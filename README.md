@@ -2,7 +2,7 @@
 
 记录立创泰山派 3M RK3576 的 Linux 开发过程。**从本 README 进入，每完成一件事，只保留一份能够独立复现的 Markdown 记录。**
 
-更新日期：2026-10-21。当前运行 Ubuntu 24.04 系列系统、Linux 6.1.99 / aarch64。固定 IP、有线 SSH、三针 TTL 调试控制台及 UART4 本地回环与重启复测已通过；Samba 共享已迁移至 `/home/rkshare`，Windows 可见 `gpio`、`lckfb` 且读写正常（用户确认）；原路径重启复测通过，新路径重启复测待补。当前按工程资源表推进 UART 与 Windows 的实际收发、单引脚 GPIO 输出和输入事件；CAN 回环、实时补丁保留，PWM、SPI、I²C 列为待确认外设的后续扩展。
+更新日期：2026-10-21。当前运行 Ubuntu 24.04 系列系统、Linux 6.1.99 / aarch64。固定 IP、有线 SSH、三针 TTL 调试控制台及 UART4 本地回环与重启复测已通过；Samba 共享已迁移至 `/home/rkshare`，Windows 可见 `gpio`、`lckfb` 且读写正常（用户确认）；迁移事项已结项。当前按工程资源表推进 UART 与 Windows 的实际收发、单引脚 GPIO 输出和输入事件；CAN 回环、实时补丁保留，PWM、SPI、I²C 列为待确认外设的后续扩展。
 
 ## 项目结构
 
@@ -30,15 +30,13 @@
 | --- | --- | --- |
 | 2026-10-21 | 固定 IP 地址及 Windows SSH 访问 | [打开完整记录](02_records/20261021_固定IP地址.md)：板端 192.168.100.123/24，重启保留，ping 4/4 回复，SSH 登录及远程命令验证通过 |
 | 2026-10-21 | TTL 串口测试与调试验证 | [打开完整记录](02_records/20261021_TTL串口调试验证.md)：CH340 / COM18 调试控制台可交互；UART4 `/dev/ttyS4` 的回环与重启复测通过，收发各 1600 字节、100/100 匹配、PASS |
-| 2026-10-21 | Samba 共享与双向文件传输 | [打开记录](02_records/20261021_Samba共享文件夹.md)：已迁移至 `/home/rkshare`，Windows 可见 `gpio`、`lckfb` 且读写正常（用户确认）；新路径重启复测待补 |
+| 2026-10-21 | Samba 共享与双向文件传输 | [打开记录](02_records/20261021_Samba共享文件夹.md)：已迁移至 `/home/rkshare`，Windows 可见 `gpio`、`lckfb` 且读写正常（用户确认）；迁移事项已结项 |
 
 复现某件事时，打开表格中对应的一份记录即可，环境、命令、排查和验证证据都放在一起。
 
-**待补验收：**Samba 新路径 `/home/rkshare` 重启后的重新访问与读写，继续追加到同一份记录。
-
 ## 下一步与后续计划
 
-下一步用 CH340 等模块验证“Windows 发、RK 收”和“RK 发、Windows 收”，两端显示并核对实际数据；GPIO 输出用万用表测高低电平，GPIO 输入捕获外部电平变化并打印。CAN 回环继续保留，后续做 PREEMPT_RT、Samba 新路径重启复测，以及根据资源表推测的 PWM、SPI、I²C 外设工作。具体待办、复用限制与完成标准统一见 [开发计划](01_docs/plans/development_plan.md)。
+下一步用 CH340 等模块验证“Windows 发、RK 收”和“RK 发、Windows 收”，两端显示并核对实际数据；GPIO 输出用万用表测高低电平，GPIO 输入捕获外部电平变化并打印。CAN 回环继续保留，后续做 PREEMPT_RT，以及根据资源表推测的 PWM、SPI、I²C 外设工作。具体待办、复用限制与完成标准统一见 [开发计划](01_docs/plans/development_plan.md)。
 
 ## 资料与工具
 
