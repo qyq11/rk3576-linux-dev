@@ -1,0 +1,30 @@
+[system]
+6.1.99-rt36-tspi
+1
+[tools]
+-rwxr-xr-x 1 lckfb lckfb 69096 Jul 22  2023 /home/rkshare/programs/rt_validation/tools/usr/bin/cyclictest
+-rwxr-xr-x 1 lckfb lckfb 68048 Jul 22  2023 /home/rkshare/programs/rt_validation/tools/usr/bin/hackbench
+62dbb170f0d461bcf69490268d0550944599898add163f40016ab70a5c642641  /home/rkshare/programs/rt_validation/tools/usr/bin/cyclictest
+bae7d9e2def45358251c24904961e96ae97b26b8d9bd84dead5e3a165e9d26e2  /home/rkshare/programs/rt_validation/tools/usr/bin/hackbench
+	linux-vdso.so.1 (0x0000007fadb37000)
+	libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000007fad910000)
+	/lib/ld-linux-aarch64.so.1 (0x0000007fadafa000)
+[hackbench_help]
+hackbench V 2.50
+Usage:
+hackbench <options>
+
+-f       --fds=NUM         number of fds
+-F       --fifo            use SCHED_FIFO for main thread
+-g       --groups=NUM      number of groups to be used
+-h       --help            print this message
+-l       --loops=LOOPS     how many message should be send
+-p       --pipe            send data via a pipe
+-i       --inet            send data via a inet tcp connection
+-s       --datasize=SIZE   message size
+-T       --threads         use POSIX threads
+-P       --process         use fork (default)
+HACKBENCH_HELP_EXIT=0
+[pm_qos_device]
+crw------- 1 root root 10, 124 Jul 28 23:04 /dev/cpu_dma_latency
+[existing_tests]

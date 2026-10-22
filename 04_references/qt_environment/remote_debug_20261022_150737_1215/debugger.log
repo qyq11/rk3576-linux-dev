@@ -1,0 +1,39 @@
+stdin/stdout redirected
+Process ./qt_demo created; pid = 13527
+Remote debugging using stdio
+0x0000007ff7fd8a40 in ?? () from /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/qt_demo/sysroot/lib/ld-linux-aarch64.so.1
+Breakpoint 1 at 0x5555555bb4: file /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/qt_demo/app_main.cpp, line 67.
+
+Breakpoint 1, main (argc=7, argv=0x7ffffffa88) at /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/qt_demo/app_main.cpp:67
+67	int main(int argc, char **argv) {
+
+RK_REMOTE_BREAKPOINT_REACHED
+$1 = 7
+#0  main (argc=7, argv=0x7ffffffa88) at /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/qt_demo/app_main.cpp:67
+70	    QTemporaryFile kmsConfig;
+
+RK_REMOTE_SINGLE_STEP_COMPLETE
+gdbserver        4460  6.0 Ss
+qt_demo         11580  1.1 t
+warning: Could not load shared library symbols for /usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqoffscreen.so.
+Do you need "set solib-search-path" or "set sysroot"?
+warning: Could not load shared library symbols for 2 libraries, e.g. /lib/aarch64-linux-gnu/libfontconfig.so.1.
+Use the "info sharedlibrary" command to see the complete listing.
+Do you need "set solib-search-path" or "set sysroot"?
+warning: Could not load shared library symbols for /usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqgif.so.
+Do you need "set solib-search-path" or "set sysroot"?
+warning: Could not load shared library symbols for /usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqico.so.
+Do you need "set solib-search-path" or "set sysroot"?
+warning: Could not load shared library symbols for /usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqjpeg.so.
+Do you need "set solib-search-path" or "set sysroot"?
+warning: Could not load shared library symbols for /lib/aarch64-linux-gnu/libjpeg.so.8.
+Do you need "set solib-search-path" or "set sysroot"?
+warning: Could not load shared library symbols for /usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqsvg.so.
+Do you need "set solib-search-path" or "set sysroot"?
+warning: Could not load shared library symbols for /lib/aarch64-linux-gnu/libQt5Svg.so.5.
+Do you need "set solib-search-path" or "set sysroot"?
+This plugin does not support propagateSizeHints()
+2026-10-22T15:07:40.872 START Qt 5.15.13  |  offscreen  |  800 x 600  |  UID 1000 screen= cwd=/home/rkshare/programs/qt_demo
+2026-10-22T15:07:42.378 READY screen content requires observation; input has not been simulated
+2026-10-22T15:07:50.711 EXIT code=0 reason=timeout
+[Inferior 1 (process 13527) exited normally]

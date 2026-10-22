@@ -1,0 +1,35 @@
+[fresh_ssh_after_unlink]
+lckfb:x:1000:1000:lckfb,,,:/home/rkshare/lckfb:/bin/bash
+HOME=/home/rkshare/lckfb
+PWD=/home/rkshare/lckfb
+OLD_PATH=ABSENT
+CD_HOME=OK
+[home_and_share_write_read]
+HOME_PATH_CHECK directory=/home/rkshare/lckfb user=lckfb
+HOME_PATH_CHECK directory=/home/rkshare user=lckfb
+[preserved_files]
+/etc/samba/smb.conf: OK
+/etc/ssh/sshd_config: OK
+/etc/hostname: OK
+/etc/hosts: OK
+/home/rkshare/lckfb/.ssh/authorized_keys: OK
+[account_database_scope]
+OTHER_PASSWD_ROWS=UNCHANGED
+[permissions]
+750 lckfb:lckfb /home/rkshare/lckfb
+700 lckfb:lckfb /home/rkshare/lckfb/.ssh
+600 lckfb:lckfb /home/rkshare/lckfb/.ssh/authorized_keys
+[services_and_share]
+active
+active
+
+[rkshare]
+	create mask = 0600
+	directory mask = 0700
+	path = /home/rkshare
+	read only = No
+	valid users = lckfb
+[kernel]
+6.1.99-rt36-tspi
+VERIFICATION=PASS
+[SSH_EXIT]=0

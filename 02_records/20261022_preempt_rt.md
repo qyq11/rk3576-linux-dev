@@ -131,6 +131,8 @@ cd 07_backups/preempt_rt && sha256sum -c SHA256SUMS
 
 原始反馈保留在数据归档中；本文只维护关键事实、方法、结果与文件入口。上述图表整理未重跑原有 60 秒对比、重新烧录或更改板端配置；随后按用户要求完成的窗口输出演示见第 7 节。
 
+2026-10-22 清理临时工作目录时，另将[构建及核查日志](../04_references/preempt_rt/work_logs/)、[实际配置 / 构建 / 打包 / 模块安装方法原稿](../04_references/preempt_rt/methods/)和[厂商来源参考](../04_references/preempt_rt/vendor_sources/)正式归档，文件来源与 SHA-256 见[归档清单](../04_references/workspace_setup/20261022_temp_archive_manifest.json)。方法原稿保留当时路径和操作范围，用于复核过程；后续实施前仍需核对实际 SDK 路径、版本及写入范围，本次整理未执行这些脚本。
+
 ## 7. WindTerm 查看 RT 运行输出（2026-10-22）
 
 用户希望通过 WindTerm 操作 RK，在串口窗口看到程序实际运行的信息。采用已有 cyclictest 显示实时线程的循环次数与唤醒延迟，不新增板端程序或修改内核。SSH 会话与 Serial 会话均可运行同一命令，输出分别经网络和物理调试串口传回；RT 补丁本身不会自动产生周期性的应用打印。
@@ -187,7 +189,7 @@ T: 0 ( 7011) P:80 I:1000 C:  19996 Min:      3 Act:   17 Avg:   14 Max:      76
 
 2026-10-22 本次 Windows 串口枚举只识别到 COM3/4/7/8 蓝牙串口，未识别到此前的 CH340/COM18，因此本次确认的是板端程序输出与 SSH 回收，**尚未复测物理调试串口或 WindTerm Serial 界面**。需接回 CH340、选对实际 COM 号后完成串口端验收；串口被其他软件占用时先释放对应端口。若先在已有 WindTerm `lckfb` SSH 会话运行同一命令，可立即观察程序统计，随后切换 Serial 检验物理串口。
 
-原始脚本与日志在 `temp/rt_console/`：`exact_command.sh`、`run_exact_command.sh`、`exact_command_20261022.log` 保存最终 20 秒参数与完整输出；`board_verification_20261022.log` 保存工具和控制台检查及前期 5 秒输出方式试跑，后者不是最终演示参数。未烧录、安装新包、变更服务或写入其他外设，无受影响的已有配置需要额外备份。
+[最终 20 秒执行原稿](../04_references/preempt_rt/console/exact_command.sh)与[完整输出](../04_references/preempt_rt/console/exact_command_20261022.log)已归档；[工具与控制台检查输出](../04_references/preempt_rt/console/board_verification_20261022.log)保存前期两种 5 秒输出方式试跑，后者不是最终演示参数。电脑端一次性 SSH 包装脚本已清理，板端执行原稿与参数保留。未烧录、安装新包、变更服务或写入其他外设，无受影响的已有配置需要额外备份。
 
 ### 7.1 按用户提供的 RK3568 截图复现参数
 
@@ -231,7 +233,7 @@ T: 4 (10430) P:80 I:3000 C: 997 Min:3 Act:20 Avg:15 Max:59
 [SSH_EXIT]=0
 ```
 
-上述数据仅用于命令与输出核验，不是完整持续负载性能结果，也不与用户 RK3568 截图直接做性能结论。原始行与完整输出在 `temp/rt_console/image_case_verify_20261022.log`；工具核查在 `image_case_preflight_20261022.log`，一次性执行脚本同目录保存。两个测试程序均已结束，没有遗留测试进程；仍未现场复测 WindTerm 的物理串口窗口。
+上述数据仅用于命令与输出核验，不是完整持续负载性能结果，也不与用户 RK3568 截图直接做性能结论。[原始行与完整输出](../04_references/preempt_rt/console/image_case_verify_20261022.log)、[工具核查](../04_references/preempt_rt/console/image_case_preflight_20261022.log)及[当次执行原稿](../04_references/preempt_rt/console/image_case_verify.sh)已归档。两个测试程序均已结束，没有遗留测试进程；仍未现场复测 WindTerm 的物理串口窗口。
 
 ### 7.2 用户 RK3576 实测截图解读与后续调优
 
@@ -249,7 +251,7 @@ RK3576 的 Min 均为 3 μs，参考 RK3568 的 Min 为 9–11 μs。以 `C × I
 
 参数解释：`T` 是测量线程编号，括号是 Linux 线程 ID，不是 CPU 编号；`P` 是实时调度优先级；`I` 是计划唤醒周期，`C` 是完成的测量次数；`Min / Act / Avg / Max` 是本轮最小、最新、平均、最大唤醒延迟。`I=1000` 表示每 1 ms 计划唤醒一次，`Max=166` 表示某次实际唤醒比计划晚 166 μs，不代表业务代码执行 166 μs。`loadavg` 为系统 1/5/15 分钟负载均值，不是 CPU 百分比；`cpu_dma_latency set to 0us` 是 CPU 退出空闲状态延迟的 PM QoS 请求，不是测得实际延迟为 0。
 
-本次只读检查原始输出在 `temp/rt_console/tuning_inspect_20261022.log`，SSH 退出码 0；没有打断用户正在运行的 PID 12680 测试，没有修改调频、CPU/IRQ 亲和性、启动参数或内核：
+本次[只读检查原始输出](../04_references/preempt_rt/console/tuning_inspect_20261022.log)及[查询原稿](../04_references/preempt_rt/console/tuning_inspect.sh)已归档，SSH 退出码 0；没有打断用户正在运行的 PID 12680 测试，没有修改调频、CPU/IRQ 亲和性、启动参数或内核：
 
 - RT 标志 1；`CONFIG_PREEMPT_RT=y`、`HIGH_RES_TIMERS=y`，`HZ=250`。
 - CPU0–3 为 Cortex-A53，容量值 442，当前可用最高频率 2016 MHz；CPU4–7 为 Cortex-A72，容量值 1024，当前可用最高频率 2208 MHz。

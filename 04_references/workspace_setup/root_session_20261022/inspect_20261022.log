@@ -1,0 +1,19 @@
+[login_identity]
+lckfb
+HOME=/home/rkshare/lckfb
+[root_account]
+root:x:0:0:root:/root:/bin/bash
+[root_ssh_effective]
+permitrootlogin without-password
+pubkeyauthentication yes
+passwordauthentication yes
+[sudo_login_shell]
+USER=root
+UID=0
+HOME=/root
+PWD=/root
+[lckfb_home]
+lckfb:x:1000:1000:lckfb,,,:/home/rkshare/lckfb:/bin/bash
+[kernel]
+6.1.99-rt36-tspi
+[SSH_EXIT]=0

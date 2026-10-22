@@ -12,6 +12,7 @@
 | --- | --- |
 | 打开的工程文件 | [06_programs/qt_demo/qt_demo.pro](../06_programs/qt_demo/qt_demo.pro) |
 | 两种目标共用的源码 | [app_main.cpp](../06_programs/qt_demo/app_main.cpp)；Windows 与 WSL 直接读取同一份文件，当前界面由 C++ 创建，没有 `.ui` 文件 |
+| 旧 Linux 专用版本 | [history/linux_main_20261022.cpp](../06_programs/qt_demo/history/linux_main_20261022.cpp)，仅供历史追溯，不参与当前构建 |
 | 本次使用的 IDE | **Qt Creator 4.11.1**，`C:\Qt5.14\Qt5.14.2\Tools\QtCreator\bin\qtcreator.exe` |
 | Windows Qt / Kit | **Qt 5.14.2 / Desktop Qt 5.14.2 MinGW 64-bit** |
 | Windows Qt 目录 | `C:\Qt5.14\Qt5.14.2\5.14.2\mingw73_64` |
@@ -115,7 +116,7 @@ C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux\temp\qt_demo\qtc
 | 本次界面状态 | 当前工作目录的 `state.json`；IDE 默认位于 `temp/qt_demo/qtcreator_debug/state.json` |
 | 应用生成的界面图 | 同目录 `render.png`；是 QWidget 渲染图，区别于电脑窗口截图或 HDMI 实物照片 |
 | IDE 自身调试问题 | Debug → Views → **Debugger Log**；看加载的 EXE、GDB、符号、信号；右键可保存日志 |
-| 正式证据 | 关键输入输出摘入本文 / 配套 JSON，原图放 `03_photos/`；临时日志在 `temp/`，默认不随 Git 保存 |
+| 正式证据 | 关键输入输出摘入本文 / 配套 JSON，原图放 `03_photos/`；本次历史日志已归档到 [04_references/qt_environment/](../04_references/qt_environment/)，新运行日志先写 `temp/`，见第 8 节 |
 
 本次 `state.json` 实际为 `platform=windows`、`qt_version=5.14.2`、`submissions=1`、`submitted_text=QT_DOC_OK`、`exit_reason=exit_button`；这次只验证输入提交，计数为 0。之前另一轮测试的计数为 1、提交文本为 `WIN_QTCREATOR_OK`，详见配套 JSON。`key_presses` / `mouse_presses` 是 Qt 事件分发计数，可能包含传播事件，不当作物理按键次数。
 
@@ -145,7 +146,7 @@ Get-FileHash -Algorithm SHA256 .\06_programs\qt_demo\app_main.cpp
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\06_programs\qt_demo\windows.ps1 -Action debug-check
 ```
 
-本入口使用独立的 `temp/qt_demo/windows_debug_x64/`，日志为 `debugger.log`；不是 IDE 的 `qtcreator_debug/`。其中应出现 `DEBUG_BREAKPOINT_REACHED`、`DEBUG_SINGLE_STEP_COMPLETE`、正常退出。只想运行测试窗口时，把脚本参数改为 `-Action run`，点击 EXIT 结束。
+本入口使用独立的 `temp/qt_demo/windows_debug_x64/`，新运行日志为 `debugger.log`；不是 IDE 的 `qtcreator_debug/`。其中应出现 `DEBUG_BREAKPOINT_REACHED`、`DEBUG_SINGLE_STEP_COMPLETE`、正常退出。[本次历史验收日志](../04_references/qt_environment/windows_debug_x64/debugger.log)已正式归档；旧构建产物已清理，脚本每次会重新运行 qmake 和编译。只想运行测试窗口时，把脚本参数改为 `-Action run`，点击 EXIT 结束。
 
 ## 5. 本次遇到的反汇编 / ?? 问题
 
@@ -207,7 +208,7 @@ bash qt_demo/run.sh stop
 bash qt_demo/collect.sh
 ```
 
-输出保存为 `temp/qt_demo/evidence/<本次编号>/` 的 `app.log`、`state.json`、`render.png`、`runtime.txt` 和已结束时的 `exit_code`。查看 `SUBMIT` 的真实文本、`EXIT` 的原因和代码；`runtime.txt` 包含内核、实时标志、活动终端等核对信息。`collect.sh` 不回收下面独立的远程调试目录。
+新运行输出保存为 `temp/qt_demo/evidence/<本次编号>/` 的 `app.log`、`state.json`、`render.png`、`runtime.txt` 和已结束时的 `exit_code`。查看 `SUBMIT` 的真实文本、`EXIT` 的原因和代码；`runtime.txt` 包含内核、实时标志、活动终端等核对信息。[本次 HDMI 原始日志与状态](../04_references/qt_environment/hdmi_20261022_141944_7325/)和[渲染图](../03_photos/20261022_qt_hdmi_render_01.png)已正式归档。`collect.sh` 不回收下面独立的远程调试目录。
 
 ![历史 RK 界面渲染图，Qt 5.15.13 / eglfs / 1600×900](../03_photos/20261022_qt_hdmi_render_01.png)
 
@@ -231,7 +232,7 @@ dpkg-query -W libqt5core5t64 libqt5gui5t64 libqt5widgets5t64
 bash qt_demo/debug_rk.sh check
 ```
 
-已实测命中 `app_main.cpp:67`，`argc=7`、回溯和单步通过，出现 `RK_REMOTE_BREAKPOINT_REACHED` / `RK_REMOTE_SINGLE_STEP_COMPLETE`；Qt 5.15.13 运行 10 秒后退出码 0。日志在 `temp/qt_demo/remote_debug/<本次编号>/debugger.log`，同目录回收状态和渲染图。
+已实测命中 `app_main.cpp:67`，`argc=7`、回溯和单步通过，出现 `RK_REMOTE_BREAKPOINT_REACHED` / `RK_REMOTE_SINGLE_STEP_COMPLETE`；Qt 5.15.13 运行 10 秒后退出码 0。[最终验收日志](../04_references/qt_environment/remote_debug_20261022_150737_1215/debugger.log)、[状态与当次 GDB 原稿](../04_references/qt_environment/remote_debug_20261022_150737_1215/)及[渲染原图](../03_photos/20261022_qt_remote_debug_01.png)已归档。新会话仍写入 `temp/qt_demo/remote_debug/<本次编号>/`。
 
 需要手动停住、查看变量时：
 
@@ -286,3 +287,25 @@ set logging enabled off
 
 - [ ] 业务输入明确后，验证真实后端数据、通信异常、退出 / 恢复和日志关联。
 - [ ] 按使用需要确认 MIPI DSI 配套屏型号与触摸；按交付要求验证自启、重启恢复、长期稳定性及界面负载下的实时性。
+
+## 8. 清理后文件入口与重新构建
+
+2026-10-22 将本次唯一旧源码、关键日志、状态和未重复的渲染图移出 `temp/`，逐字节校验后清理 EXE、ELF、对象文件、Makefile、旧调试尝试及一次性文档辅助脚本。归档来源与 SHA-256 见[清单](../04_references/workspace_setup/20261022_temp_archive_manifest.json)。此为资料整理，没有重新执行板端或图形测试。
+
+| 需要使用的内容 | 正式入口与范围 |
+| --- | --- |
+| 日常开发 | 打开 [qt_demo.pro](../06_programs/qt_demo/qt_demo.pro)，修改 [app_main.cpp](../06_programs/qt_demo/app_main.cpp)；当前工程只编译这一份源码 |
+| 旧 Linux 版本 | [linux_main_20261022.cpp](../06_programs/qt_demo/history/linux_main_20261022.cpp)，只作历史对照，不加入 SOURCES |
+| HDMI / USB 键鼠实测 | [app.log](../04_references/qt_environment/hdmi_20261022_141944_7325/app.log)、[state.json](../04_references/qt_environment/hdmi_20261022_141944_7325/state.json)、[runtime.txt](../04_references/qt_environment/hdmi_20261022_141944_7325/runtime.txt)、[退出码](../04_references/qt_environment/hdmi_20261022_141944_7325/exit_code)及[渲染图](../03_photos/20261022_qt_hdmi_render_01.png)；现场显示 / 输入仍以用户当时确认的范围为准 |
+| Windows 64 位脚本调试 | [debugger.log](../04_references/qt_environment/windows_debug_x64/debugger.log)、[state.json](../04_references/qt_environment/windows_debug_x64/state.json)和[渲染图](../03_photos/20261022_qt_windows_render_01.png) |
+| Qt Creator 故障与修复核查 | [失败片段](../04_references/qt_environment/qtcreator_diagnosis/failure_excerpts.txt)、[成功片段](../04_references/qt_environment/qtcreator_diagnosis/success_excerpts.txt)、[操作状态](../04_references/qt_environment/qtcreator_diagnosis/interaction_state.json)；仅保留原筛选片段，没有导出完整环境变量日志 |
+| 文档补采与 IDE 最终状态 | [补采输出](../04_references/qt_environment/qtcreator_diagnosis/documentation_output.txt)、[补采状态](../04_references/qt_environment/documentation/documentation_state.json)、[IDE 最终状态](../04_references/qt_environment/windows_ide_final/state.json)及[对应渲染图](../03_photos/20261022_qt_windows_ide_final_01.png) |
+| WSL→RK 最终远程调试 | [debugger.log](../04_references/qt_environment/remote_debug_20261022_150737_1215/debugger.log)、[state.json](../04_references/qt_environment/remote_debug_20261022_150737_1215/state.json)、[当次 session.gdb](../04_references/qt_environment/remote_debug_20261022_150737_1215/session.gdb)和[渲染图](../03_photos/20261022_qt_remote_debug_01.png)；GDB 原稿保留历史路径，后续调试使用现有 `debug_rk.sh` 重新生成 |
+| 构建与依赖来源 | [原构建 / 部署日志](../04_references/qt_environment/build_logs/)、[ELF 核查输出](../04_references/qt_environment/build_metadata/)、[ARM64 Qt 构建输入](../07_backups/qt_environment/qt5_arm64/source.json)、[调试工具](../07_backups/qt_environment/debug_tools/source.json) |
+
+清理后按目标重新构建，不使用历史归档中的旧脚本路径启动程序：
+
+- **Windows Qt Creator：**打开上述 `.pro`，保留本机 `qt_demo.pro.user` 的 Kit / Run 设置，先执行 qmake，再 Ctrl+B；随后按第 3 节 F5 调试。构建目录仍为 `temp/qt_demo/qtcreator_debug/`。
+- **Windows 脚本：**使用 [windows.ps1](../06_programs/qt_demo/windows.ps1)，按第 5 节选择 `build`、`run` 或 `debug-check`；三种模式都会重新编译，输出到 `temp/qt_demo/windows_debug_x64/`。
+- **RK 目标：**当前保留的 `temp/qt_demo/sysroot/` 可直接继续使用；在 WSL 的 `06_programs/` 执行第 6.1 节 `bash rk.sh qt_demo build` 重新生成 ELF。需要实际显示时再使用 [run.sh](../06_programs/qt_demo/run.sh)；板端特有问题按需使用 [debug_rk.sh](../06_programs/qt_demo/debug_rk.sh)。
+- **重建依赖：**如果以后主动删掉 sysroot，在 WSL `06_programs/` 执行 [prepare.sh](../06_programs/qt_demo/prepare.sh)（`bash qt_demo/prepare.sh`），从已校验的正式归档恢复；当前无需重复准备。

@@ -1,0 +1,26 @@
+{
+  "repository": "ArmSoM/rk3506-rkr4.2-sdk",
+  "revision": "7066d7b709d07fe21dc1808017ba11cc9987cfcf",
+  "source_directory": "docs/Patches/Real-Time-Performance/PREEMPT_RT/kernel-6.1/kernel-6.1.99",
+  "vm_directory": "/home/qyq/rk3576/preempt_rt_vendor_reference_20261022",
+  "patches": [
+    {
+      "name": "0001-Add-PREEMPT_RT-patch-corresponding-to-kernel-6.1.99.patch",
+      "bytes": 337919,
+      "sha256": "792022e28c09c2a2220a327ce7ade452cf8b7c19eab768a8e31adc3c71c0806f",
+      "git_blob_sha": "bdfd6f72d3e4c88c2064905a5756cfd038f369f1",
+      "source_url": "https://raw.githubusercontent.com/ArmSoM/rk3506-rkr4.2-sdk/7066d7b709d07fe21dc1808017ba11cc9987cfcf/docs/Patches/Real-Time-Performance/PREEMPT_RT/kernel-6.1/kernel-6.1.99/0001-Add-PREEMPT_RT-patch-corresponding-to-kernel-6.1.99.patch",
+      "header": "From e46da81b69bc1026aa6d1a2965481147d78f0d7c Mon Sep 17 00:00:00 2001\nFrom: itlhd <xikan@armsom.org>\nDate: Wed, 16 Jul 2025 14:01:56 +0800\nSubject: [PATCH 1/2] Add PREEMPT_RT patch corresponding to kernel 6.1.99\n\n---\n kernel-6.1/arch/arm/Kconfig                   |   7 +-\n .../arch/arm/configs/rockchip_rt.config       |  33 +\n kernel-6.1/arch/arm/include/asm/thread_info.h |   6 +-\n kernel-6.1/arch/arm/kernel/asm-offsets.c      |   1 +\n kernel-6.1/arch/arm/kernel/entry-armv.S       |  19 +-\n kernel-6.1/arch/arm/kernel/signal.c           |   3 +-\n kernel-6.1/arch/arm/mm/fault.c                |   6 +\n kernel-6.1/arch/arm64/Kconfig                 |   2 +\n .../arch/arm64/configs/rockchip_rt.config     |  24 +-\n kernel-6.1/arch/arm64/include/asm/preempt.h   |  25 +-\n .../arch/arm64/include/asm/thread_info.h      |   8 +-"
+    },
+    {
+      "name": "0002-Add-cyclictest-running-program-and-expand-recovery-p.patch",
+      "bytes": 1695,
+      "sha256": "ebc48732951ea9ea0dac3087e5eda0f5f10a4f2403a86a199ae6d9425bae83d6",
+      "git_blob_sha": "05c0e393ed482bd2c286248c5cca03eb693f9950",
+      "source_url": "https://raw.githubusercontent.com/ArmSoM/rk3506-rkr4.2-sdk/7066d7b709d07fe21dc1808017ba11cc9987cfcf/docs/Patches/Real-Time-Performance/PREEMPT_RT/kernel-6.1/kernel-6.1.99/0002-Add-cyclictest-running-program-and-expand-recovery-p.patch",
+      "header": "From 6258882700748e0a90b507abc4f8c05a894bc52b Mon Sep 17 00:00:00 2001\nFrom: itlhd <xikan@armsom.org>\nDate: Wed, 16 Jul 2025 14:04:02 +0800\nSubject: [PATCH 2/2] Add cyclictest running program and expand recovery\n partition\n\n---\n buildroot/configs/rockchip_rk3506_defconfig      | 1 +\n device/rockchip/.chips/rk3506/parameter-128M.txt | 2 +-\n 2 files changed, 2 insertions(+), 1 deletion(-)\n\ndiff --git a/buildroot/configs/rockchip_rk3506_defconfig b/buildroot/configs/rockchip_rk3506_defconfig\nindex 4302ccecb..be62532da 100644\n--- a/buildroot/configs/rockchip_rk3506_defconfig\n+++ b/buildroot/configs/rockchip_rk3506_defconfig\n@@ -38,3 +38,4 @@ BR2_PACKAGE_RECOVERY_USE_UPDATEENGINE=y\n BR2_PACKAGE_RECOVERY_UPDATEENGINEBIN=y"
+    }
+  ],
+  "base_patch_apply_check_exit_code": 1,
+  "patches_applied": false
+}

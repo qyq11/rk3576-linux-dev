@@ -1,0 +1,62 @@
+CONFIG_PREEMPT_RT=y
+CONFIG_HIGH_RES_TIMERS=y
+2026-10-22T13:23:20+08:00
+uid=1000(lckfb) gid=1000(lckfb) groups=1000(lckfb),4(adm),6(disk),24(cdrom),27(sudo),29(audio),44(video),46(plugdev),100(users),107(netdev),992(render),993(kvm),995(input)
+Linux localhost 6.1.99-rt36-tspi #1 SMP PREEMPT_RT Thu Oct 22 11:35:54 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+REALTIME=1
+BOOT_ID=84ab6fe1-4cc2-42d2-8c6a-3a7e930f1ace
+ 13:23:20 up 3 min,  3 users,  load average: 1.42, 0.96, 0.41
+storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal  androidboot.verifiedbootstate=orange rw rootwait earlycon=uart8250,mmio32,0x2ad40000 console=ttyFIQ0 root=PARTUUID=614e0000-0000 rcupdate.rcu_expedited=1 rcu_nocbs=all #q-09/12/2026 androidboot.fwver=ddr-v1.09-2f85f4b2d4,bl31-v1.14,bl32-v1.05,uboot-3fcd713
+CONFIG_SHA256
+96464f3467a506e86d9c6da8e6dbfc05e8b14d749be85bcaf1d6f68f92c9ceda  /home/rkshare/programs/rt_validation/rt_20261022_132319/board_kernel.config
+ROOT_MOUNT
+TARGET SOURCE         FSTYPE OPTIONS
+/      /dev/mmcblk0p8 ext4   rw,relatime
+NETWORK
+lo               UNKNOWN        127.0.0.1/8 
+end0             UP             192.168.100.123/24 
+wlan0            UP             192.168.3.38/24 
+SERVICES
+active
+active
+FAILED_UNITS
+NODES
+crw-rw---- 1 root video   226,   0 Jul 28 23:04 /dev/dri/card0
+crw-rw---- 1 root video   226,   1 Jul 28 23:04 /dev/dri/card1
+crw-rw---- 1 root video   226,   2 Jul 28 23:04 /dev/dri/card2
+crw-rw---- 1 root render  226, 128 Jul 28 23:04 /dev/dri/renderD128
+crw-rw---- 1 root render  226, 129 Jul 28 23:04 /dev/dri/renderD129
+crw-rw---- 1 root render  226, 130 Jul 28 23:04 /dev/dri/renderD130
+crw------- 1 root root    254,   0 Jul 28 23:04 /dev/gpiochip0
+crw------- 1 root root    254,   1 Jul 28 23:04 /dev/gpiochip1
+crw------- 1 root root    254,   2 Jul 28 23:04 /dev/gpiochip2
+crw------- 1 root root    254,   3 Jul 28 23:04 /dev/gpiochip3
+crw------- 1 root root    254,   4 Jul 28 23:04 /dev/gpiochip4
+crw------- 1 root root    254,   5 Jul 28 23:04 /dev/gpiochip5
+crw-rw---- 1 root dialout   4,  68 Jul 28 23:04 /dev/ttyS4
+
+/dev/dri/by-path:
+total 0
+lrwxrwxrwx 1 root root  8 Jul 28 23:04 platform-27700000.npu-card -> ../card2
+lrwxrwxrwx 1 root root 13 Jul 28 23:04 platform-27700000.npu-render -> ../renderD130
+lrwxrwxrwx 1 root root  8 Jul 28 23:04 platform-27800000.gpu-card -> ../card1
+lrwxrwxrwx 1 root root 13 Jul 28 23:04 platform-27800000.gpu-render -> ../renderD129
+lrwxrwxrwx 1 root root  8 Jul 28 23:04 platform-display-subsystem-card -> ../card0
+lrwxrwxrwx 1 root root 13 Jul 28 23:04 platform-display-subsystem-render -> ../renderD128
+MODULES
+Module                  Size  Used by
+bcmdhd               1462272  0
+LOADED_MODULE_PATHS
+/lib/modules/6.1.99-rt36-tspi/kernel/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/bcmdhd.ko
+6.1.99-rt36-tspi SMP preempt_rt mod_unload aarch64
+SYSCTL
+kernel.sched_rt_runtime_us = 950000
+kernel.sched_rt_period_us = 1000000
+kernel.printk = 3	4	1	7
+KERNEL_TAINT=0
+BOOT_PAYLOAD_SHA256=73ea7f9e89e2b0db05974b53634349af03455fd0bd244646f508a62f454f1696
+MODULE_COUNT=155
+MODULE_FILES=PASS
+OLD_MODULES_BOOT_OVERLAYS_AND_SELECTED_CONFIGS=PASS
+PREFLIGHT=PASS
+RUN_DIRECTORY=/home/rkshare/programs/rt_validation/rt_20261022_132319

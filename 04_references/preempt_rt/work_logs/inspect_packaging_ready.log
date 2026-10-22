@@ -1,0 +1,58 @@
+BUILD_STARTED=2026-10-22T11:31:35+08:00
+BUILD_FINISHED=2026-10-22T11:36:05+08:00
+BUILD_EXIT=0
+RESOURCE_TOOL
+ 18912496      4 -rw-rw-r--   1 qyq      qyq           541 Oct 22 11:31 /home/qyq/rk3576/preempt_rt_6.1.99_rt36_20261022/build/scripts/.resource_tool.cmd
+ 18912495     44 -rwxrwxr-x   1 qyq      qyq         43064 Oct 22 11:31 /home/qyq/rk3576/preempt_rt_6.1.99_rt36_20261022/build/scripts/resource_tool
+ 18254989      4 -rw-rw-r--   1 qyq      qyq           416 Sep 12 10:39 /home/qyq/rk3576/TaishanPi-3-Linux/kernel-6.1/scripts/.resource_tool.cmd
+ 18235615     40 -rw-rw-r--   1 qyq      qyq         39690 Sep  8 16:54 /home/qyq/rk3576/TaishanPi-3-Linux/kernel-6.1/scripts/resource_tool.c
+ 18254988     44 -rwxrwxr-x   1 qyq      qyq         43064 Sep 12 10:39 /home/qyq/rk3576/TaishanPi-3-Linux/kernel-6.1/scripts/resource_tool
+/home/qyq/rk3576/preempt_rt_6.1.99_rt36_20261022/kernel/scripts/Makefile:9:hostprogs-always-$(CONFIG_ARCH_ROCKCHIP)		+= resource_tool
+/home/qyq/rk3576/preempt_rt_6.1.99_rt36_20261022/kernel/scripts/Makefile:18:HOSTCFLAGS_resource_tool.o += -Wno-declaration-after-statement
+/home/qyq/rk3576/preempt_rt_6.1.99_rt36_20261022/kernel/scripts/mkimg:249:scripts/resource_tool ${DTB_PATH} ${LOGO} ${LOGO_KERNEL} >/dev/null
+FIT_SCRIPT
+#!/bin/bash -e
+
+RK_SCRIPTS_DIR="${RK_SCRIPTS_DIR:-$(dirname "$(realpath "$0")")}"
+RK_SDK_DIR="${RK_SDK_DIR:-$RK_SCRIPTS_DIR/../../../..}"
+
+TARGET_IMG="$1"
+ITS="$2"
+KERNEL_IMG="$3"
+KERNEL_DTB="$4"
+RESOURCE_IMG="$5"
+RAMDISK_IMG="$6"
+
+if [ ! -f "$ITS" ]; then
+	echo "$ITS not exists!"
+	exit 1
+fi
+
+TMP_ITS=$(mktemp)
+cp "$ITS" "$TMP_ITS"
+
+if [ "$RK_SECURITY" ]; then
+	echo "Security boot enabled, removing uboot-ignore ..."
+	sed -i "/uboot-ignore/d" "$TMP_ITS"
+fi
+
+sed -i -e "s~@KERNEL_DTB@~$(realpath -q "$KERNEL_DTB")~" \
+	-e "s~@KERNEL_IMG@~$(realpath -q "$KERNEL_IMG")~" \
+	-e "s~@RAMDISK_IMG@~$(realpath -q "$RAMDISK_IMG")~" \
+	-e "s~@RESOURCE_IMG@~$(realpath -q "$RESOURCE_IMG")~" "$TMP_ITS"
+
+"$RK_SDK_DIR/rkbin/tools/mkimage" -f "$TMP_ITS"  -E -p 0x800 "$TARGET_IMG"
+
+rm -f "$TMP_ITS"
+PACKAGING_TOOLS
+/usr/sbin/depmod
+/usr/sbin/modinfo
+/usr/bin/fdtget
+-rwxrwxr-x 1 qyq qyq 53242 Sep  8 16:53 /home/qyq/rk3576/TaishanPi-3-Linux/rkbin/tools/resource_tool
+BUILD_ARTIFACTS
+-rw-rw-r-- 1 qyq qyq 43338240 Oct 22 11:36 /home/qyq/rk3576/preempt_rt_6.1.99_rt36_20261022/build/arch/arm64/boot/Image
+-rw-rw-r-- 1 qyq qyq   286911 Oct 22 11:31 /home/qyq/rk3576/preempt_rt_6.1.99_rt36_20261022/build/arch/arm64/boot/dts/rockchip/tspi-3m-rk3576-panfrost.dtb
+BUILD_WARNINGS
+ORIGINAL_STATE
+64573e409712e98d0d15ad923b645051877b070ab550b05c71da9cdff12cb72d  /home/qyq/rk3576/TaishanPi-3-Linux/kernel-6.1/.config
+cd124546f61ec239367796566a52ae77c65ee0469597ff0e064500326665692f  /home/qyq/rk3576/TaishanPi-3-Linux/kernel-6.1/boot.img

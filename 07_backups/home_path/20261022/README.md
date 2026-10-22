@@ -1,6 +1,6 @@
 # lckfb 主目录登记变更的最小回退资料
 
-2026-10-22，来源为 `lckfb@192.168.100.123` 的实际 SSH 核查，原始日志位于项目 `temp/home_path/inspect_20261022.log`。
+2026-10-22，来源为 `lckfb@192.168.100.123` 的实际 SSH 核查；[原始查询日志](../../../04_references/workspace_setup/home_path_20261022/inspect_20261022.log)与[后续核查输出](../../../04_references/workspace_setup/home_path_20261022/)已从临时目录归档。
 
 本次只将账号登记的主目录从 `/home/lckfb` 改为 `/home/rkshare/lckfb`，验证后删除旧软链接。真实目录、共享内容、权限、公钥和 Samba 配置保留。这里只保存恢复本次变更所需的账号条目和原链接目标；不备份整机或复制用户文件，不归档密码、密码哈希、私钥或公钥内容。
 

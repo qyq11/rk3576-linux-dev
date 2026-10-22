@@ -27,7 +27,7 @@
 │   ├── 20261022_qt_environment.md      # Qt 编译、Windows / RK 调试与圈注操作记录
 │   └── 20261022_qt_environment.json    # 同一 Qt 事项的结构化实测数据
 ├── 03_photos/                           # 所有任务的原始图片，统一直接存放
-├── 04_references/                       # 原始参考资料
+├── 04_references/                       # 原始参考资料、按事项归档的日志和验证证据
 ├── 05_tools/                            # 工具和可复用测试程序，按用途分目录
 │   ├── flash/                           # RKDevTool 工具与安装包仅本地保存
 │   │   └── configs/                     # 分区配置的本地工具副本，正式归档见 07_backups
@@ -48,7 +48,7 @@
 │   ├── home_path/                        # 主目录登记变更的必要回退信息与脚本
 │   ├── root_session/                     # WindTerm 自动进入 root 的最小配置回退资料
 │   └── qt_environment/                   # Qt ARM64 构建输入、来源、校验与使用范围
-└── temp/                                # 本地一次性测试脚本、原始输出与中间文件
+└── temp/                                # 可重建的本机工作缓存；当前保留 Qt sysroot
 ```
 
 ## 程序写在哪里
@@ -93,7 +93,7 @@ bash rk.sh workflow_demo all -- 12 30
 
 **工程整体架构已归档：**见[设备架构记录](02_records/20261022_system_architecture.md)及[用户原图](03_photos/20261022_system_architecture_01.png)。PC 仅负责人机交互，经 TCP/IP 连接负责通信和控制的 Linux 工控板；工控板通过 CAN 连接 8 张轴卡、RS485 连接数据采集、RS232 连接条码扫描，另有 Input 模块待细化。此处记录设计关系，实际接口功能按需验证。
 
-2026-10-22 已清理根目录空临时文件、重复副本及过期中间文件，保留当前开发依赖和原始验证依据；范围见[工作目录记录第 9 节](02_records/20261021_workspace_setup.md#9-项目临时文件清理2026-10-22)。
+2026-10-22 已完成两轮临时文件整理：关键证据归档到 `04_references/`，唯一旧 Qt 源码移入工程 `history/`，删除重复副本、过期辅助文件和可重建产物；`temp/` 当前只保留 Qt 交叉编译依赖与说明。**查历史资料、重新编译及恢复依赖，统一从[清理后使用入口](02_records/20261021_workspace_setup.md#9-项目临时文件清理2026-10-22)进入**；[Qt 文件入口](02_records/20261022_qt_environment.md#8-清理后文件入口与重新构建)单独列明日常使用方法。
 
 ## 下一步与后续计划
 

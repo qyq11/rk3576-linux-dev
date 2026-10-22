@@ -1,0 +1,13 @@
+printf 'AUTO_ROOT_USER=%s\nAUTO_ROOT_UID=%s\nAUTO_ROOT_HOME=%s\nAUTO_ROOT_PWD=%s\n' "$(id -un)" "$(id -u)" "$HOME" "$(pwd -P)"
+if test "$(id -u)" = 0 && test "$HOME" = /root; then printf 'AUTO_ROOT_CHECK=PASS\n'; exit 0; else exit 1; fi
+printf 'AUTO_ROOT_USER=%s\nAUTO_ROOT_UID=%s\nAUTO_ROOT_HOME=%s\nAUTO_ROOT_PWD=%s\n' "$(id -un)" "$(id -u)" "$HOME" "$(pwd -P)"
+if test "$(id -u)" = 0 && test "$HOME" = /root; then printf 'AUTO_ROOT_CHECK=PASS\n'; exit 0; else exit 1; fi
+[?2004h]0;root@localhost: ~root@localhost:~# printf 'AUTO_ROOT_USER=%s\nAUTO_ROOT_UID=%s\nAUTO_ROOT_HOME=%s\nAUTO_ROOT_PWD=%s\n' "$(id -un)" "$(id -u)" "$HOME" "$(pwd -P)"
+[?2004lAUTO_ROOT_USER=root
+AUTO_ROOT_UID=0
+AUTO_ROOT_HOME=/root
+AUTO_ROOT_PWD=/root
+[?2004h]0;root@localhost: ~root@localhost:~# if test "$(id -u)" = 0 && test "$HOME" = /root; then printf 'AUTO_ROOT_CHECK=PASS\n'; exit 0; else exit 1; fi
+[?2004lAUTO_ROOT_CHECK=PASS
+logout
+Connection to 192.168.100.123 closed.

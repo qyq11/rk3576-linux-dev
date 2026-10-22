@@ -164,7 +164,7 @@ AUTO_ROOT_PWD=/root
 AUTO_ROOT_CHECK=PASS
 ```
 
-root shell 正常退出并关闭测试连接；原始交互日志保留终端控制字符，按回车分行后逐项核对上述结果。日志与临时脚本在 `temp/root_session/`。本次验证了已保存的会话配置与相同命令的实际交互提权；没有启动 WindTerm 并采集该会话界面，因此首次 GUI 连接结果以实际打开该会话为准。
+root shell 正常退出并关闭测试连接；[原始交互日志](../04_references/workspace_setup/root_session_20261022/interactive_20261022.log)保留终端控制字符，按回车分行后逐项核对上述结果。[配置与核查日志](../04_references/workspace_setup/root_session_20261022/)已正式归档，一次性辅助脚本已清理；回退仍使用前述 `07_backups/root_session/` 正式资料。本次验证了已保存的会话配置与相同命令的实际交互提权；没有启动 WindTerm 并采集该会话界面，因此首次 GUI 连接结果以实际打开该会话为准。
 
 以后打开 WindTerm，双击原来的 **`lckfb`** 会话，认证成功后约 1 秒自动进入 root，提示符应为 `root@localhost:~#`。此时终端命令以 root 执行，主目录为 `/root`；`exit` 可返回原 lckfb shell。SFTP 仍使用会话的 lckfb 身份；AI 构建部署工作流继续按项目约定使用普通用户。
 
@@ -172,10 +172,24 @@ root shell 正常退出并关闭测试连接；原始交互日志保留终端控
 
 ## 9. 项目临时文件清理（2026-10-22）
 
-按用户要求核查根目录与 `temp/`，本轮删除 93 个文件，共 131,846,672 字节（约 125.7 MiB）。其中根目录的 3 个 `users52400appdatalocaltemptmp...` 文件均为 0 字节；其余为经 SHA-256 核对的重复归档副本、旧圈注预览、过期文档草稿、旧 Git 临时索引和过期 Qt 构建输出。
+第一轮删除 93 个文件，共 131,846,672 字节（约 125.7 MiB），包括根目录 3 个空临时文件、重复镜像 / 安装包、旧预览及过期构建输出；正式备份 59 项校验清单条目核对通过。`06_programs/.gitignore` 增加 `build-*/`，防止误建的 Qt shadow-build 目录进入 Git。
 
-正式图片、源码、参考资料与 `07_backups/` 全部保留；正式备份 59 项校验清单条目核对通过。已删除的临时镜像、安装包和脚本均能在对应正式目录找到一致副本。`06_programs/` 下误建的旧 Qt shadow-build 目录已清除，其中唯一的 `render.png`、`state.json` 先保留到 `temp/qt_demo/evidence/windows_initial_build/`；`06_programs/.gitignore` 增加 `build-*/`，防止类似构建目录误入 Git。
+第二轮按用户要求将关键日志、原始输出、必要方法原稿及唯一旧源码正式归档：111 个文件逐字节 SHA-256 核验后移出 `temp/`，45 个已在正式图片或 RT 原始 ZIP 中存在的文件核对后去重，127 个过期辅助文件和可重建产物删除。本轮处理的原临时文件共 283 个、9,148,196 字节。来源、目标、用途分类和校验值见[归档与清理清单](../04_references/workspace_setup/20261022_temp_archive_manifest.json)。清单记录历史来源路径，当前使用下表正式入口。
 
-提交前补齐 `.gitattributes` 对 RT 原始参考数据及可编辑 SVG 的字节保留规则，避免 Windows 换行转换影响原文件校验；正式镜像和压缩备份继续使用 Git LFS。
+| 需要做什么 | 当前入口及用途 |
+| --- | --- |
+| 继续修改、编译或调试 Qt 程序 | [Qt 工程](../06_programs/qt_demo/qt_demo.pro)、[当前源码](../06_programs/qt_demo/app_main.cpp)；按 [Qt 记录第 8 节](20261022_qt_environment.md#8-清理后文件入口与重新构建)重新构建，旧 EXE / ELF / 对象文件已清理 |
+| 查旧 Linux 专用 Qt 源码 | [linux_main_20261022.cpp](../06_programs/qt_demo/history/linux_main_20261022.cpp)，仅历史原件，不参与当前 `.pro` 和 `build.sh` 构建 |
+| 查 Qt 显示、输入及调试证据 | [Qt 原始证据目录](../04_references/qt_environment/)，具体日志、状态及图片见 [Qt 文件入口](20261022_qt_environment.md#8-清理后文件入口与重新构建) |
+| 查 RT 测量与镜像验证 | [实时内核记录](20261022_preempt_rt.md)、[构建核查日志](../04_references/preempt_rt/work_logs/)、[方法原稿](../04_references/preempt_rt/methods/)、[控制台与调优核查](../04_references/preempt_rt/console/)；原始普通 / RT 数据继续使用既有 ZIP，恢复仍使用 `07_backups/preempt_rt/` |
+| 查串口历史收发与启动原始数据 | [2026-10-21 串口证据](../04_references/uart/20261021/)，原始接收二进制、日志及历史脚本同目录；当前接口测试仍使用 [C 版源码](../05_tools/tests/uart/uart4_loopback.c) |
+| 查主目录变更与 root 会话核查 | [主目录日志](../04_references/workspace_setup/home_path_20261022/)、[会话日志](../04_references/workspace_setup/root_session_20261022/)；恢复脚本继续在 `07_backups/home_path/`、`07_backups/root_session/` |
+| 查此前 Samba 双向测试文本 | [电脑写入文本](../04_references/samba/20261021/pc_to_rk.txt)、[RK 写入文本](../04_references/samba/20261021/rk_to_pc.txt)，仅对应当时验证，不代表 RT 内核下已复测 |
 
-仍保留正在使用的 Qt sysroot、已验证的当前 Debug 构建、Qt 原始输出、RT / 串口 / 主目录与会话变更的核查日志，以及唯一的 `original_linux_main.cpp`。这些文件用于后续开发或证据核对，不能仅因位于 `temp/` 就当作垃圾。清理明细在本机 `temp/cleanup/cleanup_summary.json`，临时目录仍不随 Git 保存。本次仅整理项目文件，未改板端环境或系统配置。
+`temp/` 当前仅保留约 102.6 MiB 的 `qt_demo/sysroot/` 和一份说明。它是电脑端 Qt ARM64 编译依赖；如以后主动删除，在 WSL 的 `06_programs/` 执行下列命令，可从[正式构建输入](../07_backups/qt_environment/qt5_arm64/source.json)核验并重建：
+
+```bash
+bash qt_demo/prepare.sh
+```
+
+`.gitattributes` 对原始证据、可编辑 SVG 和历史源码保留字节，正式镜像和压缩备份继续使用 Git LFS。本次仅整理项目文件，未运行历史脚本、编译、连接或修改 RK；后续新运行仍会在 `temp/<program>/` 生成当次输出，重要证据再按事项归档。

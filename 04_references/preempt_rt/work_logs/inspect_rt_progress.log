@@ -1,0 +1,65 @@
+BUILD_STARTED=2026-10-22T11:31:35+08:00
+  CC      sound/usb/endpoint.o
+  CC      fs/squashfs/fragment.o
+  CC      kernel/time/hrtimer.o
+  CC      drivers/video/rockchip/rga3/rga_policy.o
+  CC      mm/memblock.o
+  CC      lib/mpi/mpi-mod.o
+  CC      crypto/ecdh_helper.o
+  CC      fs/squashfs/id.o
+  CC      crypto/xor.o
+  CC      fs/squashfs/inode.o
+  CC      crypto/hash_info.o
+  CC      lib/mpi/mpi-mul.o
+  CC      kernel/time/timekeeping.o
+  CC      fs/ext4/page-io.o
+FIT_SDK_CONFIG
+RK_KERNEL=y
+RK_KERNEL_PREFERRED=""
+RK_KERNEL_ARCH="arm64"
+RK_KERNEL_ARM64=y
+RK_KERNEL_CFG="rockchip_linux_defconfig"
+RK_KERNEL_CFG_FRAGMENTS="rk3576_panfrost.config rk3576_server_console.config"
+RK_KERNEL_DTS_NAME="tspi-3m-rk3576-panfrost"
+RK_KERNEL_DTS_DIR="kernel/arch/arm64/boot/dts/rockchip"
+RK_KERNEL_DTS="$RK_KERNEL_DTS_DIR/$RK_KERNEL_DTS_NAME.dts"
+RK_KERNEL_DTB="$RK_KERNEL_DTS_DIR/$RK_KERNEL_DTS_NAME.dtb"
+RK_KERNEL_IMG="kernel/arch/$RK_KERNEL_ARCH/boot/Image"
+RK_BOOT_IMG="boot.img"
+RK_BOOT_FIT_ITS_NAME="boot.its"
+RK_BOOT_FIT_ITS="$RK_CHIP_DIR/$RK_BOOT_FIT_ITS_NAME"
+RK_USE_FIT_IMG=y
+FIT_SCRIPT
+#!/bin/bash -e
+
+RK_SCRIPTS_DIR="${RK_SCRIPTS_DIR:-$(dirname "$(realpath "$0")")}"
+RK_SDK_DIR="${RK_SDK_DIR:-$RK_SCRIPTS_DIR/../../../..}"
+
+TARGET_IMG="$1"
+ITS="$2"
+KERNEL_IMG="$3"
+KERNEL_DTB="$4"
+RESOURCE_IMG="$5"
+RAMDISK_IMG="$6"
+
+if [ ! -f "$ITS" ]; then
+	echo "$ITS not exists!"
+	exit 1
+fi
+
+TMP_ITS=$(mktemp)
+cp "$ITS" "$TMP_ITS"
+
+if [ "$RK_SECURITY" ]; then
+	echo "Security boot enabled, removing uboot-ignore ..."
+	sed -i "/uboot-ignore/d" "$TMP_ITS"
+fi
+
+sed -i -e "s~@KERNEL_DTB@~$(realpath -q "$KERNEL_DTB")~" \
+	-e "s~@KERNEL_IMG@~$(realpath -q "$KERNEL_IMG")~" \
+	-e "s~@RAMDISK_IMG@~$(realpath -q "$RAMDISK_IMG")~" \
+	-e "s~@RESOURCE_IMG@~$(realpath -q "$RESOURCE_IMG")~" "$TMP_ITS"
+
+"$RK_SDK_DIR/rkbin/tools/mkimage" -f "$TMP_ITS"  -E -p 0x800 "$TARGET_IMG"
+
+rm -f "$TMP_ITS"

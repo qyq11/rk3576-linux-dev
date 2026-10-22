@@ -9,6 +9,6 @@
 - `restore.ps1` 在 WindTerm 已退出时运行，仅恢复目标会话的这两个字段；保留当前其他设置和认证数据。
 - `SHA256SUMS` 用于核对本目录文件。
 
-未复制整个 user.sessions，因为其中包含应用保存的认证数据。原始操作与验证日志在项目 `temp/root_session/`，本目录不归档认证凭据。
+未复制整个 user.sessions，因为其中包含应用保存的认证数据。[原始操作与验证日志](../../../04_references/workspace_setup/root_session_20261022/)已从临时目录归档，本目录不归档认证凭据。
 
 已核对保存后的配置、原会话 UUID、会话数 5，以及其余设置和认证字段保持不变；通过分配 PTY 的独立 SSH 执行相同命令，实际返回 `AUTO_ROOT_USER=root`、`AUTO_ROOT_UID=0`、`AUTO_ROOT_HOME=/root` 和 `AUTO_ROOT_CHECK=PASS`。本次没有启动 WindTerm 采集会话界面，首次 GUI 连接仍以实际打开该会话为准。完整过程见[WindTerm 记录第 8 节](../../../02_records/20261021_workspace_setup.md#8-rk-会话连接后自动进入-root2026-10-22)。

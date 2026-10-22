@@ -1,0 +1,122 @@
+[kernel_and_rt]
+Linux localhost 6.1.99-rt36-tspi #1 SMP PREEMPT_RT Thu Oct 22 11:35:54 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+1
+storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal  androidboot.verifiedbootstate=orange rw rootwait earlycon=uart8250,mmio32,0x2ad40000 console=ttyFIQ0 root=PARTUUID=614e0000-0000 rcupdate.rcu_expedited=1 rcu_nocbs=all #q-09/12/2026 androidboot.fwver=ddr-v1.09-2f85f4b2d4,bl31-v1.14,bl32-v1.05,uboot-3fcd713
+[cpu_topology_and_frequency]
+Architecture:                         aarch64
+CPU(s):                               8
+On-line CPU(s) list:                  0-7
+Model name:                           Cortex-A53
+CPU max MHz:                          2016.0000
+CPU min MHz:                          408.0000
+Model name:                           Cortex-A72
+CPU max MHz:                          2208.0000
+CPU min MHz:                          408.0000
+/sys/devices/system/cpu/cpufreq/policy0
+related_cpus=0 1 2 3
+scaling_driver=cpufreq-dt
+scaling_governor=schedutil
+scaling_available_governors=interactive conservative ondemand userspace powersave performance schedutil 
+cpuinfo_min_freq=408000
+cpuinfo_max_freq=2016000
+scaling_min_freq=1200000
+scaling_max_freq=2016000
+scaling_cur_freq=2016000
+/sys/devices/system/cpu/cpufreq/policy4
+related_cpus=4 5 6 7
+scaling_driver=cpufreq-dt
+scaling_governor=schedutil
+scaling_available_governors=interactive conservative ondemand userspace powersave performance schedutil 
+cpuinfo_min_freq=408000
+cpuinfo_max_freq=2208000
+scaling_min_freq=408000
+scaling_max_freq=2208000
+scaling_cur_freq=1608000
+/sys/devices/system/cpu/cpu0/cpu_capacity=442
+/sys/devices/system/cpu/cpu1/cpu_capacity=442
+/sys/devices/system/cpu/cpu2/cpu_capacity=442
+/sys/devices/system/cpu/cpu3/cpu_capacity=442
+/sys/devices/system/cpu/cpu4/cpu_capacity=1024
+/sys/devices/system/cpu/cpu5/cpu_capacity=1024
+/sys/devices/system/cpu/cpu6/cpu_capacity=1024
+/sys/devices/system/cpu/cpu7/cpu_capacity=1024
+[cpu_isolation]
+0-7
+
+[temperature_snapshot_millicelsius]
+/sys/class/thermal/thermal_zone0 soc-thermal
+49923
+/sys/class/thermal/thermal_zone1 bigcore-thermal
+49923
+/sys/class/thermal/thermal_zone2 little-core-thermal
+50846
+/sys/class/thermal/thermal_zone3 ddr-thermal
+49923
+/sys/class/thermal/thermal_zone4 npu-thermal
+49000
+/sys/class/thermal/thermal_zone5 gpu-thermal
+49923
+[active_measurements_and_priorities]
+    PID     TID CLS RTPRIO PRI PSR COMMAND
+    101     101  FF     50  90   0 irq/21-debug
+    102     102  FF     50  90   1 irq/20-debug-signal
+    114     114  FF     50  90   5 irq/22-rockchip_thermal
+    128     128  FF     50  90   0 irq/31-rockchip_usb2phy_ls
+    129     129  FF     50  90   0 irq/32-rockchip_usb2phy_bvalid
+    130     130  FF     50  90   0 irq/33-rockchip_usb2phy_id
+    131     131  FF     50  90   0 irq/34-rockchip_usb2phy_ls
+    132     132  FF     50  90   0 irq/35-rk_pwm_irq
+    133     133  FF     50  90   0 irq/36-rk_pwm_irq
+    134     134  FF     50  90   0 irq/37-rk_pwm_irq
+    135     135  FF     50  90   0 irq/38-rk_pwm_irq
+    136     136  FF     50  90   0 irq/39-rk_pwm_irq
+    143     143  FF     50  90   0 irq/40-2ab90000.dma-controller
+    144     144  FF     50  90   0 irq/41-2ab90000.dma-controller
+    145     145  FF     50  90   0 irq/42-2abb0000.dma-controller
+    146     146  FF     50  90   0 irq/43-2abb0000.dma-controller
+    147     147  FF     50  90   1 irq/44-2abd0000.dma-controller
+    148     148  FF     50  90   0 irq/45-2abd0000.dma-controller
+    150     150  FF     50  90   0 irq/48-27702000.iommu
+    151     151  FF     50  90   0 irq/49-27702000.iommu
+  12680   12680  TS      -  19   0 cyclictest
+  12680   12681  FF     80 120   5 cyclictest
+  12680   12682  FF     80 120   5 cyclictest
+  12680   12683  FF     80 120   6 cyclictest
+  12680   12684  FF     80 120   5 cyclictest
+  12680   12685  FF     80 120   6 cyclictest
+[interrupt_counts]
+           CPU0       CPU1       CPU2       CPU3       CPU4       CPU5       CPU6       CPU7       
+ 11:     196777     266810     188096     184317     564583    1029989     736285     373202     GICv2  30 Level     arch_timer
+ 31:          0          0          0          0          0          0          0          0     GICv2 384 Level     rockchip_usb2phy_ls
+ 32:          0          0          0          0          0          0          0          0     GICv2 382 Level     rockchip_usb2phy_bvalid
+ 33:          0          0          0          0          0          0          0          0     GICv2 383 Level     rockchip_usb2phy_id
+ 34:          0          0          0          0          0          0          0          0     GICv2 388 Level     rockchip_usb2phy_ls
+ 66:         42         97          0          0          0       3056          0       1764     GICv2 292 Level     xhci-hcd:usb1
+ 98:       4808       3531          0        185          0       3124          0       1876     GICv2 285 Level     mmc0
+123:      19831          0          0          0          0          0          0          0  rockchip_gpio_irq   8 Level     bcmsdh_sdmmc
+[tracing_support]
+/sys/kernel/tracing/available_tracers
+blk function_graph function nop
+/sys/kernel/debug/tracing/available_tracers
+blk function_graph function nop
+[selected_config]
+CONFIG_IRQ_FORCED_THREADING=y
+CONFIG_NO_HZ_COMMON=y
+CONFIG_NO_HZ_IDLE=y
+CONFIG_NO_HZ=y
+CONFIG_HIGH_RES_TIMERS=y
+CONFIG_PREEMPT_LAZY=y
+CONFIG_PREEMPT_RT=y
+CONFIG_RCU_NOCB_CPU=y
+CONFIG_RCU_NOCB_CPU_CB_BOOST=y
+CONFIG_HZ=250
+CONFIG_FTRACE=y
+CONFIG_FUNCTION_TRACER=y
+# CONFIG_IRQSOFF_TRACER is not set
+# CONFIG_PREEMPT_TRACER is not set
+# CONFIG_OSNOISE_TRACER is not set
+# CONFIG_TIMERLAT_TRACER is not set
+CONFIG_FTRACE_MCOUNT_RECORD=y
+CONFIG_FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY=y
+[READ_ONLY_INSPECTION]=COMPLETE
+[SSH_EXIT]=0

@@ -1,0 +1,31 @@
+2026-10-22T11:34:02+08:00
+Linux localhost 6.1.99 #1 SMP Sat Sep 12 10:42:59 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal  androidboot.verifiedbootstate=orange rw rootwait earlycon=uart8250,mmio32,0x2ad40000 console=ttyFIQ0 root=PARTUUID=614e0000-0000 rcupdate.rcu_expedited=1 rcu_nocbs=all #q-09/12/2026 androidboot.fwver=ddr-v1.09-2f85f4b2d4,bl31-v1.14,bl32-v1.05,uboot-3fcd713
+CYCLICTEST_SHA256
+62dbb170f0d461bcf69490268d0550944599898add163f40016ab70a5c642641  tools/usr/bin/cyclictest
+CPU_POLICY
+/sys/devices/system/cpu/cpufreq/policy0
+schedutil
+1416000
+2016000
+/sys/devices/system/cpu/cpufreq/policy4
+schedutil
+408000
+2208000
+stress-ng, version 0.17.06 (gcc 13.2.0, aarch64 Linux 6.1.99)
+CONDITIONS: eight pinned threads, 1000us period each, FIFO priority 80, mlockall, default-system, 60s per phase; stress phase CPU only. No persistent system tuning.
+WARN: distance is ignored and set to 0, if histogram enabled
+WARN: not setting cpu_dma_latency from cyclictest
+WARN: distance is ignored and set to 0, if histogram enabled
+WARN: not setting cpu_dma_latency from cyclictest
+stress-ng: info:  [4350] setting to a 1 min, 10 secs run per stressor
+stress-ng: info:  [4350] dispatching hogs: 8 cpu
+stress-ng: metrc: [4350] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [4350]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [4350] cpu               47016     70.05    554.50      0.05       671.19          84.78
+stress-ng: info:  [4350] skipped: 0
+stress-ng: info:  [4350] passed: 8: cpu (8)
+stress-ng: info:  [4350] failed: 0
+stress-ng: info:  [4350] metrics untrustworthy: 0
+stress-ng: info:  [4350] successful run completed in 1 min, 10.19 secs
+BASELINE_COMPLETED=PASS

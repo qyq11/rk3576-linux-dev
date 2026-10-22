@@ -1,0 +1,33 @@
+a66d623a601b26fd286c9e68af855897832950a6e1168fa485803f5151c6a238  /home/qyq/rk3576/preempt_rt_vendor_reference_20261022/tspi_6.1.99_rt36_candidate.patch
+CANDIDATE_APPLY_CHECK=PASS
+219:static inline bool serial8250_set_THRI(struct uart_8250_port *up)
+220-{
+221-	if (up->ier & UART_IER_THRI)
+222-		return false;
+223-	up->ier |= UART_IER_THRI;
+224-#if defined(CONFIG_ARCH_ROCKCHIP) && defined(CONFIG_NO_GKI)
+225-	up->ier |= UART_IER_PTIME;
+226-#endif
+227-	serial8250_set_IER(up, up->ier);
+228-	return true;
+229-}
+230-
+231-static inline bool serial8250_clear_THRI(struct uart_8250_port *up)
+573:		add_taint(TAINT_SOFTLOCKUP, LOCKDEP_STILL_OK);
+574-#if IS_ENABLED(CONFIG_ROCKCHIP_MINIDUMP)
+575-		rk_minidump_update_cpu_regs(regs);
+576-#endif
+577-		if (softlockup_panic)
+578-			panic("softlockup: hung tasks");
+579-
+580-		printk_prefer_direct_exit();
+581-	}
+582-
+583-	return HRTIMER_RESTART;
+PATCH_STAT
+ 177 files changed, 2432 insertions(+), 682 deletions(-)
+-rt36
+ORIGINAL_STATUS
+64573e409712e98d0d15ad923b645051877b070ab550b05c71da9cdff12cb72d  /home/qyq/rk3576/TaishanPi-3-Linux/kernel-6.1/.config
+cd124546f61ec239367796566a52ae77c65ee0469597ff0e064500326665692f  /home/qyq/rk3576/TaishanPi-3-Linux/kernel-6.1/boot.img
+CANDIDATE_APPLIED_TO_INDEPENDENT_COPY_ONLY=PASS
