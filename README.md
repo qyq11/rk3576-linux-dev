@@ -55,6 +55,8 @@
 
 本机后续开发统一使用当前 Windows 项目目录 `C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux`，WSL 对应根目录为 `/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux`。当前 WindTerm 的 `wsl` 会话使用 Ubuntu 用户 `qyq`，默认进入该项目下的 `06_programs` 程序目录。
 
+**Qt 后续编译位置已明确：Windows 编码与本机调试，同一台电脑的 WSL 从共用源码交叉编译 RK 版本，再上传 RK 直接运行与验收，全部编译在电脑完成。** 当前 Qt Creator Desktop Kit 生成 Windows EXE；RK 版本由电脑 WSL 生成 AArch64 Linux 程序。板端特有问题才按需远程调试，详见 [Qt 记录](02_records/20261022_qt_environment.md)。
+
 | 内容 | 保存位置 |
 | --- | --- |
 | 正式业务程序、算法、Qt 应用的源码与构建文件 | `06_programs/<program>/`，开始编写该程序时再建子目录 |

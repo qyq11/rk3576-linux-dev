@@ -32,7 +32,7 @@
 
 ### Qt 跨平台工程与调试配置
 
-**用户当前优先级：**先形成可在工程中定位问题的调试方式。日常界面与通用逻辑在 Windows 本机调试；Linux、驱动及真实外设问题采用电脑主调试器连接 RK 的轻量调试进程，板端不安装 IDE。
+**用户当前优先级与编译位置：**在 Windows 编码并进行日常界面 / 通用逻辑调试；最终 RK 程序在同一台电脑的 WSL 交叉编译，上传 RK 直接运行与验收，全部编译在电脑完成。当前 Qt Creator Desktop Kit 生成 Windows EXE；WSL 脚本从同份源码生成 AArch64 Linux 程序，不进行 EXE 转换，不在 RK 编译。仅遇到 Linux、驱动及真实外设特有问题时，按需采用电脑主调试器连接 RK 的轻量调试进程；远程调试不是每次部署的前置步骤。
 
 - [x] 补齐 `06_programs/qt_demo/qt_demo.pro`，使用同份源码分别编译 Windows 与 RK；隔离 EGLFS、UID 与字体等平台差异。
 - [x] 复用现有 Qt Creator 4.11.1、Qt 5.14.2 和 MinGW 7.3，Windows 64-bit Debug 构建、GDB 源码断点、`argc=7`、回溯与单步通过，窗口正常运行并退出。

@@ -88,7 +88,7 @@
   ],
   "调试环境与方案验证": {
     "日期": "2026-10-22",
-    "推荐流程": "Windows 本机调试界面与通用逻辑；WSL 主调试器通过 SSH 连接 RK gdbserver 调试 Linux 目标进程",
+    "推荐流程": "Windows 编码并调试界面和通用逻辑；同一台电脑的 WSL 从同份源码交叉编译 RK AArch64 程序，上传 RK 直接运行与验收。全部编译在电脑完成，RK 不承担编译；只有遇到板端特有问题时才按需通过 SSH 连接 RK gdbserver 远程调试，不作为每次部署前置步骤。Windows EXE 与 RK ELF 分别从源码构建，不做 EXE 转换。",
     "源码SHA256": "f498bda87931b8bae566e3e1e0fcbeff3b6086794e97799c084d63aeffe2476f",
     "标准工程": "06_programs/qt_demo/qt_demo.pro",
     "跨平台处理": "RK_BOARD 编译开关隔离 EGLFS/KMS；Windows 使用 windows 平台插件和普通窗口；Unix UID 与 Windows 字体分开处理，界面逻辑共用",

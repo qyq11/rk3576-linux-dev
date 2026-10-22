@@ -2,7 +2,7 @@
 
 2026-10-22｜泰山派 3M RK3576｜**HDMI / USB 键鼠现场验证、Windows Qt Creator 图形调试、WSL→RK 命令行远程调试均已通过。**
 
-日常在 Windows 编译、查看界面和调试通用逻辑；涉及 Linux、真实设备时，用电脑上的 WSL 调试器连接 RK 的轻量 `gdbserver`。下面按当前这台电脑、当前 `qt_demo` 工程说明操作。配套[结构化实测数据](20261022_qt_environment.json)保留版本、哈希和历史验收依据；同一事项继续更新本文。
+**后续固定流程：Windows 编码和日常调试 → 同一台电脑的 WSL 交叉编译 RK 版本 → 上传 RK 直接运行并验收。全部编译在电脑完成，RK 不承担编译。** 涉及板端特有问题时，再用电脑上的 WSL 调试器连接 RK 的轻量 `gdbserver`，不将远程调试作为每次部署的必经步骤。下面按当前这台电脑、当前 `qt_demo` 工程说明操作。配套[结构化实测数据](20261022_qt_environment.json)保留版本、哈希和历史验收依据；同一事项继续更新本文。
 
 ## 1. 工程与软件在哪里
 
@@ -11,7 +11,7 @@
 | 内容 | 当前实际位置或版本 |
 | --- | --- |
 | 打开的工程文件 | [06_programs/qt_demo/qt_demo.pro](../06_programs/qt_demo/qt_demo.pro) |
-| 两端共用的源码 | [app_main.cpp](../06_programs/qt_demo/app_main.cpp)；当前界面由 C++ 创建，没有 `.ui` 文件 |
+| 两种目标共用的源码 | [app_main.cpp](../06_programs/qt_demo/app_main.cpp)；Windows 与 WSL 直接读取同一份文件，当前界面由 C++ 创建，没有 `.ui` 文件 |
 | 本次使用的 IDE | **Qt Creator 4.11.1**，`C:\Qt5.14\Qt5.14.2\Tools\QtCreator\bin\qtcreator.exe` |
 | Windows Qt / Kit | **Qt 5.14.2 / Desktop Qt 5.14.2 MinGW 64-bit** |
 | Windows Qt 目录 | `C:\Qt5.14\Qt5.14.2\5.14.2\mingw73_64` |
@@ -20,7 +20,16 @@
 | RK 交叉编译器 | WSL `Ubuntu-24.04` / `qyq`，`aarch64-linux-gnu-g++ 13.3.0` |
 | 本机工程设置 | `06_programs/qt_demo/qt_demo.pro.user`，机器相关文件，由 Git 忽略 |
 
-**Qt Creator 的版本和 Qt 库的版本是两回事。** 本机 5.14.2 已实际编译通过，不必为打开这个 `.pro` 先换成板端版本。Windows 生成 x86-64 `.exe`；RK 使用匹配 5.15.13 头文件、链接库重新交叉编译为 AArch64 ELF。两端共用源码，分别构建；新增 API 时仍需检查两端兼容性。`RK_BOARD` 只在板端构建开启，用于隔离 EGLFS / KMS 等设置。
+**Qt Creator 的版本和 Qt 库的版本是两回事。** 本机 5.14.2 已实际编译通过，不必为打开这个 `.pro` 先换成板端版本。两种编译都在电脑完成：
+
+| 用途 | 编译实际发生在哪里 | 使用的工具 / Qt | 生成的程序在哪里运行 |
+| --- | --- | --- | --- |
+| 电脑查看界面、断点调试 | Windows 的 Qt Creator | MinGW 7.3 / Windows Qt 5.14.2 | x86-64 `qt_demo.exe`，在 Windows 运行 |
+| 生成最终 RK 程序 | **同一台 Windows 电脑内的 WSL** | `aarch64-linux-gnu-g++` / 匹配 RK Qt 5.15.13 的 ARM64 头文件、链接库 | AArch64 Linux `qt_demo`，上传 RK 直接运行 |
+
+这是**从同一份 C++ 源码生成两个目标程序**，不是把 Windows `.exe` 转换成 RK 程序，也不需要先构建 `.exe` 才能交叉编译。当前 Qt Creator 的 Desktop Kit 按 Ctrl+B 只生成 Windows 版本；生成 RK 版本使用第 6 节的电脑 WSL 脚本。
+
+匹配 RK 的头文件和库已准备在电脑的 `temp/qt_demo/sysroot/`，构建时直接使用；无需每次在 RK 编译 Qt 或应用。`RK_BOARD` 仅对 RK 目标开启，用于隔离 EGLFS / KMS 等设置；新增 API 时仍需检查两种 Qt 版本兼容性。
 
 ## 2. Windows：打开工程并编译
 
@@ -146,9 +155,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\06_programs\qt_demo\wi
 
 以后出现相似问题，依次核对 Run 的 EXE 路径、Debug 构建、Kit / GDB 位数和 Debugger Log 中的具体信号；构建失败时先修复构建，避免运行旧 EXE。受影响的旧工程配置已单独备份，见 [windows_qtcreator/source.json](../07_backups/qt_environment/windows_qtcreator/source.json)，其中写明恢复方法和范围。
 
-## 6. RK：交叉编译、HDMI 运行和轻量远程调试
+## 6. 电脑 WSL 编译 RK 程序，上传后直接运行
 
-### 6.1 在 HDMI 屏幕运行
+### 6.1 编译位置与 HDMI 部署
 
 下列命令均在 **WindTerm 的 wsl 会话 / Ubuntu-24.04 / qyq** 执行，不是在板端终端执行。先进入共用源码目录：
 
@@ -162,13 +171,23 @@ cd /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_progra
 bash qt_demo/prepare.sh
 ```
 
+只在电脑编译、检查 RK 目标程序，不连接或部署到板卡：
+
+```bash
+bash rk.sh qt_demo build
+```
+
+该命令在电脑 WSL 调用 `qt_demo/build.sh`，生成 `temp/qt_demo/build/qt_demo` 并检查 AArch64 架构；这就是后续交给 RK 运行的程序。无需先在 Windows 构建 `.exe`。
+
 HDMI 和 USB 键鼠接好后，重新编译、检查 AArch64、上传、核对 SHA-256 / 动态库，再运行，最长 1800 秒：
 
 ```bash
 bash qt_demo/run.sh start 1800
 ```
 
-程序部署到 `/home/rkshare/programs/qt_demo/qt_demo`，以 `lckfb` 身份运行；临时启动器分配 tty7，应用退出后恢复 tty1，没有配置开机自启。本机编译产物是 `temp/qt_demo/build/qt_demo`，构建 / 部署日志在 `temp/qt_demo/logs/`。
+这条启动命令的编译阶段同样在**电脑 WSL**完成，编译失败会停止，不上传旧产物。RK 仅接收程序、核对哈希与动态库并执行，没有板端编译步骤。程序部署到 `/home/rkshare/programs/qt_demo/qt_demo`，以 `lckfb` 身份运行；临时启动器分配 tty7，应用退出后恢复 tty1，没有配置开机自启。构建 / 部署日志在电脑 `temp/qt_demo/logs/`。
+
+Windows 本机调试覆盖界面与通用逻辑，交叉编译覆盖 RK 目标的编译和链接；真实 HDMI、USB、驱动和业务外设仍在 RK 运行验收。只有出现板端特有问题时才启用第 6.2 节远程调试；编译成功不承诺所有后续硬件行为自动正确。
 
 查看本次运行状态与末尾日志：
 
