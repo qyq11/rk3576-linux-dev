@@ -1,0 +1,149 @@
+{
+  "run": "rt_20261022_132319",
+  "kernel": "6.1.99-rt36-tspi",
+  "realtime": 1,
+  "method": "cyclictest 2.50, CPU0-7, 8 threads, 1000us each, FIFO80, mlockall, default-system, 60s each; stress-ng 8 CPU workers, 5s preheat, 70s total",
+  "cpu_policy_matches_normal": true,
+  "rt": {
+    "idle": {
+      "cycles": 479803,
+      "min_us": 3,
+      "weighted_avg_us": 15.43,
+      "max_us": 267,
+      "p99_us": 77,
+      "p999_us": 157,
+      "p9999_us": 186,
+      "cycles_above_100us": 2624,
+      "cycles_above_1000us": 0,
+      "histogram_cycles": 479803,
+      "histogram_overflow_cycles": 0,
+      "thread_max_us": [
+        153,
+        267,
+        151,
+        181,
+        124,
+        221,
+        203,
+        160
+      ],
+      "return_code": 0,
+      "start_time": "Thu, 22 Oct 2026 13:23:26 +0800",
+      "end_time": "Thu, 22 Oct 2026 13:24:26 +0800"
+    },
+    "cpu_stress": {
+      "cycles": 479672,
+      "min_us": 3,
+      "weighted_avg_us": 8.96,
+      "max_us": 143,
+      "p99_us": 20,
+      "p999_us": 29,
+      "p9999_us": 41,
+      "cycles_above_100us": 10,
+      "cycles_above_1000us": 0,
+      "histogram_cycles": 479672,
+      "histogram_overflow_cycles": 0,
+      "thread_max_us": [
+        54,
+        143,
+        38,
+        52,
+        102,
+        58,
+        34,
+        59
+      ],
+      "return_code": 0,
+      "start_time": "Thu, 22 Oct 2026 13:24:31 +0800",
+      "end_time": "Thu, 22 Oct 2026 13:25:31 +0800"
+    }
+  },
+  "normal": {
+    "idle": {
+      "cycles": 479855,
+      "min_us": 3,
+      "weighted_avg_us": 19.45,
+      "max_us": 376,
+      "p99_us": 154,
+      "p999_us": 192,
+      "p9999_us": 264,
+      "cycles_above_100us": 11563,
+      "cycles_above_1000us": 0,
+      "histogram_cycles": 479855,
+      "histogram_overflow_cycles": 0,
+      "thread_max_us": [
+        376,
+        295,
+        154,
+        289,
+        153,
+        241,
+        168,
+        171
+      ],
+      "return_code": 0,
+      "start_time": "Thu, 22 Oct 2026 11:34:02 +0800",
+      "end_time": "Thu, 22 Oct 2026 11:35:02 +0800"
+    },
+    "cpu_stress": {
+      "cycles": 479777,
+      "min_us": 3,
+      "weighted_avg_us": 9.04,
+      "max_us": 128,
+      "p99_us": 22,
+      "p999_us": 36,
+      "p9999_us": 56,
+      "cycles_above_100us": 13,
+      "cycles_above_1000us": 0,
+      "histogram_cycles": 479777,
+      "histogram_overflow_cycles": 0,
+      "thread_max_us": [
+        86,
+        41,
+        60,
+        73,
+        121,
+        105,
+        59,
+        128
+      ],
+      "return_code": 0,
+      "start_time": "Thu, 22 Oct 2026 11:35:07 +0800",
+      "end_time": "Thu, 22 Oct 2026 11:36:07 +0800"
+    }
+  },
+  "max_latency_reduction_percent": {
+    "idle": 29.0,
+    "cpu_stress": -11.7
+  },
+  "limitations": [
+    "One 60-second sample per kernel/load condition; no causal isolation of all environmental effects.",
+    "Cyclictest wake-up latency is distinct from complete business response or external pin timing.",
+    "No business deadline supplied; no long-term worst-case bound established.",
+    "GPIO/UART nodes only checked; physical I/O, extra reboot, and recovery remain unverified.",
+    "Samba service and unchanged config verified, but Windows share read/write is not verified."
+  ],
+  "collected_files": 31,
+  "remote_file_hashes_verified": true,
+  "startup_validation": {
+    "boot_payload_sha256_matches_candidate": true,
+    "board_config_matches_built_image": true,
+    "module_files_verified": true,
+    "ko_count": 155,
+    "old_modules_overlays_and_selected_config_files_unchanged": true,
+    "fixed_ipv4": "192.168.100.123/24",
+    "ssh": "passed",
+    "smbd_service": "active",
+    "windows_smb_read_write": "not verified; automatic UNC access unsuccessful",
+    "failed_systemd_units": 0,
+    "kernel_taint": 0,
+    "kernel_severe_patterns": "none found",
+    "dmesg_lines_before": 1327,
+    "dmesg_lines_after": 1327,
+    "temperature_c_before_snapshot_max": 49.0,
+    "temperature_c_after_snapshot_max": 76.692,
+    "temperature_note": "Only before/after snapshots, not continuous monitoring or a measured peak."
+  },
+  "archive_sha256": "947dfb9d958123e6029c12161d9a048f20775f47e41d1331c1055e52d6531392",
+  "archive_bytes": 135311
+}

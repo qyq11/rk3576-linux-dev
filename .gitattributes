@@ -1,0 +1,16 @@
+# WSL executes these files; preserve Unix line endings on Windows checkouts.
+*.sh text eol=lf
+05_tools/tests/preempt_rt/*.py text eol=lf
+05_tools/tests/preempt_rt/SHA256SUMS text eol=lf
+# Preserve checksummed reference data and editable figure exports.
+04_references/preempt_rt/** -text
+03_photos/*.svg -text
+
+# Preserve archived bytes so checksums remain valid on Windows and Linux.
+07_backups/** -text
+# Store immutable image and compressed backup payloads in Git LFS.
+07_backups/**/*.img filter=lfs diff=lfs merge=lfs -text
+07_backups/**/Image filter=lfs diff=lfs merge=lfs -text
+07_backups/**/*.dtb filter=lfs diff=lfs merge=lfs -text
+07_backups/**/*.gz filter=lfs diff=lfs merge=lfs -text
+07_backups/**/*.deb filter=lfs diff=lfs merge=lfs -text

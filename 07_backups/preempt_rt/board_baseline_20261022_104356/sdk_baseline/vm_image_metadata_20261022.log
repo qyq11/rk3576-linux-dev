@@ -1,0 +1,149 @@
+FIT_IMAGE_CONTENTS
+FIT description: U-Boot FIT source file for arm
+Created:         Sat Sep 12 10:43:29 2026
+ Image 0 (fdt)
+  Description:  unavailable
+  Created:      Sat Sep 12 10:43:29 2026
+  Type:         Flat Device Tree
+  Compression:  uncompressed
+  Data Size:    286911 Bytes = 280.19 KiB = 0.27 MiB
+  Architecture: AArch64
+  Load Address: 0xffffff00
+  Hash algo:    sha256
+  Hash value:   30e1ea40aec07c164953acd5cfbcac7b3ff209f1d6f07da5bd53bcb8eacdaab8
+ Image 1 (kernel)
+  Description:  unavailable
+  Created:      Sat Sep 12 10:43:29 2026
+  Type:         Kernel Image
+  Compression:  uncompressed
+  Data Size:    44081664 Bytes = 43048.50 KiB = 42.04 MiB
+  Architecture: AArch64
+  OS:           Linux
+  Load Address: 0xffffff01
+  Entry Point:  0xffffff01
+  Hash algo:    sha256
+  Hash value:   ec803470138563c4cb71288cb8b9bc2e1373f0c4c1dc8477cbd78e7b39bf6967
+ Image 2 (resource)
+  Description:  unavailable
+  Created:      Sat Sep 12 10:43:29 2026
+  Type:         Multi-File Image
+  Compression:  uncompressed
+  Data Size:    1702400 Bytes = 1662.50 KiB = 1.62 MiB
+  Hash algo:    sha256
+  Hash value:   0f6ad36008649b049cd9bac77f6b9fa25d87fcee53b90db95507bd27071c1fbb
+ Default Configuration: 'conf'
+ Configuration 0 (conf)
+  Description:  unavailable
+  Kernel:       kernel
+  FDT:          fdt
+  Sign algo:    sha256,rsa2048:dev
+  Sign padding: pss
+  Sign value:   unavailable
+  Timestamp:    unavailable
+TOOLCHAIN_VERSION
+aarch64-none-linux-gnu-gcc (GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29)) 10.3.1 20210621
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+PARTITION_LAYOUT
+FIRMWARE_VER: 1.0
+MACHINE_MODEL: RK3576
+MACHINE_ID: 007
+MANUFACTURER: RK3576
+MAGIC: 0x5041524B
+ATAG: 0x00200800
+MACHINE: 0xffffffff
+CHECK_MASK: 0x80
+PWR_HLD: 0,0,A,0,1
+TYPE: GPT
+GROW_ALIGN: 0
+CMDLINE: mtdparts=:0x00002000@0x00004000(uboot),0x00002000@0x00006000(misc),0x00020000@0x00008000(boot),0x00040000@0x00028000(recovery),0x00010000@0x00068000(backup),0x00040000@0x00078000(oem),0x00200000@0x000B8000(userdata),-@0x002B8000(rootfs:grow)
+uuid:rootfs=614e0000-0000-4b53-8000-1d28000054a9
+uuid:boot=7A3F0000-0000-446A-8000-702F00006273
+FIRMWARE_OUTPUTS
+total 0
+lrwxrwxrwx 1 qyq qyq 44 Sep 12 10:39 MiniLoaderAll.bin -> ../../u-boot/rk3576_spl_loader_v1.09.107.bin
+lrwxrwxrwx 1 qyq qyq 25 Sep 12 10:43 boot.img -> ../../kernel-6.1/boot.img
+lrwxrwxrwx 1 qyq qyq 22 Sep 12 11:18 oem.img -> ../extra-parts/oem.img
+lrwxrwxrwx 1 qyq qyq 49 Sep 12 11:18 parameter.txt -> ../../device/rockchip/.chips/rk3576/parameter.txt
+lrwxrwxrwx 1 qyq qyq 30 Sep 12 11:18 rootfs.img -> ../../ubuntu/ubuntu-rootfs.img
+lrwxrwxrwx 1 qyq qyq 22 Sep 12 10:39 uboot.img -> ../../u-boot/uboot.img
+lrwxrwxrwx 1 qyq qyq 26 Sep 12 11:19 update.img -> ../update/Image/update.img
+lrwxrwxrwx 1 qyq qyq 27 Sep 12 11:18 userdata.img -> ../extra-parts/userdata.img
+SELECTED_BOARD_DEFCONFIG
+############################################################
+# Platform / Boot
+############################################################
+RK_UBOOT_SPL=y
+RK_CHIP_FAMILY="rk3576"
+RK_USE_FIT_IMG=y
+
+############################################################
+# Distribution
+############################################################
+RK_BUILDROOT=n
+RK_DEBIAN=n
+RK_UBUNTU=y
+RK_UBUNTU_NOBLE=y
+RK_UBUNTU_ARM64=y
+RK_ROOTFS_SYSTEM="ubuntu"
+RK_ROOTFS_SYSTEM_UBUNTU=y
+
+############################################################
+# Mirror
+# Set the Ubuntu mirror to use for package downloads
+# NOTE: Script will auto-append correct path based on arch
+#       arm64 -> /ubuntu-ports, amd64 -> /ubuntu
+#------------------------------------------------------------
+## Ubuntu official mirrors:
+#[1]ports.ubuntu.com (for ARM64)
+#[2]archive.ubuntu.com (for x86/amd64)
+#------------------------------------------------------------
+## China mirrors:
+#[1]mirrors.ustc.edu.cn
+#[2]mirrors.tuna.tsinghua.edu.cn
+#[3]mirrors.cloud.tencent.com
+############################################################
+#RK_UBUNTU_MIRROR="mirrors.ustc.edu.cn"
+#RK_UBUNTU_MIRROR="mirrors.tuna.tsinghua.edu.cn"
+#RK_UBUNTU_MIRROR="mirrors.cloud.tencent.com"
+RK_UBUNTU_MIRROR="ports.ubuntu.com"
+
+############################################################
+# Building Recovery Source
+# Your network is not able to access sources.buildroot.net!
+# 403 Forbidden
+# Enable the following configuration to disable the RECOVERY.
+############################################################
+RK_RECOVERY=n
+
+############################################################
+# Ubuntu Targets (Desktop/Server)
+# Switch the desktop environment or use server (no GUI)
+############################################################
+RK_UBUNTU_TARGET="server"
+RK_UBUNTU_TARGET_SERVER=y
+
+############################################################
+# Using SDIO Broadcom (AP6XXX) Modules
+############################################################
+RK_WIFIBT_MODULES="ALL_AP"
+
+############################################################
+# Using PCIe WiFi/Bluetooth (RTL8852BE) Modules
+############################################################
+# RK_WIFIBT_MODULES="RTL8852BE"
+# RK_WIFIBT_CHIP="RTL8852BE"
+
+############################################################
+# GPU Driver Selection
+# y = panfrost open-source driver (OpenGL 3.1 + GLES 3.1 + Vulkan 1.0)
+# n = Mali closed-source DDK (GLES 3.2 only, no desktop OpenGL)
+#
+# Kernel defconfig and device tree are handled automatically
+# via RK_KERNEL_CFG_FRAGMENTS and RK_KERNEL_DTS_NAME below.
+############################################################
+RK_GPU_PANFROST=y
+RK_KERNEL_CFG_FRAGMENTS="rk3576_panfrost.config rk3576_server_console.config"
+RK_KERNEL_DTS_NAME="tspi-3m-rk3576-panfrost"

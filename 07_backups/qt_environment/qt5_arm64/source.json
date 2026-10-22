@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-22",
+  "purpose": "Qt 5.15.13 ARM64 cross-build inputs for qt_demo; not a board system recovery image",
+  "headers": {
+    "package": "qtbase5-dev",
+    "version": "5.15.13+dfsg-1ubuntu1",
+    "architecture": "arm64",
+    "source": "http://ports.ubuntu.com/ubuntu-ports/pool/universe/q/qtbase-opensource-src/qtbase5-dev_5.15.13+dfsg-1ubuntu1_arm64.deb",
+    "sha256": "ac55917652f7f4611a1915387a0655e33b52f51e30a08322e729d0b05dec49a7",
+    "verification": "Downloaded by board apt-get; hash matches the board's Ubuntu apt package index"
+  },
+  "libraries": {
+    "file": "runtime_libs.tar.gz",
+    "source": "Existing board libraries on lckfb@192.168.100.123, collected by 06_programs/qt_demo/prepare.sh",
+    "selection": "Qt Core/Gui/Widgets and ldd dependency closure; exact paths in runtime_files.txt",
+    "sha256": "3de829791d721c9ce11b0cd895d19e52879cafffd7d583b5e679d08103275c3f"
+  },
+  "use": "Run bash qt_demo/prepare.sh in WSL from 06_programs; it verifies SHA256SUMS and extracts into temp/qt_demo/sysroot",
+  "restore_scope": "Only recreates the host cross-build inputs. Do not extract this archive over the board root filesystem. Display plugins, GPU drivers and fonts are supplied by the existing board system and are not a complete part of this archive.",
+  "host_toolchain": "Ubuntu-24.04 WSL, qyq, aarch64-linux-gnu-g++ 13.3.0; install g++-aarch64-linux-gnu if missing",
+  "repository_storage": "The .deb and .tar.gz are matched by the existing Git LFS rules; no commit or push was performed"
+}

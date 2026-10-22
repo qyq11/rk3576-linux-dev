@@ -111,6 +111,22 @@ sudo /home/rkshare/gpio/build/gpio_output 13
 | GLIBC 符号需求 | 2.17 / 2.34；本次实际在板端 glibc 2.39 上启动通过 |
 | 板端功能验证 | 用户确认物理 13 针输出验证成功；本次低电平 0 V、高电平 3.28 V |
 
+### 5.0 开发环境准备与核对
+
+2026-10-22 整理计划表时，将原计划中的环境准备结果归并到本文。以下均为 2026-10-21 已有操作与输出的整理，本次未重新安装或复测。
+
+| 项目 | 已有准备与核对结果 |
+| --- | --- |
+| WSL 安装 | 在线安装遇到 403 后改用官方 x64 MSI；实际版本为 WSL 3.0.3.0、内核 6.18.54.1-1，Windows 10.0.26200.9711 |
+| Ubuntu 初始化 | 完成 Windows 重启、WSL 2 配置及 Ubuntu 24.04 的 `--web-download` 安装；用户 `qyq` 初始化成功，发行版为 Running / VERSION 2，本机架构 x86_64，软件源更新成功 |
+| 账号保存 | 按用户要求保存在 `%USERPROFILE%\.rk3576-local\wsl_ubuntu_account.txt`，访问限当前用户与 SYSTEM；密码未写入项目 |
+| 交叉工具链 | GCC 13.3.0（13.3.0-6ubuntu2~24.04.1），目标 `aarch64-linux-gnu`；ARM64 C 开发文件、binutils、file、openssh-client 已安装并用于实际构建与传输 |
+| 目标依赖 | RK 为 aarch64 / glibc 2.39；`gpiod.h` 为 64107 字节，`libgpiod.so.2.2.2` 为 67512 字节；复制到 WSL 后大小一致，链接时库文件命名为 `libgpiod.so` |
+| 免密连接 | WSL 用户 `qyq` 使用 Ed25519 密钥，私钥位于 `~/.ssh/id_ed25519`、权限 600；公钥安装后，`ssh -o BatchMode=yes` 实际返回 `lckfb`，SCP 上传通过 |
+| 源码一致性 | 本次 GPIO C 源码复制到 WSL 历史构建目录后，SHA-256 与 Windows 正式源码一致，源码未修改 |
+
+上述首次安装中的 localhost 代理提示未阻止软件源更新；后续以实际编译、上传和板端功能结果为依据。当前项目工作目录与自动化入口另见 [工作目录记录](20261021_workspace_setup.md)和 [AI 工作流记录](20261021_ai_workflow.md)。
+
 ### 5.1 在 WSL 准备本次源码和依赖
 
 前置工具为 `gcc-aarch64-linux-gnu`、`libc6-dev-arm64-cross`、`binutils-aarch64-linux-gnu`、`file` 和 `openssh-client`；已安装并用于本次构建。SSH 密钥登录已配置并验证，准备说明见[基础知识第 8 节](../01_docs/knowledge/linux_basics.md)。

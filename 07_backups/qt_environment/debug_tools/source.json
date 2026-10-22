@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-22",
+  "purpose": "Unprivileged, on-demand RK remote debugging helper; no system-wide installation or startup service",
+  "package": "gdbserver",
+  "version": "15.1-1ubuntu1~24.04.1",
+  "architecture": "arm64",
+  "origin": "Ubuntu noble-updates/universe, downloaded with the existing board apt sources",
+  "sha256": "0f20e76c5e82c5272c32ca460c443b58effb6f55b34955c959d399ceccf2ecbe",
+  "board_extract_directory": "/home/rkshare/programs/qt_demo/tools",
+  "board_command": "dpkg-deb -x gdbserver_15.1-1ubuntu1~24.04.1_arm64.deb /home/rkshare/programs/qt_demo/tools",
+  "restore_scope": "Only populates the selected application tools directory. Does not register a package or overwrite /usr/bin/gdb or any system library.",
+  "transport": "gdbserver --once - over existing authenticated SSH stdio, without a listening TCP port",
+  "host_debugger": "WSL Ubuntu-24.04 gdb-multiarch 15.1; source code and unstripped AArch64 ELF stay on the PC"
+}

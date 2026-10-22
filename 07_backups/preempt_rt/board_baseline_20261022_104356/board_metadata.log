@@ -1,0 +1,34 @@
+uid=1000(lckfb) gid=1000(lckfb) groups=1000(lckfb),4(adm),6(disk),24(cdrom),27(sudo),29(audio),44(video),46(plugdev),100(users),107(netdev),992(render),993(kvm),995(input)
+Linux localhost 6.1.99 #1 SMP Sat Sep 12 10:42:59 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+Linux version 6.1.99 (qyq@qyq-virtual-machine) (aarch64-none-linux-gnu-gcc (GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29)) 10.3.1 20210621, GNU ld (GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29)) 2.36.1.20210621) #1 SMP Sat Sep 12 10:42:59 CST 2026
+storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal  androidboot.verifiedbootstate=orange rw rootwait earlycon=uart8250,mmio32,0x2ad40000 console=ttyFIQ0 root=PARTUUID=614e0000-0000 rcupdate.rcu_expedited=1 rcu_nocbs=all #q-09/12/2026 androidboot.fwver=ddr-v1.09-2f85f4b2d4,bl31-v1.14,bl32-v1.05,uboot-3fcd713
+lckfb:x:1000:1000:lckfb,,,:/home/lckfb:/bin/bash
+lrwxrwxrwx 1 root  root    19 Oct 22 10:43 /home/lckfb -> /home/rkshare/lckfb
+drwx------ 2 lckfb lckfb 4096 Oct 21 18:14 /home/lckfb/.ssh
+-rw------- 1 lckfb lckfb   96 Oct 21 18:14 /home/lckfb/.ssh/authorized_keys
+drwxr-x--- 5 lckfb lckfb 4096 Oct 21 19:02 /home/rkshare/lckfb
+/home/rkshare/lckfb
+NAME                SIZE   START TYPE FSTYPE PARTLABEL PARTUUID                             MOUNTPOINTS
+mmcblk0      62008590336         disk                                                       
+|-mmcblk0p1      4194304   16384 part        uboot     a12c0000-0000-4f7d-8000-740300000ce0 
+|-mmcblk0p2      4194304   24576 part        misc      61420000-0000-4a47-8000-65d100000fbe 
+|-mmcblk0p3     67108864   32768 part        boot      7a3f0000-0000-446a-8000-702f00006273 
+|-mmcblk0p4    134217728  163840 part        recovery  33140000-0000-445e-8000-33ba0000680f 
+|-mmcblk0p5     33554432  425984 part        backup    933e0000-0000-4527-8000-2726000004d2 
+|-mmcblk0p6    134217728  491520 part ext4   oem       cf2a0000-0000-4d4d-8000-011600002587 /oem
+|-mmcblk0p7   1073741824  753664 part ext4   userdata  0c7f0000-0000-455f-8000-3fb2000040d5 /userdata
+`-mmcblk0p8  60548955648 2850816 part ext4   rootfs    614e0000-0000-4b53-8000-1d28000054a9 /
+mmcblk0boot0     4194304         disk                                                       
+mmcblk0boot1     4194304         disk                                                       
+zram0                  0         disk                                                       
+TARGET SOURCE         FSTYPE OPTIONS
+/      /dev/mmcblk0p8 ext4   rw,relatime
+total 12
+drwxr-xr-x  3 root root 4096 Sep 12 11:18 .
+drwxr-xr-x 25 root root 4096 Jul 28 23:04 ..
+drwxr-xr-x  2 root root 4096 Sep 12 11:18 overlays
+/boot/overlays/overlays.ini 1096 bytes
+/boot/overlays/tspi-3m-dsi-c42388916.dtbo 4296 bytes
+/boot/overlays/.ubootenv 57 bytes
+/boot/overlays/tspi-3m-dsi-c41409463.dtbo 4856 bytes
+6970393	/lib/modules/6.1.99

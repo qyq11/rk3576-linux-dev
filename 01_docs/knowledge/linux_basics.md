@@ -339,7 +339,7 @@ pwd
 
 本例切换后的预期输出是 `/home/qyq`。`cd` 只切换目录，不会切换操作系统；`pwd` 只显示位置。提示符末尾的 `~` 也用于简写主目录。
 
-用 Linux 工具编译时，项目优先放在 WSL 的 Linux 文件系统中，例如用户主目录下的项目文件夹，减少跨 Windows 文件系统访问带来的开销。沿用项目分类：正式源码放 `05_tools/tests/`，编译产物和中间文件放项目根目录 `temp/` 下，实际需要时再建目录。
+用 Linux 工具编译时，将项目放在 WSL 的 Linux 文件系统中通常能减少跨文件系统访问的开销。**本项目按用户要求，后续统一在 Windows 的 `C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux` 中开发**，WSL 通过 `/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux` 访问同一份文件。正式应用源码及构建文件放 `06_programs/<program>/`，独立接口测试保留在 `05_tools/tests/`；编译产物和中间文件放根目录 `temp/<program>/`，实际需要时再建子目录。此前 GPIO 实验的 `~/rk3576-linux-dev` 保留为历史构建目录，后续不在两份源码间分别修改。
 
 **资料：**[微软：跨 Windows 和 Linux 文件系统工作](https://learn.microsoft.com/zh-cn/windows/wsl/filesystems)介绍 `/mnt/c/`、文件访问与性能建议；[Bash 手册](https://man7.org/linux/man-pages/man1/bash.1.html)可搜索 `Tilde Expansion`、`cd` 和 `pwd` 查具体规则。
 
@@ -411,25 +411,81 @@ wt.exe wsl.exe -d Ubuntu-24.04 --cd ~
 
 **资料：**[微软：Windows Terminal 复制、粘贴与键绑定](https://learn.microsoft.com/zh-cn/windows/terminal/customize-settings/actions)可查默认快捷键、选区行为及自定义操作；[微软：Windows Terminal 命令行参数](https://learn.microsoft.com/zh-cn/windows/terminal/command-line-arguments)用于查 `wt.exe` 启动方式；[微软：Windows Terminal 设置](https://learn.microsoft.com/zh-cn/windows/terminal/install)说明默认终端、默认配置文件及自动发现 WSL 发行版。
 
+### 7.6 用 WindTerm 直接进入 WSL Ubuntu
+
+WindTerm 也可以作为已安装 WSL Ubuntu 的终端窗口。**会话名称、启动目标和启动参数是不同的设置。** 在本机配置文件 `C:\WindTerm\.wind\profiles\default.v10\terminal\user.sessions` 中，`session.target` 决定运行哪个程序，`process.arguments` 只填写传给该程序的参数。
+
+当前 `wsl` 会话的有效字段如下，配置内容不作为终端命令执行；直接编辑文件时先完全退出 WindTerm，保留会话的其余字段：
+
+| 字段 | 当前值 |
+| --- | --- |
+| `session.target` | `C:\Windows\System32\wsl.exe` |
+| `process.arguments` | `-d Ubuntu-24.04 -u qyq --cd /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs` |
+| `process.workingDirectory` | `C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux\06_programs` |
+
+其中 `-d` 选择发行版，`-u` 选择用户，`--cd` 指定进入项目的程序目录。等效的完整 Windows 启动命令为：
+
+```text
+C:\Windows\System32\wsl.exe -d Ubuntu-24.04 -u qyq --cd /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs
+```
+
+**启动时出现 gsudo 管理员授权弹窗的原因：**原会话继承了 `admin:cmd` 的 `session.target`，仍指向 `vendors/gsudo/gsudo.exe`；即使参数中写了 WSL 命令，也仍会先运行提权工具。本机已将 `wsl` 的目标改为直接运行 `wsl.exe`，`windows` 的目标改为直接运行 `cmd.exe`，并将参数中的重复程序名去掉。
+
+保存并重新打开会话后，在 WSL 执行：
+
+```bash
+pwd
+```
+
+预期输出：
+
+```text
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs
+```
+
+**2026-10-21 已验证：**以普通用户权限重新启动 WindTerm，实际进程链为 `WindTerm.exe → winpty-agent.exe → wsl.exe`，没有启动 `gsudo.exe`。配置和原始弹窗照片见[统一记录第 6 节](../../02_records/20261021_workspace_setup.md#6-修复启动时的-gsudo-管理员授权弹窗)。原有 Ubuntu、工具链和 WSL SSH 密钥继续使用；WindTerm 自身的 SSH 会话使用其客户端配置，两者分别管理。
+
+如果还希望**每次启动 WindTerm 软件时自动打开这个会话**，打开 **会话 → 首选项 → 设置 → 应用程序 → 启动**，选择 **指定一个会话或一组会话**，添加刚才的 `wsl` 会话并保存。该项是软件启动时的会话选择，与前面设置会话内部启动哪个程序是两项配置。
+
+**资料：**[WindTerm 作者：WSL 启动程序使用完整路径](https://github.com/kingToolbox/WindTerm/discussions/2644)解释部分版本仅填写 `wsl.exe` 时的路径查找问题；[WindTerm 作者：启动时打开指定会话](https://github.com/kingToolbox/WindTerm/issues/108)给出启动会话设置入口；[微软：WSL 基本命令](https://learn.microsoft.com/zh-cn/windows/wsl/basic-commands)用于查发行版选择、用户和主目录等启动方式。
+
 ## 8. 从 WSL 交叉编译，再放到 RK 运行
 
-### 8.1 交叉编译解决什么问题
+### 8.1 编写、编译、传输与运行的整体逻辑
 
 **交叉编译是在一种环境中运行编译器，为另一种目标环境生成程序。** 本项目的编译工作在笔记本 WSL Ubuntu 中进行，生成的程序交给 RK3576 的 ARM64 Linux 执行。
 
 本项目后续自行开发的 RK Linux 应用沿用这套方式，包括下位机调度、算法和 Qt 上位机；当前 GPIO 程序是第一个流程验证实例。各应用分别选择 C / GCC 或 C++ / G++，准备自己的目标库并验证实际功能。Qt 还需要与目标 Qt 版本匹配的主机构建工具和 ARM64 开发库，参见 [Qt 官方交叉编译说明](https://doc.qt.io/qt-6/cross-compiling-qt.html)；该链接为 Qt 6 资料，项目具体 Qt 版本尚未选定。
 
-```text
-笔记本 Windows
-└─ WSL 2 Ubuntu（x86_64，负责构建）
-   C 源码 + AArch64 Linux GCC + 目标端头文件和库
-                         ↓
-              ARM64 Linux 可执行文件
-                         ↓ SCP 或 Samba 上传
-              RK3576 Linux（aarch64，负责运行）
-                         ↓
-              GPIO 设定与万用表实测对应
+**WindTerm 是进入不同环境的窗口：**`windows` 会话执行 Windows 命令，`wsl` 会话在电脑的 Ubuntu 中编译和部署，SSH / 串口登录后的会话在 RK 上执行命令。Windows 编辑器和 WSL 访问同一份项目源码；编译器在电脑上运行，业务程序最终由 RK 的 CPU 执行。
+
+```mermaid
+flowchart TB
+    subgraph PC["电脑：Windows + WSL Ubuntu"]
+        EDIT["Windows 编辑器"] -->|保存| SRC["项目源码：06_programs/程序名/"]
+        SRC -->|WSL 经 /mnt/c 访问同一份文件| WSL["WSL：ARM64 交叉编译与部署脚本"]
+        WSL -->|本机生成| BIN["ARM64 可执行文件：temp/程序名/"]
+        OUT["电脑终端显示结果，并保存日志"]
+    end
+    subgraph BOARD["RK3576：板端 Linux"]
+        FILE["板端程序：/home/rkshare/programs/程序名/程序名"]
+        RUN["RK 的 CPU 执行程序，访问板端驱动和硬件"]
+        FILE --> RUN
+    end
+    BIN -->|SCP 经 SSH：通过网络复制文件| FILE
+    WSL -.->|SSH：发送远程运行命令| RUN
+    RUN -->|SSH：回传终端输出和退出码| OUT
 ```
+
+| 连接方式 | 在本项目中传什么 |
+| --- | --- |
+| WSL 挂载访问 `/mnt/c/` | 在同一台电脑上读写 Windows 项目文件，无需另复制一份源码到 WSL |
+| SCP / SFTP，经 SSH | 通过网络在电脑与 RK 之间复制程序、日志等文件；自动工作流使用 `scp` |
+| SSH | 通过网络登录 RK、执行命令并传回终端输出和退出码 |
+| Samba / SMB | Windows 资源管理器访问 `\\192.168.100.123\rkshare`，通过网络读写 RK 的 `/home/rkshare`；也可用来复制文件 |
+| USB 转 TTL 调试串口 | 通过串口传控制台输入、输出和启动日志，当前流程不使用它上传程序 |
+
+上传后两端各保留一份产物；修改电脑源码后，要重新编译、上传并启动新程序。当前自动流程由 [`06_programs/rk.sh`](../../06_programs/rk.sh) 串起，上传后核对 SHA-256 和运行库，从部署目录执行；具体用法见[工作流记录](../../02_records/20261021_ai_workflow.md)。
 
 `x86_64` 与 Ubuntu 软件包中的 `amd64` 是这类笔记本架构的常见写法；本项目目标中的 `aarch64` 与 `arm64` 都指 ARM 64 位架构。两端都使用 Ubuntu，也仍需区分 CPU 架构。
 
@@ -608,8 +664,63 @@ ssh -o BatchMode=yes lckfb@192.168.100.123 whoami
 
 预期直接输出 `lckfb`，命令结束后回到 WSL 提示符。`BatchMode=yes` 禁止交互式密码提示，因此认证未准备好时会直接报错，不能把“没弹密码框”单独当作成功；要同时看到远程命令成功执行。
 
-这套配置适用于当前 WSL 用户到 RK 的该账号；RK 上 `sudo` 的提权认证另行管理。Windows PowerShell 或 WindTerm 使用的密钥环境也要分别配置，不能因为 WSL 已配置就默认其他客户端也完成。
+这套配置适用于当前 WSL 用户到 RK 的该账号；RK 上 `sudo` 的提权认证另行管理。从 Windows Terminal 或 WindTerm 打开同一 WSL 用户的 Ubuntu 后，使用的是同一套 WSL 密钥。直接在 Windows PowerShell 执行 SSH，或使用 WindTerm 自身的 SSH 会话时，其客户端密钥配置另行管理，不能因为 WSL 已配置就默认其他客户端也完成。
 
 **资料：**[Ubuntu：OpenSSH 的 SSH keys 部分](https://ubuntu.com/server/docs/how-to/security/openssh-server/)介绍 Ed25519、密钥文件及公钥安装；[ssh-copy-id 手册](https://manpages.debian.org/bookworm/openssh-client/ssh-copy-id.1.en.html)用于查 `-i` 与追加授权行为；[OpenSSH：ssh-agent](https://man.openbsd.org/ssh-agent)介绍带口令私钥的缓存使用。
 
 学习时可按 **WSL 和目录 → 编译器与目标架构 → 头文件/库/sysroot → ELF 检查 → SCP 与板端运行** 的顺序阅读。本项目已用 GPIO 实例完成 WSL 构建、ARM64 检查、免密上传、RK 直接运行及实际高低电平验证，基础流程已通过。后续调度、算法及 Qt 各自沿用这套方法并单独验证，进度以[开发计划](../plans/development_plan.md)为准。
+
+## 9. 开发环境备份与同型号开发板复现
+
+**可以把配置好的开发环境固化下来，供第二块同型号开发板恢复使用。** 对本项目，优先考虑“板端系统镜像 + 每板初始化”，同时保留配置脚本，便于以后更新和重建。这是后续实施方法，目前尚未导出镜像，也未完成第二块板的恢复测试；待办与验收见[开发计划中的环境备份事项](../plans/development_plan.md#开发环境备份镜像制作与新板快速部署)。
+
+### 9.1 镜像与配置脚本分别解决什么问题
+
+| 方法 | 保存什么 | 在新板上怎样使用 |
+| --- | --- | --- |
+| 系统镜像 | 备份范围内的引导、内核、设备树、根文件系统、软件库、程序及配置 | 用与镜像格式匹配的工具恢复，然后设置每块板独有的信息；适合同型号板快速复现 |
+| 配置脚本与配置包 | 基础镜像版本、软件与依赖、配置模板、安装及服务启用步骤 | 先烧录约定的基础系统，再运行脚本；适合维护变更和重新构建 |
+
+建议在所需环境稳定时保存一版可恢复镜像；后续新增依赖、修改接口或更新服务时，同时更新脚本与清单。软件包名称列表有助于盘点，精确复现还要保留版本、源及所需包文件；脚本若依赖在线软件源，也要说明这一前提。
+
+板端系统镜像可以包含已安装的运行库、SSH/Samba 配置、共享目录与权限，以及后续实际部署的 Qt、算法和服务。只复制用户文件夹不能覆盖内核、系统库和全部服务配置；容器适合封装部分用户态依赖，宿主机引导、内核和设备树仍需单独管理。
+
+### 9.2 一个文件可以怎样交付
+
+可以使用一个包含所需内容的 Rockchip 成品固件，也可以把镜像、校验文件、配置脚本、参数模板和恢复说明装进一个部署压缩包。**压缩成一个文件便于保存，实际部署仍要执行对应的烧录、初始化和验证流程。**
+
+| 文件形式 | 含义与恢复方式 |
+| --- | --- |
+| Rockchip `update.img` | 按 Rockchip 固件格式打包的成品镜像；本板官方文档使用 RKDevTool 的“升级固件”入口 |
+| 原始存储镜像，例如 `board.raw.img` | 按扇区读取的指定存储区域；恢复时要核对目标介质、起始位置和长度，不能仅凭 `.img` 扩展名选择烧录入口 |
+| 分区镜像与布局配置 | 分别保存所需分区，按实际分区布局烧录；需要同时保留必需的引导与布局信息 |
+
+官方成品固件可由系统 SDK 构建生成；**当前板上后来安装的软件和修改的文件，要纳入被打包的根文件系统等对应内容，才会进入自定义固件。** 再次下载官方原版固件不会自动带上这些配置。原始存储备份与成品固件的格式不同，改名为 `update.img` 不能完成转换。
+
+资料：[立创：成品镜像烧录](https://wiki.lckfb.com/zh-hans/tspi-3-rk3576/img-download/finished-image.html)用于核对成品固件入口；[立创：分散镜像烧录](https://wiki.lckfb.com/zh-hans/tspi-3-rk3576/img-download/distributed-image.html)用于核对分区配置与烧录方式；[Rockchip rkdeveloptool 源码](https://github.com/rockchip-linux/rkdeveloptool/blob/master/main.cpp)可查原始扇区读取、写入接口，具体工具与 Loader 对本板的支持仍需实施时验证。
+
+### 9.3 实际制作与恢复的顺序
+
+1. **确认备份对象。** 查清系统从 eMMC、TF 卡还是其他介质启动，根文件系统及业务数据分别位于哪里，记录分区布局和引导位置。eMMC 用户区的整盘备份不自动包含独立的 boot 区、SPI 存储或芯片内部信息，按实际启动链补齐必需内容。
+2. **取得一致的备份。** 优先在系统不从待备份文件系统运行、该文件系统已卸载的条件下读取，或使用经过验证的一致性方案；备份文件写到电脑或独立存储。直接读取仍在变化的根文件系统，即使复制结束，也不代表得到可可靠恢复的状态。
+3. **整理版本与校验。** 保存适用的硬件版本、DDR/eMMC 规格、系统与内核版本、实际容量、镜像格式、工具/Loader 版本、备份范围和 SHA-256。原始整盘写回时，目标实际扇区数应足够；容量不同时还要核对 GPT、分区与文件系统调整，不能只比较标称容量。
+4. **恢复到新板并初始化。** 按确认的格式烧录，设置每板参数。新旧板同时联网时使用不同 IP；当前板的 `192.168.100.123` 不直接分给两块板。核对复制的网络配置是否绑定旧网卡的 MAC 或接口名。
+5. **做新板功能验收。** 冷启动后检查网络登录、共享文件读写、运行库及程序，再验证实际纳入版本的接口和屏幕功能；重启后复测。校验值确认文件传输完整，实际启动和功能验证确认恢复可用。
+
+具体读写命令要等介质、分区和工具支持确认后再制定；本文不预设当前板的 `/dev/mmcblkN` 编号、扇区长度或烧录偏移。
+
+### 9.4 哪些内容需要每块板单独处理
+
+通用环境可复用；IP、主机名、machine-id、SSH 服务器主机密钥，以及实际存在的校准数据或设备授权，需要按新板初始化。machine-id 要连同可能作为生成来源的 D-Bus ID 一起核对，SSH 主机密钥与第 8.7 节用于登录的客户端密钥分开管理。更换主机密钥后，客户端应核验新指纹并更新对应身份记录。
+
+保留一份用于源板灾难恢复的受控备份；用于复制到其他板的通用版本另行处理密码、私钥、令牌及设备身份。电脑端用于登录的私钥继续留在电脑，板端只保留按需授权的公钥。镜像可能包含凭据和业务数据，不上传公共 Git 仓库。
+
+资料：[systemd：machine-id](https://www.freedesktop.org/software/systemd/man/latest/machine-id.html)解释通用镜像的机器标识生成及 D-Bus ID 来源；[OpenSSH：ssh-keygen](https://man.openbsd.org/ssh-keygen)用于查主机密钥生成和指纹核验。
+
+### 9.5 电脑上的 WSL 开发环境另行备份
+
+RK 镜像保存的是板端内容；电脑 WSL 里的 AArch64 GCC、构建工具、目标开发库和 SSH 客户端配置属于另一套环境。同一台电脑给新板开发时可以沿用现有 WSL，只需按新板地址与身份调整连接；换电脑或恢复开发电脑时，再导入单独保存的 WSL 发行版备份。
+
+WSL 可通过 `wsl --export` 导出发行版，之后用 `wsl --import` 恢复。导出前保存工作并停止相关进程，导入后核对用户、工具链和依赖。本项目源码位于 Windows 磁盘，通过 `/mnt/c` 访问，**这部分项目文件不会随 WSL 发行版导出而一并备份**，需单独保存；Windows 终端设置、驱动和 `.wslconfig` 等主机配置也另行记录。
+
+资料：[微软：WSL 基本命令的导出与导入](https://learn.microsoft.com/zh-cn/windows/wsl/basic-commands#export-a-distribution)用于核对发行版备份格式与恢复参数。正式实施时把板端恢复和电脑环境恢复合并到同一事项记录中，分别说明覆盖范围。

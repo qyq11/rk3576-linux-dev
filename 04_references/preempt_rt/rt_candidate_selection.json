@@ -1,0 +1,31 @@
+{
+  "candidate_sha256": "a66d623a601b26fd286c9e68af855897832950a6e1168fa485803f5151c6a238",
+  "candidate_bytes": 268101,
+  "files": 178,
+  "upstream_sections": [
+    "include/linux/sched.h",
+    "kernel/time/hrtimer.c"
+  ],
+  "vendor_sections": 176,
+  "excluded_vendor_only_paths": [
+    "arch/arm/configs/rockchip_rt.config",
+    "arch/arm64/configs/rockchip_rt.config",
+    "drivers/gpu/drm/panel/Makefile",
+    "drivers/gpu/drm/panel/panel-raspits-tc358762.c",
+    "drivers/input/touchscreen/Makefile",
+    "drivers/input/touchscreen/gt9xx/CJ080258_GT911_Config_20221117_085548.cfg",
+    "drivers/input/touchscreen/gt9xx/CJ080258_GT9271_Config_20230608_112016.cfg",
+    "drivers/input/touchscreen/gt9xx/GT911_800_1280_armsom-forge1.cfg",
+    "drivers/input/touchscreen/gt9xx/gt9xx.c",
+    "drivers/input/touchscreen/gt9xx/gt9xx_cfg.h",
+    "drivers/input/touchscreen/raspits_ft5426.c",
+    "drivers/input/touchscreen/raspits_ft5426.h",
+    "drivers/misc/Makefile",
+    "drivers/misc/rockpi_mcu.c",
+    "drivers/misc/rockpi_mcu.h",
+    "kernel/sched/isolation.c",
+    "mm/Kconfig"
+  ],
+  "excluded_second_patch_reason": "Changes RK3506 Buildroot and partition layout, outside RK3576 RT scope",
+  "timer_choice_reason": "Use upstream PREEMPT_RT timer behavior without vendor optional 50us early wake and busy waiting"
+}
