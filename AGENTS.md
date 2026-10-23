@@ -3,6 +3,9 @@
 先读根目录 README.md 和相关事项记录，保留用户已有的未提交修改。
 
 - 正式 RK 应用的源码与构建文件放 `06_programs/<program>/`；独立接口测试沿用 `05_tools/tests/`；产物与临时日志放根目录 `temp/<program>/`。
+- SN100 移植工作目录为 `06_programs/sn100_host/`，动手前读其中 `AGENTS.md`、`01_docs/plans/sn100_host_migration_plan.md` 的当前模块和 `01_docs/knowledge/sn100_host_project_guide.md`。老板提供的工程与压缩包在相邻 `06_programs/sn100_host_reference/`，仅作参考，不能直接修改、构建或以其中配置连接仪器。
+- SN100 采用“一个模块移植 → 同一模块在现有仪器验证 → 通过后进入下一模块”。暂缺设备条件时标注待实物验证，可准备后续模块但不把当前模块关闭为完成；连接参数由用户后续提供。项目专用可复用流程以后放根目录 `.agents/skills/<skill-name>/SKILL.md`，按实际需要建立，不复制全局习惯或整份计划。
+- SN100 每模块核查资源预算/测量和对同板控制的影响；无用代码须在删前建立调用/配置/动态引用依据并验证功能对照成立，正式删后再回归。不确定用途时保留，参考原件不清理。移植、资源、删减依据、仪器验证及复测统一追加 `02_records/20261022_sn100_host_migration.md`。
 - 用户要求开发、修改并验证 RK 程序时，在已授权功能范围内完成写代码、WSL ARM64 交叉编译、上传、板端执行和结果核对，不停留在提供手动命令。
 - 默认 WSL 为 `Ubuntu-24.04`，用户 `qyq`；直接访问 Windows 项目在 `/mnt/c/` 下的同一份源码。C 程序使用 `aarch64-linux-gnu-gcc`，板端程序不使用 Python。
 - 每个正式程序提供 `build.sh`，接收一个绝对输出文件路径，生成对应 ARM64 可执行文件。优先复用 `06_programs/rk.sh`：在 `06_programs` 中执行 `bash rk.sh <program> all -- <参数>`。
