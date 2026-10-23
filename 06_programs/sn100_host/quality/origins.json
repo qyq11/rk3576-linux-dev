@@ -1,0 +1,96 @@
+{
+  "schema": "sn100-quality-statistics-origins-v1",
+  "module": "O06-1",
+  "review_date": "2026-10-23",
+  "scope": "原本地质控统计计算的纯QtCore离线切片；不含凝血点判定、AL4A、质控失控判定、UI、数据库、网络或设备",
+  "path_base": "repository root",
+  "hash_algorithm": "SHA-256",
+  "hash_scope": "逐字节计算所列只读参考源码；未构建运行参考工程",
+  "sensitive_data_policy": "只读取源码，不访问旧INI、生产数据库、患者数据或认证凭据",
+  "source_call_chain": [
+    "frmQuality 页面选择质控项目/批号，读取当前及上一批结果",
+    "CusQualityChart::refreshChart 对原结果先换算unitRatio",
+    "QualityChart::qualityChart 返回上一批+当前批QVector",
+    "getStaticInfo -> staticInfo_Impl；原页面mean/CV/SD显示"
+  ],
+  "sources": [
+    {
+      "locations": [
+        "40-59: statistics fields and public function"
+      ],
+      "functions_or_symbols": [
+        "staticInfo",
+        "getStaticInfo"
+      ],
+      "sha256": "96883f31efa4ff229bf3939bb0181066c7be27627a816ca1cf0883ae55927e06",
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/quality_rule_algth.h"
+    },
+    {
+      "locations": [
+        "19-83: mean/range/sample variance/stddev/CV ratio",
+        "296-299: QVector adapter"
+      ],
+      "functions_or_symbols": [
+        "staticInfo_Impl",
+        "getStaticInfo"
+      ],
+      "sha256": "ab8ad61e289078dd69eb44d38d1f263563d9d9a002a20c9a6437fc2ebca413e7",
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/quality_rule_algth.cpp"
+    },
+    {
+      "locations": [
+        "89-149: report values, unitRatio, previous/current data, statistics and display"
+      ],
+      "functions_or_symbols": [
+        "CusQualityChart::refreshChart"
+      ],
+      "sha256": "6c3763033645a2b144c8d23024b285193b05c329814953e447306fa2f9f84a4e",
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/cus_quality_chart.cpp"
+    },
+    {
+      "locations": [
+        "215-262: rule/batch/data lookup and refreshChart call"
+      ],
+      "functions_or_symbols": [
+        "frmQuality::slotBtnProjClick"
+      ],
+      "sha256": "94a60355d1bda7c6b424146ed857f6980415fd7f36d2d4d4daba40187e668df8",
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/frm_quality.cpp"
+    },
+    {
+      "locations": [
+        "13-149: previous/current concatenation returned to statistics"
+      ],
+      "functions_or_symbols": [
+        "QualityChart::qualityChart"
+      ],
+      "sha256": "579496f730872987953fcc7b2251004ce118fca9702f3a7844f858ae68e87d2d",
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/qualitychart.cpp"
+    }
+  ],
+  "preserved_contract": [
+    "mean=sum(values)/n; range=max-min",
+    "sampleVariance=max(0,(sum((x-mean)^2)-sum(x-mean)^2/n)/(n-1))",
+    "sampleStddev=sqrt(sampleVariance)",
+    "legacyCvRatio=sampleStddev/(mean+1e-12)，带符号比值，不乘100",
+    "保持原普通有限输入的累加顺序与两遍偏差公式，不声称完成临床算法"
+  ],
+  "intentional_differences": [
+    "空输入明确empty_series错误，原函数输出全0",
+    "任何非有限输入、中间算术溢出明确失败，原函数未检查",
+    "n=1均值/极差可用，但样本方差/SD/CV不可用；JSON输出null而非假0有效估计",
+    "abs(mean)<=1e-12时CV不可用，JSON输出null；这是本轮离线数值边界，并非仪器或临床阈值",
+    "最大10000点/64序列/2MiB输入/1000000次stress为本轮本地资源预算，不是设备规格",
+    "CLI显式匿名输入契约、新绝对输出目录、固定results/measurement文件，不导入原数据表/图表",
+    "不迁入原isOutControl规则，不悄悄修正规则或把其判定接入新业务"
+  ],
+  "excluded_rule_issues": [
+    "SD4_R源码 fabs(fabs(last-first)-4*sd)>1e-12 使差0也异常、差恰4SD不异常，待原运行与业务确认",
+    "isTargetLimit先测lowLimit后lowVal，正常中止下限更低时末分支不可达",
+    "SD2_2/SD1_4/SD05_5只验证绝对偏离，不验证同侧；且扫描全部历史窗口",
+    "T7允许平台值并可把平台转向认作单调；X10使用>=0把目标线点也纳入同侧",
+    "原CV显示直接保留1位小数、无乘100，精度与业务显示含义仍需原Windows基线确认"
+  ],
+  "fixture": "06_programs/sn100_host/quality/tests/fixtures/statistics_series.json",
+  "verification": "quality/tests/statistics_test.cpp; quality/tests/verify_cli.py"
+}

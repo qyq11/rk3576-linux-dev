@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCase name="TcpTransportTest">
+<Environment>
+    <QtVersion>5.15.13</QtVersion>
+    <QtBuild>Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)</QtBuild>
+    <QTestVersion>5.15.13</QTestVersion>
+</Environment>
+<TestFunction name="initTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="2.79563"/>
+</TestFunction>
+<TestFunction name="literalQueriesReachActualPeer">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[LOOPBACK actual peer RX generation= 1 HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6b 3b 04 05 02 03 00 06 00 00 00 01 51 48 18 04 05 PAYLOADS=Qj,Qk,QH]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="7.52409"/>
+</TestFunction>
+<TestFunction name="oneByteWriteQuantumPreservesQueueOrder">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[WRITE quantum=1 bytes= 39 actual peer ordered bytes verified; this does not force OS short writes]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="7.89232"/>
+</TestFunction>
+<TestFunction name="fragmentedReceive">
+<Incident type="pass" file="" line="0">
+    <DataTag><![CDATA[header-byte]]></DataTag>
+</Incident>
+<Incident type="pass" file="" line="0">
+    <DataTag><![CDATA[length]]></DataTag>
+</Incident>
+<Incident type="pass" file="" line="0">
+    <DataTag><![CDATA[packet-index]]></DataTag>
+</Incident>
+<Incident type="pass" file="" line="0">
+    <DataTag><![CDATA[payload]]></DataTag>
+</Incident>
+<Incident type="pass" file="" line="0">
+    <DataTag><![CDATA[trailer]]></DataTag>
+</Incident>
+    <Duration msecs="31.6727"/>
+</TestFunction>
+<TestFunction name="bytewiseReceive">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[LOOPBACK actual transport RX generation= 1 HEX= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 PAYLOAD= Qq[2][1][123][2][456]]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="42.8575"/>
+</TestFunction>
+<TestFunction name="coalescedReceive">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="5.46868"/>
+</TestFunction>
+<TestFunction name="checksumErrorThenRecovery">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[LOOPBACK bad-XOR then recovery input= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 10 08 09 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 ERROR= frame.xor: 数据字段 XOR 校验失败；重新查找帧头 OUTPUT= Qq[2][1][123][2][456]]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="6.68884"/>
+</TestFunction>
+<TestFunction name="multipartReceive">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="6.31853"/>
+</TestFunction>
+<TestFunction name="maximumMessageAcrossReceiveChunks">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[MAXIMUM RX message_bytes= 128000 wire_bytes= 128704 packets= 64 decoded_message_count= 1]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="7.96791"/>
+</TestFunction>
+<TestFunction name="disconnectClearsHalfFrame">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[HALF-FRAME old generation= 1 new generation= 3 old tail rejected; new full frame accepted]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="11.8294"/>
+</TestFunction>
+<TestFunction name="disconnectClearsMultipartAssembly">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="9.96647"/>
+</TestFunction>
+<TestFunction name="explicitCloseDropsQueuedWrites">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="27.1281"/>
+</TestFunction>
+<TestFunction name="reconnectDoesNotPublishOldCallbacks">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="26.8005"/>
+</TestFunction>
+<TestFunction name="messageReceiverCanCloseTransport">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="25.2526"/>
+</TestFunction>
+<TestFunction name="queueBudgetRejectsWholeQuery">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[QUEUE budget=20 accepted=13 rejected=13 partial-rejected-bytes=0; capacity restored after drain]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="28.1919"/>
+</TestFunction>
+<TestFunction name="budgetSmallerThanOneFrameRejectsWholeQuery">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="23.8371"/>
+</TestFunction>
+<TestFunction name="disconnectedAndInvalidQueriesAreRejected">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="24.1268"/>
+</TestFunction>
+<TestFunction name="invalidPortDoesNotConnect">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="22.4133"/>
+</TestFunction>
+<TestFunction name="refusedConnectionReportsFailure">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[LOOPBACK reserved-then-closed port failure generation= 2 ERROR= "transport.socket: loopback socket错误：Connection refused"]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="25.6613"/>
+</TestFunction>
+<TestFunction name="peerCloseIsVisibleAndNoAutomaticReconnect">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="35.2908"/>
+</TestFunction>
+<TestFunction name="finalBurstBeforePeerFinIsDrained">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[FINAL BURST generation= 1 sent_frames= 2000 sent_wire_bytes= 64000 observed_wire_bytes= 64000 received_frames= 2000 lost_frames= 0]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="7.10392"/>
+</TestFunction>
+<TestFunction name="eventLoopHeartbeatUnderNetworkLoad">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[NETWORK load messages= 2000 bytes= 64000 elapsed_ms= 108 heartbeat_period_ms=1 samples= 100 maximum_gap_ms= 1.22947]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="114.321"/>
+</TestFunction>
+<TestFunction name="cleanupTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="2.62416"/>
+</TestFunction>
+<Duration msecs="530.141"/>
+</TestCase>

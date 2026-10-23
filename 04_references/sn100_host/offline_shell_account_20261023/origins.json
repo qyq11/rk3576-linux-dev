@@ -1,0 +1,546 @@
+{
+  "module": "O03-2",
+  "created": "2026-10-23",
+  "reference_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "scope": "Offline original main shell with O01 hospital and O02 account settings; explicit anonymous test sessions only; no production login, global user_powers ACL or device/network startup.",
+  "ownership": "frmMain owns one frmUserSet and one page each for O01/O02; main owns two stores and two workers. SQL connections live and close in their owning workers. Navigation reuses all instances.",
+  "visual_basis": {
+    "main_ui": "1920x1080 original logical canvas and original widget tree retained",
+    "user_ui": "1751x968 original editor canvas; QStackedWidget fits 1751x963 runtime area as original",
+    "source_styles": [
+      "frmmain/frmmain.cpp: constructor original menu, status and logo setup",
+      "frmuserset/frmuserset.cpp: constructor original material buttons and CusView setup",
+      "public/stylecolor.cpp: buttonStyle::setStrSheet()",
+      "main.cpp: getConfig() visual key mapping and white font defaults"
+    ],
+    "visual_key_source": "bin/theme_config.ini (shipped visual fields only; never loaded at runtime)",
+    "visual_keys": {
+      "leftBaseColor": "28,28,28,255",
+      "leftBtnColor": "232,51,35,200",
+      "leftBtnFontColor": "255,255,255,255 (main.cpp default)",
+      "rightBaseColor": "28,28,28,255",
+      "rightBtnColor": "127,127,127,255",
+      "rightBtnFontColor": "255,255,255,255 (main.cpp default)",
+      "matchColor": "232,51,35,255",
+      "LogoSize": "82x82"
+    },
+    "active_windows_theme": "Not verified: no original Windows runtime screenshot or active-release configuration baseline",
+    "font": "Noto Sans CJK SC replacement; original PingFang runtime/font metrics remain to compare"
+  },
+  "differences": [
+    "Reference .ui geometry, hierarchy and labels retained; original relative image paths become :/shell QRC resources. Main logo follows original runtime centering formula (43,18,82,82).",
+    "Default main/user selection is 6/0 with accounts (original account index 0, hospital 1); legacy no-accounts O03-1 remains 6/1. Unintegrated pages retain explicit offline placeholders.",
+    "O03-2 adds AccountStore and original account UI; the original user display/logout are enabled for an explicit anonymous session. Production login, SystemCommon, TCP, LIS transport, algorithm and instrument actions remain unavailable. Device state stays offline/unknown.",
+    "One local clock timer only displays host time and performs no instrument synchronization.",
+    "Hospital setEmbeddedInShell() restores original business panel position (330,10,801,551) and hides independent experiment footer; data-operation feedback uses the existing device-state label, prefixed offline, elided to its original width, retaining original normal text color and original theme red for errors. Complete detail is in status-area tooltips; instrument state remains unknown.",
+    "Host requestLeave() handles initial/save busy rejection, unsaved confirmation and synchronous discard restoration; navigation cancellation restores original selection/focus. Window exit leaves worker shutdown to the main entry.",
+    "CusMenuButton reuses lblInfo for start/pause rather than allocating an extra label, keeping the visible geometry and enabling correct disabled text. CusBadgeButton ignores mouse events while disabled. CusFlageImage cannot change offline status by clicking.",
+    "Material FlatButton implementation, ripple and state-machine animation dependencies retained. Only unused systemcommon.h include removed and PingFang family replaced.",
+    "Original CusMenuButton disabled label used invalid rgba(99,99,99) with no alpha; corrected to rgb(99,99,99), preserving the intended gray while removing the Qt QCssParser warning observed in the first WSL build/run. No geometry or business behavior changed.",
+    "Existing 81px status label uses short offline outcomes (ready/busy/unsaved/failed), full reason in tooltip; no device state is fabricated.",
+    "O01 host integration adds requestLeave() and setEmbeddedInShell(); standalone behavior retained. Linux discard dialog button minimum width includes CJK text, standard icon and padding to prevent clipping.",
+    "Smaller screens use an external scroll host around the unchanged 1920x1080 canvas; physical-screen and complete scrollbar interaction remain to verify."
+  ],
+  "license": {
+    "origin": "Vendor supplied reference source, customwidgets/materialUI; exact upstream/version not identified in this package",
+    "preserved": "All source comments retained except unused systemcommon.h include; no copyright header existed in the copied subset",
+    "notice": "Reference subset contains no code LICENSE. icons/LICENSE covers excluded icon collection, so it was not misapplied. External redistribution/license provenance remains to verify."
+  },
+  "files": [
+    {
+      "source": "frmmain/frmmain.h",
+      "source_sha256": "405af704b9ac2035a0379aebdbac9e45cd7bfe3f6c6bec055b33b12cc1303593",
+      "target": "frmmain.h",
+      "target_sha256": "f369eb32edb93e4d4a634d62fe4e0b895531591ab4ae0f462fb8006449d48c33",
+      "byte_identical": false
+    },
+    {
+      "source": "frmmain/frmmain.cpp",
+      "source_sha256": "90ed19d496a8c029e6379356c06b80950e44d2eb412cd8efc16ed4839a7425f7",
+      "target": "frmmain.cpp",
+      "target_sha256": "e044e7e91ee8f0961d90d9a35ae97d44f2ad8c8746fcc5ee60e5701fde509720",
+      "byte_identical": false
+    },
+    {
+      "source": "frmmain/frmmain.ui",
+      "source_sha256": "10abdccd214f425033647aaa7e6a3fa9d19ff969152592b223ace0d196bab96b",
+      "target": "frmmain.ui",
+      "target_sha256": "1cf4c4b6e2c5726b71812a085f438d3f326cfe2f50e6a99c402cdbb78d96167a",
+      "byte_identical": false
+    },
+    {
+      "source": "frmuserset/frmuserset.h",
+      "source_sha256": "e7a7defc07202b8aa48d83ea866b8e4a8261d8474f4582a3b03420793135649c",
+      "target": "frmuserset.h",
+      "target_sha256": "d959d60dadbc438de5d1089df0a5e319c9381a0c446df37dbda2397165dfe3de",
+      "byte_identical": false
+    },
+    {
+      "source": "frmuserset/frmuserset.cpp",
+      "source_sha256": "5572747fd24b54eeabbea5c040bad33258631dc7c04eeb967fc3a8610caa3ca9",
+      "target": "frmuserset.cpp",
+      "target_sha256": "a85690a04672e6ce037cc3cae95ff4ca6efcff5ee0d0ee51e4912492d482cc5b",
+      "byte_identical": false
+    },
+    {
+      "source": "frmuserset/frmuserset.ui",
+      "source_sha256": "d447bef206e5fb97c6d76a07d3bf0d2f9b74a9dbbbd5f651c5b8631adec5ad2e",
+      "target": "frmuserset.ui",
+      "target_sha256": "aab5767933b361d665a4dae9ac59a4503d4a80a2b766624f471527720c24823c",
+      "byte_identical": false
+    },
+    {
+      "source": "customwidgets/cusflageimage.ui",
+      "source_sha256": "2355c3c6055b790b33774e33722ec9a118b1672aaf20a4a42279c4ddfe4de115",
+      "target": "widgets/cusflageimage.ui",
+      "target_sha256": "2355c3c6055b790b33774e33722ec9a118b1672aaf20a4a42279c4ddfe4de115",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/cusbadgebutton.cpp",
+      "source_sha256": "e3181705b37e61988ec3cfd6fa25b55f4d2a9b17ed8684b50d890739f115fc6e",
+      "target": "widgets/cusbadgebutton.cpp",
+      "target_sha256": "29330a69dd2ee8c2477a36c097c2430d6c9d944cd523521d9822922d63734d32",
+      "byte_identical": false
+    },
+    {
+      "source": "customwidgets/cusbadgebutton.h",
+      "source_sha256": "fa1d7fcc50be5786ad45f5b3a17cad83eaafc04738f1c3a58016aa2ea4618e40",
+      "target": "widgets/cusbadgebutton.h",
+      "target_sha256": "fa1d7fcc50be5786ad45f5b3a17cad83eaafc04738f1c3a58016aa2ea4618e40",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/cusflageimage.cpp",
+      "source_sha256": "11495a6d3aa5343b320276c4ec0d6101ad5f09ab5bb77208bb4c8547596f1013",
+      "target": "widgets/cusflageimage.cpp",
+      "target_sha256": "3025af82a86b78e7d4b0ac40807333a1e5332b97547bc551606e60e3994e5942",
+      "byte_identical": false
+    },
+    {
+      "source": "customwidgets/cusflageimage.h",
+      "source_sha256": "daf132816913891cf11afd7573aa2891e60efdc4097012ebdeb4cb445e292870",
+      "target": "widgets/cusflageimage.h",
+      "target_sha256": "daf132816913891cf11afd7573aa2891e60efdc4097012ebdeb4cb445e292870",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/cusmenubutton.cpp",
+      "source_sha256": "dc9f933e00e4b8ede926f688c47ab90f2e19c7a6498e3f4bdde178b4336cedbc",
+      "target": "widgets/cusmenubutton.cpp",
+      "target_sha256": "ebee27f7fbb8ffe3249ba03b968ae89df5cb88ea8dab1ccf50e66d16b404981b",
+      "byte_identical": false
+    },
+    {
+      "source": "customwidgets/cusmenubutton.h",
+      "source_sha256": "87631e36ce8c79fb2d3ea36688e4124b7624f28ea4bdfab3c6eff04259b7d572",
+      "target": "widgets/cusmenubutton.h",
+      "target_sha256": "87631e36ce8c79fb2d3ea36688e4124b7624f28ea4bdfab3c6eff04259b7d572",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/cusview.cpp",
+      "source_sha256": "74d15d945bd3defebc429d7020594ec740f3be77177abb3c5afb69a73dfff7ae",
+      "target": "widgets/cusview.cpp",
+      "target_sha256": "74d15d945bd3defebc429d7020594ec740f3be77177abb3c5afb69a73dfff7ae",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/cusview.h",
+      "source_sha256": "4b17de47ad628db7b5c476640d524740777b647234c240998b44d01ad6a0bfaf",
+      "target": "widgets/cusview.h",
+      "target_sha256": "4b17de47ad628db7b5c476640d524740777b647234c240998b44d01ad6a0bfaf",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/qtmaterialflatbutton_internal.cpp",
+      "source_sha256": "d24f96b9fe12277c78f2387b271dbe815c8774177ae2cc9d136c4b62f13918bb",
+      "target": "widgets/material/qtmaterialflatbutton_internal.cpp",
+      "target_sha256": "d24f96b9fe12277c78f2387b271dbe815c8774177ae2cc9d136c4b62f13918bb",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/qtmaterialflatbutton_internal.h",
+      "source_sha256": "06f6935d4819acbbb999b7d220609b4aeb712bf105dceda2596c8fbb9f55c01b",
+      "target": "widgets/material/qtmaterialflatbutton_internal.h",
+      "target_sha256": "06f6935d4819acbbb999b7d220609b4aeb712bf105dceda2596c8fbb9f55c01b",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/qtmaterialflatbutton_p.h",
+      "source_sha256": "7a7add5b284315e470d8d9636453757ae8b4bb3e90cf13e4439f3839a6dfa94b",
+      "target": "widgets/material/qtmaterialflatbutton_p.h",
+      "target_sha256": "7a7add5b284315e470d8d9636453757ae8b4bb3e90cf13e4439f3839a6dfa94b",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/qtmaterialflatbutton.cpp",
+      "source_sha256": "a05c2e32193001d3e2687de8e434cd07bcb78ea0f46698055efd2fcf6a253cfa",
+      "target": "widgets/material/qtmaterialflatbutton.cpp",
+      "target_sha256": "59f2add9696ae1fed421d173a2a166d9fcecfa1ab4bd7e51c9be8ca7f8648dff",
+      "byte_identical": false
+    },
+    {
+      "source": "customwidgets/materialUI/qtmaterialflatbutton.h",
+      "source_sha256": "d1bffab45502d2ff05ccb4138af890d5760b68230c9103cd19b4d44f72ec1081",
+      "target": "widgets/material/qtmaterialflatbutton.h",
+      "target_sha256": "d1bffab45502d2ff05ccb4138af890d5760b68230c9103cd19b4d44f72ec1081",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialoverlaywidget.cpp",
+      "source_sha256": "09414e95c30e53da492412fb8eb6624d9c45fe74ad8248d9b4e573220424c277",
+      "target": "widgets/material/lib/qtmaterialoverlaywidget.cpp",
+      "target_sha256": "09414e95c30e53da492412fb8eb6624d9c45fe74ad8248d9b4e573220424c277",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialoverlaywidget.h",
+      "source_sha256": "e79f3e1ca5decca3960a99619a8fb9a0b67a335fb930ca53862a72ae36234e0d",
+      "target": "widgets/material/lib/qtmaterialoverlaywidget.h",
+      "target_sha256": "e79f3e1ca5decca3960a99619a8fb9a0b67a335fb930ca53862a72ae36234e0d",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialripple.cpp",
+      "source_sha256": "0a93e76f79514f7daa473cbf3cc8828400c88258197e19daa4bc045b84da2e4e",
+      "target": "widgets/material/lib/qtmaterialripple.cpp",
+      "target_sha256": "0a93e76f79514f7daa473cbf3cc8828400c88258197e19daa4bc045b84da2e4e",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialripple.h",
+      "source_sha256": "57acc85424efb2af8e8455987a67f206051e64d7992a57ea9df5efe398cbc701",
+      "target": "widgets/material/lib/qtmaterialripple.h",
+      "target_sha256": "57acc85424efb2af8e8455987a67f206051e64d7992a57ea9df5efe398cbc701",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialrippleoverlay.cpp",
+      "source_sha256": "7dfe0b143f3c02e44bb45a0ae8cc95809209a85731705e49795afb237f675fb2",
+      "target": "widgets/material/lib/qtmaterialrippleoverlay.cpp",
+      "target_sha256": "7dfe0b143f3c02e44bb45a0ae8cc95809209a85731705e49795afb237f675fb2",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialrippleoverlay.h",
+      "source_sha256": "6efa45733a3fd160a049c3cda3955bb657e6b8956cb667cb22c31841addece61",
+      "target": "widgets/material/lib/qtmaterialrippleoverlay.h",
+      "target_sha256": "6efa45733a3fd160a049c3cda3955bb657e6b8956cb667cb22c31841addece61",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialstatetransition.cpp",
+      "source_sha256": "3842bd5857272e9eeb018645faabb63d421b6593469db9d154f6f73ba6233f9d",
+      "target": "widgets/material/lib/qtmaterialstatetransition.cpp",
+      "target_sha256": "3842bd5857272e9eeb018645faabb63d421b6593469db9d154f6f73ba6233f9d",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialstatetransition.h",
+      "source_sha256": "a3ca893dc086f662de07ec76e2eb2e9d4f27334f2b19432ce902c7fb53dfa25c",
+      "target": "widgets/material/lib/qtmaterialstatetransition.h",
+      "target_sha256": "a3ca893dc086f662de07ec76e2eb2e9d4f27334f2b19432ce902c7fb53dfa25c",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialstatetransitionevent.h",
+      "source_sha256": "ac1efe37016be6a6130c54e58faa99b51e8201382e36eb78b96f60570fb7c1a0",
+      "target": "widgets/material/lib/qtmaterialstatetransitionevent.h",
+      "target_sha256": "ac1efe37016be6a6130c54e58faa99b51e8201382e36eb78b96f60570fb7c1a0",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialstyle_p.h",
+      "source_sha256": "cccdaf3f09044c2e84988314a025f2e211e4156976e6fdaa1a7aa4159c5ef77c",
+      "target": "widgets/material/lib/qtmaterialstyle_p.h",
+      "target_sha256": "cccdaf3f09044c2e84988314a025f2e211e4156976e6fdaa1a7aa4159c5ef77c",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialstyle.cpp",
+      "source_sha256": "7100f3c3a9e21d9c881c358d6ccd9e4164f50c5686da06cb6a46107ce39dea60",
+      "target": "widgets/material/lib/qtmaterialstyle.cpp",
+      "target_sha256": "7100f3c3a9e21d9c881c358d6ccd9e4164f50c5686da06cb6a46107ce39dea60",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialstyle.h",
+      "source_sha256": "c497abd2f7a64b7e74f5be0865523fa7f3c800138318357f6feadf925eb4f63c",
+      "target": "widgets/material/lib/qtmaterialstyle.h",
+      "target_sha256": "c497abd2f7a64b7e74f5be0865523fa7f3c800138318357f6feadf925eb4f63c",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialtheme_p.h",
+      "source_sha256": "72f6d8996a29e4bc8b298cee19a808bfd06a58fe3ac238b40e3dc5a8fc3fb2b9",
+      "target": "widgets/material/lib/qtmaterialtheme_p.h",
+      "target_sha256": "72f6d8996a29e4bc8b298cee19a808bfd06a58fe3ac238b40e3dc5a8fc3fb2b9",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialtheme.cpp",
+      "source_sha256": "6a42b3e1193f361280ae33f16e93b5e144e9e3f8512d9cbae4a8cec150716016",
+      "target": "widgets/material/lib/qtmaterialtheme.cpp",
+      "target_sha256": "6a42b3e1193f361280ae33f16e93b5e144e9e3f8512d9cbae4a8cec150716016",
+      "byte_identical": true
+    },
+    {
+      "source": "customwidgets/materialUI/lib/qtmaterialtheme.h",
+      "source_sha256": "5cb524b433d319b447ee29d861c321714aae65530785cbec8986f58d4789f380",
+      "target": "widgets/material/lib/qtmaterialtheme.h",
+      "target_sha256": "5cb524b433d319b447ee29d861c321714aae65530785cbec8986f58d4789f380",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/logo/sn_logo_2.png",
+      "source_sha256": "45fc7f396f2d3a7a29f5c32d975e51834292cee661fd104218346b5e69d3c874",
+      "target": "resources/logo/sn_logo_2.png",
+      "target_sha256": "45fc7f396f2d3a7a29f5c32d975e51834292cee661fd104218346b5e69d3c874",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_calibration.png",
+      "source_sha256": "fccf65ea6eccac200081ebe3904ec62ee62ebf0754cdd23098c06aae059a9a53",
+      "target": "resources/main_btn/menu_calibration.png",
+      "target_sha256": "fccf65ea6eccac200081ebe3904ec62ee62ebf0754cdd23098c06aae059a9a53",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_checked.png",
+      "source_sha256": "1bd430df15d037459e5b63134f7bcc81f31fc9891ae004ce62127dc6b2f245f1",
+      "target": "resources/main_btn/menu_checked.png",
+      "target_sha256": "1bd430df15d037459e5b63134f7bcc81f31fc9891ae004ce62127dc6b2f245f1",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_driver.png",
+      "source_sha256": "ca34ccc3a4ca34de23743321889801af61e228bf5dc4f32f811a1788a6dd4e7c",
+      "target": "resources/main_btn/menu_driver.png",
+      "target_sha256": "ca34ccc3a4ca34de23743321889801af61e228bf5dc4f32f811a1788a6dd4e7c",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_project.png",
+      "source_sha256": "5d0e407be42b300be0271acf23a42dc00c16e8dfae4c32f7e9f21e4d02a67a5e",
+      "target": "resources/main_btn/menu_project.png",
+      "target_sha256": "5d0e407be42b300be0271acf23a42dc00c16e8dfae4c32f7e9f21e4d02a67a5e",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_quality.png",
+      "source_sha256": "add2112a016e423381b579071459c24e0e087827263df95cf97f30ce3a18dc39",
+      "target": "resources/main_btn/menu_quality.png",
+      "target_sha256": "add2112a016e423381b579071459c24e0e087827263df95cf97f30ce3a18dc39",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_reagent.png",
+      "source_sha256": "0f901c611c1fce833ad27b8a20a24a06c95b0fefb18e8f32f75d21999df30b09",
+      "target": "resources/main_btn/menu_reagent.png",
+      "target_sha256": "0f901c611c1fce833ad27b8a20a24a06c95b0fefb18e8f32f75d21999df30b09",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_report.png",
+      "source_sha256": "7795abb197500b5e3a9c0c068cb7da3106cc621ce1ccef3eed2c15f33dc937ad",
+      "target": "resources/main_btn/menu_report.png",
+      "target_sha256": "7795abb197500b5e3a9c0c068cb7da3106cc621ce1ccef3eed2c15f33dc937ad",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_sample.png",
+      "source_sha256": "6bfccf4e699980f040a0200a09d69d3eee97ba0d1edf1f93f5469606e8a33e2b",
+      "target": "resources/main_btn/menu_sample.png",
+      "target_sha256": "6bfccf4e699980f040a0200a09d69d3eee97ba0d1edf1f93f5469606e8a33e2b",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/menu_user.png",
+      "source_sha256": "69b1733b4edef0f5950224161cd479ffc3d0241ffe8b5ba5d46ee2067b1f0380",
+      "target": "resources/main_btn/menu_user.png",
+      "target_sha256": "69b1733b4edef0f5950224161cd479ffc3d0241ffe8b5ba5d46ee2067b1f0380",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/pause_disable.png",
+      "source_sha256": "bf5a3eb652c7241da7112a754c4aa97bb53117c72f169662117c5bdff723752d",
+      "target": "resources/main_btn/pause_disable.png",
+      "target_sha256": "bf5a3eb652c7241da7112a754c4aa97bb53117c72f169662117c5bdff723752d",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/pause.png",
+      "source_sha256": "ffe15d2a7c63caa1abe9ca029867482e6a36d180c076ef1a9a54b88ac635273f",
+      "target": "resources/main_btn/pause.png",
+      "target_sha256": "ffe15d2a7c63caa1abe9ca029867482e6a36d180c076ef1a9a54b88ac635273f",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/shutdown_hover.png",
+      "source_sha256": "b9afec1b66458e28d647916b1110872039811588f78af06a3fc6eb5df2fdbe98",
+      "target": "resources/main_btn/shutdown_hover.png",
+      "target_sha256": "b9afec1b66458e28d647916b1110872039811588f78af06a3fc6eb5df2fdbe98",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/shutdown_normal.png",
+      "source_sha256": "accf8d8a0464ed982ee63366783388d4e7f2dd977d1f6f17e6b03c0c5bbdc4c0",
+      "target": "resources/main_btn/shutdown_normal.png",
+      "target_sha256": "accf8d8a0464ed982ee63366783388d4e7f2dd977d1f6f17e6b03c0c5bbdc4c0",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/shutdown_pressed.png",
+      "source_sha256": "57c960f9943867be222fed049e03235e567cc49780cf60a77958d784604a1421",
+      "target": "resources/main_btn/shutdown_pressed.png",
+      "target_sha256": "57c960f9943867be222fed049e03235e567cc49780cf60a77958d784604a1421",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/start_disable.png",
+      "source_sha256": "811aecdad19cd66998f4e405eb6832625ce384482f4dad20fa15683801d71f38",
+      "target": "resources/main_btn/start_disable.png",
+      "target_sha256": "811aecdad19cd66998f4e405eb6832625ce384482f4dad20fa15683801d71f38",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_btn/start.png",
+      "source_sha256": "a2f1087bf8a4f75d155e8b751202f81163018eeb26d0311622880635633d3f31",
+      "target": "resources/main_btn/start.png",
+      "target_sha256": "a2f1087bf8a4f75d155e8b751202f81163018eeb26d0311622880635633d3f31",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/alarm_hover.png",
+      "source_sha256": "4bdda42c2631524bda58e5a88a211db3b866ed87ac49c1094ed703626989ef00",
+      "target": "resources/main_state/alarm_hover.png",
+      "target_sha256": "4bdda42c2631524bda58e5a88a211db3b866ed87ac49c1094ed703626989ef00",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/alarm_normal.png",
+      "source_sha256": "c54374a4f7be3a7d6f30ada90a7788f75abf56e3d08d999f74d5481a54dcad4c",
+      "target": "resources/main_state/alarm_normal.png",
+      "target_sha256": "c54374a4f7be3a7d6f30ada90a7788f75abf56e3d08d999f74d5481a54dcad4c",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/alarm_pressed.png",
+      "source_sha256": "31f73daa5e52b4ba51e3ed7491b39cc3827c9d27743700ebb6c0d4599245529f",
+      "target": "resources/main_state/alarm_pressed.png",
+      "target_sha256": "31f73daa5e52b4ba51e3ed7491b39cc3827c9d27743700ebb6c0d4599245529f",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/clean_normal.png",
+      "source_sha256": "79a0447d419b536c6b1cfc9a1896cc9e518bac962cc4d296cabd29e3f76bf70e",
+      "target": "resources/main_state/clean_normal.png",
+      "target_sha256": "79a0447d419b536c6b1cfc9a1896cc9e518bac962cc4d296cabd29e3f76bf70e",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/closebeep_hover.png",
+      "source_sha256": "447f943be11470ce267c12b991aed3ea8921792406290b73709dcfca200635cc",
+      "target": "resources/main_state/closebeep_hover.png",
+      "target_sha256": "447f943be11470ce267c12b991aed3ea8921792406290b73709dcfca200635cc",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/closebeep_normal.png",
+      "source_sha256": "dc26d6e628d356ed233ca20c516a0300bb1c0f37955c9a55c4de49af90e0bae9",
+      "target": "resources/main_state/closebeep_normal.png",
+      "target_sha256": "dc26d6e628d356ed233ca20c516a0300bb1c0f37955c9a55c4de49af90e0bae9",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/closebeep_pressed.png",
+      "source_sha256": "6dd9bd854ab4ecf1cfc8fda4452d31f2df83f62c3f677b6bb206268b3efafcb2",
+      "target": "resources/main_state/closebeep_pressed.png",
+      "target_sha256": "6dd9bd854ab4ecf1cfc8fda4452d31f2df83f62c3f677b6bb206268b3efafcb2",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/cup_normal.png",
+      "source_sha256": "5eb43f48352445ddcaee4b35e8dcccdff9aabb3aabe98ee53c5463488110d03e",
+      "target": "resources/main_state/cup_normal.png",
+      "target_sha256": "5eb43f48352445ddcaee4b35e8dcccdff9aabb3aabe98ee53c5463488110d03e",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/lisoff_hover.png",
+      "source_sha256": "4105e7abaccd495a43e50fc9f2c30225fe4cdecdbc3b1b8e9205b64a3162c61d",
+      "target": "resources/main_state/lisoff_hover.png",
+      "target_sha256": "4105e7abaccd495a43e50fc9f2c30225fe4cdecdbc3b1b8e9205b64a3162c61d",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/lisoff_normal.png",
+      "source_sha256": "4105e7abaccd495a43e50fc9f2c30225fe4cdecdbc3b1b8e9205b64a3162c61d",
+      "target": "resources/main_state/lisoff_normal.png",
+      "target_sha256": "4105e7abaccd495a43e50fc9f2c30225fe4cdecdbc3b1b8e9205b64a3162c61d",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/lisoff_pressed.png",
+      "source_sha256": "4bce3f05fc777588258346f47e0e03c68fd1b13a00f12ac32674d866378df3fc",
+      "target": "resources/main_state/lisoff_pressed.png",
+      "target_sha256": "4bce3f05fc777588258346f47e0e03c68fd1b13a00f12ac32674d866378df3fc",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/status_off.png",
+      "source_sha256": "eb6584c1a95bda46d16212297fe1c330df1d689adb4d75bfe3dcd34d8b69853c",
+      "target": "resources/main_state/status_off.png",
+      "target_sha256": "eb6584c1a95bda46d16212297fe1c330df1d689adb4d75bfe3dcd34d8b69853c",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/temp_normal.png",
+      "source_sha256": "0ebfc5907f6c97268855319b740a651525e80f19552bd5c6612ae1d98876e3e5",
+      "target": "resources/main_state/temp_normal.png",
+      "target_sha256": "0ebfc5907f6c97268855319b740a651525e80f19552bd5c6612ae1d98876e3e5",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/usdcup_normal.png",
+      "source_sha256": "cd452f6f43f0a68c04dcfab5c8d89a9b53cca68da73099881d6c6748305868d8",
+      "target": "resources/main_state/usdcup_normal.png",
+      "target_sha256": "cd452f6f43f0a68c04dcfab5c8d89a9b53cca68da73099881d6c6748305868d8",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/usdwater_normal.png",
+      "source_sha256": "6f2cbd0fef80b0436e3d84b84ee7311f34bc8f138d4703f9e074304bdb703721",
+      "target": "resources/main_state/usdwater_normal.png",
+      "target_sha256": "6f2cbd0fef80b0436e3d84b84ee7311f34bc8f138d4703f9e074304bdb703721",
+      "byte_identical": true
+    },
+    {
+      "source": "bin/resource/main_state/user_pic.png",
+      "source_sha256": "9cf7c2d45653be702c8340843bcaa0bac6f9354430c0dc7f1f874a049adfe813",
+      "target": "resources/main_state/user_pic.png",
+      "target_sha256": "9cf7c2d45653be702c8340843bcaa0bac6f9354430c0dc7f1f874a049adfe813",
+      "byte_identical": true
+    }
+  ],
+  "account_integration": {
+    "source": "Existing O02-1 ui/frmaccountsetting and data/account_store, derived from reference frmuserset/frmaccountsetting and user role definitions; exact lines/resources in original_layout_audit.json.",
+    "layout": "Original 1471x881 account canvas; table (10,30), business panel (410,30,641,811); embedded mode disables only the standalone centering offset. No .ui edits this task.",
+    "session": "Only AccountStore::sessionChanged supplies authoritative identity/DB role. Default Guest; --test-session is simulation, not password authentication. No role-number derived global ACL.",
+    "guards": "Manual logout checks both busy states and O01 dirty guard, queues setSession(empty), waits for actual Guest. Automatic commit logout immediately consumes worker Guest without discarding hospital draft.",
+    "intentional_changes": [
+      "Clear six password fields on accepted leave.",
+      "Clear account names/list cache/role options on Guest.",
+      "Preserve original role options/list filtering/running/password branches; successful update always logs out, successful current-user removal logs out."
+    ],
+    "resources": "account_resources.qrc reuses existing public resources by relative path, preserving aliases. Unique rcc -name options avoid ARM symbol collision.",
+    "data_build_root": "temp/sn100_host/o03_2; hospital/ and account/ are isolated runtime subdirectories",
+    "pending": [
+      "Original Windows active theme/font/runtime comparison",
+      "Production login and full user_powers ACL",
+      "Complete 1600 viewport interactions",
+      "RK/instrument/resource budget/long-run and same-board control"
+    ]
+  }
+}

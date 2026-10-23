@@ -1,0 +1,128 @@
+{
+  "module": "O03-2 old heartbeat peak",
+  "review_date": "2026-10-23",
+  "scope": "Read-only independent arithmetic and source/event-loop-boundary review; no GUI, build, test or database execution; no other chat contacted.",
+  "input": {
+    "evidence": "04_references/sn100_host/offline_shell_account_20261023/write_result.json",
+    "test_source": "06_programs/sn100_host/tests/shell_account_test.cpp",
+    "test_source_sha256": "cbfef7557ca8ea2c977c69ca67a175d54fd827b9c3e9c95fbdb1dbde48d19e49",
+    "test_source_matches_old_archive_manifest": true,
+    "writer_pid": 5301,
+    "qt_version": "5.15.13",
+    "platform": "xcb",
+    "canvas": "1920x1080",
+    "response_elapsed_ms": 15384.70614
+  },
+  "raw_heartbeat_recalculation": {
+    "nominal_interval_ms": 10,
+    "samples": 1050,
+    "sum_intervals_ms": 15383.327988,
+    "p95_ms": 26.814045,
+    "max_ms": 1556.009424,
+    "max_index_zero_based": 438,
+    "max_delivery_number_one_based": 439,
+    "cumulative_start_relative_to_initial_previous_checkpoint_ms": 6315.801528,
+    "cumulative_end_relative_to_initial_previous_checkpoint_ms": 7871.810952,
+    "count_greater_than_500ms": 1,
+    "count_greater_than_100ms": 8,
+    "ten_largest_ms": [1556.009424, 144.265708, 137.894372, 117.739918, 117.340658, 110.902502, 110.892983, 103.463514, 99.450043, 91.25551],
+    "adjacent_gaps": [
+      {"index": 433, "ms": 12.038419},
+      {"index": 434, "ms": 7.351993},
+      {"index": 435, "ms": 10.836793},
+      {"index": 436, "ms": 13.761384},
+      {"index": 437, "ms": 6.204426},
+      {"index": 438, "ms": 1556.009424},
+      {"index": 439, "ms": 20.516458},
+      {"index": 440, "ms": 22.454442},
+      {"index": 441, "ms": 34.292747},
+      {"index": 442, "ms": 16.565093},
+      {"index": 443, "ms": 57.779618}
+    ],
+    "time_origin_limit": "Probe initializes previous=clock.nsecsElapsed(), not zero, but does not export that initial value. These cumulative coordinates are relative to that checkpoint; do not label them exact times from Probe.start or process startup. response_elapsed_ms minus sum_intervals_ms is1.378152ms, containing the unknown initial offset and unobserved tail/evaluation time."
+  },
+  "raw_navigation_recalculation": {
+    "all_samples": 106,
+    "all_sum_ms": 1478.656836,
+    "all_p95_ms": 15.611616,
+    "all_max_ms": 31.379491,
+    "repeated_block_zero_based_indices": [2, 101],
+    "repeated_block_one_based_indices": [3, 102],
+    "repeated_block_samples": 100,
+    "repeated_block_sequence_verified": "50 repetitions of btnHospInfo then btnAccount, main index6, user index1 then0",
+    "repeated_block_sum_ms": 1401.224252,
+    "repeated_block_mean_ms": 14.01224252,
+    "repeated_block_p95_ms": 15.538058,
+    "repeated_block_min_ms": 3.980863,
+    "repeated_block_max_ms": 17.012629,
+    "repeated_block_first_ms": 3.980863,
+    "repeated_block_last_ms": 13.391029,
+    "peak_minus_repeated_signal_sum_ms": 154.785172,
+    "repeated_signal_sum_fraction_of_peak": 0.900524270860714,
+    "selection_basis": "writeExperiment records two accepted navigation transitions before its50-iteration loop, then100 loop transitions, then four later transitions. Array order and alternating button/page data agree with that source order.",
+    "measurement_limit": "Each elapsed_ms stops at the first navigationChanged signal inside a synchronous QWidget click; it is not the entire navigationClick wall time. Sum is a lower bound for the sequential100-call block's wall time, excluding callback tails, disconnect/JSON appends, assertions/findChildren and other synchronous test work. It has no absolute/shared-clock timestamps, so overlap with heartbeat index438 cannot be recovered from this old array alone."
+  },
+  "source_event_loop_boundaries": [
+    {
+      "source": {"path": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 64, "end_line": 75},
+      "function": "waitUntil",
+      "observation": "Checks predicate before entering the loop. processEvents(AllEvents,10) and qWait(1) occur only while the predicate is false. If navigation signal and destination were already delivered synchronously, this helper returns without dispatching the event loop."
+    },
+    {
+      "source": {"path": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 490, "end_line": 524},
+      "function": "Session::navigationClick",
+      "observation": "Connects navigationChanged with window as sender/context in GUI thread, calls QWidget QTest::mouseClick directly, then waits for a spy signal plus destination indices. The elapsed value is sampled inside navigationChanged, before the click/helper returns. There is no unconditional event-loop dispatch after an already-accepted navigation."
+    },
+    {
+      "source": {"path": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 833, "end_line": 859},
+      "function": "ShellAccountTest::writeExperiment",
+      "observation": "After successful Add completion the test clears secrets, selects Add and synchronously grabs/PNG-saves the whole1920x1080 window as account_engineer.png, then enters the100-click loop with no explicit processEvents/qWait between accepted clicks. The same call stack also executes pointer/count/assertion work."
+    },
+    {
+      "source": {"path": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 1108, "end_line": 1130},
+      "function": "ShellAccountTest::navigationResponsivenessExperiment",
+      "observation": "Later focused workload inserts qWait(10) after every accepted navigation, excludes preceding PNG capture/edit/SQL/dialog work and starts a new Probe. It is a changed event-loop schedule/workload, not a trace of the old peak."
+    },
+    {
+      "source": {"path": "/usr/include/x86_64-linux-gnu/qt5/QtTest/qtestmouse.h", "environment": "current local Ubuntu-24.04 Qt5 header, read only"},
+      "observation": "The ordinary QWidget branch without QTEST_QPA_MOUSE_HANDLING sends Press/Release via qApp->notify; positive defaultMouseDelay invokes qWait, but zero/nonpositive delay does not. The QWindow/QPA branch instead dispatches differently and explicitly processEvents. Old artifacts do not export actual defaultMouseDelay or QTEST_QPA_MOUSE_HANDLING, so current header inspection supports the mechanism but does not alone prove which runtime branch/delay created the historical gap."
+    }
+  ],
+  "what_old_evidence_proves": [
+    "A1.556009424-second interval occurred between two GUI10ms timer deliveries in the comprehensive test.",
+    "This is the only interval above500ms in the retained1050 samples; eight intervals exceeded100ms.",
+    "The100 synchronous repeated navigation signal intervals sum to1.401224252seconds; no individual recorded click-to-navigationChanged interval exceeds17.012629ms in that block, or31.379491ms in all106 navigation records.",
+    "The old test has a concrete path that can keep the GUI thread inside synchronous test/product call stacks across accepted navigations without its own unconditional event-loop yield.",
+    "Immediately preceding whole-frame grab/PNG encoding/write and subsequent test/callback work are unsegmented synchronous contributors that may share an interval with the burst.",
+    "A later focused paced run has a48.589979ms maximum interval under its own changed schedule; it is useful scoped evidence and is not a historical causal trace."
+  ],
+  "what_old_evidence_does_not_prove": [
+    "It cannot assign heartbeat index438 to the100-click block with exact shared-clock overlap, because navigation/phase absolute begin/end times were never recorded.",
+    "It cannot state that an individual product navigation callback, database operation, modal animation, PNG encoding, clipboard transfer or system scheduling caused the entire1.556seconds.",
+    "The154.785172ms numerical residual is not a measured screenshot/OS cost: the signal sum excludes multiple kinds of work and may not align exactly with the peak interval.",
+    "It does not show that the event loop was never entered during the100 clicks; the installed QtTest branch/default delay and nested event activity were not recorded at that run.",
+    "It does not establish input-to-pixel latency, compositor presentation, general no-stutter behavior, low resource use, RK responsiveness or a long-run bound.",
+    "It cannot justify deleting the old peak or calling it harmless test-only overhead based solely on matching durations or the later paced result."
+  ],
+  "causal_evidence_required_from_owner_diagnosis": [
+    "Freeze relevant product/test/resource inputs and record their hashes versus the old source_manifest, Qt/QPA/fonts/DPI/build flags and actual QtTest mouse/key delay/QTEST_QPA_MOUSE_HANDLING values. A self-consistent new snapshot alone does not prove equivalence to the old run.",
+    "Use one monotonic clock for heartbeat previous/now intervals and phase begin/end; separately identify preceding grab, PNG encode, file write,100-click burst and per-click complete callback time.",
+    "Record heartbeat delivery counts before/after the burst and before the post-burst drain, plus a delivered drain interval; a long burst with zero timer deliveries is stronger evidence of scheduling starvation than simple temporal overlap.",
+    "Compare repeated same-input/frozen-code burst versus paced runs, changing only event-loop opportunity. Also compare preceding capture on/off and/proc sampler on/off so capture/sampling cost is not silently reattributed to navigation.",
+    "Keep individual product callback/operation maxima separate from accumulated synchronous-burst time and automation/PNG costs; phase overlap is not a call-stack profiler.",
+    "Do not remediate by adding processEvents to production code or removing original animations solely to make this test metric small. Any product change should follow attributed blocking evidence and preserve original behavior."
+  ],
+  "owner_new_latency_source_read_only_observation": {
+    "path": "06_programs/sn100_host/tests/shell_latency_test.cpp",
+    "positive_design": [
+      "PhaseProbe records a shared monotonic phase timeline, heartbeat intervals, interval/phase intersections and heartbeat counts per phase.",
+      "burstNavigation labels optional preceding capture and100 synchronous clicks separately and together, records timer deliveries before drain, and explicitly drains afterward.",
+      "pacedNavigation keeps the same100 clicks while recording10ms event-loop intervals.",
+      "runtimeMetadata records actual QtTest delays and QTEST_QPA_MOUSE_HANDLING.",
+      "evidenceOverhead separates grab, PNG encode, write/flush, combined save, SQL,/proc and keyboard/clipboard input phases."
+    ],
+    "not_a_runtime_result": true,
+    "limit": "This reviewer did not execute or inspect new diagnostic outcome files. New phase instrumentation is appropriate but its existence alone is not a cause determination."
+  },
+  "independent_interim_conclusion": "The old artifacts support synchronous test-driver batching plus nearby evidence-capture work as a concrete, numerically plausible starvation hypothesis. They do not establish exact attribution of the historical1.556s interval. Retain the original peak until shared-clock and controlled-repeat evidence from the owner resolves that distinction."
+}

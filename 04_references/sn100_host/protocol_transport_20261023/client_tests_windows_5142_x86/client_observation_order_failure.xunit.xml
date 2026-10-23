@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="4" failures="3" tests="17" name="ReadOnlyClientTest">
+  <properties>
+    <property value="5.14.2" name="QTestVersion"/>
+    <property value="5.14.2" name="QtVersion"/>
+    <property value="Qt 5.14.2 (i386&#x002D;little_endian&#x002D;ilp32 shared (dynamic) release build; by GCC 7.3.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="connectionDoesNotAutomaticallyQuery"/>
+  <testcase result="fail" name="validStatusIsObservedBeforeSuccessfulFinish">
+    <failure message="Compared lists differ at index 0.
+   Actual   (order): &quot;success&quot;
+   Expected (QStringList({&quot;observed:Qj&quot;, &quot;success&quot;})): &quot;observed:Qj&quot;" result="fail"/>
+  </testcase>
+  <testcase result="pass" name="onePendingRequestRejectsConcurrentQuery"/>
+  <testcase result="pass" name="queueRejectionDoesNotLeavePendingRequest"/>
+  <testcase result="pass" name="timeoutRetriesExactlyOnceThenFails">
+    <!-- message="CLIENT timeout_ms=30 maxRetries=1 generation= 2 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6a 3a 04 05 attempts=1,2 finished=false pending=false fresh=false" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="alarmWaitsForMatchingCurrentAlarm">
+    <!-- message="CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 6b 3b 04 05 observed=Qq,Ql,Qk matching completion=Qk only" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="malformedStatusDoesNotRefreshOrFinish">
+    <!-- message="CLIENT invalid status main=99 rejected; notice= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围 later valid Qj completed" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="consumablesRequestUsesOnlyReadOnlyLiteral">
+    <!-- message="CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 48 18 04 05 actual peer TX= 06 07 00 0c 00 00 00 01 51 48 5b 30 5d 5b 30 5d 18 08 09 matching completion=QH" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="disconnectCancelsRequestAndFreshness"/>
+  <testcase result="pass" name="reconnectRejectsOldHalfStatus"/>
+  <testcase result="pass" name="invalidQueryDoesNotWriteOrBecomePending"/>
+  <testcase result="fail" name="observedReceiverCanClose">
+    <failure message="Compared values are not the same
+   Actual   (successes(finished)): 1
+   Expected (0)                  : 0" result="fail"/>
+  </testcase>
+  <testcase result="fail" name="observedReceiverCanReconnectWithoutFinishingNewRequest">
+    <failure message="Compared values are not the same
+   Actual   (successes(finished)): 1
+   Expected (0)                  : 0" result="fail"/>
+  </testcase>
+  <testcase result="pass" name="queuedReceiverCanReconnectWithoutWritingOldQuery"/>
+  <testcase result="pass" name="finishedReceiverCanReconnectWithoutClearingNewRequest"/>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[CLIENT timeout_ms=30 maxRetries=1 generation= 2 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6a 3a 04 05 attempts=1,2 finished=false pending=false fresh=false]]>
+<![CDATA[CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 6b 3b 04 05 observed=Qq,Ql,Qk matching completion=Qk only]]>
+<![CDATA[CLIENT invalid status main=99 rejected; notice= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围 later valid Qj completed]]>
+<![CDATA[CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 48 18 04 05 actual peer TX= 06 07 00 0c 00 00 00 01 51 48 5b 30 5d 5b 30 5d 18 08 09 matching completion=QH]]>
+  </system-err>
+</testsuite>

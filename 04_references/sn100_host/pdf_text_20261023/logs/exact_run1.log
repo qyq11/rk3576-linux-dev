@@ -1,0 +1,26 @@
+********* Start testing of HistoryPdfTextTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : HistoryPdfTextTest::initTestCase()
+FAIL!  : HistoryPdfTextTest::exactText(one_page_alias_pairs_quotes_nonbmp) 'renderer.exitCode() == 0' returned FALSE. (HISTORY_REPORT_FONT SimSun -> Noto Sans CJK SC
+HISTORY_REPORT_FONT 黑体 -> Noto Sans CJK SC
+***********************************************************************
+starting evaluate
+***********************************************************************
+HISTORY_RENDER_ERROR PDF中文映射校验失败：unexpected end of object
+)
+   Loc: [../../../../06_programs/sn100_host/tests/history_pdf_text_test.cpp(160)]
+FAIL!  : HistoryPdfTextTest::exactText(five_pages_64_rows) 'renderer.exitCode() == 0' returned FALSE. (HISTORY_REPORT_FONT 黑体 -> Noto Sans CJK SC
+HISTORY_REPORT_FONT SimSun -> Noto Sans CJK SC
+***********************************************************************
+starting evaluate
+***********************************************************************
+HISTORY_RENDER_ERROR PDF中文映射校验失败：unexpected end of object
+)
+   Loc: [../../../../06_programs/sn100_host/tests/history_pdf_text_test.cpp(160)]
+PASS   : HistoryPdfTextTest::complexShape(latin_ligatures)
+PASS   : HistoryPdfTextTest::complexShape(decomposed_acute)
+PASS   : HistoryPdfTextTest::complexShape(precomposed_acute)
+PASS   : HistoryPdfTextTest::complexShape(both_acute_forms)
+PASS   : HistoryPdfTextTest::cleanupTestCase()
+Totals: 6 passed, 2 failed, 0 skipped, 0 blacklisted, 812ms
+********* Finished testing of HistoryPdfTextTest *********

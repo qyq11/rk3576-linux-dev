@@ -1,0 +1,182 @@
+{
+  "module": "O03-2",
+  "review_date": "2026-10-23",
+  "method": "Independent read-only inspection of archived public JSON/logs and current QtTest source. No tests, GUI or devices were run by this review.",
+  "authentication_database_or_password_read": false,
+  "source_or_document_modified": false,
+  "reviewed_test_source": "06_programs/sn100_host/tests/shell_account_test.cpp",
+  "evidence_root": "04_references/sn100_host/offline_shell_account_20261023",
+  "overall": {
+    "functional_evidence": "supports the documented anonymous offline integration scope",
+    "log_counts_match_summary": true,
+    "independent_logged_processes": 12,
+    "qt_test_pass_items": 42,
+    "qt_test_fail_items": 0,
+    "business_case_groups_in_integrated_write": 12,
+    "pass_count_caution": "42 includes initTestCase/cleanupTestCase across 12 invocations; it is not 42 distinct business cases. The current plan explicitly states this correctly.",
+    "responsiveness_release": "not fully established: the comprehensive workload has an unexplained 1556.009424ms heartbeat interval; focused navigation is separate evidence and cannot erase that result",
+    "production_login_global_acl_board_instrument_long_run": "not established and correctly retained as pending in validation_summary.json/current plan",
+    "new_implementation_bug_proven_by_this_review": false
+  },
+  "verified_logs": [
+    {"file": "account_write_03.log", "pass": 3, "fail": 0, "elapsed_ms": 15592},
+    {"file": "account_read_03.log", "pass": 3, "fail": 0, "elapsed_ms": 359},
+    {"file": "account_formal_03.log", "pass": 3, "fail": 0, "elapsed_ms": 5272},
+    {"file": "account_focus_02.log", "pass": 3, "fail": 0, "elapsed_ms": 3609},
+    {"file": "shell_test_writeExperiment.log", "pass": 3, "fail": 0, "elapsed_ms": 5772},
+    {"file": "shell_test_readExperiment.log", "pass": 3, "fail": 0, "elapsed_ms": 591},
+    {"file": "shell_test_applicationExitExperiment.log", "pass": 3, "fail": 0, "elapsed_ms": 5312},
+    {"file": "offline_test_writeExperiment.log", "pass": 3, "fail": 0, "elapsed_ms": 8622},
+    {"file": "offline_test_readExperiment.log", "pass": 3, "fail": 0, "elapsed_ms": 236},
+    {"file": "account_test_writeExperiment.log", "pass": 3, "fail": 0, "elapsed_ms": 115864},
+    {"file": "account_test_readExperiment.log", "pass": 3, "fail": 0, "elapsed_ms": 129},
+    {"file": "account_boundary_test.log", "pass": 9, "fail": 0, "elapsed_ms": 1113}
+  ],
+  "coverage": [
+    {
+      "area": "Default Guest and six role/session states",
+      "source": {"function": "ShellAccountTest::writeExperiment", "line": 713, "end_line": 801},
+      "asserted": ["Guest identity cache/password/table/options cleared", "production-login icon and Guest logout button disabled", "source page-group coordinates preserved", "roles0..5 option counts/data IDs/text mapping", "table row counts/visibility and status tooltip identity", "Administrator update index=-1"],
+      "limit": "Option text expectation is AccountStore::roleName, not an independent original runtime oracle. Exact visible username membership is not asserted per role. Original Windows visual/behavior and full user_powers are not established."
+    },
+    {
+      "area": "Authorization boundary and identity refresh",
+      "source": {"function": "ShellAccountTest::writeExperiment", "line": 789, "end_line": 832},
+      "asserted": ["Guest Add/Delete refused with public DB snapshot unchanged", "forged role4 from role1 UI data refused and unchanged", "external public role downgrade reflected before refusal", "external identity rename clears shell/account state and emits one logout", "restoring public fixture state yields the original snapshot"],
+      "limit": "Explicit setSession remains a simulation. No password login/default-account/global capability ACL claim is supported."
+    },
+    {
+      "area": "Lifecycle and hidden page",
+      "source": {"function": "ShellAccountTest::writeExperiment", "line": 837, "end_line": 874},
+      "asserted": ["100 actual account/hospital transitions", "same account/hospital page pointers and exactly one child page each", "same worker pointers and ready counts1/1", "leaving populated account clears password fields", "hidden account receives role/session refresh"],
+      "limit": "The 100 iterations establish this short sequence, not long-term leak freedom or a resource budget."
+    },
+    {
+      "area": "Automatic and manual logout",
+      "source": {"function": "ShellAccountTest::writeExperiment", "line": 876, "end_line": 951},
+      "asserted": ["running-state same-role update/current delete denied", "different-role update commits and clears identity exactly once", "engineer can restore selected target via original double-click path", "deleting current account commits and clears caches", "manual logout from dirty hospital can cancel without identity/draft loss", "accepted manual logout discards draft without DB write", "repeated Guest logout adds no logout signal"],
+      "additional_source": {"function": "ShellAccountTest::navigationResponsivenessExperiment", "line": 1131, "end_line": 1144},
+      "additional_asserted": "Manual logout while simulated actionReady=false succeeds and retains the simulated running state.",
+      "limit": "These are simulated ready/running branches, not actual instrument state validation."
+    },
+    {
+      "area": "Busy navigation/logout/exit and lock recovery",
+      "source": {"function": "ShellAccountTest::writeExperiment", "line": 953, "end_line": 1020},
+      "asserted": ["account Add under external BEGIN IMMEDIATE", "actual user/main navigation stay on previous pages", "logout control disabled and requestLogout returns false", "identity retained and shell close rejected", "at least four rejection signals", "public snapshot unchanged", "heartbeat continues", "release lock and retry commits"],
+      "actual": {"elapsed_with_original_dialog_ms": 850.85266, "heartbeat_count": 75, "max_gap_ms": 103.463514, "navigation_rejections": 4},
+      "limit": "850.85266ms includes original modal animation and automated acknowledgement; it is not a SQL wait duration. No max-gap or timeout percentile acceptance threshold is asserted here. Integrated hospital-busy manual logout is not exercised in this test."
+    },
+    {
+      "area": "Persistent public data and new process readback",
+      "source": {"function": "ShellAccountTest::readExperiment", "line": 1051, "end_line": 1091},
+      "asserted": ["reader PID5454 differs from writer PID5301", "default Guest after restart", "hospital name/department/note via actual UI", "engineer sees retained and retry rows, not self-deleted row", "full public account/hospital snapshots equal writer result", "both integrity checksok", "password fields empty", "both worker closures/thread stops"],
+      "actual": {"account_rows": 7, "hospital_dictionary_rows": 1, "writer_pid": 5301, "reader_pid": 5454},
+      "limit": "O03-2 integration writes one hospital dictionary type. All-five-type hospital coverage comes from the separately logged O01/old-shell regressions, not this one scenario. No authentication material is exported."
+    },
+    {
+      "area": "Formal product process exit",
+      "source": {"function": "ShellAccountTest::applicationExitExperiment", "line": 1164, "end_line": 1259},
+      "asserted": ["launches product binary with--accounts and independent fixture directories", "waits for SHELL_READY", "removes transient seed-input file", "finds visible window by exact process PID", "sends native X11 WM_DELETE_WINDOW", "process NormalExit/exit0", "HOSPITAL_STORE_CLOSED/ACCOUNT_STORE_CLOSED/THREADS_STOPPED true and EXIT code0 in actual product output"],
+      "limit": "Formal exit/resource sample is default Guest,1600x900,about5 seconds. It does not establish complete1600 scrolling/interactions, active transaction process-close behavior, all roles at product process level, or long stability. Other integrated tests cover active-session close separately."
+    },
+    {
+      "area": "Cumulative regression",
+      "logs": ["shell_test_writeExperiment.log", "shell_test_readExperiment.log", "shell_test_applicationExitExperiment.log", "offline_test_writeExperiment.log", "offline_test_readExperiment.log", "account_test_writeExperiment.log", "account_test_readExperiment.log", "account_boundary_test.log"],
+      "asserted": "Old O03-1 mode, standalone O01, standalone O02 and account boundaries have independent successful invocations with distinct write/read PIDs where recorded.",
+      "limit": "The old O03-1 test runs without AccountStore and therefore does not alone establish the new integrated manual-logout path while HospitalStore is busy. Standalone source special-case coverage must not be relabeled as all cases executed inside the new shell."
+    }
+  ],
+  "measurement_review": {
+    "quantile": "nearest-rank p95: sorted[max(0,ceil(N*0.95)-1)] in Probe::summary",
+    "navigation": "QTest mouse injection to navigationChanged signal; not compositor/pixel presentation. Current JSON explicitly records this boundary.",
+    "heartbeat": "Nominal10ms PreciseTimer intervals; proxy for event-loop availability, not complete input-to-pixel latency. Raw gaps retained.",
+    "integrated_process_cpu": "std::clock process CPU seconds divided by monotonic elapsed seconds; one-logical-core basis, includes QtTest, SQL workers, animation, actual dialogs and PNG capture.",
+    "formal_product_cpu": "External/proc target PID utime+stime tick delta divided by sysconf(_SC_CLK_TCK) and sampled wall seconds; correctly excludes test-driver CPU.",
+    "sampling": "resources_200ms and formal500ms are requested timer intervals; comprehensive blocking can delay callbacks. Counts are observed samples, not a guarantee of uniform coverage or captured absolute peaks.",
+    "integrated_workload": {
+      "elapsed_ms": 15384.70614,
+      "navigation_samples": 106,
+      "navigation_p95_ms": 15.611616,
+      "navigation_max_ms": 31.379491,
+      "heartbeat_samples": 1050,
+      "heartbeat_p95_ms": 26.814045,
+      "heartbeat_max_ms": 1556.009424,
+      "cpu_percent_one_core": 64.73226689454779,
+      "resource_samples": 69,
+      "rss_sample_max_kib": 153520,
+      "pss_sample_max_kib": 134775,
+      "threads_sample_max": 9,
+      "fd_sample_max": 23,
+      "scope": "full integrated test workload, not idle product"
+    },
+    "focused_navigation": {
+      "elapsed_ms": 3284.178803,
+      "navigation_samples": 100,
+      "navigation_p95_ms": 22.961638,
+      "navigation_max_ms": 25.09155,
+      "heartbeat_samples": 100,
+      "heartbeat_p95_ms": 46.733823,
+      "heartbeat_max_ms": 48.589979,
+      "cpu_percent_one_core": 94.02990002595031,
+      "resource_samples": 16,
+      "rss_sample_max_kib": 123424,
+      "hwm_sample_max_kib": 133668,
+      "pss_sample_max_kib": 113532,
+      "threads_sample_max": 9,
+      "fd_sample_max": 20,
+      "scope": "after ready/login;100 navigation transitions with explicit10ms event-loop wait after each; excludes PNG, external SQL, edit and dialogs; timing excludes subsequent running-state manual logout"
+    },
+    "formal_idle_product": {
+      "pid": 5466,
+      "sampled_seconds": 5.012786039,
+      "sample_count": 11,
+      "cpu_percent_one_core": 15.959189037312113,
+      "rss_sample_max_kib": 119900,
+      "hwm_sample_max_kib": 127668,
+      "pss_sample_max_kib": 102075,
+      "threads": 8,
+      "fd_count": 18,
+      "scope": "fresh default-Guest product,1600x900 viewport; no business interactions during sample"
+    }
+  },
+  "findings": [
+    {
+      "id": "E01",
+      "priority": 1,
+      "kind": "open responsiveness acceptance gap, already disclosed",
+      "evidence": ["write_result.json.response.heartbeat.max_ms=1556.009424", "navigation_focus.json.response.heartbeat.max_ms=48.589979", "validation_summary.json.pending"],
+      "source": {"path": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 1031, "end_line": 1032},
+      "detail": "Integrated write asserts navigation sample count and heartbeat sample count, not response percentiles/max gaps. Focused experiment similarly asserts only100 navigation samples and nonzero heartbeat samples. Therefore0 failed is consistent with the unexplained1.556s interval and cannot prove the whole interaction workload meets the project's candidate500ms no-response observation baseline.",
+      "required_reporting": "Keep offline functional acceptance separate from responsiveness acceptance. Do not dismiss the long interval as test-only or resolved by focused results without attribution evidence. Current README/plan/validation summary correctly preserve it as pending.",
+      "new_function_requested": false
+    },
+    {
+      "id": "E02",
+      "priority": 2,
+      "kind": "coverage precision",
+      "source": {"path": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 761, "end_line": 785},
+      "detail": "Per-role account filtering is asserted via row count and table visibility; the test does not compare the actual set of visible usernames/role IDs for every role. A wrong subset with the right count would satisfy these assertions. Option-label expectation also calls the same AccountStore::roleName used by the UI.",
+      "required_reporting": "Describe this test as checking role options/counts/visibility and combine it with static original-rule review. Do not call it an independent runtime proof of every role's exact row membership or original Windows labels.",
+      "implementation_defect_proven": false,
+      "new_function_requested": false
+    },
+    {
+      "id": "E03",
+      "priority": 2,
+      "kind": "uncovered existing integration guard scenario",
+      "source": {"path": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 953, "end_line": 1020},
+      "detail": "The new-shell busy guard test locks AccountStore Add only. Manual logout from HospitalStore dirty state is covered, but HospitalStore busy/save plus an enabled active account and manual logout is not directly exercised. Old O03-1 regression covers hospital busy navigation/close without an account session; it cannot substitute for the new logout route.",
+      "required_reporting": "State account-busy integration guard coverage precisely and retain this hospital-busy/logout combination as an unmeasured existing scenario if claiming every integrated busy guard. No implementation bug was established by this evidence review.",
+      "new_function_requested": false
+    },
+    {
+      "id": "E04",
+      "priority": 2,
+      "kind": "resource-budget and stability limits",
+      "detail": "The recorded CPU figures belong to distinct workloads:64.73% integrated driver,94.03% focused driver,15.96% fresh idle product. About15s integrated activity,3.28s focused navigation and5s product sampling do not establish low CPU, memory/FD bounded growth, log/storage growth, long stability or RK control interference. No resource budget assertion exists here.",
+      "required_reporting": "Keep workload labels and sample maxima, avoid low-resource/no-leak/long-run conclusions, and retain resource/long-run budgets as pending. Current validation summary does so.",
+      "new_function_requested": false
+    }
+  ],
+  "recommended_acceptance_wording": "O03-2 anonymous offline functional integration and cumulative regressions have supporting WSL evidence. Short navigation/resource distributions are measured. Comprehensive responsiveness has an unexplained1.556s heartbeat interval and remains open; production login/global ACL, complete1600 interaction, original Windows runtime equivalence, RK/instrument and long stability are not accepted by these results."
+}

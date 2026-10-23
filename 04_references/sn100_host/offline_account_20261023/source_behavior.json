@@ -1,0 +1,1218 @@
+{
+  "metadata": {
+    "module": "O02-1",
+    "audit_date": "2026-10-23",
+    "method": "static inspection of selected source files; reference application not built or run",
+    "production_database_read": false,
+    "production_credentials_read": false,
+    "old_connection_configuration_read": false,
+    "instrument_connected": false,
+    "source_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+    "source_fingerprints": [
+      {
+        "path": "frmuserset/frmaccountsetting.cpp",
+        "sha256": "d1605f95f2df31773ebc36ed369f98bfd3e0b66cc23378772637a6791e1c17a2"
+      },
+      {
+        "path": "frmuserset/frmaccountsetting.ui",
+        "sha256": "d347bf5ec32f92aca06e04a73bdecb1e693948436ce0351481b1dcb836759998"
+      },
+      {
+        "path": "frmuserset/frmaccountsetting.h",
+        "sha256": "21bcecce9fb4ab35551677a9b80a4bb6a0c0393fd96bb73d29179a535275f164"
+      },
+      {
+        "path": "tool/database/user/user_information_table.cpp",
+        "sha256": "b948a5cbf312dce7f459c2a8c33a22fd6cc63320637e375871013cef83378335"
+      },
+      {
+        "path": "tool/database/user/user_role_table.cpp",
+        "sha256": "b868dce55dd03292b7436e8298d9eab6eb074dfb26503f19d20513092ba86595"
+      },
+      {
+        "path": "main.cpp",
+        "sha256": "b63c46ae047a2f3006b823cdc9477d498eb0aa2417cfe138845ff3d4c773be09"
+      },
+      {
+        "path": "tool/database/user/user_information_table.h",
+        "sha256": "18c3e4f3aa8eb94839944f518f9cf1933eeccde8332b546b11434b6d0125dd54"
+      },
+      {
+        "path": "tool/database/user/user_role_table.h",
+        "sha256": "9a6c8abfa5c160144f6bce23a3293f7263afe7f5aeda155492cff40f728581e3"
+      },
+      {
+        "path": "public/systemcommon.h",
+        "sha256": "d43e93eb435b80e8a27be1360536d4120699bf140e01cb35ace47c5ac6e3de8a"
+      },
+      {
+        "path": "public/systemcommon.cpp",
+        "sha256": "3d2a1411b9d79821326b5d25e975edfb049aaf7daebac4dca4c9c62a5555d1b3"
+      },
+      {
+        "path": "public/stylecolor.cpp",
+        "sha256": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128"
+      },
+      {
+        "path": "customwidgets/cusmessagebox.cpp",
+        "sha256": "f58c9e72ade2e3e41afc14fe3cb841abcc6e49984d0b8706dae9206947a0af90"
+      },
+      {
+        "path": "customwidgets/cusmessagebox.ui",
+        "sha256": "7e4aa3785555f3206705ce93145f2dbf5030919807272223b18322a0af5ae994"
+      },
+      {
+        "path": "customwidgets/cusdialogmask.cpp",
+        "sha256": "a8817e35a5ed13899afc91cb76bf52f0646fd3c820c435b9433c7b923e2df09d"
+      },
+      {
+        "path": "customwidgets/cusdialogmask.h",
+        "sha256": "01ce7042f5908fc9044231c3c22aa46450b3a593beff9249ec23b1691507b3a4"
+      },
+      {
+        "path": "customwidgets/cusdialogmask.ui",
+        "sha256": "bda358a92c69a564328151370c095087ae91678aee220b92f8d9606a6b0b05bd"
+      },
+      {
+        "path": "frmuserset/frmuserset.cpp",
+        "sha256": "5572747fd24b54eeabbea5c040bad33258631dc7c04eeb967fc3a8610caa3ca9"
+      },
+      {
+        "path": "frmmain/frmmain.cpp",
+        "sha256": "90ed19d496a8c029e6379356c06b80950e44d2eb412cd8efc16ed4839a7425f7"
+      },
+      {
+        "path": "frmlogin/maskdlglogin.cpp",
+        "sha256": "b91a4cdd3fad008636ef00f82303c724aa12d3e764782fb6799cca85b85f5a9a"
+      },
+      {
+        "path": "customtools/userpower.cpp",
+        "sha256": "117edf8983d7632c5e2d36524af59eff4f971cfe71e4c2096152f516b905ea89"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "R01",
+      "source_observation": "Permission enum: Guest=0, SendDoctor=1, TestDoctor=2, CheckDoctor=3, Engineer=4, Administrator=5.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.h",
+          "line": 132,
+          "end_line": 141
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "source_observation": "Designer combo defaults are 检验医生/审核医生/工程师. Constructor does not invoke slotUserChanged. Runtime slotUserChanged clears and rebuilds both combos: role0 none; role1 送检医师; role2 送检医师/检验医师; role3 adds 审核医师; role4 and role5 add 工程师. The exact runtime labels use 医师, not designer 医生.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.ui",
+          "line": 209,
+          "end_line": 223
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.ui",
+          "line": 796,
+          "end_line": 810
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 139,
+          "end_line": 160,
+          "function": "slotUserChanged"
+        }
+      ],
+      "migration_caution": "Fixture role text must match runtime lookup; do not copy a production role database."
+    },
+    {
+      "id": "R03",
+      "source_observation": "After role rebuilding Add remains first option when nonempty. Update is set to permission-1. Thus role1/2/3/4 select index0/1/2/3. Administrator5 requests index4 in a four-item combo; Guest0 requests -1 in an empty combo.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 150,
+          "end_line": 158
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 173,
+          "end_line": 185,
+          "function": "on_btnMenuChange_clicked"
+        }
+      ],
+      "migration_caution": "Administrator update is an out-of-range-index source ambiguity. Verify Qt5 currentIndex/currentText at runtime; do not silently clamp to Engineer or invent an Administrator option."
+    },
+    {
+      "id": "R04",
+      "source_observation": "Guest hides the account table and returns before clearing old cells. For permissions1..4 the nested predicate hides all records with role>=4. Administrator5 hides records role>=5 and can see Engineer4. Lower roles are not filtered against the current role: SendDoctor can see TestDoctor/CheckDoctor.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 74,
+          "end_line": 113,
+          "function": "frmGetAccount"
+        }
+      ],
+      "migration_caution": "Preserve exact source predicate rather than applying a generic role<=current filter. Hidden guest cells are not proof that old sensitive view data were cleared."
+    },
+    {
+      "id": "R05",
+      "source_observation": "Table is read-only, no selection, no focus, ScrollPerPixel; rows are 41px high. A cellDoubleClicked connection is made within every displayed-row iteration on each refresh.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 84,
+          "end_line": 92
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 114,
+          "end_line": 134
+        }
+      ],
+      "migration_caution": "Multiple accumulated connects are an implementation defect candidate; one equivalent connection may be used only with documented no-business-behavior change and regression."
+    },
+    {
+      "id": "R06",
+      "source_observation": "Double-click copies the last-column username into ldtUserNameAdd, ldtUserNameDel, ldtUserNameUpdate and ldtUserNameUpdate2. It does not alter passwords or role combos. Entering the change tab forces both update username fields readOnly and resets both to the current session name and current role index. A subsequent double-click still calls setText and can replace those readOnly names.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 63,
+          "end_line": 72,
+          "function": "slotSetText"
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 173,
+          "end_line": 185,
+          "function": "on_btnMenuChange_clicked"
+        }
+      ],
+      "migration_caution": "Do not assume update is limited to the current user or synchronize target role without source evidence."
+    },
+    {
+      "id": "R07",
+      "source_observation": "Add validation order: Guest rejection; username OR confirmation-password empty rejection; password mismatch rejection; combo index==Administrator-1 rejection; role lookup by selected text; duplicate username rejection; insert id-auto/name/role/pwd/isdefault=0.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 189,
+          "end_line": 242,
+          "function": "on_btnAdd_clicked"
+        }
+      ],
+      "migration_caution": "Administrator option is not normally present, making index4 guard unreachable through normal role UI. Do not add a different permission model."
+    },
+    {
+      "id": "R08",
+      "source_observation": "Add failure keeps fields; success shows 保存成功 then clears both passwords and username, selects Add index0 and refreshes list.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 243,
+          "end_line": 257
+        }
+      ]
+    },
+    {
+      "id": "R09",
+      "source_observation": "Delete always asks 确认删除用户？ before any validation. Any answer other than QMessageBox::Yes returns without database change. Then deleting the current session user while actionReady==false is rejected before existence/password checks.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 261,
+          "end_line": 278,
+          "function": "on_btnDel_clicked"
+        }
+      ]
+    },
+    {
+      "id": "R10",
+      "source_observation": "Delete validation after confirmation/busy: target exists; target stored pwd equals entered target password; reject if current permission<target role; reject target role==Administrator. The equality/role checks do not have a separate Guest branch. The source permits deletion of other same-role accounts with known target password.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 279,
+          "end_line": 310
+        }
+      ],
+      "migration_caution": "Keep rejection order and target-password semantics. SQL query failures must no longer masquerade as nonexistent account; improved error reporting is an explicit migration difference."
+    },
+    {
+      "id": "R11",
+      "source_observation": "Delete database failure keeps fields/no logout. Success shows 删除成功; if deleted name equals current session name emit signalLoginOut; then clears delete name/password and refreshes.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 311,
+          "end_line": 335
+        }
+      ]
+    },
+    {
+      "id": "R12",
+      "source_observation": "Update busy predicate rejects when combo.currentIndex()==permission-1 AND actionReady==false. This is equality, despite the comment saying changing user type while running is forbidden. Changed index can bypass this particular source check.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 338,
+          "end_line": 348,
+          "function": "on_btnUpdate_clicked"
+        }
+      ],
+      "migration_caution": "Do not invert equality to inequality without a separately authorized behavior fix; test both same-role and changed-role running states."
+    },
+    {
+      "id": "R13",
+      "source_observation": "Update order after busy: find old username; verify target old password; verify two new passwords equal; require new username nonempty. New-password empty check is commented out, so two empty new-password fields pass. No duplicate-new-name check and no current-role-vs-target-role check exist in this slot.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 349,
+          "end_line": 379
+        }
+      ],
+      "migration_caution": "These are source security/behavior ambiguities, not a recommendation for production policy. Preserve only within explicit anonymous offline scope and mark production login/security review pending."
+    },
+    {
+      "id": "R14",
+      "source_observation": "Update obtains roleId by current combo text, writes old record id/new username/new pwd/new role/old isdefault; DB failure returns. Success shows 更新成功, clears all three update password fields, always emits signalLoginOut, then refreshes.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 380,
+          "end_line": 415
+        }
+      ],
+      "migration_caution": "Do not reset isdefault or forget logout. Empty/unmatched role text resolves to0 in UserRoleTable; invalid Administrator combo must be observable, not silently normalized."
+    },
+    {
+      "id": "R15",
+      "source_observation": "user_information schema is id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, role INTEGER, pwd VARCHAR, isdefault INTEGER. There is no UNIQUE(name) declaration. user_role is id INTEGER PRIMARY KEY AUTOINCREMENT, role VARCHAR. getIdByRole returns0 on not-found or prepare error; getRoleById returns empty on failure.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_information_table.cpp",
+          "line": 13,
+          "end_line": 24
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_role_table.cpp",
+          "line": 12,
+          "end_line": 22
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_role_table.cpp",
+          "line": 54,
+          "end_line": 104
+        }
+      ],
+      "migration_caution": "Use a new tagged anonymous database. Parameter binding/transactions/thread ownership/error separation can improve storage reliability while preserving normal field semantics."
+    },
+    {
+      "id": "R16",
+      "source_observation": "The username validator config is Head_Letter_Num with lenght=16 for all four username edits. Actual regex is ^[A-Za-z0-9].{16}$, which has17 total characters for an Acceptable full match, while tooltip claims16. Intermediate validator states may still be present when a button handler reads text; handler does not call hasAcceptableInput().",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "line": 44,
+          "end_line": 51
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.cpp",
+          "line": 445,
+          "end_line": 462
+        }
+      ],
+      "migration_caution": "Do not rewrite to a conventional1..16 validator silently. Programmatic setText is different from actual typing and does not prove keyboard validation equivalence."
+    },
+    {
+      "id": "R17",
+      "source_observation": "Original account signalLoginOut is connected to main on_btnLoginOut_clicked. That resets permission/name to Guest, emits signalLogout then opens login. Original login success notifies multiple pages; login showLoadInformation may send query reagent and deferred check-config signals.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "line": 508
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "line": 524,
+          "end_line": 527
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "line": 678,
+          "end_line": 682
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "line": 2077,
+          "end_line": 2093
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmlogin/maskdlglogin.cpp",
+          "line": 76,
+          "end_line": 102
+        }
+      ],
+      "migration_caution": "Offline slice must clear its explicit session and stop. Do not wire the full main/login/instrument chain."
+    },
+    {
+      "id": "R18",
+      "source_observation": "UserPower::canDoPower scans user_powers.can_role_id split on semicolons and matches current numeric role. No such general capability lookup is called inside frmAccountSetting; this slice must not invent a replacement user_powers fixture or derive all permissions from rank.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/userpower.cpp",
+          "line": 9,
+          "end_line": 37
+        }
+      ]
+    },
+    {
+      "id": "R19",
+      "source_observation": "Original default-account lookup and authentication live in UserInformationTable. Login empty password enters defaultPermission/Guest before confirmUserInfo; nonempty login consults name/password and may update isdefault for roles<=Engineer.",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_information_table.cpp",
+          "line": 94,
+          "end_line": 118
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_information_table.cpp",
+          "line": 149,
+          "end_line": 166
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_information_table.cpp",
+          "line": 206,
+          "end_line": 238
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmlogin/maskdlglogin.cpp",
+          "line": 145,
+          "end_line": 187
+        }
+      ],
+      "migration_caution": "Complete login/default-account/security behavior is outside O02-1. Never auto-create a default Administrator or infer original credentials."
+    }
+  ],
+  "test_matrix": [
+    {
+      "id": "T01",
+      "arrange": "Explicit anonymous sessions for each role0..5; fixture records contain all roles",
+      "action": "Refresh and enter all tabs",
+      "expected": "Options/index/list filtering exactly match R02-R04, including Admin invalid index; no production DB read",
+      "rules": [
+        "R01",
+        "R02",
+        "R03",
+        "R04"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Checks option counts/table counts only; not actual labels, selected Update indices or every visible username.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T02",
+      "arrange": "No active session / cleared session",
+      "action": "Attempt account operations",
+      "expected": "No implicit Administrator; explicit session required; logout remains stable",
+      "rules": [
+        "R17",
+        "R19"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Empty session becomes Guest and Add denied; nonexistent session name and forged role APIs not exercised.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      },
+      "boundary_test_mapping": {
+        "path": "06_programs/sn100_host/tests/account_boundary_test.cpp",
+        "functions": [
+          "AccountBoundaryTest::rejectForgedRoleAndStaleSession"
+        ],
+        "status": "implemented; runtime result supplied by parent runner, not this static audit"
+      }
+    },
+    {
+      "id": "T03",
+      "arrange": "Active non-Guest; ordinary visible target; populated role/password edits",
+      "action": "Double-click target row",
+      "expected": "Exactly four usernames change; passwords and combos do not",
+      "rules": [
+        "R06"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Actual mouse double-click asserts all four usernames; unchanged password/role values are not asserted independently."
+      }
+    },
+    {
+      "id": "T04",
+      "arrange": "Active user on Add page",
+      "action": "Enter Change page, then double-click a different visible user",
+      "expected": "First resets/readOnly=current; subsequent setText changes both update names to target",
+      "rules": [
+        "R06"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Change-tab readOnly is asserted; subsequent double-click replaces target and valid update succeeds, then is reversed."
+      }
+    },
+    {
+      "id": "T05",
+      "arrange": "Guest session",
+      "action": "Attempt Add",
+      "expected": "增加失败: 无权限!; no write",
+      "rules": [
+        "R07"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Guest no-permission error text asserted; no extra Administrator created.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T06",
+      "arrange": "Permitted role; empty username or empty confirmation-password",
+      "action": "Attempt Add",
+      "expected": "Nonempty error precedes mismatch; no write",
+      "rules": [
+        "R07"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Both empty-name and empty-password reject with expected nonempty message fragment.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T07",
+      "arrange": "Permitted role; two distinct transient passwords",
+      "action": "Attempt Add",
+      "expected": "Mismatch; no write; inputs preserved",
+      "rules": [
+        "R07",
+        "R08"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Mismatch specific text asserted; rejected form preservation not separately asserted.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T08",
+      "arrange": "Permitted role; existing fixture username",
+      "action": "Attempt Add with otherwise valid inputs",
+      "expected": "Duplicate rejected; no extra row",
+      "rules": [
+        "R07"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Duplicate specific text asserted; public row count checked later rather than immediately.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T09",
+      "arrange": "Role1..4 plus Admin5; permitted selected role",
+      "action": "Add unique username",
+      "expected": "Correct role/name/isdefault0 persisted; fields cleared; role Add resets0",
+      "rules": [
+        "R07",
+        "R08"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "One role2 insertion and repeated role1 writes; not each actor/role combination or post-success clearing/default index.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T10",
+      "arrange": "Any delete target",
+      "action": "Confirm cancel or close confirmation",
+      "expected": "No DB write/logout; inputs preserved",
+      "rules": [
+        "R09"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Cancel No snapshot equality checked; close/NoButton not exercised.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T11",
+      "arrange": "Current user; running",
+      "action": "Confirm delete; include wrong-password variation",
+      "expected": "Busy error precedes password error; no deletion/logout",
+      "rules": [
+        "R09"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Current running delete rejection covered; incorrect-password variant/order not asserted.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T12",
+      "arrange": "Other user; running and ready variants",
+      "action": "Delete nonexistent target",
+      "expected": "Nonexistent error; no write",
+      "rules": [
+        "R10"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Ready missing target specific text asserted; running-other-user variation not separate.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T13",
+      "arrange": "Existing other target; wrong transient password",
+      "action": "Confirm delete",
+      "expected": "Password error; no write",
+      "rules": [
+        "R10"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Wrong target password specific rejection text asserted.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T14",
+      "arrange": "Role1 actor; role2/3 visible target; correct transient target password",
+      "action": "Confirm delete",
+      "expected": "Insufficient privilege; no write",
+      "rules": [
+        "R04",
+        "R10"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Role1 deleting role2 target checks specific insufficient-permission error.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T15",
+      "arrange": "Admin5 actor and Admin5 target name entered manually",
+      "action": "Confirm delete with correct transient password",
+      "expected": "Administrator protection; no write",
+      "rules": [
+        "R04",
+        "R10"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Admin target specific protected-user error asserted.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T16",
+      "arrange": "Permitted other same/lower-role target; correct transient password",
+      "action": "Confirm delete",
+      "expected": "One row removed; no logout; delete fields cleared",
+      "rules": [
+        "R10",
+        "R11"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Engineer removes role2 target; no explicit no-logout assertion or equal-role target.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T17",
+      "arrange": "Current session target; ready; correct transient password",
+      "action": "Confirm delete",
+      "expected": "One row removed; exactly one logical logout; session cleared",
+      "rules": [
+        "R09",
+        "R11",
+        "R17"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Current-account deletion and one logout asserted; table/session clear after deletion not directly asserted.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T18",
+      "arrange": "Update current session; running; selected index==permission-1",
+      "action": "Update",
+      "expected": "Busy rejection; no write/logout",
+      "rules": [
+        "R12"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Same-role running update checks source busy-specific error.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T19",
+      "arrange": "Update current session; running; selected index!=permission-1",
+      "action": "Update with valid target old password and equal new passwords",
+      "expected": "Original equality predicate does not reject; later validation controls outcome; mark source ambiguity",
+      "rules": [
+        "R12",
+        "R13"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Changed-role running update succeeds/logs out; persistence checked through subsequent option count.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T20",
+      "arrange": "Update missing target",
+      "action": "Submit otherwise equal passwords",
+      "expected": "Nonexistent error, no write/logout",
+      "rules": [
+        "R13"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "missing",
+        "note": "Missing update target requires programmatic/direct-store path because UI names readonly."
+      }
+    },
+    {
+      "id": "T21",
+      "arrange": "Update target exists; wrong old transient password",
+      "action": "Submit",
+      "expected": "Password error before new-password mismatch; no write/logout",
+      "rules": [
+        "R13"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Wrong old password specific text asserted; combined mismatch priority is not separate.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T22",
+      "arrange": "Target exists; correct old password; unequal new passwords",
+      "action": "Submit",
+      "expected": "Mismatch; no write/logout",
+      "rules": [
+        "R13"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "New-password mismatch specific text asserted.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T23",
+      "arrange": "Target exists; correct old password; new username empty",
+      "action": "Submit equal new passwords",
+      "expected": "Empty username rejected; no write/logout",
+      "rules": [
+        "R13"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "missing",
+        "note": "Empty new username not exercised."
+      }
+    },
+    {
+      "id": "T24",
+      "arrange": "Target exists; ready; correct old password; both new passwords empty",
+      "action": "Submit",
+      "expected": "Source allows empty new password; row updated and logout; evidence omits password",
+      "rules": [
+        "R13",
+        "R14"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Empty new-password succeeds, then empty old-password successful reversible update proves secret persistence inside process without export.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      },
+      "boundary_test_mapping": {
+        "path": "06_programs/sn100_host/tests/account_boundary_test.cpp",
+        "functions": [
+          "AccountBoundaryTest::preserveAdministratorRoleZeroAndOriginalTargetRules"
+        ],
+        "status": "implemented; runtime result supplied by parent runner, not this static audit"
+      }
+    },
+    {
+      "id": "T25",
+      "arrange": "Double-click other visible target; correct target old password; target role higher than actor",
+      "action": "Submit with valid selected option",
+      "expected": "Source has no separate target-rank check; expected source behavior isolated as pending security review",
+      "rules": [
+        "R06",
+        "R13",
+        "R14"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "missing",
+        "note": "Cross-target update with known target password and no target-rank check not exercised."
+      },
+      "boundary_test_mapping": {
+        "path": "06_programs/sn100_host/tests/account_boundary_test.cpp",
+        "functions": [
+          "AccountBoundaryTest::preserveAdministratorRoleZeroAndOriginalTargetRules"
+        ],
+        "status": "implemented; runtime result supplied by parent runner, not this static audit"
+      }
+    },
+    {
+      "id": "T26",
+      "arrange": "Existing different fixture username supplied by programmatic editable test path",
+      "action": "Update target to duplicate name",
+      "expected": "Source schema/slot do not impose UNIQUE or duplicate check; explicitly preserve/document observed migration behavior",
+      "rules": [
+        "R13",
+        "R15"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "missing",
+        "note": "Duplicate updated name not exercised; requires disposable direct-store/programmatic test."
+      },
+      "boundary_test_mapping": {
+        "path": "06_programs/sn100_host/tests/account_boundary_test.cpp",
+        "functions": [
+          "AccountBoundaryTest::preserveAdministratorRoleZeroAndOriginalTargetRules"
+        ],
+        "status": "implemented; runtime result supplied by parent runner, not this static audit"
+      }
+    },
+    {
+      "id": "T27",
+      "arrange": "Admin session; Change requested index4 on count4",
+      "action": "Inspect Qt currentIndex/text; submit valid old-password path in disposable data",
+      "expected": "Capture invalid index behavior; never silently clamp/add Administrator; source role lookup can resolve0",
+      "rules": [
+        "R03",
+        "R14",
+        "R15"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Main actual UI asserts Administrator currentIndex=-1/currentText empty. Separate boundary test checks worker role0 persistence."
+      },
+      "boundary_test_mapping": {
+        "path": "06_programs/sn100_host/tests/account_boundary_test.cpp",
+        "functions": [
+          "AccountBoundaryTest::preserveAdministratorRoleZeroAndOriginalTargetRules"
+        ],
+        "status": "implemented; runtime result supplied by parent runner, not this static audit"
+      }
+    },
+    {
+      "id": "T28",
+      "arrange": "Update target with isdefault1",
+      "action": "Submit ordinary valid update",
+      "expected": "Old record id and isdefault preserved; three password edits cleared; logout",
+      "rules": [
+        "R14"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "missing",
+        "note": "No isdefault1 fixture or preserved-id/isdefault assertion; password-clear checks not explicit."
+      },
+      "boundary_test_mapping": {
+        "path": "06_programs/sn100_host/tests/account_boundary_test.cpp",
+        "functions": [
+          "AccountBoundaryTest::preserveAdministratorRoleZeroAndOriginalTargetRules"
+        ],
+        "status": "implemented; runtime result supplied by parent runner, not this static audit"
+      }
+    },
+    {
+      "id": "T29",
+      "arrange": "Account DB held by external transaction; active operation",
+      "action": "Add/Delete/Update then release lock and retry",
+      "expected": "Finite wait; truthful storage failure; no partial commit or logout on failure; retry works",
+      "rules": [
+        "R08",
+        "R11",
+        "R14",
+        "R15"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Add locked transaction snapshot/heartbeat/retry and busy-close rejection covered; Delete/Update locked paths not separately covered.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T30",
+      "arrange": "Unwritable/invalid path/tag/schema",
+      "action": "Open or operate",
+      "expected": "No reference/production fallback; explicit error, no fake success",
+      "rules": [
+        "R15"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "missing",
+        "note": "No invalid/unwritable/non-tag/foreign/schema path cases."
+      },
+      "boundary_test_mapping": {
+        "path": "06_programs/sn100_host/tests/account_boundary_test.cpp",
+        "functions": [
+          "AccountBoundaryTest::noImplicitBootstrapOrReset",
+          "AccountBoundaryTest::rejectUntaggedAndInvalidTag",
+          "AccountBoundaryTest::rejectLinkedOrReferenceAlias",
+          "AccountBoundaryTest::rejectCorruptOrMismatchedSchemaUnchanged"
+        ],
+        "status": "implemented; runtime result supplied by parent runner, not this static audit"
+      }
+    },
+    {
+      "id": "T31",
+      "arrange": "New tagged fixture directory; write account changes",
+      "action": "Exit and use new process to read",
+      "expected": "Name/role/isdefault/id/row counts persist; do not export pwd or authentication DB",
+      "rules": [
+        "R15"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::readExperiment",
+        "coverage_status_from_static_inspection": "planned",
+        "note": "Revised readExperiment compares public snapshot and explicitly asserts reader PID differs from write_result writer PID.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T32",
+      "arrange": "GUI using original username validator",
+      "action": "Type leading space/Chinese/special; type16/17 chars; use programmatic setText separately",
+      "expected": "Record Acceptable/Intermediate/Invalid and actual typed vs setText semantics; do not invent max16 correction",
+      "rules": [
+        "R16"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Revised main checks validator16 chars Intermediate and17 Acceptable; leading invalid keyboard-state matrix remains absent.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T33",
+      "arrange": "All three pages at source logical geometry, normal/checked/disabled/error states",
+      "action": "Capture UI and confirmation/error dialogs",
+      "expected": "Source UI geometry/QSS preserved; Linux font/host differences explicit; credentials masked/cleared",
+      "rules": [
+        "R02",
+        "R05"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "Three pages/Guest/failure state/modal screenshots planned; source geometry comparison belongs to independent visual QA.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T34",
+      "arrange": "Fixed anonymous data; Release/XCB;100 UI and100 write operations",
+      "action": "Measure operation and10ms heartbeat plus CPU/RSS/PSS/threads/FD/storage",
+      "expected": "Record p95/max/failures and bounded growth; candidate thresholds not RK guarantee",
+      "rules": [
+        "R15"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "partial",
+        "note": "100 writes/tab clicks/heartbeat, memory/thread/FD, process CPU and DB growth measured; p95 calculation and log growth need runner/summary.",
+        "location_note": "Function-level mapping; test source is under active edits, so unstable earlier line numbers are omitted."
+      }
+    },
+    {
+      "id": "T35",
+      "arrange": "O01 fixed anonymous data; account changes completed",
+      "action": "Run cumulative hospital CRUD/persistence/error regression",
+      "expected": "Existing O01 functionality remains passed; only this environment evidence",
+      "rules": [
+        "R15"
+      ],
+      "scope": "offline",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "external_runner",
+        "note": "No O01 regression inside account_test; must run existing hospital test separately."
+      }
+    },
+    {
+      "id": "T36",
+      "arrange": "Original Windows release unavailable; RK/instrument unavailable",
+      "action": "Review release gates",
+      "expected": "Original run behavior/visual, RK screen/device integration/long stability remain pending",
+      "rules": [
+        "R17",
+        "R19"
+      ],
+      "scope": "pending_external_environment",
+      "execution_status": "not_run_by_source_audit",
+      "current_test_mapping": {
+        "test_path": "06_programs/sn100_host/tests/account_test.cpp",
+        "test_function": "AccountTest::writeExperiment",
+        "coverage_status_from_static_inspection": "external_record",
+        "note": "Original Windows/RK/instrument/long-stability states belong to module record, not this test."
+      }
+    }
+  ],
+  "source_defect_policy": "Keep source-backed behavior within the anonymous offline slice; every intentional change is separately described. Static findings do not validate original runtime, production security, RK or instruments.",
+  "credential_evidence_policy": "Only transient test secrets in mutable temp runtime DB; no passwords, password hashes, reversible secrets, or authentication DB files in formal evidence/screenshots/logs.",
+  "test_source_review": {
+    "path": "06_programs/sn100_host/tests/account_test.cpp",
+    "sha256": "cf7d893c5d7529152327ec8adb450209c4d4fc096fc494afa7684127123a03b7",
+    "line_count": 695,
+    "status": "static inspection only; no tests executed by this audit helper",
+    "predictable_outcomes": [
+      {
+        "kind": "expected_consistent",
+        "observation": "Current main scenario arithmetic is coherent:5 seeded accounts, temporary accounts removed, lockRetry plus retained account remain =>7 rows; role<4 visible rows expected5."
+      }
+    ],
+    "cross_cutting_gaps": [
+      "The initial test review found boolean-only rejects; the parent has since added branch-specific message checks. Unchanged sanitized snapshots should still be checked for storage/authorization rejects, rather than assuming every false result implies no mutation.",
+      "Use disposable isolated directories for Administrator->role0, duplicate-name and cross-target ambiguity cases; never mutate original reference or production data.",
+      "Explicitly test data-directory traversal/non-absolute/foreign tag/schema files, missing session and roles supplied directly to worker slots; identify safe defensive differences separately from source business rules.",
+      "QTEST_MAIN with no function arguments runs write then read in the same process. The revised readExperiment explicitly rejects the writer PID, so invoke function-specific commands in separate processes.",
+      "Read-back evidence intentionally excludes credentials. Successful setSession is explicit simulation and does not validate password login/security.",
+      "The revised Probe includes process CPU percentage. Log growth and cumulative O01 results still need external runner evidence or additional measurement."
+    ]
+  },
+  "boundary_test_review": {
+    "path": "06_programs/sn100_host/tests/account_boundary_test.cpp",
+    "sha256": "ad423b2d6075d94d6bf44642594c5dfab823a59ebb007eb5abeadb6b65d699f2",
+    "method": "Independent GUIless real-worker boundaries in new SN100_BOUNDARY_DIR; no reference/production DB or credentials read",
+    "credentials_exported": false
+  },
+  "independent_implementation_static_review": {
+    "scope": "Source-to-implementation review only, no original reference runtime or hardware claim",
+    "fingerprints": [
+      {
+        "path": "06_programs/sn100_host/data/account_store.h",
+        "sha256": "16e9b7ac2bbdd94ea9c6b9178cf85ee82871c698040f231938393213a2e1e06a"
+      },
+      {
+        "path": "06_programs/sn100_host/data/account_store.cpp",
+        "sha256": "91b521bd3a6d707f2c602fe5736df0731cd2c8649211dd3408de2b9387cb902c"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/frmaccountsetting.h",
+        "sha256": "9523b7a4f9e36655b92728f8406c1825571f4d4d22d4456c004fec6507525217"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/frmaccountsetting.cpp",
+        "sha256": "21eeb2c665aea511c88b685d6f03c702f7e941c5181da1e783b6a903d50ee409"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/frmaccountsetting.ui",
+        "sha256": "712bd653374198a142672a70df9baf9a8dbbfb88e14fb129528b17899d0a35a8"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/cusmessagebox.cpp",
+        "sha256": "b472f038667285b0043fc104f3f93c607e715b26c423e00ce1f49134473f26b7"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/cusmessagebox.h",
+        "sha256": "63e5628ab67ff19656e0d39ca8b49c59300bfc64dc4f87ce2111dc3f6f2412da"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/cusmessagebox.ui",
+        "sha256": "41fc2c70631cda45572f2ce4a3fe2785d47ddae6434719771dc90a93e194bfed"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/cusdialogmask.cpp",
+        "sha256": "13988a85e7393aaa94e4ab9aaf14c380b642638c5b569da1e48701b9814d15d0"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/cusdialogmask.h",
+        "sha256": "d5387b2f1eaf46a92b9811dac73ce11f4a79dfc05a4ebfd9f3654466ef5b0a6b"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/cusdialogmask.ui",
+        "sha256": "bda358a92c69a564328151370c095087ae91678aee220b92f8d9606a6b0b05bd"
+      }
+    ],
+    "reviewed_core_rules": [
+      "Exact nested list filter and runtime role options; invalid Administrator Update index maps through selectedRole to0.",
+      "Four double-click username writes including readOnly update target; no automatic target-role selection.",
+      "Running-state equality comparison, target password, empty new password, original missing target-rank/duplicate-new-name checks, isdefault retention.",
+      "Parameterized SQL/BEGIN IMMEDIATE transactions; per-operation sessionID/DB role refresh; no pwd in AccountRow/signals.",
+      "Commit success clears requested-operation secrets; update/current-delete clears explicit session; UI waits for sanitized reload before completing acknowledgement.",
+      "Absolute/tag/canonical-reference/symlink/schema protections and no reseeding existing authentication DB."
+    ],
+    "intentional_differences_to_record": [
+      "Original repeatedly connects double-click once per visible row per refresh; new UI uses one connection with the same four-field effect.",
+      "Original Guest table is hidden before clear; new UI clears old table rows before hiding, preventing stale hidden view data.",
+      "Explicit anonymous test session replaces original login/main/device globals; session switches/logout clear transient password edits and never invoke device-linked login.",
+      "Original successful message precedes logout; worker now clears session immediately on committed update/current-delete, then UI reloads and shows success acknowledgement.",
+      "New worker validates roles against available combo options to reject forged direct-slot requests, re-reads current role under transaction, rejects invalid/no active session; these defend the isolated worker boundary rather than add a target-rank rule.",
+      "Queries use parameters/transaction/bounded lock wait and distinguish storage errors from missing target; input NUL/32767 upper bound guards match representable line-edit inputs.",
+      "Original user_role physical table is not imported; fixed public0..5 role names preserve source enum/runtime combo contract for this anonymous slice; user_powers remains outside scope.",
+      "Final CusMessageBox extraction restores original480x208 contents, semantic PNGs and280ms OutCubic/opacity/-50px mask animation. Static review confirms six content widget geometries and17 source/target resource SHA pairs; final runtime screenshots/regression remain pending elsewhere.",
+      "Dialog overlay changes from whole desktop/screen center to current host window/local center and follows host moves/resizes. Parent WindowModal replaces global stay-on-top; Material close button becomes QPushButton with same geometry/icon but no ripple; relative resources become QRC and message text is PlainText."
+    ],
+    "pending_runtime": [
+      "WSL GUI interaction/data/error/resource tests",
+      "independent store/path boundary tests",
+      "Windows/ARM64 builds",
+      "O01 cumulative regression"
+    ],
+    "blocking_static_defect_found": false
+  }
+}

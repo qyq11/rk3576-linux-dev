@@ -1,0 +1,11 @@
+QT += core testlib
+QT -= gui network
+CONFIG += console c++14 testcase warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = sn100_clot_endpoint_test
+SOURCES += endpoint_test.cpp ../clot_endpoint.cpp
+HEADERS += ../clot_endpoint.h
+INCLUDEPATH += ..
+OBJECTS_DIR = .obj
+MOC_DIR = .moc

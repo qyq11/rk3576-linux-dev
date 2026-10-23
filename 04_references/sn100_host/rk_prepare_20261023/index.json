@@ -1,0 +1,111 @@
+{
+  "schema": "sn100-rk-offline-preparation-v1",
+  "created_beijing": "2026-10-23T18:50:18.016862+08:00",
+  "scope": "Host builds, static target dependency inspection, native lifecycle tests and local mock publication; no RK/instrument connection",
+  "status": "software_preparation_passed_board_acceptance_pending",
+  "release_id": "e0420b6be0f6c981000b07f6e63dda4a641af8e9df9ff27d97fb51a44f0c3a09",
+  "package": "temp/sn100_host/rk_prepare/packages/sn100_shell_e0420b6be0f6c981000b07f6e63dda4a641af8e9df9ff27d97fb51a44f0c3a09.tar.gz",
+  "package_sha256": "99e44c5310a3ab484d027de9bc772e9d0cb2e99465cc272940ba43fb109acf05",
+  "unified_arm64": {
+    "path": "temp/sn100_host/rk_prepare/build/sn100_shell",
+    "sha256": "333bbe6a2b765b76c185d8b8f98524333f319b1a3343009e36c449a5f85ca5bb",
+    "bytes": 18927456
+  },
+  "o01_arm64": {
+    "path": "temp/sn100_host/rk_prepare/o01_baseline/sn100_host",
+    "sha256": "a9ec662cd9f4d27c3f3b82c4b4a9fba94086e070395c25aac607c157a1e6b805",
+    "bytes": 6408776
+  },
+  "windows32": {
+    "build_exit": 0,
+    "pe_machine": "0x014c",
+    "artifact": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\rk_prepare\\windows32\\release\\sn100_shell.exe",
+    "sha256": "57559c63f7b7c0f4321881ca78fafe3a1d9a8d71f117abb9c9dee4e0b2e738b3",
+    "bytes": 854528,
+    "selected_sources_unchanged": true,
+    "scope": "Current formal unified shell, Windows Qt5.14.2 MinGW32 Release build only, no app/GUI/reference execution",
+    "source_before": {
+      "shell/shutdown_request.h": "32d8aafd9677c917da1e400de631cfe1ff307009b915090fb1717f7518e635ea",
+      "shell/shell.pri": "66878919d0f9631d52a0386dd26a6facfecc1ad78d4bb0f0cb70a9c551e27594",
+      "shell/shell.pro": "fe5514b7064c6825d1feec840348f8ea7e6ba703b013a5993da79f672ab5a3d4",
+      "shell/shutdown_request.cpp": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+      "shell/main.cpp": "d401cd54b8334430d9db38c8f2f8f17bc3d313e7d04f7a4e435857a92fa78cff"
+    },
+    "qmake_exit": 0,
+    "source_after": {
+      "shell/shutdown_request.h": "32d8aafd9677c917da1e400de631cfe1ff307009b915090fb1717f7518e635ea",
+      "shell/shell.pri": "66878919d0f9631d52a0386dd26a6facfecc1ad78d4bb0f0cb70a9c551e27594",
+      "shell/shell.pro": "fe5514b7064c6825d1feec840348f8ea7e6ba703b013a5993da79f672ab5a3d4",
+      "shell/shutdown_request.cpp": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+      "shell/main.cpp": "d401cd54b8334430d9db38c8f2f8f17bc3d313e7d04f7a4e435857a92fa78cff"
+    },
+    "architecture": "x86 PE32"
+  },
+  "static_dependencies": {
+    "status": "offline_closure_passed_board_runtime_pending",
+    "elf_files": 38,
+    "errors": 0,
+    "target_elf_executed": false,
+    "runtime_components": {
+      "sqlite": {
+        "archived_files": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/rk_prepare/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/sqldrivers/libqsqlite.so"
+        ],
+        "board_verified": false,
+        "status": "archived_static_check_only"
+      },
+      "eglfs_platform": {
+        "archived_files": [],
+        "board_verified": false,
+        "status": "not_archived_board_check_required"
+      },
+      "egl_device_integration": {
+        "archived_files": [],
+        "board_verified": false,
+        "status": "not_archived_board_check_required"
+      },
+      "input": {
+        "archived_files": [],
+        "board_verified": false,
+        "status": "not_archived_board_check_required"
+      },
+      "image_formats": {
+        "archived_files": [],
+        "board_verified": false,
+        "status": "not_archived_board_check_required"
+      },
+      "fonts": {
+        "archived_files": [],
+        "requested_family": "Noto Sans CJK SC",
+        "board_verified": false,
+        "family_and_glyph_coverage_verified": false
+      }
+    }
+  },
+  "tests": {
+    "dependency_unittest": {
+      "passed": 12,
+      "failed": 0
+    },
+    "shutdown_qttest": {
+      "passed": 5,
+      "failed": 0,
+      "includes_init_cleanup": true
+    },
+    "native_workflow": {
+      "passed": 17,
+      "failed": 0,
+      "remote_publication_is_local_mock": true
+    }
+  },
+  "failures_preserved": "First two prepares built/checked ARM but rejected publishing when deployment scripts changed during review; final source-frozen prepare exit 0",
+  "private_runtime": {
+    "usr/lib/aarch64-linux-gnu/libQt5Sql.so.5": "lib/libQt5Sql.so.5",
+    "usr/lib/aarch64-linux-gnu/libsqlite3.so.0": "lib/libsqlite3.so.0",
+    "usr/lib/aarch64-linux-gnu/qt5/plugins/sqldrivers/libqsqlite.so": "plugins/sqldrivers/libqsqlite.so"
+  },
+  "new_runtime_inputs": "07_backups/qt_environment/sn100_rk_runtime/source.json",
+  "board_runtime_verified": false,
+  "instrument_verified": false,
+  "background_protocol_soak": "Existing task was neither stopped nor restarted; host native tests and up to 2 unified compile tasks plus 1 baseline compile overlapped, so this was not an idle-host window"
+}

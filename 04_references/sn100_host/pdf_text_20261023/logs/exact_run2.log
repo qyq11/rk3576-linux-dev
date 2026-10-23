@@ -1,0 +1,30 @@
+g++ -c -pipe -O2 -std=gnu++1y -Wall -Wextra -D_REENTRANT -fPIC -DNO_BARCODE -DHAVE_QT5 -DQT_NO_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_CHARTS_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_XML_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -I../../../../06_programs/sn100_host/history -I. -I../../../../06_programs/sn100_host/history -I../../../../06_programs/sn100_host/thirdparty/qtrpt/CommonFiles -I../../../../06_programs/sn100_host/thirdparty/qtrpt/QtRPT -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtCharts -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtXml -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I.moc -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -o .obj/report_pdf_mapping.o ../../../../06_programs/sn100_host/history/report_pdf_mapping.cpp
+g++ -Wl,-O1 -o ../wsl_report_stage/sn100_report_renderer .obj/report_document.o .obj/report_render.o .obj/CommonClasses.o .obj/numbertoarabicword.o .obj/Barcode.o .obj/qtrpt.o .obj/RptDsPlugin.o .obj/RptSql.o .obj/RptFieldObject.o .obj/RptBandObject.o .obj/RptPageObject.o .obj/RptCrossTabObject.o .obj/RptScriptEngine.o .obj/RptDsInline.o .obj/RptDsAbstract.o .obj/report_renderer.o .obj/report_pdf_mapping.o .obj/history_store.o .obj/qrc_report_resources.o .obj/qrc_imagesRpt.o .obj/moc_Barcode.o .obj/moc_qtrpt.o .obj/moc_RptDsPlugin.o .obj/moc_RptSql.o .obj/moc_RptFieldObject.o .obj/moc_RptBandObject.o .obj/moc_RptPageObject.o .obj/moc_RptScriptEngine.o .obj/moc_RptDsInline.o .obj/moc_RptDsAbstract.o .obj/moc_history_store.o   /usr/lib/x86_64-linux-gnu/libQt5PrintSupport.so /usr/lib/x86_64-linux-gnu/libQt5Charts.so /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Sql.so /usr/lib/x86_64-linux-gnu/libQt5Xml.so /usr/lib/x86_64-linux-gnu/libQt5Qml.so /usr/lib/x86_64-linux-gnu/libQt5Network.so /usr/lib/x86_64-linux-gnu/libQt5Core.so -lGL -lpthread   
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/history/wsl_report_stage/sn100_report_renderer: ELF 64-bit LSB pie executable, x86-64, version 1 (GNU/Linux), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=35256e45d354d95545cdeeb060cf846782acdc7b, for GNU/Linux 3.2.0, not stripped
+make: Nothing to be done for 'first'.
+********* Start testing of HistoryPdfTextTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : HistoryPdfTextTest::initTestCase()
+FAIL!  : HistoryPdfTextTest::exactText(one_page_alias_pairs_quotes_nonbmp) 'renderer.exitCode() == 0' returned FALSE. (HISTORY_REPORT_FONT 黑体 -> Noto Sans CJK SC
+HISTORY_REPORT_FONT SimSun -> Noto Sans CJK SC
+***********************************************************************
+starting evaluate
+***********************************************************************
+HISTORY_RENDER_ERROR PDF中文映射校验失败：source text and rendered glyph sequence disagree
+)
+   Loc: [../../../../06_programs/sn100_host/tests/history_pdf_text_test.cpp(160)]
+FAIL!  : HistoryPdfTextTest::exactText(five_pages_64_rows) 'renderer.exitCode() == 0' returned FALSE. (HISTORY_REPORT_FONT SimSun -> Noto Sans CJK SC
+HISTORY_REPORT_FONT 黑体 -> Noto Sans CJK SC
+***********************************************************************
+starting evaluate
+***********************************************************************
+HISTORY_RENDER_ERROR PDF中文映射校验失败：source text and rendered glyph sequence disagree
+)
+   Loc: [../../../../06_programs/sn100_host/tests/history_pdf_text_test.cpp(160)]
+PASS   : HistoryPdfTextTest::complexShape(latin_ligatures)
+PASS   : HistoryPdfTextTest::complexShape(decomposed_acute)
+PASS   : HistoryPdfTextTest::complexShape(precomposed_acute)
+PASS   : HistoryPdfTextTest::complexShape(both_acute_forms)
+PASS   : HistoryPdfTextTest::cleanupTestCase()
+Totals: 6 passed, 2 failed, 0 skipped, 0 blacklisted, 944ms
+********* Finished testing of HistoryPdfTextTest *********

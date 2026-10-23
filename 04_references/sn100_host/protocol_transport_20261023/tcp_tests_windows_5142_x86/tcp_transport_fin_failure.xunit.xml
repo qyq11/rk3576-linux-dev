@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="10" failures="1" tests="23" name="TcpTransportTest">
+  <properties>
+    <property value="5.14.2" name="QTestVersion"/>
+    <property value="5.14.2" name="QtVersion"/>
+    <property value="Qt 5.14.2 (i386&#x002D;little_endian&#x002D;ilp32 shared (dynamic) release build; by GCC 7.3.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="literalQueriesReachActualPeer">
+    <!-- message="LOOPBACK actual peer RX generation= 1 HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6b 3b 04 05 02 03 00 06 00 00 00 01 51 48 18 04 05 PAYLOADS=Qj,Qk,QH" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="oneByteWriteQuantumPreservesQueueOrder">
+    <!-- message="WRITE quantum=1 bytes= 39 actual peer ordered bytes verified; this does not force OS short writes" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="fragmentedReceive"/>
+  <testcase result="pass" name="bytewiseReceive">
+    <!-- message="LOOPBACK actual transport RX generation= 1 HEX= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 PAYLOAD= Qq[2][1][123][2][456]" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="coalescedReceive"/>
+  <testcase result="pass" name="checksumErrorThenRecovery">
+    <!-- message="LOOPBACK bad&#x002D;XOR then recovery input= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 10 08 09 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 ERROR= frame.xor: 数据字段 XOR 校验失败；重新查找帧头 OUTPUT= Qq[2][1][123][2][456]" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="multipartReceive"/>
+  <testcase result="pass" name="maximumMessageAcrossReceiveChunks">
+    <!-- message="MAXIMUM RX message_bytes= 128000 wire_bytes= 128704 packets= 64 decoded_message_count= 1" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="disconnectClearsHalfFrame">
+    <!-- message="HALF&#x002D;FRAME old generation= 1 new generation= 3 old tail rejected; new full frame accepted" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="disconnectClearsMultipartAssembly"/>
+  <testcase result="pass" name="explicitCloseDropsQueuedWrites"/>
+  <testcase result="pass" name="reconnectDoesNotPublishOldCallbacks"/>
+  <testcase result="pass" name="messageReceiverCanCloseTransport"/>
+  <testcase result="pass" name="queueBudgetRejectsWholeQuery">
+    <!-- message="QUEUE budget=20 accepted=13 rejected=13 partial&#x002D;rejected&#x002D;bytes=0; capacity restored after drain" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="budgetSmallerThanOneFrameRejectsWholeQuery"/>
+  <testcase result="pass" name="disconnectedAndInvalidQueriesAreRejected"/>
+  <testcase result="pass" name="invalidPortDoesNotConnect"/>
+  <testcase result="pass" name="refusedConnectionReportsFailure">
+    <!-- message="LOOPBACK reserved&#x002D;then&#x002D;closed port failure generation= 2 ERROR= &quot;transport.connect_timeout: 回环连接超过本地100ms预算&quot;" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="peerCloseIsVisibleAndNoAutomaticReconnect"/>
+  <testcase result="fail" name="finalBurstBeforePeerFinIsDrained">
+    <!-- message="FINAL BURST generation= 1 sent_frames= 2000 sent_wire_bytes= 64000 observed_wire_bytes= 16384 received_frames= 512 lost_frames= 1488" type="qinfo" -->
+    <failure message="Compared values are not the same
+   Actual   (observedBytes)       : 16384
+   Expected (qint64(bytes.size())): 64000" result="fail"/>
+  </testcase>
+  <testcase result="pass" name="eventLoopHeartbeatUnderNetworkLoad">
+    <!-- message="NETWORK load messages= 2000 bytes= 64000 elapsed_ms= 148 heartbeat_period_ms=1 samples= 105 maximum_gap_ms= 3.6702" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[LOOPBACK actual peer RX generation= 1 HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6b 3b 04 05 02 03 00 06 00 00 00 01 51 48 18 04 05 PAYLOADS=Qj,Qk,QH]]>
+<![CDATA[WRITE quantum=1 bytes= 39 actual peer ordered bytes verified; this does not force OS short writes]]>
+<![CDATA[LOOPBACK actual transport RX generation= 1 HEX= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 PAYLOAD= Qq[2][1][123][2][456]]]>
+<![CDATA[LOOPBACK bad-XOR then recovery input= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 10 08 09 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 ERROR= frame.xor: 数据字段 XOR 校验失败；重新查找帧头 OUTPUT= Qq[2][1][123][2][456]]]>
+<![CDATA[MAXIMUM RX message_bytes= 128000 wire_bytes= 128704 packets= 64 decoded_message_count= 1]]>
+<![CDATA[HALF-FRAME old generation= 1 new generation= 3 old tail rejected; new full frame accepted]]>
+<![CDATA[QUEUE budget=20 accepted=13 rejected=13 partial-rejected-bytes=0; capacity restored after drain]]>
+<![CDATA[LOOPBACK reserved-then-closed port failure generation= 2 ERROR= "transport.connect_timeout: 回环连接超过本地100ms预算"]]>
+<![CDATA[FINAL BURST generation= 1 sent_frames= 2000 sent_wire_bytes= 64000 observed_wire_bytes= 16384 received_frames= 512 lost_frames= 1488]]>
+<![CDATA[NETWORK load messages= 2000 bytes= 64000 elapsed_ms= 148 heartbeat_period_ms=1 samples= 105 maximum_gap_ms= 3.6702]]>
+  </system-err>
+</testsuite>

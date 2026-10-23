@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-23",
+  "purpose": "Reproducible host-side dependency inspection and application-private SQLite runtime for the unified SN100 offline shell",
+  "board_loader": {
+    "archive": "board_loader.tar.gz",
+    "archive_sha256": "03a09de566655ccccab80b895f7c98d20f20874b7c1ad8b11dbe9d2c9dcadcb6",
+    "member": "lib/ld-linux-aarch64.so.1",
+    "member_bytes": 203968,
+    "member_sha256": "390027e5f45f236bd1838bc54bf464c5ff01d260ab9f8b415ea8276641bce505",
+    "source": "Historical board copy retained in temp/qt_demo/sysroot/lib/ld-linux-aarch64.so.1 by 06_programs/qt_demo/debug_rk.sh during the successful 2026-10-22 15:07 remote-debug session",
+    "verification_scope": "Existing historical copy matches the pinned hash; no new board read was performed",
+    "use": "Offline inspection sysroot only; never put this loader in the deployment package or install it over board libc"
+  },
+  "sqlite": {
+    "package": "libsqlite3-0_3.45.1-1ubuntu2_arm64.deb",
+    "sha256": "b71c08ea650c212b2c8fa5bbcef9957e5e85c8f5c484a85cfb8961a8271bf376",
+    "index": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/main/binary-arm64/Packages.xz",
+    "source": "https://ports.ubuntu.com/ubuntu-ports/pool/main/s/sqlite3/libsqlite3-0_3.45.1-1ubuntu2_arm64.deb",
+    "verification": "Downloaded package matches SHA256 in the official Ubuntu HTTPS package index; retained stanza in sqlite_package_index.txt",
+    "use": "Extract into the isolated host sysroot; package only the libsqlite3.so.0 provider in the app-private lib directory"
+  },
+  "related_inputs": [
+    "07_backups/qt_environment/qt5_arm64/source.json",
+    "07_backups/qt_environment/sn100_arm64/package_index.txt"
+  ],
+  "restore": "bash 06_programs/sn100_host/shell/prepare_runtime.sh ABSOLUTE_SYSROOT",
+  "restore_scope": "Recreates local inspection inputs; no SSH, board package installation, rootfs extraction, system Qt replacement or GPU/driver/font deployment",
+  "board_runtime_verified": false
+}

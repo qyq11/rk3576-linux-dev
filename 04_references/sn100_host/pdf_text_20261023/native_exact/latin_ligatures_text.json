@@ -1,0 +1,237 @@
+{
+  "schema": "sn100-pdf-exact-text-v1",
+  "pdf_sha256": "7f9deb0e9727f5f1c4d485bb7d0a54838af74f539c068932a4de8f71d773280c",
+  "snapshot_sha256": "6aa931dffde6aad805935b5cccd4a46b17ac405fa001d3ab8fd28aa119358d15",
+  "expected_pages": 1,
+  "comparison": "exact Unicode; ignore layout whitespace only; no normalization or radical substitution",
+  "parsers": [
+    {
+      "parser": "pypdf 6.10.0",
+      "pages": [
+        {
+          "width_pt": 595.0,
+          "height_pt": 420.0,
+          "text": "匿名中文验证医院检验报告单姓名：匿名分页性别：女年龄：23床号： B-09科室：血液科送检医生：测试医生甲样本序号：987 病人类型：匿名病人类别：血凝\n 第1页 共1页\n项目代号 项目名称 结果参考范围 单位P01 Office office ffi fi ﬃ ﬁ 9001.125 s报告日期：2026-10-2312:34:56备注：二号'单引号'\"双引号\" 检验医生：检验医生乙审核医生：审核医生丙"
+        }
+      ],
+      "field_checks": {
+        "name": {
+          "expected": "姓名：匿名分页",
+          "found_exact_unicode": true
+        },
+        "sex": {
+          "expected": "性别：女",
+          "found_exact_unicode": true
+        },
+        "age": {
+          "expected": "年龄：23",
+          "found_exact_unicode": true
+        },
+        "bed_number": {
+          "expected": "床号：B-09",
+          "found_exact_unicode": true
+        },
+        "department": {
+          "expected": "科室：血液科",
+          "found_exact_unicode": true
+        },
+        "sample_provider": {
+          "expected": "送检医生：测试医生甲",
+          "found_exact_unicode": true
+        },
+        "sample_sn": {
+          "expected": "样本序号：987",
+          "found_exact_unicode": true
+        },
+        "patient_type": {
+          "expected": "病人类型：匿名病人",
+          "found_exact_unicode": true
+        },
+        "report_date": {
+          "expected": "报告日期：2026-10-23 12:34:56",
+          "found_exact_unicode": true
+        },
+        "mark": {
+          "expected": "备注：二号'单引号'\"双引号\"",
+          "found_exact_unicode": true
+        },
+        "checker": {
+          "expected": "检验医生：检验医生乙",
+          "found_exact_unicode": true
+        },
+        "reviewer": {
+          "expected": "审核医生：审核医生丙",
+          "found_exact_unicode": true
+        },
+        "hospital_name": {
+          "expected": "匿名中文验证医院检验报告单",
+          "found_exact_unicode": true
+        }
+      },
+      "row_checks": [
+        {
+          "row": 1,
+          "expected": "P01Office office ffi fi ﬃ ﬁ9001.125s",
+          "found_in_order_exact_unicode": true
+        }
+      ],
+      "numeric_checks": [
+        {
+          "expected_value": "9001.125",
+          "expected_count": 1,
+          "actual_count": 1
+        }
+      ],
+      "footer_checks": [
+        {
+          "page": 1,
+          "expected": "第1页共1页",
+          "found_once_exact_unicode": true
+        }
+      ],
+      "repeated_field_checks": [
+        {
+          "page": 1,
+          "checks": {
+            "name": true,
+            "sex": true,
+            "age": true,
+            "bed_number": true,
+            "department": true,
+            "sample_provider": true,
+            "sample_sn": true,
+            "patient_type": true,
+            "report_date": true,
+            "mark": true,
+            "checker": true,
+            "reviewer": true,
+            "hospital_name": true,
+            "column:项目代号": true,
+            "column:项目名称": true,
+            "column:结果": true,
+            "column:参考范围": true,
+            "column:单位": true,
+            "category": true
+          }
+        }
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "parser": "pdfplumber 0.11.9",
+      "pages": [
+        {
+          "width_pt": 595.0,
+          "height_pt": 420.0,
+          "text": "匿名中文验证医院检验报告单\n姓名：匿名分页 性别：女 年龄：23\n床号：B-09\n科室：血液科\n送检医生：测试医生甲 样本序号：987\n病人类型：匿名病人\n类别：血凝\n第1页 共1页\n项目代号 项目名称 结果 参考范围 单位\nP01 Office office ffi fi ﬃ ﬁ 9001.125 s\n报告日期：2026-10-23\n12:34:56\n备注：二号'单引号'\"双引号\"\n检验医生：检验医生乙\n审核医生：审核医生丙",
+          "text_geometric_order": "匿名中文验证医院检验报告单\n科室：血液科 姓名：匿名分页 性别：女 年龄：23 病人类型：匿名病人\n床号：B-09 送检医生：测试医生甲 样本序号：987 类别：血凝\n项目代号 项目名称 结果 参考范围 单位\nP01 Office office ffi fi ﬃ ﬁ 9001.125 s\n报告日期：2026-10-23\n检验医生：检验医生乙\n12:34:56\n备注：二号'单引号'\"双引号\" 审核医生：审核医生丙\n第1页 共1页"
+        }
+      ],
+      "field_checks": {
+        "name": {
+          "expected": "姓名：匿名分页",
+          "found_exact_unicode": true
+        },
+        "sex": {
+          "expected": "性别：女",
+          "found_exact_unicode": true
+        },
+        "age": {
+          "expected": "年龄：23",
+          "found_exact_unicode": true
+        },
+        "bed_number": {
+          "expected": "床号：B-09",
+          "found_exact_unicode": true
+        },
+        "department": {
+          "expected": "科室：血液科",
+          "found_exact_unicode": true
+        },
+        "sample_provider": {
+          "expected": "送检医生：测试医生甲",
+          "found_exact_unicode": true
+        },
+        "sample_sn": {
+          "expected": "样本序号：987",
+          "found_exact_unicode": true
+        },
+        "patient_type": {
+          "expected": "病人类型：匿名病人",
+          "found_exact_unicode": true
+        },
+        "report_date": {
+          "expected": "报告日期：2026-10-23 12:34:56",
+          "found_exact_unicode": true
+        },
+        "mark": {
+          "expected": "备注：二号'单引号'\"双引号\"",
+          "found_exact_unicode": true
+        },
+        "checker": {
+          "expected": "检验医生：检验医生乙",
+          "found_exact_unicode": true
+        },
+        "reviewer": {
+          "expected": "审核医生：审核医生丙",
+          "found_exact_unicode": true
+        },
+        "hospital_name": {
+          "expected": "匿名中文验证医院检验报告单",
+          "found_exact_unicode": true
+        }
+      },
+      "row_checks": [
+        {
+          "row": 1,
+          "expected": "P01Office office ffi fi ﬃ ﬁ9001.125s",
+          "found_in_order_exact_unicode": true
+        }
+      ],
+      "numeric_checks": [
+        {
+          "expected_value": "9001.125",
+          "expected_count": 1,
+          "actual_count": 1
+        }
+      ],
+      "footer_checks": [
+        {
+          "page": 1,
+          "expected": "第1页共1页",
+          "found_once_exact_unicode": true
+        }
+      ],
+      "repeated_field_checks": [
+        {
+          "page": 1,
+          "checks": {
+            "name": true,
+            "sex": true,
+            "age": true,
+            "bed_number": true,
+            "department": true,
+            "sample_provider": true,
+            "sample_sn": true,
+            "patient_type": true,
+            "report_date": true,
+            "mark": true,
+            "checker": true,
+            "reviewer": true,
+            "hospital_name": true,
+            "column:项目代号": true,
+            "column:项目名称": true,
+            "column:结果": true,
+            "column:参考范围": true,
+            "column:单位": true,
+            "category": true
+          }
+        }
+      ],
+      "failures": [],
+      "passed": true
+    }
+  ],
+  "passed": true
+}

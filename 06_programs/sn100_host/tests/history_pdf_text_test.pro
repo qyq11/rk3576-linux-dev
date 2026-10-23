@@ -1,0 +1,10 @@
+QT += core testlib
+QT -= gui
+CONFIG += c++14 console testcase warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = history_pdf_text_test
+SOURCES += history_pdf_text_test.cpp
+DISTFILES += verify_history_pdf_text.py
+MOC_DIR = .moc
+OBJECTS_DIR = .obj

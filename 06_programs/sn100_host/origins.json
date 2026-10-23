@@ -1,0 +1,127 @@
+{
+  "reference_files": [
+    {
+      "source": "frmuserset/frmhospinfosetting.ui",
+      "bytes": 14729,
+      "sha256": "e3c9c512aaf22d454d7b571b23b2142743962483703c0b16658983458d641c5d"
+    },
+    {
+      "source": "frmuserset/frmhospinfosetting.cpp",
+      "bytes": 35701,
+      "sha256": "f6933a14edf3a80b4dd789104f0f675e8d1f0e5bb1dd75e500a65bed0ffac40a"
+    },
+    {
+      "source": "frmuserset/frmhospinfosetting.h",
+      "bytes": 1093,
+      "sha256": "232e9e7f4c2a50bd8db1f322c163359d9396936e68dd21947ad6f712bb13fc03"
+    },
+    {
+      "source": "tool/database/hospital/hospital_information_table.cpp",
+      "bytes": 4849,
+      "sha256": "8bf68b9087b49e1092d7c97bc73ed87dcffec1f633916727611e1188acc59a12"
+    },
+    {
+      "source": "tool/database/hospital/hospital_information_table.h",
+      "bytes": 1453,
+      "sha256": "86e793fbd203e17ac0d602cec71cdfe35b74365238772d4bf61a4acd39cc5a42"
+    }
+  ],
+  "mapping": {
+    "reference_length": 20902,
+    "migrated_length": 20902,
+    "byte_identical_ascii": true,
+    "sha256_ascii": "eaa2e2e7911b08c9c0334811ac80c5fc4637db8471802261e8842e55a8911547",
+    "utf16_code_units_checked": 65536,
+    "conversion_semantic_differences": [],
+    "limit": "Static source extraction plus exhaustive individual UTF-16 code units; runtime UI/IME behavior is separate."
+  },
+  "reference_root": "../sn100_host_reference/Seerain450_PC/Seerain450_PC/",
+  "module": "O01 hospital information",
+  "scope": "Selected UI/schema/mnemonic extraction only; no production data/configuration imported.",
+  "intentional_changes": [
+    "Keep original business control geometry, ordering and local/shared QSS; independent host centers the original panel",
+    "Use installed Noto at original font sizes for this offline build; reference PingFangBold.ttf exists but its import/use conditions and rendering remain unverified",
+    "Queued database worker; bound SQL and atomic write",
+    "SQLite hospital/name authority plus INI compatibility export",
+    "Explicit discard/error handling; experiment footer outside business panel"
+  ],
+  "account_module": {
+    "name": "O02-1 anonymous offline account settings",
+    "reference_files": [
+      {
+        "source": "frmuserset/frmaccountsetting.h",
+        "sha256": "21bcecce9fb4ab35551677a9b80a4bb6a0c0393fd96bb73d29179a535275f164",
+        "bytes": 800
+      },
+      {
+        "source": "frmuserset/frmaccountsetting.cpp",
+        "sha256": "d1605f95f2df31773ebc36ed369f98bfd3e0b66cc23378772637a6791e1c17a2",
+        "bytes": 15332
+      },
+      {
+        "source": "frmuserset/frmaccountsetting.ui",
+        "sha256": "d347bf5ec32f92aca06e04a73bdecb1e693948436ce0351481b1dcb836759998",
+        "bytes": 30488
+      },
+      {
+        "source": "tool/database/user/user_information_table.cpp",
+        "sha256": "b948a5cbf312dce7f459c2a8c33a22fd6cc63320637e375871013cef83378335",
+        "bytes": 7932
+      },
+      {
+        "source": "tool/database/user/user_information_table.h",
+        "sha256": "18c3e4f3aa8eb94839944f518f9cf1933eeccde8332b546b11434b6d0125dd54",
+        "bytes": 1508
+      },
+      {
+        "source": "tool/database/user/user_role_table.cpp",
+        "sha256": "b868dce55dd03292b7436e8298d9eab6eb074dfb26503f19d20513092ba86595",
+        "bytes": 2927
+      },
+      {
+        "source": "public/stylecolor.cpp",
+        "sha256": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128",
+        "bytes": 21077
+      },
+      {
+        "source": "customwidgets/cusmessagebox.h",
+        "sha256": "ff2f5e1302ee4b7d14b0888bb0cb411fbe546e48bfec2b74b8e9a0ecc01f9783",
+        "bytes": 1041
+      },
+      {
+        "source": "customwidgets/cusmessagebox.cpp",
+        "sha256": "f58c9e72ade2e3e41afc14fe3cb841abcc6e49984d0b8706dae9206947a0af90",
+        "bytes": 7415
+      },
+      {
+        "source": "customwidgets/cusmessagebox.ui",
+        "sha256": "7e4aa3785555f3206705ce93145f2dbf5030919807272223b18322a0af5ae994",
+        "bytes": 5410
+      },
+      {
+        "source": "customwidgets/cusdialogmask.cpp",
+        "sha256": "a8817e35a5ed13899afc91cb76bf52f0646fd3c820c435b9433c7b923e2df09d",
+        "bytes": 6416
+      },
+      {
+        "source": "customwidgets/cusdialogmask.h",
+        "sha256": "01ce7042f5908fc9044231c3c22aa46450b3a593beff9249ec23b1691507b3a4",
+        "bytes": 954
+      },
+      {
+        "source": "customwidgets/cusdialogmask.ui",
+        "sha256": "bda358a92c69a564328151370c095087ae91678aee220b92f8d9606a6b0b05bd",
+        "bytes": 1821
+      }
+    ],
+    "scope": "Selected UI/role/schema/modal resources only. Reference database, passwords, old configuration and instrument chain were not read or copied.",
+    "intentional_changes": [
+      "GUI/worker separation; bound SQL and transactions; isolated tagged path",
+      "Explicit simulated identity/device state, no production login; role rechecked inside each write",
+      "Exact original role, list, busy-state and empty-password branches retained; recorded source issues remain pending original runtime verification",
+      "Original popup content/PNG/colors/mask animation retained; mask limited to host window, Material close ripple omitted",
+      "Single double-click connection, row-null guard, bounded in-flight UI request, post-commit logout and reread",
+      "Public snapshots omit authentication fields; runtime pwd format retained only in temp DB"
+    ]
+  }
+}

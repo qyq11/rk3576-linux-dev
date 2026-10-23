@@ -1,0 +1,27 @@
+SN100 O04 report cross-build inputs, Ubuntu noble / ARM64, 2026-10-23
+
+Source: official https://ports.ubuntu.com/ubuntu-ports/ noble main/universe
+ARM64 package indexes. Exact source URLs, versions, package paths, sizes and
+index-provided SHA-256 values are retained in package_manifest.json and each
+*.index.txt. SHA256SUMS verifies all archived .deb payloads.
+
+Scope: eight Qt development/runtime packages and thirteen additional libraries
+required by the actual ELF DT_NEEDED closure were downloaded and extracted only
+into temp/sn100_host/arm64_sysroot. No ARM64 package was installed into the WSL
+package database; no RK board, instrument, printer or deployed Qt was changed.
+The 54 resolved SONAMEs, paths and library hashes are recorded in
+link_dependency_closure.json. Existing cross-compiler runtime libraries and
+previously archived Qt Core/Gui/Widgets/SQL inputs are reused rather than copied
+or replaced. The sysroot is a reconstructible build tree, so it needs no second
+backup. These archives allow reconstruction alongside the existing qt5_arm64
+and sn100_arm64 inputs.
+
+Only packages necessary for this cross-build closure were extracted. This is
+not a complete dpkg installation of qtdeclarative5-dev and does not add QtQuick
+runtime tooling that this Widgets report target does not link. CUPS plugin
+runtime discovery and physical printing remain a later target acceptance item.
+The current task authorizes no deployment or system-library replacement.
+
+QtRPT's Apache-2.0 license is separate from Qt module licensing. The QtCharts
+copyright/license files included in these packages must be considered for the
+product's final distribution/license decision, which remains pending.

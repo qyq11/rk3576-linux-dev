@@ -1,0 +1,171 @@
+[
+  {
+    "name": "verified_replay_a",
+    "exit_code": 0,
+    "expected": 0,
+    "summary": {
+      "architecture": "x86_64",
+      "elapsed_ms": 57,
+      "evidence": "simulated-source-derived",
+      "failed_expectations": 0,
+      "final_link_state": "has-simulated-status",
+      "hardware_verified": false,
+      "heartbeat_gap_max_ms": 10.928916,
+      "heartbeat_gap_p95_ms": 10.928916,
+      "heartbeat_interval_ms": 10,
+      "heartbeat_samples": 5,
+      "host_cpu_architecture": "x86_64",
+      "log_bytes": 21058,
+      "maximum_assembly_bytes_after_feed": 0,
+      "maximum_wire_bytes_after_feed": 20,
+      "notices": 17,
+      "os": "Ubuntu 24.04.5 LTS",
+      "qt_version": "5.15.13",
+      "receive_max_ms": 0,
+      "receive_p95_ms": 0,
+      "records": 25,
+      "remaining_assembly_bytes": 0,
+      "remaining_wire_bytes": 0,
+      "schema": "sn100-protocol-result-v1",
+      "simulated_tx_frames": 6,
+      "status_observations": 7,
+      "stress_messages": 0
+    }
+  },
+  {
+    "name": "verified_replay_b",
+    "exit_code": 0,
+    "expected": 0,
+    "summary": {
+      "architecture": "x86_64",
+      "elapsed_ms": 51,
+      "evidence": "simulated-source-derived",
+      "failed_expectations": 0,
+      "final_link_state": "has-simulated-status",
+      "hardware_verified": false,
+      "heartbeat_gap_max_ms": 10.774903,
+      "heartbeat_gap_p95_ms": 10.774903,
+      "heartbeat_interval_ms": 10,
+      "heartbeat_samples": 5,
+      "host_cpu_architecture": "x86_64",
+      "log_bytes": 21058,
+      "maximum_assembly_bytes_after_feed": 0,
+      "maximum_wire_bytes_after_feed": 20,
+      "notices": 17,
+      "os": "Ubuntu 24.04.5 LTS",
+      "qt_version": "5.15.13",
+      "receive_max_ms": 0,
+      "receive_p95_ms": 0,
+      "records": 25,
+      "remaining_assembly_bytes": 0,
+      "remaining_wire_bytes": 0,
+      "schema": "sn100-protocol-result-v1",
+      "simulated_tx_frames": 6,
+      "status_observations": 7,
+      "stress_messages": 0
+    }
+  },
+  {
+    "name": "repeated_process_same_output",
+    "events_sha256": "0cd7c91cb19a88d44c121ebcbdf0e693bee63c3b3f918e37be481d99d3b56e55",
+    "passed": true
+  },
+  {
+    "name": "verified_stress_10000",
+    "exit_code": 0,
+    "expected": 0,
+    "summary": {
+      "architecture": "x86_64",
+      "elapsed_ms": 2131,
+      "evidence": "simulated-source-derived",
+      "failed_expectations": 0,
+      "final_link_state": "has-simulated-status",
+      "hardware_verified": false,
+      "heartbeat_gap_max_ms": 19.971103,
+      "heartbeat_gap_p95_ms": 12.575546,
+      "heartbeat_interval_ms": 10,
+      "heartbeat_samples": 212,
+      "host_cpu_architecture": "x86_64",
+      "log_bytes": 22735739,
+      "maximum_assembly_bytes_after_feed": 0,
+      "maximum_wire_bytes_after_feed": 20,
+      "notices": 20016,
+      "os": "Ubuntu 24.04.5 LTS",
+      "qt_version": "5.15.13",
+      "receive_max_ms": 0.159591,
+      "receive_p95_ms": 0.007777,
+      "records": 10025,
+      "remaining_assembly_bytes": 0,
+      "remaining_wire_bytes": 0,
+      "schema": "sn100-protocol-result-v1",
+      "simulated_tx_frames": 6,
+      "status_observations": 10007,
+      "stress_messages": 10000
+    },
+    "resources": {
+      "VmRSS_max": 11176,
+      "VmHWM_max": 11176,
+      "Pss_max": 7871,
+      "Threads_max": 1,
+      "fd_max": 7,
+      "samples": 391,
+      "sample_span_seconds": 2.1765773019999415,
+      "cpu_one_core_percent": 21.593535849525853,
+      "cpu_clock_ticks_per_second": 100,
+      "sample_period_seconds": 0.005,
+      "memory_unit": "KiB"
+    }
+  },
+  {
+    "name": "wrong_main_status",
+    "exit_code": 4,
+    "expected": 4
+  },
+  {
+    "name": "invalid_main_status",
+    "exit_code": 2,
+    "expected": 2
+  },
+  {
+    "name": "string_status_count",
+    "exit_code": 2,
+    "expected": 2
+  },
+  {
+    "name": "misspelled_expectation",
+    "exit_code": 2,
+    "expected": 2
+  },
+  {
+    "name": "invalid_link_state",
+    "exit_code": 2,
+    "expected": 2
+  },
+  {
+    "name": "fractional_timestamp",
+    "exit_code": 2,
+    "expected": 2
+  },
+  {
+    "name": "malformed_hex",
+    "exit_code": 2,
+    "expected": 2
+  },
+  {
+    "name": "unsupported_action",
+    "exit_code": 2,
+    "expected": 2
+  },
+  {
+    "name": "existing_output_preserved",
+    "exit_code": 2,
+    "unchanged_sha256": "0cd7c91cb19a88d44c121ebcbdf0e693bee63c3b3f918e37be481d99d3b56e55"
+  },
+  {
+    "name": "concurrent_output_exclusive",
+    "exit_codes": [
+      0,
+      2
+    ]
+  }
+]

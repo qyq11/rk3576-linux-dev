@@ -1,0 +1,1079 @@
+{
+  "schema": "sn100-cleanup-audit-v1",
+  "date": "2026-10-24",
+  "candidate_groups": 22,
+  "candidate_files": 167,
+  "candidate_bytes": 17569114.0,
+  "deleted_files": 0,
+  "deleted_bytes": 0,
+  "outcome": "deletion_blocked_by_tool_policy",
+  "attempts": [
+    "Verified recursive PowerShell deletion rejected before process creation.",
+    "Safer individual verified regular-file deletion rejected before process creation."
+  ],
+  "explanation": "Both rejected calls returned blocked by policy without a more specific reason; no deletion workaround attempted.",
+  "git_exclusions": [
+    "/temp/",
+    "06_programs/.gitignore: __pycache__/ and *.pyc"
+  ],
+  "preserved": [
+    "reference originals",
+    "business sources and UI/resources",
+    "runtime data and unsaved drafts",
+    "credentials",
+    "permanent evidence",
+    "build dependencies and sysroots",
+    "O03-4 release package"
+  ],
+  "frozen_build_inputs_checked": 197,
+  "frozen_build_inputs_changed": [],
+  "candidates": [
+    {
+      "relative_path": "temp/sn100_host/arm64_build",
+      "kind": "generated",
+      "file_count": 11,
+      "bytes": 148993.0,
+      "evidence": "旧 O01/O02 ARM64 moc/uic/qrc 生成残片；11 个文件均为生成 cpp/h。正式 .ui/.qrc/headers 与 build.sh 可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/arm64_build/moc_account_store.cpp",
+          "bytes": 11509,
+          "sha256": "0785ec29ba739ded964d1bb651348998795f87e7bdac9bf5e960d193511f1452"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/moc_cusdialogmask.cpp",
+          "bytes": 3971,
+          "sha256": "26c39e23dc92fd3a927dc1abddd4be4fd9b08a2f8eb40dbe050bcb4855be3d5d"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/moc_cusmessagebox.cpp",
+          "bytes": 4069,
+          "sha256": "5cc25264075f12f2b24233b9b3c329be1ed557228ccfdf222563bee781e98a45"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/moc_frmaccountsetting.cpp",
+          "bytes": 13058,
+          "sha256": "d8323cf7d5cccecce2cc6e0d723d24e83e0043c87d3211b010035522ba0b0da7"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/moc_frmhospinfosetting.cpp",
+          "bytes": 9442,
+          "sha256": "71f236ed953d6c4480386f2150573d028aec92946094cc18361ed72ee19821b9"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/moc_hospital_store.cpp",
+          "bytes": 12913,
+          "sha256": "4608eacc88c432929631dd577f3356d63370d3e556490d9bafa18a0ae3cac113"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/qrc_resources.cpp",
+          "bytes": 44789,
+          "sha256": "d8797f26e73721eec11dec36d7bd5864bace14347cd5b238f918b30c5fc811f8"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/ui_cusdialogmask.h",
+          "bytes": 2728,
+          "sha256": "1986126ee328f1c95fb5c6da99484866097279253f5f8f92a5a2182703576206"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/ui_cusmessagebox.h",
+          "bytes": 4800,
+          "sha256": "c1a60382e2d224db04e1fa7505af4f3e19953f643dd789482546bc4d937257ab"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/ui_frmaccountsetting.h",
+          "bytes": 24992,
+          "sha256": "9eeaecaac4fe3661a9b4669a9d160eaac7f050fb4cb86dc2677661cfa406c5f6"
+        },
+        {
+          "relative_path": "temp/sn100_host/arm64_build/ui_frmhospinfosetting.h",
+          "bytes": 16722,
+          "sha256": "c8145bfa16325fa02392e773fe96edecac5a3eb4ab1092b26001259ecec68f61"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/arm64_release",
+      "kind": "generated",
+      "file_count": 1,
+      "bytes": 6383392.0,
+      "evidence": "旧 O02 ARM64 可执行文件 sn100_host，无运行数据；正式源码/build.sh 与归档依赖可重建。rk_prepare 冻结包保持保留。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/arm64_release/sn100_host",
+          "bytes": 6383392,
+          "sha256": "d360674da75c634e6364aa219c0b665365771adc9809297e36d94c1158286eb4"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/windows_5142_x86_release",
+      "kind": "generated",
+      "file_count": 34,
+      "bytes": 1565289.0,
+      "evidence": "旧 O01/O02 Windows32 qmake 构建树，无手写输入/运行数据；Makefile 指向正式 sn100_host.pro，Qt5.14.2/MinGW32 可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.qmake.stash",
+          "bytes": 1115,
+          "sha256": "1abc3c22ab8ce44b3883930643eaaf853d0a95aa88a77f1b36f3935db9eb76b4"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/Makefile",
+          "bytes": 36547,
+          "sha256": "7d2e2661056fb2e43ccc09a88642cd816a61e8b0d83a8ddcd52d95214e608337"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/Makefile.Debug",
+          "bytes": 154343,
+          "sha256": "5a4155a4e75979c628a25134295d11a8babcdcd5bceb607dd990dd9ed3f510f2"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/Makefile.Release",
+          "bytes": 154385,
+          "sha256": "ce4e642a12408827e3844a3fa58b09246aadf214ef8e7502fd5d0b86485b9f82"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/object_script.sn100_host.Debug",
+          "bytes": 360,
+          "sha256": "9b47759f55b1b5f3aa9a1fc10ea53b53b9a1ed0fbdb4d522df07fe49ef044bc1"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/object_script.sn100_host.Release",
+          "bytes": 360,
+          "sha256": "9b47759f55b1b5f3aa9a1fc10ea53b53b9a1ed0fbdb4d522df07fe49ef044bc1"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.moc/moc_account_store.cpp",
+          "bytes": 11812,
+          "sha256": "dfce5c79e77d333da86afaf8c9d6d6d3a09fffe9c5ef17da52c7dfb920b1466e"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.moc/moc_cusdialogmask.cpp",
+          "bytes": 4113,
+          "sha256": "b8c2514b50409ab0e40302bfdd1af0e7e7b8cc0e07bb5a5887dfbf50760bd892"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.moc/moc_cusmessagebox.cpp",
+          "bytes": 4209,
+          "sha256": "f6b981aac10844fc80017c85b3324f28ae6e1f080d1619628de4555c20bab352"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.moc/moc_frmaccountsetting.cpp",
+          "bytes": 12617,
+          "sha256": "093642c1d53f71f4696359f57f6f6f35a820a6bde065f671e889232ba606cc4b"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.moc/moc_frmhospinfosetting.cpp",
+          "bytes": 9147,
+          "sha256": "0d7034abcf0448727f503e06c42442403507fde4a7231bedac1c4b30267157c9"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.moc/moc_hospital_store.cpp",
+          "bytes": 13249,
+          "sha256": "ffca463d9c165344afbc3de66c35d66afbbf6a073a967a2688d4ddc8b5f82973"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.moc/moc_predefs.h",
+          "bytes": 14400,
+          "sha256": "084feb5e4db549ccac8bc3baf6c2cc94b0f113b5898262a07cd1da1fa913a7b3"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/account_store.o",
+          "bytes": 106742,
+          "sha256": "d4a2d03576b4fd29d6f42f16cb13b99deac5e00dd529f3fff7df1a35ac72d718"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/cusdialogmask.o",
+          "bytes": 18195,
+          "sha256": "a6b375002681aee05271455281570449c17a37e8ca60af18ee040c5354200e3c"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/cusmessagebox.o",
+          "bytes": 19023,
+          "sha256": "ae11e3ec8f4e81a9fff0a56231d7b887f312b94e26726b297aa904cbe143b209"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/frmaccountsetting.o",
+          "bytes": 110938,
+          "sha256": "d2736a0e827d789ab3be503c3a4ac2526c7f617ffac032b1ee5d46823ccc3bf2"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/frmhospinfosetting.o",
+          "bytes": 123038,
+          "sha256": "5ca3a124c1cb9c72cba5dacb48ff7124de812ff1cbbf2b5f305eca584884de2f"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/hospital_store.o",
+          "bytes": 118007,
+          "sha256": "959c23b29e1dc340708044b7962ebf4fbaf016238b8c8dfb920388eb5110ba0f"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/main.o",
+          "bytes": 35608,
+          "sha256": "dcb0fc07e4ec22965311ab0b71da39278531567d7325a77569c8393964986ddd"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/mnemonic.o",
+          "bytes": 23217,
+          "sha256": "712a23e281cb776d25ca519e4b2d5a791972beb297d4e9da47a34b1db1cafa2f"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/moc_account_store.o",
+          "bytes": 36045,
+          "sha256": "dd8fca26ea6996340ea7fc30d6bbc22498eac4e0f01bee7adf176b022133a807"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/moc_cusdialogmask.o",
+          "bytes": 8870,
+          "sha256": "3bffa8671719abf8cf6d05746547b64096cace4815cbda5d5bae546a474e27e8"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/moc_cusmessagebox.o",
+          "bytes": 9581,
+          "sha256": "0984aba5cc711ad67d3b235f8c8a9c9af563289d21b907c3b9be2ad0dfd0a7a1"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/moc_frmaccountsetting.o",
+          "bytes": 15448,
+          "sha256": "055e59927adecc262584958d374ce7194fd19456205d30f191459e80da51aff9"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/moc_frmhospinfosetting.o",
+          "bytes": 38213,
+          "sha256": "875e42550b73fceaaf99e056e5b2270f2b653c339020d15a2b6684b677a0082c"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/moc_hospital_store.o",
+          "bytes": 38467,
+          "sha256": "9a0a23d8a6a34dfb06fe854c49c672aaac9ba54cebda3b3ee76e4f7e2d55e6f7"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.obj/qrc_resources.o",
+          "bytes": 9968,
+          "sha256": "65991d54a16f402e7102e38fb2161d65a3ec9e9f3d182cfbf55880e369cc5b58"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.rcc/qrc_resources.cpp",
+          "bytes": 45485,
+          "sha256": "76ba21515992e84c421388aa72aa42ea5ad5136cee2bb1f39f5e5e6c9370478b"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.ui/ui_cusdialogmask.h",
+          "bytes": 2808,
+          "sha256": "e093ab67f5fd59265684e0582cb4310407a2e02d3dfdb4480e564151c9f57daa"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.ui/ui_cusmessagebox.h",
+          "bytes": 4919,
+          "sha256": "3b450c0dc79f7c3d5bcb757be8287e1f684c982227e77e7427d6cce350de6c60"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.ui/ui_frmaccountsetting.h",
+          "bytes": 25485,
+          "sha256": "9fa7a97eca0e700986768714eabd742143ad12f77f96c2122a7b4c9dbe057eb0"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/.ui/ui_frmhospinfosetting.h",
+          "bytes": 17071,
+          "sha256": "1fdb13f4a9100f7a07b75b7a1bfda63a897439d01977acafd65a48c80e004fa2"
+        },
+        {
+          "relative_path": "temp/sn100_host/windows_5142_x86_release/release/sn100_host.exe",
+          "bytes": 341504,
+          "sha256": "d40293b658089769f14ac43087208f196a7054135a785d414694c81c32ba08d2"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/wsl_o02_clean_release",
+      "kind": "generated",
+      "file_count": 30,
+      "bytes": 1617898.0,
+      "evidence": "旧 O02 WSL qmake 构建树，无手写输入/运行数据；Makefile 指向正式 sn100_host.pro/Qt5.15.13，可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.qmake.stash",
+          "bytes": 693,
+          "sha256": "7650178e7ee42c930f33cd3325eb0752875623f8ee4b5044db7b17093919acf9"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/Makefile",
+          "bytes": 38026,
+          "sha256": "f9449c1053cbc1f61ea432ffd0d3eb9dd386842a79d101b92f27c8968a7b2385"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/sn100_host",
+          "bytes": 515224,
+          "sha256": "2d6d47eb99a571bf29cd640c412bcae58d83cb6967d5d89487efd100b69c742f"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.moc/moc_account_store.cpp",
+          "bytes": 11512,
+          "sha256": "b7c17a7f0742110cf705f5db590d2dbea334a2ef66e525c51ea1e64c9f599dfb"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.moc/moc_cusdialogmask.cpp",
+          "bytes": 3974,
+          "sha256": "dfbfbfd1a412d83b4cafba737977c5892179578dd9a8c05900bc47930c1234d8"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.moc/moc_cusmessagebox.cpp",
+          "bytes": 4072,
+          "sha256": "ba22454b0f85a2fe6e05ad87c91280a281513682776c7e9659ea63e349957be8"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.moc/moc_frmaccountsetting.cpp",
+          "bytes": 12317,
+          "sha256": "f6e2e43de3c23cf3ddb5e7dad1cf4367c466b14ef89506b7a463352cfe79d70b"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.moc/moc_frmhospinfosetting.cpp",
+          "bytes": 8911,
+          "sha256": "1528d061d3f59123a14fead143a30421fa27d4330f3c2653e25496579dd7a185"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.moc/moc_hospital_store.cpp",
+          "bytes": 12916,
+          "sha256": "fb9fde04bd69c1cc50e7f234ae893e72a6b7cd2b9cedac43e870e296c2e54c13"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.moc/moc_predefs.h",
+          "bytes": 16538,
+          "sha256": "21c0485f6694dc5fecb653377fd2c26d11c1812044c43a63cf31ab4e52c33194"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/account_store.o",
+          "bytes": 141392,
+          "sha256": "b1c114377964e6c8106dfaba9e1a6d57e69faab9e0ce101584dd01de38960144"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/cusdialogmask.o",
+          "bytes": 27264,
+          "sha256": "2745c25a40a25c5b63b3def33559f556966adf1616310e8237d72ff3e63dc3ba"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/cusmessagebox.o",
+          "bytes": 29464,
+          "sha256": "3373a07761c7d237b546d3a211b8102ea7a207049c3a061958bc0243b9ab5b76"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/frmaccountsetting.o",
+          "bytes": 129392,
+          "sha256": "4038822c2c844849da72fc8434d9d13a203f5e3fb1129083613589d5798b4d46"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/frmhospinfosetting.o",
+          "bytes": 165432,
+          "sha256": "8656c23779a3c7af85d0880da5d0c30924282d62385638f0166510adea4af74e"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/hospital_store.o",
+          "bytes": 152064,
+          "sha256": "f65d6e678b056c23fedc1f50910e384717ca33f3960bb821e357cddcb1eed806"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/main.o",
+          "bytes": 51536,
+          "sha256": "de262c8e2b011573404f33401952b2fdefc89ae079ab9d89af9578e41a31f588"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/mnemonic.o",
+          "bytes": 25656,
+          "sha256": "530c11a3391c2a470258acbc5677189add342f98b428f2d0b183547163a728d6"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/moc_account_store.o",
+          "bytes": 41648,
+          "sha256": "7c376275f6f1220a2c8868f51fb382aaacd49a03ebf9039252e9f205785e9712"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/moc_cusdialogmask.o",
+          "bytes": 10520,
+          "sha256": "bc1f920b7962a88bf17c7d3c39ed1ca87510810692bbeb9a2b6d69b477aa8891"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/moc_cusmessagebox.o",
+          "bytes": 11056,
+          "sha256": "761a84f3fbcb2d8eea10d67ca476d29691a3cc4d2e3696416b81a61e043314ba"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/moc_frmaccountsetting.o",
+          "bytes": 19768,
+          "sha256": "39c9aa9c88f71fd8cedc14b6e2986f738b437a2c7a1215c1f6b067bbe06d2837"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/moc_frmhospinfosetting.o",
+          "bytes": 43272,
+          "sha256": "6c9c6cad6c412ccbc340a1961328268aa829d85dfe887bb455187b2e08456b55"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/moc_hospital_store.o",
+          "bytes": 39576,
+          "sha256": "0094c085e31e61312fb74be6efaa48552a65920193d6200367290c3521e21be5"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.obj/qrc_resources.o",
+          "bytes": 11584,
+          "sha256": "f110057c6ac4b1377099f819009aecd4aa0aaec430e898846a2bed23247e1806"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.rcc/qrc_resources.cpp",
+          "bytes": 44849,
+          "sha256": "d1b9b79d9e30a2913772d631cb6f2bed45fa0884a659bc7994e896d715f51376"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.ui/ui_cusdialogmask.h",
+          "bytes": 2728,
+          "sha256": "1986126ee328f1c95fb5c6da99484866097279253f5f8f92a5a2182703576206"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.ui/ui_cusmessagebox.h",
+          "bytes": 4800,
+          "sha256": "c1a60382e2d224db04e1fa7505af4f3e19953f643dd789482546bc4d937257ab"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.ui/ui_frmaccountsetting.h",
+          "bytes": 24992,
+          "sha256": "9eeaecaac4fe3661a9b4669a9d160eaac7f050fb4cb86dc2677661cfa406c5f6"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_o02_clean_release/.ui/ui_frmhospinfosetting.h",
+          "bytes": 16722,
+          "sha256": "c8145bfa16325fa02392e773fe96edecac5a3eb4ab1092b26001259ecec68f61"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/wsl_release",
+      "kind": "generated",
+      "file_count": 30,
+      "bytes": 1617963.0,
+      "evidence": "旧 O01/O02 WSL qmake 构建树，无手写输入/运行数据；Makefile 指向正式 sn100_host.pro/Qt5.15.13。现有 GUI 在不同的 integration/wsl_release。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.qmake.stash",
+          "bytes": 693,
+          "sha256": "7650178e7ee42c930f33cd3325eb0752875623f8ee4b5044db7b17093919acf9"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/Makefile",
+          "bytes": 38091,
+          "sha256": "4306201c602048f43a1309e6212f957f1646fbd4a2c85725250d56c29904ef5f"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/sn100_host",
+          "bytes": 515224,
+          "sha256": "2d6d47eb99a571bf29cd640c412bcae58d83cb6967d5d89487efd100b69c742f"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.moc/moc_account_store.cpp",
+          "bytes": 11512,
+          "sha256": "b7c17a7f0742110cf705f5db590d2dbea334a2ef66e525c51ea1e64c9f599dfb"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.moc/moc_cusdialogmask.cpp",
+          "bytes": 3974,
+          "sha256": "dfbfbfd1a412d83b4cafba737977c5892179578dd9a8c05900bc47930c1234d8"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.moc/moc_cusmessagebox.cpp",
+          "bytes": 4072,
+          "sha256": "ba22454b0f85a2fe6e05ad87c91280a281513682776c7e9659ea63e349957be8"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.moc/moc_frmaccountsetting.cpp",
+          "bytes": 12317,
+          "sha256": "f6e2e43de3c23cf3ddb5e7dad1cf4367c466b14ef89506b7a463352cfe79d70b"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.moc/moc_frmhospinfosetting.cpp",
+          "bytes": 8911,
+          "sha256": "1528d061d3f59123a14fead143a30421fa27d4330f3c2653e25496579dd7a185"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.moc/moc_hospital_store.cpp",
+          "bytes": 12916,
+          "sha256": "fb9fde04bd69c1cc50e7f234ae893e72a6b7cd2b9cedac43e870e296c2e54c13"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.moc/moc_predefs.h",
+          "bytes": 16538,
+          "sha256": "21c0485f6694dc5fecb653377fd2c26d11c1812044c43a63cf31ab4e52c33194"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/account_store.o",
+          "bytes": 141392,
+          "sha256": "b1c114377964e6c8106dfaba9e1a6d57e69faab9e0ce101584dd01de38960144"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/cusdialogmask.o",
+          "bytes": 27264,
+          "sha256": "2745c25a40a25c5b63b3def33559f556966adf1616310e8237d72ff3e63dc3ba"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/cusmessagebox.o",
+          "bytes": 29464,
+          "sha256": "3373a07761c7d237b546d3a211b8102ea7a207049c3a061958bc0243b9ab5b76"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/frmaccountsetting.o",
+          "bytes": 129392,
+          "sha256": "4038822c2c844849da72fc8434d9d13a203f5e3fb1129083613589d5798b4d46"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/frmhospinfosetting.o",
+          "bytes": 165432,
+          "sha256": "8656c23779a3c7af85d0880da5d0c30924282d62385638f0166510adea4af74e"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/hospital_store.o",
+          "bytes": 152064,
+          "sha256": "f65d6e678b056c23fedc1f50910e384717ca33f3960bb821e357cddcb1eed806"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/main.o",
+          "bytes": 51536,
+          "sha256": "de262c8e2b011573404f33401952b2fdefc89ae079ab9d89af9578e41a31f588"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/mnemonic.o",
+          "bytes": 25656,
+          "sha256": "530c11a3391c2a470258acbc5677189add342f98b428f2d0b183547163a728d6"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/moc_account_store.o",
+          "bytes": 41648,
+          "sha256": "7c376275f6f1220a2c8868f51fb382aaacd49a03ebf9039252e9f205785e9712"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/moc_cusdialogmask.o",
+          "bytes": 10520,
+          "sha256": "bc1f920b7962a88bf17c7d3c39ed1ca87510810692bbeb9a2b6d69b477aa8891"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/moc_cusmessagebox.o",
+          "bytes": 11056,
+          "sha256": "761a84f3fbcb2d8eea10d67ca476d29691a3cc4d2e3696416b81a61e043314ba"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/moc_frmaccountsetting.o",
+          "bytes": 19768,
+          "sha256": "39c9aa9c88f71fd8cedc14b6e2986f738b437a2c7a1215c1f6b067bbe06d2837"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/moc_frmhospinfosetting.o",
+          "bytes": 43272,
+          "sha256": "6c9c6cad6c412ccbc340a1961328268aa829d85dfe887bb455187b2e08456b55"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/moc_hospital_store.o",
+          "bytes": 39576,
+          "sha256": "0094c085e31e61312fb74be6efaa48552a65920193d6200367290c3521e21be5"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.obj/qrc_resources.o",
+          "bytes": 11584,
+          "sha256": "f110057c6ac4b1377099f819009aecd4aa0aaec430e898846a2bed23247e1806"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.rcc/qrc_resources.cpp",
+          "bytes": 44849,
+          "sha256": "d1b9b79d9e30a2913772d631cb6f2bed45fa0884a659bc7994e896d715f51376"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.ui/ui_cusdialogmask.h",
+          "bytes": 2728,
+          "sha256": "1986126ee328f1c95fb5c6da99484866097279253f5f8f92a5a2182703576206"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.ui/ui_cusmessagebox.h",
+          "bytes": 4800,
+          "sha256": "c1a60382e2d224db04e1fa7505af4f3e19953f643dd789482546bc4d937257ab"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.ui/ui_frmaccountsetting.h",
+          "bytes": 24992,
+          "sha256": "9eeaecaac4fe3661a9b4669a9d160eaac7f050fb4cb86dc2677661cfa406c5f6"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_release/.ui/ui_frmhospinfosetting.h",
+          "bytes": 16722,
+          "sha256": "c8145bfa16325fa02392e773fe96edecac5a3eb4ab1092b26001259ecec68f61"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/agent_test_build/.obj",
+      "kind": "objects",
+      "file_count": 6,
+      "bytes": 668176.0,
+      "evidence": "6 个 .o；仅对象文件，父目录/target_wrapper.sh/测试输入保留。正式医院测试源码可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/agent_test_build/.obj/frmhospinfosetting.o",
+          "bytes": 165432,
+          "sha256": "8656c23779a3c7af85d0880da5d0c30924282d62385638f0166510adea4af74e"
+        },
+        {
+          "relative_path": "temp/sn100_host/agent_test_build/.obj/hospital_store.o",
+          "bytes": 152064,
+          "sha256": "f65d6e678b056c23fedc1f50910e384717ca33f3960bb821e357cddcb1eed806"
+        },
+        {
+          "relative_path": "temp/sn100_host/agent_test_build/.obj/mnemonic.o",
+          "bytes": 25656,
+          "sha256": "530c11a3391c2a470258acbc5677189add342f98b428f2d0b183547163a728d6"
+        },
+        {
+          "relative_path": "temp/sn100_host/agent_test_build/.obj/moc_frmhospinfosetting.o",
+          "bytes": 43272,
+          "sha256": "6c9c6cad6c412ccbc340a1961328268aa829d85dfe887bb455187b2e08456b55"
+        },
+        {
+          "relative_path": "temp/sn100_host/agent_test_build/.obj/moc_hospital_store.o",
+          "bytes": 39576,
+          "sha256": "0094c085e31e61312fb74be6efaa48552a65920193d6200367290c3521e21be5"
+        },
+        {
+          "relative_path": "temp/sn100_host/agent_test_build/.obj/offline_test.o",
+          "bytes": 242176,
+          "sha256": "9e5e09ea77e3d49dcc43f390cb3cfe5dd671d14d4013c74560bc3298f1840f3a"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/wsl_tests/.obj",
+      "kind": "objects",
+      "file_count": 6,
+      "bytes": 668144.0,
+      "evidence": "6 个 .o；仅对象文件，父目录/脚本/数据保留。正式医院测试源码可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/wsl_tests/.obj/frmhospinfosetting.o",
+          "bytes": 165432,
+          "sha256": "8656c23779a3c7af85d0880da5d0c30924282d62385638f0166510adea4af74e"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_tests/.obj/hospital_store.o",
+          "bytes": 152064,
+          "sha256": "f65d6e678b056c23fedc1f50910e384717ca33f3960bb821e357cddcb1eed806"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_tests/.obj/mnemonic.o",
+          "bytes": 25656,
+          "sha256": "530c11a3391c2a470258acbc5677189add342f98b428f2d0b183547163a728d6"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_tests/.obj/moc_frmhospinfosetting.o",
+          "bytes": 43272,
+          "sha256": "6c9c6cad6c412ccbc340a1961328268aa829d85dfe887bb455187b2e08456b55"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_tests/.obj/moc_hospital_store.o",
+          "bytes": 39576,
+          "sha256": "0094c085e31e61312fb74be6efaa48552a65920193d6200367290c3521e21be5"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_tests/.obj/offline_test.o",
+          "bytes": 242144,
+          "sha256": "c98f5e864ebeb3730a7f13c41e0e1ea2d60dd70a1ee03cc38e333c7939329886"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/wsl_account_tests/.obj",
+      "kind": "objects",
+      "file_count": 10,
+      "bytes": 682264.0,
+      "evidence": "10 个 .o；仅对象文件，不触及账户库/secret/脚本。正式账户测试源码可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/account_store.o",
+          "bytes": 141392,
+          "sha256": "b1c114377964e6c8106dfaba9e1a6d57e69faab9e0ce101584dd01de38960144"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/account_test.o",
+          "bytes": 260176,
+          "sha256": "968c28dda5fd0f098d7620581b601e161b1234ce8493ddc5bc053034f0b01d5f"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/cusdialogmask.o",
+          "bytes": 27264,
+          "sha256": "2745c25a40a25c5b63b3def33559f556966adf1616310e8237d72ff3e63dc3ba"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/cusmessagebox.o",
+          "bytes": 29464,
+          "sha256": "3373a07761c7d237b546d3a211b8102ea7a207049c3a061958bc0243b9ab5b76"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/frmaccountsetting.o",
+          "bytes": 129392,
+          "sha256": "4038822c2c844849da72fc8434d9d13a203f5e3fb1129083613589d5798b4d46"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/moc_account_store.o",
+          "bytes": 41648,
+          "sha256": "7c376275f6f1220a2c8868f51fb382aaacd49a03ebf9039252e9f205785e9712"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/moc_cusdialogmask.o",
+          "bytes": 10520,
+          "sha256": "bc1f920b7962a88bf17c7d3c39ed1ca87510810692bbeb9a2b6d69b477aa8891"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/moc_cusmessagebox.o",
+          "bytes": 11056,
+          "sha256": "761a84f3fbcb2d8eea10d67ca476d29691a3cc4d2e3696416b81a61e043314ba"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/moc_frmaccountsetting.o",
+          "bytes": 19768,
+          "sha256": "39c9aa9c88f71fd8cedc14b6e2986f738b437a2c7a1215c1f6b067bbe06d2837"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_tests/.obj/qrc_resources.o",
+          "bytes": 11584,
+          "sha256": "f110057c6ac4b1377099f819009aecd4aa0aaec430e898846a2bed23247e1806"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/wsl_account_boundary_tests/.obj",
+      "kind": "objects",
+      "file_count": 3,
+      "bytes": 396744.0,
+      "evidence": "3 个 .o；仅对象文件，父目录/脚本/数据保留。正式边界测试源码可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/wsl_account_boundary_tests/.obj/account_boundary_test.o",
+          "bytes": 213704,
+          "sha256": "e19983d352e1eacbbfc2dd27aa1d7c364959652352856e8ce8a8ca2bc577eb43"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_boundary_tests/.obj/account_store.o",
+          "bytes": 141392,
+          "sha256": "b1c114377964e6c8106dfaba9e1a6d57e69faab9e0ce101584dd01de38960144"
+        },
+        {
+          "relative_path": "temp/sn100_host/wsl_account_boundary_tests/.obj/moc_account_store.o",
+          "bytes": 41648,
+          "sha256": "7c376275f6f1220a2c8868f51fb382aaacd49a03ebf9039252e9f205785e9712"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/history/o01_regression_build/.obj",
+      "kind": "objects",
+      "file_count": 6,
+      "bytes": 668176.0,
+      "evidence": "6 个 .o；仅对象文件，父目录/脚本/数据保留。正式医院测试源码可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/history/o01_regression_build/.obj/frmhospinfosetting.o",
+          "bytes": 165432,
+          "sha256": "8656c23779a3c7af85d0880da5d0c30924282d62385638f0166510adea4af74e"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o01_regression_build/.obj/hospital_store.o",
+          "bytes": 152064,
+          "sha256": "f65d6e678b056c23fedc1f50910e384717ca33f3960bb821e357cddcb1eed806"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o01_regression_build/.obj/mnemonic.o",
+          "bytes": 25656,
+          "sha256": "530c11a3391c2a470258acbc5677189add342f98b428f2d0b183547163a728d6"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o01_regression_build/.obj/moc_frmhospinfosetting.o",
+          "bytes": 43272,
+          "sha256": "6c9c6cad6c412ccbc340a1961328268aa829d85dfe887bb455187b2e08456b55"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o01_regression_build/.obj/moc_hospital_store.o",
+          "bytes": 39576,
+          "sha256": "0094c085e31e61312fb74be6efaa48552a65920193d6200367290c3521e21be5"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o01_regression_build/.obj/offline_test.o",
+          "bytes": 242176,
+          "sha256": "7c00a9ca77df10575a677deeb29a3563ef8ab26924aac433bd44b252e5fcaf4b"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/history/o04_report_history_regression_build/.obj",
+      "kind": "objects",
+      "file_count": 7,
+      "bytes": 1311632.0,
+      "evidence": "7 个 .o；仅对象文件，父目录/脚本/数据保留。正式历史测试源码可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_history_regression_build/.obj/history_page.o",
+          "bytes": 351856,
+          "sha256": "6567e95e8c574256c38b51107d503e5c8ac22a12bcf16fa3d929600b36a94b14"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_history_regression_build/.obj/history_store.o",
+          "bytes": 312032,
+          "sha256": "25c80017179fd4505621c74c44700efe28cd9556525300d24ef9f25df365e45d"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_history_regression_build/.obj/history_test.o",
+          "bytes": 468824,
+          "sha256": "7598932fc839e74843b9ab3fdd7d20648f7364f222ca055478ca9076489c4ada"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_history_regression_build/.obj/moc_history_page.o",
+          "bytes": 60976,
+          "sha256": "e230f61dafb5cf642f79fbf2f82f1e94fb59f8dbf8fc20a3e544ca65eaecf6ad"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_history_regression_build/.obj/moc_history_store.o",
+          "bytes": 80392,
+          "sha256": "1863c10e0b07d7959a38427e40905e4f967cb6bb6551fe990dbdcac5018b57f5"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_history_regression_build/.obj/qrc_resources.o",
+          "bytes": 5520,
+          "sha256": "af5bf3a4c77baa8fcce481a271dac95939413c0ecb8737603eaeb7b11929c871"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_history_regression_build/.obj/result_statistics.o",
+          "bytes": 32032,
+          "sha256": "4a7f818d2bc5f0650c7ee4f6769ae868d404c14cbbd02fa1c4d555d4696fdf92"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/history/o04_report_o01_regression_build/.obj",
+      "kind": "objects",
+      "file_count": 6,
+      "bytes": 673768.0,
+      "evidence": "6 个 .o；仅对象文件，父目录/脚本/数据保留。正式医院测试源码可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_o01_regression_build/.obj/frmhospinfosetting.o",
+          "bytes": 170352,
+          "sha256": "3464e7d4b44277a4785c2e9b48788532a6afef381324b5b5985c11166d941ec9"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_o01_regression_build/.obj/hospital_store.o",
+          "bytes": 152064,
+          "sha256": "f65d6e678b056c23fedc1f50910e384717ca33f3960bb821e357cddcb1eed806"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_o01_regression_build/.obj/mnemonic.o",
+          "bytes": 25656,
+          "sha256": "530c11a3391c2a470258acbc5677189add342f98b428f2d0b183547163a728d6"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_o01_regression_build/.obj/moc_frmhospinfosetting.o",
+          "bytes": 43912,
+          "sha256": "60c8bd693bf67a581104c1c13b85603eb4516097841438bb3822f03359a299b9"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_o01_regression_build/.obj/moc_hospital_store.o",
+          "bytes": 39576,
+          "sha256": "0094c085e31e61312fb74be6efaa48552a65920193d6200367290c3521e21be5"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/o04_report_o01_regression_build/.obj/offline_test.o",
+          "bytes": 242208,
+          "sha256": "e7cf921dd2842d7673f62b2c95072a2c2cbd7d4b37a540ea6c9ebd59817b4922"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/history/page_guard_build/.obj",
+      "kind": "objects",
+      "file_count": 7,
+      "bytes": 966264.0,
+      "evidence": "7 个 .o；仅对象文件，父目录/脚本/数据保留。正式页面守卫测试源码可重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/history/page_guard_build/.obj/history_page_guard_test.o",
+          "bytes": 141976,
+          "sha256": "d9eaa623e8a3a31db6148273f4affce1e77560635ce41457d1cbbcd4c18eb2c2"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/page_guard_build/.obj/history_page.o",
+          "bytes": 347320,
+          "sha256": "c1c443116cf61457c9c90251feafcf12946f5ebdb326604f0213b6ca37a266a5"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/page_guard_build/.obj/history_store.o",
+          "bytes": 312032,
+          "sha256": "25c80017179fd4505621c74c44700efe28cd9556525300d24ef9f25df365e45d"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/page_guard_build/.obj/moc_history_page.o",
+          "bytes": 46992,
+          "sha256": "13cc0c1330fccc165ba08ec35996b34226b2d73eefd7fc062b7d5c5446fa2f1b"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/page_guard_build/.obj/moc_history_store.o",
+          "bytes": 80392,
+          "sha256": "1863c10e0b07d7959a38427e40905e4f967cb6bb6551fe990dbdcac5018b57f5"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/page_guard_build/.obj/qrc_resources.o",
+          "bytes": 5520,
+          "sha256": "af5bf3a4c77baa8fcce481a271dac95939413c0ecb8737603eaeb7b11929c871"
+        },
+        {
+          "relative_path": "temp/sn100_host/history/page_guard_build/.obj/result_statistics.o",
+          "bytes": 32032,
+          "sha256": "4a7f818d2bc5f0650c7ee4f6769ae868d404c14cbbd02fa1c4d555d4696fdf92"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/ui_syntax",
+      "kind": "generated",
+      "file_count": 1,
+      "bytes": 13119.0,
+      "evidence": "仅 ui_frmhospinfosetting.h；头部明确为 Qt UI Compiler 5.15.13 generated，可由正式医院 .ui 重建。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/ui_syntax/ui_frmhospinfosetting.h",
+          "bytes": 13119,
+          "sha256": "aa9c8dc2b3d1fd7eb3364dbf58d0f16a89d7f18a1f693c4947e33be384b62f2a"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/update_documents.py",
+      "kind": "obsolete_document_script",
+      "file_count": 1,
+      "bytes": 23851.0,
+      "evidence": "O01 完成后一次性修改计划/记录/README 的临时脚本；正式工程/skills/docs 中按文件名搜索无引用，结果已写入正式 MD。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/update_documents.py",
+          "bytes": 23851,
+          "sha256": "740eb4c0c360388a734e3c51274a8213e59e0f6af048e89595adf9ce866d88a9"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/update_visual_record.py",
+      "kind": "obsolete_document_script",
+      "file_count": 1,
+      "bytes": 8788.0,
+      "evidence": "一次性追加 O01 7.6 视觉修正/复测与计划摘要的脚本；正式文件无引用，当前记录保留结果。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/update_visual_record.py",
+          "bytes": 8788,
+          "sha256": "208fbe0ef975af2b5a87bb5830ef267058eac31ff5320e2590cef1919d4ac7c9"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/final_account_docs.py",
+      "kind": "obsolete_document_script",
+      "file_count": 1,
+      "bytes": 2585.0,
+      "evidence": "一次性同步 O02 当时哈希/措辞与计划的脚本；正式文件无引用，结果已写入正式文档。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/final_account_docs.py",
+          "bytes": 2585,
+          "sha256": "15fe1f9ed43bbfc79650a4f82eddff70a9a7775903496724cba9beb68e941cd1"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/sync_account_entry.py",
+      "kind": "obsolete_document_script",
+      "file_count": 1,
+      "bytes": 636.0,
+      "evidence": "一次性替换 README O02 摘要的脚本；正式文件无引用，结果已保存并继续更新。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/sync_account_entry.py",
+          "bytes": 636,
+          "sha256": "b764bebdfb4658b433c630fd021b0d6ad02b3e149ef49fe905a59a3f24a3e1d5"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/integration/fix_record_links.py",
+      "kind": "obsolete_document_script",
+      "file_count": 1,
+      "bytes": 526.0,
+      "evidence": "一次性修复 O03-3 移植记录相对链接的脚本；正式文件无引用。仅删此文件，现有 GUI 父目录不动。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/integration/fix_record_links.py",
+          "bytes": 526,
+          "sha256": "cc376ebf39176613dc1852c369be93474171e046c83b0c0654c467a29d53eb7a"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/integration/resources_measure_failed_x11_obsolete_sampler.json",
+      "kind": "archived_duplicate",
+      "file_count": 1,
+      "bytes": 94140.0,
+      "evidence": "失败采集的 temp 副本，与正式失败证据 SHA-256 一致。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/integration/resources_measure_failed_x11_obsolete_sampler.json",
+          "bytes": 94140,
+          "sha256": "b42406b42ee88d1ed0121b241c385a80a18f95acc9101e3244fa14d999401ea2"
+        }
+      ]
+    },
+    {
+      "relative_path": "temp/sn100_host/integration/metadata_v2.json",
+      "kind": "archived_duplicate",
+      "file_count": 1,
+      "bytes": 20813.0,
+      "evidence": "旧 ARM64 元数据 temp 副本，与正式 arm64_cross_metadata_v2.json SHA-256 一致。",
+      "file_fingerprints": [
+        {
+          "relative_path": "temp/sn100_host/integration/metadata_v2.json",
+          "bytes": 20813,
+          "sha256": "a8e2e87d1dd6d0539c38d43576036c62df659bd9a3137ee77a7a773d47ad7074"
+        }
+      ]
+    },
+    {
+      "relative_path": "06_programs/sn100_host/shell/__pycache__",
+      "kind": "python_generated_cache",
+      "file_count": 2,
+      "bytes": 35953.0,
+      "evidence": "CPython 3.12 generated cache; source .py scripts retained",
+      "file_fingerprints": [
+        {
+          "relative_path": "06_programs/sn100_host/shell/__pycache__/check_arm64.cpython-312.pyc",
+          "bytes": 24186,
+          "sha256": "105bc9631e66a7c72a777a689a64e63806778a7ea3c212d21825b1bdb7c94a27"
+        },
+        {
+          "relative_path": "06_programs/sn100_host/shell/__pycache__/package_arm64.cpython-312.pyc",
+          "bytes": 11767,
+          "sha256": "ff4aeed38fa068ba4bc25e312ef80fc37df175687ac5981cbee8415a0ebe284e"
+        }
+      ]
+    }
+  ],
+  "staged_validation": {
+    "frozen_index_inputs": 197,
+    "lfs_pointers_verified": 241,
+    "excluded_paths": [],
+    "mismatches": []
+  },
+  "preserve_byte_attributes_added": [
+    "06_programs/sn100_host/history/origins.json",
+    "06_programs/sn100_host/shell/resources.qrc",
+    "06_programs/sn100_host/thirdparty/qtrpt/origins.json",
+    "06_programs/sn100_host/ui/frmhospinfosetting.ui"
+  ],
+  "whitespace_check": "Edited documentation/rules passed; immutable imported SVG/evidence/vendor/UI whitespace retained without reformatting.",
+  "candidate_files_still_present": 167
+}

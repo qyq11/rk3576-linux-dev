@@ -1,0 +1,712 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "module": "O06",
+  "purpose": "记录 AL4A 真实 Linux 依赖阻断与 O06-1 质控统计切片边界；此文件是静态审查证据，不是算法或仪器验收证明。",
+  "reference_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "path_convention": "下列源码路径相对于 reference_root；所有行号为当前文件一基行号。",
+  "scope_and_limits": {
+    "activities": [
+      "读取相关源码、qmake 输入与头文件，使用 rg 搜索已解压参考树中的实现和原生库文件。",
+      "只读取 AL4ADLL.dll 原字节以核对 PE 架构、大小、SHA-256；没有加载或执行该库。",
+      "判定反例按所见源码表达式解析计算；未启动原 Windows 发行程序，不能代替实际行为基线。"
+    ],
+    "not_performed": [
+      "未修改、构建或启动参考工程。",
+      "未读取参考生产数据库、INI/CFG 配置、患者数据、凭据或历史日志内容。",
+      "未解压或检索原始 RAR 内的其他潜在版本；搜索结论仅覆盖当前已解压树。",
+      "未联网、连接设备或测量 RK/仪器表现。",
+      "未证明库缺失于供应商的其他交付物；仅记录本地搜索未找到。",
+      "未验证完整预处理后的所有机型/宏组合；调用关系是当前源码和 qmake 输入的静态证据，未进行运行时覆盖跟踪。"
+    ]
+  },
+  "inspected_sources": [
+    {
+      "path": "SeeRain450.pro",
+      "bytes": 4663,
+      "sha256": "bc2fe217a77a6260f1f8ae69d2fb30228f7082a8d5ac2ab3bdce99647f4d9cf2"
+    },
+    {
+      "path": "main.cpp",
+      "bytes": 16238,
+      "sha256": "b63c46ae047a2f3006b823cdc9477d498eb0aa2417cfe138845ff3d4c773be09"
+    },
+    {
+      "path": "customtools/customtools.pri",
+      "bytes": 1342,
+      "sha256": "13b42225147cf66c1ee0fac03ddacf1b5a069db42851b42ced272d2f282af6f9"
+    },
+    {
+      "path": "customtools/algorithmcore.cpp",
+      "bytes": 39169,
+      "sha256": "578a94cb671586e17dd15f1c92b329417a04efcbfc540d1034af076cce5edddc"
+    },
+    {
+      "path": "customtools/algorithmcore.h",
+      "bytes": 12358,
+      "sha256": "edd29c66772f841b404eeae95547c021a112e624fbabef65be9f4b9357269a9b"
+    },
+    {
+      "path": "customtools/AL4A_Driver.cpp",
+      "bytes": 1792,
+      "sha256": "e8c8e79ae85fac038af830f123445b58b3646136ce1ac05ea5f2914d7ad89162"
+    },
+    {
+      "path": "customtools/include/0_Driver/AL4A_Driver.h",
+      "bytes": 3828,
+      "sha256": "1e6b6eed552eface60d5908a9920c3a92d627c7621b35bc77da6be61a96d9edf"
+    },
+    {
+      "path": "customtools/include/AL4A_Impl/AL4A_User.h",
+      "bytes": 5580,
+      "sha256": "e478d63ffbcae9b793acb9759f8ff385b7eb2096edcc4dba4a234d0077255a87"
+    },
+    {
+      "path": "customtools/include/AL4A_Impl/AL4A_Base.h",
+      "bytes": 3886,
+      "sha256": "d4c3ebb06f075ddee7814e48bd160d90542087f7682d9631b1ba72a9d9ba6757"
+    },
+    {
+      "path": "customtools/include/AL4A_Impl/AL4A_FitBase.h",
+      "bytes": 6744,
+      "sha256": "551d9ed3fd12de4ce513d7536366bf91038515188ae4e938cca2265a6648ff62"
+    },
+    {
+      "path": "customtools/include/AL4A_Impl/AL4A_Def.h",
+      "bytes": 1090,
+      "sha256": "9fdb5f7195bd0b39c925eb32071ea5c8971003c2a87e72b8a48cdc1cf2bd1c13"
+    },
+    {
+      "path": "customtools/include/AL4A_UP_Dll/al4a_450.h",
+      "bytes": 3893,
+      "sha256": "a2e505077587fb03f08a8fa82b6abce37029f0ae8e4091dfb3bb4b096a09ebb1"
+    },
+    {
+      "path": "customtools/include/AL4A_Ver.h",
+      "bytes": 348,
+      "sha256": "4374e9639defcd0fd2fe2a3984e4b702756d97170461a34bc0de4c55521a1b49"
+    },
+    {
+      "path": "customtools/spectrumcalculate.cpp",
+      "bytes": 30101,
+      "sha256": "55480ffe6f493447f53fb248fbc9ef59d5049427e2e0155e826eee98888432f7"
+    },
+    {
+      "path": "frmcalibration/frmcalibrationmaterial.cpp",
+      "bytes": 56218,
+      "sha256": "ccd7ad768e3679a1d6a316167b20a5b98b51f1f293439f9e2478d46b6183142f"
+    },
+    {
+      "path": "frmreagent/wgtreagentpanel.cpp",
+      "bytes": 112747,
+      "sha256": "d4ca20cc9924fdc520e6a699e5129be6ece0534e994f03a5b077ea0e51cce13f"
+    },
+    {
+      "path": "frm_report/report_string_pasher.cpp",
+      "bytes": 31804,
+      "sha256": "b1074b447ff9f25f8b2f80a54ea31e87af00e60e1f65044b38f8e54d9840622d"
+    },
+    {
+      "path": "frm_quality/quality_rule_algth.cpp",
+      "bytes": 7349,
+      "sha256": "ab8ad61e289078dd69eb44d38d1f263563d9d9a002a20c9a6437fc2ebca413e7"
+    },
+    {
+      "path": "frm_quality/quality_rule_algth.h",
+      "bytes": 1505,
+      "sha256": "96883f31efa4ff229bf3939bb0181066c7be27627a816ca1cf0883ae55927e06"
+    },
+    {
+      "path": "frm_quality/cus_quality_chart.cpp",
+      "bytes": 11930,
+      "sha256": "6c3763033645a2b144c8d23024b285193b05c329814953e447306fa2f9f84a4e"
+    },
+    {
+      "path": "frm_quality/cus_quality_chart.ui",
+      "bytes": 16874,
+      "sha256": "b980aff145f5391fbfa92c59ba997c177d3bf7ad1caab7d436653e54d33d6c13"
+    }
+  ],
+  "binary": {
+    "path": "bin/lib/AL4ADLL.dll",
+    "bytes": 3493888,
+    "sha256": "d33c9f8b442ace8851880723d0ce7ea2bbf18f8650bee7f9b43030eb66c20dbc",
+    "pe_header_offset": 128,
+    "machine_hex": "0x014c",
+    "machine_meaning": "IMAGE_FILE_MACHINE_I386 / x86 32-bit",
+    "optional_header_magic_hex": "0x010b",
+    "format": "Windows PE32 DLL",
+    "windows_file_version_resource": null,
+    "runtime_version": "未调用 AL4A_GetVersion_450，实际运行版本待确认。",
+    "version_header": {
+      "path": "customtools/include/AL4A_Ver.h",
+      "line": 13,
+      "macro": "AL4A_VERSION",
+      "value_pattern": "3.0.001 + '_' + __DATE__",
+      "limitation": "头文件的版本宏和编译日期不能独立证明所交付 DLL 的版本。"
+    }
+  },
+  "searches": [
+    {
+      "method": "rg --files",
+      "scope": "当前已解压参考工程",
+      "glob_patterns": [
+        "*.so",
+        "*.so.*",
+        "*.a",
+        "*.lib"
+      ],
+      "matches": [],
+      "conclusion": "未找到可直接用于 Linux 的共享/静态算法库；Windows DLL 已单独核验。",
+      "limit": "不检索未解压归档、项目外目录或供应商其他介质；不将未找到当作永久不存在。"
+    },
+    {
+      "method": "rg --files",
+      "glob_patterns": [
+        "*.cpp",
+        "*.c",
+        "*.cc",
+        "*.cxx"
+      ],
+      "candidate_file_count": 213,
+      "scope": "当前已解压参考工程",
+      "note": "使用 rg 默认隐藏文件/忽略行为；显式指定参考工程根目录。"
+    },
+    {
+      "method": "rg -n",
+      "glob_patterns": [
+        "*.cpp",
+        "*.c",
+        "*.cc",
+        "*.cxx"
+      ],
+      "pattern": "AL4A_Static_Impl\\s*\\(|AL4A_LinearCoes_Impl\\s*\\(|AL4A_SplineFit_Impl\\s*\\(|AL4A_TotalMethod_450\\s*\\(|AL4A_Init_450\\s*\\(",
+      "matches": [],
+      "conclusion": "所列核心实现/入口在上述源码中未找到定义。",
+      "limit": "特征搜索不能排除经过其他命名、代码生成、未解压版本或二进制内部的实现。"
+    },
+    {
+      "method": "相关头文件与 customtools.pri 静态阅读",
+      "locations": [
+        "customtools/include/AL4A_Impl/AL4A_User.h",
+        "customtools/include/AL4A_Impl/AL4A_Base.h",
+        "customtools/include/AL4A_Impl/AL4A_FitBase.h",
+        "customtools/include/AL4A_UP_Dll/al4a_450.h",
+        "customtools/include/ALGL_Impl/",
+        "customtools/customtools.pri"
+      ],
+      "conclusion": "发现数据类型、部分辅助方法及算法声明；没有据此组成可重建的 AL4A 核心实现。Eigen/ALGL 头文件本身不能证明凝血、拟合与项目规则实现齐备。"
+    }
+  ],
+  "algorithm_backend": {
+    "current_branch": {
+      "path": "customtools/algorithmcore.cpp",
+      "disabled_macro_line": 5,
+      "branch_switch_line": 522,
+      "description": "本文件 AL4A_OLD 定义已注释；所查 qmake/源码未发现启用定义，当前审查依据为 522 行后的新接口分支。"
+    },
+    "loader": {
+      "path": "customtools/AL4A_Driver.cpp",
+      "global_object_line": 20,
+      "default_path": ".//lib//AL4ADLL.dll",
+      "constructor_line": 22,
+      "load_library_line": 24,
+      "symbol_resolution_lines": [
+        26,
+        29,
+        31,
+        33,
+        36,
+        39,
+        42,
+        45,
+        47,
+        51,
+        54
+      ],
+      "linux_no_op_line": 58,
+      "description": "仅 Windows 分支 LoadLibraryA/GetProcAddress；Linux 构造分支忽略路径。",
+      "resolved_symbol_names": [
+        "AL4A_GetVersion_450",
+        "AL4A_Init_450",
+        "AL4A_Close_450",
+        "AL4A_TotalMethod_450",
+        "AL4A_TotalMethod_C",
+        "AL4A_LinearFit_450",
+        "AL4A_PolyFit_450",
+        "AL4A_SplineFit_450",
+        "AL4A_CorTransfor_450",
+        "AL4A_CorReturn_450",
+        "AL4A_Monotonicity_450"
+      ],
+      "symbol_name_evidence": "此清单来自加载封装源码；没有以实际加载成功作为依据。"
+    },
+    "linux_false_success": [
+      {
+        "function": "algorithmCore::_AL4A_Init_Dll",
+        "line": 539,
+        "result": "Linux 跳过初始化返回 true。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_Close_Dll",
+        "line": 551,
+        "result": "Linux 不调用后端返回 true。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_TotalMethod_UR_Dll(QVector<bool>&)",
+        "line": 564,
+        "result": "Linux 不设置计算输出，返回 true。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_TotalMethod_UR_Dll(QVector<QString>&,QVector<bool>&)",
+        "line": 607,
+        "result": "仅先清空文本错误列表；Linux 不设置其他结果，返回 true。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_LinearFit_Dll",
+        "line": 679,
+        "result": "Linux 忽略输入输出，返回 true。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_PolyFit_Dll",
+        "line": 723,
+        "result": "Linux 忽略输入输出，返回 !false。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_SplineFit_Dll",
+        "line": 769,
+        "result": "Linux 忽略输入输出，返回 !false。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_CorTransfor_Dll",
+        "line": 834,
+        "result": "Linux 不变换输入，返回 !false。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_CorReturn_Dll",
+        "line": 866,
+        "result": "Linux 不逆变换输入，返回 !false。"
+      },
+      {
+        "function": "algorithmCore::_AL4A_Get_Curve_UR_Dll",
+        "line": 905,
+        "result": "先令 newResult=0 并清空曲线；Linux 跳过计算后返回 !false。"
+      }
+    ],
+    "cross_platform_placeholders": [
+      {
+        "function": "algorithmCore::_AL4A_AddProject_Dll",
+        "line": 817
+      },
+      {
+        "function": "algorithmCore::_AL4A_DeleteProject_Dll",
+        "line": 826
+      },
+      {
+        "function": "algorithmCore::_AL4A_Get_Curve_Dll",
+        "line": 896
+      },
+      {
+        "function": "algorithmCore::_AL4A_AD_To_OD_Dll",
+        "line": 1043
+      }
+    ],
+    "placeholder_note": "以上新分支函数没有实际业务操作却返回 true，不能作为相应能力的完成证明。",
+    "abi_risks": [
+      {
+        "path": "customtools/include/0_Driver/AL4A_Driver.h",
+        "lines": [
+          35,
+          43,
+          48,
+          52,
+          60,
+          63
+        ],
+        "issue": "现有接口跨动态库传递 C++ STL 容器/字符串、引用和 size_t；须匹配编译器、C++ 运行库、ABI、数据布局与 32/64 位宽度。"
+      },
+      {
+        "path": "customtools/include/AL4A_UP_Dll/al4a_450.h",
+        "lines": [
+          18,
+          63,
+          78
+        ],
+        "issue": "extern C 仅固定导出符号名；参数仍包含 C++ 类型，不能据此视为稳定跨平台 C ABI。"
+      },
+      {
+        "path": "customtools/include/0_Driver/AL4A_Driver.h",
+        "line": 38,
+        "issue": "AL4A_TotalMethod_C 暴露长度、bool 及多级输出指针，当前头信息不能明确输出分配/释放方法、长度单位、线程安全和错误生命周期。"
+      },
+      {
+        "path": "customtools/algorithmcore.cpp",
+        "lines": [
+          940,
+          944,
+          963,
+          965,
+          972
+        ],
+        "issue": "曲线重算先分配 C 调用输入并调用可选 C 接口，再调用 C++ 接口；当前函数中未见这些 malloc 输入的对应释放，且未检查 C 调用返回值。迁移时不能照搬此重复调用/所有权做法。"
+      },
+      {
+        "paths": [
+          "customtools/include/0_Driver/AL4A_Driver.h",
+          "customtools/include/AL4A_Impl/AL4A_User.h",
+          "customtools/include/AL4A_Impl/AL4A_Def.h"
+        ],
+        "issue": "头文件 include 存在 al4a_user.h / AL4A_User.h、AL4A_Config.h / al4a_config.h、AL4A_ver.h / AL4A_Ver.h、GL4A_user.h / GL4A_User.h 等大小写差异；Linux 接入时需核对实际文件名。"
+      }
+    ]
+  },
+  "source_call_chains": [
+    {
+      "name": "原始结果",
+      "path": "customtools/spectrumcalculate.cpp",
+      "function": "SpectrumCalculate::getTotalResult",
+      "function_line": 548,
+      "calls": [
+        {
+          "line": 596,
+          "callee": "SpectrumCalculate::getOrgResult"
+        },
+        {
+          "line": 48,
+          "callee": "algorithmCore::_AL4A_TotalMethod_UR_Dll",
+          "owner_function_line": 23
+        }
+      ],
+      "dependency": "真实 AL4A TotalMethod 与项目参数"
+    },
+    {
+      "name": "校准结果应用",
+      "path": "customtools/spectrumcalculate.cpp",
+      "function": "SpectrumCalculate::getCalResult(QString&,double,double&)",
+      "function_line": 240,
+      "calls": [
+        {
+          "lines": [
+            314,
+            319,
+            329
+          ],
+          "callee": "algorithmCore::_AL4A_CorTransfor_Dll"
+        },
+        {
+          "lines": [
+            340,
+            347
+          ],
+          "callee": "algorithmCore::_AL4A_LinearFit_Dll"
+        },
+        {
+          "line": 354,
+          "callee": "algorithmCore::_AL4A_SplineFit_Dll"
+        },
+        {
+          "line": 361,
+          "callee": "algorithmCore::_AL4A_PolyFit_Dll"
+        },
+        {
+          "line": 379,
+          "callee": "algorithmCore::_AL4A_CorReturn_Dll"
+        }
+      ],
+      "excluded_inactive_overload": "115–238 行的另一个 getCalResult 在 #if(0) 内，没有将其当作当前活跃链路。"
+    },
+    {
+      "name": "校准拟合",
+      "path": "frmcalibration/frmcalibrationmaterial.cpp",
+      "function": "frmCalibrationMaterial::caculateValue",
+      "function_line": 801,
+      "calls": [
+        {
+          "lines": [
+            846,
+            848
+          ],
+          "callee": "algorithmCore::_AL4A_CorTransfor_Dll"
+        },
+        {
+          "lines": [
+            875,
+            882
+          ],
+          "callee": "algorithmCore::_AL4A_LinearFit_Dll"
+        },
+        {
+          "line": 888,
+          "callee": "algorithmCore::_AL4A_SplineFit_Dll"
+        },
+        {
+          "line": 892,
+          "callee": "algorithmCore::_AL4A_PolyFit_Dll"
+        },
+        {
+          "line": 912,
+          "callee": "algorithmCore::_AL4A_CorReturn_Dll"
+        }
+      ]
+    },
+    {
+      "name": "试剂容量拟合",
+      "path": "frmreagent/wgtreagentpanel.cpp",
+      "calls": [
+        {
+          "line": 1445,
+          "caller": "wgtReagentPanel::calibrationProcess",
+          "caller_line": 1272,
+          "callee": "algorithmCore::_AL4A_PolyFit_Dll"
+        },
+        {
+          "line": 1758,
+          "caller": "wgtReagentPanel::updateHoleVolInfo",
+          "caller_line": 1584,
+          "callee": "algorithmCore::_AL4A_PolyFit_Dll",
+          "condition": "SystemCommon::isNewProtocal 为 false 且拟合点存在的分支"
+        }
+      ],
+      "limitation": "未读取生产配置，不认定 SN100 当前必定采用此旧协议分支。"
+    },
+    {
+      "name": "报告曲线重新计算",
+      "path": "frm_report/report_string_pasher.cpp",
+      "function": "getChartData",
+      "function_line": 486,
+      "calls": [
+        {
+          "line": 556,
+          "callee": "algorithmCore::_AL4A_Get_Curve_UR_Dll"
+        }
+      ]
+    },
+    {
+      "name": "程序启动",
+      "path": "main.cpp",
+      "calls": [
+        {
+          "line": 352,
+          "callee": "algorithmCore::_AL4A_Init_Dll"
+        }
+      ],
+      "limitation": "参考程序没有启动；不得复制完整启动链以绕开依赖或连接原设备。"
+    }
+  ],
+  "independent_quality_slice": {
+    "source": "frm_quality/quality_rule_algth.cpp",
+    "functions": [
+      {
+        "name": "staticInfo_Impl",
+        "line_start": 19,
+        "line_end": 83
+      },
+      {
+        "name": "getStaticInfo",
+        "line_start": 296,
+        "line_end": 299
+      }
+    ],
+    "real_implementation_present": true,
+    "al4a_dependency": false,
+    "formulas": {
+      "mean": "sum(x)/n",
+      "range": "max(x)-min(x)",
+      "v1": "sum((x-mean)^2)",
+      "v2": "(sum(x-mean)^2)/n",
+      "sample_variance": "max(0,(v1-v2)/(n-1)) when n>1",
+      "standard_deviation": "sqrt(sample_variance)",
+      "cv_ratio_legacy": "standard_deviation/(mean+1e-12) when n>1"
+    },
+    "source_edge_behavior": [
+      "空输入：五个统计字段初始化为零后返回。",
+      "单点：mean 为该点、range 为零，variance/SD/CV 保持零。",
+      "CV 为比值，没有乘 100，负/零均值和非有限值没有明确失败接口。",
+      "有限输入也可能在求和、差平方或分母上产生溢出/非有限结果，迁移版应明确失败并登记差异。"
+    ],
+    "display_evidence": [
+      {
+        "path": "frm_quality/cus_quality_chart.cpp",
+        "lines": [
+          145,
+          146,
+          147,
+          148,
+          149
+        ],
+        "observation": "调用 getStaticInfo 后直接将 mean/cv/SD 以一位小数显示。"
+      },
+      {
+        "path": "frm_quality/cus_quality_chart.ui",
+        "line": 318,
+        "observation": "标签文字为 CV:，未声明百分号。"
+      }
+    ],
+    "golden_example": {
+      "input": [
+        8,
+        10,
+        12
+      ],
+      "expected_mean": 10,
+      "expected_range": 4,
+      "expected_sample_variance": 4,
+      "expected_standard_deviation": 2,
+      "expected_cv_ratio_legacy_approximately": 0.19999999999998,
+      "validation_type": "依据源码公式的匿名手算样本，不是仪器输出。"
+    },
+    "acceptance_boundary": "仅匿名质控统计独立切片；不接原数据、GUI、失控判定、设备或 AL4A。真实凝血/拟合/试剂/任务/校准及完整质控不能因此关闭。"
+  },
+  "quality_rule_findings": [
+    {
+      "id": "r4_threshold_expression",
+      "path": "frm_quality/quality_rule_algth.cpp",
+      "lines": [
+        267,
+        269,
+        274
+      ],
+      "function": "isOutControl / SD4_R",
+      "observed_expression": "abs(abs(last-first)-4*sd1)>1e-12",
+      "issue": "表达式检查与阈值的距离，和注释“超过4SD”不一致。",
+      "examples": [
+        {
+          "input": [
+            10,
+            10
+          ],
+          "sd1": 1,
+          "absolute_difference": 0,
+          "source_return": 1
+        },
+        {
+          "input": [
+            10,
+            14
+          ],
+          "sd1": 1,
+          "absolute_difference": 4,
+          "source_return": 0
+        }
+      ],
+      "evidence_type": "静态表达式计算",
+      "required_resolution": "供应商/产品规则确认后建立正反边界样本，不能自行按通用名称修正规则。"
+    },
+    {
+      "id": "lower_severity_branch_shadowed",
+      "path": "frm_quality/quality_rule_algth.cpp",
+      "lines": [
+        100,
+        105
+      ],
+      "function": "isTargetLimit",
+      "issue": "先比较 lowLimit，再比较 lowVal；在 lowVal<lowLimit 的嵌套条件下，更低值分支不可达。",
+      "example": {
+        "rule_parameters": {
+          "upVal": 20,
+          "upLimit": 15,
+          "lowLimit": 7,
+          "lowVal": 5
+        },
+        "input_last_value": 4,
+        "source_return": 3,
+        "observed_shadowed_branch_return": 4
+      },
+      "evidence_type": "按匿名阈值的静态分支追踪",
+      "limitation": "未读取生产阈值，未断言实际配置必定采用此排序。"
+    },
+    {
+      "id": "consecutive_sd_side_and_window",
+      "path": "frm_quality/quality_rule_algth.cpp",
+      "lines": [
+        117,
+        123,
+        204,
+        208,
+        252,
+        255
+      ],
+      "functions": [
+        "isSDLimit_Impl",
+        "isOutControl / SD2_2"
+      ],
+      "issue": "按绝对偏差检查，可将目标两侧的相邻点一起判为超限；窗口遍历整个传入序列。方向及历史窗口语义需确认。",
+      "example": {
+        "target": 10,
+        "sd1": 1,
+        "input": [
+          7,
+          13
+        ],
+        "source_return": 1
+      },
+      "evidence_type": "静态算法追踪",
+      "required_resolution": "确认当前项目要求是否同侧、窗口是否只针对最新结果，以及历史告警保留语义。"
+    },
+    {
+      "id": "trend_equal_values",
+      "path": "frm_quality/quality_rule_algth.cpp",
+      "lines": [
+        153,
+        169,
+        280,
+        283
+      ],
+      "functions": [
+        "isMonotonicity",
+        "isOutControl / T7"
+      ],
+      "issue": "比较乘积 >=0 允许等值；与注释“持续增大或者减小”的严格程度需要确认。",
+      "example": {
+        "input": [
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10
+        ],
+        "source_return": 1
+      },
+      "evidence_type": "静态算法追踪",
+      "required_resolution": "确认等值点和连续趋势规则的具体约定。"
+    }
+  ],
+  "minimum_supplier_materials": [
+    {
+      "item": "真实 Linux 实现",
+      "needed": "完整可重建 AL4A 源码与必要第三方实现/构建说明/授权，或分别匹配 WSL x86_64 与 RK AArch64 的 Linux 库、版本、SHA 和依赖清单。"
+    },
+    {
+      "item": "匹配 ABI 与生命周期契约",
+      "needed": "与库同版头文件、符号、编译器/C++运行库/ABI、结构布局、size_t/bool/指针位宽、错误码、线程安全、初始化/关闭、输入输出缓冲区容量和分配释放方式。现有 C 接口也需补齐这些内容。"
+    },
+    {
+      "item": "匿名项目参数与金样本",
+      "needed": "当前 SN100 启用项目/方法对应的匿名参数包与格式说明；原始 AD/参考通道及采样/波长信息、预期终点/结果/检查标志/异常码/处理曲线，覆盖正常及错误边界并给出认可容差。"
+    },
+    {
+      "item": "实际版本和可安全对照入口",
+      "needed": "确认当前发行库、项目参数和固件/型号的对应关系，提供获准的隔离 Windows 原版对照方式；不能依赖头文件版本字符串或旧生产配置推断。"
+    },
+    {
+      "item": "质控判定规则",
+      "needed": "确认上下限字段排序、CV 比值/百分比展示、连续点的方向/等值/时间窗口、R4阈值和告警级别，提供匿名正反例。"
+    }
+  ],
+  "conclusion": {
+    "complete_o06": false,
+    "real_linux_al4a_ready": false,
+    "safe_current_slice": "O06-1 匿名质控统计真实计算",
+    "blocked_paths": [
+      "原始凝血/吸光度结果与处理曲线",
+      "AL4A 校准拟合/逆算及结果应用",
+      "依赖 AL4A 的试剂容量拟合",
+      "完整样本任务、校准、质控及仪器纵向链路"
+    ],
+    "rule_migration": "上述判定疑点尚未确认，本轮不迁入或宣称判定正确。",
+    "follow_up": "取得最小材料后按一种已启用方法建立金样本对照，再逐段接通；离线、Windows、ARM64、RK和仪器验收分别登记。"
+  }
+}

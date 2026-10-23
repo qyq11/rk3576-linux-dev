@@ -1,0 +1,35 @@
+{
+  "schema": "sn100-final-build-metadata-version-notes-v1",
+  "final_metadata": "build/final_build_metadata_v2.json",
+  "final_artifact_count": 6,
+  "final_includes_old_account_test_binary": false,
+  "old_metadata": "build/pre_helper_fix_metadata.json",
+  "old_metadata_status": "historical_snapshot_not_final_source_binary_pairing",
+  "reason": "Per the root task's O03 coordination, this historical snapshot recorded the account test source and account test binary before the two qWait helper corrections. It must not be paired with the later corrected source. The final v2 snapshot intentionally records six artifacts and excludes that historical account test binary.",
+  "historical_account_test_source": {
+    "path": "06_programs/sn100_host/tests/shell_account_test.cpp",
+    "bytes": 64698,
+    "sha256": "cbfef7557ca8ea2c977c69ca67a175d54fd827b9c3e9c95fbdb1dbde48d19e49",
+    "mtime_ns": 1792746095737306200,
+    "unchanged_during_read": true,
+    "matches_end_of_capture": true
+  },
+  "historical_account_test_binary": {
+    "path": "temp/sn100_host/integration/account_shell_build/shell_account_test",
+    "bytes": 1492696,
+    "sha256": "59dc5301fce38ad3d0e15e01b063cdacf67ada687f7d4e0443cf713621cb5e00"
+  },
+  "later_account_test_source_in_v2": {
+    "path": "06_programs/sn100_host/tests/shell_account_test.cpp",
+    "bytes": 64976,
+    "sha256": "eca2a91a58d8d804818755e95ce9f1f60555b3ffec296e61dfaee8d8c4c4dbaf",
+    "mtime_ns": 1792748670796947800,
+    "unchanged_during_read": true,
+    "matches_end_of_capture": true
+  },
+  "source_hashes_differ": true,
+  "final_source_count": 144,
+  "source_changed_during_final_capture": [],
+  "collector_stable_delivery_flag_preserved": false,
+  "scope": "Build metadata and public logs only. No executable, runtime database, configuration, core dump or authentication value is archived. This snapshot does not claim RK execution, instrument verification or long-duration qualification."
+}

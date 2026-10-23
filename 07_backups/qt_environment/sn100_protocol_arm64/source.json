@@ -1,0 +1,70 @@
+{
+  "scope": "O05-2 ARM64 build-only additional Qt5Network dependencies; no system install or board changes; plain TCP only, optional TLS inputs excluded from the formal archive",
+  "date": "2026-10-23",
+  "qt_version": "5.15.13+dfsg-1ubuntu1",
+  "restore": "06_programs/sn100_host/protocol/prepare_transport_arm64.sh",
+  "destination": "temp/sn100_host/protocol/o05_2/arm64_network_sysroot",
+  "existing_core_sysroot_unchanged": true,
+  "indexes": [
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/main/binary-arm64/Packages.xz",
+      "sha256": "4a1901e6124fb0a111f5dffc8f5c14474f449e2ecfa71f2eaf0b29917edb53f9"
+    },
+    {
+      "url": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/universe/binary-arm64/Packages.xz",
+      "sha256": "6df230cf5cfebcbd59e4e2713b8eed07dc0aaed66fb471ebf046cb70ccb07275",
+      "reuse": "Previously downloaded project build input"
+    }
+  ],
+  "packages": [
+    {
+      "package": "libqt5network5t64",
+      "version": "5.15.13+dfsg-1ubuntu1",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/universe/q/qtbase-opensource-src/libqt5network5t64_5.15.13+dfsg-1ubuntu1_arm64.deb",
+      "sha256": "5c5cbe89e2012156327cfadea7b389b4810b2bed6ed026b089228b99bd5b586c",
+      "depends": "libc6 (>= 2.38), libgssapi-krb5-2 (>= 1.17), libqt5core5t64 (>= 5.15.1), libqt5dbus5t64 (>= 5.14.1), libstdc++6 (>= 11), qtbase-abi-5-15-13, zlib1g (>= 1:1.1.4)"
+    },
+    {
+      "package": "libgssapi-krb5-2",
+      "version": "1.20.1-6ubuntu2",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/k/krb5/libgssapi-krb5-2_1.20.1-6ubuntu2_arm64.deb",
+      "sha256": "27d6f3321a5b126ff1cfa76399506bb11e53ac38b5d263c3acdae2452356932d",
+      "depends": "libkrb5-3 (= 1.20.1-6ubuntu2), libc6 (>= 2.38), libcom-err2 (>= 1.43.9), libk5crypto3 (>= 1.20), libkrb5support0 (= 1.20.1-6ubuntu2)"
+    },
+    {
+      "package": "libkrb5-3",
+      "version": "1.20.1-6ubuntu2",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/k/krb5/libkrb5-3_1.20.1-6ubuntu2_arm64.deb",
+      "sha256": "45f2427ee2de6006348e6acfc6f104a4624fbe8577275ce7ab6a9a510842cdc3",
+      "depends": "libkrb5support0 (= 1.20.1-6ubuntu2), libc6 (>= 2.38), libcom-err2 (>= 1.43.9), libk5crypto3 (>= 1.20), libkeyutils1 (>= 1.5.9), libssl3t64 (>= 3.0.0)"
+    },
+    {
+      "package": "libk5crypto3",
+      "version": "1.20.1-6ubuntu2",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/k/krb5/libk5crypto3_1.20.1-6ubuntu2_arm64.deb",
+      "sha256": "6b372dcd362202fba55fe40dabc9e6216fb96757b3f908a0056049fd1d3e6706",
+      "depends": "libc6 (>= 2.38), libkrb5support0 (= 1.20.1-6ubuntu2)"
+    },
+    {
+      "package": "libkrb5support0",
+      "version": "1.20.1-6ubuntu2",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/k/krb5/libkrb5support0_1.20.1-6ubuntu2_arm64.deb",
+      "sha256": "f24500abe0707ad5f16371e9f511d48923d8378f240afe9caa77a91b4854a95a",
+      "depends": "libc6 (>= 2.38)"
+    },
+    {
+      "package": "libcom-err2",
+      "version": "1.47.0-2.4~exp1ubuntu4",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/e/e2fsprogs/libcom-err2_1.47.0-2.4~exp1ubuntu4_arm64.deb",
+      "sha256": "369be6a7c9e8d85de7eb81697bad038016805cf510ea5d7cb03b0c6e91d7eda5",
+      "depends": "libc6 (>= 2.38)"
+    },
+    {
+      "package": "libkeyutils1",
+      "version": "1.6.3-3build1",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/main/k/keyutils/libkeyutils1_1.6.3-3build1_arm64.deb",
+      "sha256": "d141e94ed3b32ea6540f2e927a83b3d42cd4378256a1aad60cda583ffdbd78af",
+      "depends": "libc6 (>= 2.17)"
+    }
+  ]
+}

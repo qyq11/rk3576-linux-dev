@@ -1,0 +1,33 @@
+{
+  "schema": "sn100-integrated-report-independent-verification-v1",
+  "passed": true,
+  "checks": [
+    {
+      "run": "offscreen_02",
+      "passed": true,
+      "page_count": 1,
+      "pypdf_matches_saved_raw_text": true,
+      "independent_parsers": [
+        "pypdf",
+        "pdfplumber"
+      ],
+      "hospital_literal": "整合匿名医院 O'Brien",
+      "normalization": "Fixed report title ignores layout whitespace only; no character normalization or substitution"
+    },
+    {
+      "run": "xcb_02",
+      "passed": true,
+      "page_count": 1,
+      "pypdf_matches_saved_raw_text": true,
+      "independent_parsers": [
+        "pypdf",
+        "pdfplumber"
+      ],
+      "hospital_literal": "整合匿名医院 O'Brien",
+      "normalization": "Fixed report title ignores layout whitespace only; no character normalization or substitution"
+    }
+  ],
+  "retained_failed_log_verified": true,
+  "xcb_wrapper_exit_0_verified": true,
+  "archive_contains_no_database_or_secret_file": true
+}

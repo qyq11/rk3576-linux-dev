@@ -1,0 +1,199 @@
+{
+  "schema": "sn100-o05-3-readonly-request1160-tcp-review-v1",
+  "scope": "Read existing frozen sources and terminal wire records only; no execution, reconnection, source change, or retest",
+  "logical_request": 1160,
+  "query": "Qk",
+  "connection_generation": 59,
+  "wire_has_transaction_id": false,
+  "timestamp_note": "UTC/Asia-Shanghai are derived from summary.started_utc plus monotonic event elapsed_ms; per-event wall-clock timestamps were not recorded",
+  "stage_started_utc": "2026-10-23T11:54:38.804Z",
+  "golden_query_hex": "02 03 00 06 00 00 00 01 51 6B 3B 04 05",
+  "wire_file": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\protocol\\o05_3\\long_run_01\\recovery_8h\\wire_0002.jsonl",
+  "wire_sha256": "3a5642cfa783bebdbaae5afc060890f6931bfe2378288973bb1b3457e22acda7",
+  "summary_file": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\protocol\\o05_3\\long_run_01\\recovery_8h\\summary.json",
+  "summary_sha256": "d457e2cf4248464fa11a67574b82de8e3deeae58f24a1227aa7589556816136e",
+  "frozen_sources": [
+    {
+      "frozen_file": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\04_references\\sn100_host\\protocol_stability_20261023\\long_run_01\\source_snapshot\\read_only_client.cpp",
+      "sha256": "0e0d61c1504b3cf095890e4e10a6edbb3ac0e863b2a80f6ca9a394ac1755cb13",
+      "expected_sha256": "0e0d61c1504b3cf095890e4e10a6edbb3ac0e863b2a80f6ca9a394ac1755cb13",
+      "matches_job_manifest": true
+    },
+    {
+      "frozen_file": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\04_references\\sn100_host\\protocol_stability_20261023\\long_run_01\\source_snapshot\\tcp_transport.cpp",
+      "sha256": "7c625117b506edf16f4cecc9e0e2dd8e6ab47bf53a38dc6d30c48e5e87ea8196",
+      "expected_sha256": "7c625117b506edf16f4cecc9e0e2dd8e6ab47bf53a38dc6d30c48e5e87ea8196",
+      "matches_job_manifest": true
+    },
+    {
+      "frozen_file": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\04_references\\sn100_host\\protocol_stability_20261023\\long_run_01\\source_snapshot\\soak_main.cpp",
+      "sha256": "646c7f7181ac5eb47e713a5c0d78ccc09c92110bcac0302d5f5ba7293f2e6e3c",
+      "expected_sha256": "646c7f7181ac5eb47e713a5c0d78ccc09c92110bcac0302d5f5ba7293f2e6e3c",
+      "matches_job_manifest": true
+    }
+  ],
+  "timeline": [
+    {
+      "sequence": 29168,
+      "source_line": 8855,
+      "elapsed_ms": 1149852,
+      "derived_utc": "2026-10-23T12:13:48.656Z",
+      "derived_asia_shanghai": "2026-10-23T20:13:48.656+08:00",
+      "event": {
+        "attempt": 1,
+        "elapsed_ms": 1149852,
+        "generation": 59,
+        "hex": "02 03 00 06 00 00 00 01 51 6B 3B 04 05",
+        "kind": "client.TX.queued.not_peer_ack",
+        "sequence": 29168
+      }
+    },
+    {
+      "sequence": 29169,
+      "source_line": 8856,
+      "elapsed_ms": 1149855,
+      "derived_utc": "2026-10-23T12:13:48.659Z",
+      "derived_asia_shanghai": "2026-10-23T20:13:48.659+08:00",
+      "event": {
+        "elapsed_ms": 1149855,
+        "hex": "02 03 00 06 00 00 00 01 51 6B 3B 04 05",
+        "kind": "peer.RX.actual",
+        "sequence": 29169
+      }
+    },
+    {
+      "sequence": 29170,
+      "source_line": 8857,
+      "elapsed_ms": 1149856,
+      "derived_utc": "2026-10-23T12:13:48.660Z",
+      "derived_asia_shanghai": "2026-10-23T20:13:48.660+08:00",
+      "event": {
+        "elapsed_ms": 1149856,
+        "hex": "51 6B",
+        "kind": "peer.deliberately.withheld.first.reply",
+        "sequence": 29170
+      }
+    },
+    {
+      "sequence": 29171,
+      "source_line": 8858,
+      "elapsed_ms": 1149902,
+      "derived_utc": "2026-10-23T12:13:48.706Z",
+      "derived_asia_shanghai": "2026-10-23T20:13:48.706+08:00",
+      "event": {
+        "elapsed_ms": 1149902,
+        "hex": "06 07 00 16 00 00 00 01 51 71 5B 31 5D 5B 42 61 73 65 5D 5B 31 31 34 38 35 5D 1A 08 09",
+        "kind": "peer.TX.queued.not_client_ack",
+        "sequence": 29171
+      }
+    },
+    {
+      "sequence": 29172,
+      "source_line": 8859,
+      "elapsed_ms": 1149904,
+      "derived_utc": "2026-10-23T12:13:48.708Z",
+      "derived_asia_shanghai": "2026-10-23T20:13:48.708+08:00",
+      "event": {
+        "data": {
+          "channels": {
+            "Base": "11485"
+          },
+          "declared_count": 1,
+          "duplicate_channels": 0,
+          "evidence": "simulated-source-derived",
+          "source_encoding": "utf-8-offline-profile"
+        },
+        "elapsed_ms": 1149904,
+        "generation": 59,
+        "hex": "51 71",
+        "kind": "client.RX.parsed",
+        "sequence": 29172
+      }
+    },
+    {
+      "sequence": 29173,
+      "source_line": 8860,
+      "elapsed_ms": 1149978,
+      "derived_utc": "2026-10-23T12:13:48.782Z",
+      "derived_asia_shanghai": "2026-10-23T20:13:48.782+08:00",
+      "event": {
+        "attempt": 2,
+        "elapsed_ms": 1149978,
+        "generation": 59,
+        "hex": "02 03 00 06 00 00 00 01 51 6B 3B 04 05",
+        "kind": "client.TX.queued.not_peer_ack",
+        "sequence": 29173
+      }
+    },
+    {
+      "sequence": 29174,
+      "source_line": 8861,
+      "elapsed_ms": 1150169,
+      "derived_utc": "2026-10-23T12:13:48.973Z",
+      "derived_asia_shanghai": "2026-10-23T20:13:48.973+08:00",
+      "event": {
+        "detail": "client.timeout: 只读等待及1次重试已耗尽；状态未知，TCP连接未据此假称断开",
+        "elapsed_ms": 1150169,
+        "generation": 59,
+        "hex": "51 6B",
+        "kind": "client.request.finished",
+        "sequence": 29174,
+        "success": false
+      }
+    },
+    {
+      "sequence": 29175,
+      "source_line": 8862,
+      "elapsed_ms": 1150172,
+      "derived_utc": "2026-10-23T12:13:48.976Z",
+      "derived_asia_shanghai": "2026-10-23T20:13:48.976+08:00",
+      "event": {
+        "elapsed_ms": 1150172,
+        "error": "unexpected request failure: client.timeout: 只读等待及1次重试已耗尽；状态未知，TCP连接未据此假称断开",
+        "kind": "experiment.result",
+        "passed": false,
+        "sequence": 29175
+      }
+    }
+  ],
+  "interval_ms": {
+    "first_queue_to_first_peer_read": 3,
+    "first_queue_to_retry_queue": 126,
+    "retry_queue_to_failed_callback": 191,
+    "first_queue_to_failed_callback": 317
+  },
+  "terminal_accounting": {
+    "logical_queries": 1160,
+    "completed_queries": 1159,
+    "query_attempts": 1276,
+    "peer_query_rx_bytes": 16575,
+    "queued_query_bytes": 16588,
+    "difference_bytes": 13,
+    "expected_query_wire_remaining": 13,
+    "cancelled_unconfirmed_query_bytes": 0,
+    "diagnostics_sent": 11485,
+    "diagnostics_received": 11485,
+    "planned_recoveries": 19,
+    "pending_after_close": false,
+    "fresh_status_after_close": false
+  },
+  "evidence_conclusions": [
+    "First Qk is confirmed read by the owned peer; first response intentionally withheld under retry_every=10 for request1160.",
+    "Attempt2 has a local successful queue notification; no corresponding peer.RX.actual, Qk reply queue, or Qk parsed observation is present before final failure.",
+    "Exactly13 queued bytes remain unconfirmed, matching one query frame and terminal wire accounting.",
+    "Client deadline starts after local queue acceptance, before asynchronous transport write/pump; queued is not delivered evidence.",
+    "Soak finish sets m_finishing=true, then closes client and aborts peer; peer readyRead skips work when finishing."
+  ],
+  "cannot_conclude": [
+    "No claim that attempt2 was never passed to QTcpSocket, never sent by the OS, never reached peer kernel/Qt buffers, or was lost on TCP.",
+    "No cause attribution to a specific event-loop, scheduler, filesystem, network, WSL/host sleep, or transport defect from these records alone.",
+    "The191ms record interval does not locate the aggregate265.897876ms heartbeat maximum to this exact request.",
+    "The120ms local experiment timeout is not a confirmed SN100 instrument deadline; evidence does not authorize loosening it or retesting."
+  ],
+  "source_references": {
+    "client_deadline_and_retry": "read_only_client.cpp:164-170,240-265",
+    "transport_planned_queue_and_async_pump": "tcp_transport.cpp:226-236,335-361",
+    "soak_policy_and_actual_read": "soak_main.cpp:74,98-103,243-263,290-298",
+    "soak_terminal_cleanup": "soak_main.cpp:385-405"
+  }
+}

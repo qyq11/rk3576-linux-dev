@@ -1,0 +1,420 @@
+{
+  "schema": "sn100-integration-pure-regression-v1",
+  "started": "2026-10-23T17:26:47.134+08:00",
+  "scope": "Fresh WSL Release QtCore/QtTest builds; fixed source vectors/synthetic fixture only",
+  "gui_started": false,
+  "network_or_instrument": false,
+  "database_or_credentials_read": false,
+  "resource_measurement_performed": false,
+  "scheduling": "Serial modules, nice 10, make -j1; no GUI focus/input or resource stress workload.",
+  "modules": [
+    {
+      "module": "quality",
+      "fixed_inputs": "Committed fixed vectors in statistics_test.cpp; CLI fixture is not substituted.",
+      "sources": [
+        {
+          "path": "06_programs/sn100_host/quality/tests/statistics_test.pro",
+          "bytes": 281,
+          "sha256": "4b2c6a7f9e74859b5fdee9d86c19bf87a20e1db556dd1d49d6f6fd2850d06039",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/quality/tests/statistics_test.cpp",
+          "bytes": 4726,
+          "sha256": "b25fb732cb60027fafac23fafb702ec45d44270fe18296e00a73ed6e38830ce9",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/quality/statistics.cpp",
+          "bytes": 3970,
+          "sha256": "17c48489ef4af997adb358c27d00b11498f6ef71cf782dd203ea4895755511dc",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/quality/statistics.h",
+          "bytes": 912,
+          "sha256": "04388558193519fb831aec3d74ddb9e321f510f92cb2f39804424049af879ad8",
+          "unchanged_during_read": true
+        }
+      ],
+      "build_directory": "temp/sn100_host/integration/pure_regression/quality/build",
+      "qmake": {
+        "command": [
+          "/usr/lib/qt5/bin/qmake",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/quality/tests/statistics_test.pro",
+          "-spec",
+          "linux-g++",
+          "CONFIG+=release",
+          "CONFIG-=debug"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.2738691889999245,
+        "log": "temp/sn100_host/integration/pure_regression/quality/qmake.log"
+      },
+      "make": {
+        "command": [
+          "/usr/bin/nice",
+          "-n",
+          "10",
+          "/usr/bin/make",
+          "-j1"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 5.833076203000019,
+        "log": "temp/sn100_host/integration/pure_regression/quality/make.log"
+      },
+      "artifact": {
+        "path": "temp/sn100_host/integration/pure_regression/quality/build/sn100_quality_statistics_test",
+        "bytes": 47088,
+        "sha256": "9bef355521c420ccadac0afb4c37ff12a682b5b9cb694ae21f88eada140ef6f7",
+        "unchanged_during_read": true
+      },
+      "test": {
+        "command": [
+          "/usr/bin/nice",
+          "-n",
+          "10",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/quality/build/sn100_quality_statistics_test",
+          "-v1"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.07601075599995966,
+        "log": "temp/sn100_host/integration/pure_regression/quality/test.log"
+      },
+      "totals": {
+        "passed": 19,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0
+      },
+      "file": {
+        "command": [
+          "/usr/bin/file",
+          "--brief",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/quality/build/sn100_quality_statistics_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.037757834999865736,
+        "log": "temp/sn100_host/integration/pure_regression/quality/file.log"
+      },
+      "readelf": {
+        "command": [
+          "/usr/bin/readelf",
+          "-h",
+          "-d",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/quality/build/sn100_quality_statistics_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.020509909000111293,
+        "log": "temp/sn100_host/integration/pure_regression/quality/readelf.log"
+      },
+      "ldd": {
+        "command": [
+          "/usr/bin/ldd",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/quality/build/sn100_quality_statistics_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.03792536200012364,
+        "log": "temp/sn100_host/integration/pure_regression/quality/ldd.log"
+      },
+      "direct_needed": [
+        "libQt5Test.so.5",
+        "libQt5Core.so.5",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "qt_libraries": [
+        "libQt5Core.so.5",
+        "libQt5Test.so.5"
+      ],
+      "missing_libraries": false,
+      "source_changed_during_build_or_test": [],
+      "only_QtCore_and_QtTest": true,
+      "dependency_note": "QtTest is test harness only; QtCore has non-Qt system dependencies shown by ldd. This is not literally only the C++ standard library.",
+      "ok": true
+    },
+    {
+      "module": "coagulation",
+      "fixed_inputs": "Committed synthetic Gompertz, ramp, flat, multipeak and boundary vectors in endpoint_test.cpp.",
+      "sources": [
+        {
+          "path": "06_programs/sn100_host/coagulation/tests/endpoint_test.pro",
+          "bytes": 280,
+          "sha256": "cf9fe35a62a1e8ed4bcf03f843d45fad17b632dd478dd35d88ab933658907ceb",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/coagulation/tests/endpoint_test.cpp",
+          "bytes": 10620,
+          "sha256": "3e4a4ce56443505627f81bdd97058aae17f3296c8ad3f5fca7b2e0d4b2f63b95",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/coagulation/clot_endpoint.cpp",
+          "bytes": 19036,
+          "sha256": "cf6d39ecf5fc4cc6359befeebcf01ad115b15e46b8a16577d12f5febd592bd16",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/coagulation/clot_endpoint.h",
+          "bytes": 2266,
+          "sha256": "df950b735c2b2d670ff804b4de5f75223f669eef59e70398eea8482315d35183",
+          "unchanged_during_read": true
+        }
+      ],
+      "build_directory": "temp/sn100_host/integration/pure_regression/coagulation/build",
+      "qmake": {
+        "command": [
+          "/usr/lib/qt5/bin/qmake",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/coagulation/tests/endpoint_test.pro",
+          "-spec",
+          "linux-g++",
+          "CONFIG+=release",
+          "CONFIG-=debug"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.16984457300009126,
+        "log": "temp/sn100_host/integration/pure_regression/coagulation/qmake.log"
+      },
+      "make": {
+        "command": [
+          "/usr/bin/nice",
+          "-n",
+          "10",
+          "/usr/bin/make",
+          "-j1"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 5.540036549999968,
+        "log": "temp/sn100_host/integration/pure_regression/coagulation/make.log"
+      },
+      "artifact": {
+        "path": "temp/sn100_host/integration/pure_regression/coagulation/build/sn100_clot_endpoint_test",
+        "bytes": 94536,
+        "sha256": "abc340cceb57c9fec4c79d5179cf507d42dfe1c6bfcc928281f20b36cc707879",
+        "unchanged_during_read": true
+      },
+      "test": {
+        "command": [
+          "/usr/bin/nice",
+          "-n",
+          "10",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/coagulation/build/sn100_clot_endpoint_test",
+          "-v1"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.07004931000005854,
+        "log": "temp/sn100_host/integration/pure_regression/coagulation/test.log"
+      },
+      "totals": {
+        "passed": 19,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0
+      },
+      "file": {
+        "command": [
+          "/usr/bin/file",
+          "--brief",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/coagulation/build/sn100_clot_endpoint_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.03795403999993141,
+        "log": "temp/sn100_host/integration/pure_regression/coagulation/file.log"
+      },
+      "readelf": {
+        "command": [
+          "/usr/bin/readelf",
+          "-h",
+          "-d",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/coagulation/build/sn100_clot_endpoint_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.014272570000002816,
+        "log": "temp/sn100_host/integration/pure_regression/coagulation/readelf.log"
+      },
+      "ldd": {
+        "command": [
+          "/usr/bin/ldd",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/coagulation/build/sn100_clot_endpoint_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.038350019000063185,
+        "log": "temp/sn100_host/integration/pure_regression/coagulation/ldd.log"
+      },
+      "direct_needed": [
+        "libQt5Test.so.5",
+        "libQt5Core.so.5",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "qt_libraries": [
+        "libQt5Core.so.5",
+        "libQt5Test.so.5"
+      ],
+      "missing_libraries": false,
+      "source_changed_during_build_or_test": [],
+      "only_QtCore_and_QtTest": true,
+      "dependency_note": "QtTest is test harness only; QtCore has non-Qt system dependencies shown by ldd. This is not literally only the C++ standard library.",
+      "ok": true
+    },
+    {
+      "module": "protocol",
+      "fixed_inputs": "Committed simulated literal frames and tests/fixtures/protocol_replay.json; no live transport.",
+      "sources": [
+        {
+          "path": "06_programs/sn100_host/tests/protocol_test.pro",
+          "bytes": 412,
+          "sha256": "3bea93b91843ce6f785c90070bf57b5fbd3acafbaf14b34fd0d4c61a4359f1f6",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/tests/protocol_test.cpp",
+          "bytes": 31177,
+          "sha256": "835e787a6ceea8f9c428408361b17274719660765a364d56b045cffa26699904",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/protocol/frame_codec.cpp",
+          "bytes": 9651,
+          "sha256": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/protocol/frame_codec.h",
+          "bytes": 2074,
+          "sha256": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/protocol/status_session.cpp",
+          "bytes": 11691,
+          "sha256": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/protocol/status_session.h",
+          "bytes": 2113,
+          "sha256": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+          "unchanged_during_read": true
+        },
+        {
+          "path": "06_programs/sn100_host/tests/fixtures/protocol_replay.json",
+          "bytes": 9097,
+          "sha256": "c8530c045483b8c04c01f59d77783a6369ab8494b25df86c3c7c0f6a9e35da11",
+          "unchanged_during_read": true
+        }
+      ],
+      "build_directory": "temp/sn100_host/integration/pure_regression/protocol/build",
+      "qmake": {
+        "command": [
+          "/usr/lib/qt5/bin/qmake",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/protocol_test.pro",
+          "-spec",
+          "linux-g++",
+          "CONFIG+=release",
+          "CONFIG-=debug"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.2189440800000284,
+        "log": "temp/sn100_host/integration/pure_regression/protocol/qmake.log"
+      },
+      "make": {
+        "command": [
+          "/usr/bin/nice",
+          "-n",
+          "10",
+          "/usr/bin/make",
+          "-j1"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 8.292106906000072,
+        "log": "temp/sn100_host/integration/pure_regression/protocol/make.log"
+      },
+      "artifact": {
+        "path": "temp/sn100_host/integration/pure_regression/protocol/build/sn100_protocol_test",
+        "bytes": 192672,
+        "sha256": "067be763935dc8707b2bc39e7edcbe78931b9e6ad29efe9daa3d04b4d1b6c462",
+        "unchanged_during_read": true
+      },
+      "test": {
+        "command": [
+          "/usr/bin/nice",
+          "-n",
+          "10",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/protocol/build/sn100_protocol_test",
+          "-v1"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.3695994370000335,
+        "log": "temp/sn100_host/integration/pure_regression/protocol/test.log"
+      },
+      "totals": {
+        "passed": 63,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0
+      },
+      "file": {
+        "command": [
+          "/usr/bin/file",
+          "--brief",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/protocol/build/sn100_protocol_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.036266398999941885,
+        "log": "temp/sn100_host/integration/pure_regression/protocol/file.log"
+      },
+      "readelf": {
+        "command": [
+          "/usr/bin/readelf",
+          "-h",
+          "-d",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/protocol/build/sn100_protocol_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.020887305000087508,
+        "log": "temp/sn100_host/integration/pure_regression/protocol/readelf.log"
+      },
+      "ldd": {
+        "command": [
+          "/usr/bin/ldd",
+          "--",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/integration/pure_regression/protocol/build/sn100_protocol_test"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.03586370299990449,
+        "log": "temp/sn100_host/integration/pure_regression/protocol/ldd.log"
+      },
+      "direct_needed": [
+        "libQt5Test.so.5",
+        "libQt5Core.so.5",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "qt_libraries": [
+        "libQt5Core.so.5",
+        "libQt5Test.so.5"
+      ],
+      "missing_libraries": false,
+      "source_changed_during_build_or_test": [],
+      "only_QtCore_and_QtTest": true,
+      "dependency_note": "QtTest is test harness only; QtCore has non-Qt system dependencies shown by ldd. This is not literally only the C++ standard library.",
+      "ok": true
+    }
+  ],
+  "finished": "2026-10-23T17:27:08.671+08:00",
+  "ok": true
+}

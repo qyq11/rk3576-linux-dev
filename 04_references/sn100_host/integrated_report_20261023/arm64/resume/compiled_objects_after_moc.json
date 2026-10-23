@@ -1,0 +1,714 @@
+{
+  "schema": "sn100-explicit-arm-link-resume-v1",
+  "compiled_inputs": {
+    "data/account_store.cpp": "91b521bd3a6d707f2c602fe5736df0731cd2c8649211dd3408de2b9387cb902c",
+    "data/account_store.h": "16e9b7ac2bbdd94ea9c6b9178cf85ee82871c698040f231938393213a2e1e06a",
+    "data/hospital_store.cpp": "e623a2e3552806414ba9e3f318036e3cdaa1dce2b81ab878d15deeb98f552bec",
+    "data/hospital_store.h": "a3e21ee67520f7e64c6dbce6b3dde47516a6d609324ed2fa750867e2a9e8c576",
+    "history/frm_report_material.ui": "ff6c3f81eaff7631fd11e2b1aa417fbc0af20da31e0d4123a2e8d84a41b24b12",
+    "history/history.pro": "eea54ed103f66676a2da0b4e7e0c909ac8a224322867087540a1670c57ecd7f6",
+    "history/history_core.pri": "6a9ff2f5c2a729a1b58f1f9748025e0c22b353c24b23329f93038b656180bfc2",
+    "history/history_page.cpp": "0b7173fab4842fa72345c0ea2ea54835d4df85da7cd95f10c9eaedbbab4bdcd9",
+    "history/history_page.h": "f4ce14e59d5d8bf98116b9d877f2968aad452bc8e0c171e96e25c3bfde98d956",
+    "history/history_report.pri": "74f7f86afb162760a8e0b95ae53e40d2cc879baa60caa98c2ab4bfe96d193acc",
+    "history/history_store.cpp": "51b52c8e205ceb14a96be9c4087802ef954c364801cc62f725ab516e1a902558",
+    "history/history_store.h": "385d976d549fba18fa94420668e4cd8f0360d0bd24f1a148c720e69c97dcf6ab",
+    "history/main.cpp": "78315ded159fa4a2b0d54725a1289c1f0357c40f7bdd1e35031427520604927d",
+    "history/mask_dlg_export.ui": "b212c3d3bc1ff211a05b2216854ec56cf905581bb0938221b4d8cf91149cfd21",
+    "history/mask_dlg_query_report.ui": "c78b4bd3e7d688f6c3680172b01568c8f7bbc3131d41a6f14a625a2ad0b2368f",
+    "history/mask_dlg_report_detail.ui": "5804678d88bdf7782e1e7511973e85c1f9d3850705dd88d803c45b428b379e79",
+    "history/origins.json": "d4e347008c0451b854e290f2190eb717fd0a93862e003171a11c29e7b880cbf5",
+    "history/renderer.pro": "f06d19d08a9ab807b470a3a93eda422c95bddd7f4b5e4c9b308791949bd58e56",
+    "history/report_controller.cpp": "79325bb5f8a25a885f2d38ebf8890fd18f0d0ceb25e451afc991bfa9af5dc491",
+    "history/report_controller.h": "5cca8e5b3dc69717a473ed16fac318495a6dfdcf7247f250f88ede0bf4a85e69",
+    "history/report_document.cpp": "ebe25d4f18b8e896f3865f0a18a97ee0c3d3301a96a72b6a982a06715dbe78f8",
+    "history/report_document.h": "80b70bf75f85ff1eef234cfebeb395fa9a32619dcb0f2467aadbc04673197d9b",
+    "history/report_engine.pri": "05d433bce7ec0d22d103e0a7c91ed73d752d779dd1d05b0b6db4f9318da27250",
+    "history/report_pdf_mapping.cpp": "2b8e964c9d1572d9f4b5cb7585db1bb89d2efbb8c8d77833d3b0411de19c9de7",
+    "history/report_pdf_mapping.h": "c11e310d26c07045d2a38cdd3873ee7f34fbde4ffe5a68f157cd27ae19c65aae",
+    "history/report_render.cpp": "c8855d2466c0c15917074b20372da4d9d23a916c8d65c6db1e0d853008125707",
+    "history/report_render.h": "e39e54e72506c78d429313b21d349ca3cd0d827e5729a382ad87fe479f30488c",
+    "history/report_renderer.cpp": "508ed7a42241cbd78876739df0913b6d771609b131f1e4af4d009d37582704db",
+    "history/report_resources.qrc": "90e45d3956f33bdc91375cf67fa7bf461be3b5c554e31324bd9d00c8ea783389",
+    "history/resources.qrc": "b879904f45d27f5802a9b45e230390a45fd94502794c6214233038507af460a2",
+    "history/result_statistics.cpp": "8051ad429db0444c751d83da1c5744c0de1c1f83cae2bba955abed0f1e891702",
+    "history/result_statistics.h": "91809fab7c16499f019d7bc2590beabf441fd4314c024363c287448c90b48b13",
+    "history/templates/report.xml": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2",
+    "resources/arrow_drop_down.svg": "5be563e2aa73a39f3772114ba965758e7304852e756be95ca3dd30f549b74005",
+    "resources/close.png": "1762d1372fe2cfc6b0aae20febf532484dad3702a9ad1be992617a49b7f643f4",
+    "resources/messagebox/message_error.png": "3c1869e89ebf97e7bed6b1fdabd09323c238624807b51b2c6212f538e277f316",
+    "resources/messagebox/message_error_hover.png": "8bba184f3ccb339ae05f59cfa2c378a798fdef6855d4f512d7bd75d8bdb0a51c",
+    "resources/messagebox/message_error_normal.png": "5a3e70e0a74b5be8342d7703c6c00e7231619f7458c118057e9c47677ee41da9",
+    "resources/messagebox/message_error_pressed.png": "b44f13c73726d5c427f729f692438d4ecc5b3bcef9cadba2b79f418debeb4811",
+    "resources/messagebox/message_info.png": "fd17050b43bb03587ef0e7c83e5a293318526350ecd641975ee4d616ea307fc3",
+    "resources/messagebox/message_info_hover.png": "695e1b9afc0fd500ffcb41109feb7e80c0556cbaf4cf50b9c540deb284f44e9a",
+    "resources/messagebox/message_info_normal.png": "a581c2582e646e451f0f6cef66e268e4897124d95e6c814067a5adb24a3f4462",
+    "resources/messagebox/message_info_pressed.png": "7546bc64bdba684f79ff413f6165ade95b7d9c556948ee90bdd5e65dd3e12864",
+    "resources/messagebox/message_ques.png": "c2a73ee07d056b97368900fbc312f0d43daa96812568e8b66521d3a2cf02b4c2",
+    "resources/messagebox/message_ques_hover.png": "2f509e7927927fae5318351c70971a0303619a6045af0768c2e45f676b0ed2cb",
+    "resources/messagebox/message_ques_normal.png": "f68058142cabf511d51a3d28ffb8011bec7b72d8a4eadc98fbcc76be8ab57ad5",
+    "resources/messagebox/message_ques_pressed.png": "b88077025cb84212fabdaf15055376e9b8c862f690a953fcaa54003ee38a09e9",
+    "resources/messagebox/message_warn_hover.png": "0ce9c1a115b3aaffe1494c015f17c7e7720016c131effbccd0f81bbbab4360bb",
+    "resources/messagebox/message_warn_normal.png": "89a630be7e8d7341c32ed052f8cb924824693247767b2e65dc8860d41de6433d",
+    "resources/messagebox/message_warn_pressed.png": "74e6295793780996271d01d75af5c19ceb536fdab5a0aaaa01cdc6dc793c53b9",
+    "resources/messagebox/message_warning.png": "3f44fb13c926bfc98b5999c5daa56a008c3643dd209ddf3825948f25bfc24c48",
+    "resources.qrc": "f33a2e3fa493a40f19ab3c591711887f4dda7d4879655d147544fbeab71479c7",
+    "shell/account_resources.qrc": "071ac7dd2b42d5e83183d8b4d68ea61a7f6ee889e4abdf9cfda73604c458c0f5",
+    "shell/frmmain.cpp": "2fbfe3598655a386e6162374ce6f31107468467c54e6e9d13fa483a1cb10bf22",
+    "shell/frmmain.h": "8c265dfa579ac35d5ca45745aa78130e5259d6fc4f379d62f24db86bec504d57",
+    "shell/frmmain.ui": "1cf4c4b6e2c5726b71812a085f438d3f326cfe2f50e6a99c402cdbb78d96167a",
+    "shell/frmuserset.cpp": "a85690a04672e6ce037cc3cae95ff4ca6efcff5ee0d0ee51e4912492d482cc5b",
+    "shell/frmuserset.h": "d959d60dadbc438de5d1089df0a5e319c9381a0c446df37dbda2397165dfe3de",
+    "shell/frmuserset.ui": "aab5767933b361d665a4dae9ac59a4503d4a80a2b766624f471527720c24823c",
+    "shell/history_shell.cpp": "f9cbc08872670a783e1c3676524958c4580a61049d34065b812a8094952f3697",
+    "shell/main.cpp": "a6a54b2ca873997f399b9514e8452148a7132cfaa59e2cec5e67621c23c9fcfb",
+    "shell/origins.json": "72674d7f141375d20c6aee84dae62cfc1e20179e8833fac856fb0d967221c555",
+    "shell/resources/logo/sn_logo_2.png": "45fc7f396f2d3a7a29f5c32d975e51834292cee661fd104218346b5e69d3c874",
+    "shell/resources/main_btn/menu_calibration.png": "fccf65ea6eccac200081ebe3904ec62ee62ebf0754cdd23098c06aae059a9a53",
+    "shell/resources/main_btn/menu_checked.png": "1bd430df15d037459e5b63134f7bcc81f31fc9891ae004ce62127dc6b2f245f1",
+    "shell/resources/main_btn/menu_driver.png": "ca34ccc3a4ca34de23743321889801af61e228bf5dc4f32f811a1788a6dd4e7c",
+    "shell/resources/main_btn/menu_project.png": "5d0e407be42b300be0271acf23a42dc00c16e8dfae4c32f7e9f21e4d02a67a5e",
+    "shell/resources/main_btn/menu_quality.png": "add2112a016e423381b579071459c24e0e087827263df95cf97f30ce3a18dc39",
+    "shell/resources/main_btn/menu_reagent.png": "0f901c611c1fce833ad27b8a20a24a06c95b0fefb18e8f32f75d21999df30b09",
+    "shell/resources/main_btn/menu_report.png": "7795abb197500b5e3a9c0c068cb7da3106cc621ce1ccef3eed2c15f33dc937ad",
+    "shell/resources/main_btn/menu_sample.png": "6bfccf4e699980f040a0200a09d69d3eee97ba0d1edf1f93f5469606e8a33e2b",
+    "shell/resources/main_btn/menu_user.png": "69b1733b4edef0f5950224161cd479ffc3d0241ffe8b5ba5d46ee2067b1f0380",
+    "shell/resources/main_btn/pause.png": "ffe15d2a7c63caa1abe9ca029867482e6a36d180c076ef1a9a54b88ac635273f",
+    "shell/resources/main_btn/pause_disable.png": "bf5a3eb652c7241da7112a754c4aa97bb53117c72f169662117c5bdff723752d",
+    "shell/resources/main_btn/shutdown_hover.png": "b9afec1b66458e28d647916b1110872039811588f78af06a3fc6eb5df2fdbe98",
+    "shell/resources/main_btn/shutdown_normal.png": "accf8d8a0464ed982ee63366783388d4e7f2dd977d1f6f17e6b03c0c5bbdc4c0",
+    "shell/resources/main_btn/shutdown_pressed.png": "57c960f9943867be222fed049e03235e567cc49780cf60a77958d784604a1421",
+    "shell/resources/main_btn/start.png": "a2f1087bf8a4f75d155e8b751202f81163018eeb26d0311622880635633d3f31",
+    "shell/resources/main_btn/start_disable.png": "811aecdad19cd66998f4e405eb6832625ce384482f4dad20fa15683801d71f38",
+    "shell/resources/main_state/alarm_hover.png": "4bdda42c2631524bda58e5a88a211db3b866ed87ac49c1094ed703626989ef00",
+    "shell/resources/main_state/alarm_normal.png": "c54374a4f7be3a7d6f30ada90a7788f75abf56e3d08d999f74d5481a54dcad4c",
+    "shell/resources/main_state/alarm_pressed.png": "31f73daa5e52b4ba51e3ed7491b39cc3827c9d27743700ebb6c0d4599245529f",
+    "shell/resources/main_state/clean_normal.png": "79a0447d419b536c6b1cfc9a1896cc9e518bac962cc4d296cabd29e3f76bf70e",
+    "shell/resources/main_state/closebeep_hover.png": "447f943be11470ce267c12b991aed3ea8921792406290b73709dcfca200635cc",
+    "shell/resources/main_state/closebeep_normal.png": "dc26d6e628d356ed233ca20c516a0300bb1c0f37955c9a55c4de49af90e0bae9",
+    "shell/resources/main_state/closebeep_pressed.png": "6dd9bd854ab4ecf1cfc8fda4452d31f2df83f62c3f677b6bb206268b3efafcb2",
+    "shell/resources/main_state/cup_normal.png": "5eb43f48352445ddcaee4b35e8dcccdff9aabb3aabe98ee53c5463488110d03e",
+    "shell/resources/main_state/lisoff_hover.png": "4105e7abaccd495a43e50fc9f2c30225fe4cdecdbc3b1b8e9205b64a3162c61d",
+    "shell/resources/main_state/lisoff_normal.png": "4105e7abaccd495a43e50fc9f2c30225fe4cdecdbc3b1b8e9205b64a3162c61d",
+    "shell/resources/main_state/lisoff_pressed.png": "4bce3f05fc777588258346f47e0e03c68fd1b13a00f12ac32674d866378df3fc",
+    "shell/resources/main_state/status_off.png": "eb6584c1a95bda46d16212297fe1c330df1d689adb4d75bfe3dcd34d8b69853c",
+    "shell/resources/main_state/temp_normal.png": "0ebfc5907f6c97268855319b740a651525e80f19552bd5c6612ae1d98876e3e5",
+    "shell/resources/main_state/usdcup_normal.png": "cd452f6f43f0a68c04dcfab5c8d89a9b53cca68da73099881d6c6748305868d8",
+    "shell/resources/main_state/usdwater_normal.png": "6f2cbd0fef80b0436e3d84b84ee7311f34bc8f138d4703f9e074304bdb703721",
+    "shell/resources/main_state/user_pic.png": "9cf7c2d45653be702c8340843bcaa0bac6f9354430c0dc7f1f874a049adfe813",
+    "shell/resources.qrc": "515f0213a1738d907ae582ea62dece00ebd79e5ac24ebd3face07742918a36f8",
+    "shell/shell.pri": "7fe59788c94008dec059d4c0b14669a38da577afdea5cecc98af7ad406c83112",
+    "shell/shell.pro": "fe5514b7064c6825d1feec840348f8ea7e6ba703b013a5993da79f672ab5a3d4",
+    "shell/shutdown_request.cpp": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+    "shell/shutdown_request.h": "32d8aafd9677c917da1e400de631cfe1ff307009b915090fb1717f7518e635ea",
+    "shell/widgets/cusbadgebutton.cpp": "29330a69dd2ee8c2477a36c097c2430d6c9d944cd523521d9822922d63734d32",
+    "shell/widgets/cusbadgebutton.h": "fa1d7fcc50be5786ad45f5b3a17cad83eaafc04738f1c3a58016aa2ea4618e40",
+    "shell/widgets/cusflageimage.cpp": "3025af82a86b78e7d4b0ac40807333a1e5332b97547bc551606e60e3994e5942",
+    "shell/widgets/cusflageimage.h": "daf132816913891cf11afd7573aa2891e60efdc4097012ebdeb4cb445e292870",
+    "shell/widgets/cusflageimage.ui": "2355c3c6055b790b33774e33722ec9a118b1672aaf20a4a42279c4ddfe4de115",
+    "shell/widgets/cusmenubutton.cpp": "ebee27f7fbb8ffe3249ba03b968ae89df5cb88ea8dab1ccf50e66d16b404981b",
+    "shell/widgets/cusmenubutton.h": "87631e36ce8c79fb2d3ea36688e4124b7624f28ea4bdfab3c6eff04259b7d572",
+    "shell/widgets/cusview.cpp": "74d15d945bd3defebc429d7020594ec740f3be77177abb3c5afb69a73dfff7ae",
+    "shell/widgets/cusview.h": "4b17de47ad628db7b5c476640d524740777b647234c240998b44d01ad6a0bfaf",
+    "shell/widgets/material/lib/qtmaterialoverlaywidget.cpp": "09414e95c30e53da492412fb8eb6624d9c45fe74ad8248d9b4e573220424c277",
+    "shell/widgets/material/lib/qtmaterialoverlaywidget.h": "e79f3e1ca5decca3960a99619a8fb9a0b67a335fb930ca53862a72ae36234e0d",
+    "shell/widgets/material/lib/qtmaterialripple.cpp": "0a93e76f79514f7daa473cbf3cc8828400c88258197e19daa4bc045b84da2e4e",
+    "shell/widgets/material/lib/qtmaterialripple.h": "57acc85424efb2af8e8455987a67f206051e64d7992a57ea9df5efe398cbc701",
+    "shell/widgets/material/lib/qtmaterialrippleoverlay.cpp": "7dfe0b143f3c02e44bb45a0ae8cc95809209a85731705e49795afb237f675fb2",
+    "shell/widgets/material/lib/qtmaterialrippleoverlay.h": "6efa45733a3fd160a049c3cda3955bb657e6b8956cb667cb22c31841addece61",
+    "shell/widgets/material/lib/qtmaterialstatetransition.cpp": "3842bd5857272e9eeb018645faabb63d421b6593469db9d154f6f73ba6233f9d",
+    "shell/widgets/material/lib/qtmaterialstatetransition.h": "a3ca893dc086f662de07ec76e2eb2e9d4f27334f2b19432ce902c7fb53dfa25c",
+    "shell/widgets/material/lib/qtmaterialstatetransitionevent.h": "ac1efe37016be6a6130c54e58faa99b51e8201382e36eb78b96f60570fb7c1a0",
+    "shell/widgets/material/lib/qtmaterialstyle.cpp": "7100f3c3a9e21d9c881c358d6ccd9e4164f50c5686da06cb6a46107ce39dea60",
+    "shell/widgets/material/lib/qtmaterialstyle.h": "c497abd2f7a64b7e74f5be0865523fa7f3c800138318357f6feadf925eb4f63c",
+    "shell/widgets/material/lib/qtmaterialstyle_p.h": "cccdaf3f09044c2e84988314a025f2e211e4156976e6fdaa1a7aa4159c5ef77c",
+    "shell/widgets/material/lib/qtmaterialtheme.cpp": "6a42b3e1193f361280ae33f16e93b5e144e9e3f8512d9cbae4a8cec150716016",
+    "shell/widgets/material/lib/qtmaterialtheme.h": "5cb524b433d319b447ee29d861c321714aae65530785cbec8986f58d4789f380",
+    "shell/widgets/material/lib/qtmaterialtheme_p.h": "72f6d8996a29e4bc8b298cee19a808bfd06a58fe3ac238b40e3dc5a8fc3fb2b9",
+    "shell/widgets/material/qtmaterialflatbutton.cpp": "59f2add9696ae1fed421d173a2a166d9fcecfa1ab4bd7e51c9be8ca7f8648dff",
+    "shell/widgets/material/qtmaterialflatbutton.h": "d1bffab45502d2ff05ccb4138af890d5760b68230c9103cd19b4d44f72ec1081",
+    "shell/widgets/material/qtmaterialflatbutton_internal.cpp": "d24f96b9fe12277c78f2387b271dbe815c8774177ae2cc9d136c4b62f13918bb",
+    "shell/widgets/material/qtmaterialflatbutton_internal.h": "06f6935d4819acbbb999b7d220609b4aeb712bf105dceda2596c8fbb9f55c01b",
+    "shell/widgets/material/qtmaterialflatbutton_p.h": "7a7add5b284315e470d8d9636453757ae8b4bb3e90cf13e4439f3839a6dfa94b",
+    "tests/fixtures/accounts.json": "85a052fd568778af75a8d4bc349525be22f83b51d37f67389ef4c3eba0527d24",
+    "tests/fixtures/history_report_options.json": "24c79877ece4fb987ae4711d09f9dde297cd7967224bb04c93aa8fe164d6096c",
+    "tests/fixtures/history_reports.json": "0869068a20f6d747907f2b249660f86da37e35dbd61bb7dfb9bfdda1842c9f95",
+    "thirdparty/qtrpt/CommonFiles/Barcode.cpp": "6f171697c6216d68b5635ba5ddc6a3d711067831dbf57c54d6df3bb48ad15b62",
+    "thirdparty/qtrpt/CommonFiles/Barcode.h": "503804278c082241102d2d736d566ca4320006e912e1a75ab049709068fc450c",
+    "thirdparty/qtrpt/CommonFiles/CommonClasses.cpp": "83a41f50a324e4f2532a1fddf821638d03cda7976dfbb8572a52e577c5ccbcfe",
+    "thirdparty/qtrpt/CommonFiles/CommonClasses.h": "579aabe4b61f601b805aa5a06f8e2030fd4f0946d6560e3bc7398d6fee529c1b",
+    "thirdparty/qtrpt/CommonFiles/CommonFiles_QtRpt.pri": "6fc1e46b3286698b59e21b9bf87d0601b742d9d0d1863dd960fbf38748934d81",
+    "thirdparty/qtrpt/CommonFiles/numbertoarabicword.cpp": "cb76a0729a831d0185c5be51ec5149fc619d6fc1f03ebda2b03a018d20b877ac",
+    "thirdparty/qtrpt/CommonFiles/numbertoarabicword.h": "97469406caf14bac14069266d1366ee3c8a865e950e625be5f04fed90fe28a89",
+    "thirdparty/qtrpt/NOTICE": "4042f5854aa17dc8100a54307be6ad93e427fb65077ec522725409f27511272a",
+    "thirdparty/qtrpt/QtRPT/QtRPT.pri": "d1a3976c1490ffb14e48877e8eb03355bc133d47fde09353f381a935a637d1ce",
+    "thirdparty/qtrpt/QtRPT/RptBandObject.cpp": "1ffefe8fe2071b46e71e475d13f34b06fba2ccebcc4d350d6229ae44dd36b437",
+    "thirdparty/qtrpt/QtRPT/RptBandObject.h": "c485414193130f23ec7b6aa4b1dc216fe33d2af3b5bdfe1a097534238f80843c",
+    "thirdparty/qtrpt/QtRPT/RptCrossTabObject.cpp": "0c03c4b894a75657fa5c19db0d41967d137e59d91f972dda4cc54f6073621af7",
+    "thirdparty/qtrpt/QtRPT/RptCrossTabObject.h": "d099a8202df000f66b3f6160b32b2cf46f02c1d56b8a7a10121b6cf24bad644c",
+    "thirdparty/qtrpt/QtRPT/RptDsAbstract.cpp": "b275d6ac84ccfd97e0df63c1900cd4083cbd67fb2927d0fbb4c6f0d5baafa8e5",
+    "thirdparty/qtrpt/QtRPT/RptDsAbstract.h": "ea39ffb62f9424947e1971bfd8c39d4fa4cc3045000bd1defc5b5327811b5811",
+    "thirdparty/qtrpt/QtRPT/RptDsInline.cpp": "d16c8eecc3e65b08d8228143d145b125cd083aeeea16f9d00f0d24d74c6157bc",
+    "thirdparty/qtrpt/QtRPT/RptDsInline.h": "72e482132ba863b11d0a1c904537e27440df2935f6b4de916beb3a225c2bc206",
+    "thirdparty/qtrpt/QtRPT/RptDsPlugin.cpp": "b53121495eb372f2ca99637efca3dea11a085ad4508ebaee9da819f34f9a5aaa",
+    "thirdparty/qtrpt/QtRPT/RptDsPlugin.h": "d89844d2af04b7f7097ef43302fe4fee2599ad593e2b9b1536d798f3df1f5cce",
+    "thirdparty/qtrpt/QtRPT/RptFieldObject.cpp": "c037947a1ee56485db0c26e9a3a6bb987de2af963cdbcf5c532ca3858a38e5fb",
+    "thirdparty/qtrpt/QtRPT/RptFieldObject.h": "6a74806fa08408e66eef4b3457344dbe1be71d2ac24bae911c02e8d784339139",
+    "thirdparty/qtrpt/QtRPT/RptPageObject.cpp": "8e16fe9c76b541717fd50742b8bff32c13ffe9b587e65b8cb94d301e89c8e2d1",
+    "thirdparty/qtrpt/QtRPT/RptPageObject.h": "e090d42980c9107afea64acbd07aff0c2301e5c7259e6e1300b1a027ebc75ac0",
+    "thirdparty/qtrpt/QtRPT/RptScriptEngine.cpp": "bb719514d8d7fc38d882cd35380f6d7ad3964587f15c162ae487209fbd9bc05c",
+    "thirdparty/qtrpt/QtRPT/RptScriptEngine.h": "0ffc5b7cb764bf6334209f0004a74ba41a32356a3a82cc96ae6e6df564b48352",
+    "thirdparty/qtrpt/QtRPT/RptSql.cpp": "178d4c22ff96d20729b087273d13ffebc693ca98bbb094e116070945d0bd3cc7",
+    "thirdparty/qtrpt/QtRPT/RptSql.h": "2edeea0c055f1fbc5e99e4b51e093ffd598c5eccaa1a51fc61a93aa460d27db8",
+    "thirdparty/qtrpt/QtRPT/config.pri": "ba738eddabe2255f420166815cc1f6986d78717ed8f4d1ebe7771222e135def9",
+    "thirdparty/qtrpt/QtRPT/excel.png": "b60d465c0bce252b64468e7eb0a44932169cdbb07c04facd00d42a84fe892d79",
+    "thirdparty/qtrpt/QtRPT/html.png": "db181568617e856dd73a7faa99422816b29973de1da10904d76366c3381e3041",
+    "thirdparty/qtrpt/QtRPT/imagesRpt.qrc": "0e3981b543df4e1ad08f503dd357a53e3315cf033f16c33f10bc851598ad301b",
+    "thirdparty/qtrpt/QtRPT/license.txt": "a29921edf62e5ca0ae106b825ac67fdf4ed02c6b7baa817390a0177ec6dff23c",
+    "thirdparty/qtrpt/QtRPT/pdf.png": "212d49ea330b333e82e19036a09950979d743ad4f6182954d6e105fb1344a4ad",
+    "thirdparty/qtrpt/QtRPT/qtrpt.cpp": "55589d03453c9928679d6840ae58d7c0d7b624a9f1adfe3abf7e9592ae49e4a3",
+    "thirdparty/qtrpt/QtRPT/qtrpt.h": "ac43eb83c96a7ade7c7a31ade08f1c873df1164d7e3993e95ef16b9d51ca950d",
+    "thirdparty/qtrpt/QtRPT/qtrpt_global.h": "40f1a8256aae1cc71a1838f0df55599dac911afb0f36cac367d6a514ca9af2d0",
+    "thirdparty/qtrpt/QtRPT/qtrptnamespace.h": "dbcbf0acf0e9085124c15d88b10c96ff9f21132e6d71667c10a4308ab0365802",
+    "thirdparty/qtrpt/origins.json": "f230916fec0e6d4299053bc7915ae70eb60df169cae8780a09ccc46864e47a1b",
+    "thirdparty/qtrpt/qtrpt.pri": "64e413f646e3b0d05d1c7874f1bd13e709a14ee670da307180fd1bd9db1d2a76",
+    "ui/cusdialogmask.cpp": "13988a85e7393aaa94e4ab9aaf14c380b642638c5b569da1e48701b9814d15d0",
+    "ui/cusdialogmask.h": "d5387b2f1eaf46a92b9811dac73ce11f4a79dfc05a4ebfd9f3654466ef5b0a6b",
+    "ui/cusdialogmask.ui": "bda358a92c69a564328151370c095087ae91678aee220b92f8d9606a6b0b05bd",
+    "ui/cusmessagebox.cpp": "b472f038667285b0043fc104f3f93c607e715b26c423e00ce1f49134473f26b7",
+    "ui/cusmessagebox.h": "63e5628ab67ff19656e0d39ca8b49c59300bfc64dc4f87ce2111dc3f6f2412da",
+    "ui/cusmessagebox.ui": "41fc2c70631cda45572f2ce4a3fe2785d47ddae6434719771dc90a93e194bfed",
+    "ui/frmaccountsetting.cpp": "4ca520400ded88361aea99b4ae686f0d70aec52725b961ac6527417b67b9aa10",
+    "ui/frmaccountsetting.h": "bbf4902cab6b579a5fa6b80da1b915d099955c71b5193f17fa5056d8181ee52d",
+    "ui/frmaccountsetting.ui": "712bd653374198a142672a70df9baf9a8dbbfb88e14fb129528b17899d0a35a8",
+    "ui/frmhospinfosetting.cpp": "f800e9e64ed69f3f5f20419c00b4e09a6104df79e4e7508ec31a890938e99c59",
+    "ui/frmhospinfosetting.h": "6c24d118e520cf5810ce03a182a4894b41ad77cff202f60f9ab1646014155b44",
+    "ui/frmhospinfosetting.ui": "9bbba8a9bda139595103ce1f078c0002b1a93ea32f7ac0bad2fd759610762b03",
+    "ui/mnemonic.cpp": "b37efe95be067c5677679931ae2a2065e3a3633d10c7b97f6f8decb0401eef4e",
+    "ui/mnemonic.h": "c2fc42b3603073119340d909f2f8be6c6c22acbf3cd752a2986f823df7266725"
+  },
+  "compiler_sha256": "8e4174bb36ea623ea1690321f762da6c25f8c2760ee6eb5973f3b123688b3243",
+  "build_type": "Release",
+  "flags": [
+    "-std=c++14",
+    "-O2",
+    "-g",
+    "-DQT_NO_DEBUG",
+    "-fPIC",
+    "-Wall",
+    "-Wextra",
+    "-DNO_BARCODE",
+    "-DHAVE_QT5",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/ui",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/history",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/CommonFiles",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtCore",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtGui",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtWidgets",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtSql",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtXml",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtPrintSupport",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtQml",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtNetwork",
+    "-I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtCharts",
+    "-isystem",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5",
+    "-isystem",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtCore",
+    "-isystem",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtGui",
+    "-isystem",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtWidgets",
+    "-isystem",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/sysroot/usr/include/aarch64-linux-gnu/qt5/QtSql"
+  ],
+  "build_script_sha256": "617b4a0c3eecb078994cf9f4b01ff9834122d008151ab76ce02216eba75834d1",
+  "objects": [
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/main.cpp",
+      "source_sha256": "a6a54b2ca873997f399b9514e8452148a7132cfaa59e2cec5e67621c23c9fcfb",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_0.o",
+      "object_sha256": "16fffa24cc57312b45ad27971d1d44dc0f3dbf0514acc61660ad21696be6ed48"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/shutdown_request.cpp",
+      "source_sha256": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_1.o",
+      "object_sha256": "72d9f6195a3b432719949c9adcc7e67e434fc94dea9250b7e19a298cd550d391"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/frmmain.cpp",
+      "source_sha256": "2fbfe3598655a386e6162374ce6f31107468467c54e6e9d13fa483a1cb10bf22",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_2.o",
+      "object_sha256": "697256087577e632c5648c2d423f06a408273fa8d48010c1e1fc5d891704e9f3"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/frmuserset.cpp",
+      "source_sha256": "a85690a04672e6ce037cc3cae95ff4ca6efcff5ee0d0ee51e4912492d482cc5b",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_3.o",
+      "object_sha256": "41a6de79dbbc0c8997cc7cb1f195c53f62d42788b64a168e210530607754fbd3"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/history_shell.cpp",
+      "source_sha256": "f9cbc08872670a783e1c3676524958c4580a61049d34065b812a8094952f3697",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_4.o",
+      "object_sha256": "94beab2f91a76fab71a2924aea7f5da193050e158eb3c2d8899bd9755d1c8e21"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/data/hospital_store.cpp",
+      "source_sha256": "e623a2e3552806414ba9e3f318036e3cdaa1dce2b81ab878d15deeb98f552bec",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_5.o",
+      "object_sha256": "a4683fe8a8d07b94ef1cd530c7fca3b39fb2ebfd5053fc3d3cadd93fbd07eb5b"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/ui/frmhospinfosetting.cpp",
+      "source_sha256": "f800e9e64ed69f3f5f20419c00b4e09a6104df79e4e7508ec31a890938e99c59",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_6.o",
+      "object_sha256": "c006c322dcb97ffa799fc9ca9c01f27e2b1f389eb236b7eb7d01e0f62cf2b232"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/ui/mnemonic.cpp",
+      "source_sha256": "b37efe95be067c5677679931ae2a2065e3a3633d10c7b97f6f8decb0401eef4e",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_7.o",
+      "object_sha256": "89e8a7a7469fdbd7bfdd49e15bc203831f93fba467b1f1e4210768a4fb5e5586"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/data/account_store.cpp",
+      "source_sha256": "91b521bd3a6d707f2c602fe5736df0731cd2c8649211dd3408de2b9387cb902c",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_8.o",
+      "object_sha256": "cdb4ec2284523956c69ffd564f3974ff48560f13e444e050269f5f83a4be479a"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/ui/frmaccountsetting.cpp",
+      "source_sha256": "4ca520400ded88361aea99b4ae686f0d70aec52725b961ac6527417b67b9aa10",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_9.o",
+      "object_sha256": "ec7d9a74b0e59aef890e3b4355da80c5a8e39de96f443dc7e20090d3741b15e6"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/ui/cusmessagebox.cpp",
+      "source_sha256": "b472f038667285b0043fc104f3f93c607e715b26c423e00ce1f49134473f26b7",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_10.o",
+      "object_sha256": "42ed5cd597f485f7641853f88a5617f0e86c6326302e9591521e78ed8038e6e1"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/ui/cusdialogmask.cpp",
+      "source_sha256": "13988a85e7393aaa94e4ab9aaf14c380b642638c5b569da1e48701b9814d15d0",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_11.o",
+      "object_sha256": "519a5232645ed89a7dbd6593bb67fbb9400afb4cb09cf13457c9ccebda6eb15f"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/history/history_store.cpp",
+      "source_sha256": "51b52c8e205ceb14a96be9c4087802ef954c364801cc62f725ab516e1a902558",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_12.o",
+      "object_sha256": "75a7acd2197be93b732a6331da493317e92e54172e1ddabd65381f7f2f5341d2"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/history/history_page.cpp",
+      "source_sha256": "0b7173fab4842fa72345c0ea2ea54835d4df85da7cd95f10c9eaedbbab4bdcd9",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_13.o",
+      "object_sha256": "e0c2a211ddd07d0e7d18653bb1a922d006e15bf13706f88d8bd4a393c79146dd"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/history/result_statistics.cpp",
+      "source_sha256": "8051ad429db0444c751d83da1c5744c0de1c1f83cae2bba955abed0f1e891702",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_14.o",
+      "object_sha256": "8fb94ade9e66af96994aecf947c5954c0c607e23c0f54a98fbbcd784f92b67c9"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/cusbadgebutton.cpp",
+      "source_sha256": "29330a69dd2ee8c2477a36c097c2430d6c9d944cd523521d9822922d63734d32",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_15.o",
+      "object_sha256": "d9e28fec6aa434147291c7b61c8e376118a306e6184a190834f80d139132b3cd"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/cusflageimage.cpp",
+      "source_sha256": "3025af82a86b78e7d4b0ac40807333a1e5332b97547bc551606e60e3994e5942",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_16.o",
+      "object_sha256": "0222885e4a768059856208497614bdd77a62252ef733b56e64df309f4d907429"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/cusmenubutton.cpp",
+      "source_sha256": "ebee27f7fbb8ffe3249ba03b968ae89df5cb88ea8dab1ccf50e66d16b404981b",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_17.o",
+      "object_sha256": "1d2f81731cfaba5d16196bad24e895a0d9ceb25eebc610abd0d697724da0c8ca"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/cusview.cpp",
+      "source_sha256": "74d15d945bd3defebc429d7020594ec740f3be77177abb3c5afb69a73dfff7ae",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_18.o",
+      "object_sha256": "a0f529016ceb9ed09fdc04fa78ffa76fe8db6421c77662b0ced4eebe36d93aa5"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material/qtmaterialflatbutton.cpp",
+      "source_sha256": "59f2add9696ae1fed421d173a2a166d9fcecfa1ab4bd7e51c9be8ca7f8648dff",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_19.o",
+      "object_sha256": "f67b13d112fafb838ec4b3358470f7e726a21d0a885f7ee55a6a6651edb7dbc4"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material/qtmaterialflatbutton_internal.cpp",
+      "source_sha256": "d24f96b9fe12277c78f2387b271dbe815c8774177ae2cc9d136c4b62f13918bb",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_20.o",
+      "object_sha256": "383021d0ebffd34029d471c4eb6b05efa47c61830661efdac006e37b5d74791c"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialoverlaywidget.cpp",
+      "source_sha256": "09414e95c30e53da492412fb8eb6624d9c45fe74ad8248d9b4e573220424c277",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_21.o",
+      "object_sha256": "7f5f139a1834bf9d53bbf3c382cc3d172b0eb7e2db85417fe9604a25b75d5cbe"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialripple.cpp",
+      "source_sha256": "0a93e76f79514f7daa473cbf3cc8828400c88258197e19daa4bc045b84da2e4e",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_22.o",
+      "object_sha256": "ccd6c46e465b38228da319312252219b68c2f17febfee99fa6a2197467a1bc58"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialrippleoverlay.cpp",
+      "source_sha256": "7dfe0b143f3c02e44bb45a0ae8cc95809209a85731705e49795afb237f675fb2",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_23.o",
+      "object_sha256": "3199baafea74b629f73257a6c904b65bf8bca0e8442e4bd9d7be3b3958064213"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialstatetransition.cpp",
+      "source_sha256": "3842bd5857272e9eeb018645faabb63d421b6593469db9d154f6f73ba6233f9d",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_24.o",
+      "object_sha256": "84f572ec2e40b2fd415f7f5a4acc9919871012139afa94e7526ca9a36bd63812"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialstyle.cpp",
+      "source_sha256": "7100f3c3a9e21d9c881c358d6ccd9e4164f50c5686da06cb6a46107ce39dea60",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_25.o",
+      "object_sha256": "47c59bf09899ef0fe55a3ac406c6c4ac25b301a15f76c874ea09fac01fcbf037"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialtheme.cpp",
+      "source_sha256": "6a42b3e1193f361280ae33f16e93b5e144e9e3f8512d9cbae4a8cec150716016",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_26.o",
+      "object_sha256": "0d9b79748111684a3d2ca93a9590f6819daa87faa33e45bcce5ae3836627fb68"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/history/report_controller.cpp",
+      "source_sha256": "79325bb5f8a25a885f2d38ebf8890fd18f0d0ceb25e451afc991bfa9af5dc491",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_27.o",
+      "object_sha256": "3010ec894b36390be91934bc37d6194eb28caec0bf9e3ac106acaa3dd1e13ebc"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/history/report_document.cpp",
+      "source_sha256": "ebe25d4f18b8e896f3865f0a18a97ee0c3d3301a96a72b6a982a06715dbe78f8",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_28.o",
+      "object_sha256": "6156690f2bc6cf88c69319950e9b989b4e97a562ff75d0f3ad3d5eb8d1bedea3"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/history/report_render.cpp",
+      "source_sha256": "c8855d2466c0c15917074b20372da4d9d23a916c8d65c6db1e0d853008125707",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_29.o",
+      "object_sha256": "448e524ee394c4018fed6f3e3ea8e9600d33019219b4ddf845496bfbbde69f69"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptBandObject.cpp",
+      "source_sha256": "1ffefe8fe2071b46e71e475d13f34b06fba2ccebcc4d350d6229ae44dd36b437",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_30.o",
+      "object_sha256": "ea7a38e0d261077edfd07d621432f49e5a3b07773f638f24124f875301a571cf"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptCrossTabObject.cpp",
+      "source_sha256": "0c03c4b894a75657fa5c19db0d41967d137e59d91f972dda4cc54f6073621af7",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_31.o",
+      "object_sha256": "72afb3582ec085439e516594aa849832c5a02d61b9a546a1e296af90665443fe"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptDsAbstract.cpp",
+      "source_sha256": "b275d6ac84ccfd97e0df63c1900cd4083cbd67fb2927d0fbb4c6f0d5baafa8e5",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_32.o",
+      "object_sha256": "8286502a670077eb5151b40f7c140d1452ad7a8245d4bcceeaf900de9e129d20"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptDsInline.cpp",
+      "source_sha256": "d16c8eecc3e65b08d8228143d145b125cd083aeeea16f9d00f0d24d74c6157bc",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_33.o",
+      "object_sha256": "edc979603388f54efcdac789604797ca9be3404d2955f22a9e807275c3d31e1c"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptDsPlugin.cpp",
+      "source_sha256": "b53121495eb372f2ca99637efca3dea11a085ad4508ebaee9da819f34f9a5aaa",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_34.o",
+      "object_sha256": "224628fa476b3399f5393cd7252719ed46d1d6f45c33e916d8ebc4089c9660a3"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptFieldObject.cpp",
+      "source_sha256": "c037947a1ee56485db0c26e9a3a6bb987de2af963cdbcf5c532ca3858a38e5fb",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_35.o",
+      "object_sha256": "44307ae53fedcb3c7b91e9c614898c867be63a556db743cf6a72e59d15d665d8"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptPageObject.cpp",
+      "source_sha256": "8e16fe9c76b541717fd50742b8bff32c13ffe9b587e65b8cb94d301e89c8e2d1",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_36.o",
+      "object_sha256": "48abc72fa7fb2aa185d885f8521a9da87548ad073d9f5b76427b59d86002e3f6"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptScriptEngine.cpp",
+      "source_sha256": "bb719514d8d7fc38d882cd35380f6d7ad3964587f15c162ae487209fbd9bc05c",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_37.o",
+      "object_sha256": "399716db74649c198ca9e783272ff7ba5b9daa0b1e824e7f0e6fed1145cd9735"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/RptSql.cpp",
+      "source_sha256": "178d4c22ff96d20729b087273d13ffebc693ca98bbb094e116070945d0bd3cc7",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_38.o",
+      "object_sha256": "e425fc070ec9f684213b0365df5d2cdb4ec0485cc173eaacdd3fd81a126cb0d1"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/qtrpt.cpp",
+      "source_sha256": "55589d03453c9928679d6840ae58d7c0d7b624a9f1adfe3abf7e9592ae49e4a3",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_39.o",
+      "object_sha256": "21985df4b8702e4fd44b8508ca80e9fbef87bae89f9df68635bc0a05fd286080"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/CommonFiles/Barcode.cpp",
+      "source_sha256": "6f171697c6216d68b5635ba5ddc6a3d711067831dbf57c54d6df3bb48ad15b62",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_40.o",
+      "object_sha256": "ed4ad7497629162fa9f9e4c810c7d07e8d7eb85c7b068af65f370a575fc1584f"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/CommonFiles/CommonClasses.cpp",
+      "source_sha256": "83a41f50a324e4f2532a1fddf821638d03cda7976dfbb8572a52e577c5ccbcfe",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_41.o",
+      "object_sha256": "afc03cee43d8d1fef5d8d26d2088fc24579ded88b7dfddfe5727d106e1cce19b"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/thirdparty/qtrpt/CommonFiles/numbertoarabicword.cpp",
+      "source_sha256": "cb76a0729a831d0185c5be51ec5149fc619d6fc1f03ebda2b03a018d20b877ac",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_42.o",
+      "object_sha256": "2959463d0af3b306cd1f168e8cafc87ce4907cc5c20be33f51c802222af46dea"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_frmmain.cpp",
+      "source_sha256": "5e25cd8a8781e146adb34a997a5c91152d2b5fe5938091702d78f76c295294e6",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_43.o",
+      "object_sha256": "b058f3075c2460df1dfd6ec57e1ae341c993e4ad976133bb3f4265b818b6c54e"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_frmuserset.cpp",
+      "source_sha256": "08e959361b2b76f9f040abcedd52b9a32129b2d2c1b2bf3bdc4388cc6c41f581",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_44.o",
+      "object_sha256": "100e47164c891a3c628fb9314fd5b8289c2880809f5a5f34ced098b030a62a05"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_hospital_store.cpp",
+      "source_sha256": "9b68200f4627d3f627172f7b84d1efcaeeb802e9c73eb52b5759c96c00f9941d",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_45.o",
+      "object_sha256": "576ac0e9ac27661fb5318d0c7f7b04e9386b503ae19a2d29347370540162f1de"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_frmhospinfosetting.cpp",
+      "source_sha256": "013b551f58954fdc411ff3d23aff9f1c52c69cf32e971b043f53a8f26567ed1e",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_46.o",
+      "object_sha256": "7b8923f3c9527ae017b9f6c6983d5dbf1eefd68e259f68776a77f48c61d6f7b7"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_account_store.cpp",
+      "source_sha256": "0cedf4aef88bb479d1d2ba81fae8a94d7b43ba955f5753e6b43f980b1302a5b8",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_47.o",
+      "object_sha256": "56f48e86d00909873c54672cbabd30588ead3806c3cc4d57bc389e7f153fce81"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_frmaccountsetting.cpp",
+      "source_sha256": "21371ccda34a01e32c3eddfbcb2719b193da579fc826d592ff7ba5b867bde390",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_48.o",
+      "object_sha256": "9be887bf9dd9e28e952a6d767098dff3f32bba1c7222fac0384cda6497c7ec7c"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_cusmessagebox.cpp",
+      "source_sha256": "ad7a4c0191d20acf28c53c3aa5a39343d95d2780b53cae379e3a30a2a7ff2700",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_49.o",
+      "object_sha256": "8ef5ff197dd769096a91de05ccc2c2878cd4fcb32e454138ee4f96567b62267e"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_cusdialogmask.cpp",
+      "source_sha256": "6587d4b1604dbaa45bfef2e881f316290f8f4d07e444563016525fe755de43a1",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_50.o",
+      "object_sha256": "ec5c2288acc6f5df65dc4f68c86920c2343457ef8eb14961c27315c0ea505e36"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_history_store.cpp",
+      "source_sha256": "64ebec9e715fb816b7b051116b12a2aec49b8cc82dbd32d81f37342a81d20639",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_51.o",
+      "object_sha256": "c51d96c8c4bcc6280997de42b5881c86813b85f637d0d43c27ffd7a903d350d6"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_history_page.cpp",
+      "source_sha256": "2937c2446e8175955341bf8a059d273b1bee56de38c203cf48d33ddd1f7c87b0",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_52.o",
+      "object_sha256": "b2a9899b093721444d8dcc8a428df5120bd86581f7597c08fc65ff50a96b30ab"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_cusbadgebutton.cpp",
+      "source_sha256": "e6c912eeb012e182aef00f03ebc960b9056db102a311579966f1604d08efc9be",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_53.o",
+      "object_sha256": "9a6fa0b7962a917e9394f4a72dc3a50f01eae74f620a2a51b9ee794aace05ab4"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_cusflageimage.cpp",
+      "source_sha256": "360d7d8352033784857caf0a888711b002c1b5207c609e680161b59fe101122a",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_54.o",
+      "object_sha256": "922ac771e1d43cfbd042a5502d9d0280b720af1b8057beea0cd2c050517c9c55"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_cusmenubutton.cpp",
+      "source_sha256": "41ee8e3486dddb1aabd897ad6231d4c1f3aca5f302a60157ebb03c1193982b42",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_55.o",
+      "object_sha256": "8bf422302339798b388ee8ff00a6cbce026fc85a1361272121e7496b8b26461d"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_cusview.cpp",
+      "source_sha256": "ff25c8c8dbdbe7feb0dd7a260a943971e17d800ca3953a3f66a32eaaa72958ad",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_56.o",
+      "object_sha256": "0675e7fa4454ff0dbac1614ecf9cc5f89d5d9b6f0c7200bfbc62e77a173590cf"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtmaterialflatbutton.cpp",
+      "source_sha256": "d8fd1bcabc5e961ce374d741d108c9b81eff8e46c43a01b35fb27f3007473da0",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_57.o",
+      "object_sha256": "c8dd66243880993bf452de002d29945d1902db070e56e1db1c93903da11cd5f5"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtmaterialflatbutton_internal.cpp",
+      "source_sha256": "3e28868a597e92d975a0a1f06a4c8e67574ccbcc461370eead41925485edfb41",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_58.o",
+      "object_sha256": "e1ae43b5e2a8ec2c07a781c87016231655f7efac0253b4ae979cbe416fbd02c5"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtmaterialoverlaywidget.cpp",
+      "source_sha256": "2f732dbbe621a58e763eb9b4711d35dbb785b3b286452cef0a70351a93ef69bd",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_59.o",
+      "object_sha256": "b1c0f3a84b48c58f6dec5ecca8f3badb9b501ab34d580f55c99698500ac80ed2"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtmaterialripple.cpp",
+      "source_sha256": "29276a21577a5640e237d0ced1b9c367fe8d2d2008a229eaf0f561ea3ecdb40a",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_60.o",
+      "object_sha256": "562dd54c6c452de918b80a9311790168c7b9cb7c516f406b7ceecf033f6a0a7c"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtmaterialrippleoverlay.cpp",
+      "source_sha256": "1ef29a769bde332128d6c0d3562d275ece4efa12e61e1a05e77ba99b9cc02ba9",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_61.o",
+      "object_sha256": "21be0f5b7957e30ae4f81eec3263cb21666774592a313f7e43dfa6223b36be1d"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtmaterialstatetransition.cpp",
+      "source_sha256": "b62edbe738933e1d68d81081be1f4de68c961e891af61497c3a8e989e1c48193",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_62.o",
+      "object_sha256": "cf1b023ba9ea0ac56f23d0a79e9740b0f57f7c98f25be881a0286e69181e9877"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtmaterialstyle.cpp",
+      "source_sha256": "8add7eb69c824e222106376e92401f12a9ecd9681945b34efed5f462df42a296",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_63.o",
+      "object_sha256": "17d8cce9336f5162b0628f5f91e2580d1d20148024b7eebcdeed3dd2fb9053c9"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtmaterialtheme.cpp",
+      "source_sha256": "1bcd4e67edf4c696e14594719440ea60065bc9c63e38827d6218c745548e0263",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_64.o",
+      "object_sha256": "0192e68d89fc2f8eb61792b8fbf27cf2577f95fcaf0ddfed99170077a21d6968"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_report_controller.cpp",
+      "source_sha256": "2f368d6bf2137ed33125bbbba7585d9958f938983f2db7faafd452de4e386d2d",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_65.o",
+      "object_sha256": "34c660ca31f1f2e9fa1891de40f52424de460e616840491a35781c2eef3bcbcc"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_RptBandObject.cpp",
+      "source_sha256": "35a98b12edd109ca9dc00fe1740cbf371a1b96074b91093c7a2e79c9d263431c",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_66.o",
+      "object_sha256": "921727b40d98775cc3ff7f851111b33c2091b25be2835927e68ca309f5b35b9d"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_RptDsAbstract.cpp",
+      "source_sha256": "753298275a26df0f617da074b2781e4b3be4c72bb89704dd0b2b24786a72e284",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_67.o",
+      "object_sha256": "2d035e14158292c210cc60710e0fe545f1f1194e1105df3bcbe0e4e65e02650a"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_RptDsInline.cpp",
+      "source_sha256": "5ec74275ad61be26154259a847793e4b054a94c8548b4bb168374a99291aada9",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_68.o",
+      "object_sha256": "6b6dce25ea881c49925587ec0768406eaed8d7caf231525d7ef4fd8a8b81a332"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_RptDsPlugin.cpp",
+      "source_sha256": "0ca7b37d75144f8dd90d22e3f0c2aba675a17fa0419942d26aea99067c3f6526",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_69.o",
+      "object_sha256": "15a232cb251bf762a833362d4bf55f7bafb33ddf05214e9ad79c8f48f0dacc00"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_RptFieldObject.cpp",
+      "source_sha256": "c889f949364bf422ec912f84dfa30c1eb258284cfa2177b84ef73d316423212e",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_70.o",
+      "object_sha256": "416ec3311c1e9755e775e910006741e5ebc162b656e0b740bce0fd1801cd8cd1"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_RptPageObject.cpp",
+      "source_sha256": "b2943bbd1424f53bebd0addf8e24da03b591216db1bfa5c48ce30299cdb61ac4",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_71.o",
+      "object_sha256": "ddab9bc0a9ca88219f68340548eb5604d77d208a2b9b20f9ef8f0e34d47a190f"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_RptScriptEngine.cpp",
+      "source_sha256": "054fa95b13f6164c68964a90ec9d26ccac5d2a2fbe4d8416cd7fc634b0f8b7c9",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_72.o",
+      "object_sha256": "dd9947fd6a34e58408cdbbb416f5a47d86939c402a64d5386f9d28b737fff867"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_RptSql.cpp",
+      "source_sha256": "e2b0e1e7635fd29aad9173221feb112048607967a60789e4f14842fd365f7596",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_73.o",
+      "object_sha256": "b60862f2e4b5f20f96a4d4892dc62f75e90b1c7dce2d5f964cf839fbc686dd95"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_qtrpt.cpp",
+      "source_sha256": "fa1ac17b25adaadc6cb68c344dc6cd7fd860f0d312716a62d20890b68be54b29",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_74.o",
+      "object_sha256": "e2a03d1d6cbed423d9028f08b6aff83cb19739011f8f8660af3990d678118acd"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/moc_Barcode.cpp",
+      "source_sha256": "2e5a570d81d90df5e844ef448498b4e3699a0072a20db21d6302687780409cc4",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_75.o",
+      "object_sha256": "d29e68becc1eec6258e8aa5ad333b141ebce198a309ccfbafdcd091820692975"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/qrc_shell_resources.cpp",
+      "source_sha256": "23f684285d80dd2b1691b337b8dc637e49e13b1a6f4b0c745980e1c35eff5d24",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_76.o",
+      "object_sha256": "206b4024708a805a1a922c818a40744f5478fa75a8b8531e70b6d63cc520d859"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/qrc_account_resources.cpp",
+      "source_sha256": "c647ca89775c2db5582beb64d8cbdbaffea06fc1e12a3cfca1d0b324e0994b7a",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_77.o",
+      "object_sha256": "60e58457d5b81feaffd39ac634e18f85a0f4593473b460ba31acdf9fcb6a60c6"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/qrc_report_resources.cpp",
+      "source_sha256": "c57646120e69dc2debbd168f7e31fb45a0df6a7799fb5e866423e0cc05d5a2eb",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_78.o",
+      "object_sha256": "cd340889e2046c55d971f355629ebaaba87d205485cdf0170a66040ac55e785b"
+    },
+    {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/qrc_imagesRpt.cpp",
+      "source_sha256": "717b614af6d0b3745e5fe8eae16448c0e4f35d56dfc5c11de5fae1707ddd15c3",
+      "object": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o03_4/rk_prepare/arm64_build/obj_79.o",
+      "object_sha256": "5618319abd40d0727dd158d850c1d814489f7ed76e4bb6c9ae6eed1afb2949a0"
+    }
+  ]
+}

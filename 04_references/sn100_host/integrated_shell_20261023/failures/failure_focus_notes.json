@@ -1,0 +1,64 @@
+{
+  "schema": "sn100-integrated-viewport-failure-focus-notes-v1",
+  "scope": "Three unsuccessful migrated Widgets viewport diagnostic attempts; retained separately and excluded from passing evidence.",
+  "original_windows_visual_parity": "not assessed",
+  "source_or_gui_changed_by_this_archival_task": false,
+  "existing_failure_notes_modified": false,
+  "root_checksum_manifest_modified": false,
+  "core_or_database_or_secret_archived": false,
+  "product_metadata_owner": "Final product source and binary identity are recorded separately by the root task; these entries describe test helper corrections.",
+  "failed_attempt_count": 3,
+  "attempts": [
+    {
+      "archive_log": "viewport_retry_01_hospital_focus_before_activation.log",
+      "source_log": "temp/sn100_host/integration/logs/viewport_retry_01.log",
+      "observed": "viewportExperiment reached its final hospital-name focus assertion, which was false; QtTest totals: 2 passed, 1 failed.",
+      "diagnosis": "Window activation was an unmet test precondition after native modal interaction. This first log does not directly record activeWindow, so attribution uses the later focus trail and successful retest after explicit host activation.",
+      "correction": "Preserve the hospital-name focus assertion. Wait for the target native window to be exposed and active, and activate the host before the final application-focus assertion.",
+      "counted_as_pass": false
+    },
+    {
+      "archive_log": "viewport_retry_02_native_hit_and_diagnostic_lifetime.log",
+      "source_log": "temp/sn100_host/integration/logs/viewport_retry_02.log",
+      "observed": "After Escape closed the detail window, btnExport was geometrically visible but QApplication::widgetAt returned none. The test failed, then terminated with std::bad_alloc and timeout reported a core dump.",
+      "diagnosis": "The native hit test ran before mapping/activation settled. During failed-test cleanup, the newly added diagnostic lambda outlived its captured local focus-trail container; the root task identified and corrected that test diagnostic lifetime defect. The log contains no allocator backtrace or sanitizer result.",
+      "correction": "Use a local QObject connection context destroyed before the captured focus-trail container. Wait up to 3 seconds for the actual native hit target, recomputing global coordinates. No core dump is copied into evidence.",
+      "counted_as_pass": false
+    },
+    {
+      "archive_log": "viewport_retry_03_final_focus_before_host_activation.log",
+      "source_log": "temp/sn100_host/integration/logs/viewport_retry_03.log",
+      "observed": "The final focus assertion again failed with focusWidget none. The trail records ldtHospName -> lineEdit_5 -> ldtHospName before leaving the hospital page; it records no other hospital child taking focus on return. QtTest totals: 2 passed, 1 failed.",
+      "diagnosis": "The trail supports retaining the hospital-name expectation and does not show lastHospitalFocus being replaced by another hospital control. The host needed the same explicit activation precondition already used by the older shell focus test on WSLg.",
+      "correction": "Explicitly activate the host and wait for windowActive before asserting application focus. Keep the exact hospital-name assertion, detail Escape guard and real native hit checks.",
+      "counted_as_pass": false
+    }
+  ],
+  "successful_retest": {
+    "log": "../logs/integrated_viewport.log",
+    "result": "../results/viewport_result.json",
+    "observations": "Both actual 1600x900 and 1920x1080 runs passed whole-control visibility, widgetAt hit, hospital editor focus restoration and outer detail Escape closure.",
+    "recorded_qt_totals": "3 passed, 0 failed, 0 skipped",
+    "earlier_failures_reclassified_as_pass": false
+  },
+  "failed_log_copies": [
+    {
+      "archive_log": "failures/viewport_retry_01_hospital_focus_before_activation.log",
+      "sha256": "01ca37e04c5d105a3aa9f46110e58666ef28e8dbec079846be8c51ab69a2485f",
+      "bytes": 637,
+      "byte_identical": true
+    },
+    {
+      "archive_log": "failures/viewport_retry_02_native_hit_and_diagnostic_lifetime.log",
+      "sha256": "2458b5de293707d955ca8683f7d5f8f7c308d9e7fb0744fb7d3c37e66ff3f33b",
+      "bytes": 993,
+      "byte_identical": true
+    },
+    {
+      "archive_log": "failures/viewport_retry_03_final_focus_before_host_activation.log",
+      "sha256": "3a4524904b4d9dc391606bcdc9e2025d8e063e4b7559916b1e9d7b3905998290",
+      "bytes": 988,
+      "byte_identical": true
+    }
+  ]
+}

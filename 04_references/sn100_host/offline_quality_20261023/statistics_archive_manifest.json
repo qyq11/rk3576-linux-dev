@@ -1,0 +1,90 @@
+{
+  "source_contract": "statistics_origins.json",
+  "artifact_metadata": "statistics_build_metadata.json",
+  "module": "O06-1",
+  "copy_sources": [
+    {
+      "to": "statistics_origins.json",
+      "from": "06_programs/sn100_host/quality/origins.json"
+    },
+    {
+      "to": "statistics_fixture.json",
+      "from": "06_programs/sn100_host/quality/tests/fixtures/statistics_series.json"
+    },
+    {
+      "to": "statistics_wsl_unit_test.log",
+      "from": "temp/sn100_host/quality/unit_test.log"
+    },
+    {
+      "to": "statistics_windows32_unit_test.log",
+      "from": "temp/sn100_host/quality/windows_unit_test.log"
+    },
+    {
+      "to": "statistics_cli_verification.json",
+      "from": "temp/sn100_host/quality/cli_checks__q8ebm5h/verification.json"
+    },
+    {
+      "to": "statistics_first_process_results.json",
+      "from": "temp/sn100_host/quality/cli_checks__q8ebm5h/golden_first_process/results.json"
+    },
+    {
+      "to": "statistics_second_process_results.json",
+      "from": "temp/sn100_host/quality/cli_checks__q8ebm5h/golden_second_process/results.json"
+    },
+    {
+      "to": "statistics_first_process_stdout.log",
+      "from": "temp/sn100_host/quality/cli_checks__q8ebm5h/golden_first_process.stdout.txt"
+    },
+    {
+      "to": "statistics_second_process_stdout.log",
+      "from": "temp/sn100_host/quality/cli_checks__q8ebm5h/golden_second_process.stdout.txt"
+    },
+    {
+      "to": "statistics_windows32_results.json",
+      "from": "temp/sn100_host/quality/windows_runtime_02ce224a00a14a68add5ca2d75752096/results.json"
+    },
+    {
+      "to": "statistics_windows32_measurement.json",
+      "from": "temp/sn100_host/quality/windows_runtime_02ce224a00a14a68add5ca2d75752096/measurement.json"
+    },
+    {
+      "to": "statistics_windows32_stdout.log",
+      "from": "temp/sn100_host/quality/windows_runtime_02ce224a00a14a68add5ca2d75752096.stdout.txt"
+    },
+    {
+      "to": "statistics_resources.json",
+      "from": "temp/sn100_host/quality/root_verification/resources.json"
+    },
+    {
+      "to": "statistics_measurement.json",
+      "from": "temp/sn100_host/quality/root_verification/statistics_run/measurement.json"
+    },
+    {
+      "to": "statistics_stress_results.json",
+      "from": "temp/sn100_host/quality/root_verification/statistics_run/results.json"
+    },
+    {
+      "to": "statistics_stress_stdout.log",
+      "from": "temp/sn100_host/quality/root_verification/stdout.log"
+    }
+  ],
+  "schema": "sn100-quality-statistics-archive-v1",
+  "stress_scope": "WSL 10000 repeats of [8,10,12]; resource samples and event-loop data are a short baseline, not an RK budget acceptance",
+  "date": "2026-10-23",
+  "scope": "Anonymous offline statistics; no GUI, clinical rule, AL4A, RK run, instrument, or long stability acceptance",
+  "cli_checks": {
+    "windows32_wsl_exact_json_equal": true,
+    "passed": 19,
+    "existing_output_unchanged": true,
+    "golden_series": 6,
+    "independent_process_equal": true
+  },
+  "checksum_scope": "All files recursively in this archive except SHA256SUMS itself, including the pre-existing algorithm_dependency_audit.json",
+  "excluded": "No executables, production databases, old INI, credentials, real patients, or large generated input files copied",
+  "unit_tests": {
+    "failed": 0,
+    "note": "QtTest totals include initTestCase and cleanupTestCase",
+    "windows32_passed": 19,
+    "wsl_passed": 19
+  }
+}

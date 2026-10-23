@@ -2,7 +2,9 @@
 
 2026-10-22｜泰山派 3M RK3576｜**HDMI / USB 键鼠现场验证、Windows Qt Creator 图形调试、WSL→RK 命令行远程调试均已通过。**
 
-**后续固定流程：Windows 编码和日常调试 → 同一台电脑的 WSL 交叉编译 RK 版本 → 上传 RK 直接运行并验收。全部编译在电脑完成，RK 不承担编译。** 涉及板端特有问题时，再用电脑上的 WSL 调试器连接 RK 的轻量 `gdbserver`，不将远程调试作为每次部署的必经步骤。下面按当前这台电脑、当前 `qt_demo` 工程说明操作。配套[结构化实测数据](20261022_qt_environment.json)保留版本、哈希和历史验收依据；同一事项继续更新本文。
+**2026-10-23 新增 WSL 本机脱机开发入口见第9节；以下保留 Qt 最小示例的 Windows / RK 历史流程。** Windows 编码和日常调试 → 同一台电脑的 WSL 交叉编译 RK 版本 → 上传 RK 直接运行并验收。全部编译在电脑完成，RK 不承担编译。涉及板端特有问题时，再用电脑上的 WSL 调试器连接 RK 的轻量 `gdbserver`，不将远程调试作为每次部署的必经步骤。下面按当前这台电脑、当前 `qt_demo` 工程说明操作。配套[结构化实测数据](20261022_qt_environment.json)保留版本、哈希和历史验收依据；同一事项继续更新本文。
+
+2026-10-23补充：Ubuntu24.04/qyq已安装Fcitx5、拼音及Qt5输入插件的26个新增依赖，无已有包升级/移除；SN100正常WSL GUI启动入口自动接入。用户实际确认中文候选并保存“测试医院”，UI/数据库一致。安装/恢复输入在[07_backups/qt_environment/wsl_ime](../07_backups/qt_environment/wsl_ime/README.md)，详细范围、WSLg必要适配与操作证据只维护在[SN100同一记录](20261022_sn100_host_migration.md#hospital-ime-setup-20261023)。本项没有修改Windows设置、系统Qt路径或RK环境，RK拼音输入仍待实屏验证。
 
 ## 1. 工程与软件在哪里
 
@@ -63,7 +65,7 @@
 
 上述是**待验证方案**，尚未更改Windows/RK Qt、内核、软件包或设备配置。原软件源码保持不变，本轮完成代码审查、技能/官方资料检索和[SN100详细移植计划](../01_docs/plans/sn100_host_migration_plan.md)，下一步先固定可运行Windows基线、取得真实ARM64算法实现和完整依赖。后续“如何编译/调试”的原业务操作步骤须在该工程实际验证后追加，下面第2节起仍针对 `qt_demo`。
 
-2026-10-22后续补充：按用户要求，将原 `SN100_host/` 整体整理到 `06_programs/sn100_host_reference/`，并新建相邻 `06_programs/sn100_host/` 作为正式工作目录，当前仅有局部AGENTS。原压缩包/关键源码SHA和文件数/总大小移位前后核对一致，见[位置与校验依据](../04_references/sn100_host/reference_location.json)；未修改原代码、构建或启动业务软件。目录/工程风格/未来仓库Skill结构与调研来源见[工程管理说明](../01_docs/knowledge/sn100_host_project_guide.md)。
+2026-10-22后续补充：按用户要求，将原 `SN100_host/` 整体整理到 `06_programs/sn100_host_reference/`，并新建相邻 `06_programs/sn100_host/` 作为正式工作目录，当时仅有局部AGENTS（2026-10-23后已有多个离线切片，最新见[移植盘点](20261022_sn100_host_migration.md#progress-review-20261023)）。原压缩包/关键源码SHA和文件数/总大小移位前后核对一致，见[位置与校验依据](../04_references/sn100_host/reference_location.json)；未修改原代码、构建或启动业务软件。目录/工程风格/未来仓库Skill结构与调研来源见[工程管理说明](../01_docs/knowledge/sn100_host_project_guide.md)。
 
 用户确认现有SN100仪器可用于后续验收，**按一个模块移植、该模块仪器验证、通过后进入下一个模块**推进；本轮仅记录方式，接口参数以后提供。首批候选是连接/状态显示，源码审查发现状态收包会触发自动校时和首次收包联动，需隔离后再作为只读验证；模块范围、条件、真实输入输出和通过标准见[计划2.6节](../01_docs/plans/sn100_host_migration_plan.md#26-逐模块移植和现有仪器验收用户已确认)。这不是已完成仪器验证的记录，不将最小demo结果移作业务模块结果。
 
@@ -313,11 +315,12 @@ set logging enabled off
 
 **当前需要做**
 
-- [ ] 先按第 3.2 节练习一次按钮回调断点：核对 `clicks` 从 0 到 1、界面和日志一致。以此掌握在实际功能位置排查问题。
+- [ ] 配合SN100首轮RK离线实屏，复核现有Qt5.15.13/SQLite插件、字体、EGLFS及键鼠环境；独立页与统一壳的构建/部署入口按[首验卡](../01_docs/plans/sn100_host_migration_plan.md#rk-offline-card)分别核对。当前SN100业务页面未有板端通过结论。
+- [ ] 第3.2节按钮回调断点仅作为按需学习练习：核对`clicks`、界面和日志；不作为SN100移植或上机前置。
 
 **未完成即将执行**
 
-- [ ] 明确首个业务页面要显示的状态、数据、操作和错误处理，以及 Qt 与调度 / 算法的接口边界；在当前工程基础上确定下一步页面范围。
+- [ ] SN100已交付医院/账户/历史查询三页统一离线入口及独立报告/协议/算法切片；设备到场后先O01再逐模块补实屏/数据/退出与资源，再做三页累计回归。仪器、调度/算法及生产认证按各自接口和前置条件推进；[最新状态与边界](20261022_sn100_host_migration.md#progress-review-20261023)。
 - [ ] 确有板端特有故障、需要图形化远程调试时，再配置电脑端 AArch64 GDB / Qt Creator Kit，并用真实目标进程验收；需要 HDMI 时另核对启动和附加方式。
 
 **将来需要做**
@@ -346,3 +349,11 @@ set logging enabled off
 - **Windows 脚本：**使用 [windows.ps1](../06_programs/qt_demo/windows.ps1)，按第 5 节选择 `build`、`run` 或 `debug-check`；三种模式都会重新编译，输出到 `temp/qt_demo/windows_debug_x64/`。
 - **RK 目标：**当前保留的 `temp/qt_demo/sysroot/` 可直接继续使用；在 WSL 的 `06_programs/` 执行第 6.1 节 `bash rk.sh qt_demo build` 重新生成 ELF。需要实际显示时再使用 [run.sh](../06_programs/qt_demo/run.sh)；板端特有问题按需使用 [debug_rk.sh](../06_programs/qt_demo/debug_rk.sh)。
 - **重建依赖：**如果以后主动删掉 sysroot，在 WSL `06_programs/` 执行 [prepare.sh](../06_programs/qt_demo/prepare.sh)（`bash qt_demo/prepare.sh`），从已校验的正式归档恢复；当前无需重复准备。
+
+## 9. WSL 本机 Qt5 开发环境（2026-10-23）
+
+为 SN100 离线移植新增 WSL Ubuntu24.04.5 / x86_64 的 Qt/qmake5.15.13、G++13.3、SQLite 驱动、中文字体和 Qt Creator13.0.0。IDE 自身基于 Qt6.4.2，登记的 **SN100 WSL Qt 5.15.13 x86_64** Kit 使用 `/usr/lib/qt5/bin/qmake`、`/usr/bin/g++` 与 GDB；没有升级工程到 Qt6。启动使用 XCB/WSLg，Windows 与 RK 原环境未改。
+
+实际安装新增169包、无已有包升级/删除；安装输入、包版本、SHA及新Kit配置在[正式归档](../07_backups/qt_environment/wsl_amd64/source.json)。本机 `.deb` 为 amd64，不上传 RK；ARM64 新增 SQL 输入另在[sn100_arm64](../07_backups/qt_environment/sn100_arm64/source.json)。
+
+开发入口见[SN100简明说明](../06_programs/sn100_host/README.md)。O01 实际界面、按钮、数据持久化、响应与资源证据统一在[同一移植记录第7节](20261022_sn100_host_migration.md#7-2026-10-23wsl-qt-环境与-o01-医院信息脱机实验)，不在本环境记录重复业务实验。终端构建/XCB运行和同切片Windows32/ARM64构建通过，IDE F5、完整原Windows行为及板端/仪器仍待验。

@@ -1,0 +1,102 @@
+{
+  "source_ui": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/cusmessagebox.ui",
+  "target_ui": "06_programs/sn100_host/ui/cusmessagebox.ui",
+  "mask_ui_copied_byte_for_byte": true,
+  "content_geometry_all_equal": true,
+  "content": [
+    {
+      "object_name": "view_frame",
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>90</x><y>110</y><width>480</width><height>208</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>90</x><y>110</y><width>480</width><height>208</height></rect></property>",
+      "original_class": "QFrame",
+      "migrated_class": "QFrame",
+      "original_qss": "",
+      "migrated_qss": ""
+    },
+    {
+      "object_name": "btnCancel",
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>160</x><y>150</y><width>129</width><height>48</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>160</x><y>150</y><width>129</width><height>48</height></rect></property>",
+      "original_class": "QPushButton",
+      "migrated_class": "QPushButton",
+      "original_qss": "",
+      "migrated_qss": ""
+    },
+    {
+      "object_name": "lblIco",
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>10</x><y>10</y><width>20</width><height>20</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>10</x><y>10</y><width>20</width><height>20</height></rect></property>",
+      "original_class": "QLabel",
+      "migrated_class": "QLabel",
+      "original_qss": "QLabel{border-image: url(:/image/message_ques.png);}",
+      "migrated_qss": "QLabel{border-image: url(:/messagebox/message_ques.png);}"
+    },
+    {
+      "object_name": "lblInfo",
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>15</x><y>50</y><width>451</width><height>91</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>15</x><y>50</y><width>451</width><height>91</height></rect></property>",
+      "original_class": "QLabel",
+      "migrated_class": "QLabel",
+      "original_qss": "color:#53627C",
+      "migrated_qss": "color:#53627C"
+    },
+    {
+      "object_name": "btnClose",
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>440</x><y>0</y><width>41</width><height>41</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>440</x><y>0</y><width>41</width><height>41</height></rect></property>",
+      "original_class": "QtMaterialFlatButton",
+      "migrated_class": "QPushButton",
+      "original_qss": "",
+      "migrated_qss": ""
+    },
+    {
+      "object_name": "btnSure",
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>16</x><y>150</y><width>129</width><height>48</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>16</x><y>150</y><width>129</width><height>48</height></rect></property>",
+      "original_class": "QPushButton",
+      "migrated_class": "QPushButton",
+      "original_qss": "",
+      "migrated_qss": ""
+    }
+  ],
+  "animation": {
+    "duration_ms": 280,
+    "close_duration_ms": 280,
+    "translation_y_px": -50,
+    "easing": "OutCubic",
+    "background": "rgba(0,0,0,100)",
+    "shadow_blur_px": 11,
+    "shadow_rgba": "0,0,0,100",
+    "shadow_offset_px": [
+      0,
+      3
+    ],
+    "view_radius_px": 11
+  },
+  "retained_behavior": [
+    "Information/Warning/Error show only original btnSure; Question shows original btnSure and btnCancel",
+    "btnSure returns QMessageBox::Yes; btnCancel returns No; close/Escape retains NoButton",
+    "All show methods return only after closing animation and modal acknowledgement",
+    "Semantic PNG normal/hover/pressed colors are unchanged byte copies",
+    "Label remains original 451x91 word-wrapped plain-text area with #53627C and original 11pt size",
+    "Reference LoadInfo/addMsg wrappers are not extracted because this account slice has no callers; original files are not modified"
+  ],
+  "necessary_adaptations": [
+    "Original whole-desktop bounds/screen center changed to the current parent host client rectangle/local center for WSLg. No global desktop overlay or WindowStaysOnTopHint.",
+    "Dialog uses parent transient WindowModal ownership; the same host-local geometry follows host Move/Resize events.",
+    "QtMaterialFlatButton close becomes flat transparent QPushButton, preserving original 41x41 geometry and 13x13 close icon; Material ripple is not extracted.",
+    "PingFang font family replaced with Noto Sans CJK SC; original point sizes and local content coordinates retained.",
+    "Runtime relative resource paths become QRC aliases :/messagebox/* and :/image/close.png.",
+    "Qt parent ownership and initialized pointers replace original unsafe uninitialized/manual destruction paths.",
+    "Escape/reject also uses the same close fade rather than bypassing it; no implicit Yes decision."
+  ],
+  "resource_count": 17,
+  "resource_manifest": "dialog_resource_manifest.json",
+  "pending": "Actual original Windows release theme, rasterization/native opacity behavior and RK EGLFS stack remain pending runtime comparison."
+}

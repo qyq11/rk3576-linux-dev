@@ -1,0 +1,101 @@
+{
+  "al4a_equivalence_verified": false,
+  "clinical_validated": false,
+  "effective_parameters": {
+    "baseline_points": 100,
+    "derivative_window_points": 101,
+    "maximum_baseline_range_fraction": 0.1,
+    "maximum_plateau_range_fraction": 0.1,
+    "maximum_reference_slope_fraction": 0.1,
+    "minimum_amplitude": 1,
+    "plateau_points": 100,
+    "search_end_seconds": 990,
+    "search_start_seconds": 10,
+    "secondary_peak_fraction": 0.8,
+    "threshold_percent": 50,
+    "use_search_window": true
+  },
+  "hardware_verified": false,
+  "input": {
+    "complete_curve": true,
+    "data_kind": "synthetic",
+    "description": "Synthetic 100000-point logistic curve for one WSL resource-budget observation, not clinical accuracy validation",
+    "direction": "rising",
+    "parameters": {
+      "baseline_points": 100,
+      "derivative_window_points": 101,
+      "maximum_baseline_range_fraction": 0.1,
+      "maximum_plateau_range_fraction": 0.1,
+      "maximum_reference_slope_fraction": 0.1,
+      "minimum_amplitude": 1,
+      "plateau_points": 100,
+      "search_end_seconds": 990,
+      "search_start_seconds": 10,
+      "secondary_peak_fraction": 0.8,
+      "threshold_percent": 50
+    },
+    "schema": "sn100-clot-endpoint-input-v1",
+    "time_reference": "seconds-since-reagent-addition",
+    "points_omitted_from_archive": {
+      "count": 100000,
+      "first_point": [
+        0,
+        10.000000001388795
+      ],
+      "last_point": [
+        999.99,
+        109.9999999986105
+      ],
+      "reconstruction": "make_budget_case.py; its project-relative placement has the same depth as the original script"
+    }
+  },
+  "input_sha256": "ba11066297ea896316c25f54826e194b7fd13760b4d990974f7791434d7bf6dd",
+  "maximum_derivative": {
+    "baseline": 10.00000000142375,
+    "candidate_found": true,
+    "directed_amplitude": 99.99999999715183,
+    "elapsed_ms": 66.247814,
+    "lower_index": 49950,
+    "method": "maximum_derivative",
+    "peak_slope_optical_units_per_second": 1.2499601632718438,
+    "plateau": 109.99999999857557,
+    "time_seconds": 500,
+    "upper_index": 50050,
+    "warnings": [
+      "sampled_local_regression_peak_not_clinical_ct"
+    ]
+  },
+  "percentage": {
+    "baseline": 10.00000000142375,
+    "candidate_found": true,
+    "directed_amplitude": 99.99999999715183,
+    "elapsed_ms": 1.657891,
+    "lower_index": 49999,
+    "method": "percentage",
+    "plateau": 109.99999999857557,
+    "threshold_value": 59.999999999999666,
+    "time_seconds": 499.9999999999997,
+    "upper_index": 50000,
+    "warnings": []
+  },
+  "qt_version": "5.15.13",
+  "schema": "sn100-clot-endpoint-result-v1",
+  "stage": "offline-research-prototype",
+  "large_files_retained_in_temp": [
+    {
+      "path": "temp/sn100_host/coagulation/budget_100000.input.json",
+      "bytes": 2755479,
+      "sha256": "ba11066297ea896316c25f54826e194b7fd13760b4d990974f7791434d7bf6dd"
+    },
+    {
+      "path": "temp/sn100_host/coagulation/budget_100000.result.json",
+      "bytes": 8755508,
+      "sha256": "7dc849020e35616c3691e22d3a9ae80021740e6c9b5a217975e6125c75086cd2"
+    },
+    {
+      "path": "temp/sn100_host/coagulation/logs/budget_run.log",
+      "bytes": 8755509,
+      "sha256": "5a575ab65e4711179785ab8b811af48c2bffa947458305f08afdd05038d6fe5b"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "purpose": "Temporary Qt Charts diagnostic evidence rendering; product source and WSL GUI unchanged",
+  "sdk": "Windows Qt 5.14.2 MinGW 7.3.0 32-bit; Widgets/Charts/Svg",
+  "display": "QT_QPA_PLATFORM=offscreen; no shown windows",
+  "font_fix": "QT_QPA_FONTDIR=C:/Windows/Fonts plus explicit msyh.ttc/msyhbd.ttc; regular=0 bold=1 availableFamilies=252; fail if YaHei missing",
+  "observed_cause": "Initial offscreen application had no discovered usable Windows fonts; no text elements were emitted. Explicit installed font loading restored Chinese and numeric glyphs.",
+  "raster_axis_workaround": "Timeline overlay raster render still clipped built-in Y-axis label prefixes. Re-render exactly the axis tick values as uncached scene text while retaining geometry; pixel fonts keep raster/SVG metrics stable. Underlying Qt clip behavior not further localized.",
+  "timeline_contract": "Every point marks the end of [previous callback,current callback]; stem height is the measured gap. Points are not joined and do not imply continuous observations.",
+  "candidate": "500 ms line is an initial observation candidate, not an acceptance threshold",
+  "visual_check": "view_image original-resolution inspection: both PNGs have readable Chinese/values/units; summary labels separated; timeline Y ticks 0..2500 all complete, phase labels/captions visible, no clipping identified",
+  "outputs": [
+    {
+      "path": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\o03_2_latency\\attempts\\final_03\\chart_data.json",
+      "bytes": 3741,
+      "sha256": "36eecb000c575dcca3951e530cf516189a67e34a0c578329646e45b7ca4e4cc5"
+    },
+    {
+      "path": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\o03_2_latency\\attempts\\final_03\\latency_summary.png",
+      "bytes": 178220,
+      "sha256": "f646bba956de11dc67cf554bb9f9fabba49e25a9a0575382248608139d2bc72f"
+    },
+    {
+      "path": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\o03_2_latency\\attempts\\final_03\\latency_summary.svg",
+      "bytes": 170352,
+      "sha256": "867fa4ce507b359d3eb3f21e29b01a4cdf43d7e8be56d6038842c357f9718857"
+    },
+    {
+      "path": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\o03_2_latency\\attempts\\final_03\\latency_timeline.png",
+      "bytes": 126883,
+      "sha256": "275ef770726487d314f9cf0622690e08f4363df0d1775a30cb1232c6059cb91b"
+    },
+    {
+      "path": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\o03_2_latency\\attempts\\final_03\\latency_timeline.svg",
+      "bytes": 145939,
+      "sha256": "8ce8202ab07dc43d2551d293565dff89ce55870965c8eb735342318e5b998f52"
+    }
+  ],
+  "helper_sha256": "6351a478c0662722c22183e5239981ad55cdf2906a14e4e53ca5c9995751043e",
+  "binary_sha256": "b4df5de1040f5a206dfc486ddb339e1ccc80c4b1ac085d6d1dd07747000040c8"
+}

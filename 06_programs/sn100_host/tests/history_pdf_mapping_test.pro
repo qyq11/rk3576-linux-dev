@@ -1,0 +1,11 @@
+QT += core gui testlib
+QT -= widgets
+CONFIG += c++14 console testcase warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = history_pdf_mapping_test
+INCLUDEPATH += $$PWD/../history
+SOURCES += history_pdf_mapping_test.cpp $$PWD/../history/report_pdf_mapping.cpp
+HEADERS += $$PWD/../history/report_pdf_mapping.h
+MOC_DIR = .moc
+OBJECTS_DIR = .obj

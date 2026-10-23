@@ -1,0 +1,53 @@
+{
+  "schema": "sn100-integration-failed-attempts-v1",
+  "archived_at": "2026-10-23T17:35:03.478+08:00",
+  "acceptance": false,
+  "notes": [
+    {
+      "source": "temp/sn100_host/integration/logs/attempt1/integrated_write.log",
+      "archived_file": "attempt1_integrated_write_modal_ancestor_timeout.log",
+      "status": "failed_attempt_not_acceptance",
+      "reason": "首轮：测试对modal祖先的判定导致等待超时；本日志保留为失败，不计通过。",
+      "totals_lines": [
+        "Totals: 1 passed, 1 failed, 0 skipped, 0 blacklisted, 90063ms"
+      ],
+      "sha256": "6c7e8c42fb5d1c35d8e27c772850b1bd45c82809ad6bbce031f92208450ffab5",
+      "bytes": 1724
+    },
+    {
+      "source": "temp/sn100_host/integration/logs/attempt2/integrated_viewport.log",
+      "archived_file": "attempt2_integrated_viewport_queued_focus_timing.log",
+      "status": "failed_attempt_not_acceptance",
+      "reason": "第二轮：排队焦点恢复的时序与测试断言不一致；本日志保留为失败，不计通过。",
+      "totals_lines": [
+        "Totals: 2 passed, 1 failed, 0 skipped, 0 blacklisted, 692ms"
+      ],
+      "sha256": "6fa627bc02c3b286e06b290e80d251fa9955648120d0add11122a56b74e990da",
+      "bytes": 626
+    },
+    {
+      "source": "temp/sn100_host/integration/logs/attempt2/account_writeExperiment.log",
+      "archived_file": "attempt2_account_writeExperiment_directory_contract.log",
+      "status": "failed_attempt_not_acceptance",
+      "reason": "第二轮：旧账户测试对实验目录的约束触发；本日志保留为失败，不计通过。",
+      "totals_lines": [
+        "Totals: 1 passed, 1 failed, 0 skipped, 0 blacklisted, 4ms"
+      ],
+      "sha256": "f808fb133118aa4c4ea7d84f7cd4f346c0c664b4263455a8c268caabdd4fec1d",
+      "bytes": 611
+    },
+    {
+      "source": "temp/sn100_host/integration/logs/integrated_viewport.log",
+      "archived_file": "attempt3_integrated_viewport_x11_exposed_active_wait.log",
+      "status": "failed_attempt_not_acceptance",
+      "reason": "第三轮：X11测试尚未等待窗口exposed/active；本日志保留为失败，不计通过。",
+      "totals_lines": [
+        "Totals: 2 passed, 1 failed, 0 skipped, 0 blacklisted, 681ms"
+      ],
+      "sha256": "f4b24958757cc1ae5111aab40dc5ab5ff8b17ac42e53ebddd3c4d515a9ba161b",
+      "bytes": 896
+    }
+  ],
+  "privacy_check": "Explicit public JSON/log whitelist; no authentication keys/values or secret patterns detected. No DB, CSV, configuration, binary, object, executable or core dump is included.",
+  "limits": "Reasons follow the integration task failure diagnosis; raw failed logs remain unchanged. Passing retests, final metadata and root SHA256SUMS are handled separately by the integration owner."
+}

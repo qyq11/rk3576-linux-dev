@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>frmMain</class>
+ <widget class="QWidget" name="frmMain">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>1080</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>frmMain</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QFrame" name="frmBg">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1920</width>
+     <height>1080</height>
+    </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::ClickFocus</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="CusView" name="statusArea" native="true">
+    <property name="geometry">
+     <rect>
+      <x>167</x>
+      <y>0</y>
+      <width>1753</width>
+      <height>117</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <widget class="CusFlageImage" name="wgtDivStateLamp" native="true">
+     <property name="geometry">
+      <rect>
+       <x>32</x>
+       <y>17</y>
+       <width>42</width>
+       <height>79</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+    </widget>
+    <widget class="QFrame" name="div_info_bg">
+     <property name="geometry">
+      <rect>
+       <x>76</x>
+       <y>27</y>
+       <width>431</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QFrame#div_info_bg{
+background-color: white;
+border-radius:8px;
+border: 1px solid #E8E8E8;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="lblDivType">
+      <property name="geometry">
+       <rect>
+        <x>23</x>
+        <y>9</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans CJK SC</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{color:#838383;}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblDivState">
+      <property name="geometry">
+       <rect>
+        <x>23</x>
+        <y>30</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans CJK SC</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{color:rgb(170,170,170);}</string>
+      </property>
+      <property name="text">
+       <string>等待连接</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblCupHave">
+      <property name="geometry">
+       <rect>
+        <x>261</x>
+        <y>18</y>
+        <width>26</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+        border-image: url(:/shell/main_state/cup_normal.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblWasteCup">
+      <property name="geometry">
+       <rect>
+        <x>194</x>
+        <y>18</y>
+        <width>26</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+        border-image: url(:/shell/main_state/usdcup_normal.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblTemp">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>18</y>
+        <width>26</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+        border-image: url(:/shell/main_state/temp_normal.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblWaterHave">
+      <property name="geometry">
+       <rect>
+        <x>158</x>
+        <y>18</y>
+        <width>26</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+        border-image: url(:/shell/main_state/clean_normal.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblWasteWater">
+      <property name="geometry">
+       <rect>
+        <x>228</x>
+        <y>18</y>
+        <width>26</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+        border-image: url(:/shell/main_state/usdwater_normal.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>106</x>
+        <y>19</y>
+        <width>21</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:#EEEEEE;
+border:none;
+background-color:transparent;
+border-left:2px solid rgba(0,0,0,50);
+
+</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSystemTime">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>10</y>
+        <width>111</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans CJK SC</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{color:#838383;}</string>
+      </property>
+      <property name="text">
+       <string>00:00:00 
+0000-00-00 </string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_6">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>20</y>
+        <width>21</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:#EEEEEE;
+border:none;
+background-color:transparent;
+border-left:2px solid rgba(0,0,0,50);
+
+</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>1479</x>
+       <y>47</y>
+       <width>21</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:#EEEEEE;
+border:none;
+background-color:transparent;
+border-left:2px solid rgba(0,0,0,50);
+
+</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="CusBadgeButton" name="btnAbnormal" native="true">
+     <property name="geometry">
+      <rect>
+       <x>1584</x>
+       <y>33</y>
+       <width>52</width>
+       <height>52</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_3">
+     <property name="geometry">
+      <rect>
+       <x>1565</x>
+       <y>50</y>
+       <width>21</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:#EEEEEE;
+border:none;
+background-color:transparent;
+border-left:2px solid rgba(0,0,0,50);
+
+</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_4">
+     <property name="geometry">
+      <rect>
+       <x>1653</x>
+       <y>50</y>
+       <width>21</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:#EEEEEE;
+border:none;
+background-color:transparent;
+border-left:2px solid rgba(0,0,0,50);
+
+</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="CusBadgeButton" name="btnShutDown" native="true">
+     <property name="geometry">
+      <rect>
+       <x>1670</x>
+       <y>33</y>
+       <width>52</width>
+       <height>52</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+    </widget>
+    <widget class="CusBadgeButton" name="btnLis" native="true">
+     <property name="geometry">
+      <rect>
+       <x>1409</x>
+       <y>33</y>
+       <width>52</width>
+       <height>52</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+    </widget>
+    <widget class="CusBadgeButton" name="btnCloseBeep" native="true">
+     <property name="geometry">
+      <rect>
+       <x>1498</x>
+       <y>33</y>
+       <width>52</width>
+       <height>52</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_5">
+     <property name="geometry">
+      <rect>
+       <x>1391</x>
+       <y>50</y>
+       <width>21</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:#EEEEEE;
+border:none;
+background-color:transparent;
+border-left:2px solid rgba(0,0,0,50);
+
+</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="CusBadgeButton" name="btnUser" native="true">
+     <property name="geometry">
+      <rect>
+       <x>1070</x>
+       <y>33</y>
+       <width>52</width>
+       <height>52</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblUserName">
+     <property name="geometry">
+      <rect>
+       <x>1130</x>
+       <y>46</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Noto Sans CJK SC</family>
+       <pointsize>13</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:#484848</string>
+     </property>
+     <property name="text">
+      <string>您好,Guest</string>
+     </property>
+    </widget>
+    <widget class="QtMaterialFlatButton" name="btnLoginOut">
+     <property name="geometry">
+      <rect>
+       <x>1315</x>
+       <y>26</y>
+       <width>71</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Noto Sans CJK SC</family>
+       <pointsize>13</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <stylestrategy>PreferDefault</stylestrategy>
+      </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>注销</string>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>37</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <zorder>lineEdit_2</zorder>
+    <zorder>div_info_bg</zorder>
+    <zorder>wgtDivStateLamp</zorder>
+    <zorder>btnAbnormal</zorder>
+    <zorder>lineEdit_3</zorder>
+    <zorder>lineEdit_4</zorder>
+    <zorder>btnShutDown</zorder>
+    <zorder>btnLis</zorder>
+    <zorder>btnCloseBeep</zorder>
+    <zorder>lineEdit_5</zorder>
+    <zorder>btnUser</zorder>
+    <zorder>lblUserName</zorder>
+    <zorder>btnLoginOut</zorder>
+   </widget>
+   <widget class="QStackedWidget" name="stkCenterAdptive">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>117</y>
+      <width>1751</width>
+      <height>963</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="currentIndex">
+     <number>-1</number>
+    </property>
+   </widget>
+   <widget class="CusView" name="menuArea" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>117</y>
+      <width>167</width>
+      <height>963</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <widget class="CusMenuButton" name="btnStart">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>871</y>
+       <width>167</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Noto Sans CJK SC</family>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>90</width>
+       <height>90</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="CusMenuButton" name="btnPause">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>780</y>
+       <width>167</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Noto Sans CJK SC</family>
+       <pointsize>16</pointsize>
+       <kerning>true</kerning>
+      </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>90</width>
+       <height>90</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="lstMenuButton">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>167</width>
+       <height>761</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Noto Sans CJK SC</family>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QListWidget{background-color:transparent}QListWidget::Item{background-color:transparent}
+</string>
+     </property>
+    </widget>
+    <zorder>lstMenuButton</zorder>
+    <zorder>btnStart</zorder>
+    <zorder>btnPause</zorder>
+   </widget>
+   <widget class="CusView" name="wgtLogoBg" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>168</width>
+      <height>118</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>19</y>
+       <width>82</width>
+       <height>82</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/*QLabel {
+        border-image: url(:/image/sn_logo_2.png);
+}
+*/</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <zorder>wgtLogoBg</zorder>
+   <zorder>statusArea</zorder>
+   <zorder>stkCenterAdptive</zorder>
+   <zorder>menuArea</zorder>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QtMaterialFlatButton</class>
+   <extends>QPushButton</extends>
+   <header>qtmaterialflatbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CusView</class>
+   <extends>QWidget</extends>
+   <header>cusview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CusBadgeButton</class>
+   <extends>QWidget</extends>
+   <header>cusbadgebutton.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CusFlageImage</class>
+   <extends>QWidget</extends>
+   <header>cusflageimage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CusMenuButton</class>
+   <extends>QPushButton</extends>
+   <header>cusmenubutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

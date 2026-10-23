@@ -1,0 +1,16 @@
+{
+  "fault": "14 tests/platform. writeData short/zero/-1 and Connecting are explicit injected overrides, not OS-observed short writes; positive short fragments still use real QTcpSocket and actual peer RX golden check. Real nonreading peer triggers write_timeout. SO_LINGER{1,0}/abort restores; no packet capture to claim RST bit",
+  "silence": "3 tests/platform including init/cleanup, actual200000ms since connect/last validQj; concurrent two independent clients; continual Qq/invalidQj, pending cancellation, notice reentrancy guard, same-instance real reconnect. Raw timing/TX/RX and before/after sources saved",
+  "soak_checks": "70s WSL50Qq/s, reconnect2s and withhold every2ndquery, plus15s Windows equivalent. Real contiguous sequence and independent readonly query literals; explicit unconfirmed cancelled bytes per generation. Default4MiB segments/512MiB budget; lower test limits exercise real rotation and failure",
+  "gates": "Actual duration; >=90% nominal diagnostics and10ms heartbeat count; no gap>120s; query and wire accounting; natural final drain. Supervisor rejects >120s sampling pause or wall/monotonic discrepancy; these are offline load integrity guards, not RK realtime requirements",
+  "memory": "Fixed2002-bin histograms, single in-flight request, bounded transport; full wire streaming files. Supervisor samples /proc every1s and streams JSONL; finite first600/last600 resource windows; target CPU100%=onecore",
+  "I/O_failures": "log budget, next-segment entry blocked by directory, summary path blocked by directory all exit3; terminal progress/stdout cannot claim outputs_saved=true; existing outputs/invalidCLI exit2",
+  "background": "Frozen executable and frozen runner copy, stdinDEVNULL/new session, supervised child-only termination. Interruption test reaps owned target. No broad kill, WSL restart, power-policy change, GUI or shared docs writes by worker",
+  "pending": [
+    "2hour continuous communication and8hour recovery stage actual results",
+    "24–72hour full business stability",
+    "original Windows full application/SN100 protocol/encoding/endpoints",
+    "RK loader/ABI/runtime/screen/resources",
+    "instrument/same-board control"
+  ]
+}

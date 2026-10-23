@@ -1,0 +1,442 @@
+{
+  "schema": "sn100-protocol-origins-v1",
+  "module": "O05-1",
+  "review_date": "2026-10-23",
+  "evidence": "simulated-source-derived",
+  "scope": "只读 Qj 的离线帧编解码、合成状态解析和模拟会话；不含真实网络、仪器、LIS、校时或控制动作。",
+  "path_base": "repository root",
+  "hash_algorithm": "SHA-256",
+  "hash_scope": "逐字节计算本机只读参考源码的完整文件；不是原发行程序或仪器固件的身份验证。",
+  "sensitive_data_policy": "只读取列出的源码并计算哈希；未读取旧 INI、生产数据库、患者数据或认证凭据。本文件不收录连接参数。",
+  "source_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "sources": [
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commanddefine.h",
+      "functions_or_symbols": [
+        "MAIN_STX1/2",
+        "MAIN_RTX1/2",
+        "SLAVE_STX1/2",
+        "SLAVE_RTX1/2",
+        "WAIT_COMPLETE_FRAME_TIMEOUT",
+        "MaxPacketCount",
+        "PCQueryCmd",
+        "PCQueryStatus"
+      ],
+      "locations": [
+        "8-19: 双向帧头/尾",
+        "21-22: 超时注释和1000计数常量",
+        "47: MaxPacketCount=2000",
+        "147-150: Q/j"
+      ],
+      "sha256": "a40cff81a236d854e1c09eeb1ae7e02ffe242d4af2702cd58aacf2b8017065f4"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/communication_pub.h",
+      "functions_or_symbols": [
+        "HIBYTE",
+        "LOBYTE",
+        "MAKEWORD"
+      ],
+      "locations": [
+        "Windows 使用 minwindef.h；Linux 分支给出高低字节与组字宏"
+      ],
+      "sha256": "fc790f90ab03b7b60bfb7727739dc56a3309e745ae79b29f89e70561cb761088"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commandthread.h",
+      "functions_or_symbols": [
+        "MaxUnCommandMs",
+        "SendLinkIntervalMs",
+        "CommandThread"
+      ],
+      "locations": [
+        "14-15: 200000ms静默阈值/3000ms检查间隔"
+      ],
+      "sha256": "d65bf473217bb2d4e8397cd82f3df5ec5c0cf355f70c0511314629db93f6c619"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commandthread.cpp",
+      "functions_or_symbols": [
+        "CommandThread::run",
+        "CommandThread::GetXorCheckValue",
+        "CommandThread::crcCheck",
+        "CommandThread::addProtocalShell",
+        "CommandThread::pcSendDataProcess",
+        "CommandThread::mcuReceiveDataProcessPartOne",
+        "CommandThread::mcuReceiveDataProcessPartTwo",
+        "CommandThread::slotSendCmdToA53",
+        "CommandThread::slotReceiveMcuData",
+        "CommandThread::slotReceiveLogData",
+        "CommandThread::slotCommandTimerTimeOut"
+      ],
+      "locations": [
+        "50-61: 10ms轮询",
+        "65-92: XOR",
+        "96-125: 外层组帧",
+        "128-153: 发送队列每次取一包",
+        "158-221: 接收拆帧/超时",
+        "225-301: 顺序分包重组",
+        "333-362: 2000字节分片和四字节分包头",
+        "365-395: 任意收包/日志更新收包时间",
+        "405-434: 约每3秒检查200s静默，主动心跳发送已注释"
+      ],
+      "sha256": "b3d5cfc6c8c786a5a9c1216c64778c51acfb76894011401a613d591f09a9a8b4"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commandsender.cpp",
+      "functions_or_symbols": [
+        "getQueryStatusCommand"
+      ],
+      "locations": [
+        "271-277: 业务载荷只有Qj，不包含帧壳和分包头"
+      ],
+      "sha256": "e036e02a5736863f76c95bab4e822dfdae12906b53df15c2746f776706b0f974"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commandreceiver.cpp",
+      "functions_or_symbols": [
+        "CommandReceiver::commandChanger",
+        "CommandReceiver::slotCommandReceiver",
+        "CommandReceiver::pcQueryCmd",
+        "CommandReceiver::pcQueryStatus"
+      ],
+      "locations": [
+        "30-56: 方括号字段含空字段",
+        "60-99: 第一业务字节分发",
+        "184-200: Qj分发，每5次回复发signalSendTime",
+        "534-592: 主字段数量和25个字段",
+        "595-618: 首次登录状态触发试剂请求/配置检查",
+        "631-638,952-953: 子系统块数量及字段偏移",
+        "961-977: 原全局动作状态和节流通知"
+      ],
+      "sha256": "a4174f13056668fde17af00c86c6f17d5289414ceee276a83d462be6efc81470"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.h",
+      "functions_or_symbols": [
+        "SystemCommon::DMainStatus",
+        "SystemCommon::DLedStatus",
+        "SystemCommon::DoErrorWorkType"
+      ],
+      "locations": [
+        "150-159: 主状态0..6",
+        "163-175: 灯/工作状态0..7",
+        "179-189: 错误处理类型0..7"
+      ],
+      "sha256": "d43e93eb435b80e8a27be1360536d4120699bf140e01cb35ace47c5ac6e3de8a"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+      "functions_or_symbols": [
+        "signalSendTime -> SendPCTime signal/slot wiring",
+        "signalPCQueryReagent / signalCheckConfig signal/slot wiring"
+      ],
+      "locations": [
+        "359: 试剂请求接线",
+        "391: 状态接收自动触发校时的接线",
+        "538-543: 配置/试剂联动接线"
+      ],
+      "sha256": "90ed19d496a8c029e6379356c06b80950e44d2eb412cd8efc16ed4839a7425f7"
+    }
+  ],
+  "wire_contract": {
+    "source_identity": "当前参考源码契约；SN100现场固件是否采用相同版本仍待验证。",
+    "host_to_device": {
+      "header_hex": "02 03",
+      "tail_hex": "04 05"
+    },
+    "device_to_host": {
+      "header_hex": "06 07",
+      "tail_hex": "08 09"
+    },
+    "layout": "HEADER[2] LEN[2, big endian] PACKET[LEN] XOR[1] TAIL[2]",
+    "length_meaning": "LEN包含四字节分包头和业务分片，不包含外层7字节；完整线帧总长=LEN+7。",
+    "packet_layout": "INDEX[2, big endian, zero based] TOTAL[2, big endian] BUSINESS_FRAGMENT[1..2000]",
+    "fragment_size_origin": "2000来自commanddefine.h的MaxPacketCount；编码器按此分片。",
+    "checksum": "PACKET全部字节从0开始逐字节XOR，包含INDEX/TOTAL，不含HEADER/LEN/XOR/TAIL；不是CRC。",
+    "business_status_query_ascii": "Qj",
+    "business_status_query_hex": "51 6A",
+    "single_status_query_frame_hex": "02 03 00 06 00 00 00 01 51 6A 3A 04 05",
+    "status_message_layout": "Qj[GENERAL_COUNT][GENERAL_FIELDS...][SUBSYSTEM_COUNT][ID][FIELD_COUNT][RAW_FIELDS...]...",
+    "escaping": "当前源码无方括号字段转义契约；本地解析器拒绝嵌套括号及非法字符。",
+    "identity_and_ack": "分包头只含索引/总数，不含事务ID。所审帧层没有通用ACK/NAK或重传ID；其他业务命令可能有自身应答，本切片不移植。"
+  },
+  "general_fields": [
+    {
+      "position": 1,
+      "name": "model",
+      "original_member": "driverInformation.driverModel",
+      "source_line": 543,
+      "original_conversion": "QString"
+    },
+    {
+      "position": 2,
+      "name": "main_status",
+      "original_member": "driverInformation.mainstatus",
+      "source_line": 545,
+      "original_conversion": "toInt -> DMainStatus"
+    },
+    {
+      "position": 3,
+      "name": "led_status",
+      "original_member": "driverInformation.ledStatus",
+      "source_line": 547,
+      "original_conversion": "toInt -> DLedStatus"
+    },
+    {
+      "position": 4,
+      "name": "error_work_type",
+      "original_member": "driverInformation.errorWorkType",
+      "source_line": 549,
+      "original_conversion": "toInt -> DoErrorWorkType"
+    },
+    {
+      "position": 5,
+      "name": "error_codes",
+      "original_member": "driverInformation.errCodeList",
+      "source_line": 550,
+      "original_conversion": "split('|'), remove empty entries"
+    },
+    {
+      "position": 6,
+      "name": "door_normal",
+      "original_member": "driverInformation.doorNormal",
+      "source_line": 552,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 7,
+      "name": "door_open_ss",
+      "original_member": "driverInformation.doorOpen_SS",
+      "source_line": 553,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 8,
+      "name": "temperature_normal",
+      "original_member": "driverInformation.normalTempture",
+      "source_line": 555,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 9,
+      "name": "versions",
+      "original_member": "driverInformation.driverVersions",
+      "source_line": 556,
+      "original_conversion": "split('|')"
+    },
+    {
+      "position": 10,
+      "name": "serial",
+      "original_member": "driverInformation.driverNumber",
+      "source_line": 557,
+      "original_conversion": "QString"
+    },
+    {
+      "position": 11,
+      "name": "emergency_stop",
+      "original_member": "driverInformation.EmgcStopKey_SS",
+      "source_line": 559,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 12,
+      "name": "no_water_test",
+      "original_member": "driverInformation.noWaterTest",
+      "source_line": 561,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 13,
+      "name": "no_cup_test",
+      "original_member": "driverInformation.noCupTest",
+      "source_line": 563,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 14,
+      "name": "version_check",
+      "original_member": "driverInformation.versionCheck",
+      "source_line": 565,
+      "original_conversion": "QString"
+    },
+    {
+      "position": 15,
+      "name": "start_key",
+      "original_member": "driverInformation.StartKey_SS",
+      "source_line": 567,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 16,
+      "name": "plate_key",
+      "original_member": "driverInformation.PlateKey_SS",
+      "source_line": 569,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 17,
+      "name": "sample_scanner",
+      "original_member": "driverInformation.SampleScannerStatus",
+      "source_line": 571,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 18,
+      "name": "reagent_scanner",
+      "original_member": "driverInformation.ReagentScannerStatus",
+      "source_line": 573,
+      "original_conversion": "toInt > 0"
+    },
+    {
+      "position": 19,
+      "name": "main_period_ms",
+      "original_member": "driverInformation.MainPeriodMs",
+      "source_line": 575,
+      "original_conversion": "QString; source comment says ms, added 20260614"
+    },
+    {
+      "position": 20,
+      "name": "protocol_marker",
+      "original_member": "SystemCommon::isNewProtocal",
+      "source_line": 577,
+      "original_conversion": "equals LinuxNew"
+    },
+    {
+      "position": 21,
+      "name": "reagent_channels",
+      "original_member": "reagentPanelChannelCount",
+      "source_line": 582,
+      "original_conversion": "toInt; source fallback20 when absent"
+    },
+    {
+      "position": 22,
+      "name": "test_channels",
+      "original_member": "channelCount",
+      "source_line": 585,
+      "original_conversion": "toInt; source fallback18 when absent"
+    },
+    {
+      "position": 23,
+      "name": "emergency_holes",
+      "original_member": "SystemCommon::emergencyHoleCountTemp",
+      "source_line": 588,
+      "original_conversion": "toInt"
+    },
+    {
+      "position": 24,
+      "name": "sample_holes",
+      "original_member": "SystemCommon::sampleHoleCountTemp",
+      "source_line": 590,
+      "original_conversion": "toInt"
+    },
+    {
+      "position": 25,
+      "name": "dual_needle_working",
+      "original_member": "driverInformation.is2ReagentNeedleWorking",
+      "source_line": 592,
+      "original_conversion": "toInt > 0; source comment added 20260614"
+    }
+  ],
+  "general_fields_source": "communication/commandreceiver.cpp:534-592；position不包含开头的GENERAL_COUNT。缺少的可选主字段在本地快照中保持缺少，不复用上次值或注入原全局默认配置。",
+  "preserved": [
+    "保留双向头尾、BE16长度、分包索引/总数、2000业务字节分片和数据字段XOR。",
+    "保留Qj命令和方括号空字段，保留主状态/灯状态/错误类型的源码枚举编号及25字段顺序。",
+    "保留顺序组包和错误可观测性；一次feed可解析连续多个合法线帧。",
+    "普通布尔字段的正整数仍可表示真，不把源码toInt()>0误改为只能0或1。"
+  ],
+  "intentional_differences": [
+    {
+      "id": "D01-incomplete-timeout",
+      "source": "10ms定时回调累计WAIT_COMPLETE_FRAME_TIMEOUT=1000后比较本次与上次缓冲长度；注释分别存在1秒/10000ms说法，且字节进展时未统一重置累计计数。原组包层没有独立明确的无进展期限。",
+      "local": "使用调用者单调毫秒时钟，半帧自最后新字节、组包自最后新有效分片分别10秒无进展即清空；重复片不延长期限。任一超时丢弃同连接半帧和组包，断线reset也全部清空。",
+      "reason": "时间口径明确、有界恢复；不宣称原固件确认了10秒等待策略。"
+    },
+    {
+      "id": "D02-local-budgets",
+      "local": {
+        "max_packets": 64,
+        "max_logical_bytes": 128000,
+        "max_feed_bytes": 65536,
+        "max_buffer_bytes": 67547,
+        "business_fragment_bytes": [
+          1,
+          2000
+        ],
+        "status_general_count": [
+          4,
+          25
+        ],
+        "max_status_fields": 4096,
+        "max_status_field_bytes": 1024,
+        "max_subsystems": 64,
+        "max_subsystem_fields": 256
+      },
+      "reason": "除源码2000分片值外均是本地资源/支持范围预算，不能当作仪器协议规格或全型号最大值。"
+    },
+    {
+      "id": "D03-strict-atomic-status",
+      "source": "原commandChanger提取括号字段后，pcQueryStatus直接toInt/at访问并逐字段修改全局状态；非法值可能变0、短报文可能越界。",
+      "local": "仅支持可打印ASCII字段；验证完整括号、声明数量、已知枚举和相应非负数字字段；允许原布尔的正整数真值，负数/非法文本拒绝。完整验证后一次发布新快照，失败不发布部分状态。不执行原全局状态/UI副作用。",
+      "reason": "拒绝把格式错误解释为成功状态，避免越界及半更新；未来固件新增字段/非ASCII文字需另行验证扩展。"
+    },
+    {
+      "id": "D04-duplicate-and-correlation",
+      "source": "帧层无请求ID；原组包仅依次检查index/total，没有完整消息身份或通用ACK重试契约。",
+      "local": "只在未完成组包中跳过完全相同的前一个分片并计数；两个相同完整单包均作为新观测发布。一个Qj在途请求仅管理本地等待状态，不能证明任意回复属于哪次请求/重试。",
+      "reason": "避免对自然重复状态误去重；不凭字节相同推定仪器重传。"
+    },
+    {
+      "id": "D05-simulated-request-retry",
+      "source": "所审CommandThread帧层没有Qj请求级自动重试/ACK超时表。",
+      "local": "默认Qj等待1000ms、最多重试1次，只生成模拟TX字节；超限后状态标失效。构造参数限等待1..60000ms、重试0..3。事件时间推进可触发重试，实际发送时刻是当前模拟事件时间，不补发所有已错过周期。",
+      "reason": "用于离线超时/恢复验证，不代表真实命令重发策略或仪器动作授权；真实Transport尚未接入。"
+    },
+    {
+      "id": "D06-valid-status-silence",
+      "source": "原CommandThread约每3秒按最后任意MCU数据/日志收包时间检查200000ms；lastRevLinkTime为空时不检查。",
+      "local": "单调时间200000ms无有效Qj快照即模拟断线；从open计时，之后仅有效状态刷新。错误帧、日志或未知业务不能保持状态新鲜；receive/queryStatus先推进会话时间。",
+      "reason": "缺首包或无效流量时也能清除旧状态；属于本地状态有效性策略，不是原样复制。"
+    },
+    {
+      "id": "D07-no-automatic-followups",
+      "source": "原pcQueryCmd每5次Qj回复emit signalSendTime；frmmain.cpp391接SendPCTime。原pcQueryStatus首次登录接收可请求试剂并安排配置检查。",
+      "local": "不实例化原主窗、接收器、数据库或控制链，不发校时、试剂、配置、LIS或机械动作命令；模拟会话仅允许人工Qj查询与其本地模拟重试。",
+      "reason": "切片只验证查询/状态协议，不扩大到写入或硬件功能。"
+    },
+    {
+      "id": "D08-raw-subsystems",
+      "source": "原pcQueryStatus按motorNumber分支解释SN450/其他型号传感器、通道与温度字段，并用motorOffset跳到下一块。",
+      "local": "按[id][field_count][fields]核查边界，只保留原始子块；不把CV450/6600分支传感器映射声明为已核实的SN100字段，不将子块值驱动硬件/UI动作。",
+      "reason": "机型/主控/协议版本及实际子系统布局尚待现场确认。"
+    },
+    {
+      "id": "D09-frame-recovery",
+      "source": "原拆帧噪声前缀remove(0,stxIndex+1)可能多删首字节；短包、队列和长度/超时处理缺少当前本地完整边界。",
+      "local": "噪声重同步保留末尾首帧头字节；零/超长长度、错尾、错XOR、错序/总数和超预算均明确报错并有界丢弃，不照搬原越界/无界等待行为。",
+      "reason": "保持合法线上格式，同时修复错误输入处理；错误路径变化需继续累计回归。"
+    },
+    {
+      "id": "D10-event-driven-offline",
+      "source": "原CommandThread在10ms轮询中每次取一发送包。",
+      "local": "编解码器由调用者feed/expire驱动；encodeMessage只返回分帧列表，不使用真实发送队列或设定真实2000字节分包发送时序。回放器按合成事件推进。",
+      "reason": "当前为可复用纯值协议边界和离线验证；未来Transport须单独核对板端发送时序、连接与背压。"
+    }
+  ],
+  "verification_limits": {
+    "reference_built_or_run": false,
+    "network_or_instrument_connected": false,
+    "hardware_verified": false,
+    "sn100_firmware_protocol_version": "待用户提供控制器/固件身份及允许的实际查询响应后核验",
+    "synthetic_fixture": "06_programs/sn100_host/tests/fixtures/protocol_replay.json",
+    "synthetic_fixture_claim": "只从源码规则独立构造字节和状态，不是仪器捕获；SIMULATED/SIM-*等值只用于测试。",
+    "pending": [
+      "当前SN100是否支持Qj及25字段版本",
+      "原Windows实际行为对照",
+      "真实ACK/关联/重试语义及控制器多客户端限制",
+      "子系统机型映射",
+      "RK实屏/资源与同板控制",
+      "仪器/长期稳定性验收"
+    ]
+  }
+}

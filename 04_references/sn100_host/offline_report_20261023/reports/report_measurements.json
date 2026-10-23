@@ -1,0 +1,1294 @@
+{
+    "clock_ticks_per_second": 1000000,
+    "database_after": {
+        "integrity_check": "ok",
+        "report_columns": [
+            {
+                "decimals": 1,
+                "factor": 1,
+                "label": "PT",
+                "position": 0,
+                "project": "PT",
+                "result_type": 1,
+                "unit": "s"
+            },
+            {
+                "decimals": 2,
+                "factor": 1,
+                "label": "INR",
+                "position": 1,
+                "project": "PT",
+                "result_type": 4,
+                "unit": ""
+            },
+            {
+                "decimals": 2,
+                "factor": 1,
+                "label": "APTT",
+                "position": 2,
+                "project": "APTT",
+                "result_type": 1,
+                "unit": "s"
+            },
+            {
+                "decimals": 2,
+                "factor": 1,
+                "label": "FIB",
+                "position": 3,
+                "project": "FIB",
+                "result_type": 2,
+                "unit": "g/L"
+            },
+            {
+                "decimals": 3,
+                "factor": 1000,
+                "label": "D-D",
+                "position": 4,
+                "project": "D-D",
+                "result_type": 2,
+                "unit": "ng/mL"
+            },
+            {
+                "decimals": -1,
+                "factor": 1,
+                "label": "RAWX",
+                "position": 5,
+                "project": "RAWX",
+                "result_type": 1,
+                "unit": ""
+            }
+        ],
+        "report_data": [
+            {
+                "age": 20,
+                "application_serial": "TEST-A001",
+                "auditor": "测试审核员",
+                "bed_number": "测试床1",
+                "checker": "测试送检员",
+                "data_time": "20261022235959",
+                "department": "匿名科室",
+                "id": 1,
+                "jianyan": "测试检验员",
+                "name": "匿名一号",
+                "patient_type": "匿名门诊",
+                "remark": "日期左边界外一秒",
+                "row_id": 101,
+                "sample_id": "ANON-001",
+                "sex": 0,
+                "sn": 1,
+                "state": "匿名完成",
+                "visible": 1
+            },
+            {
+                "age": 30,
+                "application_serial": "TEST-A002",
+                "auditor": "测试审核员",
+                "bed_number": "测试床2",
+                "checker": "测试送检员",
+                "data_time": "20261023000000",
+                "department": "匿名科室",
+                "id": 2,
+                "jianyan": "测试检验员",
+                "name": "匿名二号",
+                "patient_type": "匿名住院",
+                "remark": "日期起点包含",
+                "row_id": 102,
+                "sample_id": "ANON-002",
+                "sex": 1,
+                "sn": 2,
+                "state": "匿名完成",
+                "visible": 1
+            },
+            {
+                "age": 0,
+                "application_serial": "TEST-'003",
+                "auditor": "测试审核员",
+                "bed_number": "测试床,3",
+                "checker": "测试送检\"员",
+                "data_time": "20261023123456",
+                "department": "匿名科室'甲",
+                "id": 3,
+                "jianyan": "测试检验'员",
+                "name": "匿名,\"三号\"\n换行",
+                "patient_type": "匿名类型",
+                "remark": "匿名备注第一行\n第二行,含\"引号\"和'单引号",
+                "row_id": 103,
+                "sample_id": "ANON,\"003",
+                "sex": -1,
+                "sn": 3,
+                "state": "匿名复测",
+                "visible": 1
+            },
+            {
+                "age": 40,
+                "application_serial": "TEST-A004",
+                "auditor": "测试审核员",
+                "bed_number": "测试床4",
+                "checker": "测试送检员",
+                "data_time": "20261023235959",
+                "department": "匿名科室",
+                "id": 4,
+                "jianyan": "测试检验员",
+                "name": "匿名四号",
+                "patient_type": "匿名门诊",
+                "remark": "日期终点包含；非法数值必须显示****",
+                "row_id": 104,
+                "sample_id": "ANON-004",
+                "sex": 0,
+                "sn": 4,
+                "state": "匿名异常",
+                "visible": 1
+            },
+            {
+                "age": 50,
+                "application_serial": "TEST-A005",
+                "auditor": "测试审核员",
+                "bed_number": "测试床5",
+                "checker": "测试送检员",
+                "data_time": "20261024000000",
+                "department": "匿名科室",
+                "id": 5,
+                "jianyan": "测试检验员",
+                "name": "匿名五号",
+                "patient_type": "匿名住院",
+                "remark": "日期右边界外一秒",
+                "row_id": 105,
+                "sample_id": "ANON-005",
+                "sex": 1,
+                "sn": 5,
+                "state": "匿名完成",
+                "visible": 1
+            },
+            {
+                "age": 0,
+                "application_serial": "",
+                "auditor": "",
+                "bed_number": "",
+                "checker": "",
+                "data_time": "20261023120000",
+                "department": "",
+                "id": 6,
+                "jianyan": "",
+                "name": "匿名隐藏样本",
+                "patient_type": "",
+                "remark": "visible=0必须不出现在查询、明细、保存或CSV",
+                "row_id": 106,
+                "sample_id": "ANON-HIDDEN",
+                "sex": -1,
+                "sn": 6,
+                "state": "匿名隐藏",
+                "visible": 0
+            }
+        ],
+        "report_results": [
+            {
+                "abnormal_type": "",
+                "date_time": "20261022235959",
+                "fid": 101,
+                "project_name": "PT",
+                "task_id": 1001
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023000000",
+                "fid": 102,
+                "project_name": "APTT",
+                "task_id": 1002
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123001",
+                "fid": 103,
+                "project_name": "PT",
+                "task_id": 1003
+            },
+            {
+                "abnormal_type": "匿名复测",
+                "date_time": "20261023123102",
+                "fid": 103,
+                "project_name": "PT",
+                "task_id": 1004
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123203",
+                "fid": 103,
+                "project_name": "APTT",
+                "task_id": 1005
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123304",
+                "fid": 103,
+                "project_name": "FIB",
+                "task_id": 1006
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123405",
+                "fid": 103,
+                "project_name": "D-D",
+                "task_id": 1007
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123406",
+                "fid": 103,
+                "project_name": "RAWX",
+                "task_id": 1008
+            },
+            {
+                "abnormal_type": "匿名无效",
+                "date_time": "20261023235959",
+                "fid": 104,
+                "project_name": "PT",
+                "task_id": 1009
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261024000000",
+                "fid": 105,
+                "project_name": "FIB",
+                "task_id": 1010
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023120000",
+                "fid": 106,
+                "project_name": "PT",
+                "task_id": 1011
+            }
+        ],
+        "report_values": [
+            {
+                "raw_value": "11.25",
+                "result_type": 1,
+                "task_id": 1001
+            },
+            {
+                "raw_value": "1.00",
+                "result_type": 4,
+                "task_id": 1001
+            },
+            {
+                "raw_value": "0",
+                "result_type": 1,
+                "task_id": 1002
+            },
+            {
+                "raw_value": "12.34",
+                "result_type": 1,
+                "task_id": 1003
+            },
+            {
+                "raw_value": "1.236",
+                "result_type": 4,
+                "task_id": 1003
+            },
+            {
+                "raw_value": "13.46",
+                "result_type": 1,
+                "task_id": 1004
+            },
+            {
+                "raw_value": "1.111",
+                "result_type": 4,
+                "task_id": 1004
+            },
+            {
+                "raw_value": "35.678",
+                "result_type": 1,
+                "task_id": 1005
+            },
+            {
+                "raw_value": "2.345",
+                "result_type": 2,
+                "task_id": 1006
+            },
+            {
+                "raw_value": "0.123456",
+                "result_type": 2,
+                "task_id": 1007
+            },
+            {
+                "raw_value": "待确认,\"raw\"\nnext",
+                "result_type": 1,
+                "task_id": 1008
+            },
+            {
+                "raw_value": "INVALID",
+                "result_type": 1,
+                "task_id": 1009
+            },
+            {
+                "raw_value": "nan",
+                "result_type": 4,
+                "task_id": 1009
+            },
+            {
+                "raw_value": "3.14159",
+                "result_type": 2,
+                "task_id": 1010
+            },
+            {
+                "raw_value": "99.9",
+                "result_type": 1,
+                "task_id": 1011
+            },
+            {
+                "raw_value": "9.99",
+                "result_type": 4,
+                "task_id": 1011
+            }
+        ]
+    },
+    "database_before": {
+        "integrity_check": "ok",
+        "report_columns": [
+            {
+                "decimals": 1,
+                "factor": 1,
+                "label": "PT",
+                "position": 0,
+                "project": "PT",
+                "result_type": 1,
+                "unit": "s"
+            },
+            {
+                "decimals": 2,
+                "factor": 1,
+                "label": "INR",
+                "position": 1,
+                "project": "PT",
+                "result_type": 4,
+                "unit": ""
+            },
+            {
+                "decimals": 2,
+                "factor": 1,
+                "label": "APTT",
+                "position": 2,
+                "project": "APTT",
+                "result_type": 1,
+                "unit": "s"
+            },
+            {
+                "decimals": 2,
+                "factor": 1,
+                "label": "FIB",
+                "position": 3,
+                "project": "FIB",
+                "result_type": 2,
+                "unit": "g/L"
+            },
+            {
+                "decimals": 3,
+                "factor": 1000,
+                "label": "D-D",
+                "position": 4,
+                "project": "D-D",
+                "result_type": 2,
+                "unit": "ng/mL"
+            },
+            {
+                "decimals": -1,
+                "factor": 1,
+                "label": "RAWX",
+                "position": 5,
+                "project": "RAWX",
+                "result_type": 1,
+                "unit": ""
+            }
+        ],
+        "report_data": [
+            {
+                "age": 20,
+                "application_serial": "TEST-A001",
+                "auditor": "测试审核员",
+                "bed_number": "测试床1",
+                "checker": "测试送检员",
+                "data_time": "20261022235959",
+                "department": "匿名科室",
+                "id": 1,
+                "jianyan": "测试检验员",
+                "name": "匿名一号",
+                "patient_type": "匿名门诊",
+                "remark": "日期左边界外一秒",
+                "row_id": 101,
+                "sample_id": "ANON-001",
+                "sex": 0,
+                "sn": 1,
+                "state": "匿名完成",
+                "visible": 1
+            },
+            {
+                "age": 30,
+                "application_serial": "TEST-A002",
+                "auditor": "测试审核员",
+                "bed_number": "测试床2",
+                "checker": "测试送检员",
+                "data_time": "20261023000000",
+                "department": "匿名科室",
+                "id": 2,
+                "jianyan": "测试检验员",
+                "name": "匿名二号",
+                "patient_type": "匿名住院",
+                "remark": "日期起点包含",
+                "row_id": 102,
+                "sample_id": "ANON-002",
+                "sex": 1,
+                "sn": 2,
+                "state": "匿名完成",
+                "visible": 1
+            },
+            {
+                "age": 0,
+                "application_serial": "TEST-'003",
+                "auditor": "测试审核员",
+                "bed_number": "测试床,3",
+                "checker": "测试送检\"员",
+                "data_time": "20261023123456",
+                "department": "匿名科室'甲",
+                "id": 3,
+                "jianyan": "测试检验'员",
+                "name": "匿名,\"三号\"\n换行",
+                "patient_type": "匿名类型",
+                "remark": "匿名备注第一行\n第二行,含\"引号\"和'单引号",
+                "row_id": 103,
+                "sample_id": "ANON,\"003",
+                "sex": -1,
+                "sn": 3,
+                "state": "匿名复测",
+                "visible": 1
+            },
+            {
+                "age": 40,
+                "application_serial": "TEST-A004",
+                "auditor": "测试审核员",
+                "bed_number": "测试床4",
+                "checker": "测试送检员",
+                "data_time": "20261023235959",
+                "department": "匿名科室",
+                "id": 4,
+                "jianyan": "测试检验员",
+                "name": "匿名四号",
+                "patient_type": "匿名门诊",
+                "remark": "日期终点包含；非法数值必须显示****",
+                "row_id": 104,
+                "sample_id": "ANON-004",
+                "sex": 0,
+                "sn": 4,
+                "state": "匿名异常",
+                "visible": 1
+            },
+            {
+                "age": 50,
+                "application_serial": "TEST-A005",
+                "auditor": "测试审核员",
+                "bed_number": "测试床5",
+                "checker": "测试送检员",
+                "data_time": "20261024000000",
+                "department": "匿名科室",
+                "id": 5,
+                "jianyan": "测试检验员",
+                "name": "匿名五号",
+                "patient_type": "匿名住院",
+                "remark": "日期右边界外一秒",
+                "row_id": 105,
+                "sample_id": "ANON-005",
+                "sex": 1,
+                "sn": 5,
+                "state": "匿名完成",
+                "visible": 1
+            },
+            {
+                "age": 0,
+                "application_serial": "",
+                "auditor": "",
+                "bed_number": "",
+                "checker": "",
+                "data_time": "20261023120000",
+                "department": "",
+                "id": 6,
+                "jianyan": "",
+                "name": "匿名隐藏样本",
+                "patient_type": "",
+                "remark": "visible=0必须不出现在查询、明细、保存或CSV",
+                "row_id": 106,
+                "sample_id": "ANON-HIDDEN",
+                "sex": -1,
+                "sn": 6,
+                "state": "匿名隐藏",
+                "visible": 0
+            }
+        ],
+        "report_results": [
+            {
+                "abnormal_type": "",
+                "date_time": "20261022235959",
+                "fid": 101,
+                "project_name": "PT",
+                "task_id": 1001
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023000000",
+                "fid": 102,
+                "project_name": "APTT",
+                "task_id": 1002
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123001",
+                "fid": 103,
+                "project_name": "PT",
+                "task_id": 1003
+            },
+            {
+                "abnormal_type": "匿名复测",
+                "date_time": "20261023123102",
+                "fid": 103,
+                "project_name": "PT",
+                "task_id": 1004
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123203",
+                "fid": 103,
+                "project_name": "APTT",
+                "task_id": 1005
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123304",
+                "fid": 103,
+                "project_name": "FIB",
+                "task_id": 1006
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123405",
+                "fid": 103,
+                "project_name": "D-D",
+                "task_id": 1007
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023123406",
+                "fid": 103,
+                "project_name": "RAWX",
+                "task_id": 1008
+            },
+            {
+                "abnormal_type": "匿名无效",
+                "date_time": "20261023235959",
+                "fid": 104,
+                "project_name": "PT",
+                "task_id": 1009
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261024000000",
+                "fid": 105,
+                "project_name": "FIB",
+                "task_id": 1010
+            },
+            {
+                "abnormal_type": "",
+                "date_time": "20261023120000",
+                "fid": 106,
+                "project_name": "PT",
+                "task_id": 1011
+            }
+        ],
+        "report_values": [
+            {
+                "raw_value": "11.25",
+                "result_type": 1,
+                "task_id": 1001
+            },
+            {
+                "raw_value": "1.00",
+                "result_type": 4,
+                "task_id": 1001
+            },
+            {
+                "raw_value": "0",
+                "result_type": 1,
+                "task_id": 1002
+            },
+            {
+                "raw_value": "12.34",
+                "result_type": 1,
+                "task_id": 1003
+            },
+            {
+                "raw_value": "1.236",
+                "result_type": 4,
+                "task_id": 1003
+            },
+            {
+                "raw_value": "13.46",
+                "result_type": 1,
+                "task_id": 1004
+            },
+            {
+                "raw_value": "1.111",
+                "result_type": 4,
+                "task_id": 1004
+            },
+            {
+                "raw_value": "35.678",
+                "result_type": 1,
+                "task_id": 1005
+            },
+            {
+                "raw_value": "2.345",
+                "result_type": 2,
+                "task_id": 1006
+            },
+            {
+                "raw_value": "0.123456",
+                "result_type": 2,
+                "task_id": 1007
+            },
+            {
+                "raw_value": "待确认,\"raw\"\nnext",
+                "result_type": 1,
+                "task_id": 1008
+            },
+            {
+                "raw_value": "INVALID",
+                "result_type": 1,
+                "task_id": 1009
+            },
+            {
+                "raw_value": "nan",
+                "result_type": 4,
+                "task_id": 1009
+            },
+            {
+                "raw_value": "3.14159",
+                "result_type": 2,
+                "task_id": 1010
+            },
+            {
+                "raw_value": "99.9",
+                "result_type": 1,
+                "task_id": 1011
+            },
+            {
+                "raw_value": "9.99",
+                "result_type": 4,
+                "task_id": 1011
+            }
+        ]
+    },
+    "expected_failures": [
+        {
+            "message": "原模板单行字段mark含换行/无效文本；未生成截断报告，请先核对患者信息。",
+            "operation": "report"
+        },
+        {
+            "message": "PDF渲染失败（退出码4）：HISTORY_RENDER_ERROR 报告头字段name含模板控制符<>[]或换行，不能按原模板安全输出；未改变原始信息。\n",
+            "operation": "pdf"
+        },
+        {
+            "message": "PDF渲染失败（退出码4）：HISTORY_RENDER_ERROR 报告第1行字段unit含模板控制符<>[]或换行，不能按原模板安全输出。\n",
+            "operation": "pdf"
+        },
+        {
+            "message": "PDF渲染失败（退出码4）：HISTORY_RENDER_ERROR 报告字段field2的字体Noto Sans CJK SC缺少字形U+10FFFF，未生成可能含方块的报告。\n",
+            "operation": "pdf"
+        },
+        {
+            "message": "请选择匿名隔离目录exports下新的.pdf文件；不会覆盖已有文件。",
+            "operation": "pdf"
+        },
+        {
+            "message": "请选择匿名隔离目录exports下新的.pdf文件；不会覆盖已有文件。",
+            "operation": "pdf"
+        },
+        {
+            "message": "请选择匿名隔离目录exports下新的.pdf文件；不会覆盖已有文件。",
+            "operation": "pdf"
+        },
+        {
+            "message": "所选匿名报告为空、标识无效或超过64任务容量。",
+            "operation": "report"
+        },
+        {
+            "message": "PDF渲染器缺失或不可执行：/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/history/report_final_20261023_04/missing-renderer",
+            "operation": "pdf"
+        },
+        {
+            "message": "已有PDF导出正在执行。",
+            "operation": "pdf"
+        }
+    ],
+    "gap_p100_ms": 219.199948,
+    "gap_p50_ms": 10.067485,
+    "gap_p95_ms": 37.036381,
+    "gap_p99_ms": 135.367927,
+    "multiline_original_preview_failure": "原模板单行字段mark含换行/无效文本；未生成截断报告，请先核对患者信息。",
+    "operations": [
+        {
+            "elapsed_ms": 38.851987,
+            "operation": "mouse print to populated preview"
+        },
+        {
+            "elapsed_ms": 136.721429,
+            "operation": "mouse save to actual PDF completion"
+        },
+        {
+            "cycle": 0,
+            "elapsed_ms": 21.70597,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 1,
+            "elapsed_ms": 23.061278,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 2,
+            "elapsed_ms": 22.266988,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 3,
+            "elapsed_ms": 21.02281,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 4,
+            "elapsed_ms": 19.551857,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 5,
+            "elapsed_ms": 21.142098,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 6,
+            "elapsed_ms": 21.943032,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 7,
+            "elapsed_ms": 22.254873,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 8,
+            "elapsed_ms": 19.759059,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 9,
+            "elapsed_ms": 20.122101,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 10,
+            "elapsed_ms": 20.131487,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 11,
+            "elapsed_ms": 20.40559,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 12,
+            "elapsed_ms": 18.866448,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 13,
+            "elapsed_ms": 21.213618,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 14,
+            "elapsed_ms": 21.11328,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 15,
+            "elapsed_ms": 20.632552,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 16,
+            "elapsed_ms": 35.507677,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 17,
+            "elapsed_ms": 48.906298,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 18,
+            "elapsed_ms": 42.953546,
+            "operation": "repeat preview"
+        },
+        {
+            "cycle": 19,
+            "elapsed_ms": 24.733169,
+            "operation": "repeat preview"
+        },
+        {
+            "elapsed_ms": 335.209062,
+            "operation": "64 original task rows PDF completion"
+        }
+    ],
+    "preview_cycles": 21,
+    "renderer_resource_samples": [
+        {
+            "Pss_kib": 5436,
+            "Threads:": 1,
+            "VmHWM:": 10380,
+            "VmRSS:": 10380,
+            "elapsed_ms": 482,
+            "fd_count": 4,
+            "pid": 1261,
+            "proc_clock_ticks_per_second": 100,
+            "system_ticks": 0,
+            "user_ticks": 0
+        },
+        {
+            "Pss_kib": null,
+            "Threads:": 1,
+            "VmHWM:": null,
+            "VmRSS:": null,
+            "elapsed_ms": 1492,
+            "fd_count": 0,
+            "pid": 1265,
+            "proc_clock_ticks_per_second": 100,
+            "system_ticks": 0,
+            "user_ticks": 0
+        },
+        {
+            "Pss_kib": 8,
+            "Threads:": 1,
+            "VmHWM:": 8,
+            "VmRSS:": 8,
+            "elapsed_ms": 1701,
+            "fd_count": 4,
+            "pid": 1268,
+            "proc_clock_ticks_per_second": 100,
+            "system_ticks": 0,
+            "user_ticks": 0
+        },
+        {
+            "Pss_kib": 20543,
+            "Threads:": 1,
+            "VmHWM:": 38616,
+            "VmRSS:": 38616,
+            "elapsed_ms": 2257,
+            "fd_count": 7,
+            "pid": 1270,
+            "proc_clock_ticks_per_second": 100,
+            "system_ticks": 1,
+            "user_ticks": 0
+        },
+        {
+            "Pss_kib": 22279,
+            "Threads:": 1,
+            "VmHWM:": 41800,
+            "VmRSS:": 41800,
+            "elapsed_ms": 2357,
+            "fd_count": 7,
+            "pid": 1270,
+            "proc_clock_ticks_per_second": 100,
+            "system_ticks": 2,
+            "user_ticks": 9
+        },
+        {
+            "Pss_kib": 22307,
+            "Threads:": 1,
+            "VmHWM:": 41824,
+            "VmRSS:": 41824,
+            "elapsed_ms": 2458,
+            "fd_count": 7,
+            "pid": 1270,
+            "proc_clock_ticks_per_second": 100,
+            "system_ticks": 3,
+            "user_ticks": 18
+        }
+    ],
+    "renderer_resource_scope": "separate renderer PIDs sampled every approximately 100 ms; CPU ticks are cumulative observed /proc values",
+    "resource_samples": [
+        {
+            "Pss_kib": 100880,
+            "Threads:": 5,
+            "VmHWM:": 108372,
+            "VmRSS:": 108372,
+            "cpu_clock_ticks": 124740,
+            "elapsed_ms": 0,
+            "fd_count": 14
+        },
+        {
+            "Pss_kib": 141967,
+            "Threads:": 7,
+            "VmHWM:": 165396,
+            "VmRSS:": 165396,
+            "cpu_clock_ticks": 399857,
+            "elapsed_ms": 480,
+            "fd_count": 23
+        },
+        {
+            "Pss_kib": 144524,
+            "Threads:": 5,
+            "VmHWM:": 165524,
+            "VmRSS:": 165524,
+            "cpu_clock_ticks": 412786,
+            "elapsed_ms": 651,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 144524,
+            "Threads:": 5,
+            "VmHWM:": 165524,
+            "VmRSS:": 165524,
+            "cpu_clock_ticks": 415701,
+            "elapsed_ms": 751,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135327,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 147012,
+            "cpu_clock_ticks": 493503,
+            "elapsed_ms": 929,
+            "fd_count": 15
+        },
+        {
+            "Pss_kib": 135327,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 147012,
+            "cpu_clock_ticks": 657717,
+            "elapsed_ms": 1159,
+            "fd_count": 15
+        },
+        {
+            "Pss_kib": 130331,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 769392,
+            "elapsed_ms": 1490,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 115736,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 791530,
+            "elapsed_ms": 1698,
+            "fd_count": 20
+        },
+        {
+            "Pss_kib": 135119,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 799033,
+            "elapsed_ms": 1827,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135119,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 803526,
+            "elapsed_ms": 1926,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135119,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 807955,
+            "elapsed_ms": 2026,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135119,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 811588,
+            "elapsed_ms": 2126,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 121444,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 820468,
+            "elapsed_ms": 2255,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 119996,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 824617,
+            "elapsed_ms": 2354,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 119996,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 828977,
+            "elapsed_ms": 2455,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135119,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 838751,
+            "elapsed_ms": 2579,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135119,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 842437,
+            "elapsed_ms": 2679,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135119,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 846553,
+            "elapsed_ms": 2780,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135119,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146804,
+            "cpu_clock_ticks": 850709,
+            "elapsed_ms": 2879,
+            "fd_count": 19
+        },
+        {
+            "Pss_kib": 135121,
+            "Threads:": 5,
+            "VmHWM:": 164632,
+            "VmRSS:": 146808,
+            "cpu_clock_ticks": 855129,
+            "elapsed_ms": 2914,
+            "fd_count": 15
+        }
+    ],
+    "resource_scope": "test parent process; child PDF renderer not included",
+    "response_scope": "mouse dispatch to signal/content readiness; not pixel presentation or real time",
+    "sample_count": 181,
+    "samples_ms": [
+        18.483957,
+        3.231603,
+        35.412298,
+        19.733246,
+        1.445945,
+        219.199948,
+        26.879128,
+        10.192707,
+        10.139739,
+        135.367927,
+        53.440519,
+        10.86992,
+        36.417736,
+        10.908914,
+        9.30284,
+        10.098748,
+        10.019774,
+        10.105873,
+        9.894852,
+        9.967216,
+        10.003948,
+        9.873663,
+        9.862007,
+        11.000059,
+        9.818066,
+        10.225977,
+        10.023592,
+        9.851057,
+        9.899981,
+        10.064502,
+        9.134795,
+        11.023869,
+        9.101774,
+        10.066178,
+        10.981426,
+        26.381866,
+        27.221965,
+        25.447226,
+        24.710779,
+        23.429207,
+        24.124644,
+        23.392087,
+        24.144111,
+        24.545435,
+        22.049808,
+        22.289898,
+        22.656349,
+        22.763348,
+        20.900205,
+        23.447526,
+        27.317743,
+        23.185507,
+        46.587463,
+        66.00968,
+        53.306651,
+        26.829472,
+        16.989508,
+        49.61178,
+        10.915251,
+        9.788805,
+        10.88334,
+        24.683333,
+        10.067485,
+        10.95277,
+        9.62424,
+        25.137142,
+        11.036487,
+        9.884071,
+        15.01297,
+        81.225149,
+        10.170473,
+        10.832301,
+        10.069134,
+        9.988203,
+        9.97118,
+        9.97533,
+        9.724382,
+        9.792659,
+        37.139338,
+        10.947511,
+        9.61504,
+        9.97238,
+        10.065779,
+        10.005716,
+        9.956859,
+        10.046417,
+        9.842106,
+        9.781986,
+        10.030097,
+        9.959102,
+        10.54425,
+        9.996821,
+        9.961097,
+        10.068924,
+        10.070448,
+        10.123969,
+        9.028865,
+        10.143801,
+        9.972162,
+        9.913325,
+        10.530146,
+        9.981683,
+        10.191289,
+        9.946361,
+        10.010372,
+        9.740067,
+        9.898682,
+        9.959748,
+        9.935562,
+        9.98619,
+        9.953711,
+        9.827215,
+        11.075398,
+        9.717031,
+        9.967799,
+        37.036381,
+        11.064457,
+        9.858257,
+        9.941813,
+        10.309186,
+        9.597891,
+        9.281888,
+        10.040075,
+        10.03614,
+        11.013668,
+        9.837969,
+        10.117987,
+        8.977898,
+        10.002484,
+        10.024333,
+        10.418359,
+        9.896916,
+        10.150985,
+        10.093171,
+        10.208028,
+        10.093193,
+        10.013974,
+        10.045158,
+        8.979386,
+        11.153986,
+        9.08541,
+        10.041137,
+        10.144178,
+        34.69785,
+        10.422698,
+        9.93511,
+        9.938935,
+        10.067232,
+        10.321196,
+        10.060494,
+        9.800781,
+        10.088783,
+        9.884624,
+        9.928692,
+        9.941385,
+        10.030864,
+        10.08681,
+        10.055465,
+        9.980618,
+        10.012671,
+        9.998481,
+        10.191861,
+        9.866128,
+        10.050577,
+        10.1087,
+        9.657902,
+        10.229438,
+        10.045841,
+        10.076294,
+        10.231282,
+        9.240669,
+        10.119365,
+        10.19834,
+        10.177571,
+        9.967286,
+        10.406293,
+        8.890719,
+        10.293553,
+        10.02023,
+        9.79822,
+        10.668291
+    ],
+    "source_results_unchanged": true,
+    "timer_interval_ms": 10
+}

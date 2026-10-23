@@ -1,0 +1,907 @@
+{
+    "actual": {
+        "hospital_name": "O03保存重开医院 O'Brien",
+        "integrity_check": "ok",
+        "rows": [
+            {
+                "column_one": "门诊",
+                "column_three": "匿名门诊",
+                "column_two": "MZ",
+                "id": 2,
+                "type": "bingren"
+            },
+            {
+                "column_one": "检验员",
+                "column_three": "JY003",
+                "column_two": "JYY",
+                "id": 4,
+                "type": "jianyan"
+            },
+            {
+                "column_one": "血液科",
+                "column_three": "锁库恢复后保存 O'Brien 中文",
+                "column_two": "XYK",
+                "id": 1,
+                "type": "keshi"
+            },
+            {
+                "column_one": "审核员",
+                "column_three": "SH003",
+                "column_two": "SHY",
+                "id": 5,
+                "type": "shenhe"
+            },
+            {
+                "column_one": "送检员",
+                "column_three": "SJ003",
+                "column_two": "SJY",
+                "id": 3,
+                "type": "songjian"
+            }
+        ]
+    },
+    "assertions": [
+        {
+            "assertion": "five_anonymous_dictionary_types_saved_through_embedded_O01",
+            "passed": true
+        },
+        {
+            "assertion": "main_navigation_cancel_keeps_page_selection_and_draft",
+            "passed": true
+        },
+        {
+            "assertion": "main_navigation_discard_restores_committed_draft_without_database_write",
+            "passed": true
+        },
+        {
+            "assertion": "user_navigation_cancel_and_discard_use_O01_guard",
+            "passed": true
+        },
+        {
+            "assertion": "all_eight_main_and_five_user_navigation_names_clicked",
+            "passed": true
+        },
+        {
+            "assertion": "100_mouse_navigation_transitions_reuse_one_O01_and_restore_editor_focus",
+            "passed": true
+        },
+        {
+            "assertion": "real_locked_save_rejects_navigation_and_close_then_recovers_without_partial_commit",
+            "passed": true
+        },
+        {
+            "assertion": "dirty_shell_exit_cancel_keeps_draft_confirm_exits_without_persisting_draft",
+            "passed": true
+        }
+    ],
+    "discard_dialog_text": "切换页面将放弃当前未保存的更改，是否继续？",
+    "expected_hospital_name": "O03保存重开医院 O'Brien",
+    "expected_rows": [
+        {
+            "column_one": "血液科",
+            "column_three": "锁库恢复后保存 O'Brien 中文",
+            "column_two": "XYK",
+            "type": "keshi"
+        },
+        {
+            "column_one": "门诊",
+            "column_three": "匿名门诊",
+            "column_two": "MZ",
+            "type": "bingren"
+        },
+        {
+            "column_one": "送检员",
+            "column_three": "SJ003",
+            "column_two": "SJY",
+            "type": "songjian"
+        },
+        {
+            "column_one": "检验员",
+            "column_three": "JY003",
+            "column_two": "JYY",
+            "type": "jianyan"
+        },
+        {
+            "column_one": "审核员",
+            "column_three": "SH003",
+            "column_two": "SHY",
+            "type": "shenhe"
+        }
+    ],
+    "locked_save": {
+        "actual_error": "操作失败（save）：开始保存事务失败: database is locked Unable to fetch row",
+        "close_rejected": true,
+        "draft_preserved": true,
+        "failed_save_ms": 261.685517,
+        "heartbeat_max_gap_ms": 108.124807,
+        "heartbeat_samples": 18,
+        "main_navigation_rejected": true,
+        "partial_commit": false,
+        "user_navigation_rejected": true,
+        "visible_error_color_checked": true,
+        "visible_error_text": "脱机／失败",
+        "visible_error_tooltip": "操作失败（save）：开始保存事务失败: database is locked Unable to fetch row"
+    },
+    "mode": "O03-1 offline shell with O01 only",
+    "platform": "xcb",
+    "process_id": 2443,
+    "qt_version": "5.15.13",
+    "repeat_navigation_transitions": 100,
+    "response": {
+        "heartbeat": {
+            "max_ms": 455.376211,
+            "p95_ms": 81.146317,
+            "samples": 198
+        },
+        "heartbeat_gap_ms": [
+            84.294614,
+            15.947307,
+            5.056358,
+            9.877663,
+            10.048834,
+            11.752877,
+            7.838743,
+            10.510453,
+            12.963547,
+            54.819715,
+            16.235054,
+            75.928419,
+            16.350095,
+            4.929243,
+            9.796751,
+            9.974787,
+            12.394418,
+            6.59857,
+            9.966434,
+            10.301532,
+            10.53603,
+            9.924024,
+            13.13684,
+            53.115273,
+            15.545507,
+            81.146317,
+            17.138829,
+            6.574101,
+            6.560372,
+            9.834176,
+            13.693282,
+            6.602952,
+            10.57096,
+            18.687436,
+            16.878915,
+            42.349846,
+            91.087078,
+            18.552288,
+            4.710671,
+            7.649228,
+            9.719466,
+            11.695686,
+            8.729539,
+            23.03108,
+            19.214457,
+            47.75644,
+            94.034738,
+            15.928903,
+            5.694212,
+            8.71972,
+            10.079833,
+            13.353293,
+            6.645667,
+            23.939901,
+            15.518016,
+            38.81706,
+            144.64538,
+            34.375005,
+            130.84709,
+            21.788121,
+            455.376211,
+            14.139288,
+            8.063063,
+            8.331274,
+            10.075184,
+            11.899984,
+            7.73393,
+            10.110446,
+            10.016469,
+            9.816749,
+            11.238925,
+            8.993964,
+            9.727553,
+            12.74107,
+            7.65272,
+            9.68352,
+            9.843333,
+            10.711038,
+            9.787524,
+            9.805258,
+            9.578215,
+            13.140453,
+            7.628848,
+            9.772,
+            9.988505,
+            10.32177,
+            9.846994,
+            9.869825,
+            9.549357,
+            13.505911,
+            6.720172,
+            10.460421,
+            10.052857,
+            9.783471,
+            9.871005,
+            9.880828,
+            9.723388,
+            12.739942,
+            7.612056,
+            10.576876,
+            9.954373,
+            9.721125,
+            9.73808,
+            9.590404,
+            10.325563,
+            11.460206,
+            8.694736,
+            9.765839,
+            9.96421,
+            10.521165,
+            9.530551,
+            9.9958,
+            9.687421,
+            12.708358,
+            7.784272,
+            9.575502,
+            20.906864,
+            56.338692,
+            54.511022,
+            52.838698,
+            55.004308,
+            58.373142,
+            53.102637,
+            52.498045,
+            54.723195,
+            56.72361,
+            52.631573,
+            53.247678,
+            54.260496,
+            50.042408,
+            50.867826,
+            52.29593,
+            51.146756,
+            53.618449,
+            55.5455,
+            52.842999,
+            50.423272,
+            52.954241,
+            52.535274,
+            53.317699,
+            51.870108,
+            51.605315,
+            53.162344,
+            52.238257,
+            51.916408,
+            56.928552,
+            58.633465,
+            57.096646,
+            54.219283,
+            58.946557,
+            51.084983,
+            52.234168,
+            58.659513,
+            57.403125,
+            54.803575,
+            52.266778,
+            51.816169,
+            52.913174,
+            54.067458,
+            52.083096,
+            52.393604,
+            53.797148,
+            52.647352,
+            52.276646,
+            51.621536,
+            52.67748,
+            50.83354,
+            108.124807,
+            10.992836,
+            10.072337,
+            9.848021,
+            9.177254,
+            13.040594,
+            7.642529,
+            9.604188,
+            9.902698,
+            10.680112,
+            9.844046,
+            9.809044,
+            10.15715,
+            11.782746,
+            7.585547,
+            10.668812,
+            9.842536,
+            15.764728,
+            140.855735,
+            10.137462,
+            10.064564,
+            9.984732,
+            10.742832,
+            12.014875,
+            7.625011,
+            9.493769,
+            10.978684,
+            16.955192,
+            14.683309,
+            160.909102,
+            31.596624
+        ],
+        "navigation": {
+            "max_ms": 29.08488,
+            "p95_ms": 25.802586,
+            "samples": 128
+        },
+        "navigation_measurement": "QTest mouse injection to navigationChanged after page selection; excludes compositor/pixel presentation",
+        "operations": [
+            {
+                "elapsed_ms": 149.998807,
+                "operation": "btnSave"
+            },
+            {
+                "elapsed_ms": 52.473196,
+                "operation": "btnBingRenInfo"
+            },
+            {
+                "elapsed_ms": 175.703152,
+                "operation": "btnSave"
+            },
+            {
+                "elapsed_ms": 52.061525,
+                "operation": "btnSongJianInfo"
+            },
+            {
+                "elapsed_ms": 161.214802,
+                "operation": "btnSave"
+            },
+            {
+                "elapsed_ms": 59.125076,
+                "operation": "btnJianYanInfo"
+            },
+            {
+                "elapsed_ms": 151.092801,
+                "operation": "btnSave"
+            },
+            {
+                "elapsed_ms": 63.621741,
+                "operation": "btnShenHeInfo"
+            },
+            {
+                "elapsed_ms": 151.749388,
+                "operation": "btnSave"
+            },
+            {
+                "elapsed_ms": 54.68988,
+                "operation": "btnKeShiInfo"
+            },
+            {
+                "elapsed_ms": 29.08488,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 12.264181,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.917285,
+                "operation": "navigation_btnLanguage"
+            },
+            {
+                "elapsed_ms": 16.646644,
+                "operation": "navigation_btnHospInfo"
+            },
+            {
+                "elapsed_ms": 25.886912,
+                "operation": "navigation_btnReagentAdptive"
+            },
+            {
+                "elapsed_ms": 13.44903,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 25.322264,
+                "operation": "navigation_btnSampleAdptive"
+            },
+            {
+                "elapsed_ms": 11.502419,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 27.139551,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.74271,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 25.886625,
+                "operation": "navigation_btnCalibrateAdptive"
+            },
+            {
+                "elapsed_ms": 10.663956,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 24.93293,
+                "operation": "navigation_btnQualityAdptive"
+            },
+            {
+                "elapsed_ms": 10.726212,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 26.377329,
+                "operation": "navigation_btnSystemAdptive"
+            },
+            {
+                "elapsed_ms": 9.682304,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 25.802586,
+                "operation": "navigation_btnDivStatusAdptive"
+            },
+            {
+                "elapsed_ms": 9.344758,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 26.718351,
+                "operation": "navigation_btnAccount"
+            },
+            {
+                "elapsed_ms": 19.212392,
+                "operation": "navigation_btnHospInfo"
+            },
+            {
+                "elapsed_ms": 20.838161,
+                "operation": "navigation_btnLanguage"
+            },
+            {
+                "elapsed_ms": 17.382017,
+                "operation": "navigation_btnHospInfo"
+            },
+            {
+                "elapsed_ms": 18.404668,
+                "operation": "navigation_btnPrinter"
+            },
+            {
+                "elapsed_ms": 17.292954,
+                "operation": "navigation_btnHospInfo"
+            },
+            {
+                "elapsed_ms": 18.945937,
+                "operation": "navigation_btnLis"
+            },
+            {
+                "elapsed_ms": 19.065519,
+                "operation": "navigation_btnHospInfo"
+            },
+            {
+                "elapsed_ms": 19.784407,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.957728,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.150261,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.922638,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.13383,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.305583,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.488232,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 11.22975,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 21.678566,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.520968,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.410755,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.656497,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.068256,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.386999,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.219177,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.103613,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 21.450646,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 10.779842,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.354347,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.269523,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.609716,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 7.908599,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.00996,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 10.634885,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.709298,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.21329,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.834124,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 7.701327,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.20954,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.462073,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.627359,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.978985,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.841151,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 10.259338,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.893211,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.86413,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.669386,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 7.805598,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.127125,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.427297,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.26425,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.359378,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 18.747535,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.659044,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 17.956469,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.895375,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 17.99,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.822315,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 18.290549,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.51664,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.591579,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.743277,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.116856,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.165679,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.40429,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.301731,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 21.297308,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.954673,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 21.38206,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 10.536689,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.96067,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 10.939588,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.587043,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.366035,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.420978,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 11.769298,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.806405,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.637066,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.070105,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.245505,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.537887,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.877332,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.376378,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.748875,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.906647,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.106936,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.523773,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.069474,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.261904,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.967254,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.210353,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.460844,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.303779,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 7.522463,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 18.628296,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.255422,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 18.777652,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.640386,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.371212,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 10.154497,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 19.522611,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.4614,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.028108,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.039303,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 18.933408,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 9.094617,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 20.094633,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.924313,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 18.546503,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 8.429007,
+                "operation": "navigation_btnUserSettingAdptive"
+            },
+            {
+                "elapsed_ms": 261.685517,
+                "operation": "locked_save_failure"
+            },
+            {
+                "elapsed_ms": 158.004617,
+                "operation": "btnSave"
+            },
+            {
+                "elapsed_ms": 25.349932,
+                "operation": "navigation_btnReportAdptive"
+            },
+            {
+                "elapsed_ms": 7.882312,
+                "operation": "navigation_btnUserSettingAdptive"
+            }
+        ],
+        "timer_interval_ms": 10
+    },
+    "window_size": "1920x1080"
+}

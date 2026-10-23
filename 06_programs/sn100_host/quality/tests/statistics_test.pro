@@ -1,0 +1,11 @@
+QT += core testlib
+QT -= gui network
+CONFIG += console c++14 testcase warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = sn100_quality_statistics_test
+SOURCES += statistics_test.cpp ../statistics.cpp
+HEADERS += ../statistics.h
+INCLUDEPATH += ..
+OBJECTS_DIR = .obj
+MOC_DIR = .moc

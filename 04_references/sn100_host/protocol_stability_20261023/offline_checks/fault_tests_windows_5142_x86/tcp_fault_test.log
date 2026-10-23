@@ -1,0 +1,27 @@
+********* Start testing of TcpFaultTest *********
+Config: Using QtTest library 5.14.2, Qt 5.14.2 (i386-little_endian-ilp32 shared (dynamic) release build; by GCC 7.3.0)
+PASS   : TcpFaultTest::initTestCase()
+QINFO  : TcpFaultTest::shortWriteActuallyReachesPeerWithoutDuplication() INJECTED writeData cap=2 requested_first=13 returned_first=2 calls= 21 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6b 3b 04 05 02 03 00 06 00 00 00 01 51 48 18 04 05
+PASS   : TcpFaultTest::shortWriteActuallyReachesPeerWithoutDuplication()
+QINFO  : TcpFaultTest::zeroWriteWaitsAndThenRecovers() INJECTED writeData returns=0,13 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05
+PASS   : TcpFaultTest::zeroWriteWaitsAndThenRecovers()
+QINFO  : TcpFaultTest::permanentZeroHitsDeadlineAndReconnects() INJECTED permanent-zero calls= 4 deadline_ms=60 actual_timeout_ms= 72 old_generation= 1 recovered_generation= 3 recovered actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05
+PASS   : TcpFaultTest::permanentZeroHitsDeadlineAndReconnects()
+QINFO  : TcpFaultTest::negativeWriteFailsOnceAndReconnects() INJECTED writeData=-1 terminates exactly once; true loopback reconnect sends only golden Qj
+PASS   : TcpFaultTest::negativeWriteFailsOnceAndReconnects()
+QINFO  : TcpFaultTest::shortThenNegativeDropsOldSuffixAndQueue() INJECTED short=3 then -1; old partial Qk and queued QH discarded, new connection receives Qj only
+PASS   : TcpFaultTest::shortThenNegativeDropsOldSuffixAndQueue()
+QINFO  : TcpFaultTest::connectingDeadlineIsControlledAndReconnects() INJECTED ConnectingState deadline_ms=60 actual_timeout_ms= 71 no OS black-hole claim; subsequent real Qj reconnect passed
+PASS   : TcpFaultTest::connectingDeadlineIsControlledAndReconnects()
+PASS   : TcpFaultTest::closeDuringZeroWriteCancelsOldTimerAndQueue()
+PASS   : TcpFaultTest::errorReceiverCanReconnect()
+PASS   : TcpFaultTest::disconnectedReceiverCanReconnect()
+PASS   : TcpFaultTest::nullFactoryIsRejectedAndLaterRealConnectionWorks()
+QINFO  : TcpFaultTest::realPeerResetAndReconnect() REAL local peer SO_LINGER={1,0}+abort reset, observed error= transport.peer_closed: 回环对端已关闭，已排空收到的完整帧 recovered actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05
+PASS   : TcpFaultTest::realPeerResetAndReconnect()
+QINFO  : TcpFaultTest::realNonReadingPeerBackpressureAndRecovery() REAL non-reading loopback peer SO_RCVBUF=1024 Qt_readBuffer=1 sendBuffer=1024 accepted_queries= 15141 backpressure_rejections= 25 max_pending_bytes= 65533 terminated= true elapsed_ms= 254
+QINFO  : TcpFaultTest::realNonReadingPeerBackpressureAndRecovery() REAL non-reader write_timeout recovery actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05
+PASS   : TcpFaultTest::realNonReadingPeerBackpressureAndRecovery()
+PASS   : TcpFaultTest::cleanupTestCase()
+Totals: 14 passed, 0 failed, 0 skipped, 0 blacklisted, 1082ms
+********* Finished testing of TcpFaultTest *********

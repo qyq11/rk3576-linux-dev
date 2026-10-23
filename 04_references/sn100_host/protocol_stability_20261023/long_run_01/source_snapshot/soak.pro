@@ -1,0 +1,10 @@
+QT += core network
+QT -= gui
+CONFIG += console c++14 warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = sn100_protocol_soak
+SOURCES += soak_main.cpp read_only_client.cpp tcp_transport.cpp read_only_messages.cpp frame_codec.cpp status_session.cpp
+HEADERS += read_only_client.h tcp_transport.h read_only_messages.h frame_codec.h status_session.h
+OBJECTS_DIR = .obj
+MOC_DIR = .moc

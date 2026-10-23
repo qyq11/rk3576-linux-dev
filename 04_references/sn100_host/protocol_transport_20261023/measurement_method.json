@@ -1,0 +1,17 @@
+{
+  "load": "Release real 127.0.0.1 TCP; own ephemeral listener, NoProxy, 7 initial diagnostics +10000 Qq paced over60000ms; 3 readonly queries exact39 bytes",
+  "resource_probe": "Parent samples /proc/PID/status, smaps_rollup, stat and fd nominally every10ms; max sampled RSS/PSS/Threads/FD; VmHWM kernel high watermark; CPU ticks divided by elapsed seconds and SC_CLK_TCK, 100%=one core",
+  "heartbeat": "PreciseTimer10ms; QElapsedTimer actual successive callback gaps, nearest-rank p95, max. This is interval, not excess latency; no GUI drawing/input test",
+  "parse": "QElapsedTimer around parseReadOnlyMessage, each parsed message, nearest-rank p95 and max",
+  "queues": "Client combined user queue+QTcpSocket bytesToWrite sampled at wireQueued; server bytesToWrite afterwrite; codec wire/assembly sampled at callbacks and before close. Not a complete process-internal peak, socket unread and transient DecodeBatch are not counted",
+  "environment_limit": "Other chat builds active on same host; no attribution of heartbeat spikes. WSL metrics are baseline, not RK budget or realtime acceptance",
+  "storage": "Full JSONL retained, loopback16MiB / client-demo1MiB hard experiment log budgets; no production log rotation claim",
+  "pending": [
+    "true OS short/zero write and write-stall fault injection",
+    "controlled connect-timeout blackhole",
+    "200000ms silent-client wall-clock soak",
+    "2h/8h and longer business stability",
+    "SN100 actual encoding/version/endpoints/timing",
+    "RK target loader, resources, screen and same-board realtime control"
+  ]
+}

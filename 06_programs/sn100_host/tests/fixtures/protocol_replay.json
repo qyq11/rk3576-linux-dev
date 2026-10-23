@@ -1,0 +1,241 @@
+{
+  "schema": "sn100-protocol-replay-v1",
+  "evidence": "simulated-source-derived",
+  "description": "仅由参考源码规则构造的匿名离线输入；非仪器捕获，不证明 SN100 固件版本、连接参数、硬件动作或现场状态。",
+  "source_functions": [
+    "communication/commanddefine.h: MAIN_STX/SLAVE_STX, MAIN_RTX/SLAVE_RTX, MaxPacketCount",
+    "communication/commandthread.cpp: addProtocalShell, GetXorCheckValue, slotSendCmdToA53",
+    "communication/commandreceiver.cpp: pcQueryStatus",
+    "public/systemcommon.h: DMainStatus, DLedStatus, DoErrorWorkType"
+  ],
+  "byte_construction": "Independently constructed literal frames: two-byte RX header 06 07; big-endian length of packet-header+payload; big-endian packet index 0 and total 1; ASCII Qj fields; XOR of packet-header+payload; trailer 08 09. Generated without running, building or reading runtime data from the reference application.",
+  "general_field_order": [
+    "model",
+    "main_status",
+    "led_status",
+    "error_work_type",
+    "error_codes",
+    "door_normal",
+    "door_open_ss",
+    "temperature_normal",
+    "versions",
+    "serial",
+    "emergency_stop",
+    "no_water_test",
+    "no_cup_test",
+    "version_check",
+    "start_key",
+    "plate_key",
+    "sample_scanner",
+    "reagent_scanner",
+    "main_period_ms",
+    "protocol_marker",
+    "reagent_channels",
+    "test_channels",
+    "emergency_holes",
+    "sample_holes",
+    "dual_needle_working"
+  ],
+  "events": [
+    {
+      "at_ms": 0,
+      "action": "connect",
+      "expect_link_state": "connected-status-unknown",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 1,
+      "action": "query-status",
+      "expect_link_state": "awaiting-status",
+      "expect_status_count": 0,
+      "expect_tx_count": 1
+    },
+    {
+      "at_ms": 20,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809",
+      "expect_main_status": 2,
+      "expect_link_state": "has-simulated-status",
+      "expect_status_count": 1,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 21,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809",
+      "expect_main_status": 2,
+      "case": "Same complete status remains a new observation; no message ID exists.",
+      "expect_link_state": "has-simulated-status",
+      "expect_status_count": 1,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 30,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c415445445d5b355d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d480809",
+      "expect_main_status": 5,
+      "expect_link_state": "has-simulated-status",
+      "expect_status_count": 1,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 40,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c415445445d5b365d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4b0809",
+      "expect_main_status": 6,
+      "expect_link_state": "has-simulated-status",
+      "expect_status_count": 1,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 50,
+      "action": "query-status",
+      "expect_link_state": "awaiting-status",
+      "expect_status_count": 0,
+      "expect_tx_count": 1
+    },
+    {
+      "at_ms": 60,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4e0809",
+      "case": "Corrupted literal XOR must be rejected without committing status.",
+      "expect_link_state": "awaiting-status",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 61,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809",
+      "expect_main_status": 2,
+      "expect_link_state": "has-simulated-status",
+      "expect_status_count": 1,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 70,
+      "action": "disconnect",
+      "expect_link_state": "disconnected",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 71,
+      "action": "rx",
+      "hex": "415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809",
+      "case": "Old stream tail while disconnected must be rejected.",
+      "expect_link_state": "disconnected",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 80,
+      "action": "connect",
+      "expect_link_state": "connected-status-unknown",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 81,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c",
+      "expect_link_state": "connected-status-unknown",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 82,
+      "action": "disconnect",
+      "case": "Drop incomplete frame at disconnect.",
+      "expect_link_state": "disconnected",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 83,
+      "action": "connect",
+      "expect_link_state": "connected-status-unknown",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 84,
+      "action": "query-status",
+      "expect_link_state": "awaiting-status",
+      "expect_status_count": 0,
+      "expect_tx_count": 1
+    },
+    {
+      "at_ms": 85,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c415445445d5b355d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d480809",
+      "expect_main_status": 5,
+      "expect_link_state": "has-simulated-status",
+      "expect_status_count": 1,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 90,
+      "action": "query-status",
+      "expect_link_state": "awaiting-status",
+      "expect_status_count": 0,
+      "expect_tx_count": 1
+    },
+    {
+      "at_ms": 92,
+      "action": "query-status",
+      "case": "Reject a second concurrent Qj request.",
+      "expect_link_state": "awaiting-status",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 1090,
+      "action": "advance",
+      "case": "Only the read-only synthetic Qj request is retried once.",
+      "expect_link_state": "awaiting-status",
+      "expect_status_count": 0,
+      "expect_tx_count": 1
+    },
+    {
+      "at_ms": 2090,
+      "action": "advance",
+      "case": "Retry exhausted: state becomes stale.",
+      "expect_link_state": "status-timeout",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 200085,
+      "action": "advance",
+      "case": "200000 ms since the last valid status.",
+      "expect_link_state": "disconnected",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 200090,
+      "action": "connect",
+      "expect_link_state": "connected-status-unknown",
+      "expect_status_count": 0,
+      "expect_tx_count": 0
+    },
+    {
+      "at_ms": 200091,
+      "action": "query-status",
+      "expect_link_state": "awaiting-status",
+      "expect_status_count": 0,
+      "expect_tx_count": 1
+    },
+    {
+      "at_ms": 200100,
+      "action": "rx",
+      "hex": "0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809",
+      "expect_main_status": 2,
+      "expect_link_state": "has-simulated-status",
+      "expect_status_count": 1,
+      "expect_tx_count": 0
+    }
+  ]
+}

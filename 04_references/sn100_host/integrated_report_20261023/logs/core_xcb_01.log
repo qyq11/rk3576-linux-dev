@@ -1,0 +1,16 @@
+********* Start testing of IntegratedShellTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : IntegratedShellTest::initTestCase()
+PASS   : IntegratedShellTest::writeExperiment()
+FAIL!  : IntegratedShellTest::readExperiment() 'written.value(QStringLiteral("writer_process_id")).toDouble() != double(QCoreApplication::applicationPid())' returned FALSE. (readExperiment must run in a new process)
+   Loc: [../../../../06_programs/sn100_host/tests/integrated_shell_test.cpp(749)]
+FAIL!  : IntegratedShellTest::measureExperiment() 'written.value(QStringLiteral("writer_process_id")).toDouble() != double(QCoreApplication::applicationPid())' returned FALSE. (measureExperiment must run in a new process)
+   Loc: [../../../../06_programs/sn100_host/tests/integrated_shell_test.cpp(780)]
+PASS   : IntegratedShellTest::applicationExitExperiment()
+PASS   : IntegratedShellTest::viewportExperiment()
+PASS   : IntegratedShellTest::initializationFailureExperiment()
+PASS   : IntegratedShellTest::cleanupTestCase()
+Totals: 6 passed, 2 failed, 0 skipped, 0 blacklisted, 34820ms
+********* Finished testing of IntegratedShellTest *********
+
+EXIT_CODE=2

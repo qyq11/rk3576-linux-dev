@@ -1,0 +1,110 @@
+{
+  "schema": "sn100-quality-cli-verification-v1",
+  "executable": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/quality/wsl_release/sn100_quality_statistics",
+  "fixture": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/quality/tests/fixtures/statistics_series.json",
+  "work_directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/quality/cli_checks__q8ebm5h",
+  "checks": [
+    {
+      "name": "golden_first_process",
+      "exit_code": 0,
+      "expected_exit": 0
+    },
+    {
+      "name": "golden_second_process",
+      "exit_code": 0,
+      "expected_exit": 0
+    },
+    {
+      "name": "existing_output_refused",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "relative_output_refused",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "empty_series",
+      "exit_code": 4,
+      "expected_exit": 4
+    },
+    {
+      "name": "variance_overflow",
+      "exit_code": 4,
+      "expected_exit": 4
+    },
+    {
+      "name": "sum_overflow",
+      "exit_code": 4,
+      "expected_exit": 4
+    },
+    {
+      "name": "null_sample",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "bool_sample",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "string_sample",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "sample_budget",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "duplicate_ids",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "anonymous_contract",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "malformed_json",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "file_budget",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "stress_negative",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "stress_over_budget",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "output_parent_missing",
+      "exit_code": 2,
+      "expected_exit": 2
+    },
+    {
+      "name": "large_singleton_stress",
+      "exit_code": 0,
+      "expected_exit": 0
+    }
+  ],
+  "check_count": 19,
+  "golden_series": 6,
+  "independent_process_equal": true,
+  "existing_output_unchanged": true,
+  "cross_platform_exact_json_equal": true,
+  "cross_platform_comparison": "temp/sn100_host/quality/windows_runtime_02ce224a00a14a68add5ca2d75752096/results.json",
+  "cross_platform_numeric_tolerance": "relative=1e-12, absolute=1e-12"
+}

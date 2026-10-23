@@ -1,0 +1,60 @@
+{
+  "method": "Independent read-only review of accepted public logs, phase JSON and the input helper/caller assertions; no GUI or clipboard operation by this reviewer.",
+  "ascii_results": [
+    {
+      "round": 1,
+      "log": "temp/sn100_host/o03_2_latency/attempts/final_03/logs/overhead_01.log",
+      "log_sha256": "0243f2d76b64a989fd350a466cab5227293132d8ea2c073b50a2b65bcb69cea2",
+      "clipboard_warning_lines": 10,
+      "ascii_clipboard_phases": 10,
+      "accepted_test_totals": [
+        "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3165ms"
+      ],
+      "business_assertions_passed": true
+    },
+    {
+      "round": 2,
+      "log": "temp/sn100_host/o03_2_latency/attempts/final_03/logs/overhead_02.log",
+      "log_sha256": "6f4f2de0247712ab0d73b49df3b29070460e207bba3bccbf02d80387be06c237",
+      "clipboard_warning_lines": 10,
+      "ascii_clipboard_phases": 10,
+      "accepted_test_totals": [
+        "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3092ms"
+      ],
+      "business_assertions_passed": true
+    },
+    {
+      "round": 3,
+      "log": "temp/sn100_host/o03_2_latency/attempts/final_03/logs/overhead_03.log",
+      "log_sha256": "7c73a885a7acd17bc06278fd6d96d94c1fab6e434dd0ded420660f835a5926f2",
+      "clipboard_warning_lines": 10,
+      "ascii_clipboard_phases": 10,
+      "accepted_test_totals": [
+        "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3072ms"
+      ],
+      "business_assertions_passed": true
+    }
+  ],
+  "unicode_failed_regressions": [
+    {
+      "log": "temp/sn100_host/o03_2_latency/corrected_original/writeExperiment_01.log",
+      "log_sha256": "1a63149ef2b9794a7b70fe82a7db5010292c03f963e2d329760c3c6452545b2c",
+      "actual_failure": "FAIL!  : ShellAccountTest::writeExperiment() 'paste(qobject_cast<QLineEdit *>(hospitalTable->cellWidget(0, 0)), kDepartment)' returned FALSE. ()",
+      "totals": [
+        "Totals: 2 passed, 1 failed, 0 skipped, 0 blacklisted, 1263ms"
+      ],
+      "scope": "Department-name paste failed before100 navigation loop. Earlier hospital-name input passed; not a timing result."
+    },
+    {
+      "log": "temp/sn100_host/o03_2_latency/corrected_original/writeExperiment_retry_01.log",
+      "log_sha256": "bb1f64c30bea618219b2ffc9c7096b4df3210027da7e02a2ff8ef34f9ec28d13",
+      "actual_failure": "FAIL!  : ShellAccountTest::writeExperiment() 'paste(qobject_cast<QLineEdit *>(hospitalTable->cellWidget(0, 0)), kDepartment)' returned FALSE. ()",
+      "totals": [
+        "Totals: 2 passed, 1 failed, 0 skipped, 0 blacklisted, 1257ms"
+      ],
+      "scope": "Department-name paste failed before100 navigation loop. Earlier hospital-name input passed; not a timing result."
+    }
+  ],
+  "assertion_basis": "In evidenceOverhead every paste(field,text) is required by QVERIFY; paste returns true only after field.text()==text. All30 matched ASCII paste phases passed despite30 clipboard warnings.",
+  "limit": "Warnings remain real observations. Matching ASCII field text does not prove Unicode, IME, native desktop clipboard ownership or WSLg clipboard reliability."
+}

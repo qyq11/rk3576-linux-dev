@@ -1,0 +1,127 @@
+{
+    "evidence": "anonymous-offline-source-derived",
+    "schema": "sn100-quality-statistics-result-v1",
+    "series": [
+        {
+            "id": "golden-8-10-12",
+            "input_values": [
+                8,
+                10,
+                12
+            ],
+            "statistics": {
+                "count": 3,
+                "cv_available": true,
+                "cv_unit": "ratio-not-percent",
+                "legacy_cv_ratio": 0.19999999999998,
+                "mean": 10,
+                "ok": true,
+                "range": 4,
+                "sample_estimate_available": true,
+                "sample_stddev": 2,
+                "sample_variance": 4
+            }
+        },
+        {
+            "id": "sample-not-population",
+            "input_values": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "statistics": {
+                "count": 4,
+                "cv_available": true,
+                "cv_unit": "ratio-not-percent",
+                "legacy_cv_ratio": 0.5163977794941157,
+                "mean": 2.5,
+                "ok": true,
+                "range": 3,
+                "sample_estimate_available": true,
+                "sample_stddev": 1.2909944487358056,
+                "sample_variance": 1.6666666666666667
+            }
+        },
+        {
+            "id": "constant",
+            "input_values": [
+                7,
+                7,
+                7
+            ],
+            "statistics": {
+                "count": 3,
+                "cv_available": true,
+                "cv_unit": "ratio-not-percent",
+                "legacy_cv_ratio": 0,
+                "mean": 7,
+                "ok": true,
+                "range": 0,
+                "sample_estimate_available": true,
+                "sample_stddev": 0,
+                "sample_variance": 0
+            }
+        },
+        {
+            "id": "zero-mean",
+            "input_values": [
+                -1,
+                0,
+                1
+            ],
+            "statistics": {
+                "count": 3,
+                "cv_available": false,
+                "cv_unit": "ratio-not-percent",
+                "legacy_cv_ratio": null,
+                "mean": 0,
+                "ok": true,
+                "range": 2,
+                "sample_estimate_available": true,
+                "sample_stddev": 1,
+                "sample_variance": 1,
+                "unavailable_reason": "mean_magnitude_at_or_below_1e-12"
+            }
+        },
+        {
+            "id": "singleton",
+            "input_values": [
+                9
+            ],
+            "statistics": {
+                "count": 1,
+                "cv_available": false,
+                "cv_unit": "ratio-not-percent",
+                "legacy_cv_ratio": null,
+                "mean": 9,
+                "ok": true,
+                "range": 0,
+                "sample_estimate_available": false,
+                "sample_stddev": null,
+                "sample_variance": null,
+                "unavailable_reason": "sample_size_below_two"
+            }
+        },
+        {
+            "id": "negative-mean",
+            "input_values": [
+                -12,
+                -10,
+                -8
+            ],
+            "statistics": {
+                "count": 3,
+                "cv_available": true,
+                "cv_unit": "ratio-not-percent",
+                "legacy_cv_ratio": -0.20000000000002,
+                "mean": -10,
+                "ok": true,
+                "range": 4,
+                "sample_estimate_available": true,
+                "sample_stddev": 2,
+                "sample_variance": 4
+            }
+        }
+    ]
+}

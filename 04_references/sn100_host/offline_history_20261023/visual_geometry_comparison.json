@@ -1,0 +1,1408 @@
+{
+  "adaptations": [
+    "Dialogs remove animated mask/display wrapper and use original view_frame sizes 501x501,1341x930,501x291.",
+    "Material flat/radio/check widgets use native Qt5 controls; known source theme colors preserved in history_page.cpp; ripple animation, original shadow and checkbox painting await visual comparison.",
+    "Unavailable PingFang family replaced with Noto Sans CJK SC, original point/pixel sizes retained.",
+    "Resource-only icons replaced with semantic text arrows, calendar ellipsis and close symbol; original icon artwork pending resource migration.",
+    "Main business surface remains1751x968 inside external scrolling host; no product banner or experimental toolbar added.",
+    "Chart/control/LIS/printing/display-setting/deletion controls retain positions and are disabled with explanation for this slice; original hidden save button remains hidden."
+  ],
+  "basis": "Read-only reference UI and frm_report_material.cpp:initReportForm/init_header; known O01 visual keys only; no production database or configuration read.",
+  "module": "O04-1",
+  "pages": [
+    {
+      "geometryDifferences": [],
+      "classDifferences": [
+        {
+          "objectName": "wgtReport",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QWidget",
+          "original": "CusView"
+        },
+        {
+          "objectName": "reportFunMenu",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QWidget",
+          "original": "CusView"
+        },
+        {
+          "objectName": "btnDetail",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btnQuery",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btnDisplay",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btnUpdate",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btnPrinter",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btnExport",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btnDel",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btn_save_modify",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        }
+      ],
+      "referenceSha256": "3690F78E8D7F9D2377DD507189CC47293211B2E8DF62D18BD0C94EA2B0614A7D",
+      "matchingGeometries": [
+        {
+          "objectName": "frmReportMaterial",
+          "geometry": [
+            0,
+            0,
+            1751,
+            968
+          ]
+        },
+        {
+          "objectName": "wgtReport",
+          "geometry": [
+            19,
+            20,
+            1481,
+            921
+          ]
+        },
+        {
+          "objectName": "btnPrvRow",
+          "geometry": [
+            160,
+            0,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "label_3",
+          "geometry": [
+            600,
+            -4,
+            31,
+            60
+          ]
+        },
+        {
+          "objectName": "lblTotalPage",
+          "geometry": [
+            500,
+            -4,
+            80,
+            60
+          ]
+        },
+        {
+          "objectName": "label",
+          "geometry": [
+            440,
+            -4,
+            41,
+            60
+          ]
+        },
+        {
+          "objectName": "btnFirstPage",
+          "geometry": [
+            20,
+            0,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "label_4",
+          "geometry": [
+            220,
+            -4,
+            51,
+            60
+          ]
+        },
+        {
+          "objectName": "btnNextPage",
+          "geometry": [
+            730,
+            0,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "btnLastPage",
+          "geometry": [
+            800,
+            0,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "btnNextRow",
+          "geometry": [
+            660,
+            0,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "btnPrvPage",
+          "geometry": [
+            90,
+            0,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "label_5",
+          "geometry": [
+            370,
+            -4,
+            41,
+            60
+          ]
+        },
+        {
+          "objectName": "ldtCurPage",
+          "geometry": [
+            280,
+            -4,
+            80,
+            60
+          ]
+        },
+        {
+          "objectName": "reportFunMenu",
+          "geometry": [
+            1525,
+            0,
+            226,
+            968
+          ]
+        },
+        {
+          "objectName": "btnDetail",
+          "geometry": [
+            26,
+            70,
+            178,
+            61
+          ]
+        },
+        {
+          "objectName": "btnQuery",
+          "geometry": [
+            26,
+            150,
+            178,
+            61
+          ]
+        },
+        {
+          "objectName": "btnDisplay",
+          "geometry": [
+            26,
+            230,
+            178,
+            61
+          ]
+        },
+        {
+          "objectName": "btnUpdate",
+          "geometry": [
+            26,
+            310,
+            178,
+            61
+          ]
+        },
+        {
+          "objectName": "btnPrinter",
+          "geometry": [
+            26,
+            390,
+            178,
+            61
+          ]
+        },
+        {
+          "objectName": "btnExport",
+          "geometry": [
+            26,
+            470,
+            178,
+            61
+          ]
+        },
+        {
+          "objectName": "btnDel",
+          "geometry": [
+            26,
+            550,
+            178,
+            61
+          ]
+        },
+        {
+          "objectName": "btn_save_modify",
+          "geometry": [
+            30,
+            870,
+            178,
+            61
+          ]
+        }
+      ],
+      "matchingGeometryCount": 23,
+      "localStyleChecks": [
+        {
+          "objectName": "tableResultReportOne",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "tablePatientInfo",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "tableResultReport",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnPrvRow",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnFirstPage",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnNextPage",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnLastPage",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnNextRow",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnPrvPage",
+          "exactExceptFont": true
+        }
+      ],
+      "portedSha256": "FF6C3F81EAFF7631FD11E2B1AA417FBC0AF20DA31E0D4123A2E8D84A41B24B12",
+      "file": "frm_report_material.ui"
+    },
+    {
+      "geometryDifferences": [
+        {
+          "objectName": "MaskDlgQueryReport",
+          "reason": "Standalone dialog now uses original inner view_frame geometry; internal child coordinates retained.",
+          "ported": [
+            0,
+            0,
+            501,
+            501
+          ],
+          "original": [
+            0,
+            0,
+            1460,
+            1330
+          ]
+        }
+      ],
+      "classDifferences": [
+        {
+          "objectName": "btnCalendarEnd",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btnClose",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "btnCalendarStart",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        },
+        {
+          "objectName": "ckxByDate",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QCheckBox",
+          "original": "CusCheckBox"
+        },
+        {
+          "objectName": "ckxBySampleCode",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QCheckBox",
+          "original": "CusCheckBox"
+        },
+        {
+          "objectName": "btnEditBatch",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        }
+      ],
+      "referenceSha256": "FD96D0DCA518961202705909C916B8AC74A155FFFD573ABF34EB902DD06F49F6",
+      "matchingGeometries": [
+        {
+          "objectName": "btnSave",
+          "geometry": [
+            60,
+            410,
+            181,
+            61
+          ]
+        },
+        {
+          "objectName": "btnCancel",
+          "geometry": [
+            260,
+            410,
+            181,
+            61
+          ]
+        },
+        {
+          "objectName": "btnCalendarEnd",
+          "geometry": [
+            419,
+            130,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "label_4",
+          "geometry": [
+            90,
+            141,
+            101,
+            31
+          ]
+        },
+        {
+          "objectName": "ldtEndDate",
+          "geometry": [
+            190,
+            131,
+            221,
+            51
+          ]
+        },
+        {
+          "objectName": "btnClose",
+          "geometry": [
+            460,
+            0,
+            41,
+            41
+          ]
+        },
+        {
+          "objectName": "btnCalendarStart",
+          "geometry": [
+            420,
+            65,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "label_5",
+          "geometry": [
+            90,
+            77,
+            101,
+            31
+          ]
+        },
+        {
+          "objectName": "ldtStartDate",
+          "geometry": [
+            189,
+            67,
+            221,
+            51
+          ]
+        },
+        {
+          "objectName": "ckxByDate",
+          "geometry": [
+            40,
+            21,
+            201,
+            41
+          ]
+        },
+        {
+          "objectName": "ldtSampleCode",
+          "geometry": [
+            190,
+            330,
+            221,
+            51
+          ]
+        },
+        {
+          "objectName": "label_6",
+          "geometry": [
+            90,
+            347,
+            101,
+            21
+          ]
+        },
+        {
+          "objectName": "ckxBySampleCode",
+          "geometry": [
+            40,
+            280,
+            251,
+            41
+          ]
+        },
+        {
+          "objectName": "btnEditBatch",
+          "geometry": [
+            420,
+            329,
+            51,
+            51
+          ]
+        },
+        {
+          "objectName": "label_7",
+          "geometry": [
+            90,
+            210,
+            81,
+            31
+          ]
+        },
+        {
+          "objectName": "ldtSampleID",
+          "geometry": [
+            190,
+            200,
+            221,
+            51
+          ]
+        }
+      ],
+      "matchingGeometryCount": 16,
+      "localStyleChecks": [
+        {
+          "objectName": "btnSave",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnCancel",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnCalendarEnd",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtEndDate",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnCalendarStart",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtStartDate",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtSampleCode",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnEditBatch",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtSampleID",
+          "exactExceptFont": true
+        }
+      ],
+      "portedSha256": "C78B4BD3E7D688F6C3680172B01568C8F7BBC3131D41A6F14A625A2AD0B2368F",
+      "file": "mask_dlg_query_report.ui"
+    },
+    {
+      "geometryDifferences": [
+        {
+          "objectName": "MaskDlgReportDetail",
+          "reason": "Standalone dialog now uses original inner view_frame geometry; internal child coordinates retained.",
+          "ported": [
+            0,
+            0,
+            1341,
+            930
+          ],
+          "original": [
+            0,
+            0,
+            2822,
+            1509
+          ]
+        }
+      ],
+      "classDifferences": [
+        {
+          "objectName": "wgtChart",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QWidget",
+          "original": "ReportChart"
+        },
+        {
+          "objectName": "btnClose",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QPushButton",
+          "original": "QtMaterialFlatButton"
+        }
+      ],
+      "referenceSha256": "D0B439966C8789FA76BAA589D7396D7A1E1E56DD87961F1D0044825A31031143",
+      "matchingGeometries": [
+        {
+          "objectName": "wgtChart",
+          "geometry": [
+            520,
+            170,
+            531,
+            441
+          ]
+        },
+        {
+          "objectName": "btnClose",
+          "geometry": [
+            1300,
+            0,
+            41,
+            41
+          ]
+        },
+        {
+          "objectName": "btnSave",
+          "geometry": [
+            1020,
+            850,
+            141,
+            61
+          ]
+        },
+        {
+          "objectName": "btnCancel",
+          "geometry": [
+            1180,
+            850,
+            131,
+            61
+          ]
+        },
+        {
+          "objectName": "label_4",
+          "geometry": [
+            520,
+            10,
+            121,
+            41
+          ]
+        },
+        {
+          "objectName": "label_6",
+          "geometry": [
+            520,
+            130,
+            121,
+            41
+          ]
+        },
+        {
+          "objectName": "lineEdit_3",
+          "geometry": [
+            490,
+            10,
+            16,
+            911
+          ]
+        },
+        {
+          "objectName": "label_3",
+          "geometry": [
+            1070,
+            560,
+            81,
+            41
+          ]
+        },
+        {
+          "objectName": "cbxYaixsType",
+          "geometry": [
+            1170,
+            560,
+            141,
+            51
+          ]
+        },
+        {
+          "objectName": "cbxLightType",
+          "geometry": [
+            1170,
+            500,
+            141,
+            51
+          ]
+        },
+        {
+          "objectName": "label_2",
+          "geometry": [
+            1070,
+            510,
+            81,
+            41
+          ]
+        },
+        {
+          "objectName": "btnPrinter",
+          "geometry": [
+            520,
+            850,
+            141,
+            61
+          ]
+        },
+        {
+          "objectName": "btnUpdateLis",
+          "geometry": [
+            690,
+            850,
+            141,
+            61
+          ]
+        },
+        {
+          "objectName": "btn_recal",
+          "geometry": [
+            860,
+            850,
+            141,
+            61
+          ]
+        },
+        {
+          "objectName": "tableResultSelect",
+          "geometry": [
+            520,
+            50,
+            791,
+            71
+          ]
+        },
+        {
+          "objectName": "label_5",
+          "geometry": [
+            520,
+            620,
+            101,
+            41
+          ]
+        },
+        {
+          "objectName": "btnUpRow",
+          "geometry": [
+            160,
+            850,
+            141,
+            61
+          ]
+        },
+        {
+          "objectName": "btnNextRow",
+          "geometry": [
+            320,
+            850,
+            141,
+            61
+          ]
+        },
+        {
+          "objectName": "lstTestInfo",
+          "geometry": [
+            520,
+            660,
+            791,
+            161
+          ]
+        },
+        {
+          "objectName": "widget",
+          "geometry": [
+            20,
+            20,
+            441,
+            801
+          ]
+        },
+        {
+          "objectName": "wgtTabs_2",
+          "geometry": [
+            0,
+            740,
+            441,
+            61
+          ]
+        },
+        {
+          "objectName": "btnMenuResult",
+          "geometry": [
+            0,
+            0,
+            221,
+            61
+          ]
+        },
+        {
+          "objectName": "btnMenuInfo",
+          "geometry": [
+            220,
+            0,
+            221,
+            61
+          ]
+        },
+        {
+          "objectName": "lineEdit",
+          "geometry": [
+            -250,
+            -16,
+            1361,
+            20
+          ]
+        },
+        {
+          "objectName": "stkResult",
+          "geometry": [
+            10,
+            10,
+            421,
+            721
+          ]
+        },
+        {
+          "objectName": "projectResultList",
+          "geometry": [
+            0,
+            0,
+            421,
+            711
+          ]
+        },
+        {
+          "objectName": "ldtSmapleID",
+          "geometry": [
+            150,
+            80,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "label_7",
+          "geometry": [
+            40,
+            80,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "ldtName",
+          "geometry": [
+            150,
+            280,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "label_8",
+          "geometry": [
+            40,
+            280,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "label_9",
+          "geometry": [
+            40,
+            330,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "ldtAge",
+          "geometry": [
+            150,
+            330,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "label_10",
+          "geometry": [
+            40,
+            380,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "cbxSex",
+          "geometry": [
+            150,
+            380,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "ldtApplyNumber",
+          "geometry": [
+            150,
+            130,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "label_11",
+          "geometry": [
+            40,
+            130,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "label_12",
+          "geometry": [
+            40,
+            480,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "label_13",
+          "geometry": [
+            40,
+            530,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "label_14",
+          "geometry": [
+            40,
+            580,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "label_15",
+          "geometry": [
+            40,
+            180,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "label_16",
+          "geometry": [
+            40,
+            230,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "ldtChuangHao",
+          "geometry": [
+            150,
+            230,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "label_17",
+          "geometry": [
+            40,
+            430,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "label_18",
+          "geometry": [
+            40,
+            630,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "ldtBeiZhu",
+          "geometry": [
+            150,
+            630,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "ldtReportDate",
+          "geometry": [
+            150,
+            30,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "label_19",
+          "geometry": [
+            40,
+            30,
+            91,
+            36
+          ]
+        },
+        {
+          "objectName": "ldtBingRenLeiXin",
+          "geometry": [
+            150,
+            180,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "ldtKeShi",
+          "geometry": [
+            150,
+            430,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "ldtJianYan",
+          "geometry": [
+            150,
+            480,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "ldtSongJian",
+          "geometry": [
+            150,
+            530,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "ldtShenHe",
+          "geometry": [
+            150,
+            580,
+            221,
+            41
+          ]
+        },
+        {
+          "objectName": "widget_3",
+          "geometry": [
+            1060,
+            130,
+            251,
+            361
+          ]
+        },
+        {
+          "objectName": "wgtTabs",
+          "geometry": [
+            0,
+            0,
+            251,
+            61
+          ]
+        },
+        {
+          "objectName": "btnMenuResultInfo",
+          "geometry": [
+            10,
+            10,
+            111,
+            42
+          ]
+        },
+        {
+          "objectName": "btnMenuErrorInfo",
+          "geometry": [
+            130,
+            10,
+            111,
+            42
+          ]
+        },
+        {
+          "objectName": "stkTestInfo",
+          "geometry": [
+            10,
+            70,
+            231,
+            281
+          ]
+        },
+        {
+          "objectName": "lstResultInfo",
+          "geometry": [
+            0,
+            0,
+            231,
+            281
+          ]
+        },
+        {
+          "objectName": "lstErrorInfo",
+          "geometry": [
+            0,
+            0,
+            231,
+            281
+          ]
+        }
+      ],
+      "matchingGeometryCount": 59,
+      "localStyleChecks": [
+        {
+          "objectName": "wgtChart",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnSave",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnCancel",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "lineEdit_3",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "cbxYaixsType",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "cbxLightType",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnPrinter",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnUpdateLis",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btn_recal",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "tableResultSelect",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnUpRow",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnNextRow",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "lstTestInfo",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "widget",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "wgtTabs_2",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "lineEdit",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "projectResultList",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtSmapleID",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtName",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtAge",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "cbxSex",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtApplyNumber",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtChuangHao",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtBeiZhu",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtReportDate",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtBingRenLeiXin",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtKeShi",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtJianYan",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtSongJian",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "ldtShenHe",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "widget_3",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "wgtTabs",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "stkTestInfo",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "lstResultInfo",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "lstErrorInfo",
+          "exactExceptFont": true
+        }
+      ],
+      "portedSha256": "5804678D88BDF7782E1E7511973E85C1F9D3850705DD88D803C45B428B379E79",
+      "file": "mask_dlg_report_detail.ui"
+    },
+    {
+      "geometryDifferences": [
+        {
+          "objectName": "MaskDlgExport",
+          "reason": "Standalone dialog now uses original inner view_frame geometry; internal child coordinates retained.",
+          "ported": [
+            0,
+            0,
+            501,
+            291
+          ],
+          "original": [
+            0,
+            0,
+            1960,
+            1009
+          ]
+        }
+      ],
+      "classDifferences": [
+        {
+          "objectName": "ckxByAll",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QRadioButton",
+          "original": "QtMaterialRadioButton"
+        },
+        {
+          "objectName": "ckxBySelect",
+          "reason": "Minimal native Qt5 control substitution for isolated offline module; ripple/mask/custom painting not yet migrated.",
+          "ported": "QRadioButton",
+          "original": "QtMaterialRadioButton"
+        }
+      ],
+      "referenceSha256": "E053660FE6A0A798A156922108F82FF736F2747D39C8C4119FCCAC899A70184F",
+      "matchingGeometries": [
+        {
+          "objectName": "btnSave",
+          "geometry": [
+            50,
+            210,
+            201,
+            61
+          ]
+        },
+        {
+          "objectName": "btnCancel",
+          "geometry": [
+            270,
+            210,
+            201,
+            61
+          ]
+        },
+        {
+          "objectName": "ckxByAll",
+          "geometry": [
+            50,
+            50,
+            281,
+            51
+          ]
+        },
+        {
+          "objectName": "ckxBySelect",
+          "geometry": [
+            50,
+            130,
+            281,
+            51
+          ]
+        }
+      ],
+      "matchingGeometryCount": 4,
+      "localStyleChecks": [
+        {
+          "objectName": "btnSave",
+          "exactExceptFont": true
+        },
+        {
+          "objectName": "btnCancel",
+          "exactExceptFont": true
+        }
+      ],
+      "portedSha256": "B212C3D3BC1FF211A05B2216854EC56CF905581BB0938221B4D8CF91149CFD21",
+      "file": "mask_dlg_export.ui"
+    }
+  ],
+  "runtimeStyleSources": {
+    "button": "Right function menu: main.cpp:getConfig visual keys rightBaseColor28,28,28,255; rightBtnColor127,127,127,255; rightBtnFontColor absent→255,255,255,255 default. Other dialog buttons use original shared kBtnNormalColor42,118,242,255/hover170/pressed135,206,250,255.",
+    "table": "Original .ui #EEEEEE alternating rows and O01-established report-row selection183,215,255,255",
+    "header": "frm_report_material.cpp:initReportForm #444444 text,#D6D6D6 header,#DDDDDD borders,60px header",
+    "detailColumns": "Original main-result table labels and hidden taskID column retained; configured all values listed separately; chart is unimplemented placeholder",
+    "patientColumns": "Report metadata name/age/sex/state retained; width120/60/60/80 within original320pixel region",
+    "reportMode": "Shipped visual ReportTableType=1→Vertical: selected report results in 项目/结果/单位/时间/taskID columns; taskID hidden. Metadata three-table grouping retained with original20px spacer and599px result width."
+  },
+  "date": "2026-10-23",
+  "limits": [
+    "This source comparison does not establish complete original runtime visual consistency.",
+    "Active Windows theme, original screenshots and RK real-screen comparison remain pending.",
+    "Data fixture result-label/precision choices are explicit anonymous inputs, not inferred instrument project configuration."
+  ],
+  "shippedVisualKeys": {
+    "ReportTableType": 1,
+    "rightBtnFontColor": "255,255,255,255 (main.cpp default; key absent)",
+    "rightBaseColor": "28,28,28,255",
+    "kReportRowSelected": "183,215,255,255",
+    "matchColor": "232,51,35,255",
+    "rightBtnColor": "127,127,127,255"
+  },
+  "validatorSources": "SystemCommon::lineEditValidator Head_Letter_Num exact original QRegExp retained, including length+1 quirk; QValidator replaces setMaxLength so existing values load without truncation. Single-line display does not overwrite unchanged raw fields; unchanged unknown sex retained.",
+  "detailSmallScreenAdaptation": {
+    "interaction": "Outer DetailDialog owns busy/dirty close guard; inner Escape forwards to outer close; scroll reaches original bottom operations",
+    "reason": "Original1341x930 detail content exceeds900px available display height; original bottom Save/Cancel controls must stay reachable.",
+    "runtimeVerification": "Pending final WSLg test screenshot of content and scroll-to-bottom viewport; source compilation passes.",
+    "outerSize": "1365x954 bounded to QScreen::availableGeometry.size minus40x60",
+    "retained": "All original inner control coordinates, sizing, grouping, colors and operation order",
+    "outerDialog": "MaskDlgReportDetail",
+    "scrollArea": "historyDetailScroll",
+    "innerContent": "historyDetailContent (QDialog with Qt::Widget, fixed1341x930)"
+  }
+}

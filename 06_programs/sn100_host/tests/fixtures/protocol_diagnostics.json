@@ -1,0 +1,185 @@
+{
+  "schema": "sn100-protocol-diagnostics-v1",
+  "evidence": "simulated-source-derived",
+  "source_encoding": "utf-8-offline-profile",
+  "description": "所有输入均为独立构造的合成协议载荷，不是仪器捕获；不含真实患者、账号、生产库或连接配置。payload_hex由明确的测试文本按UTF-8逐字节转换，expected由原源码的字段/集合规则独立填写。",
+  "hardware_verified": false,
+  "source_functions": [
+    "CommandReceiver::pcQueryAD",
+    "alarmPasher",
+    "abnormalParser",
+    "CommandReceiver::pcQueryConsume",
+    "getQueryAlarmCommand",
+    "getQueryConsumeCommand"
+  ],
+  "cases": [
+    {
+      "name": "delegated-Qj",
+      "payload_text": "Qj[4][SIMULATED][2][1][0][0]",
+      "valid": true,
+      "command": "Qj",
+      "expected": {
+        "model": "SIMULATED",
+        "main_status": 2,
+        "led_status": 1,
+        "error_work_type": 0
+      },
+      "payload_hex": "516a5b345d5b53494d554c415445445d5b325d5b315d5b305d5b305d"
+    },
+    {
+      "name": "Qq-Base-string-keys-first-duplicate",
+      "payload_text": "Qq[4][Base][10 20 30 40][1][123][01][00123][1][999]",
+      "valid": true,
+      "command": "Qq",
+      "expected": {
+        "declared_count": 4,
+        "channels": {
+          "01": "00123",
+          "1": "123",
+          "Base": "10 20 30 40"
+        },
+        "duplicate_channels": 1
+      },
+      "payload_hex": "51715b345d5b426173655d5b31302032302033302034305d5b315d5b3132335d5b30315d5b30303132335d5b315d5b3939395d"
+    },
+    {
+      "name": "Qk-old-alarm-duplicates-order",
+      "payload_text": "Qk[2][SIM-E1][A||B|][SIM-E1][C]",
+      "valid": true,
+      "command": "Qk",
+      "expected": {
+        "declared_count": 2,
+        "from_board": false,
+        "notification": false,
+        "alarms": [
+          {
+            "error_code": "SIM-E1",
+            "raw_parameters": "A||B|"
+          },
+          {
+            "error_code": "SIM-E1",
+            "raw_parameters": "C"
+          }
+        ]
+      },
+      "payload_hex": "516b5b325d5b53494d2d45315d5b417c7c427c5d5b53494d2d45315d5b435d"
+    },
+    {
+      "name": "Ql-empty-new-notification",
+      "payload_text": "Ql[0]",
+      "valid": true,
+      "command": "Ql",
+      "expected": {
+        "declared_count": 0,
+        "from_board": false,
+        "notification": true,
+        "alarms": []
+      },
+      "payload_hex": "516c5b305d"
+    },
+    {
+      "name": "QK-Chinese-text-no-action",
+      "payload_text": "QK[1][SIM-中文][模拟异常：无设备][仅文本：不要执行复位]",
+      "valid": true,
+      "command": "QK",
+      "expected": {
+        "declared_count": 1,
+        "from_board": true,
+        "notification": false,
+        "alarms": [
+          {
+            "error_code": "SIM-中文",
+            "description": "模拟异常：无设备",
+            "measure": "仅文本：不要执行复位"
+          }
+        ]
+      },
+      "payload_hex": "514b5b315d5b53494d2de4b8ade696875d5be6a8a1e68b9fe5bc82e5b8b8efbc9ae697a0e8aebee5a4875d5be4bb85e69687e69cacefbc9ae4b88de8a681e689a7e8a18ce5a48de4bd8d5d"
+    },
+    {
+      "name": "QL-notification-preserves-text",
+      "payload_text": "QL[1][SIM-E2][simulated condition][do not operate device]",
+      "valid": true,
+      "command": "QL",
+      "expected": {
+        "declared_count": 1,
+        "from_board": true,
+        "notification": true,
+        "alarms": [
+          {
+            "error_code": "SIM-E2",
+            "description": "simulated condition",
+            "measure": "do not operate device"
+          }
+        ]
+      },
+      "payload_hex": "514c5b315d5b53494d2d45325d5b73696d756c6174656420636f6e646974696f6e5d5b646f206e6f74206f706572617465206465766963655d"
+    },
+    {
+      "name": "QH-last-project-value-raw-text",
+      "payload_text": "QH[3][PT][10][APTT][unknown][PT][11][2][PT][3][PT][004]",
+      "valid": true,
+      "command": "QH",
+      "expected": {
+        "declared_has_count": 3,
+        "declared_used_count": 2,
+        "has": {
+          "APTT": "unknown",
+          "PT": "11"
+        },
+        "used": {
+          "PT": "004"
+        }
+      },
+      "payload_hex": "51485b335d5b50545d5b31305d5b415054545d5b756e6b6e6f776e5d5b50545d5b31315d5b325d5b50545d5b335d5b50545d5b3030345d"
+    },
+    {
+      "name": "QH-empty-both-maps",
+      "payload_text": "QH[0][0]",
+      "valid": true,
+      "command": "QH",
+      "expected": {
+        "declared_has_count": 0,
+        "declared_used_count": 0,
+        "has": {},
+        "used": {}
+      },
+      "payload_hex": "51485b305d5b305d"
+    },
+    {
+      "name": "Qq-empty-map",
+      "payload_text": "Qq[0]",
+      "valid": true,
+      "command": "Qq",
+      "expected": {
+        "declared_count": 0,
+        "channels": {},
+        "duplicate_channels": 0
+      },
+      "payload_hex": "51715b305d"
+    },
+    {
+      "name": "malformed-is-not-empty-alarm",
+      "payload_text": "Qk[1][SIM-E1]",
+      "valid": false,
+      "payload_hex": "516b5b315d5b53494d2d45315d"
+    },
+    {
+      "name": "reject-invalid-UTF8",
+      "payload_hex": "514b5b315d5b455d5bc3285d5b4d5d",
+      "valid": false
+    },
+    {
+      "name": "reject-extra-abnormal-field",
+      "payload_text": "QK[0][extra]",
+      "valid": false,
+      "payload_hex": "514b5b305d5b65787472615d"
+    },
+    {
+      "name": "reject-missing-QH-second-count",
+      "payload_text": "QH[0]",
+      "valid": false,
+      "payload_hex": "51485b305d"
+    }
+  ]
+}

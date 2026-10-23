@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="8" failures="0" tests="19" name="ReadOnlyClientTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="connectionDoesNotAutomaticallyQuery"/>
+  <testcase result="pass" name="validStatusIsObservedBeforeSuccessfulFinish">
+    <!-- message="CLIENT actual peer RX generation= 2 HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 PAYLOAD=Qj" type="qinfo" -->
+    <!-- message="CLIENT actual peer TX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09 OBSERVED=Qj[4][SIMULATED][2][1][0][0] order= observed:Qj,success" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="onePendingRequestRejectsConcurrentQuery"/>
+  <testcase result="pass" name="queueRejectionDoesNotLeavePendingRequest"/>
+  <testcase result="pass" name="timeoutRetriesExactlyOnceThenFails">
+    <!-- message="CLIENT timeout_ms=30 maxRetries=1 generation= 2 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6a 3a 04 05 attempts=1,2 finished=false pending=false fresh=false" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="overdueStatusCannotTurnTimeoutIntoSuccess">
+    <!-- message="CLIENT overdue deadline_ms=1 artificial_event_loop_delay_ms=5 finished_success=false valid_late_observations= 1" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="timeoutReceiverNewRequestIsNotFinishedByOldObservation">
+    <!-- message="CLIENT timeout direct slot started replacement=true old observation replacement_pending=true false_successes= 0 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="alarmWaitsForMatchingCurrentAlarm">
+    <!-- message="CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 6b 3b 04 05 observed=Qq,Ql,Qk matching completion=Qk only" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="malformedStatusDoesNotRefreshOrFinish">
+    <!-- message="CLIENT invalid status main=99 rejected; notice= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围 later valid Qj completed" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="consumablesRequestUsesOnlyReadOnlyLiteral">
+    <!-- message="CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 48 18 04 05 actual peer TX= 06 07 00 0c 00 00 00 01 51 48 5b 30 5d 5b 30 5d 18 08 09 matching completion=QH" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="disconnectCancelsRequestAndFreshness"/>
+  <testcase result="pass" name="reconnectRejectsOldHalfStatus"/>
+  <testcase result="pass" name="invalidQueryDoesNotWriteOrBecomePending"/>
+  <testcase result="pass" name="observedReceiverCanClose"/>
+  <testcase result="pass" name="observedReceiverCanReconnectWithoutFinishingNewRequest"/>
+  <testcase result="pass" name="queuedReceiverCanReconnectWithoutWritingOldQuery"/>
+  <testcase result="pass" name="finishedReceiverCanReconnectWithoutClearingNewRequest"/>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[CLIENT actual peer RX generation= 2 HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 PAYLOAD=Qj]]>
+<![CDATA[CLIENT actual peer TX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09 OBSERVED=Qj[4][SIMULATED][2][1][0][0] order= observed:Qj,success]]>
+<![CDATA[CLIENT timeout_ms=30 maxRetries=1 generation= 2 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6a 3a 04 05 attempts=1,2 finished=false pending=false fresh=false]]>
+<![CDATA[CLIENT overdue deadline_ms=1 artificial_event_loop_delay_ms=5 finished_success=false valid_late_observations= 1]]>
+<![CDATA[CLIENT timeout direct slot started replacement=true old observation replacement_pending=true false_successes= 0 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]>
+<![CDATA[CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 6b 3b 04 05 observed=Qq,Ql,Qk matching completion=Qk only]]>
+<![CDATA[CLIENT invalid status main=99 rejected; notice= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围 later valid Qj completed]]>
+<![CDATA[CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 48 18 04 05 actual peer TX= 06 07 00 0c 00 00 00 01 51 48 5b 30 5d 5b 30 5d 18 08 09 matching completion=QH]]>
+  </system-err>
+</testsuite>

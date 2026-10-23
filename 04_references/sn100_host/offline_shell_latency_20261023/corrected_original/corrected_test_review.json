@@ -1,0 +1,346 @@
+{
+  "date": "2026-10-23",
+  "scope": "Independent read-only correction and claim audit; no GUI/build/product edit or credential read",
+  "source_change": {
+    "frozen": "temp/sn100_host/o03_2_latency/attempts/final_03/source_snapshot/tests/shell_account_test.cpp",
+    "live": "06_programs/sn100_host/tests/shell_account_test.cpp",
+    "frozen_sha256": "cbfef7557ca8ea2c977c69ca67a175d54fd827b9c3e9c95fbdb1dbde48d19e49",
+    "live_sha256": "eca2a91a58d8d804818755e95ce9f1f60555b3ffec296e61dfaee8d8c4c4dbaf",
+    "only_two_waits_and_three_comment_lines": true,
+    "assertion_token_count_before": 240,
+    "assertion_token_count_after": 240,
+    "business_assertions_deleted": false,
+    "navigation_loop": "50 hospital/account pairs remain;100 successful navigation assertions unchanged",
+    "added_lines": [
+      848,
+      849,
+      850,
+      851,
+      853
+    ]
+  },
+  "diagnostic_cpp": {
+    "path": "06_programs/sn100_host/tests/shell_latency_test.cpp",
+    "sha256": "7f8a145501b63682a0a878936df45d26bc8e0209db61fa842405466a55340d0c",
+    "matches_tested_final03_snapshot": true,
+    "console_and_json_forward_same_redacted_message": true,
+    "normal_trace_starts_without_gui_proc_sampler": true,
+    "normal_trace_has_no_external_capture_sql_proc_or_clipboard": true,
+    "normal_asserts_adds_deletes_and_saves": 10,
+    "normal_original_dialog_internal_capture_and_animation_preserved": true,
+    "normal_public_sql_and_worker_shutdown_after_trace": true,
+    "warning_limit": "Only exact transient fixture secrets are redacted; normal Qt warning category/message retained; no field value is intentionally logged"
+  },
+  "diagnosis_runs": {
+    "runs": 18,
+    "unique_pids": 18,
+    "all_public_business_assertions_passed": true,
+    "all_workers_closed": true,
+    "all_logs_three_passed_zero_failed": true,
+    "conditions": [
+      {
+        "condition": "burst",
+        "processes": 3,
+        "run_max_heartbeat_ms": [
+          1831.738225,
+          1778.9902599999998,
+          1669.167657
+        ],
+        "run_p95_heartbeat_ms": [
+          1831.738225,
+          1778.9902599999998,
+          1669.167657
+        ]
+      },
+      {
+        "condition": "capture_burst",
+        "processes": 3,
+        "run_max_heartbeat_ms": [
+          1997.483815,
+          1807.026284,
+          2149.263276
+        ],
+        "run_p95_heartbeat_ms": [
+          1997.483815,
+          1807.026284,
+          2149.263276
+        ]
+      },
+      {
+        "condition": "proc_burst",
+        "processes": 3,
+        "run_max_heartbeat_ms": [
+          2030.359947,
+          1698.066783,
+          1955.3866070000001
+        ],
+        "run_p95_heartbeat_ms": [
+          2030.359947,
+          1698.066783,
+          1955.3866070000001
+        ]
+      },
+      {
+        "condition": "paced",
+        "processes": 3,
+        "run_max_heartbeat_ms": [
+          52.680245,
+          50.14028599999983,
+          50.244828999999754
+        ],
+        "run_p95_heartbeat_ms": [
+          42.73602700000015,
+          46.65971899999977,
+          48.283927000000006
+        ]
+      },
+      {
+        "condition": "normal",
+        "processes": 3,
+        "run_max_heartbeat_ms": [
+          117.16885899999943,
+          86.82012899999972,
+          93.70680500000002
+        ],
+        "run_p95_heartbeat_ms": [
+          25.98297300000013,
+          23.262449999999262,
+          23.866296000000148
+        ]
+      },
+      {
+        "condition": "overhead",
+        "processes": 3,
+        "run_max_heartbeat_ms": [
+          79.62845299999998,
+          79.285527,
+          75.42641100000003
+        ],
+        "run_p95_heartbeat_ms": [
+          48.74766700000001,
+          50.13413799999989,
+          46.308993000000015
+        ]
+      }
+    ],
+    "per_run": [
+      {
+        "condition": "burst",
+        "round": 1,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/burst_01/burstNavigation_results.json",
+        "pid": 549,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2751ms",
+        "heartbeat_max_ms": 1831.738225
+      },
+      {
+        "condition": "burst",
+        "round": 2,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/burst_02/burstNavigation_results.json",
+        "pid": 1113,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2410ms",
+        "heartbeat_max_ms": 1778.9902599999998
+      },
+      {
+        "condition": "burst",
+        "round": 3,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/burst_03/burstNavigation_results.json",
+        "pid": 1343,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2276ms",
+        "heartbeat_max_ms": 1669.167657
+      },
+      {
+        "condition": "capture_burst",
+        "round": 1,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/capture_burst_01/burstNavigation_results.json",
+        "pid": 1016,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2618ms",
+        "heartbeat_max_ms": 1997.483815
+      },
+      {
+        "condition": "capture_burst",
+        "round": 2,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/capture_burst_02/burstNavigation_results.json",
+        "pid": 1278,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2425ms",
+        "heartbeat_max_ms": 1807.026284
+      },
+      {
+        "condition": "capture_burst",
+        "round": 3,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/capture_burst_03/burstNavigation_results.json",
+        "pid": 1569,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2763ms",
+        "heartbeat_max_ms": 2149.263276
+      },
+      {
+        "condition": "proc_burst",
+        "round": 1,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/proc_burst_01/burstNavigation_results.json",
+        "pid": 1061,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2682ms",
+        "heartbeat_max_ms": 2030.359947
+      },
+      {
+        "condition": "proc_burst",
+        "round": 2,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/proc_burst_02/burstNavigation_results.json",
+        "pid": 1311,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2309ms",
+        "heartbeat_max_ms": 1698.066783
+      },
+      {
+        "condition": "proc_burst",
+        "round": 3,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/proc_burst_03/burstNavigation_results.json",
+        "pid": 1612,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 2574ms",
+        "heartbeat_max_ms": 1955.3866070000001
+      },
+      {
+        "condition": "paced",
+        "round": 1,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/paced_01/pacedNavigation_results.json",
+        "pid": 675,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 4279ms",
+        "heartbeat_max_ms": 52.680245
+      },
+      {
+        "condition": "paced",
+        "round": 2,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/paced_02/pacedNavigation_results.json",
+        "pid": 1143,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3983ms",
+        "heartbeat_max_ms": 50.14028599999983
+      },
+      {
+        "condition": "paced",
+        "round": 3,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/paced_03/pacedNavigation_results.json",
+        "pid": 1383,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3969ms",
+        "heartbeat_max_ms": 50.244828999999754
+      },
+      {
+        "condition": "normal",
+        "round": 1,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/normal_01/normalOperations_results.json",
+        "pid": 792,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 22206ms",
+        "heartbeat_max_ms": 117.16885899999943
+      },
+      {
+        "condition": "normal",
+        "round": 2,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/normal_02/normalOperations_results.json",
+        "pid": 1174,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 22043ms",
+        "heartbeat_max_ms": 86.82012899999972
+      },
+      {
+        "condition": "normal",
+        "round": 3,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/normal_03/normalOperations_results.json",
+        "pid": 1499,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 22194ms",
+        "heartbeat_max_ms": 93.70680500000002
+      },
+      {
+        "condition": "overhead",
+        "round": 1,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/overhead_01/evidenceOverhead_results.json",
+        "pid": 934,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3165ms",
+        "heartbeat_max_ms": 79.62845299999998
+      },
+      {
+        "condition": "overhead",
+        "round": 2,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/overhead_02/evidenceOverhead_results.json",
+        "pid": 1228,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3092ms",
+        "heartbeat_max_ms": 79.285527
+      },
+      {
+        "condition": "overhead",
+        "round": 3,
+        "result_path": "temp/sn100_host/o03_2_latency/attempts/final_03/runs/overhead_03/evidenceOverhead_results.json",
+        "pid": 1539,
+        "assertions": true,
+        "workers_closed": true,
+        "log_totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3072ms",
+        "heartbeat_max_ms": 75.42641100000003
+      }
+    ]
+  },
+  "original_comprehensive_retest": {
+    "status": "NOT PASSED",
+    "failed_attempts": [
+      {
+        "path": "temp/sn100_host/o03_2_latency/corrected_original/writeExperiment_01.log",
+        "totals": "Totals: 2 passed, 1 failed, 0 skipped, 0 blacklisted, 1263ms",
+        "warning": "QWARN  : ShellAccountTest::writeExperiment() qt.qpa.clipboard: QXcbClipboard::setMimeData: Cannot set X11 selection owner",
+        "failed_assertion": "FAIL!  : ShellAccountTest::writeExperiment() 'paste(qobject_cast<QLineEdit *>(hospitalTable->cellWidget(0, 0)), kDepartment)' returned FALSE. ()",
+        "location": "   Loc: [../source_snapshot/tests/shell_account_test.cpp(731)]"
+      },
+      {
+        "path": "temp/sn100_host/o03_2_latency/corrected_original/writeExperiment_retry_01.log",
+        "totals": "Totals: 2 passed, 1 failed, 0 skipped, 0 blacklisted, 1257ms",
+        "warning": "QWARN  : ShellAccountTest::writeExperiment() qt.qpa.clipboard: QXcbClipboard::setMimeData: Cannot set X11 selection owner",
+        "failed_assertion": "FAIL!  : ShellAccountTest::writeExperiment() 'paste(qobject_cast<QLineEdit *>(hospitalTable->cellWidget(0, 0)), kDepartment)' returned FALSE. ()",
+        "location": "   Loc: [../source_snapshot/tests/shell_account_test.cpp(731)]"
+      }
+    ],
+    "failure_point": "Department QLineEdit Chinese clipboard paste at original line731, before hospital save and before100-navigation loop; do not describe as first Chinese input because hospital-name paste already returned true",
+    "reach_corrected_navigation_loop": false,
+    "build_success_does_not_equal_retest_pass": true
+  },
+  "supported_claims": [
+    "New labelled burst/paced experiment reproduces synchronous GUI-test-driver starvation, with original layout/animation retained.",
+    "Three paced navigation processes passed; maxima52.680245/50.140286/50.244829ms.",
+    "Three normal-operation processes passed; maxima117.168859/86.820129/93.706805ms; this is keyboard/worker/original-dialog workload, separate from evidence overhead.",
+    "Corrected original comprehensive test retains100 transitions and every original assertion, but its new full regression has not passed because WSLg clipboard injection failed before the corrected loop.",
+    "Historical O03-2 offline acceptance and its original1.556s unlabelled observation remain original evidence. New labelled mechanism reproduction does not prove which operation produced that historical single instance."
+  ],
+  "unsupported_claims": [
+    "Do not mark corrected original comprehensive retest complete or passed.",
+    "Do not subtract or erase historical1.556s value, call it proven screenshot-only, or report old exact causation as proven.",
+    "Do not infer pure product/render/compositor latency from heartbeat gaps or full modal-operation duration.",
+    "The final03 source snapshot has declared current/O03-3 dependencies; do not call it bit-identical historical O03-2 product source.",
+    "No RK/instrument/same-board-control/long-run acceptance from these WSL short tests."
+  ],
+  "status": "Read-only review complete; no blocking defect confirmed in diagnostic CPP. New comprehensive clipboard-dependent regression remains unpassed."
+}

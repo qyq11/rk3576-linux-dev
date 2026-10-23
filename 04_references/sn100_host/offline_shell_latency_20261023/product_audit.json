@@ -1,0 +1,98 @@
+{
+  "audit_date": "2026-10-23",
+  "scope": "Read-only static audit of account/hospital GUI, worker boundaries, retained Material/popup animation, and the O03-2 comprehensive test harness. No GUI/build was run and no runtime authentication database or secret was read.",
+  "source_condition": "Live shell source already includes the declared O03-3 history integration. Conclusions about old O03-2 are limited to shared account/hospital/material code and the archived test harness; live main/frmMain source is not claimed byte-identical to the previously tested O03-2 product.",
+  "skills": [
+    ".agents/skills/sn100-module-migration/SKILL.md",
+    ".agents/skills/sn100-module-migration/references/engineering-and-verification.md",
+    ".agents/skills/sn100-project-files/SKILL.md"
+  ],
+  "historical_peak_attribution": {
+    "reported_gap_ms": 1556.009,
+    "provable_exact_cause": false,
+    "reason": "The old Probe stores consecutive heartbeat gaps, navigation timings and 200 ms resource samples, but no heartbeat callback timestamps, activity spans, screenshot phase spans or SQL verification phase spans. A source audit alone cannot assign the historical maximum to a particular call.",
+    "probe_scope": "Starts after both pages ready and window exposed (tests/shell_account_test.cpp:701); remains active through functional actions, modal answering, screenshots, public SQL verification and final stopWorkers before result capture (:1028-1030).",
+    "interpretation": "A 10 ms QTimer gap is an event-dispatch interval. A 280 ms modal animation or a slow asynchronous worker operation does not itself establish a same-duration GUI stall. Pixel/compositor feedback and worker completion need separate start/end definitions."
+  },
+  "product_gui_paths": [
+    {
+      "path": "Account buttons -> setBusy/reportStatus -> queued AccountStore request -> worker result -> table/cache/password/identity update -> original modal -> operationFinished",
+      "source": "06_programs/sn100_host/ui/frmaccountsetting.cpp:73-168,182-193,235-269,303-338",
+      "gui_work": ["Read/edit widgets", "Clear and rebuild public QTableWidget rows", "Refresh role combo options and identity edits", "Show original custom modal and process its animation", "Emit actual operation result after modal completes"],
+      "worker_work": ["SQL open/SELECT/transaction/commit/rollback", "Role and identity recheck", "200 ms SQLite busy timeout", "FULL durability commit"],
+      "notes": "The role table is small in the original 5-row/7-row anonymized test. UI rendering scales with rows but that does not prove a 1.556 s stall here. Account load has no overall row cap, so large real account sets would need a separately declared load test."
+    },
+    {
+      "path": "Hospital buttons -> capture edited rows -> queued HospitalStore request -> worker result -> renderRows -> status/operationFinished",
+      "source": "06_programs/sn100_host/ui/frmhospinfosetting.cpp:96-175,348-425; data/hospital_store.cpp",
+      "gui_work": ["Cell editor creation and row rendering", "Mnemonic transformation on textChanged", "Draft restore when explicitly discarding", "Original leave/delete confirmation in modal event loop"],
+      "worker_work": ["SQL load/save/remove and transaction", "SQLite lock waiting", "INI persistence"],
+      "notes": "Current original O03-2 test uses one hospital row. Normal hospital persistence is not performed synchronously in the GUI callback."
+    },
+    {
+      "path": "Manual logout -> page busy/draft guards -> queued setSession(empty) -> actual sessionChanged -> clear public account cache and identity -> loggedOut",
+      "source": "06_programs/sn100_host/shell/frmmain.cpp:275-312; ui/frmaccountsetting.cpp:86-98,202-227",
+      "gui_work": ["Draft confirmation", "Clear identity/password/public rows", "Refresh top username and logout button"],
+      "worker_work": ["Apply authoritative empty account session"],
+      "notes": "Automatic commit logout uses the already-cleared worker snapshot, not a second synchronous SQL operation or a hidden hospital-draft discard."
+    }
+  ],
+  "retained_animation_and_paint": [
+    {
+      "source": "06_programs/sn100_host/shell/widgets/material/qtmaterialflatbutton_internal.cpp:86-145",
+      "behavior": "Original halo animation loops indefinitely; grow/shrink each 840 ms. Property setters call m_button->update() for repaint. All run in the GUI thread.",
+      "diagnostic": "Measure idle and each normal operation with this animation unchanged. Count/timestamp Paint/UpdateRequest or duration of event dispatch in the test harness; do not disable the halo to create an improved headline number."
+    },
+    {
+      "source": "06_programs/sn100_host/ui/cusdialogmask.cpp:136-162; ui/cusmessagebox.cpp:34-50",
+      "behavior": "Every opening AND closing of the original custom popup calls viewWidget_->grab() synchronously before starting opacity/move animation. Opacity/move duration remains 280 ms (150 ms special no-offset mode), OutCubic offset -50 px and original shadow. QDialog::exec() runs a modal event loop.",
+      "diagnostic": "Separate internal dialog-view grab from the external full-window evidence screenshot; separately measure click-to-input-ready and click-to-close-finished, allowing normal heartbeat dispatch during the retained animation."
+    },
+    {
+      "source": "06_programs/sn100_host/shell/widgets/cusview.cpp:7-14,59-94; widgets/material/qtmaterialflatbutton.cpp:564-590",
+      "behavior": "Original custom frames have drop shadows and CPU QPainter paths; Material buttons use antialiasing, clipping and halo/foreground rendering. CusView paint reloads an image if a background image path is configured.",
+      "diagnostic": "Full QWidget grab can synchronously render child widgets, QSS/text/icons/effects and potentially allocate substantial pixel buffers; at 1920x1080 a 32-bit image alone is about 8.3 MB. Actual time must be measured, not inferred from that size."
+    }
+  ],
+  "test_only_synchronous_gui_costs": [
+    {
+      "source": "06_programs/sn100_host/tests/shell_account_test.cpp:740,795,837,951,1019,1083",
+      "operation": "window->grab().save(PNG path)",
+      "parts_to_separate": ["GUI rendering / grab / QPixmap-to-QImage", "PNG encoding to QBuffer in memory", "write encoded bytes to the same filesystem as prior evidence", "optional storage sync only if explicitly part of the measurement"],
+      "notes": "QPixmap::save(path) combines rendering/codec/file I/O in one GUI call. The old timing includes this work. Moving only PNG encoding/file writing out of GUI is allowed for test evidence but must leave QWidget/QPixmap GUI access on the GUI thread and preserve completed-image ownership."
+    },
+    {
+      "source": "06_programs/sn100_host/tests/shell_account_test.cpp:307-345",
+      "operation": "5 ms DialogAnswers timer discovers modal state, optionally modal->grab().save(), then QTest mouse click",
+      "notes": "Capture happens before answering the modal. This can lengthen the interaction and delay heartbeat processing; it is extra evidence work, separate from the product's own popup-view grab."
+    },
+    {
+      "source": "06_programs/sn100_host/tests/shell_account_test.cpp:120-169,214-236",
+      "operation": "publicSnapshot opens an independent SQLite connection, runs PRAGMA integrity_check plus public SELECTs; changePublicAccount performs a public UPDATE in the test GUI thread",
+      "notes": "These are test verification/identity-invalidation operations, not the queued production AccountStore path. SQLite on the mounted Windows filesystem can have different latency from Linux-local files. Do not read/export password columns."
+    },
+    {
+      "source": "06_programs/sn100_host/tests/shell_account_test.cpp:172-210,255-261",
+      "operation": "Every 200 ms the GUI timer synchronously reads /proc status, smaps_rollup and stat and enumerates fd",
+      "notes": "Memory-map traversal and proc sampling have real cost. Baseline normal-operation heartbeat should be measured both without the in-process resource observer and with it; resource sampling can instead use a separate observer process and only public /proc values."
+    },
+    {
+      "source": "06_programs/sn100_host/tests/shell_account_test.cpp:426-441,1028-1030",
+      "operation": "End-of-test close and stopWorkers use BlockingQueuedConnection plus QThread::wait; waitUntil then processes queued closed notifications",
+      "notes": "Teardown is included in the old Probe lifetime. Label shutdown as a separate phase. Never report its wait as an ordinary button response without the actual callback boundary."
+    },
+    {
+      "source": "06_programs/sn100_host/tests/shell_account_test.cpp:357-370,498 onward",
+      "operation": "Clipboard paste, QTest injection, polling assertions and test helpers execute in the test application's GUI process",
+      "notes": "No-capture normal-operation replay still has a test driver. Report it as controlled QtTest input, not a physical mouse/compositor-latency result."
+    }
+  ],
+  "recommended_trace_contract": {
+    "heartbeat": "Use one monotonic origin and retain each callback time, previous callback time and gap; calculate phase overlap from actual [previous,now] interval, not only the label active when callback fires.",
+    "spans": ["idle original animation", "normal navigation", "normal hospital add/save/leave", "normal account add/update/delete and retained success/error popup", "manual/automatic logout", "product popup internal view capture", "test full-window grab", "PNG memory encoding", "PNG file output", "external public SQL verification", "proc observer", "shutdown"],
+    "carryover": "After every synchronous diagnostic span return to the event loop so the first delayed heartbeat can be attributed to the span it overlaps; do not reset previous heartbeat and hide the gap.",
+    "repeat": "Use independent fresh anonymous data and Release builds, fixed 1920x1080/DPI/font/QPA, no layout/animation changes. Repeat with no screenshot/SQL/proc observer, then controlled separate evidence phases, then the combined old-style path.",
+    "background": "Record own test PID, relevant concurrently running compile/GUI processes and host load; do not close or kill another chat's preview or tests."
+  },
+  "conclusion": "There are several concrete synchronous GUI sampling operations in the old comprehensive test and a small internal product popup grab. The worker architecture rules out assuming that the SQLite 200 ms lock wait itself ran in GUI, but does not prove screenshots caused the historical maximum. Retest with timestamped phase overlap is required; preserve the old 1556.009 ms observation and qualify any reproduction result."
+}

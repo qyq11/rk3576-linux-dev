@@ -1,0 +1,48 @@
+{
+  "schema": "sn100-host-sampler-state-selfcheck-v1",
+  "passed": true,
+  "scope": "Only anonymous headless fork children created by this selfcheck; no GUI, app, network, database or credentials",
+  "script_sha256": {
+    "sample_process.py": "208206dd25d75b30efa7e4e3559edeb32fd60b99ed251684ae0db1eb2942cd9b",
+    "sample_process_before_state_fix.py": "765aae1dc6ae7bb1aebe975b8d99f03d052a4f108c3c1be475eb1bb20487f512"
+  },
+  "cases": [
+    {
+      "case": "old_sampler_reproduces_false_completion_on_zombie",
+      "exit_code": 0,
+      "wall_seconds": 0.8859345549999489,
+      "state_at_return": "Z",
+      "samples_without_rss": 58,
+      "stopped_reason": "duration_complete",
+      "output": "sampler_state_selfcheck_before_zombie.json"
+    },
+    {
+      "case": "fixed_sampler_stops_at_zombie_live_samples_only",
+      "exit_code": 4,
+      "wall_seconds": 0.30785175099981643,
+      "live_samples": 23,
+      "stopped_reason": "target_exited",
+      "output": "sampler_state_selfcheck_mid_exit.json"
+    },
+    {
+      "case": "initial_zombie_records_null_resources_no_samples",
+      "exit_code": 4,
+      "wall_seconds": 0.07550509100019553,
+      "live_samples": 0,
+      "stopped_reason": "target_exited",
+      "output": "sampler_state_selfcheck_initial_zombie.json"
+    },
+    {
+      "case": "live_target_completes_requested_duration",
+      "exit_code": 0,
+      "wall_seconds": 0.38364345300033165,
+      "live_samples": 4,
+      "stopped_reason": "duration_complete",
+      "output": "sampler_state_selfcheck_live_complete.json"
+    }
+  ],
+  "limitations": [
+    "Real Linux zombie state Z exercised; transient X/x covered by the same membership check, not forced in a real process.",
+    "Selfcheck measurements are script validation, not SN100 app resource evidence."
+  ]
+}

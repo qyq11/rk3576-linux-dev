@@ -1,0 +1,420 @@
+{
+  "schema": "sn100-o03-4-integrated-report-evidence-v1",
+  "date": "2026-10-23",
+  "status": "O03-4 authorized offline integration delivered; real preview open; native/Windows32/ARM64 builds and new ARM release checked; board/instrument and listed acceptance gates pending",
+  "provenance": "Hand-written anonymous fixtures only; selected result files copied byte-for-byte; account databases, credentials and mutable runtime directories are excluded",
+  "environment": {
+    "architecture": "x86_64",
+    "concurrent_compilation": true,
+    "qt": "5.15.13",
+    "build": "Release",
+    "user": "qyq",
+    "os": "Ubuntu-24.04 in WSL",
+    "font": "Noto Sans CJK SC"
+  },
+  "runs": [
+    {
+      "elapsed_ms": 3437,
+      "log": "logs/offscreen_01.log",
+      "passed": 3,
+      "exit_evidence": "Execution tool completion",
+      "skipped": 0,
+      "exit_code": 1,
+      "qpa": "offscreen",
+      "id": "offscreen_01",
+      "result": "Retained failure: fixed title PDF extraction inserted layout whitespace; hospital literal itself passed; test fixed title comparison to ignore whitespace only",
+      "failed": 1
+    },
+    {
+      "pdf": "offscreen_02/committed_hospital.pdf",
+      "elapsed_ms": 3005,
+      "lifecycle": "offscreen_02/lifecycle.json",
+      "extracted_pdf_text": "offscreen_02/committed_hospital_pdf.json",
+      "log": "logs/offscreen_02.log",
+      "passed": 4,
+      "exit_evidence": "Execution tool completion",
+      "skipped": 0,
+      "exit_code": 0,
+      "qpa": "offscreen",
+      "id": "offscreen_02",
+      "failed": 0
+    },
+    {
+      "pdf": "xcb_02/committed_hospital.pdf",
+      "elapsed_ms": 2920,
+      "lifecycle": "xcb_02/lifecycle.json",
+      "extracted_pdf_text": "xcb_02/committed_hospital_pdf.json",
+      "log": "logs/xcb_02.log",
+      "passed": 4,
+      "exit_evidence": "Wrapper appended EXIT_CODE=0 to log",
+      "skipped": 0,
+      "exit_code": 0,
+      "qpa": "xcb",
+      "id": "xcb_02",
+      "failed": 0
+    }
+  ],
+  "excluded_run": {
+    "reason": "Root reports four passes, but wrapper exit-code capture quoting was wrong; not used as formal exit-code evidence",
+    "id": "xcb_01"
+  },
+  "assertions": [
+    "Before-attach and duplicate report enable rejected",
+    "Empty or uncommitted hospital cannot provide report heading",
+    "Committed Chinese hospital name with apostrophe appears in actual PDF",
+    "Uncommitted patient edits block print request",
+    "Report busy rejects navigation, logout and close",
+    "Original preview/PDF controls support cancel, missing-helper recovery and real-helper export",
+    "Missing-helper red failure status survives preview close and clears on next successful operation",
+    "Reopened hospital data and old three-page entry remain usable"
+  ],
+  "visual_qa": {
+    "xcb_pdf": "See root main record for any separate visual inspection",
+    "offscreen_pdf": "Root rendered and inspected: complete hospital and fields; original long title wraps without text loss; layout retained",
+    "screenshot_claim": "No offscreen screenshot is used as WSLg visual evidence",
+    "actual_gui": "Actual WSLg original Print button opened committed 测试医院 report; screenshot evidence in actual_gui; original other-window draft preserved"
+  },
+  "limitations": [
+    "Anonymous offline software verification only; project columns are explicit fixtures",
+    "Original Windows release complete behavior/theme and Windows main-GUI operation pending",
+    "Designated PDF-reader Ctrl+C/Ctrl+F pending; parser/renderer checks are separate",
+    "No physical printer, XLSX, RK deployment/display/input or instrument acceptance",
+    "No performance/resource-budget or long-stability release; other builds were active",
+    "Existing other-window unsaved department draft preserved; full close/reopen of that window pending"
+  ],
+  "binaries": [
+    {
+      "path": "temp/sn100_host/integration/report_tests/integrated_report_test",
+      "sha256": "cfb93eeafdaad067bf1a3a4d1b720c9bf71c7e874083d79472bf2efa7504b9ac",
+      "bytes": 2082120,
+      "fingerprint_scope": "Historical binary used for offscreen_01/offscreen_02/xcb_02; mutable temp test path may later hold the load-test rebuild, whose execution.json records its own fingerprint"
+    },
+    {
+      "path": "temp/sn100_host/integration/report_tests/sn100_report_renderer",
+      "sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b",
+      "bytes": 1048272,
+      "fingerprint_scope": "Historical binary used for offscreen_01/offscreen_02/xcb_02; mutable temp test path may later hold the load-test rebuild, whose execution.json records its own fingerprint"
+    },
+    {
+      "path": "temp/sn100_host/o03_4/wsl_release/sn100_report_renderer",
+      "sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b",
+      "bytes": 1048272,
+      "fingerprint_scope": "Historical binary used for offscreen_01/offscreen_02/xcb_02; mutable temp test path may later hold the load-test rebuild, whose execution.json records its own fingerprint"
+    }
+  ],
+  "copied_files": [
+    {
+      "source": "temp/sn100_host/integration/report_tests/run_offscreen_01.log",
+      "archive_path": "logs/offscreen_01.log",
+      "bytes": 4979,
+      "sha256": "779312aa3f14e2774b56cb8767448654da1770e74ec646c7805463197e5e030d"
+    },
+    {
+      "source": "temp/sn100_host/integration/report_tests/run_offscreen_02.log",
+      "archive_path": "logs/offscreen_02.log",
+      "bytes": 4777,
+      "sha256": "2e5e4d3e7fee6674ca369a611e1a0781da4c34d77e0cb6c0e6c2d329c9d643d7"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/logs/report_xcb_02.log",
+      "archive_path": "logs/xcb_02.log",
+      "bytes": 3461,
+      "sha256": "60a1b068c43b1d4d100459d00356b43725413cd813a156091f6aadc135a1814f"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/integrated_report_offscreen_02/lifecycle.json",
+      "archive_path": "offscreen_02/lifecycle.json",
+      "bytes": 349,
+      "sha256": "aa17662b2c2ca15b3187775387bd853e7ce84f8995b9bfa936310c3e57b765f8"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/integrated_report_offscreen_02/committed_hospital_pdf.json",
+      "archive_path": "offscreen_02/committed_hospital_pdf.json",
+      "bytes": 527,
+      "sha256": "00f3b0c6f028d6107630c9c7f210e770bf04db253f00730a9038eb57a7f434d4"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/integrated_report_offscreen_02/runtime/history/exports/committed_hospital.pdf",
+      "archive_path": "offscreen_02/committed_hospital.pdf",
+      "bytes": 20818,
+      "sha256": "cf21729ac79606776403d1161f2fbbcb68166670081e36e3c4e080281c31010d"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/integrated_report_xcb_02/lifecycle.json",
+      "archive_path": "xcb_02/lifecycle.json",
+      "bytes": 349,
+      "sha256": "aa17662b2c2ca15b3187775387bd853e7ce84f8995b9bfa936310c3e57b765f8"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/integrated_report_xcb_02/committed_hospital_pdf.json",
+      "archive_path": "xcb_02/committed_hospital_pdf.json",
+      "bytes": 527,
+      "sha256": "00f3b0c6f028d6107630c9c7f210e770bf04db253f00730a9038eb57a7f434d4"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/integrated_report_xcb_02/runtime/history/exports/committed_hospital.pdf",
+      "archive_path": "xcb_02/committed_hospital.pdf",
+      "bytes": 20818,
+      "sha256": "4db8cdc8b30f4f3a12aa5281077f92907cdbd97e4b6d6f4547b76c92f10d4433"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/integrated_report_offscreen_01/runtime/history/exports/committed_hospital.pdf",
+      "archive_path": "offscreen_01/committed_hospital.pdf",
+      "bytes": 20818,
+      "sha256": "6a9be338efa04548ca5c25ffe2272ae4c3cf27250415c24ec22c3763a91fbfa6"
+    }
+  ],
+  "mixed_load": {
+    "directory": "mixed_load_offscreen_01",
+    "rounds": 60,
+    "samples": [
+      "mixed_load_offscreen_01/load_0001.pdf",
+      "mixed_load_offscreen_01/load_0060.pdf"
+    ],
+    "failures": 0,
+    "selected_method": "reportLoadExperiment",
+    "successful_pdfs": 60,
+    "acceptance": "Measured baseline under concurrent ARM compilation and other desktop workload; budgets unknown; no resource, latency or long-stability release",
+    "load_duration_ms": 60004,
+    "all_60_pdf_verification": "mixed_load_offscreen_01/independent_verification.json",
+    "residual_helper_pids": [],
+    "parent_measurement_scope": "QtTest process containing real Widgets/main shell, test driver and evidence overhead; not a separately measured production application PID"
+  },
+  "root_copied_files": [
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/write_result.json",
+      "archive_path": "core_xcb_02/write_result.json",
+      "bytes": 3173,
+      "sha256": "8a5bef002b3da4d452397d24d03991d05e544f253d07247f6888210f35094c40"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/read_result.json",
+      "archive_path": "core_xcb_02/read_result.json",
+      "bytes": 191,
+      "sha256": "902cb52e408294c6c1ffdaaffc3b19d4e3f1a41245bea0af2b0d9317e575b82c"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/viewport_result.json",
+      "archive_path": "core_xcb_02/viewport_result.json",
+      "bytes": 17740,
+      "sha256": "66bacc3e73031fa0d009312398cea8207687a4321e81c8490fb97c660571be0d"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/initialization_failure_result.json",
+      "archive_path": "core_xcb_02/initialization_failure_result.json",
+      "bytes": 794,
+      "sha256": "97f19094b40508f55eae9fc12308e98f7a2552d200756b49e6c64698ad5a24b0"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/measurement_result.json",
+      "archive_path": "core_xcb_02/measurement_result.json",
+      "bytes": 1166,
+      "sha256": "ee2c282cb1169998e035225fd2e2af0931c1f79ad3e58d9a37401949f103693a"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/application_exit_result.json",
+      "archive_path": "core_xcb_02/application_exit_result.json",
+      "bytes": 754,
+      "sha256": "55f0965a2f96d32f0d88b377fe34c7aeadfb342ca147619fd196fae4aaa2a909"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/logs/core_xcb_01.log",
+      "archive_path": "logs/core_xcb_01.log",
+      "bytes": 1245,
+      "sha256": "9210ceece41c68b1cf7692f0a5d98a8905050b75766b6150089624e7b18bb59b"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/logs/core_xcb_02.log",
+      "archive_path": "logs/core_xcb_02.log",
+      "bytes": 3181,
+      "sha256": "c07278fccf503e7965d27161d63ef2cb1827133b43f7e9c31b8e071c983a6f06"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/logs/native_build_02.log",
+      "archive_path": "logs/native_build_02.log",
+      "bytes": 177423,
+      "sha256": "54dfc70fe238f50eab185733a8f78cef4efb8efb7a6b91b8192e22abf2451375"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/logs/windows_shell_build.log",
+      "archive_path": "logs/windows_shell_build.log",
+      "bytes": 213694,
+      "sha256": "de085acdf29cc8f641020798be772c4f4d1c4899d5ef2c161b79d0d73b4f9b9f"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/logs/windows_renderer_build.log",
+      "archive_path": "logs/windows_renderer_build.log",
+      "bytes": 65303,
+      "sha256": "7883a7b6e1fac0a2fd61bf3196f131b9e0ad3686fb5f75725da49045eae4c19a"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/logs/user_preview_01.log",
+      "archive_path": "logs/user_preview_01.log",
+      "bytes": 550,
+      "sha256": "f74c293fd3d411dc7e9ce20aee306ec57842d440b361d1d3f6256984abb5224e"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/viewport_1600x900_hospital.png",
+      "archive_path": "03_photos/20261023_sn100_o03_4_1600x900_hospital_01.png",
+      "bytes": 69712,
+      "sha256": "45b3adfb9a12a994a2ff715defb3afe1e0d4a3ac22db4a17990bf8e245135e6e"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/viewport_1600x900_account.png",
+      "archive_path": "03_photos/20261023_sn100_o03_4_1600x900_account_01.png",
+      "bytes": 80354,
+      "sha256": "0be9a64aba91516767b9f574cb75f28043605fcefcff7af18800c45281b19aa1"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/viewport_1600x900_history.png",
+      "archive_path": "03_photos/20261023_sn100_o03_4_1600x900_history_01.png",
+      "bytes": 92633,
+      "sha256": "8ecbfbb644059d7d66b6a0ffcfc53df1069eaccbb4c110f62ffdb702e4496bb4"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/viewport_1920x1080_hospital.png",
+      "archive_path": "03_photos/20261023_sn100_o03_4_1920x1080_hospital_01.png",
+      "bytes": 120214,
+      "sha256": "86f282128d71a3684212ef8d50727585ba7c42f39c117a7af8360736f845a670"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/viewport_1920x1080_account.png",
+      "archive_path": "03_photos/20261023_sn100_o03_4_1920x1080_account_01.png",
+      "bytes": 132121,
+      "sha256": "327b6d2adafaff263a68b8dd9ac8e12a029004cf73937e96f9995d28039d9325"
+    },
+    {
+      "source": "temp/sn100_host/o03_4/core_xcb_02/viewport_1920x1080_history.png",
+      "archive_path": "03_photos/20261023_sn100_o03_4_1920x1080_history_01.png",
+      "bytes": 149713,
+      "sha256": "0f7972dad0d20ae0005b8579529b3f8ae78565e7041d8c2d32bf36971f9fd109"
+    }
+  ],
+  "core_regression": {
+    "qpa": "xcb",
+    "log": "logs/core_xcb_02.log",
+    "business_cases": 6,
+    "separate_processes": true,
+    "passed_per_process_including_setup_cleanup": 3,
+    "failed": 0,
+    "exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "cases": [
+      "writeExperiment",
+      "readExperiment",
+      "viewportExperiment",
+      "initializationFailureExperiment",
+      "measureExperiment",
+      "applicationExitExperiment"
+    ],
+    "retained_failed_runner": {
+      "log": "logs/core_xcb_01.log",
+      "exit_code": 2,
+      "reason": "All slots were selected in a single process, violating existing readback/measurement contract; fixed runner uses six separate processes; no product fix attributed to this harness correction."
+    }
+  },
+  "actual_gui": {
+    "window_title": "SN100 · 统一脱机主界面 · 报告预览/PDF · 模拟会话 (Ubuntu-24.04)",
+    "hospital_heading": "测试医院检验报告单",
+    "data_root": "temp/sn100_host/integration/user_preview_01",
+    "existing_committed_data_reused_without_seed": true,
+    "existing_other_window_unsaved_department_draft_preserved": true,
+    "entry": "Original result-report page Print button; REPORT_PREVIEW_READY recorded",
+    "log": "logs/user_preview_01.log",
+    "raw_screenshot": "../../../03_photos/20261023_sn100_o03_4_preview_01.png",
+    "annotated_screenshot": "../../../03_photos/20261023_sn100_o03_4_preview_marked_01.png",
+    "manual_pdf_export_claimed": false,
+    "manual_pdf_note": "PDF exports were verified with actual controls in QtTest; desktop automation did not produce a file chooser, so no manual desktop export is claimed.",
+    "screenshot_sha256": {
+      "03_photos/20261023_sn100_o03_4_preview_01.png": "e1cffe6c14452ad071f6b0f4166e87604dcf5baf7c5d5de622ee9873c5268bd8",
+      "03_photos/20261023_sn100_o03_4_preview_marked_01.png": "86ebe4e694adb705391e30cccd857c2690e1c2e0a5c2d174d48ff626830abebe",
+      "03_photos/20261023_sn100_o03_4_preview_marked_01.svg": "cdcec70dbf6a883a499c412df007f937e0587b6008c5a9c5d5718c385a679a4c"
+    }
+  },
+  "source_fingerprints": [
+    {
+      "path": "06_programs/sn100_host/shell/main.cpp",
+      "sha256": "a6a54b2ca873997f399b9514e8452148a7132cfaa59e2cec5e67621c23c9fcfb",
+      "bytes": 15000
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.cpp",
+      "sha256": "2fbfe3598655a386e6162374ce6f31107468467c54e6e9d13fa483a1cb10bf22",
+      "bytes": 17123
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.h",
+      "sha256": "8c265dfa579ac35d5ca45745aa78130e5259d6fc4f379d62f24db86bec504d57",
+      "bytes": 2741
+    },
+    {
+      "path": "06_programs/sn100_host/shell/history_shell.cpp",
+      "sha256": "f9cbc08872670a783e1c3676524958c4580a61049d34065b812a8094952f3697",
+      "bytes": 7378
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.cpp",
+      "sha256": "79325bb5f8a25a885f2d38ebf8890fd18f0d0ceb25e451afc991bfa9af5dc491",
+      "bytes": 11748
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.h",
+      "sha256": "5cca8e5b3dc69717a473ed16fac318495a6dfdcf7247f250f88ede0bf4a85e69",
+      "bytes": 2178
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.ui",
+      "sha256": "1cf4c4b6e2c5726b71812a085f438d3f326cfe2f50e6a99c402cdbb78d96167a",
+      "bytes": 18885
+    },
+    {
+      "path": "06_programs/sn100_host/history/frm_report_material.ui",
+      "sha256": "ff6c3f81eaff7631fd11e2b1aa417fbc0af20da31e0d4123a2e8d84a41b24b12",
+      "bytes": 31053
+    },
+    {
+      "path": "06_programs/sn100_host/history/templates/report.xml",
+      "sha256": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2",
+      "bytes": 19908
+    },
+    {
+      "path": "06_programs/sn100_host/tests/integrated_report_test.cpp",
+      "sha256": "7b500eb86676ffb954ac5e3fd7ea39b6edf17c7700b093488ac82840e39c3a7e",
+      "bytes": 43200
+    }
+  ],
+  "additional_binaries": [
+    {
+      "path": "temp/sn100_host/o03_4/wsl_release/sn100_shell",
+      "sha256": "9ab048ce42930cdf18db454afdae6e6852673432dec30132b8a1d346e57d4fe7",
+      "bytes": 1988432
+    },
+    {
+      "path": "temp/sn100_host/o03_4/windows_pair/sn100_shell.exe",
+      "sha256": "321286e119aa6b821889feb6e21f2f474d500d299e2a46735f3a38547c40ac50",
+      "bytes": 1375744
+    },
+    {
+      "path": "temp/sn100_host/o03_4/windows_pair/sn100_report_renderer.exe",
+      "sha256": "00aaeeb34e9faf6ed6700eeafaa34d4c2e0d3990113f71b3377fb61c3f0f2fdb",
+      "bytes": 720896
+    }
+  ],
+  "arm64": {
+    "result": "arm64/result.json",
+    "prepare_exit_code": 0,
+    "dependency_status": "offline_closure_passed_board_runtime_pending",
+    "release_id": "f1f08caa0a5914badd6009e5710842cb3f867a29c2d8985d938b7c7ec414614b",
+    "package_sha256": "68b6d0d31d26ffff1f3e27ebb59ec6265ac486ee7b4616b32a012c9a78c454e4",
+    "current_source_freeze_verified_at_closeout": true,
+    "board_runtime_verified": false
+  },
+  "formal_result": "../../../02_records/20261022_sn100_host_migration.md#o03-4-offline",
+  "closeout_date": "2026-10-24"
+}

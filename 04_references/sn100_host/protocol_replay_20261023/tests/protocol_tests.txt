@@ -1,0 +1,127 @@
+********* Start testing of ProtocolTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : ProtocolTest::initTestCase()
+QINFO  : ProtocolTest::literalTx() SYNTHETIC TX #1 query status HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 PAYLOAD=Qj
+PASS   : ProtocolTest::literalTx()
+QINFO  : ProtocolTest::literalRx() SYNTHETIC RX #1 AD HEX= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 PAYLOAD= Qq[2][1][123][2][456]
+PASS   : ProtocolTest::literalRx()
+QINFO  : ProtocolTest::literalStatus() SYNTHETIC RX #2 status HEX= 06 07 00 85 00 00 00 01 51 6a 5b 32 35 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 5d 5b 31 5d 5b 30 5d 5b 31 5d 5b 73 69 6d 2d 76 31 7c 73 69 6d 2d 76 32 5d 5b 53 49 4d 2d 30 30 31 5d 5b 30 5d 5b 30 5d 5b 30 5d 5b 6f 66 66 6c 69 6e 65 2d 76 31 5d 5b 30 5d 5b 30 5d 5b 31 5d 5b 31 5d 5b 31 30 5d 5b 4c 69 6e 75 78 4e 65 77 5d 5b 32 30 5d 5b 31 38 5d 5b 33 5d 5b 31 30 5d 5b 30 5d 5b 30 5d 4f 08 09 PAYLOAD= Qj[25][SIMULATED][2][1][0][][1][0][1][sim-v1|sim-v2][SIM-001][0][0][0][offline-v1][0][0][1][1][10][LinuxNew][20][18][3][10][0][0]
+PASS   : ProtocolTest::literalStatus()
+PASS   : ProtocolTest::everyStreamSplit()
+PASS   : ProtocolTest::bytewiseStream()
+PASS   : ProtocolTest::coalescedMessages()
+QINFO  : ProtocolTest::leadingNoiseAndPartialHeader() NOISE recovery input=ff 00 06 06 + 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 OUTPUT= Qq[2][1][123][2][456]
+PASS   : ProtocolTest::leadingNoiseAndPartialHeader()
+QINFO  : ProtocolTest::malformedLength(zero) REJECT length HEX= 06 07 00 00 ERROR= frame.length: 数据字段长度 0 无效，允许 5..2004（含四字节分包头）; frame.noise: 帧头前丢弃 3 个噪声字节
+PASS   : ProtocolTest::malformedLength(zero)
+QINFO  : ProtocolTest::malformedLength(packet-header-only) REJECT length HEX= 06 07 00 04 ERROR= frame.length: 数据字段长度 4 无效，允许 5..2004（含四字节分包头）; frame.noise: 帧头前丢弃 3 个噪声字节
+PASS   : ProtocolTest::malformedLength(packet-header-only)
+QINFO  : ProtocolTest::malformedLength(over-local-frame-limit) REJECT length HEX= 06 07 07 d5 ERROR= frame.length: 数据字段长度 2005 无效，允许 5..2004（含四字节分包头）; frame.noise: 帧头前丢弃 3 个噪声字节
+PASS   : ProtocolTest::malformedLength(over-local-frame-limit)
+QINFO  : ProtocolTest::malformedLength(uint16-maximum) REJECT length HEX= 06 07 ff ff ERROR= frame.length: 数据字段长度 65535 无效，允许 5..2004（含四字节分包头）; frame.noise: 帧头前丢弃 3 个噪声字节
+PASS   : ProtocolTest::malformedLength(uint16-maximum)
+QINFO  : ProtocolTest::corruptChecksumAndRecovery() REJECT XOR RX HEX= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 10 08 09 ERROR= frame.xor: 数据字段 XOR 校验失败；重新查找帧头; frame.noise: 帧头前丢弃 31 个噪声字节 RECOVERED= Ts[1]
+PASS   : ProtocolTest::corruptChecksumAndRecovery()
+PASS   : ProtocolTest::corruptTrailerAndRecovery()
+PASS   : ProtocolTest::rejectWrongDirection()
+QINFO  : ProtocolTest::multipartLiterals() SYNTHETIC RX multipart #0= 06 07 00 0c 00 00 00 02 51 71 5b 32 5d 5b 31 5d 21 08 09 #1= 06 07 00 11 00 01 00 02 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 30 08 09 ASSEMBLED= Qq[2][1][123][2][456]
+PASS   : ProtocolTest::multipartLiterals()
+PASS   : ProtocolTest::duplicatePacket()
+PASS   : ProtocolTest::reorderedPacketsAndRecovery()
+PASS   : ProtocolTest::conflictingPacketAndRecovery()
+PASS   : ProtocolTest::inconsistentCountAndRecovery()
+PASS   : ProtocolTest::invalidPacketCount(zero-total)
+PASS   : ProtocolTest::invalidPacketCount(over-64-total)
+PASS   : ProtocolTest::invalidPacketCount(index-equals-total)
+PASS   : ProtocolTest::disconnectDropsPartialInput()
+PASS   : ProtocolTest::frameIdleTimeout()
+PASS   : ProtocolTest::assemblyIdleTimeout()
+PASS   : ProtocolTest::encoderLimits()
+PASS   : ProtocolTest::maximumMessageAndBoundedInput()
+QINFO  : ProtocolTest::repeatedMessagesDoNotGrow() SHORT codec repetition: messages=10000 inputBytes= 320000 elapsedMs= 2 remainingWireBytes= 0 remainingAssemblyBytes= 0
+PASS   : ProtocolTest::repeatedMessagesDoNotGrow()
+PASS   : ProtocolTest::defaultStatusJsonIsSafe()
+PASS   : ProtocolTest::publicStatusJsonBoundsAreSafe()
+QINFO  : ProtocolTest::statusFieldsAndEnums() STATUS fields= {"declared_general_count":25,"error_work_type":0,"evidence":"simulated-source-derived","general":{"door_normal":"1","door_open_ss":"0","dual_needle_working":"0","emergency_holes":"3","emergency_stop":"0","error_codes":"","error_work_type":"0","led_status":"1","main_period_ms":"10","main_status":"2","model":"SIMULATED","no_cup_test":"0","no_water_test":"0","plate_key":"0","protocol_marker":"LinuxNew","reagent_channels":"20","reagent_scanner":"1","sample_holes":"10","sample_scanner":"1","serial":"SIM-001","start_key":"0","temperature_normal":"1","test_channels":"18","version_check":"offline-v1","versions":"sim-v1|sim-v2"},"led_status":1,"main_status":2,"main_status_name":"ready","model":"SIMULATED","subsystems_raw":[]}
+PASS   : ProtocolTest::statusFieldsAndEnums()
+QINFO  : ProtocolTest::malformedStatus(empty) REJECT status PAYLOAD=  ERROR= status.command: 当前仅支持参考工程 Qj 状态消息
+PASS   : ProtocolTest::malformedStatus(empty)
+QINFO  : ProtocolTest::malformedStatus(not-status) REJECT status PAYLOAD= Qq[2][1][123][2][456] ERROR= status.command: 当前仅支持参考工程 Qj 状态消息
+PASS   : ProtocolTest::malformedStatus(not-status)
+QINFO  : ProtocolTest::malformedStatus(missing-closing-bracket) REJECT status PAYLOAD= Qj[4][SIMULATED][2][1][0][0 ERROR= status.syntax: 字段未结束或超过本地字段预算
+PASS   : ProtocolTest::malformedStatus(missing-closing-bracket)
+QINFO  : ProtocolTest::malformedStatus(nested-bracket) REJECT status PAYLOAD= Qj[4][SIM[ULATED][2][1][0][0] ERROR= status.syntax: 非法字符或字段超过本地1024字节预算
+PASS   : ProtocolTest::malformedStatus(nested-bracket)
+QINFO  : ProtocolTest::malformedStatus(missing-general-fields) REJECT status PAYLOAD= Qj[25][SIMULATED][2][1][0][0] ERROR= status.count: 需4至25个已知主字段及明确的子系统计数
+PASS   : ProtocolTest::malformedStatus(missing-general-fields)
+QINFO  : ProtocolTest::malformedStatus(negative-count) REJECT status PAYLOAD= Qj[-4][SIMULATED][2][1][0][0] ERROR= status.count: 需4至25个已知主字段及明确的子系统计数
+PASS   : ProtocolTest::malformedStatus(negative-count)
+QINFO  : ProtocolTest::malformedStatus(too-many-general-fields) REJECT status PAYLOAD= Qj[26][SIMULATED][2][1][0][0] ERROR= status.count: 需4至25个已知主字段及明确的子系统计数
+PASS   : ProtocolTest::malformedStatus(too-many-general-fields)
+QINFO  : ProtocolTest::malformedStatus(main-status-outside-enum) REJECT status PAYLOAD= Qj[4][SIMULATED][7][1][0][0] ERROR= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围
+PASS   : ProtocolTest::malformedStatus(main-status-outside-enum)
+QINFO  : ProtocolTest::malformedStatus(led-status-outside-enum) REJECT status PAYLOAD= Qj[4][SIMULATED][2][8][0][0] ERROR= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围
+PASS   : ProtocolTest::malformedStatus(led-status-outside-enum)
+QINFO  : ProtocolTest::malformedStatus(error-type-outside-enum) REJECT status PAYLOAD= Qj[4][SIMULATED][2][1][8][0] ERROR= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围
+PASS   : ProtocolTest::malformedStatus(error-type-outside-enum)
+QINFO  : ProtocolTest::malformedStatus(empty-model) REJECT status PAYLOAD= Qj[4][][2][1][0][0] ERROR= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围
+PASS   : ProtocolTest::malformedStatus(empty-model)
+QINFO  : ProtocolTest::malformedStatus(nonnumeric-status) REJECT status PAYLOAD= Qj[4][SIMULATED][ready][1][0][0] ERROR= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围
+PASS   : ProtocolTest::malformedStatus(nonnumeric-status)
+QINFO  : ProtocolTest::malformedStatus(overflow-numeric-status) REJECT status PAYLOAD= Qj[4][SIMULATED][999999999999999][1][0][0] ERROR= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围
+PASS   : ProtocolTest::malformedStatus(overflow-numeric-status)
+QINFO  : ProtocolTest::malformedStatus(missing-subsystem-count) REJECT status PAYLOAD= Qj[4][SIMULATED][2][1][0] ERROR= status.count: 需4至25个已知主字段及明确的子系统计数
+PASS   : ProtocolTest::malformedStatus(missing-subsystem-count)
+QINFO  : ProtocolTest::malformedStatus(too-many-subsystems) REJECT status PAYLOAD= Qj[4][SIMULATED][2][1][0][65] ERROR= status.subsystems: 子系统计数超过本地64块预算或非法
+PASS   : ProtocolTest::malformedStatus(too-many-subsystems)
+QINFO  : ProtocolTest::malformedStatus(truncated-subsystem) REJECT status PAYLOAD= Qj[4][SIMULATED][2][1][0][1][999][2][a] ERROR= status.subsystems: 子系统字段少于声明数量
+PASS   : ProtocolTest::malformedStatus(truncated-subsystem)
+QINFO  : ProtocolTest::malformedStatus(negative-subsystem-length) REJECT status PAYLOAD= Qj[4][SIMULATED][2][1][0][1][999][-1] ERROR= status.subsystems: 子系统头缺失或超过本地字段预算
+PASS   : ProtocolTest::malformedStatus(negative-subsystem-length)
+QINFO  : ProtocolTest::malformedStatus(trailing-unclaimed-field) REJECT status PAYLOAD= Qj[4][SIMULATED][2][1][0][0][extra] ERROR= status.count: 声明数量之外还有未归属字段
+PASS   : ProtocolTest::malformedStatus(trailing-unclaimed-field)
+QINFO  : ProtocolTest::malformedStatus(trailing-unbracketed-byte) REJECT status PAYLOAD= Qj[4][SIMULATED][2][1][0][0]x ERROR= status.syntax: 字段必须完整放在方括号内
+PASS   : ProtocolTest::malformedStatus(trailing-unbracketed-byte)
+QINFO  : ProtocolTest::malformedStatus(nonnumeric-channel-count) REJECT status PAYLOAD= Qj[25][SIMULATED][2][1][0][][1][0][1][sim-v1|sim-v2][SIM-001][0][0][0][offline-v1][0][0][1][1][10][LinuxNew][twenty][18][3][10][0][0] ERROR= status.number: 第21个主字段不是合法非负整数
+PASS   : ProtocolTest::malformedStatus(nonnumeric-channel-count)
+QINFO  : ProtocolTest::malformedStatus(oversized-field) REJECT status PAYLOAD= Qj[4][AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ERROR= status.syntax: 非法字符或字段超过本地1024字节预算
+PASS   : ProtocolTest::malformedStatus(oversized-field)
+QINFO  : ProtocolTest::unknownSubsystemKeepsRawValues() STATUS unknown-subsystem PAYLOAD= Qj[4][SIMULATED][2][1][0][2][999][3][alpha][][37.5][3][0] RAW= {"declared_general_count":4,"error_work_type":0,"evidence":"simulated-source-derived","general":{"error_work_type":"0","led_status":"1","main_status":"2","model":"SIMULATED"},"led_status":1,"main_status":2,"main_status_name":"ready","model":"SIMULATED","subsystems_raw":[{"id":999,"raw_fields":["alpha","","37.5"]},{"id":3,"raw_fields":[]}]}
+PASS   : ProtocolTest::unknownSubsystemKeepsRawValues()
+PASS   : ProtocolTest::sessionOnlyAcceptsStatus()
+PASS   : ProtocolTest::sessionDuplicateStatus()
+QINFO  : ProtocolTest::sessionRetryAndTimeout() SESSION only-read retry TX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 RETRY= session.retry: 仅模拟重试只读Qj，第1次 EXHAUSTED= session.timeout: Qj模拟重试已耗尽，状态失效
+PASS   : ProtocolTest::sessionRetryAndTimeout()
+PASS   : ProtocolTest::sessionReceiveAtDeadline()
+PASS   : ProtocolTest::invalidStatusNeverRefreshesSession()
+PASS   : ProtocolTest::sessionDisconnectDropsOldBytes()
+PASS   : ProtocolTest::sessionSilenceAndTimeReversal()
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 0 at_ms= 0 action= connect RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= connected-status-unknown NOTICES= session.connected: 模拟连接已建立，仪器状态未知
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 1 at_ms= 1 action= query-status RX_HEX=  TX_COUNT= 1 STATUS_COUNT= 0 STATE= awaiting-status NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 2 at_ms= 20 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809 TX_COUNT= 0 STATUS_COUNT= 1 STATE= has-simulated-status NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 3 at_ms= 21 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809 TX_COUNT= 0 STATUS_COUNT= 1 STATE= has-simulated-status NOTICES= status.repeated: 同值完整状态仍刷新；线上无消息ID，不能推定重传; status.uncorrelated: 作为最新观测值接收，不能证明属于哪次Qj请求
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 4 at_ms= 30 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c415445445d5b355d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d480809 TX_COUNT= 0 STATUS_COUNT= 1 STATE= has-simulated-status NOTICES= status.uncorrelated: 作为最新观测值接收，不能证明属于哪次Qj请求
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 5 at_ms= 40 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c415445445d5b365d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4b0809 TX_COUNT= 0 STATUS_COUNT= 1 STATE= has-simulated-status NOTICES= status.uncorrelated: 作为最新观测值接收，不能证明属于哪次Qj请求
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 6 at_ms= 50 action= query-status RX_HEX=  TX_COUNT= 1 STATUS_COUNT= 0 STATE= awaiting-status NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 7 at_ms= 60 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4e0809 TX_COUNT= 0 STATUS_COUNT= 0 STATE= awaiting-status NOTICES= frame.xor: 数据字段 XOR 校验失败；重新查找帧头; frame.noise: 丢弃 139 个非帧头字节
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 8 at_ms= 61 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809 TX_COUNT= 0 STATUS_COUNT= 1 STATE= has-simulated-status NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 9 at_ms= 70 action= disconnect RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= disconnected NOTICES= session.disconnected: 已清空半帧、组包、在途请求与旧状态
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 10 at_ms= 71 action= rx RX_HEX= 415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809 TX_COUNT= 0 STATUS_COUNT= 0 STATE= disconnected NOTICES= session.rx_rejected: 模拟断线期间不接收旧报文
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 11 at_ms= 80 action= connect RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= connected-status-unknown NOTICES= session.connected: 模拟连接已建立，仪器状态未知
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 12 at_ms= 81 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c TX_COUNT= 0 STATUS_COUNT= 0 STATE= connected-status-unknown NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 13 at_ms= 82 action= disconnect RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= disconnected NOTICES= session.disconnected: 已清空半帧、组包、在途请求与旧状态
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 14 at_ms= 83 action= connect RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= connected-status-unknown NOTICES= session.connected: 模拟连接已建立，仪器状态未知
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 15 at_ms= 84 action= query-status RX_HEX=  TX_COUNT= 1 STATUS_COUNT= 0 STATE= awaiting-status NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 16 at_ms= 85 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c415445445d5b355d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d480809 TX_COUNT= 0 STATUS_COUNT= 1 STATE= has-simulated-status NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 17 at_ms= 90 action= query-status RX_HEX=  TX_COUNT= 1 STATUS_COUNT= 0 STATE= awaiting-status NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 18 at_ms= 92 action= query-status RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= awaiting-status NOTICES= session.query_rejected: 未连接或已有Qj在途请求
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 19 at_ms= 1090 action= advance RX_HEX=  TX_COUNT= 1 STATUS_COUNT= 0 STATE= awaiting-status NOTICES= session.retry: 仅模拟重试只读Qj，第1次
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 20 at_ms= 2090 action= advance RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= status-timeout NOTICES= session.timeout: Qj模拟重试已耗尽，状态失效
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 21 at_ms= 200085 action= advance RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= disconnected NOTICES= session.silence: 200000ms无有效状态，模拟断线并清空旧状态
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 22 at_ms= 200090 action= connect RX_HEX=  TX_COUNT= 0 STATUS_COUNT= 0 STATE= connected-status-unknown NOTICES= session.connected: 模拟连接已建立，仪器状态未知
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 23 at_ms= 200091 action= query-status RX_HEX=  TX_COUNT= 1 STATUS_COUNT= 0 STATE= awaiting-status NOTICES= 
+QINFO  : ProtocolTest::replayFixture() REPLAY event= 24 at_ms= 200100 action= rx RX_HEX= 0607008500000001516a5b32355d5b53494d554c415445445d5b325d5b315d5b305d5b5d5b315d5b305d5b315d5b73696d2d76317c73696d2d76325d5b53494d2d3030315d5b305d5b305d5b305d5b6f66666c696e652d76315d5b305d5b305d5b315d5b315d5b31305d5b4c696e75784e65775d5b32305d5b31385d5b335d5b31305d5b305d5b305d4f0809 TX_COUNT= 0 STATUS_COUNT= 1 STATE= has-simulated-status NOTICES= 
+PASS   : ProtocolTest::replayFixture()
+PASS   : ProtocolTest::cleanupTestCase()
+Totals: 63 passed, 0 failed, 0 skipped, 0 blacklisted, 107ms
+********* Finished testing of ProtocolTest *********

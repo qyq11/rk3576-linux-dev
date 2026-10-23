@@ -1,0 +1,13 @@
+{
+  "schema": "sn100-quality-statistics-input-v1",
+  "evidence": "anonymous-handcrafted",
+  "description": "人工匿名金样本；不来自患者或仪器。expected仅供独立验收使用，CLI不会用它生成结果。CV是比值而非百分数。",
+  "series": [
+    {"id": "golden-8-10-12", "values": [8, 10, 12], "expected": {"mean": 10, "range": 4, "sample_variance": 4, "sample_stddev": 2, "cv_available": true, "legacy_cv_ratio": 0.19999999999998}},
+    {"id": "sample-not-population", "values": [1, 2, 3, 4], "expected": {"mean": 2.5, "range": 3, "sample_variance": 1.6666666666666667, "sample_stddev": 1.2909944487358056, "cv_available": true, "legacy_cv_ratio": 0.5163977794941156}},
+    {"id": "constant", "values": [7, 7, 7], "expected": {"mean": 7, "range": 0, "sample_variance": 0, "sample_stddev": 0, "cv_available": true, "legacy_cv_ratio": 0}},
+    {"id": "zero-mean", "values": [-1, 0, 1], "expected": {"mean": 0, "range": 2, "sample_variance": 1, "sample_stddev": 1, "cv_available": false, "legacy_cv_ratio": null}},
+    {"id": "singleton", "values": [9], "expected": {"mean": 9, "range": 0, "sample_variance": null, "sample_stddev": null, "cv_available": false, "legacy_cv_ratio": null}},
+    {"id": "negative-mean", "values": [-12, -10, -8], "expected": {"mean": -10, "range": 4, "sample_variance": 4, "sample_stddev": 2, "cv_available": true, "legacy_cv_ratio": -0.20000000000002}}
+  ]
+}

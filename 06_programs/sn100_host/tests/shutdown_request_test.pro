@@ -1,0 +1,10 @@
+QT += core gui widgets testlib
+CONFIG += c++14 console testcase warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = shutdown_request_test
+INCLUDEPATH += $$PWD/..
+SOURCES += $$PWD/shutdown_request_test.cpp $$PWD/../shell/shutdown_request.cpp
+HEADERS += $$PWD/../shell/shutdown_request.h
+MOC_DIR = .moc
+OBJECTS_DIR = .obj

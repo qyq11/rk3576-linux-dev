@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-23",
+  "environment": "Ubuntu-24.04/qyq, WSLg XCB, Qt5.15.13, original 1920x1080 canvas",
+  "installed_packages": {
+    "added": [
+      "dictionaries-common",
+      "emacsen-common",
+      "fcitx5",
+      "fcitx5-chinese-addons-data",
+      "fcitx5-data",
+      "fcitx5-frontend-qt5",
+      "fcitx5-module-punctuation:amd64",
+      "fcitx5-modules:amd64",
+      "fcitx5-pinyin:amd64",
+      "hunspell-en-us",
+      "libaspell15:amd64",
+      "libboost-iostreams1.83.0:amd64",
+      "libenchant-2-2:amd64",
+      "libfcitx5-qt-data",
+      "libfcitx5-qt1:amd64",
+      "libfcitx5config6:amd64",
+      "libfcitx5core7:amd64",
+      "libfcitx5utils2:amd64",
+      "libhunspell-1.7-0:amd64",
+      "libime-data",
+      "libime-data-language-model:amd64",
+      "libimecore0:amd64",
+      "libimepinyin0:amd64",
+      "libxcb-ewmh2:amd64",
+      "libxcb-imdkit1:amd64",
+      "libxkbfile1:amd64"
+    ],
+    "changed": [],
+    "removed": [],
+    "config_created": [
+      "/home/qyq/.config/fcitx5/profile",
+      "/home/qyq/.config/fcitx5/config"
+    ],
+    "exit_code": 0,
+    "first_attempt": "apt --no-download local deb install refused to fetch; no packages changed by that attempt",
+    "successful_method": "dpkg --install all 26 downloaded exact-version packages as WSL root; user configuration and GUI as qyq"
+  },
+  "verified": {
+    "user_confirmation": "User explicitly confirmed Chinese candidates after typing ceshi on their physical keyboard; guided Space then yiyuan/Space and Save.",
+    "saved_hospital_name": "测试医院",
+    "saved_rows": [
+      [
+        1,
+        "检验科",
+        "JYK",
+        "操作演示",
+        "keshi"
+      ]
+    ],
+    "integrity_check": "ok",
+    "qt_plugin_loaded": true,
+    "software_left_open": true,
+    "ordinary_user_processes": true,
+    "gui_exit_before_manual_entry": "user_demo_01 exited 0, all 3 stores closed and THREADS_STOPPED true",
+    "data_note": "User added an extra unsaved blank department row after hospital name save; left draft untouched. Database still contains one saved department."
+  },
+  "startup_adapter": "normal WSL GUI modes only; existing user D-Bus and Fcitx daemon reused, no --replace; WSLg-only disable=wayland for newly started daemon",
+  "failure_and_recovery": [
+    "apt --no-download refused local deb fetching; downloaded dependency closure then installed with dpkg successfully",
+    "default Fcitx Wayland frontend exited with permission to bind input_method denied; WSLg X11/D-Bus mode worked",
+    "Windows automation repeatedly detected concurrent user input; stopped issuing keys, user completed actual candidate selection and save"
+  ],
+  "measurements": {
+    "scope": "one 1-second sample per process, includes GUI observation activity; no performance threshold claim",
+    "processes": [
+      {
+        "pid": 501,
+        "name": "sn100_shell",
+        "uid": "1000\t1000\t1000\t1000",
+        "environment": {
+          "QT_QPA_PLATFORM": "xcb",
+          "QT_IM_MODULE": "fcitx",
+          "XMODIFIERS": "@im=fcitx",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "ime_libraries": [
+          "/usr/lib/x86_64-linux-gnu/qt5/plugins/platforminputcontexts/libfcitx5platforminputcontextplugin.so"
+        ],
+        "rss": "129760 kB",
+        "peak_rss": "138468 kB",
+        "pss": "114097 kB",
+        "threads": 9,
+        "fds": 21,
+        "cpu_percent_one_core_1s": 29.988
+      },
+      {
+        "pid": 587,
+        "name": "fcitx5",
+        "uid": "1000\t1000\t1000\t1000",
+        "environment": {
+          "QT_QPA_PLATFORM": null,
+          "QT_IM_MODULE": null,
+          "XMODIFIERS": null,
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "ime_libraries": [],
+        "rss": "67672 kB",
+        "peak_rss": "67672 kB",
+        "pss": "57404 kB",
+        "threads": 3,
+        "fds": 19,
+        "cpu_percent_one_core_1s": 0.0
+      }
+    ]
+  },
+  "not_verified": [
+    "RK/ARM runtime IME",
+    "instrument",
+    "Windows reference runtime",
+    "long-run/control coexistence",
+    "full Ubuntu reboot/autostart beyond application launcher"
+  ],
+  "sha256": {
+    "06_programs/sn100_host/wsl_ime.sh": "f4e93b805302d66d73c770791a803c1b9790c545e7e219a2c54741c517e144ef",
+    "06_programs/sn100_host/wsl.sh": "c2833c0fb6af60ec0bbd9177cd7200e3f8ec38ea3f97fb3a8fac4175355d576a",
+    "06_programs/sn100_host/shell/wsl.sh": "e7bc0e165efbacb7714e140604ba697367b55b76386f9874c25a4d334ec7d781",
+    "06_programs/sn100_host/history/wsl.sh": "c48c22acdfc3f03c21630ca3aa04aec1610a9746434e571dae88a4d777bf48df",
+    "temp/sn100_host/integration/wsl_release/sn100_shell": "8eaf9e912006eb7c4dc685895e4e42e78837aacce76d7625664fa66a3dd54a66",
+    "03_photos/20261023_sn100_hospital_pinyin_saved_01.png": "6bfa56242d19594c118971b0cfa67b9de0418123da5bab03bab37848413bea5c"
+  }
+}

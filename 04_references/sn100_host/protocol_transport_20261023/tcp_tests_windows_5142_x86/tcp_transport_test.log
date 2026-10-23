@@ -1,0 +1,41 @@
+********* Start testing of TcpTransportTest *********
+Config: Using QtTest library 5.14.2, Qt 5.14.2 (i386-little_endian-ilp32 shared (dynamic) release build; by GCC 7.3.0)
+PASS   : TcpTransportTest::initTestCase()
+QINFO  : TcpTransportTest::literalQueriesReachActualPeer() LOOPBACK actual peer RX generation= 1 HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6b 3b 04 05 02 03 00 06 00 00 00 01 51 48 18 04 05 PAYLOADS=Qj,Qk,QH
+PASS   : TcpTransportTest::literalQueriesReachActualPeer()
+QINFO  : TcpTransportTest::oneByteWriteQuantumPreservesQueueOrder() WRITE quantum=1 bytes= 39 actual peer ordered bytes verified; this does not force OS short writes
+PASS   : TcpTransportTest::oneByteWriteQuantumPreservesQueueOrder()
+PASS   : TcpTransportTest::fragmentedReceive(header-byte)
+PASS   : TcpTransportTest::fragmentedReceive(length)
+PASS   : TcpTransportTest::fragmentedReceive(packet-index)
+PASS   : TcpTransportTest::fragmentedReceive(payload)
+PASS   : TcpTransportTest::fragmentedReceive(trailer)
+QINFO  : TcpTransportTest::bytewiseReceive() LOOPBACK actual transport RX generation= 1 HEX= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 PAYLOAD= Qq[2][1][123][2][456]
+PASS   : TcpTransportTest::bytewiseReceive()
+PASS   : TcpTransportTest::coalescedReceive()
+QINFO  : TcpTransportTest::checksumErrorThenRecovery() LOOPBACK bad-XOR then recovery input= 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 10 08 09 06 07 00 19 00 00 00 01 51 71 5b 32 5d 5b 31 5d 5b 31 32 33 5d 5b 32 5d 5b 34 35 36 5d 11 08 09 ERROR= frame.xor: 数据字段 XOR 校验失败；重新查找帧头 OUTPUT= Qq[2][1][123][2][456]
+PASS   : TcpTransportTest::checksumErrorThenRecovery()
+PASS   : TcpTransportTest::multipartReceive()
+QINFO  : TcpTransportTest::maximumMessageAcrossReceiveChunks() MAXIMUM RX message_bytes= 128000 wire_bytes= 128704 packets= 64 decoded_message_count= 1
+PASS   : TcpTransportTest::maximumMessageAcrossReceiveChunks()
+QINFO  : TcpTransportTest::disconnectClearsHalfFrame() HALF-FRAME old generation= 1 new generation= 3 old tail rejected; new full frame accepted
+PASS   : TcpTransportTest::disconnectClearsHalfFrame()
+PASS   : TcpTransportTest::disconnectClearsMultipartAssembly()
+PASS   : TcpTransportTest::explicitCloseDropsQueuedWrites()
+PASS   : TcpTransportTest::reconnectDoesNotPublishOldCallbacks()
+PASS   : TcpTransportTest::messageReceiverCanCloseTransport()
+QINFO  : TcpTransportTest::queueBudgetRejectsWholeQuery() QUEUE budget=20 accepted=13 rejected=13 partial-rejected-bytes=0; capacity restored after drain
+PASS   : TcpTransportTest::queueBudgetRejectsWholeQuery()
+PASS   : TcpTransportTest::budgetSmallerThanOneFrameRejectsWholeQuery()
+PASS   : TcpTransportTest::disconnectedAndInvalidQueriesAreRejected()
+PASS   : TcpTransportTest::invalidPortDoesNotConnect()
+QINFO  : TcpTransportTest::refusedConnectionReportsFailure() LOOPBACK reserved-then-closed port failure generation= 2 ERROR= "transport.connect_timeout: 回环连接超过本地100ms预算"
+PASS   : TcpTransportTest::refusedConnectionReportsFailure()
+PASS   : TcpTransportTest::peerCloseIsVisibleAndNoAutomaticReconnect()
+QINFO  : TcpTransportTest::finalBurstBeforePeerFinIsDrained() FINAL BURST generation= 1 sent_frames= 2000 sent_wire_bytes= 64000 observed_wire_bytes= 64000 received_frames= 2000 lost_frames= 0
+PASS   : TcpTransportTest::finalBurstBeforePeerFinIsDrained()
+QINFO  : TcpTransportTest::eventLoopHeartbeatUnderNetworkLoad() NETWORK load messages= 2000 bytes= 64000 elapsed_ms= 132 heartbeat_period_ms=1 samples= 90 maximum_gap_ms= 3.8131
+PASS   : TcpTransportTest::eventLoopHeartbeatUnderNetworkLoad()
+PASS   : TcpTransportTest::cleanupTestCase()
+Totals: 27 passed, 0 failed, 0 skipped, 0 blacklisted, 1188ms
+********* Finished testing of TcpTransportTest *********

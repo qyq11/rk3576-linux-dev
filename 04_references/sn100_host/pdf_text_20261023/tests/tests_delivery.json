@@ -1,0 +1,33 @@
+{
+  "source_fingerprints": {
+    "06_programs/sn100_host/tests/history_pdf_text_test.cpp": "9a8a7e98e5c90af1ab96f84bbc9c0d6ba4fddfa88ed26c1ebda1a3a7ada6f5e5",
+    "06_programs/sn100_host/tests/history_pdf_text_test.pro": "b6c0d855adf21f6edcd1c8facda2926aef4faca22d1cbdad7a3f9958a35123ce",
+    "06_programs/sn100_host/tests/history_pdf_mapping_test.cpp": "e3b6ee3996d080ebf923e0fa1c0adbd5d0bc6fa79f7e11857b152d998f1547c2",
+    "06_programs/sn100_host/tests/history_pdf_mapping_test.pro": "7fa3b884ffbba5b7e70fb54ecc0d2d2c9148b6e93d34160d99cf3303a51177df",
+    "06_programs/sn100_host/tests/verify_history_pdf_text.py": "928bdc7d16449a63913ceb8529870c1c73590b0b4a02d1451b2de1b6d836ef3a"
+  },
+  "mapper_run": "temp/sn100_host/history/pdf_text_tests/mapping_offpage_final_03_qttest.txt",
+  "mapper_result": "16 passed, 0 failed, 388ms; native Qt5.15.13 x86_64 offscreen; final 64KiB qUncompress hint, compressed-content mapper",
+  "mapper_fixture": "temp/sn100_host/history/pdf_text_20261023/raw_offpage_values.pdf",
+  "mapper_fixture_sha256": "c3b77d608bf1d0199e02eaa497ad50e3940582b563f91150c80da66198e94fd5",
+  "comparison": "Exact Unicode; ignore layout whitespace only; no normalization or radical substitution",
+  "positive_parser_controls": [
+    "windows_values_positive.json",
+    "windows_rows64_positive_repeated_fields.json"
+  ],
+  "negative_parser_controls": [
+    "baseline_values_negative.json",
+    "baseline_rows64_negative.json"
+  ],
+  "prepared_optional_scripts": [
+    "compare_pdf_images.py",
+    "measure_renderer.py"
+  ],
+  "runtime_scope": "Tests only: anonymous fixture, no visible GUI, device, network, SQL, physical print or deployment.",
+  "historical_mapper_run": "temp/sn100_host/history/pdf_text_tests/mapping_04_qttest.txt: transparent-marker protocol, kept as previous evidence",
+  "mapper_source_sha256": "2b8e964c9d1572d9f4b5cb7585db1bb89d2efbb8c8d77833d3b0411de19c9de7",
+  "ligature_parser_correction": "run3 existing PDF: raw pypdf/pdfplumber chars/ToUnicode preserve FB03/FB01; disable pdfplumber expand_ligatures and unicode_norm for extraction; no PDF regeneration; strict both-parser recheck passed",
+  "mapper_header_sha256": "c11e310d26c07045d2a38cdd3873ee7f34fbde4ffe5a68f157cd27ae19c65aae",
+  "final_build_log": "temp/sn100_host/history/pdf_text_tests/mapping_offpage_final_03_build.log",
+  "final_mapper_run_exit_code": 0
+}

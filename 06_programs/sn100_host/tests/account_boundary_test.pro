@@ -1,0 +1,11 @@
+QT += core sql testlib
+QT -= gui network
+CONFIG += c++14 console testcase warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = account_boundary_test
+INCLUDEPATH += $$PWD/..
+SOURCES += account_boundary_test.cpp ../data/account_store.cpp
+HEADERS += ../data/account_store.h
+MOC_DIR = .moc
+OBJECTS_DIR = .obj

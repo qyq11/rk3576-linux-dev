@@ -1,0 +1,416 @@
+{
+  "module": "O02-1 anonymous offline account settings",
+  "original_ui": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.ui",
+  "migrated_ui": "06_programs/sn100_host/ui/frmaccountsetting.ui",
+  "original_ui_sha256": "d347bf5ec32f92aca06e04a73bdecb1e693948436ce0351481b1dcb836759998",
+  "migrated_ui_sha256": "712bd653374198a142672a70df9baf9a8dbbfb88e14fb129528b17899d0a35a8",
+  "font_substitution_only_text_content": true,
+  "widget_count": 40,
+  "all_widgets_preserved": true,
+  "all_xml_geometry_equal": true,
+  "all_local_qss_equal_except_font": true,
+  "runtime_host": {
+    "source_root": "1471x881",
+    "left_group": "tbl_Account: x10,y30,w391,h811",
+    "right_group": "widget: x410,y30,w641,h811",
+    "minimum": "1061x861",
+    "recommended": "1200x900",
+    "adaptation": "resizeEvent translates both root groups by the same max(0,(hostWidth-1061)/2) horizontal offset; y30 and all sizes/internal coordinates remain unchanged.",
+    "no_added_business_controls": true
+  },
+  "dynamic_style_sources": [
+    "frmuserset/frmaccountsetting.cpp constructor: wgtTabs_2 dynamic style",
+    "public/stylecolor.cpp: comboboxStyle::setStrSheet/getStrSheet",
+    "frmuserset/frmuserset.cpp: inherited buttonStyle and white parent context",
+    "public/stylecolor.cpp: buttonStyle::setStrSheet",
+    "bin/theme_config.ini: shipped reference match/button/list colors"
+  ],
+  "resource": "Original combo arrow alias :/image/arrow_drop_down.svg supplied by root resources.qrc",
+  "preserved_source_behaviors": [
+    "role 1..4 list hides roles >=4; Administrator list hides roles >=5; Guest list hidden",
+    "Role options 1..currentRole capped at Engineer 4; Administrator update index 4 invalid -> role lookup 0",
+    "Double click sets Add/Del/Update/Update2 names only, including read-only update names of another target",
+    "Update-page entry resets target to current name and marks both names read-only",
+    "Running-state update rejects equal selectedIndex/currentRole-1 as written, despite contrary original comment",
+    "New password may be empty; update always logs out; deleting current actor logs out",
+    "Original username QRegExp ^[A-Za-z0-9].{16}$ retained, including intermediate-value submission semantics",
+    "Table row height 41 and body 13pt retained; original hidden headers and local QSS retained"
+  ],
+  "necessary_differences": [
+    "AccountStore worker replaces blocking original DAL/global state; explicit simulated AccountSession/actionReady replaces implicit login/instrument globals",
+    "Worker clears committed session before success acknowledgement; UI reloads sanitized rows before operationFinished(true)",
+    "Session switch/logout/close clears transient password fields; ordinary add/remove only clear their original action fields",
+    "Original repeated per-row double-click connections replaced with one constructor connection, preserving the same text result",
+    "SqlBase member was used only for unused connection-string assignment in this page and is not brought into this slice",
+    "One in-flight storage request disables original input groups; busy close is rejected until result",
+    "Original CusMessageBox/CusDialogMask content, semantic PNGs and 280 ms animation are now extracted; host-only bounds, QRC paths, font fallback and Material-close ripple omission are recorded separately in dialog_visual_comparison.json"
+  ],
+  "pending": [
+    "Original Windows active theme and actual modal/button/native rendering still require runtime screenshot comparison",
+    "Original update busy comment/condition conflict, empty-password and Administrator role0 behavior remain explicitly preserved pending full original runtime requirements",
+    "RK display/input/resources, instrument context integration and long-duration behavior remain pending",
+    "Original role0 role-table label was not read; current roleName(0) preserves the original no-match empty-string default, not an invented translated label."
+  ],
+  "widgets": [
+    {
+      "object_name": "frmAccountSetting",
+      "class": "QWidget",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>0</x><y>0</y><width>1471</width><height>881</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>0</x><y>0</y><width>1471</width><height>881</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "widget",
+      "class": "QWidget",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>410</x><y>30</y><width>641</width><height>811</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>410</x><y>30</y><width>641</width><height>811</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "wgtTabs_2",
+      "class": "QWidget",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>0</x><y>0</y><width>761</width><height>54</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>0</x><y>0</y><width>761</width><height>54</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "btnMenuAdd",
+      "class": "QPushButton",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>0</x><y>0</y><width>207</width><height>54</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>0</x><y>0</y><width>207</width><height>54</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "btnMenuDel",
+      "class": "QPushButton",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>210</x><y>0</y><width>207</width><height>54</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>210</x><y>0</y><width>207</width><height>54</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "btnMenuChange",
+      "class": "QPushButton",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>430</x><y>0</y><width>207</width><height>54</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>430</x><y>0</y><width>207</width><height>54</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "stkAccount",
+      "class": "QStackedWidget",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>10</x><y>70</y><width>631</width><height>621</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>10</x><y>70</y><width>631</width><height>621</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "page",
+      "class": "QWidget",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "",
+      "migrated_geometry_xml": "",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "cbxTypeSelectAdd",
+      "class": "QComboBox",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>330</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>330</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtUserNameAdd",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>120</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>120</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_5",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>197</y><width>81</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>197</y><width>81</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_6",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>337</y><width>81</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>337</y><width>81</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_4",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>130</y><width>81</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>130</y><width>81</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtPasswordAdd",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>190</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>190</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "btnAdd",
+      "class": "QPushButton",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>430</y><width>401</width><height>61</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>430</y><width>401</width><height>61</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_28",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>268</y><width>81</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>268</y><width>81</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtPasswordAgainAdd",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>260</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>260</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "page_2",
+      "class": "QWidget",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "",
+      "migrated_geometry_xml": "",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtUserNameDel",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>190</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>190</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "btnDel",
+      "class": "QPushButton",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>360</y><width>401</width><height>61</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>360</y><width>401</width><height>61</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_20",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>270</y><width>81</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>270</y><width>81</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_21",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>200</y><width>81</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>200</y><width>81</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtPasswordDel",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>260</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>260</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "page_5",
+      "class": "QWidget",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "",
+      "migrated_geometry_xml": "",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_25",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>50</y><width>101</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>50</y><width>101</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtUserNameUpdate",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>40</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>40</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtUserPasswordUpdate",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>100</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>100</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_26",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>110</y><width>111</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>110</y><width>111</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_27",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>420</y><width>111</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>420</y><width>111</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "cbxTypeSelectUpdate",
+      "class": "QComboBox",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>410</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>410</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtUserNameUpdate2",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>230</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>230</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_29",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>300</y><width>111</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>300</y><width>111</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtUserPasswordUpdate2",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>290</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>290</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_30",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>240</y><width>101</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>240</y><width>101</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "btnUpdate",
+      "class": "QPushButton",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>500</y><width>401</width><height>61</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>500</y><width>401</width><height>61</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_31",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>320</x><y>160</y><width>41</width><height>61</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>320</x><y>160</y><width>41</width><height>61</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "ldtUserPasswordUpdate3",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>350</y><width>321</width><height>51</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>190</x><y>350</y><width>321</width><height>51</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "label_32",
+      "class": "QLabel",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>360</y><width>111</width><height>36</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>110</x><y>360</y><width>111</width><height>36</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "lineEdit",
+      "class": "QLineEdit",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>0</x><y>50</y><width>801</width><height>20</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>0</x><y>50</y><width>801</width><height>20</height></rect></property>",
+      "style_equal_except_font": true
+    },
+    {
+      "object_name": "tbl_Account",
+      "class": "QTableWidget",
+      "preserved": true,
+      "geometry_equal": true,
+      "original_geometry_xml": "<property name=\"geometry\"><rect><x>10</x><y>30</y><width>391</width><height>811</height></rect></property>",
+      "migrated_geometry_xml": "<property name=\"geometry\"><rect><x>10</x><y>30</y><width>391</width><height>811</height></rect></property>",
+      "style_equal_except_font": true
+    }
+  ]
+}

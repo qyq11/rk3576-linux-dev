@@ -1,0 +1,59 @@
+{
+  "schema": "sn100-o04-anonymous-v1",
+  "source": "Hand-written synthetic offline fixture; no patient, production database, clinical reference or vendor project configuration was used.",
+  "date": "2026-10-23",
+  "expected": {
+    "visibleReports": 5,
+    "dayReportIds": [2, 3, 4],
+    "allCsvRows": 6,
+    "dayCsvRows": 4,
+    "note": "Column labels, precision and scaling below are explicit test inputs, not validated SN100 instrument settings. Unknown RAWX precision is intentionally preserved verbatim."
+  },
+  "columns": [
+    {"project": "PT", "resultType": 1, "label": "PT", "unit": "s", "decimals": 1, "factor": 1},
+    {"project": "PT", "resultType": 4, "label": "INR", "unit": "", "decimals": 2, "factor": 1},
+    {"project": "APTT", "resultType": 1, "label": "APTT", "unit": "s", "decimals": 2, "factor": 1},
+    {"project": "FIB", "resultType": 2, "label": "FIB", "unit": "g/L", "decimals": 2, "factor": 1},
+    {"project": "D-D", "resultType": 2, "label": "D-D", "unit": "ng/mL", "decimals": 3, "factor": 1000},
+    {"project": "RAWX", "resultType": 1, "label": "RAWX", "unit": "", "decimals": -1, "factor": 1}
+  ],
+  "reports": [
+    {
+      "id": 1, "rowId": 101, "sampleNumber": 1, "barcode": "ANON-001", "dateTime": "2026-10-22T23:59:59", "visible": true, "state": "匿名完成",
+      "patient": {"name": "匿名一号", "sex": 0, "age": 20, "department": "匿名科室", "patientType": "匿名门诊", "applicationSerial": "TEST-A001", "bedNumber": "测试床1", "examiner": "测试检验员", "sender": "测试送检员", "auditor": "测试审核员", "remark": "日期左边界外一秒"},
+      "results": [{"taskId": 1001, "project": "PT", "testedAt": "2026-10-22T23:59:59", "abnormalType": "", "values": {"1": "11.25", "4": "1.00"}}]
+    },
+    {
+      "id": 2, "rowId": 102, "sampleNumber": 2, "barcode": "ANON-002", "dateTime": "2026-10-23T00:00:00", "visible": true, "state": "匿名完成",
+      "patient": {"name": "匿名二号", "sex": 1, "age": 30, "department": "匿名科室", "patientType": "匿名住院", "applicationSerial": "TEST-A002", "bedNumber": "测试床2", "examiner": "测试检验员", "sender": "测试送检员", "auditor": "测试审核员", "remark": "日期起点包含"},
+      "results": [{"taskId": 1002, "project": "APTT", "testedAt": "2026-10-23T00:00:00", "abnormalType": "", "values": {"1": "0"}}]
+    },
+    {
+      "id": 3, "rowId": 103, "sampleNumber": 3, "barcode": "ANON,\"003", "dateTime": "2026-10-23T12:34:56", "visible": true, "state": "匿名复测",
+      "patient": {"name": "匿名,\"三号\"\n换行", "sex": -1, "age": 0, "department": "匿名科室'甲", "patientType": "匿名类型", "applicationSerial": "TEST-'003", "bedNumber": "测试床,3", "examiner": "测试检验'员", "sender": "测试送检\"员", "auditor": "测试审核员", "remark": "匿名备注第一行\n第二行,含\"引号\"和'单引号"},
+      "results": [
+        {"taskId": 1003, "project": "PT", "testedAt": "2026-10-23T12:30:01", "abnormalType": "", "values": {"1": "12.34", "4": "1.236"}},
+        {"taskId": 1004, "project": "PT", "testedAt": "2026-10-23T12:31:02", "abnormalType": "匿名复测", "values": {"1": "13.46", "4": "1.111"}},
+        {"taskId": 1005, "project": "APTT", "testedAt": "2026-10-23T12:32:03", "abnormalType": "", "values": {"1": "35.678"}},
+        {"taskId": 1006, "project": "FIB", "testedAt": "2026-10-23T12:33:04", "abnormalType": "", "values": {"2": "2.345"}},
+        {"taskId": 1007, "project": "D-D", "testedAt": "2026-10-23T12:34:05", "abnormalType": "", "values": {"2": "0.123456"}},
+        {"taskId": 1008, "project": "RAWX", "testedAt": "2026-10-23T12:34:06", "abnormalType": "", "values": {"1": "待确认,\"raw\"\nnext"}}
+      ]
+    },
+    {
+      "id": 4, "rowId": 104, "sampleNumber": 4, "barcode": "ANON-004", "dateTime": "2026-10-23T23:59:59", "visible": true, "state": "匿名异常",
+      "patient": {"name": "匿名四号", "sex": 0, "age": 40, "department": "匿名科室", "patientType": "匿名门诊", "applicationSerial": "TEST-A004", "bedNumber": "测试床4", "examiner": "测试检验员", "sender": "测试送检员", "auditor": "测试审核员", "remark": "日期终点包含；非法数值必须显示****"},
+      "results": [{"taskId": 1009, "project": "PT", "testedAt": "2026-10-23T23:59:59", "abnormalType": "匿名无效", "values": {"1": "INVALID", "4": "nan"}}]
+    },
+    {
+      "id": 5, "rowId": 105, "sampleNumber": 5, "barcode": "ANON-005", "dateTime": "2026-10-24T00:00:00", "visible": true, "state": "匿名完成",
+      "patient": {"name": "匿名五号", "sex": 1, "age": 50, "department": "匿名科室", "patientType": "匿名住院", "applicationSerial": "TEST-A005", "bedNumber": "测试床5", "examiner": "测试检验员", "sender": "测试送检员", "auditor": "测试审核员", "remark": "日期右边界外一秒"},
+      "results": [{"taskId": 1010, "project": "FIB", "testedAt": "2026-10-24T00:00:00", "abnormalType": "", "values": {"2": "3.14159"}}]
+    },
+    {
+      "id": 6, "rowId": 106, "sampleNumber": 6, "barcode": "ANON-HIDDEN", "dateTime": "2026-10-23T12:00:00", "visible": false, "state": "匿名隐藏",
+      "patient": {"name": "匿名隐藏样本", "sex": -1, "age": 0, "department": "", "patientType": "", "applicationSerial": "", "bedNumber": "", "examiner": "", "sender": "", "auditor": "", "remark": "visible=0必须不出现在查询、明细、保存或CSV"},
+      "results": [{"taskId": 1011, "project": "PT", "testedAt": "2026-10-23T12:00:00", "abnormalType": "", "values": {"1": "99.9", "4": "9.99"}}]
+    }
+  ]
+}

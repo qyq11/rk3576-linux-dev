@@ -1,0 +1,41 @@
+{
+  "groups": {
+    "btnAdd_success": {
+      "samples": 51,
+      "p95_ms": 658.45804,
+      "maximum_ms": 663.167183
+    },
+    "btnAdd_request_to_commit": {
+      "samples": 51,
+      "p95_ms": 55.499475,
+      "maximum_ms": 61.846211
+    },
+    "btnAdd_status_feedback": {
+      "samples": 51,
+      "p95_ms": 1.531741,
+      "maximum_ms": 2.907269
+    },
+    "btnDel_success": {
+      "samples": 50,
+      "p95_ms": 1243.856587,
+      "maximum_ms": 1244.595098
+    },
+    "btnDel_request_to_commit": {
+      "samples": 50,
+      "p95_ms": 56.255719,
+      "maximum_ms": 61.113266
+    },
+    "btnDel_status_feedback": {
+      "samples": 50,
+      "p95_ms": 592.266763,
+      "maximum_ms": 597.836465
+    }
+  },
+  "timer": {
+    "timer_gap_max_ms": 52.2313,
+    "timer_gap_p95_ms": 11.097994,
+    "timer_interval_ms": 10,
+    "timer_samples": 11531
+  },
+  "scope": "WSL Release/XCB. success total includes original 280ms opening + 280ms closing and automated acknowledgement; deletion also includes confirmation dialog. request_to_commit excludes confirmation/acknowledgement animation. status_feedback is a status signal, and deletion status occurs after confirmation. This is not original Windows/RK/long stability acceptance."
+}

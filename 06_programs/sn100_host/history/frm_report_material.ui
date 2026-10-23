@@ -1,0 +1,991 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+  <class>frmReportMaterial</class>
+  <widget class="QWidget" name="frmReportMaterial">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1751</width>
+        <height>968</height>
+      </rect>
+    </property>
+    <property name="font">
+      <font>
+        <family>Noto Sans CJK SC</family>
+        <pointsize>12</pointsize>
+      </font>
+    </property>
+    <property name="windowTitle">
+      <string>Form</string>
+    </property>
+    <widget class="QWidget" name="wgtReport" native="true">
+      <property name="geometry">
+        <rect>
+          <x>19</x>
+          <y>20</y>
+          <width>1481</width>
+          <height>921</height>
+        </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+          <number>1</number>
+        </property>
+        <property name="leftMargin">
+          <number>1</number>
+        </property>
+        <property name="topMargin">
+          <number>1</number>
+        </property>
+        <property name="rightMargin">
+          <number>1</number>
+        </property>
+        <property name="bottomMargin">
+          <number>1</number>
+        </property>
+        <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="spacing">
+              <number>0</number>
+            </property>
+            <property name="leftMargin">
+              <number>5</number>
+            </property>
+            <property name="topMargin">
+              <number>5</number>
+            </property>
+            <property name="rightMargin">
+              <number>5</number>
+            </property>
+            <item>
+              <widget class="QTableWidget" name="tableResultReportOne">
+                <property name="maximumSize">
+                  <size>
+                    <width>504</width>
+                    <height>16777215</height>
+                  </size>
+                </property>
+                <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="styleSheet">
+                  <string notr="true">
+QHeaderView{
+	background-color: transparent;
+}
+QHeaderView::section {	
+	color: #444444;
+	font:bold 28px "Noto Sans CJK SC";
+	text-align:left;
+	height:40px;
+	background-color: transparent;
+	border:1px solid #DDDDDD;
+	border-left:none;
+	border-right:none;
+	border-top:none;
+}
+QTableView::item:selected{
+        background:#B7D7FF;    
+}
+
+QTableWidget{
+gridline-color :#D6D6D6;
+background-color: transparent;
+alternate-background-color: #EEEEEE;
+}
+</string>
+                </property>
+                <property name="alternatingRowColors">
+                  <bool>true</bool>
+                </property>
+                <property name="showGrid">
+                  <bool>true</bool>
+                </property>
+                <property name="rowCount">
+                  <number>0</number>
+                </property>
+                <property name="columnCount">
+                  <number>0</number>
+                </property>
+                <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>170</number>
+                </attribute>
+                <attribute name="horizontalHeaderStretchLastSection">
+                  <bool>true</bool>
+                </attribute>
+                <attribute name="verticalHeaderVisible">
+                  <bool>false</bool>
+                </attribute>
+              </widget>
+            </item>
+            <item>
+              <widget class="QTableWidget" name="tablePatientInfo">
+                <property name="minimumSize">
+                  <size>
+                    <width>0</width>
+                    <height>0</height>
+                  </size>
+                </property>
+                <property name="maximumSize">
+                  <size>
+                    <width>16777215</width>
+                    <height>16777215</height>
+                  </size>
+                </property>
+                <property name="styleSheet">
+                  <string notr="true">
+QHeaderView{
+	background-color: transparent;
+}
+QHeaderView::section {	
+	color: #444444;
+	font:bold 28px "Noto Sans CJK SC";
+	text-align:left;
+	height:40px;
+	background-color: transparent;
+	border:1px solid #DDDDDD;
+	border-left:none;
+	border-right:none;
+	border-top:none;
+}
+QTableView::item:selected{
+        background:#B7D7FF;    
+}
+
+QTableWidget{
+gridline-color :#D6D6D6;
+background-color: transparent;
+alternate-background-color: #EEEEEE;
+}
+</string>
+                </property>
+                <property name="alternatingRowColors">
+                  <bool>true</bool>
+                </property>
+                <attribute name="verticalHeaderVisible">
+                  <bool>false</bool>
+                </attribute>
+              </widget>
+            </item>
+            <item>
+              <widget class="QTableWidget" name="tableResultReport">
+                <property name="minimumSize">
+                  <size>
+                    <width>0</width>
+                    <height>845</height>
+                  </size>
+                </property>
+                <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="styleSheet">
+                  <string notr="true">
+QHeaderView{
+	background-color: transparent;
+}
+QHeaderView::section {	
+	color: #444444;
+	font:bold 28px "Noto Sans CJK SC";
+	text-align:left;
+	height:40px;
+	background-color: transparent;
+	border:1px solid #DDDDDD;
+	border-left:none;
+	border-right:none;
+	border-top:none;
+}
+QTableView::item:selected{
+        background:#B7D7FF;    
+}
+
+QTableWidget{
+gridline-color :#D6D6D6;
+background-color: transparent;
+alternate-background-color: #EEEEEE;
+}
+</string>
+                </property>
+                <property name="alternatingRowColors">
+                  <bool>true</bool>
+                </property>
+                <attribute name="verticalHeaderVisible">
+                  <bool>false</bool>
+                </attribute>
+              </widget>
+            </item>
+          </layout>
+        </item>
+        <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="spacing">
+              <number>0</number>
+            </property>
+            <item>
+              <widget class="QWidget" name="widget" native="true">
+                <property name="minimumSize">
+                  <size>
+                    <width>40</width>
+                    <height>65</height>
+                  </size>
+                </property>
+                <widget class="QPushButton" name="btnPrvRow">
+                  <property name="geometry">
+                    <rect>
+                      <x>160</x>
+                      <y>0</y>
+                      <width>51</width>
+                      <height>51</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>0</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>12</pointsize>
+                    </font>
+                  </property>
+                  <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="styleSheet">
+                    <string notr="true">.QPushButton{
+	border-image: url(:/image/uprow_normal.png);
+}
+.QPushButton:hover
+{
+    border-image: url(:/image/uprow_hover.png);
+}
+.QPushButton:pressed
+{
+	border-image: url(:/image/uprow_pressed.png);
+}</string>
+                  </property>
+                  <property name="text">
+                    <string></string>
+                  </property>
+                  <property name="iconSize">
+                    <size>
+                      <width>38</width>
+                      <height>38</height>
+                    </size>
+                  </property>
+                  <property name="flat">
+                    <bool>true</bool>
+                  </property>
+                </widget>
+                <widget class="QLabel" name="label_3">
+                  <property name="geometry">
+                    <rect>
+                      <x>600</x>
+                      <y>-4</y>
+                      <width>31</width>
+                      <height>60</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>38</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>16</pointsize>
+                    </font>
+                  </property>
+                  <property name="text">
+                    <string>页</string>
+                  </property>
+                </widget>
+                <widget class="QLabel" name="lblTotalPage">
+                  <property name="geometry">
+                    <rect>
+                      <x>500</x>
+                      <y>-4</y>
+                      <width>80</width>
+                      <height>60</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>80</width>
+                      <height>38</height>
+                    </size>
+                  </property>
+                  <property name="maximumSize">
+                    <size>
+                      <width>100</width>
+                      <height>16777215</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>16</pointsize>
+                    </font>
+                  </property>
+                  <property name="text">
+                    <string>1</string>
+                  </property>
+                  <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                  </property>
+                </widget>
+                <widget class="QLabel" name="label">
+                  <property name="geometry">
+                    <rect>
+                      <x>440</x>
+                      <y>-4</y>
+                      <width>41</width>
+                      <height>60</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>38</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>16</pointsize>
+                    </font>
+                  </property>
+                  <property name="text">
+                    <string>共</string>
+                  </property>
+                  <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                </widget>
+                <widget class="QPushButton" name="btnFirstPage">
+                  <property name="geometry">
+                    <rect>
+                      <x>20</x>
+                      <y>0</y>
+                      <width>51</width>
+                      <height>51</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>0</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>12</pointsize>
+                    </font>
+                  </property>
+                  <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="styleSheet">
+                    <string notr="true">.QPushButton{
+	border-image: url(:/image/toppage_normal.png);
+}
+.QPushButton:hover
+{
+    border-image: url(:/image/toppage_hover.png);
+}
+.QPushButton:pressed
+{
+	border-image: url(:/image/toppage_pressed.png);
+}</string>
+                  </property>
+                  <property name="text">
+                    <string></string>
+                  </property>
+                </widget>
+                <widget class="QLabel" name="label_4">
+                  <property name="geometry">
+                    <rect>
+                      <x>220</x>
+                      <y>-4</y>
+                      <width>51</width>
+                      <height>60</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>38</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>16</pointsize>
+                    </font>
+                  </property>
+                  <property name="text">
+                    <string>第</string>
+                  </property>
+                  <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                </widget>
+                <widget class="QPushButton" name="btnNextPage">
+                  <property name="geometry">
+                    <rect>
+                      <x>730</x>
+                      <y>0</y>
+                      <width>51</width>
+                      <height>51</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>0</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>12</pointsize>
+                    </font>
+                  </property>
+                  <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="styleSheet">
+                    <string notr="true">.QPushButton{
+	border-image: url(:/image/downpage_normal.png);
+}
+.QPushButton:hover
+{
+    border-image: url(:/image/downpage_hover.png);
+}
+.QPushButton:pressed
+{
+	border-image: url(:/image/downpage_pressed.png);
+}</string>
+                  </property>
+                  <property name="text">
+                    <string></string>
+                  </property>
+                </widget>
+                <widget class="QPushButton" name="btnLastPage">
+                  <property name="geometry">
+                    <rect>
+                      <x>800</x>
+                      <y>0</y>
+                      <width>51</width>
+                      <height>51</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>0</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>12</pointsize>
+                    </font>
+                  </property>
+                  <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="styleSheet">
+                    <string notr="true">.QPushButton{
+	border-image: url(:/image/bottompage_normal.png);
+}
+.QPushButton:hover
+{
+    border-image: url(:/image/bottompage_hover.png);
+}
+.QPushButton:pressed
+{
+	border-image: url(:/image/bottompage_pressed.png);
+}</string>
+                  </property>
+                  <property name="text">
+                    <string></string>
+                  </property>
+                </widget>
+                <widget class="QPushButton" name="btnNextRow">
+                  <property name="geometry">
+                    <rect>
+                      <x>660</x>
+                      <y>0</y>
+                      <width>51</width>
+                      <height>51</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>0</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>12</pointsize>
+                    </font>
+                  </property>
+                  <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="styleSheet">
+                    <string notr="true">.QPushButton{
+	border-image: url(:/image/downrow_normal.png);
+}
+.QPushButton:hover
+{
+    border-image: url(:/image/downrow_hover.png);
+}
+.QPushButton:pressed
+{
+	border-image: url(:/image/downrow_pressed.png);
+}</string>
+                  </property>
+                  <property name="text">
+                    <string></string>
+                  </property>
+                </widget>
+                <widget class="QPushButton" name="btnPrvPage">
+                  <property name="geometry">
+                    <rect>
+                      <x>90</x>
+                      <y>0</y>
+                      <width>51</width>
+                      <height>51</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>0</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>12</pointsize>
+                    </font>
+                  </property>
+                  <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="styleSheet">
+                    <string notr="true">.QPushButton{
+	border-image: url(:/image/uppage_normal.png);
+}
+.QPushButton:hover
+{
+    border-image: url(:/image/uppage_hover.png);
+}
+.QPushButton:pressed
+{
+	border-image: url(:/image/uppage_pressed.png);
+}</string>
+                  </property>
+                  <property name="text">
+                    <string></string>
+                  </property>
+                </widget>
+                <widget class="QLabel" name="label_5">
+                  <property name="geometry">
+                    <rect>
+                      <x>370</x>
+                      <y>-4</y>
+                      <width>41</width>
+                      <height>60</height>
+                    </rect>
+                  </property>
+                  <property name="minimumSize">
+                    <size>
+                      <width>0</width>
+                      <height>38</height>
+                    </size>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>16</pointsize>
+                    </font>
+                  </property>
+                  <property name="text">
+                    <string>页</string>
+                  </property>
+                </widget>
+                <widget class="QLabel" name="ldtCurPage">
+                  <property name="geometry">
+                    <rect>
+                      <x>280</x>
+                      <y>-4</y>
+                      <width>80</width>
+                      <height>60</height>
+                    </rect>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <family>Noto Sans CJK SC</family>
+                      <pointsize>16</pointsize>
+                    </font>
+                  </property>
+                  <property name="text">
+                    <string>1</string>
+                  </property>
+                  <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                  </property>
+                </widget>
+              </widget>
+            </item>
+          </layout>
+        </item>
+      </layout>
+    </widget>
+    <widget class="QWidget" name="reportFunMenu" native="true">
+      <property name="geometry">
+        <rect>
+          <x>1525</x>
+          <y>0</y>
+          <width>226</width>
+          <height>968</height>
+        </rect>
+      </property>
+      <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+      </property>
+      <widget class="QPushButton" name="btnDetail">
+        <property name="geometry">
+          <rect>
+            <x>26</x>
+            <y>70</y>
+            <width>178</width>
+            <height>61</height>
+          </rect>
+        </property>
+        <property name="font">
+          <font>
+            <family>Noto Sans CJK SC</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+        </property>
+        <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+          <string>详细</string>
+        </property>
+        <property name="iconSize">
+          <size>
+            <width>37</width>
+            <height>32</height>
+          </size>
+        </property>
+        <property name="checkable">
+          <bool>false</bool>
+        </property>
+        <property name="checked">
+          <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+          <bool>false</bool>
+        </property>
+      </widget>
+      <widget class="QPushButton" name="btnQuery">
+        <property name="geometry">
+          <rect>
+            <x>26</x>
+            <y>150</y>
+            <width>178</width>
+            <height>61</height>
+          </rect>
+        </property>
+        <property name="font">
+          <font>
+            <family>Noto Sans CJK SC</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+        </property>
+        <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+          <string>查询</string>
+        </property>
+        <property name="iconSize">
+          <size>
+            <width>37</width>
+            <height>32</height>
+          </size>
+        </property>
+        <property name="checkable">
+          <bool>false</bool>
+        </property>
+        <property name="checked">
+          <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+          <bool>false</bool>
+        </property>
+      </widget>
+      <widget class="QPushButton" name="btnDisplay">
+        <property name="geometry">
+          <rect>
+            <x>26</x>
+            <y>230</y>
+            <width>178</width>
+            <height>61</height>
+          </rect>
+        </property>
+        <property name="font">
+          <font>
+            <family>Noto Sans CJK SC</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+        </property>
+        <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+          <string>显示</string>
+        </property>
+        <property name="iconSize">
+          <size>
+            <width>37</width>
+            <height>32</height>
+          </size>
+        </property>
+        <property name="checkable">
+          <bool>false</bool>
+        </property>
+        <property name="checked">
+          <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+          <bool>false</bool>
+        </property>
+      </widget>
+      <widget class="QPushButton" name="btnUpdate">
+        <property name="geometry">
+          <rect>
+            <x>26</x>
+            <y>310</y>
+            <width>178</width>
+            <height>61</height>
+          </rect>
+        </property>
+        <property name="font">
+          <font>
+            <family>Noto Sans CJK SC</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+        </property>
+        <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+          <string>上传</string>
+        </property>
+        <property name="iconSize">
+          <size>
+            <width>37</width>
+            <height>32</height>
+          </size>
+        </property>
+        <property name="checkable">
+          <bool>false</bool>
+        </property>
+        <property name="checked">
+          <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+          <bool>false</bool>
+        </property>
+      </widget>
+      <widget class="QPushButton" name="btnPrinter">
+        <property name="geometry">
+          <rect>
+            <x>26</x>
+            <y>390</y>
+            <width>178</width>
+            <height>61</height>
+          </rect>
+        </property>
+        <property name="font">
+          <font>
+            <family>Noto Sans CJK SC</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+        </property>
+        <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+          <string>打印</string>
+        </property>
+        <property name="iconSize">
+          <size>
+            <width>37</width>
+            <height>32</height>
+          </size>
+        </property>
+        <property name="checkable">
+          <bool>false</bool>
+        </property>
+        <property name="checked">
+          <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+          <bool>false</bool>
+        </property>
+      </widget>
+      <widget class="QPushButton" name="btnExport">
+        <property name="geometry">
+          <rect>
+            <x>26</x>
+            <y>470</y>
+            <width>178</width>
+            <height>61</height>
+          </rect>
+        </property>
+        <property name="font">
+          <font>
+            <family>Noto Sans CJK SC</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+        </property>
+        <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+          <string>导出</string>
+        </property>
+        <property name="iconSize">
+          <size>
+            <width>37</width>
+            <height>32</height>
+          </size>
+        </property>
+        <property name="checkable">
+          <bool>false</bool>
+        </property>
+        <property name="checked">
+          <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+          <bool>false</bool>
+        </property>
+      </widget>
+      <widget class="QPushButton" name="btnDel">
+        <property name="geometry">
+          <rect>
+            <x>26</x>
+            <y>550</y>
+            <width>178</width>
+            <height>61</height>
+          </rect>
+        </property>
+        <property name="font">
+          <font>
+            <family>Noto Sans CJK SC</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+        </property>
+        <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+          <string>删除</string>
+        </property>
+        <property name="iconSize">
+          <size>
+            <width>37</width>
+            <height>32</height>
+          </size>
+        </property>
+        <property name="checkable">
+          <bool>false</bool>
+        </property>
+        <property name="checked">
+          <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+          <bool>false</bool>
+        </property>
+      </widget>
+      <widget class="QPushButton" name="btn_save_modify">
+        <property name="geometry">
+          <rect>
+            <x>30</x>
+            <y>870</y>
+            <width>178</width>
+            <height>61</height>
+          </rect>
+        </property>
+        <property name="font">
+          <font>
+            <family>Noto Sans CJK SC</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+          </font>
+        </property>
+        <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+          <string>保存修改</string>
+        </property>
+        <property name="iconSize">
+          <size>
+            <width>37</width>
+            <height>32</height>
+          </size>
+        </property>
+        <property name="checkable">
+          <bool>false</bool>
+        </property>
+        <property name="checked">
+          <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+          <bool>false</bool>
+        </property>
+      </widget>
+    </widget>
+    <zorder>reportFunMenu</zorder>
+    <zorder>wgtReport</zorder>
+  </widget>
+</ui>

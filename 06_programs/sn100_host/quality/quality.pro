@@ -1,0 +1,10 @@
+QT += core
+QT -= gui network
+CONFIG += console c++14 warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = sn100_quality_statistics
+SOURCES += main.cpp statistics.cpp
+HEADERS += statistics.h
+OBJECTS_DIR = .obj
+MOC_DIR = .moc

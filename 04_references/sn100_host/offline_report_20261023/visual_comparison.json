@@ -1,0 +1,194 @@
+{
+  "form_comparison": [
+    {
+      "path": "06_programs/sn100_host/history/frm_report_material.ui",
+      "current_sha256": "ff6c3f81eaff7631fd11e2b1aa417fbc0af20da31e0d4123a2e8d84a41b24b12",
+      "original_sha256": "3690f78e8d7f9d2377dd507189cc47293211b2e8df62d18bd0c94ea2b0614a7d",
+      "exact_original_bytes": false,
+      "unchanged_from_o04_1": true
+    },
+    {
+      "path": "06_programs/sn100_host/history/mask_dlg_export.ui",
+      "current_sha256": "b212c3d3bc1ff211a05b2216854ec56cf905581bb0938221b4d8cf91149cfd21",
+      "original_sha256": "e053660fe6a0a798a156922108f82ff736f2747d39c8c4119fccac899a70184f",
+      "exact_original_bytes": false,
+      "unchanged_from_o04_1": true
+    },
+    {
+      "path": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+      "current_sha256": "c78b4bd3e7d688f6c3680172b01568c8f7bbc3131d41a6f14a625a2ad0b2368f",
+      "original_sha256": "fd96d0dca518961202705909c916b8ac74a155fffd573abf34eb902dd06f49f6",
+      "exact_original_bytes": false,
+      "unchanged_from_o04_1": true
+    },
+    {
+      "path": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+      "current_sha256": "5804678d88bdf7782e1e7511973e85c1f9d3850705dd88d803c45b428b379e79",
+      "original_sha256": "d0b439966c8789fa76baa589d7396d7a1e1e56dd87961f1d0044825a31031143",
+      "exact_original_bytes": false,
+      "unchanged_from_o04_1": true
+    }
+  ],
+  "retained_o04_1_adaptations": [
+    "Dialogs remove animated mask/display wrapper and use original view_frame sizes 501x501,1341x930,501x291.",
+    "Material flat/radio/check widgets use native Qt5 controls; known source theme colors preserved in history_page.cpp; ripple animation, original shadow and checkbox painting await visual comparison.",
+    "Unavailable PingFang family replaced with Noto Sans CJK SC, original point/pixel sizes retained.",
+    "Resource-only icons replaced with semantic text arrows, calendar ellipsis and close symbol; original icon artwork pending resource migration.",
+    "Main business surface remains1751x968 inside external scrolling host; no product banner or experimental toolbar added.",
+    "Chart/control/LIS/printing/display-setting/deletion controls retain positions and are disabled with explanation for this slice; original hidden save button remains hidden."
+  ],
+  "previous_original_geometry_audit": [
+    {
+      "file": "frm_report_material.ui",
+      "geometry_differences": [],
+      "class_difference_count": 10
+    },
+    {
+      "file": "mask_dlg_query_report.ui",
+      "geometry_differences": [
+        {
+          "objectName": "MaskDlgQueryReport",
+          "reason": "Standalone dialog now uses original inner view_frame geometry; internal child coordinates retained.",
+          "ported": [
+            0,
+            0,
+            501,
+            501
+          ],
+          "original": [
+            0,
+            0,
+            1460,
+            1330
+          ]
+        }
+      ],
+      "class_difference_count": 6
+    },
+    {
+      "file": "mask_dlg_report_detail.ui",
+      "geometry_differences": [
+        {
+          "objectName": "MaskDlgReportDetail",
+          "reason": "Standalone dialog now uses original inner view_frame geometry; internal child coordinates retained.",
+          "ported": [
+            0,
+            0,
+            1341,
+            930
+          ],
+          "original": [
+            0,
+            0,
+            2822,
+            1509
+          ]
+        }
+      ],
+      "class_difference_count": 2
+    },
+    {
+      "file": "mask_dlg_export.ui",
+      "geometry_differences": [
+        {
+          "objectName": "MaskDlgExport",
+          "reason": "Standalone dialog now uses original inner view_frame geometry; internal child coordinates retained.",
+          "ported": [
+            0,
+            0,
+            501,
+            291
+          ],
+          "original": [
+            0,
+            0,
+            1960,
+            1009
+          ]
+        }
+      ],
+      "class_difference_count": 2
+    }
+  ],
+  "template_exact": true,
+  "paper_mm": [
+    210,
+    148
+  ],
+  "vendor_reference_bytes_unchanged": [
+    "QtRPT/RptDsPlugin.cpp",
+    "QtRPT/RptDsPlugin.h",
+    "QtRPT/RptSql.cpp",
+    "QtRPT/RptSql.h",
+    "QtRPT/RptFieldObject.cpp",
+    "QtRPT/RptFieldObject.h",
+    "QtRPT/RptBandObject.cpp",
+    "QtRPT/RptBandObject.h",
+    "QtRPT/RptPageObject.cpp",
+    "QtRPT/RptPageObject.h",
+    "QtRPT/RptCrossTabObject.cpp",
+    "QtRPT/RptCrossTabObject.h",
+    "QtRPT/RptScriptEngine.cpp",
+    "QtRPT/RptScriptEngine.h",
+    "QtRPT/RptDsInline.cpp",
+    "QtRPT/RptDsInline.h",
+    "QtRPT/RptDsAbstract.cpp",
+    "QtRPT/RptDsAbstract.h",
+    "QtRPT/qtrpt_global.h",
+    "QtRPT/qtrptnamespace.h",
+    "QtRPT/QtRPT.pri",
+    "QtRPT/config.pri",
+    "QtRPT/imagesRpt.qrc",
+    "QtRPT/pdf.png",
+    "QtRPT/html.png",
+    "QtRPT/excel.png",
+    "QtRPT/license.txt",
+    "CommonFiles/CommonClasses.cpp",
+    "CommonFiles/CommonClasses.h",
+    "CommonFiles/numbertoarabicword.cpp",
+    "CommonFiles/numbertoarabicword.h",
+    "CommonFiles/Barcode.cpp",
+    "CommonFiles/Barcode.h",
+    "CommonFiles/CommonFiles_QtRpt.pri"
+  ],
+  "vendor_local_patches": [
+    "QtRPT/qtrpt.cpp",
+    "QtRPT/qtrpt.h"
+  ],
+  "actual_pdf_points": [
+    595,
+    420
+  ],
+  "final_linux_pages_reviewed": [
+    "report_preview.pdf:1",
+    "report_values.pdf:1",
+    "report_64_tasks.pdf:1",
+    "report_64_tasks.pdf:2",
+    "report_64_tasks.pdf:3",
+    "report_64_tasks.pdf:4",
+    "report_64_tasks.pdf:5"
+  ],
+  "render_tool": "Bundled Poppler pdftoppm, PNG 120 dpi, each page visually reviewed",
+  "observations": [
+    "No visible clipped or overlapping text, no missing glyph boxes in these fixed anonymous cases",
+    "Date/time wraps into two original footer lines, both visible; geometry/size unchanged",
+    "ReportTitle patient header only on first page, MasterHeader/MasterFooter and page numbering repeat as original template",
+    "Windows QtRPT distribution full running behavior/theme and RK screen still pending"
+  ],
+  "allowed_differences": [
+    "Unavailable original fonts replaced by Noto Sans CJK SC at same sizes/coordinates on Linux",
+    "QtRPT offline print/HTML/XLSX unavailable state only; original action placement retained",
+    "PDF text comparison uses NFKC + whitespace normalization; raw text retained because QtPDF/Noto emits some CJK radical codepoints"
+  ],
+  "raw_ported_images": [
+    "03_photos/20261023_sn100_report_statistics_01.png",
+    "03_photos/20261023_sn100_report_page_01.png",
+    "03_photos/20261023_sn100_report_preview_01.png",
+    "03_photos/20261023_sn100_report_pdf_values_01.png",
+    "03_photos/20261023_sn100_report_pdf_64_page_01.png",
+    "03_photos/20261023_sn100_report_pdf_64_page_02.png",
+    "03_photos/20261023_sn100_report_pdf_64_page_03.png",
+    "03_photos/20261023_sn100_report_pdf_64_page_04.png",
+    "03_photos/20261023_sn100_report_pdf_64_page_05.png"
+  ]
+}

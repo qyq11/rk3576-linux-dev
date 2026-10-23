@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCase name="ReadOnlyClientTest">
+<Environment>
+    <QtVersion>5.15.13</QtVersion>
+    <QtBuild>Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)</QtBuild>
+    <QTestVersion>5.15.13</QTestVersion>
+</Environment>
+<TestFunction name="initTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="2.68012"/>
+</TestFunction>
+<TestFunction name="connectionDoesNotAutomaticallyQuery">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="45.2797"/>
+</TestFunction>
+<TestFunction name="validStatusIsObservedBeforeSuccessfulFinish">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CLIENT actual peer RX generation= 2 HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 PAYLOAD=Qj]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CLIENT actual peer TX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09 OBSERVED=Qj[4][SIMULATED][2][1][0][0] order= observed:Qj,success]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="8.84887"/>
+</TestFunction>
+<TestFunction name="onePendingRequestRejectsConcurrentQuery">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="26.4442"/>
+</TestFunction>
+<TestFunction name="queueRejectionDoesNotLeavePendingRequest">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="44.1234"/>
+</TestFunction>
+<TestFunction name="timeoutRetriesExactlyOnceThenFails">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CLIENT timeout_ms=30 maxRetries=1 generation= 2 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05 02 03 00 06 00 00 00 01 51 6a 3a 04 05 attempts=1,2 finished=false pending=false fresh=false]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="176.75"/>
+</TestFunction>
+<TestFunction name="overdueStatusCannotTurnTimeoutIntoSuccess">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CLIENT overdue deadline_ms=1 artificial_event_loop_delay_ms=5 finished_success=false valid_late_observations= 1]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="12.2036"/>
+</TestFunction>
+<TestFunction name="timeoutReceiverNewRequestIsNotFinishedByOldObservation">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CLIENT timeout direct slot started replacement=true old observation replacement_pending=true false_successes= 0 actual peer RX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="12.4979"/>
+</TestFunction>
+<TestFunction name="alarmWaitsForMatchingCurrentAlarm">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 6b 3b 04 05 observed=Qq,Ql,Qk matching completion=Qk only]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="8.87171"/>
+</TestFunction>
+<TestFunction name="malformedStatusDoesNotRefreshOrFinish">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CLIENT invalid status main=99 rejected; notice= status.enum: 型号为空或主状态/灯状态/错误类型不在参考枚举范围 later valid Qj completed]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="8.07446"/>
+</TestFunction>
+<TestFunction name="consumablesRequestUsesOnlyReadOnlyLiteral">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CLIENT actual peer RX= 02 03 00 06 00 00 00 01 51 48 18 04 05 actual peer TX= 06 07 00 0c 00 00 00 01 51 48 5b 30 5d 5b 30 5d 18 08 09 matching completion=QH]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="6.61309"/>
+</TestFunction>
+<TestFunction name="disconnectCancelsRequestAndFreshness">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="29.6905"/>
+</TestFunction>
+<TestFunction name="reconnectRejectsOldHalfStatus">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="59.6204"/>
+</TestFunction>
+<TestFunction name="invalidQueryDoesNotWriteOrBecomePending">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="24.0241"/>
+</TestFunction>
+<TestFunction name="observedReceiverCanClose">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="26.1649"/>
+</TestFunction>
+<TestFunction name="observedReceiverCanReconnectWithoutFinishingNewRequest">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="7.14824"/>
+</TestFunction>
+<TestFunction name="queuedReceiverCanReconnectWithoutWritingOldQuery">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="6.26106"/>
+</TestFunction>
+<TestFunction name="finishedReceiverCanReconnectWithoutClearingNewRequest">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="7.48295"/>
+</TestFunction>
+<TestFunction name="cleanupTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1.83689"/>
+</TestFunction>
+<Duration msecs="534.593"/>
+</TestCase>

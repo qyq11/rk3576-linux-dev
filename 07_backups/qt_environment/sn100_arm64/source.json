@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-23",
+  "source": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/universe/binary-arm64/Packages.xz",
+  "verification": "Downloaded .deb SHA-256 matches the corresponding official Ubuntu ports Packages stanza saved in package_index.txt.",
+  "packages": [
+    "libqt5sql5t64",
+    "libqt5sql5-sqlite"
+  ],
+  "version": "5.15.13+dfsg-1ubuntu1",
+  "architecture": "arm64",
+  "use": "prepare_arm64.sh extracts these plus the existing qt5_arm64 archive into temp/sn100_host/arm64_sysroot.",
+  "restore_scope": "Host cross-build inputs for O01. No board installation or runtime validation. Existing base Qt libraries remain in sibling qt5_arm64 archive; no duplicated base archive."
+}

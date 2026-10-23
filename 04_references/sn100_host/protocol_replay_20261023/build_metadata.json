@@ -1,0 +1,61 @@
+{
+  "module": "O05-1",
+  "date": "2026-10-23",
+  "scope": "source-derived synthetic QtCore replay; no network/hardware",
+  "source_sha256": {
+    "06_programs/sn100_host/protocol/build.sh": "ca190b3ec5cbc0387c3de54d28065cdfb966c891001bca4e44fd5d09dae59b2e",
+    "06_programs/sn100_host/protocol/frame_codec.cpp": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+    "06_programs/sn100_host/protocol/frame_codec.h": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+    "06_programs/sn100_host/protocol/main.cpp": "84688d4e112a255bb5e62be1ca75fa8dcf1fa4fb33f5600c85e870ca4fa27e6b",
+    "06_programs/sn100_host/protocol/origins.json": "5ee157c3785cfd17e8cdcfa85f3ebec4bfe4b87b3719b754ca77c51951f3e285",
+    "06_programs/sn100_host/protocol/protocol.pro": "73983e80e955f41e7b9f123909a793cc9ce44d3f4f3682b05417e2403edbf3c1",
+    "06_programs/sn100_host/protocol/status_session.cpp": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+    "06_programs/sn100_host/protocol/status_session.h": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+    "06_programs/sn100_host/protocol/wsl.sh": "0735d490dd35f62a5a56aaee3ef0c9283c5d61eeac83820174d1925687b759a4",
+    "06_programs/sn100_host/tests/fixtures/protocol_replay.json": "c8530c045483b8c04c01f59d77783a6369ab8494b25df86c3c7c0f6a9e35da11",
+    "06_programs/sn100_host/tests/protocol_test.cpp": "835e787a6ceea8f9c428408361b17274719660765a364d56b045cffa26699904",
+    "06_programs/sn100_host/tests/protocol_test.pro": "3bea93b91843ce6f785c90070bf57b5fbd3acafbaf14b34fd0d4c61a4359f1f6"
+  },
+  "binaries": {
+    "wsl_x86_64": {
+      "path": "temp/sn100_host/protocol/wsl_release/sn100_protocol_replay",
+      "bytes": 161632,
+      "sha256": "5139a012e6295020cc9c0b80fa4ee35b9a80c5be36fcfb81665a8eb30e732efe",
+      "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=75f4e70054cbe1e3785bc442e21904a29a2d553e, for GNU/Linux 3.2.0, not stripped"
+    },
+    "windows_x86": {
+      "path": "temp/sn100_host/protocol/windows_5142_x86_release/release/sn100_protocol_replay.exe",
+      "bytes": 108032,
+      "sha256": "21ba871688a65828ad7e128d819bffe3fd6eb21adf36d84fc7cf91a6e8334afb",
+      "file": "PE32 executable (console) Intel 80386 (stripped to external PDB), for MS Windows, 8 sections"
+    },
+    "linux_arm64": {
+      "path": "temp/sn100_host/protocol/arm64_release/sn100_protocol_replay",
+      "bytes": 1940408,
+      "sha256": "03abb88ebc004ec5f8c351a91e21ccc8fa437dce6708e4d234a07220b26e0d50",
+      "file": "ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=084e021b48ff865d94206a231d8b432f74d8b3dd, for GNU/Linux 3.7.0, with debug_info, not stripped"
+    }
+  },
+  "toolchain": {
+    "qmake": [
+      "QMake version 3.1",
+      "Using Qt version 5.15.13 in /usr/lib/x86_64-linux-gnu"
+    ],
+    "native_g++": [
+      "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "Copyright (C) 2023 Free Software Foundation, Inc."
+    ],
+    "arm64_g++": [
+      "aarch64-linux-gnu-g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "Copyright (C) 2023 Free Software Foundation, Inc."
+    ]
+  },
+  "full_stress_event_json": {
+    "path": "temp/sn100_host/protocol/verification_final/verified_stress_10000/events.jsonl",
+    "bytes": 15485049,
+    "sha256": "234cc8e94a297071bee6725a885852613328b591a74ea84d4fa9dd9c15fa13c8",
+    "retention": "Verbose duplicate field expansion stays rebuildable in temp; all actual TX/RX and status lines are archived in stress/tx_rx.txt."
+  },
+  "arm64_needed": "\nDynamic section at offset 0x1f820 contains 31 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libQt5Core.so.5]\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-aarch64.so.1]\n 0x000000000000000c (INIT)               0x4010\n 0x000000000000000d (FINI)               0x14030\n 0x0000000000000019 (INIT_ARRAY)         0x2f678\n 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x2f688\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x298\n 0x0000000000000005 (STRTAB)             0x1380\n 0x0000000000000006 (SYMTAB)             0x2b8\n 0x000000000000000a (STRSZ)              5318 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x2fa50\n 0x0000000000000002 (PLTRELSZ)           3960 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x3098\n 0x0000000000000007 (RELA)               0x2a80\n 0x0000000000000008 (RELASZ)             1560 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            Flags: NOW PIE\n 0x000000006ffffffe (VERNEED)            0x29b0\n 0x000000006fffffff (VERNEEDNUM)         5\n 0x000000006ffffff0 (VERSYM)             0x2846\n 0x000000006ffffff9 (RELACOUNT)          41\n 0x0000000000000000 (NULL)               0x0\n",
+  "windows_linux_event_bytes_identical": true
+}

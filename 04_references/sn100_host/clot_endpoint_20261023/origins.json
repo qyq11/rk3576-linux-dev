@@ -1,0 +1,40 @@
+{
+  "module": "O06-2",
+  "scope": "Offline research prototypes for clot endpoint candidates; independent new implementation, not AL4A port or a validated clinical assay",
+  "researched_on": "2026-10-23",
+  "sources": [
+    {
+      "title": "Siemens Healthineers: Sysmex CS Systems Sample Result Evaluation Clotting Assays, T05012.002",
+      "url": "https://nacce.siemens-healthineers.com/wp-content/uploads/2022/12/T05012.002-Sysmex-CS-Systems-Sample-Result-Evaluation-Clotting-Assays_eff-date-12-19-2022.pdf",
+      "location": "Percentage Detection Method – Measurement Principle for Clotting Assays, slide 2-8",
+      "supports": "The optical baseline and final endpoint define signal change; a selected percentage, often 50%, supplies a method-specific clotting point. Mask and reading windows matter.",
+      "implementation_choices": "Caller-provided complete curve, explicit optical direction and reagent-relative seconds; arithmetic mean of configured first/last point windows, configured search window and linear crossing interpolation. These are our numerical choices, not vendor reproduction."
+    },
+    {
+      "title": "Diagnostic Grifols, S.A.: QNext Instructions for Use",
+      "url": "https://usermanual.wiki/Diagnostic-Grifols/215550-3932834.pdf",
+      "location": "Section 9.2.2.2, printed pages 9-31 through 9-33",
+      "hosting_note": "Mirror of manufacturer-authored primary manual; attribution and manufacturer identity checked in PDF",
+      "supports": "Maximum Rate selects the first-derivative peak time. PT/APTT variants include stabilization and/or filtering protections.",
+      "implementation_choices": "Our odd-window local linear regression estimates slope on nonuniform time samples; select an interior positive directed peak at sample resolution, reject obvious ambiguity and unstable reference windows. No claim to implement vendor PT/APTT protections."
+    },
+    {
+      "title": "Clarification of fibrin generation and degradation reaction processes of clot-fibrinolysis waveform in hemorrhagic disorders",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0320111",
+      "location": "Materials and methods; CFWA",
+      "supports": "Distinguishes the percentage crossing and derivative peak measurements; observed proximity does not establish universal identity or transfer to SN100."
+    }
+  ],
+  "business_boundary": {
+    "input": "Synthetic or anonymized finite optical samples, strictly increasing nonnegative reagent-relative seconds, explicit rising/falling direction, complete acquisition including baseline and terminal plateau",
+    "output": "Separate percentage and maximum-derivative candidate times, method details, parameters, raw inputs and explicit failures; no result averaging or silent fallback",
+    "defaults": "All amplitude, stability, window and ambiguity defaults are engineering trial settings, not clinical cutoffs; must be confirmed on SN100 raw curves",
+    "not_implemented": ["machine learning", "AL4A equivalence", "real-time early stopping", "project-specific diagnostic result conversion", "calibration/INR/FIB derivation", "patient reporting", "instrument control", "full interference/no-clot detector"]
+  },
+  "next_validation": [
+    "Confirm optical signal meaning, direction, units, sample period, reagent-addition zero and acquisition mask from SN100",
+    "Obtain anonymized normal/delayed/low-amplitude/no-clot/noisy/biphasic/incomplete traces and independent reference clot times",
+    "Freeze per-assay preprocessing, windows, stability/ambiguity and minimum response settings before evaluation",
+    "Compare candidate time error, invalid-result rate, repeats, noise/filter sensitivity, runtime/resource use and RK behavior; do not tune tolerance on evaluation data"
+  ]
+}

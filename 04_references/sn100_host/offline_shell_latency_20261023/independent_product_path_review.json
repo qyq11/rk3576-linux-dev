@@ -1,0 +1,215 @@
+{
+  "review": "O03-2 latency independent product path review",
+  "mode": "Static source review only; no GUI, build, runtime DB, authentication database or secret file access",
+  "scope": "Account/Hospital worker ownership, GUI response handlers, CusMessageBox/CusDialogMask show-close captures and animations, normalOperations no-external-capture coverage, snapshot dependency preparation",
+  "conclusion": {
+    "proven_old_1556ms_cause": false,
+    "proven_product_defects_in_reviewed_paths": [],
+    "normal_no_external_capture_preserves_product_animation_and_internal_capture": true,
+    "business_persistence_is_worker_owned": true,
+    "source_review_certifies_executed_snapshot_or_binary": false
+  },
+  "source_facts": [
+    {
+      "id": "worker_boundary",
+      "locations": [
+        "ui/frmaccountsetting.cpp:73-80",
+        "ui/frmhospinfosetting.cpp:96-101",
+        "data/account_store.cpp:199-246",
+        "data/hospital_store.cpp:180-214",
+        "tests/shell_account_test.cpp:382-412"
+      ],
+      "fact": "UI load/write requests use explicit queued connections. The test Session moves both stores to separate QThreads before starting initialization. Each store checks current thread ownership and rejects GUI-thread initialization. Account add/remove/update transactions and Hospital save/remove transactions execute in their owning worker, not in the GUI callback.",
+      "limit": "Asynchronous persistence alone does not establish that all later GUI rendering or dialog work is asynchronous. No runtime timing is derived from this source review."
+    },
+    {
+      "id": "commit_before_dialog",
+      "locations": [
+        "data/account_store.cpp:514-522",
+        "data/account_store.cpp:601-606",
+        "data/hospital_store.cpp:607-618",
+        "data/hospital_store.cpp:673-757",
+        "ui/frmaccountsetting.cpp:99-156",
+        "ui/frmhospinfosetting.cpp:107-158"
+      ],
+      "fact": "Account commit precedes succeeded; the GUI callback clears accepted inputs and requests a second worker load. After that load, the GUI synchronously rebuilds table items, opens the success CusMessageBox, and only after modal completion clears busy and emits operationFinished. Hospital SQL commit and QSettings/QSaveFile INI export precede saved in the worker; hospital GUI accepts committed rows/IDs and requests a worker reload. Hospital save uses status text, not a custom success dialog.",
+      "limit": "SQLite busy_timeout=200 bounds relevant lock waiting, not all storage work or FULL-sync/INI-export duration; these storage operations remain on the worker. Operation wall time can include worker waits and modal animation/acknowledgement and is not itself an event-loop-gap measurement."
+    },
+    {
+      "id": "product_sync_capture",
+      "locations": [
+        "ui/cusmessagebox.cpp:34-50",
+        "ui/cusmessagebox.cpp:88-117",
+        "ui/cusdialogmask.cpp:136-175",
+        "ui/cusmessagebox.ui:49-62"
+      ],
+      "fact": "CusMessageBox::showDialog calls mask->showAnimation() synchronously before QDialog::exec(). Both showAnimation and closeAnimation enter CusDialogMask::startAnimation. That function aligns the host and synchronously executes viewWidget_->grab(), sets the pixmap and animation start/end values, then starts the animation group. The current view_frame geometry and minimum size are 480x208; this internal content capture is distinct from evidence code that grabs the entire shell window.",
+      "limit": "This identifies a synchronous GUI rendering/capture boundary, not a measured cause or duration. The product also renders the host-sized dimming mask and normal widget painting on the GUI thread. No claim that the internal content grab takes 1.556 seconds is supported by this review."
+    },
+    {
+      "id": "animation_nested_loop",
+      "locations": [
+        "ui/cusmessagebox.cpp:20-25",
+        "ui/cusmessagebox.cpp:49-50",
+        "ui/cusdialogmask.h:25",
+        "ui/cusdialogmask.cpp:23-33",
+        "ui/cusdialogmask.cpp:69-95",
+        "ui/cusdialogmask.cpp:130-162"
+      ],
+      "fact": "Message boxes call setupForm() with noOffset=false by default. The source retains 280 ms parallel opacity/move animations, OutCubic movement, -50 px offset and the 11 px shadow. animationGroup_.start() schedules animation progression; QDialog::exec() runs a modal nested event loop. Input readiness waits for the show animation to finish. Button acknowledgement initiates the close animation, whose finished signal ends the dialog.",
+      "limit": "The nominal 280 ms show plus 280 ms close is intended animation wall time and cannot be treated as a continuous GUI stall. Synchronous capture/setup/painting and each frame's GUI rendering still require separate timing to locate a delivery gap."
+    },
+    {
+      "id": "normal_coverage",
+      "locations": [
+        "tests/shell_latency_test.cpp:291-329",
+        "tests/shell_latency_test.cpp:508-637",
+        "tests/shell_account_test.cpp:305-354",
+        "tests/shell_account_test.cpp:525-535",
+        "ui/frmaccountsetting.cpp:113-121",
+        "ui/frmaccountsetting.cpp:418-441"
+      ],
+      "fact": "normalOperations creates the real Session and DialogAnswers, waits for readiness/exposure/login before trace.start(false), then uses real keyboard/button input for 10 successful account Add/Delete pairs and 10 hospital saves. Add reaches the product success dialog; Delete reaches its product question and success dialogs. DialogAnswers waits for CusMessageBox::isReadyForInput and clicks the actual Sure/Cancel button. Its optional external capturePath defaults empty and normalOperations never assigns it. This path therefore expects 30 real custom dialogs and 60 product-internal view grabs on a fully successful Add/Delete loop; animations are neither bypassed nor replaced.",
+      "limit": "The 30/60 count is static call-path expectation, not observed instrumentation. The test records dialog_answers. Input is ASCII keyboard input; it intentionally does not characterize clipboard, IME or Unicode paste performance. Startup/cold-window exposure is outside the normalOperations active trace."
+    },
+    {
+      "id": "no_external_capture_measurement_boundary",
+      "locations": [
+        "tests/shell_latency_test.cpp:521-523",
+        "tests/shell_latency_test.cpp:606-636",
+        "tests/shell_latency_test.cpp:639-710",
+        "tests/shell_latency_test.cpp:390-454"
+      ],
+      "fact": "The normalOperations active trace disables the resource sampler and contains no external screenshot/PNG file save, independent public SQL snapshot, clipboard access or /proc sample. Its public DB verification, file-size checks, close, worker shutdown and result JSON writing occur after trace.stop(). Separate evidenceOverhead phases split full-window grab, pre-grabbed PNG encoding, pre-encoded file writing, combined grab-save, and public SQL snapshots. Burst navigation optionally includes a separately labelled preceding screenshot; its 100 programmatic widget clicks are intentionally grouped without event-loop drains.",
+      "limit": "A normal.account_add/delete phase includes keyboard entry, worker completion, GUI list rendering and product dialog show/close. Phase overlap with a timer gap alone cannot isolate the internal grab from those other GUI operations. Synchronous burst-driver work and external evidence work must not be relabelled as normal user-paced navigation."
+    },
+    {
+      "id": "snapshot_preservation",
+      "locations": [
+        "tests/prepare_shell_latency.py:public_sources",
+        "tests/prepare_shell_latency.py:prepare",
+        "tests/prepare_shell_latency.py:verify_snapshot",
+        "tests/shell_latency_test.pro",
+        "tests/shell_latency.sh",
+        "shell/shell.pri"
+      ],
+      "fact": "The preparation script copies allowlisted product/source/resource files byte-for-byte, checks hashes before and after copy, and verifies the frozen snapshot on reuse. The only generated helper is the unchanged prefix of frozen shell_account_test.cpp before the test class marker. The qmake target includes shell.pri and links the product account/hospital UI, CusMessageBox and CusDialogMask sources. The runner does not patch out animation or internal captures and verifies successful build metadata before execution.",
+      "limit": "This review fingerprints live source. The owner must associate actual timing evidence with its completed source_manifest/build_metadata/binary SHA; this source-only review does not attest a running process or any specific frozen build."
+    }
+  ],
+  "interpretation": {
+    "old_peak": "The old approximately 1.556-second peak remains unattributed by this static review. Neither queued worker writes, internal product grabs, intended animation durations, nor the external grab-save immediately preceding a synchronous click burst may be singled out as the cause without matching measured phase intervals or direct call timing.",
+    "necessary_next_evidence": "Use the owner's isolated normal, paced, burst-with/without-capture and evidence-overhead timing results with the exact frozen source/binary identities. If a normal-operation gap persists, time product show/close setup and viewWidget_->grab separately inside that diagnostic snapshot while preserving the real calls and animations; timing scopes must distinguish call duration, modal wall time and timer-delivery gaps.",
+    "product_changes_recommended_now": "None from this static review; no reason established to remove animations, reduce UI effects or change persistence rules."
+  },
+  "sensitive_data_boundary": "No authentication DB, test DB, secret file, password value, GUI run output or screenshot was opened by this review. Source API and literal schema/key names were reviewed only.",
+  "writes": [
+    "temp/sn100_host/o03_2_latency_independent_review/product_path_review.json"
+  ],
+  "reviewed_utc": "2026-10-23T09:40:02.4759074Z",
+  "source_identity_scope": "Live source identities at report creation; no runtime snapshot or binary was verified by this reviewer",
+  "source_fingerprints": [
+    {
+      "path": "06_programs/sn100_host/data/account_store.cpp",
+      "sha256": "91b521bd3a6d707f2c602fe5736df0731cd2c8649211dd3408de2b9387cb902c",
+      "bytes": 26949,
+      "last_write_utc": "2026-10-23T07:31:48.7330831Z"
+    },
+    {
+      "path": "06_programs/sn100_host/data/account_store.h",
+      "sha256": "16e9b7ac2bbdd94ea9c6b9178cf85ee82871c698040f231938393213a2e1e06a",
+      "bytes": 2851,
+      "last_write_utc": "2026-10-23T07:24:52.0470153Z"
+    },
+    {
+      "path": "06_programs/sn100_host/data/hospital_store.cpp",
+      "sha256": "e623a2e3552806414ba9e3f318036e3cdaa1dce2b81ab878d15deeb98f552bec",
+      "bytes": 27123,
+      "last_write_utc": "2026-10-23T06:41:02.7285897Z"
+    },
+    {
+      "path": "06_programs/sn100_host/data/hospital_store.h",
+      "sha256": "a3e21ee67520f7e64c6dbce6b3dde47516a6d609324ed2fa750867e2a9e8c576",
+      "bytes": 2466,
+      "last_write_utc": "2026-10-23T06:30:59.2783846Z"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/frmaccountsetting.cpp",
+      "sha256": "4ca520400ded88361aea99b4ae686f0d70aec52725b961ac6527417b67b9aa10",
+      "bytes": 18817,
+      "last_write_utc": "2026-10-23T08:49:26.7864936Z"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/frmhospinfosetting.cpp",
+      "sha256": "f800e9e64ed69f3f5f20419c00b4e09a6104df79e4e7508ec31a890938e99c59",
+      "bytes": 22075,
+      "last_write_utc": "2026-10-23T08:15:47.0740590Z"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/cusmessagebox.cpp",
+      "sha256": "b472f038667285b0043fc104f3f93c607e715b26c423e00ce1f49134473f26b7",
+      "bytes": 3671,
+      "last_write_utc": "2026-10-23T07:39:31.5131602Z"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/cusmessagebox.h",
+      "sha256": "63e5628ab67ff19656e0d39ca8b49c59300bfc64dc4f87ce2111dc3f6f2412da",
+      "bytes": 1156,
+      "last_write_utc": "2026-10-23T07:39:31.5120017Z"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/cusmessagebox.ui",
+      "sha256": "41fc2c70631cda45572f2ce4a3fe2785d47ddae6434719771dc90a93e194bfed",
+      "bytes": 5272,
+      "last_write_utc": "2026-10-23T07:37:36.6673307Z"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/cusdialogmask.cpp",
+      "sha256": "13988a85e7393aaa94e4ab9aaf14c380b642638c5b569da1e48701b9814d15d0",
+      "bytes": 5310,
+      "last_write_utc": "2026-10-23T07:39:31.5110023Z"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/cusdialogmask.h",
+      "sha256": "d5387b2f1eaf46a92b9811dac73ce11f4a79dfc05a4ebfd9f3654466ef5b0a6b",
+      "bytes": 1445,
+      "last_write_utc": "2026-10-23T07:39:31.5090087Z"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/shell_account_test.cpp",
+      "sha256": "cbfef7557ca8ea2c977c69ca67a175d54fd827b9c3e9c95fbdb1dbde48d19e49",
+      "bytes": 64698,
+      "last_write_utc": "2026-10-23T09:01:35.7373062Z"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/shell_latency_test.cpp",
+      "sha256": "7f8a145501b63682a0a878936df45d26bc8e0209db61fa842405466a55340d0c",
+      "bytes": 35309,
+      "last_write_utc": "2026-10-23T09:32:49.4203620Z"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/shell_latency_test.pro",
+      "sha256": "5cd6c1facf2aee335d1d9020a0d795e9f2b21ad4d409f37f5a75c7ed9b32b7b2",
+      "bytes": 768,
+      "last_write_utc": "2026-10-23T09:26:04.8376716Z"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/prepare_shell_latency.py",
+      "sha256": "d24fe86b565539c66a7c68f9339e511fd5b16e671586af68344dc5e74d25b294",
+      "bytes": 15934,
+      "last_write_utc": "2026-10-23T09:36:26.5959449Z"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/shell_latency.sh",
+      "sha256": "3a904896e3a0c227b5a811ff74dded5e308c9cd2a5a73735c2a23b29b4310755",
+      "bytes": 4456,
+      "last_write_utc": "2026-10-23T09:33:34.9942437Z"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shell.pri",
+      "sha256": "9714d522f400423a77d3c0c75f113a266218cc575d20395e93b9c36cac4e4202",
+      "bytes": 1556,
+      "last_write_utc": "2026-10-23T09:11:40.9767406Z"
+    }
+  ]
+}

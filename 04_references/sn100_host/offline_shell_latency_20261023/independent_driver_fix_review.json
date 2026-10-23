@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "title": "O03-2 comprehensive driver pacing fix: independent read-only review",
+  "date": "2026-10-23",
+  "reviewer": "/root/source_audit",
+  "scope": {
+    "old_source": "temp/sn100_host/o03_2_latency/attempts/final_03/source_snapshot/tests/shell_account_test.cpp",
+    "current_source": "06_programs/sn100_host/tests/shell_account_test.cpp",
+    "purpose": "Confirm action pacing fixes synchronous test-driver starvation without removing business checks, and statically inspect fresh-build/run guards.",
+    "writes": [
+      "temp/sn100_host/o03_2_latency_independent_review/driver_fix_review.json"
+    ],
+    "no_source_or_docs_changes": true,
+    "no_build": true,
+    "no_gui_execution": true,
+    "no_database_or_password_read": true,
+    "no_other_chat_contact": true,
+    "previous_timing_method_review_preserved": true
+  },
+  "exact_text_comparison": {
+    "old_file": "temp/sn100_host/o03_2_latency/attempts/final_03/source_snapshot/tests/shell_account_test.cpp",
+    "old_sha256": "CBFEF7557CA8EA2C977C69CA67A175D54FD827B9C3E9C95FBDB1DBDE48D19E49",
+    "new_file": "06_programs/sn100_host/tests/shell_account_test.cpp",
+    "new_sha256": "ECA2A91A58D8D804818755E95CE9F1F60555B3FFEC296E61DFAEE8D8C4C4DBAF",
+    "old_block_occurrences": 1,
+    "exact_pacing_replacement_only": true,
+    "assertion_lines_identical": true,
+    "assertion_count": 240,
+    "case_lines_identical": true,
+    "case_count": 12,
+    "corrected_frozen_test_sha256": "ECA2A91A58D8D804818755E95CE9F1F60555B3FFEC296E61DFAEE8D8C4C4DBAF",
+    "pipeline_sha256": "680CCDC59414E313D63EBA5711AE86549BE9A6AAA3CA68FAFB661D70C4ADCCBE"
+  },
+  "diff": {
+    "hunks": 1,
+    "removed_original_lines": 0,
+    "replaced_original_lines": 0,
+    "added_comment_lines": 3,
+    "added_executable_lines": 2,
+    "lines": "Current tests/shell_account_test.cpp:848-853",
+    "changes": [
+      "After the hospital navigation assertion, add a three-line explanation of synchronous QWidget QTest dispatch and QTest::qWait(10).",
+      "After the account navigation assertion, add QTest::qWait(10)."
+    ],
+    "other_measurement_changes": "None in the reviewed formal C++ test. Probe calculation, signal timing boundary, raw heartbeat array, result fields and thresholds are unchanged.",
+    "whole_file_proof": "Replacing the single original two-navigation-statement block with those same statements plus the exact five added lines reconstructs the entire current file after LF/CRLF normalization.",
+    "frozen_corrected_test_matches_formal": true
+  },
+  "coverage_preserved": [
+    {
+      "area": "100 transitions and single instances",
+      "source": "Current tests/shell_account_test.cpp:839-864",
+      "assessment": "Loop remains iteration<50 with hospital+account assertions each iteration; all page/store identity, child counts, initialization counts and no-dirty assertions remain. repeat_page_transitions stays100."
+    },
+    {
+      "area": "Guest and roles0..5",
+      "source": "Current tests/shell_account_test.cpp:758-832",
+      "assessment": "Option values, unusual role filters, administrator invalid update index, Guest refusal, forged role refusal, transaction identity/role recheck and current-session invalidation remain text-identical."
+    },
+    {
+      "area": "Passwords and hidden page",
+      "source": "Current tests/shell_account_test.cpp:866-876",
+      "assessment": "Six-field cleanup and hidden-page permissions tests remain text-identical. No password verification, cleanup or evidence-redaction helper changed."
+    },
+    {
+      "area": "Original running rule and automatic logout",
+      "source": "Current tests/shell_account_test.cpp:878-929",
+      "assessment": "Running-state current-user deletion refusal, equality-based update refusal, changed-role update commit/logout, real double-click target restoration, current-account delete logout and exact one-logout assertions remain."
+    },
+    {
+      "area": "Hospital drafts and manual logout",
+      "source": "Current tests/shell_account_test.cpp:742-756,931-957",
+      "assessment": "Cancel retains draft/identity; accept restores persisted hospital snapshot without draft writes; repeat logout remains a no-op. All checks are unchanged."
+    },
+    {
+      "area": "Account lock, navigation/close rejection and recovery",
+      "source": "Current tests/shell_account_test.cpp:959-1025",
+      "assessment": "BEGIN IMMEDIATE setup, real busy navigation/logout/close attempts, no partial commit, at least5 heartbeat callbacks, rejection count, unlock and successful retry remain text-identical."
+    },
+    {
+      "area": "Process re-open and orderly exit",
+      "source": "Current tests/shell_account_test.cpp:1033-1097,1169 onward",
+      "assessment": "Window close, worker shutdown, independent writer/read PIDs, public snapshot equivalence, formal application exit test and exit-code checks remain text-identical."
+    }
+  ],
+  "pacing_interpretation": {
+    "frequency": "Two added source calls execute per iteration;50 iterations therefore add100 opportunities for queued events and nominal1000ms of event-loop time.",
+    "reason": "The old helper can complete synchronously once navigationChanged satisfies its predicate; adding event-loop intervals between actions prevents a100-action GUI-thread test burst from deferring heartbeat/paint dispatch until its end.",
+    "scope": "This is test scheduling correction. It does not change product UI, retained animations, account/hospital business rules or storage code.",
+    "comparison_limit": "A corrected heartbeat maximum is a separate paced-workload result. Preserve the old unpaced1556.009424ms observation; do not describe shorter heartbeat gaps as a product speed optimization or delete the old data.",
+    "completion_vs_responsiveness": "QTest::qWait dispatches events; its deliberate wall-clock interval is not added to click-to-navigationChanged signal latency. Total experiment duration and GUI inter-delivery gaps remain different metrics."
+  },
+  "pipeline_review": {
+    "main_pipeline": "temp/sn100_host/o03_2_latency/corrected_original.py",
+    "main_pipeline_sha256": "680CCDC59414E313D63EBA5711AE86549BE9A6AAA3CA68FAFB661D70C4ADCCBE",
+    "prior_read_pipeline_sha256": "EA2FD52E1DC122057A79DBE4BA5A4B419A64C7AAB7003848EAA079CF74287A69",
+    "observed_increment": "Owner added a constrained optional run_label to retain independent retries/logs; fresh-build, exact-text check and binary SHA guard remain. The later SHA is the reviewed pipeline snapshot.",
+    "checks": [
+      {
+        "source": "corrected_original.py:13-20",
+        "finding": "Build refuses an existing corrected target and copies only the recorded final_03 public source snapshot, checking each source SHA before copy."
+      },
+      {
+        "source": "corrected_original.py:23-35",
+        "finding": "Checks exactly one original navigation block and requires old.replace(before,after)==current before writing the changed test into its separate snapshot."
+      },
+      {
+        "source": "corrected_original.py:37-41",
+        "finding": "Test.pro must match archived O03-2 SHA; it is copied unchanged."
+      },
+      {
+        "source": "corrected_original.py:44-52",
+        "finding": "qmake and make use subprocess.run(check=True); failure raises before build_metadata.json is written. Successful metadata binds base source manifest, corrected test, unchanged pro and freshly produced binary SHA."
+      },
+      {
+        "source": "corrected_original.py:54-72",
+        "finding": "Run requires success metadata and matching binary SHA, refuses existing data and existing per-slot log, retains each result/exit code and stops on the first failing test. There is no fallback to an earlier binary."
+      },
+      {
+        "source": "tests/shell_latency.sh:39-64 and tests/prepare_shell_latency.py:238-249",
+        "finding": "Separate diagnosis runner also verifies any reused successful frozen target, removes its known executable before a new build, uses errexit+pipefail, and only records build metadata after qmake/make completion; run validates manifest/binary fingerprints."
+      },
+      {
+        "source": "shell/wsl.sh:3,19-23,80-86",
+        "finding": "Formal account-test path builds before exec under errexit and uses qmake&&make in build; qmake/make failure returns before test exec. No explicit stale-binary fallback exists in this path."
+      }
+    ],
+    "static_only": true,
+    "did_not_execute_or_validate_new_run_results": true
+  },
+  "conclusion": {
+    "driver_fix_review_passed": true,
+    "removed_or_weakened_business_assertion_found": false,
+    "blocking_driver_change_issue_found": false,
+    "fresh_build_and_no_stale_fallback_paths_supported_by_static_review": true,
+    "remaining": "Owner must complete/review the corrected full-regression runtime results under these exact test and pipeline hashes. This independent review does not report a fresh runtime pass."
+  }
+}

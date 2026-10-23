@@ -1,0 +1,200 @@
+{
+    "al4a_equivalence_verified": false,
+    "clinical_validated": false,
+    "effective_parameters": {
+        "baseline_points": 5,
+        "derivative_window_points": 5,
+        "maximum_baseline_range_fraction": 0.1,
+        "maximum_plateau_range_fraction": 0.1,
+        "maximum_reference_slope_fraction": 0.1,
+        "minimum_amplitude": 1,
+        "plateau_points": 5,
+        "search_end_seconds": 25,
+        "search_start_seconds": 5,
+        "secondary_peak_fraction": 0.8,
+        "threshold_percent": 50,
+        "use_search_window": true
+    },
+    "hardware_verified": false,
+    "input": {
+        "complete_curve": true,
+        "data_kind": "synthetic",
+        "description": "手工构造的不对称光学曲线；非患者/仪器数据。50%阈值60，线性交点11.2秒；5点局部回归最大速率采样时刻11秒，二者不要求相等。",
+        "direction": "falling",
+        "parameters": {
+            "baseline_points": 5,
+            "derivative_window_points": 5,
+            "maximum_baseline_range_fraction": 0.1,
+            "maximum_plateau_range_fraction": 0.1,
+            "maximum_reference_slope_fraction": 0.1,
+            "minimum_amplitude": 1,
+            "plateau_points": 5,
+            "search_end_seconds": 25,
+            "search_start_seconds": 5,
+            "secondary_peak_fraction": 0.8,
+            "threshold_percent": 50
+        },
+        "points": [
+            [
+                0,
+                110
+            ],
+            [
+                1,
+                110
+            ],
+            [
+                2,
+                110
+            ],
+            [
+                3,
+                110
+            ],
+            [
+                4,
+                110
+            ],
+            [
+                5,
+                110
+            ],
+            [
+                6,
+                110
+            ],
+            [
+                7,
+                110
+            ],
+            [
+                8,
+                109
+            ],
+            [
+                9,
+                105
+            ],
+            [
+                10,
+                90
+            ],
+            [
+                11,
+                65
+            ],
+            [
+                12,
+                40
+            ],
+            [
+                13,
+                30
+            ],
+            [
+                14,
+                24
+            ],
+            [
+                15,
+                20
+            ],
+            [
+                16,
+                17
+            ],
+            [
+                17,
+                15
+            ],
+            [
+                18,
+                13
+            ],
+            [
+                19,
+                12
+            ],
+            [
+                20,
+                11
+            ],
+            [
+                21,
+                10
+            ],
+            [
+                22,
+                10
+            ],
+            [
+                23,
+                10
+            ],
+            [
+                24,
+                10
+            ],
+            [
+                25,
+                10
+            ],
+            [
+                26,
+                10
+            ],
+            [
+                27,
+                10
+            ],
+            [
+                28,
+                10
+            ],
+            [
+                29,
+                10
+            ],
+            [
+                30,
+                10
+            ]
+        ],
+        "schema": "sn100-clot-endpoint-input-v1",
+        "time_reference": "seconds-since-reagent-addition"
+    },
+    "input_sha256": "533f219856a679e342e305e95e47a2bd9757b15e1407355197206c69705acf3b",
+    "maximum_derivative": {
+        "baseline": 110,
+        "candidate_found": true,
+        "directed_amplitude": 100,
+        "elapsed_ms": 0.001966,
+        "lower_index": 9,
+        "method": "maximum_derivative",
+        "peak_slope_optical_units_per_second": 20,
+        "plateau": 10,
+        "time_seconds": 11,
+        "upper_index": 13,
+        "warnings": [
+            "sampled_local_regression_peak_not_clinical_ct"
+        ]
+    },
+    "percentage": {
+        "baseline": 110,
+        "candidate_found": true,
+        "directed_amplitude": 100,
+        "elapsed_ms": 0.002301,
+        "lower_index": 11,
+        "method": "percentage",
+        "plateau": 10,
+        "threshold_value": 60,
+        "time_seconds": 11.2,
+        "upper_index": 12,
+        "warnings": [
+        ]
+    },
+    "qt_version": "5.15.13",
+    "schema": "sn100-clot-endpoint-result-v1",
+    "stage": "offline-research-prototype"
+}
+

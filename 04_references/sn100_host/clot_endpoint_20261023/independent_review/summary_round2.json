@@ -1,0 +1,281 @@
+{
+  "evidence": "independent-synthetic-mathematical-review",
+  "clinical_validation": false,
+  "al4a_equivalence": false,
+  "expected_gompertz_half_time_seconds": 52.932103364653315,
+  "expected_gompertz_rate_peak_seconds": 50,
+  "passed": true,
+  "cases": [
+    {
+      "case": "asymmetric_gompertz",
+      "exit_code": 0,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": true,
+        "time_seconds": 52.93086029759366,
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": true,
+        "time_seconds": 50,
+        "warnings": [
+          "sampled_local_regression_peak_not_clinical_ct"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "case": "falling_gompertz",
+      "exit_code": 0,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": true,
+        "time_seconds": 52.93086029759366,
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": true,
+        "time_seconds": 50,
+        "warnings": [
+          "sampled_local_regression_peak_not_clinical_ct"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "case": "reagent_origin_preserved",
+      "exit_code": 0,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": true,
+        "time_seconds": 62.93086029759366,
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": true,
+        "time_seconds": 60,
+        "warnings": [
+          "sampled_local_regression_peak_not_clinical_ct"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "case": "seconds_scaled",
+      "exit_code": 0,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": true,
+        "time_seconds": 158.79258089278096,
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": true,
+        "time_seconds": 150,
+        "warnings": [
+          "sampled_local_regression_peak_not_clinical_ct"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "case": "nonuniform_time",
+      "exit_code": 0,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": true,
+        "time_seconds": 52.93197649378808,
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": true,
+        "time_seconds": 50,
+        "warnings": [
+          "sampled_local_regression_peak_not_clinical_ct"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "case": "linear_has_no_reference_plateau",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "reference_still_changing",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "reference_still_changing",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "unfinished_logistic",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "unstable_reference_window",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "unstable_reference_window",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "flat_curve",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "low_response_amplitude",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "low_response_amplitude",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "low_amplitude",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "low_response_amplitude",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "low_response_amplitude",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "opposite_direction",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "direction_mismatch",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "direction_mismatch",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "two_separated_rate_peaks",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": true,
+        "time_seconds": 55.01041426385996,
+        "warnings": [
+          "multiple_high_rate_regions"
+        ]
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "multiple_rate_peaks",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "window_before_main_transition",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "no_threshold_crossing",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "peak_at_boundary",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "window_after_main_transition",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "no_threshold_crossing",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "peak_at_boundary",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "duplicate_time",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "time_not_increasing",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "time_not_increasing",
+        "warnings": []
+      },
+      "passed": true
+    },
+    {
+      "case": "negative_reagent_time",
+      "exit_code": 4,
+      "stderr": "",
+      "percentage": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "negative_time",
+        "warnings": []
+      },
+      "maximum_derivative": {
+        "candidate_found": false,
+        "time_seconds": null,
+        "error_code": "negative_time",
+        "warnings": []
+      },
+      "passed": true
+    }
+  ]
+}

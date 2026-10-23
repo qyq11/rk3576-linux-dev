@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "title": "O03-2 independent review of latency test timing method",
+  "date": "2026-10-23",
+  "reviewer": "/root/source_audit",
+  "review_boundary": {
+    "purpose": "Review measurement/phase attribution design for the previously observed 1556.009424 ms GUI-heartbeat gap.",
+    "operations": "Read-only formal test source, public frozen source files, public manifests and old public evidence; only this JSON is written.",
+    "no_build": true,
+    "no_gui_execution": true,
+    "no_database_or_secret_read": true,
+    "no_other_chat_contact": true,
+    "no_runtime_result_claim": true,
+    "source_condition": "shell_latency_test.cpp was stable across reads and equals the candidate final_02 copy. prepare_shell_latency.py changed during this review. final_02 was still being frozen when observed; its completed manifest/build metadata/generated helper did not yet exist.",
+    "verdict_scope": "Static timing-method review of the identified SHA snapshot; not verification of a finished frozen build or successful experiments."
+  },
+  "reviewed_source_state": {
+    "snapshots": [
+      {
+        "path": "06_programs/sn100_host/tests/shell_latency_test.cpp",
+        "sha256": "7F8A145501B63682A0A878936DF45D26BC8E0209DB61FA842405466A55340D0C"
+      },
+      {
+        "path": "06_programs/sn100_host/tests/shell_latency_test.pro",
+        "sha256": "5CD6C1FACF2AEE335D1D9020A0D795E9F2B21AD4D409F37F5A75C7ED9B32B7B2"
+      },
+      {
+        "path": "06_programs/sn100_host/tests/prepare_shell_latency.py",
+        "sha256": "D24FE86B565539C66A7C68F9339E511FD5B16E671586AF68344DC5E74D25B294"
+      },
+      {
+        "path": "06_programs/sn100_host/tests/shell_latency.sh",
+        "sha256": "3A904896E3A0C227B5A811FF74DDED5E308C9CD2A5A73735C2A23B29B4310755"
+      },
+      {
+        "path": "temp/sn100_host/o03_2_latency/attempts/final_02/source_snapshot/tests/shell_latency_test.cpp",
+        "sha256": "7F8A145501B63682A0A878936DF45D26BC8E0209DB61FA842405466A55340D0C"
+      },
+      {
+        "path": "temp/sn100_host/o03_2_latency/attempts/final_02/source_snapshot/tests/shell_account_test.cpp",
+        "sha256": "CBFEF7557CA8EA2C977C69CA67A175D54FD827B9C3E9C95FBDB1DBDE48D19E49"
+      },
+      {
+        "path": "temp/sn100_host/o03_2_latency/generated/latency_support.h",
+        "sha256": "7BD4BD0C122FE205BE992DF653550F64159B5905933F02AA392094322CD7922E"
+      },
+      {
+        "path": "temp/sn100_host/o03_2_latency/run_experiments.py",
+        "sha256": "1B0EB009EDEC08248BA0334FFDFBD5C7A4F765B755DA4DD4A6F5220173EB637A"
+      }
+    ],
+    "final_02_completed_manifest_exists": false,
+    "final_02_success_build_metadata_exists": false,
+    "final_02_generated_support_exists": false
+  },
+  "main_test_initial_sha256": "7F8A145501B63682A0A878936DF45D26BC8E0209DB61FA842405466A55340D0C",
+  "prepare_script_drift": {
+    "first_sha256": "C79134D2184748C6FCEDF12476835EFC0CD8D13A39638DCDB4BDCB23E00011C1",
+    "later_sha256": "D24FE86B565539C66A7C68F9339E511FD5B16E671586AF68344DC5E74D25B294",
+    "interpretation": "Do not extend initial source-freeze-script review to later uninspected changes."
+  },
+  "product_preservation": {
+    "matched_archived_core_files": [
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "91B521BD3A6D707F2C602FE5736DF0731CD2C8649211DD3408DE2B9387CB902C",
+        "path": "data/account_store.cpp"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "16E9B7AC2BBDD94EA9C6B9178CF85EE82871C698040F231938393213A2E1E06A",
+        "path": "data/account_store.h"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "4CA520400DED88361AEA99B4AE686F0D70AEC52725B961AC6527417B67B9AA10",
+        "path": "ui/frmaccountsetting.cpp"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "BBF4902CAB6B579A5FA6B80DA1B915D099955C71B5193F17FA5056D8181EE52D",
+        "path": "ui/frmaccountsetting.h"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "712BD653374198A142672A70DF9BAF9A8DBBFB88E14FB129528B17899D0A35A8",
+        "path": "ui/frmaccountsetting.ui"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "F800E9E64ED69F3F5F20419C00B4E09A6104DF79E4E7508EC31A890938E99C59",
+        "path": "ui/frmhospinfosetting.cpp"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "6C24D118E520CF5810CE03A182A4894B41AD77CFF202F60F9AB1646014155B44",
+        "path": "ui/frmhospinfosetting.h"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "A85690A04672E6CE037CC3CAE95FF4CA6EFCFF5EE0D0EE51E4912492D482CC5B",
+        "path": "shell/frmuserset.cpp"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "D959D60DADBC438DE5D1089DF0A5E319C9381A0C446DF37DBDA2397165DFE3DE",
+        "path": "shell/frmuserset.h"
+      },
+      {
+        "matches_archived_O03_2": true,
+        "sha256": "AAB5767933B361D665A4DAE9AC59A4503D4A80A2B766624F471527720C24823C",
+        "path": "shell/frmuserset.ui"
+      }
+    ],
+    "animations": "Candidate frozen ui/cusdialogmask.cpp retains 280 ms background/picture/move animation and original popup capture. No test code disables product animations or swaps layout/styles.",
+    "session": "Frozen original Session creates frmMain with AccountStore and HospitalStore, explicitly logs in offlineEngineer; no HistoryPage is attached. Compiled shell core can contain newer O03-3 declarations but that path is inactive here.",
+    "qss_and_roles": "The inspected account/UI/store sources match the O03-2 archive. The test changes role selection through the original combobox value and uses real QWidget key/mouse delivery; it does not replace account slots with fake successful results."
+  },
+  "timing_checks": [
+    {
+      "name": "Common monotonic origin",
+      "source": "tests/shell_latency_test.cpp:54-62,80-96,114-147",
+      "assessment": "Heartbeat and phase begin/end use the same QElapsedTimer::nsecsElapsed origin. Phase duration and process CPU are separately named. GUI-heartbeat gap is a callback delivery interval, not worker completion or compositor/pixel latency."
+    },
+    {
+      "name": "Phase/heartbeat overlap",
+      "source": "tests/shell_latency_test.cpp:150-193",
+      "assessment": "Each heartbeat retains previous_ms/now_ms/gap_ms; overlap is computed using max(begin)/min(end) against every phase. This correctly preserves the interval spanning a synchronous phase and the following event-loop drain, rather than assigning it solely to the phase active when timeout finally fires.",
+      "limit": "Phases nest, so overlap durations from all rows must not be summed as mutually exclusive causes. Temporal intersection alone does not identify a blocking call stack; the result interpretation already says so."
+    },
+    {
+      "name": "Long asynchronous/modal operations versus stalls",
+      "source": "tests/shell_latency_test.cpp:135-146,529-541,554-607",
+      "assessment": "Operation scopes include input/worker wait/real modal completion. A long phase can deliver many heartbeats; trace.result separately reports heartbeat statistics and delivery counts. The current code does not directly relabel whole operation duration as GUI no-response."
+    },
+    {
+      "name": "Final heartbeat tail",
+      "source": "tests/shell_latency_test.cpp:98-111,189-190,339-343",
+      "assessment": "The final settle returns to the event loop before stop, and undelivered_tail_ms is explicitly retained. The final tail is not included in the inter-delivery max; callers must preserve this distinction rather than silently treating it as zero."
+    },
+    {
+      "name": "Burst versus paced input control",
+      "source": "tests/shell_latency_test.cpp:390-505; generated/latency_support.h:66-75,492-524",
+      "assessment": "Both drive 100 accepted original navigation buttons. The synchronous burst intentionally has no event-loop interval; waitUntil performs no pumping if the synchronously delivered selection signal already makes its predicate true. The paced condition adds the explicit 10 ms interval. Heartbeat delivery counts before/after the burst plus the next drain can demonstrate test-driver starvation in a new run.",
+      "limit": "Record actual QTest defaultMouseDelay and QTEST_QPA_MOUSE_HANDLING. Source alone does not establish the effective runtime mouse path; runtimeMetadata is designed to record them."
+    },
+    {
+      "name": "Primary normal-operation path purity",
+      "source": "tests/shell_latency_test.cpp:508-637; generated/latency_support.h:310-348,527-537",
+      "assessment": "normalOperations starts tracing after ready/login and passes trace.start(false); it uses ASCII real keyboard events instead of clipboard. The helper does not set capturePath, so DialogAnswers performs no external PNG capture. Independent SQL snapshots, file sizes, shutdown and JSON output happen after trace.stop. Original product popup grabs/animations and actual worker SQL remain inside the operation.",
+      "remaining_driver_overhead": "5 ms modal-answer timer, QSignalSpy bookkeeping, QTest input, waitUntil/processEvents and phase/heartbeat JSON allocation remain. It is a controlled QtTest workload rather than uninstrumented physical-input latency."
+    },
+    {
+      "name": "Evidence overhead separation",
+      "source": "tests/shell_latency_test.cpp:639-763",
+      "assessment": "Whole-window grab, pregrabbed PNG encoding, preencoded QFile write/flush, combined original grab/save, public SQL snapshots, proc sample and clipboard/keyboard driver paths have distinct scopes and event-loop intervals. This can identify a reproducible overhead class. QFile flush is correctly stated not to be fsync/durable storage proof."
+    }
+  ],
+  "findings": [
+    {
+      "id": "M01",
+      "severity": "low",
+      "type": "scope/comment mismatch",
+      "source": "tests/shell_latency_test.cpp:272-273,724-746",
+      "detail": "The keyboardInput comment says Unicode clipboard cost is a separate experiment, but evidenceOverhead currently uses only ASCII LatencyInputXX in both clipboard and keyboard conditions. The original archived workload also pasted Chinese hospital/department/note text.",
+      "correction": "Change the comment/report to say ASCII clipboard comparison, or add a separately labelled CJK clipboard input if that behavior is to be discussed. Do not claim measured Chinese-input overhead from these ASCII samples.",
+      "timing_method_blocker": false
+    },
+    {
+      "id": "M02",
+      "severity": "low",
+      "type": "paired-order interpretation",
+      "source": "temp/sn100_host/o03_2_latency/run_experiments.py conditions list and repetition loop",
+      "detail": "Each of three rounds runs the same fixed order burst, paced, normal, overhead, capture_burst, proc_burst. Round-robin interleaving is present, but order is not rotated/counterbalanced across rounds as proposed in measurement_review.json.",
+      "correction": "Describe the actual fixed order; for causal performance comparisons sensitive to warmup/load, alternate or rotate burst/paced order. This does not invalidate observation of zero heartbeat delivery during a synchronous burst.",
+      "timing_method_blocker": false
+    },
+    {
+      "id": "M03",
+      "severity": "medium",
+      "type": "historical reproduction boundary",
+      "source": "tests/shell_latency_test.cpp:390-407,460-474 versus archived shell_account_test.cpp:723-740,833-859",
+      "detail": "New burst/paced start with five seeded accounts and an empty hospital dictionary; the old burst follows an O03Retained addition and a saved hospital row. The two new conditions match each other, but are not an exact original-input reconstruction.",
+      "correction": "Call it a same-class mechanism reproduction. Match the original pre-burst public rows outside the trace if claiming an exact input-matched replay. Retain the historical 1556.009424 ms as an old unlabelled observation.",
+      "timing_method_blocker": false
+    },
+    {
+      "id": "M04",
+      "severity": "low",
+      "type": "normal-operation coverage boundary",
+      "source": "tests/shell_latency_test.cpp:508-608",
+      "detail": "Normal trace covers Engineer ASCII add/delete, hospital-name save, dirty navigation and manual logout. It does not include account update/automatic logout, all role branches, lock/error recovery, hospital row CRUD or physical CJK input. Phase durations also begin before field entry, rather than at the final Save/Add click.",
+      "correction": "Report these exact workloads and whole-operation measurement boundaries; do not label their durations as click-to-visible feedback or extend their heartbeat maximum to every normal business path. Existing functional regression evidence remains separate.",
+      "timing_method_blocker": false
+    }
+  ],
+  "interpretation_contract": {
+    "historical_exact_cause": "The old archived peak has no phase timestamps. A new phase-labelled reproduction can establish a repeatable same-class mechanism, but cannot prove which call caused that exact historical interval.",
+    "acceptable_future_claim": "In new SHA-identified runs, 100 synchronous QWidget test clicks delivered zero GUI heartbeats, and the long next interval overlaps their aggregate dispatch; paced original controls/animations removed that starvation under the stated workload, if actual run evidence shows those facts.",
+    "unacceptable_future_claims": [
+      "Any modal lasting more than 500 ms means the GUI was blocked for that duration.",
+      "A heartbeat interval overlapping PNG proves PNG exclusively caused it.",
+      "Summing parent and child phase overlaps yields causal time shares.",
+      "The new maximum erases or proves exact retrospective attribution of the old 1556.009424 ms.",
+      "ASCII Engineer-only controlled results prove full original UI, all roles, RK, compositor, long-run or device responsiveness."
+    ]
+  },
+  "conclusion": {
+    "blocking_measurement_algorithm_defect_found": false,
+    "method_suitable_for": "Fresh controlled test-driver starvation and evidence-overhead diagnosis with explicit phase/time/runtime metadata.",
+    "issues_reported_to_parent": [
+      "M01",
+      "M02",
+      "M03",
+      "M04"
+    ],
+    "pending": "Owner completes immutable snapshot/build and actual coordinated runs, then reviews raw intervals/phases/warnings/results against the exact SHA. This independent task did not run them."
+  }
+}

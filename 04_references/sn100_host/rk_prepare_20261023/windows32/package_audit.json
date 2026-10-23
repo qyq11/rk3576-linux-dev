@@ -1,0 +1,53 @@
+{
+  "scope": "Read-only audit of actual final ARM release tar; no extraction or execution",
+  "archive": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/rk_prepare/packages/sn100_shell_e0420b6be0f6c981000b07f6e63dda4a641af8e9df9ff27d97fb51a44f0c3a09.tar.gz",
+  "archive_sha256": "99e44c5310a3ab484d027de9bc772e9d0cb2e99465cc272940ba43fb109acf05",
+  "release_id": "e0420b6be0f6c981000b07f6e63dda4a641af8e9df9ff27d97fb51a44f0c3a09",
+  "members": [
+    "SHA256SUMS",
+    "lib",
+    "lib/libQt5Sql.so.5",
+    "lib/libsqlite3.so.0",
+    "plugins",
+    "plugins/sqldrivers",
+    "plugins/sqldrivers/libqsqlite.so",
+    "release.json",
+    "release_id",
+    "rk_board.sh",
+    "sn100_shell"
+  ],
+  "manifest_matches_all_payloads": true,
+  "only_expected_payloads": true,
+  "private_runtime": {
+    "usr/lib/aarch64-linux-gnu/libQt5Sql.so.5": "lib/libQt5Sql.so.5",
+    "usr/lib/aarch64-linux-gnu/libsqlite3.so.0": "lib/libsqlite3.so.0",
+    "usr/lib/aarch64-linux-gnu/qt5/plugins/sqldrivers/libqsqlite.so": "plugins/sqldrivers/libqsqlite.so"
+  },
+  "elf": {
+    "sn100_shell": {
+      "machine": "AArch64",
+      "bytes": 18927456,
+      "sha256": "333bbe6a2b765b76c185d8b8f98524333f319b1a3343009e36c449a5f85ca5bb"
+    },
+    "lib/libQt5Sql.so.5": {
+      "machine": "AArch64",
+      "bytes": 331304,
+      "sha256": "4bf30eba98a71efdb5deb02fa0a534e3c55b08b386912933bb4f7bc6e58f192d"
+    },
+    "lib/libsqlite3.so.0": {
+      "machine": "AArch64",
+      "bytes": 1526192,
+      "sha256": "c5ff01170526282c54ee341dc584f40f5d50bbb37f29f436460d0f4d8d9f03a5"
+    },
+    "plugins/sqldrivers/libqsqlite.so": {
+      "machine": "AArch64",
+      "bytes": 134864,
+      "sha256": "c9141773c48f9561040b929f8e412986550bd2af6cc8064fa3c6fc1f21af949c"
+    }
+  },
+  "contains_loader": false,
+  "contains_system_gpu_or_display_plugins": false,
+  "contains_system_qt_core_gui_widgets": false,
+  "board_runtime_verified": false,
+  "status": "PASS_actual_tar_members_and_sha"
+}

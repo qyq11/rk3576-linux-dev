@@ -1,0 +1,57 @@
+{
+  "scope": "Read-only O03-2 archived test-driver audit; no build, GUI, authentication database or secret read; no shell/product change",
+  "date": "2026-10-23",
+  "skills": [".agents/skills/sn100-module-migration/SKILL.md", ".agents/skills/sn100-project-files/SKILL.md", ".agents/skills/sn100-module-migration/references/engineering-and-verification.md"],
+  "archived_source": "04_references/sn100_host/offline_shell_account_20261023/",
+  "strongest_candidate": {
+    "status": "High-confidence hypothesis requiring phase-instrumented paired reproduction",
+    "mechanism": "100 synchronous QWidget QTest clicks run without returning to the GUI event loop. navigationChanged is delivered synchronously, so waitUntil sees an already-true predicate and performs no processEvents/qWait. Timer delivery can remain pending for the whole burst.",
+    "locations": [
+      {"file": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 68, "detail": "waitUntil only pumps events while predicate is false"},
+      {"file": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 509, "detail": "navigationClick uses QTest::mouseClick(QWidget*) then waits for synchronously emitted selection signal"},
+      {"file": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 845, "detail": "50 account/hospital pairs, with neither qWait nor queued delivery between transitions"},
+      {"file": "06_programs/sn100_host/tests/shell_account_test.cpp", "line": 1115, "detail": "Independent navigation experiment explicitly qWait(10) after each click"},
+      {"file": "/usr/include/x86_64-linux-gnu/qt5/QtTest/qtestmouse.h", "detail": "Installed Qt5.15 QWidget mouseEvent fallback calls qApp->notify synchronously; unlike QWindow overload, no trailing processEvents. A positive defaultMouseDelay would add qWait; record actual default in reproduction. Archived build flags contain no QTEST_QPA_MOUSE_HANDLING."}
+    ],
+    "archived_numerical_evidence": {
+      "maximum_heartbeat_gap_ms": 1556.009424,
+      "heartbeat_zero_based_index": 438,
+      "interval_start_ms_from_cumulative_gaps_approximately": 6315.801528,
+      "interval_end_ms_from_cumulative_gaps_approximately": 7871.810952,
+      "navigation_100_signal_duration_sum_ms": 1401.224252,
+      "navigation_all_106_signal_duration_sum_ms": 1478.656836,
+      "resource_sample_before_ms": 6231.875296,
+      "resource_sample_after_ms": 7872.867536,
+      "process_cpu_ticks_before": 411,
+      "process_cpu_ticks_after": 556,
+      "cpu_ticks_delta": 145,
+      "interpretation": "The long interval coincides with about 1.45 CPU seconds if CLK_TCK is100, consistent with busy synchronous dispatch rather than a purely sleeping lock. Phase boundaries are absent, so time proximity is not proof of exact overlap.",
+      "focused_navigation_max_heartbeat_ms": 48.589979,
+      "comprehensive_next_highest_heartbeat_ms": 144.265708
+    }
+  },
+  "other_test_only_costs": [
+    {"operation": "Client grab and PNG save", "locations": [340,740,837,795,951,1019], "detail": "QWidget::grab renders synchronously, QPixmap::save encodes and writes synchronously on GUI thread. account_engineer.png immediately precedes navigation burst, so the same pending timer interval can include its cost. Split grab, toImage and PNG save wall/CPU timings and flush a pending heartbeat before each phase. Use password-empty frames only."},
+    {"operation": "Clipboard injection", "locations": [364,367,369], "detail": "Every paste uses setText/Ctrl+V/clear against WSLg XCB clipboard. account_write_03.log has46 QXcbClipboard transfer warnings with no timestamps. Cannot attribute the longest interval to these warnings. Compare identical ASCII input through keyboard events and clipboard; separately measure Unicode input via input-method commit events. Keep secrets transient and exclude text values from traces."},
+    {"operation": "Public SQL verification/edit", "locations": [119,132,216,607], "detail": "publicSnapshot opens SQLite connections, PRAGMA integrity_check and SELECT synchronously in test GUI thread; changePublicAccount updates public identity/role there. These are not product worker paths. Time isolated test-only spans; preserve public-only selects; never archive authentication DB or derived secrets."},
+    {"operation": "Proc resource probe", "locations": [172,257], "detail": "200ms QTimer reads /proc status, smaps_rollup, stat and enumerates descriptors on GUI thread. Sampler itself can contribute overhead and shares timer scheduling gaps. For attribution record sampler duration or collect process resource samples externally without changing product animation."},
+    {"operation": "Original modal dialogs", "locations": [310,340,344], "detail": "Original animation and modal lifetime are intentionally preserved. Modal duration can include nested event-loop heartbeats and must not be equated with one continuous GUI stall. Time signal-to-ready, decision and return separately; compare capture disabled/enabled with the same original animation."}
+  ],
+  "measurement_gaps": [
+    "heartbeat_gap_ms has durations only, no per-phase monotonic timestamps. Cumulative values reconstruct approximate delivery times but cannot retrospectively establish operations underway.",
+    "navigation_samples elapsed_ms is operation-local, lacks absolute probe time and identifies only the first navigationChanged signal, not event return or compositor/pixel presentation.",
+    "Timer probe starts after fixture initialization/ready/exposed and remains active through synchronous snapshots, PNG evidence, driving loops and worker shutdown. Its max is mixed test+product cost.",
+    "probe.result() does not append the outstanding final interval; synchronous work after last delivered heartbeat can be absent from max. For each diagnostic phase drain scheduled delivery once and retain phase_end separately.",
+    "Resource samples are process totals and do not separate GUI/test thread vs SQL worker CPU. No call stack or normal-product operation phase was recorded.",
+    "Old write log has no monotonic timestamps for clipboard warnings or case transitions. Do not rewrite old1.556s as screenshot-only or harmless without new reproduction."
+  ],
+  "recommended_experiments_in_order": [
+    "Keep original layouts, QSS and all animations. Use immutable saved O03-2 product inputs in an independent latency build/test tree, not changing O03-3 shared shell.",
+    "Measure identical100 QWidget QTest navigation burst with phase timestamps, defaultMouseDelay, heartbeat delivery count during burst and after queued drain. Repeat with10ms event-loop time after each click. If burst has zero deliveries and paired phase gap scales with total dispatch, attribute it to synchronous driver starvation.",
+    "Normal-operation workload separately: individual page transitions and account add/update/delete/logout with event loop between user actions; no PNG, public SQL snapshots or clipboard inside measured business span. Wait for actual completion signal and retain failure/lock recovery assertions.",
+    "Separate evidence workload: grab, image conversion, PNG encoding/save, public snapshot, public role edit, clipboard and proc sample measured independently; retain wall/CPU and relevant heartbeat overlap without logging field contents.",
+    "Repeat original comprehensive flow with instrumentation first, then corrected realistic input scheduling; retain both raw outcomes and unchanged business assertions. Do not merely remove slow intervals from max.",
+    "Report signal response, GUI heartbeat, modal completion and pixels separately; use no WSL result to close RK resource/long-run acceptance."
+  ],
+  "product_change_recommendation": "None justified from current archived evidence. Test instrumentation and realistic scheduling should precede any product change. Do not disable original animations or redraw the layout."
+}

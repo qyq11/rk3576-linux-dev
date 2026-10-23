@@ -1,0 +1,67 @@
+{
+  "scope": "Application binaries remain in temp; ARM64 build/ELF only, not board execution",
+  "cxx_standard": "C++14",
+  "toolchains": {
+    "wsl_qt": "5.15.13",
+    "wsl_gxx": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "arm64_gxx": "aarch64-linux-gnu-g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "windows_qt": "5.14.2",
+    "windows_gxx": "g++.exe (i686-posix-dwarf-rev0, Built by MinGW-W64 project) 7.3.0"
+  },
+  "targets": [
+    {
+      "path": "temp/sn100_host/coagulation/wsl_release/sn100_clot_endpoint",
+      "bytes": 118840,
+      "sha256": "b16bbbb4819ab1d511d1b130610bc4e4b54d52ae001f59a417ab1424d9cbe1b9",
+      "target": "wsl_x86_64",
+      "architecture": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/coagulation/wsl_release/sn100_clot_endpoint: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=f7d62c43eee6caa032050146be9b48bc003e1aa6, for GNU/Linux 3.2.0, not stripped",
+      "direct_dynamic_dependencies": [
+        "libQt5Core.so.5",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ]
+    },
+    {
+      "path": "temp/sn100_host/coagulation/windows_5142_x86_release/release/sn100_clot_endpoint.exe",
+      "bytes": 72192,
+      "sha256": "fd1e056d729b445131d8b27fc772e89b7da62c3a1a8cfad1ccd7090235eff314",
+      "target": "windows_x86",
+      "architecture": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/coagulation/windows_5142_x86_release/release/sn100_clot_endpoint.exe: PE32 executable (console) Intel 80386 (stripped to external PDB), for MS Windows, 8 sections",
+      "direct_dynamic_dependencies": [
+        "Qt5Core.dll",
+        "libgcc_s_dw2-1.dll",
+        "KERNEL32.dll",
+        "msvcrt.dll",
+        "libstdc++-6.dll"
+      ]
+    },
+    {
+      "path": "temp/sn100_host/coagulation/arm64_release/sn100_clot_endpoint",
+      "bytes": 1252936,
+      "sha256": "ba9c17e085fd3737ca710d169071261180d57a8279586b716479cd5a35e3641f",
+      "target": "arm64",
+      "architecture": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/coagulation/arm64_release/sn100_clot_endpoint: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=79f2cd065c775fe0b69db745d795d297298ce1dd, for GNU/Linux 3.7.0, with debug_info, not stripped",
+      "direct_dynamic_dependencies": [
+        "libQt5Core.so.5",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "06_programs/sn100_host/coagulation/build.sh": "610cebedf2fae6e00b7cbe87d4024d79d2f5ba77b88c235728370b335b564054",
+    "06_programs/sn100_host/coagulation/clot_endpoint.cpp": "cf6d39ecf5fc4cc6359befeebcf01ad115b15e46b8a16577d12f5febd592bd16",
+    "06_programs/sn100_host/coagulation/clot_endpoint.h": "df950b735c2b2d670ff804b4de5f75223f669eef59e70398eea8482315d35183",
+    "06_programs/sn100_host/coagulation/coagulation.pro": "05d11cfc36843ec018330ae2681b6d4b6512714a165180803a42f8fe2c170baf",
+    "06_programs/sn100_host/coagulation/main.cpp": "0724674689f6685841a6f07dd71d93af1c66d1a8f31002901a778d2af0607725",
+    "06_programs/sn100_host/coagulation/origins.json": "d192802dcd35d9f2db22c2aaa3661bfad17653c935b61bec030d8e63c6394b7c",
+    "06_programs/sn100_host/coagulation/tests/endpoint_test.cpp": "3e4a4ce56443505627f81bdd97058aae17f3296c8ad3f5fca7b2e0d4b2f63b95",
+    "06_programs/sn100_host/coagulation/tests/endpoint_test.pro": "cf9fe35a62a1e8ed4bcf03f843d45fad17b632dd478dd35d88ab933658907ceb",
+    "06_programs/sn100_host/coagulation/tests/fixtures/synthetic_curve.json": "7e2563669fd1c744caa71f68916010b2593d303f0a2e56d6d5bc803cccf52ca4",
+    "06_programs/sn100_host/coagulation/wsl.sh": "0615a1006444217547e6772fe7b054158ab80dfd6649c3938344d3ed5f1d4acd"
+  }
+}

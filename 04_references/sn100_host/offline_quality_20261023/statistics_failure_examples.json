@@ -1,0 +1,118 @@
+{
+  "examples": [
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "existing_output_refused",
+      "stderr": "{\"error_code\":\"new_output_required\",\"error_message\":\"输出目录必须尚不存在且父目录存在\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "relative_output_refused",
+      "stderr": "{\"error_code\":\"absolute_paths_required\",\"error_message\":\"输入文件和新输出目录必须显式使用绝对路径\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 4,
+      "actual_exit_code": 4,
+      "stdout": "{\"id\":\"boundary\",\"input_values\":[],\"statistics\":{\"count\":0,\"error_code\":\"empty_series\",\"error_message\":\"统计至少需要一个有限数值\",\"ok\":false}}\nSUMMARY {\"architecture\":\"x86_64\",\"clinical_rule_evaluation\":false,\"elapsed_ms\":1,\"failures\":1,\"heartbeat_max_ms\":null,\"heartbeat_p95_ms\":null,\"heartbeat_samples\":0,\"network_or_instrument\":false,\"operation_max_ms\":null,\"operation_p95_ms\":null,\"operation_p99_ms\":null,\"os\":\"Ubuntu 24.04.5 LTS\",\"qt_version\":\"5.15.13\",\"schema\":\"sn100-quality-statistics-measurement-v1\",\"series_count\":1,\"stress_input_values\":[],\"stress_last_mean\":null,\"stress_operations\":0}\n",
+      "name": "empty_series",
+      "stderr": ""
+    },
+    {
+      "expected_exit_code": 4,
+      "actual_exit_code": 4,
+      "stdout": "{\"id\":\"boundary\",\"input_values\":[-1e+200,1e+200],\"statistics\":{\"count\":2,\"error_code\":\"arithmetic_overflow\",\"error_message\":\"偏差平方或累加超出double范围\",\"ok\":false}}\nSUMMARY {\"architecture\":\"x86_64\",\"clinical_rule_evaluation\":false,\"elapsed_ms\":1,\"failures\":1,\"heartbeat_max_ms\":null,\"heartbeat_p95_ms\":null,\"heartbeat_samples\":0,\"network_or_instrument\":false,\"operation_max_ms\":null,\"operation_p95_ms\":null,\"operation_p99_ms\":null,\"os\":\"Ubuntu 24.04.5 LTS\",\"qt_version\":\"5.15.13\",\"schema\":\"sn100-quality-statistics-measurement-v1\",\"series_count\":1,\"stress_input_values\":[],\"stress_last_mean\":null,\"stress_operations\":0}\n",
+      "name": "variance_overflow",
+      "stderr": ""
+    },
+    {
+      "expected_exit_code": 4,
+      "actual_exit_code": 4,
+      "stdout": "{\"id\":\"boundary\",\"input_values\":[1e+308,1e+308],\"statistics\":{\"count\":2,\"error_code\":\"arithmetic_overflow\",\"error_message\":\"求和超出double范围\",\"ok\":false}}\nSUMMARY {\"architecture\":\"x86_64\",\"clinical_rule_evaluation\":false,\"elapsed_ms\":1,\"failures\":1,\"heartbeat_max_ms\":null,\"heartbeat_p95_ms\":null,\"heartbeat_samples\":0,\"network_or_instrument\":false,\"operation_max_ms\":null,\"operation_p95_ms\":null,\"operation_p99_ms\":null,\"os\":\"Ubuntu 24.04.5 LTS\",\"qt_version\":\"5.15.13\",\"schema\":\"sn100-quality-statistics-measurement-v1\",\"series_count\":1,\"stress_input_values\":[],\"stress_last_mean\":null,\"stress_operations\":0}\n",
+      "name": "sum_overflow",
+      "stderr": ""
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "null_sample",
+      "stderr": "{\"error_code\":\"non_numeric_sample\",\"error_message\":\"样本必须是有限JSON数值，不能是字符串/null/布尔值\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "bool_sample",
+      "stderr": "{\"error_code\":\"non_numeric_sample\",\"error_message\":\"样本必须是有限JSON数值，不能是字符串/null/布尔值\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "string_sample",
+      "stderr": "{\"error_code\":\"non_numeric_sample\",\"error_message\":\"样本必须是有限JSON数值，不能是字符串/null/布尔值\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "sample_budget",
+      "stderr": "{\"error_code\":\"sample_limit\",\"error_message\":\"单序列超过10000点预算\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "duplicate_ids",
+      "stderr": "{\"error_code\":\"series_schema\",\"error_message\":\"序列需唯一1至64字符ID及数值数组\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "anonymous_contract",
+      "stderr": "{\"error_code\":\"input_schema\",\"error_message\":\"需要已声明的匿名统计输入契约\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "malformed_json",
+      "stderr": "{\"error_code\":\"invalid_json\",\"error_message\":\"输入必须是合法JSON对象，数值须有限\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "file_budget",
+      "stderr": "{\"error_code\":\"input_file\",\"error_message\":\"输入不可读或超过2MiB预算\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "stress_negative",
+      "stderr": "{\"error_code\":\"stress_limit\",\"error_message\":\"压力次数应为0至1000000\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "stress_over_budget",
+      "stderr": "{\"error_code\":\"stress_limit\",\"error_message\":\"压力次数应为0至1000000\",\"ok\":false}\n"
+    },
+    {
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "stdout": "",
+      "name": "output_parent_missing",
+      "stderr": "{\"error_code\":\"new_output_required\",\"error_message\":\"输出目录必须尚不存在且父目录存在\",\"ok\":false}\n"
+    }
+  ],
+  "scope": "Bounded actual stdout/stderr from the 16 expected-failure CLI cases; no large generated input arrays copied",
+  "schema": "sn100-quality-cli-failure-evidence-v1"
+}

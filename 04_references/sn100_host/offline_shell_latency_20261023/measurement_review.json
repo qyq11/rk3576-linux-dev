@@ -1,0 +1,140 @@
+{
+  "review_kind": "independent read-only experiment design; no new execution result",
+  "date": "2026-10-23",
+  "scope": "O03-2 integrated-test 1556.009424 ms GUI heartbeat interval attribution, preserving original layouts and animations",
+  "reviewer": "heartbeat_measurement_review",
+  "instructions_read": [
+    ".agents/skills/sn100-module-migration/SKILL.md",
+    ".agents/skills/sn100-module-migration/references/engineering-and-verification.md",
+    ".agents/skills/sn100-project-files/SKILL.md",
+    "README.md",
+    "AGENTS.md",
+    "06_programs/sn100_host/AGENTS.md",
+    "01_docs/plans/sn100_host_migration_plan.md current O03 cards",
+    "01_docs/knowledge/sn100_host_project_guide.md relevant file/workflow sections",
+    "02_records/20261022_sn100_host_migration.md O03-2 evidence"
+  ],
+  "original_evidence": {
+    "result": "04_references/sn100_host/offline_shell_account_20261023/write_result.json",
+    "test": "06_programs/sn100_host/tests/shell_account_test.cpp",
+    "timer_interval_ms": 10,
+    "max_interval_ms": 1556.009424,
+    "zero_based_max_gap_index": 438,
+    "max_gap_start_ms_from_probe_start": 6315.801528,
+    "max_gap_end_ms_from_probe_start": 7871.810952,
+    "nearby_resource_samples": {
+      "before_ms": 6231.875296,
+      "after_ms": 7872.867536,
+      "before_cpu_ticks": 411,
+      "after_cpu_ticks": 556,
+      "cpu_tick_difference": 145,
+      "interpretation": "Substantial process CPU work occurred near the long interval if _SC_CLK_TCK is confirmed. It does not identify GUI thread CPU, PNG, or an exclusive operation. Do not turn this correlation into proof."
+    },
+    "retrospective_limit": "Original raw samples contain ordered intervals but no per-operation monotonic time markers. Exact historical attribution cannot be recovered from the archived data. A new reproduction can identify a reproducible same-class cause, not prove which old operation caused that exact old interval."
+  },
+  "paired_burst_test_priority": {
+    "status": "Strong static hypothesis identified independently by driver_audit.json; needs execution",
+    "mechanism": "The old 100-navigation loop uses the QWidget QTest::mouseClick overload, which can synchronously qApp->notify without processing unrelated timer events when defaultMouseDelay is nonpositive. navigationChanged is synchronous, so waitUntil returns without entering its event-pumping body. The test can monopolize GUI dispatch for the entire burst.",
+    "installed_header_checked": "/usr/include/x86_64-linux-gnu/qt5/QtTest/qtestmouse.h QWidget fallback; unlike QWindow overload it has no trailing processEvents",
+    "control": "Repeat the same 100-navigation burst with complete begin/end markers, actual defaultMouseDelay, heartbeat delivery count inside burst and a post-burst event drain. Pair with identical controls and fixed data but 10 ms event-loop interval between clicks. Rotate control order across at least three fresh-process rounds.",
+    "evidence_boundary": "A reproducible zero-delivery burst and a gap covering its duration would establish test-driver starvation in that new run. It would not prove the exact unlabelled old peak, nor prove screenshots caused it. Full-window screenshot immediately before the old burst can also contribute to the same pending-timer gap."
+  },
+  "main_thread_test_work_identified": [
+    {"name": "widget grab and PNG save", "location": "QWidget::grab().save(...) including DialogAnswers timer callback", "risk": "Rendering including effects, image conversion, PNG compression and filesystem I/O are synchronous and merged by the old expression."},
+    {"name": "clipboard entry", "location": "paste(): clipboard.setText, mouse click, Ctrl+A, Ctrl+V, waitUntil, clipboard.clear", "risk": "WSLg/XCB clipboard protocol and synthetic-input delays are part of this test action; not equivalent to typing latency or SQL latency."},
+    {"name": "public database snapshots", "location": "publicSnapshot(): independent QSQLITE read-only connection, PRAGMA integrity_check, public SELECTs", "risk": "These verification-only SQL reads run in the GUI test thread, distinct from the production worker SQL path."},
+    {"name": "resource sampling", "location": "Probe 200 ms timer reading /proc/status, smaps_rollup, stat and fd directory", "risk": "Sampling itself occupies the GUI thread. It must be disabled for the primary normal-operation baseline or measured separately."},
+    {"name": "public identity edits and lock setup", "location": "changePublicAccount() and BEGIN IMMEDIATE in the test", "risk": "Direct test SQL executes on GUI test thread and must have explicit markers."},
+    {"name": "stopWorkers", "location": "blocking close invoke and QThread::wait before probe.result", "risk": "Shutdown belongs in its own phase, not the normal-interaction distribution. The historical large interval is mid-run, so shutdown alone is not supported as its cause."}
+  ],
+  "measurement_contract": {
+    "clock": "One monotonic QElapsedTimer shared by heartbeat and phases; nanosecond timestamps stored before formatting.",
+    "heartbeat": "Record every callback's prior and current monotonic time, interval, nominal 10 ms interval, and callback/phase overlap. Interval is not direct input-to-pixel latency or worker completion time.",
+    "phase_markers": "Begin/end markers immediately around each sync test operation. Keep them in memory and serialize only after measurement stops. Record nesting and operation id.",
+    "gap_attribution": "Intersect each [previous heartbeat, current heartbeat] interval with every phase [start,end]. A gap can span multiple phases or phase plus idle. Report every overlap; do not assign it solely to the label active at callback end.",
+    "phase_boundaries": "Yield to the unchanged event loop between isolated phases and wait for at least one or preferably two heartbeat callbacks before starting the next phase. Otherwise a long gap can be incorrectly assigned to the following phase.",
+    "operation_markers": "Separate input injection, business request emission, worker result arrival, GUI operationFinished, modal ready, modal answer click and modal close. Modal lifetime with animation is not a GUI-stall measurement.",
+    "qtest": "Document default mouse/key delay and waitUntil/qWait policy. QTest-driven input remains a test load. A typed-ASCII control can isolate clipboard-specific cost; a direct setText control is synthetic instrumentation only and cannot replace the real-control functional path.",
+    "normal_workload": "No screenshot, PNG, external SQL snapshot, public SQL edits, or GUI-thread resource sampling inside primary normal-operation measurement. Use actual Widgets controls, workers, original dialogs and animations.",
+    "resource_observer": "Sample process CPU/RSS/PSS/threads/FD in an external process if needed. Record observer cadence and overhead separately. Do not claim thread-specific CPU from whole-process /proc ticks.",
+    "environment": "Release, fixed source/binary SHA, Qt/QPA/display/font/canvas/data size, machine load and concurrent compiles. Preserve other windows; do not close unrelated previews or suppress animations.",
+    "privacy": "No passwords, derived secrets, authentication DB, or credential hashes in logs/screenshots. Capture only after clearing all password fields and use isolated anonymous data."
+  },
+  "recommended_controls": [
+    {"id": "normal", "operation": "Fresh two-worker shell; 100 account/hospital navigations plus repeated real hospital save, account add, account/session logout and unsaved cancel/discard", "excluded": "Screenshots, PNG, direct SQL verification, GUI resource polling", "purpose": "Isolate unchanged product plus necessary input-driving overhead."},
+    {"id": "grab_only", "operation": "QWidget::grab() into memory, no encoding/write", "purpose": "Widget rendering/effects capture cost."},
+    {"id": "png_memory", "operation": "Pre-grab outside this phase; encode identical image using normal PNG settings to QBuffer", "purpose": "PNG compression/conversion/allocation cost with no filesystem write."},
+    {"id": "write_only", "operation": "Pre-encode outside this phase; write same bytes to a new temp file then normal flush/close", "purpose": "Separate normal application-level file I/O from encoding. Without fsync this is not durability latency or raw physical storage throughput."},
+    {"id": "grab_save_original", "operation": "Unchanged original QWidget::grab().save(path) expression", "purpose": "Compare split phases to the original combined sampling path, including QPixmap conversion behavior."},
+    {"id": "clipboard", "operation": "Original paste helper on empty anonymous field", "purpose": "Measure setText, each click/key injection, text-visible wait and clear separately; compare typed ASCII control with same font/field/length where possible."},
+    {"id": "sql_snapshot", "operation": "Original publicSnapshot on both isolated tiny databases, after worker idle", "purpose": "Verification-only QSQLITE open/integrity/select/close cost; never select pwd."},
+    {"id": "resource_read", "operation": "Original /proc sample routine", "purpose": "Observer cost, using both single measured calls and original periodic timer if needed."},
+    {"id": "dialog_capture", "operation": "Same original modal animation with and without its grab/save callback", "purpose": "Check whether screenshotting a dialog/effect inside the 5 ms auto-answer timer stalls event handling; preserve animations."}
+  ],
+  "repeat_policy": {
+    "preferred": "At least three fresh-process rounds per normal workload and control; fixed anonymous data and stable Release binary. In each round run a short idle warm-up then fixed operations; preserve first/cold samples separately.",
+    "per_phase_repeats": "At least five repeated captures/encodes/writes and three snapshot/clipboard/dialog sequences if runtime permits. Show every duration; no pooling that hides between-process variation.",
+    "ordering": "Alternate or rotate control order across rounds so cold font/image/disk caches and background compilation do not always favor the same arm.",
+    "claims": "If only three observations are available report min/median/max and raw values. Per-round p95/p99 needs the sample count and calculation rule. Do not report p99 of three operations as a robust tail estimate.",
+    "no_historical_erasure": "Keep old 1556.009424 ms value and its measurement limitation. New normal-operation results explain current behavior under their stated load, not all operating conditions."
+  },
+  "runner_static_review": {
+    "reviewed_files": ["06_programs/sn100_host/tests/shell_latency_test.pro", "06_programs/sn100_host/tests/shell_latency.sh", "06_programs/sn100_host/tests/prepare_shell_latency.py"],
+    "result": "No blocking issue found in initial read; implementation not executed by this reviewer",
+    "positive_controls": [
+      "Dedicated o03_2_latency source/build/generated/evidence roots preserve previous O03-2 products and data",
+      "Public suffix allowlist and runtime/temp/secret/DB exclusions avoid copying runtime authentication material or reference tree",
+      "Pre-copy, copied-byte and post-copy fingerprints detect live-source races before freeze completion",
+      "Generated original helper prefix has a separate SHA and explicit boundary validation",
+      "Build metadata written only after successful native build; run verifies frozen source and binary SHA before execution",
+      "prepare-run rejects existing or noncanonical evidence child path; each run starts with a fresh data root",
+      "No implicit GUI execution during build, and no automatic live-source rebuild during run"
+    ],
+    "claim_boundary": "Source closure is the current formal program snapshot including declared O03-3 history dependencies. It must not be called byte-identical historical O03-2 product source. Generated support derives from the current O03-2 test-helper prefix, which is a narrower provenance statement."
+  },
+  "test_static_review": {
+    "file": "06_programs/sn100_host/tests/shell_latency_test.cpp",
+    "initial_read_sha256": "15a18c2411748a032c4745a2052d16b6efd21ceb75da377f9fca4f94781045e9",
+    "result": "Main measurement boundaries and decomposition are sound on static read; warning redaction finding corrected by owner and verified by reread; no build or GUI execution by this reviewer",
+    "final_read_sha256": "7352034c9931c2f6dd636785c50471b73c29a826ee35fd2dfdb0af615ef21701",
+    "positive_controls": [
+      "PhaseProbe records heartbeat prior/current monotonic times and phase begin/end using the same QElapsedTimer",
+      "Result computes actual interval intersection with every phase and permits nested/overlapping spans",
+      "No heartbeat previous-time reset at phase boundaries; post-phase qWait drains pending delivery and final undelivered tail is explicit",
+      "Burst and paced navigation operate same visible controls; default QtTest delays and QPA path are included in metadata",
+      "Normal operation trace disables proc sampler and avoids screenshot/PNG/clipboard/direct SQL verification; original modal implementation remains active",
+      "Normal public SQL verification and all worker stop/close operations occur after trace.stop()",
+      "Evidence phases separate window grab, pre-grabbed QPixmap PNG conversion/encoding to memory, preencoded file flush/close, original grab/save, public SQL and proc read",
+      "Repeated input control uses matched ASCII via clipboard versus real key events; empty-password assertions precede captured frames",
+      "Fresh per-slot runtime roots and NewOnly result files prevent reset or overwrite of existing account/hospital data",
+      "Whole-operation durations can include modal animation while heartbeat intervals continue; interpretation states temporal overlap is not call-stack or pixel proof"
+    ],
+    "finding_sent_to_owner": {
+      "id": "warning_forward_redaction",
+      "status_at_initial_read": "Pending owner fix before freeze",
+      "status_at_final_read": "Corrected: same redacted safeMessage goes to both JSON recorder and previous Qt message handler",
+      "location": "PhaseProbe::messageHandler / recordWarning",
+      "finding": "recordWarning redacts transient secrets for JSON but previousMessageHandler is passed the original unsanitized QString. Forward the same sanitized string as recorded. Current business code was not found to print passwords, but the stated diagnostic redaction contract should cover both outputs."
+    },
+    "reporting_limits": [
+      "Normal phases measure full controlled input/action/worker/original modal workflow; the implementation does not separately timestamp business request, worker SQL start/commit and compositor presentation",
+      "PNG-to-QBuffer includes QPixmap conversion/allocation as well as codec work; it is not pure compression CPU",
+      "File flush is Qt/OS buffered flush and close, without fsync/durable storage guarantee",
+      "Runtime metadata saying original O03-2 layout refers to retained visual/animation policy; frozen current shell may also include O03-3 history integration",
+      "Repetition and order rotation are runner/orchestrator responsibilities; this source provides per-slot experiments, not independent-round scheduling",
+      "A successful new burst reproduction can show driver starvation in its run but cannot identify the exact unlabelled historical peak"
+    ]
+  },
+  "acceptance_language": {
+    "supported_after_reproduction": "Measured normal-operation intervals and a reproducible sampling/test-only cost can be reported separately, with phase-overlap proof. Original layouts/animations and functional outcome remain unchanged.",
+    "unsupported": [
+      "Exact retrospective attribution of the old unmarked peak",
+      "Calling a 560 ms animated modal duration a 560 ms event-loop stall",
+      "Calling navigationChanged latency full visible/compositor feedback",
+      "Treating worker transaction duration as GUI blocking",
+      "Treating whole-process CPU as GUI-only CPU",
+      "Claiming WSL timings meet RK3576/real-instrument/long-run requirements",
+      "Removing animations, changing timer priority, or hiding a slow phase to improve the number"
+    ]
+  }
+}

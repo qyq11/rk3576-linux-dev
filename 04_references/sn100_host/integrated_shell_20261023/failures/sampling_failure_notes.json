@@ -1,0 +1,134 @@
+{
+  "schema": "sn100-integration-sampling-failures-v1",
+  "archived_at": "2026-10-23T17:53:19.596+08:00",
+  "acceptance": false,
+  "scope": "Two independent failed resource-measurement attempts and sampler correctness evidence; no valid application resource acceptance is established here.",
+  "attempts": [
+    {
+      "id": "measurement_attempt1_abort",
+      "status": "failed_not_acceptance",
+      "log": "measurement_attempt1_abort.log",
+      "log_observation": "measureExperiment received signal 15 at function time 43043ms; total 43047ms; Totals 1 passed, 1 failed, 0 skipped, 0 blacklisted, 43146ms.",
+      "driver_reported_context": "The sampler label failed its format validation, and the driver wait budget was insufficient; this attempt was aborted after about 43 seconds.",
+      "attribution_limit": "The Qt log establishes the abort/timing. The label validation and driver wait context are supplied by the root task; do not relabel this abort as the later X11 disconnection."
+    },
+    {
+      "id": "measurement_attempt2_x11",
+      "status": "failed_not_acceptance",
+      "log": "measurement_attempt2_x11.log",
+      "log_observation": "After initTestCase passed, measureExperiment logged: The X11 connection broke (error 1). Did the X11 server die?",
+      "driver_reported_exit_code": 1,
+      "root_cause": "unknown",
+      "attribution_limit": "The log establishes X11 error 1, and the root driver reported exit 1. The currently available WSLg log begins in a new segment at 2026-10-23 17:43:21 Asia/Shanghai; the earlier segment was lost, so no earlier WSLg failure cause can be verified. Do not infer server death, graphics-driver failure, or an application defect from this line alone."
+    }
+  ],
+  "obsolete_resource_capture": {
+    "file": "resources_measure_failed_x11_obsolete_sampler.json",
+    "status": "invalid_obsolete_sampler_zombie_contamination",
+    "acceptance": false,
+    "reported_requested_seconds": 55.0,
+    "reported_observed_span_seconds": 55.000074251000115,
+    "reported_stopped_reason": "duration_complete",
+    "sample_count": 551,
+    "samples_without_rss": 542,
+    "first_sample_without_rss_seconds": 0.900115877999724,
+    "last_sample_without_rss_seconds": 55.00007537700003,
+    "invalid_for": [
+      "55-second live-application resource acceptance",
+      "full-window CPU utilization",
+      "whole-window resource or response pass decision"
+    ],
+    "reason": "The old sampler checked PID existence/start ticks but did not detect Z/X/x states. The root task identified a zombie tail after the X11 exit. That tail could continue to the nominal 55-second deadline and dilute CPU or include dead-process resource observations.",
+    "interpretation": "The original JSON is copied unchanged as failed evidence only. Its duration_complete string does not establish a successful 55-second application run. Do not use its CPU/maxima or whole-window resource values for release acceptance. The old JSON omitted process states, so it cannot independently delimit a trustworthy live-only interval.",
+    "separate_from_x11_root_cause": true
+  },
+  "sampler_repair": {
+    "status": "headless_sampler_selfcheck_passed_not_application_resource_acceptance",
+    "implementation": "temp/sn100_host/integration/sample_process.py",
+    "sha256": "208206dd25d75b30efa7e4e3559edeb32fd60b99ed251684ae0db1eb2942cd9b",
+    "backup_temp_only": "temp/sn100_host/integration/sample_process_before_state_fix.py",
+    "backup_sha256": "765aae1dc6ae7bb1aebe975b8d99f03d052a4f108c3c1be475eb1bb20487f512",
+    "behavior": [
+      "Read process state from /proc/PID/stat and status.",
+      "Stop with target_exited on Z/X/x and discard any sample spanning exit.",
+      "Do not append dead-state CPU/RSS zeros; initial zombie resources remain null with zero samples.",
+      "Incomplete captures set requested_duration_completed=false and usable_for_requested_duration=false and return 4; only a complete duration with at least two live samples returns 0."
+    ],
+    "selfcheck_result": "../results/sampler_state_selfcheck_result.json",
+    "all_four_cases_passed": true,
+    "cases": [
+      {
+        "case": "old_sampler_reproduces_false_completion_on_zombie",
+        "exit_code": 0,
+        "wall_seconds": 0.8859345549999489,
+        "state_at_return": "Z",
+        "samples_without_rss": 58,
+        "stopped_reason": "duration_complete",
+        "output": "sampler_state_selfcheck_before_zombie.json"
+      },
+      {
+        "case": "fixed_sampler_stops_at_zombie_live_samples_only",
+        "exit_code": 4,
+        "wall_seconds": 0.30785175099981643,
+        "live_samples": 23,
+        "stopped_reason": "target_exited",
+        "output": "sampler_state_selfcheck_mid_exit.json"
+      },
+      {
+        "case": "initial_zombie_records_null_resources_no_samples",
+        "exit_code": 4,
+        "wall_seconds": 0.07550509100019553,
+        "live_samples": 0,
+        "stopped_reason": "target_exited",
+        "output": "sampler_state_selfcheck_initial_zombie.json"
+      },
+      {
+        "case": "live_target_completes_requested_duration",
+        "exit_code": 0,
+        "wall_seconds": 0.38364345300033165,
+        "live_samples": 4,
+        "stopped_reason": "duration_complete",
+        "output": "sampler_state_selfcheck_live_complete.json"
+      }
+    ],
+    "limitations": [
+      "Real Linux zombie state Z exercised; transient X/x covered by the same membership check, not forced in a real process.",
+      "Selfcheck measurements are script validation, not SN100 app resource evidence."
+    ]
+  },
+  "files": [
+    {
+      "source": "temp/sn100_host/integration/logs/measurement_attempt1_abort.log",
+      "archived_file": "failures/measurement_attempt1_abort.log",
+      "bytes": 1686,
+      "sha256": "e0c7451746faa58804e6c117b25f893150b0986d30f91f9c5edc8afea216e14c"
+    },
+    {
+      "source": "temp/sn100_host/integration/logs/measurement_attempt2_x11.log",
+      "archived_file": "failures/measurement_attempt2_x11.log",
+      "bytes": 349,
+      "sha256": "2478152ea194ea7bfa6162357d7bc1854dfd31c313722a80f86ed476ce88c197"
+    },
+    {
+      "source": "temp/sn100_host/integration/resources_measure_failed_x11_obsolete_sampler.json",
+      "archived_file": "failures/resources_measure_failed_x11_obsolete_sampler.json",
+      "bytes": 94140,
+      "sha256": "b42406b42ee88d1ed0121b241c385a80a18f95acc9101e3244fa14d999401ea2"
+    },
+    {
+      "source": "temp/sn100_host/integration/sampler_state_selfcheck_result.json",
+      "archived_file": "results/sampler_state_selfcheck_result.json",
+      "bytes": 1797,
+      "sha256": "dd10161d4869996751469e651e8d0fbabb76700c50827dedd586531a6393b153"
+    }
+  ],
+  "privacy": {
+    "explicit_file_whitelist_only": true,
+    "authentication_values_archived": false,
+    "database_or_configuration_copied": false,
+    "core_dump_copied": false,
+    "whole_system_log_copied": false,
+    "old_sampler_script_archived": false
+  },
+  "remaining": "Repeat the actual application measurement with the repaired sampler after the root task resolves or isolates the X11 run failure; archive a successful complete run separately."
+}
