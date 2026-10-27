@@ -1,0 +1,248 @@
+{
+  "schema": "sn100-lis-settings-global-source-delta-review-v1",
+  "reviewed_utc": "2026-10-24T13:43:52.840051+00:00",
+  "scope": "Read-only delta from completed361 printer checkpoint to current371 LIS local-settings source. Inherits existing F01-F18/43 operation facts; does not repeat review or tests of unaffected operations.",
+  "source_contract": {
+    "old_path": "temp/sn100_host/printer_settings_20261024/native/final_after.json",
+    "old_inputs": 361,
+    "old_manifest_sha256": "119cfab52d54bd61d4fb765a7666a8dddf74d2e110baf1a4207eab1d68cef83f",
+    "new_path": "temp/sn100_host/lis_settings_20261024/native/final_before.json",
+    "current_inputs": 371,
+    "new_manifest_sha256": "e00508fe595f49c50413856422522fb00e8ddcd21b2080f15b50e636d8093fb5",
+    "all_current_source_sha_match": true
+  },
+  "delta": {
+    "added": [
+      "data/lis_settings_store.cpp",
+      "data/lis_settings_store.h",
+      "data/serial_port_catalog.cpp",
+      "data/serial_port_catalog.h",
+      "shell/lis_shell.cpp",
+      "ui/frmlissetting.cpp",
+      "ui/frmlissetting.h",
+      "ui/frmlissetting.ui",
+      "ui/lis_origins.json",
+      "ui/lis_settings.pri"
+    ],
+    "changed": [
+      "shell/build.sh",
+      "shell/frmmain.cpp",
+      "shell/frmmain.h",
+      "shell/frmuserset.cpp",
+      "shell/frmuserset.h",
+      "shell/login_shell.cpp",
+      "shell/main.cpp",
+      "shell/package_arm64.py",
+      "shell/rk_board.sh",
+      "shell/shell.pri",
+      "shell/wsl.sh"
+    ],
+    "removed": [],
+    "unchanged_existing_inputs": 350,
+    "group_counts": {
+      "data": {
+        "previous_inputs": 6,
+        "current_inputs": 10,
+        "old_inputs_byte_identical": 6
+      },
+      "ui": {
+        "previous_inputs": 23,
+        "current_inputs": 28,
+        "old_inputs_byte_identical": 23
+      },
+      "shell": {
+        "previous_inputs": 90,
+        "current_inputs": 91,
+        "old_inputs_byte_identical": 79
+      },
+      "history": {
+        "previous_inputs": 32,
+        "current_inputs": 32,
+        "old_inputs_byte_identical": 32
+      },
+      "projects": {
+        "previous_inputs": 20,
+        "current_inputs": 20,
+        "old_inputs_byte_identical": 20
+      },
+      "reagents": {
+        "previous_inputs": 35,
+        "current_inputs": 35,
+        "old_inputs_byte_identical": 35
+      },
+      "samples": {
+        "previous_inputs": 63,
+        "current_inputs": 63,
+        "old_inputs_byte_identical": 63
+      },
+      "instrument": {
+        "previous_inputs": 16,
+        "current_inputs": 16,
+        "old_inputs_byte_identical": 16
+      },
+      "protocol": {
+        "previous_inputs": 14,
+        "current_inputs": 14,
+        "old_inputs_byte_identical": 14
+      }
+    }
+  },
+  "historical_fact_basis": {
+    "path": "04_references/sn100_host/global_coverage_20261024/review_summary.json",
+    "sha256": "d2830e7be9f2a35c8f244f1ae39c697d54a8526fda4b62a8b41a14b31f64ba58",
+    "operation_facts": 43,
+    "source_scope_of_historical_review": "348 historical operation inventory, not the current source version. Superseded printer/login outcomes were already incorporated in completed361; they are not rediscovered gaps.",
+    "business_fact_index_sha256": "10b17b6d3edc3bb3930f263722233558cc6f1780d89753c9aed8b299661eecc1",
+    "unaffected_43_operations_not_rescanned": true
+  },
+  "final_attach_facts": [
+    {
+      "feature": "F14 LIS local settings",
+      "classification": "current_source_integrated_local_settings_testing_in_progress",
+      "entry": "main6 user settings -> subpage4",
+      "path": "--lis-settings -> LisSettingsStore/O10LisSettings worker -> frmLisSetting -> frmMain::attachLisPage -> frmUserSet::insertWidget(4,page)",
+      "evidence": [
+        "shell/main.cpp:94,118,270-281,529-544",
+        "shell/lis_shell.cpp:14-34",
+        "shell/frmuserset.cpp:121-130",
+        "shell/shell.pri:53-54"
+      ],
+      "launchers": "wsl integrated-run includes --lis-settings; release capability local_lis_settings gates board startup argument. Direct executable without opt-in intentionally retains earlier path.",
+      "runtime_acceptance": "Not recertified by this review; root is validating actual tests/builds/resources/frozen package. Source attachment is not a completion claim."
+    },
+    {
+      "feature": "F11 actual LIS communication/business",
+      "classification": "not_implemented_by_this_local_settings_slice",
+      "present": "Original9 local keys/12 hidden keys and no-device metadata enumeration only; all auto flags persist intent.",
+      "still_missing": [
+        "external TCP client/server/serial open",
+        "LIS-specific HL7/MLLP codec and accepted dialect/charset",
+        "QRY/DSR task mapping",
+        "ORU result upload",
+        "ACK/timeout/retry/dedup/reconnect and automatic modes"
+      ],
+      "evidence": [
+        "ui/lis_settings.pri compiles local store/catalog/page only",
+        "data/serial_port_catalog.cpp reads registry/sysfs/stat metadata only",
+        "shell/package_arm64.py:lis_settings_scope communication=false/serial_device_open=false",
+        "protocol group14 existing inputs unchanged; device Qj loopback is not LIS transport"
+      ],
+      "interpretation": "Local Save does not restore original signalConnectLis/openComm side effect and does not enable report upload or task execution."
+    },
+    {
+      "feature": "F14 language",
+      "classification": "still_final_placeholder_original_apply_unenabled",
+      "entry": "main6/user2",
+      "evidence": [
+        "shell/frmuserset.cpp:60-91 attaches only account/hospital during construction",
+        "later replacement exists only for user3 printer and user4 LIS"
+      ],
+      "inherited_fact": "Reference language page offered simplified Chinese and empty Apply; do not invent a translation engine or call a menu/.ui completion."
+    },
+    {
+      "feature": "F07 calibration",
+      "classification": "main3_still_final_placeholder",
+      "evidence": [
+        "shell/frmmain.cpp:31-90 creates placeholders except user6",
+        "shell/main.cpp final attachment list has history/catalog/sample/instrument/printer/LIS only",
+        "shell/shell.pri contains no calibration widget/store target"
+      ],
+      "not_blocked_locally": "Original point/curve metadata, project/batch binding, local save/copy/delete and raw-point curve browsing can be implemented without clinical fitting or instrument execution.",
+      "deferred": "Accepted fit/transform/inverse method, real curve/parameters/error, clinical approval/application and real acquisition remain separate."
+    },
+    {
+      "feature": "F08 quality control",
+      "classification": "main4_still_final_placeholder_standalone_statistics_is_not_page_business",
+      "evidence": [
+        "shell/frmmain.cpp:31-90",
+        "shell/main.cpp final attachment list",
+        "shell/shell.pri contains no quality widget/store/statistics integration"
+      ],
+      "not_blocked_locally": "Control material/project/batch CRUD, target metadata, anonymous point storage/browsing and unit-safe basic statistics are independently executable local tasks.",
+      "deferred": "Unconfirmed out-of-control rules and clinical interpretation are not enabled merely by storing metadata or plotting anonymous points."
+    }
+  ],
+  "unchanged_old_business_interpretation": {
+    "data6_and_ui23": "Existing account/hospital/printer inputs byte-identical. Login shell change only adds LIS busy guard; source guard diff reviewed, no new authentication/role semantics claimed.",
+    "history32": "Existing query/report/CSV/PDF and disabled LIS-upload source inputs unchanged; existing report-upload gap and original unsafe detail-handler caveat are inherited without re-audit.",
+    "projects20_reagents35_samples63": "Existing local project/unit/reagent/sample/task-preset business inputs unchanged. Advanced project actions, real task execution/consumption and other recorded gaps are not closed by LIS settings.",
+    "instrument16_protocol14": "Existing maintenance/device-status/loopback inputs unchanged. No mechanical command, instrument protocol or O05 long-run fix is added.",
+    "shell79_of90": "Eleven existing shell build/lifecycle/navigation/status/launcher files changed for LIS; one lis_shell helper added. Existing unrelated forms/resources remain byte-identical; no live original-theme acceptance is inferred.",
+    "standalone_research_selected_fingerprints": {
+      "quality/quality.pro": {
+        "sha256": "10442ffd67545eff7c6b22df7b488741219a482ef66481a5aaa5a6ee529c9210",
+        "matches_previous_selected_interface_fingerprint": true
+      },
+      "quality/origins.json": {
+        "sha256": "1b91db7b4cd526caf09f3073d8ebc98e8e936985754581026139fbdd8946a0c7",
+        "matches_previous_selected_interface_fingerprint": true
+      },
+      "quality/statistics.h": {
+        "sha256": "04388558193519fb831aec3d74ddb9e321f510f92cb2f39804424049af879ad8",
+        "matches_previous_selected_interface_fingerprint": true
+      },
+      "quality/main.cpp": {
+        "sha256": "daca84864a66e2e8234f435645e168ff401177c9821b0d246df166be6e123ea6",
+        "matches_previous_selected_interface_fingerprint": true
+      },
+      "coagulation/coagulation.pro": {
+        "sha256": "05d11cfc36843ec018330ae2681b6d4b6512714a165180803a42f8fe2c170baf",
+        "matches_previous_selected_interface_fingerprint": true
+      },
+      "coagulation/clot_endpoint.h": {
+        "sha256": "df950b735c2b2d670ff804b4de5f75223f669eef59e70398eea8482315d35183",
+        "matches_previous_selected_interface_fingerprint": true
+      },
+      "coagulation/origins.json": {
+        "sha256": "d192802dcd35d9f2db22c2aaa3661bfad17653c935b61bec030d8e63c6394b7c",
+        "matches_previous_selected_interface_fingerprint": true
+      }
+    },
+    "research_scope_limit": "Only prior reviewed interface/entry/provenance fingerprints listed here were checked, not a fresh full algorithm audit. Neither research CLI is integrated as calibration/QC page."
+  },
+  "next_best_executable_slice": {
+    "recommendation": "F08-QC local1: original control-material/project/batch management, then anonymous point/history chart browsing within the same module.",
+    "why": [
+      "It supplies real local page/database business behind current main4 placeholder, rather than another empty navigation shell.",
+      "Existing project/result/unit basis and pure quality statistics are available; first CRUD stage does not require them to compute clinical decisions.",
+      "No real curve, device, calibration fit or LIS endpoint is needed to create/reopen anonymous control records and batches.",
+      "Language Apply has no established original business; restoring only that shell is less useful than the concrete QC operations."
+    ],
+    "start_conditions": [
+      "Complete O10-2 actual validation/source freeze and confirm no shared writer/build conflict before modifying main/shell/build or existing plans.",
+      "Read selected original QC .ui/dialog, control/item-project/rule/batch/result schemas and role/access/side effects, using no production database/configuration.",
+      "Freeze IDs/project-result/unit references using current ProjectsStore and explicit anonymous tagged test data; do not reuse original GUI/global AllDal SQL connections.",
+      "Define default/previous batch invariant and explicit commit semantics. Original slot_cbx_pihao_index_changed performs multiple immediate UpdataFlag writes; original Save updates item then rule separately. Migrate these to worker-owned atomic transaction with failure rollback, not an implicit GUI selection write.",
+      "Keep unconfirmed rule strategy evaluation, clinical flagging/approval and physical task/result acquisition disabled with truthful status."
+    ],
+    "first_acceptance": [
+      "Original layout/colors/dialog entry and actual main4 attachment after independent local pass.",
+      "Control name/manufacturer/used state and project/result association create/edit/delete/reopen; referenced-history/default-batch deletion protection.",
+      "Batch name/expiration/current/previous transitions with at most one current batch per declared original scope; transaction failure leaves previous committed state and draft intact.",
+      "Anonymous historical points/series can be displayed/count-sorted/selected with explicit units and invalid-data flags without asserting clinical control status.",
+      "Cancel/continue/discard, busy hidden page, login/logout/normal exit, actual write/lock/conflict recovery and cumulative old-page regression.",
+      "Applicable fresh Windows/ARM main/helper/frozen package and stated-load response/resource evidence before calling the local slice delivered."
+    ],
+    "local_vs_algorithm_boundary": "Do not wait for clinical curve/fit/rule approval to implement local CRUD/batch/anonymous point browsing. Do wait for accepted methods/data/error/roles before enabling fit/clinical QC judgment or applying values to patient results/instrument actions."
+  },
+  "following_independent_candidate": {
+    "feature": "F07 calibration local1",
+    "scope": "Original curve archive/point table, project/batch selection, local copy/save/delete and raw-point plot, preserving original UI and references.",
+    "conditions": "Freeze original calibration schema/point units/project-batch IDs and permissions; separate local metadata/current-curve selection from clinical checked/applied flags; keep unsupported fit/recalculate/inverse/clinical approval visibly unenabled until validated.",
+    "why_not_algorithm_blocked": "Browsing or persisting already supplied anonymous points does not require solving AL4A or accepting a new fit. The clot-endpoint research prototype is also a different problem from calibration fitting."
+  },
+  "candidate_read_only_reference_sha256": {
+    "frm_quality/frm_quality.h": "2b045e1b5e85cadafd339153c876855c86de178c89ae7cce52af68d28e2f0c20",
+    "frm_quality/mask_dlg_add_control.h": "ea8f2084d21523f55f0285763c33cecf2510f9108591066d22ae66b51f8dc1c3",
+    "frm_quality/mask_dlg_add_control.cpp": "3e3f3dd9cf229e0776b5313327a714ea5d0a47b6b9478f78e2a188a63c19f90c",
+    "tool/database/quality/quality_item_table.h": "d19ce1a21c53468c7aa194cf677ebf680e86c037aba7c3bed22597650453988f",
+    "tool/database/quality/quality_batch_table.h": "afc77296872f8bb94ab65914cfe6da8a4515eb409c3d9b36718d89c025c04bc7",
+    "frmcalibration/frmcalibrationmaterial.h": "a29bae2892381922c558565b7adb66fdee56c9b6bd65406f11cc211cd5812b16"
+  },
+  "not_a_parallel_plan": true,
+  "shared_source_or_documents_modified": false,
+  "build_gui_tests_resource_or_device_executed": false,
+  "runtime_configs_databases_credentials_read": false,
+  "forbidden_systemcommon_cpp_read": false,
+  "static_only": true
+}

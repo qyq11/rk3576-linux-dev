@@ -1,0 +1,14 @@
+{
+  "utc": "2026-10-26T11:38:04.644496+00:00",
+  "mode": "static source contract analysis, notruntime reproduction",
+  "before_QC_handoff_SHA": "201b80c20163b2b567cd60d10d5985d01c9967dc7f033c29cfc2f51b9bf723db",
+  "current_guard_SHA": "0a5f28d523dc0acbdacfe01b92ae721fba62cd5d0fc357cae240edb0b4f4f775",
+  "changes": [
+    "remove two obsolete unusedDTO assignments",
+    "reject bothtarget andsource expectedRevision>actualcurrent before reconcile release/ACK inclNULL final",
+    "reject committed saveRack target0 consistentlywithSource"
+  ],
+  "counterexample": "catalog currentrevision9 with targetpending expected10 and Sourceaborted before10/afterNULL must notclearholds orACK",
+  "normal_contract": "expected==current allowed; committedfinal=before+1; no role/UI/clinicalrule changed",
+  "verified": false
+}

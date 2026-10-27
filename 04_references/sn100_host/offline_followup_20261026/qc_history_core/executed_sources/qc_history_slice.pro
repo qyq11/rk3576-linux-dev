@@ -1,0 +1,10 @@
+QT += core
+QT -= gui network
+CONFIG += console c++14 warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = qc_history_core_tests
+SOURCES += qc_history_core.cpp tests.cpp statistics/statistics.cpp
+HEADERS += qc_history_core.h statistics/statistics.h
+OBJECTS_DIR = .obj
+MOC_DIR = .moc

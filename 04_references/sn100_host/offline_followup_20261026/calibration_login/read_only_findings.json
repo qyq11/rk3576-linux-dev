@@ -1,0 +1,136 @@
+{
+  "schema": "sn100-calibration-login-readonly-followup-v1",
+  "date": "2026-10-26",
+  "status": "prepared_waiting_serial_execution_slot",
+  "original_causes_confirmed": false,
+  "original_checkpoints_read_only": true,
+  "calibration": {
+    "failure": {
+      "raw_directory": "temp/sn100_host/qc_local_20261025/suite_final_05/calibration_reference_offscreen",
+      "test_exit": -6,
+      "qt_signal": 11,
+      "qt_totals": "18 passed, 1 failed",
+      "row": "destroyedTypesOrHistoricalUnitCannotBeCopied:missing-calibration-type",
+      "function_ms": 832,
+      "full_ms": 12081
+    },
+    "exact_old_source": {
+      "path": "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/calibration_reference/calibration_reference_test.cpp",
+      "sha256": "5b8cfa9653218b193f5b1f916f651a863ed23ab056fa2328ada128094f48e155"
+    },
+    "current_test": {
+      "path": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+      "sha256": "25c984c73a5b0d7486edb87aacfea8d21ac4c4f691f99c8dc082adfa883b7239",
+      "modified_this_task": false
+    },
+    "traceable_sequence": [
+      "该数据行先QFETCH(damage=1)，随后Fixture构造四个worker并启动线程。",
+      "Fixture::initialize初始化项目/试剂、复制GUARD_A/B项目并在匿名夹具建立结果类型；随后保存匿名试剂批次。",
+      "原失败最后一条该行QINFO为保存试剂批号COMMITTED，没有出现该行FIXTURE初始化完成标记。",
+      "按旧源175-181行，标记前还要readReagents、解析批号、initialize校准库、设置会话；无法由原日志进一步确定出错线程/指令。",
+      "旧源563行只有Fixture::initialize成功返回，才会save校准记录；568行删除Calibration类型及577行copy均在此后。",
+      "因此日志只把可见进度约束到夹具初始化阶段；不证明行标题里的损坏/复制业务本身导致崩溃。其他线程或此前未观测的内存破坏仍不能排除。"
+    ],
+    "confirmed_hazard": "旧Worker和临时读取器用QSignalSpy直接接收worker信号，同时在主测试线程读/clear/销毁其容器；旧GDB有意断点确实停在worker Thread2的QSignalSpy::qt_metacall，而主Thread1在Fixture::initialize等待。ReagentStore在succeeded之后还自动load，旧call以成功信号为完成点而不等slot返回。",
+    "evidence": [
+      "04_references/sn100_host/calibration_local_20261025/calibration_reference_lifecycle_handoff.json",
+      "04_references/sn100_host/calibration_local_20261025/reference_lifecycle_repair_20261026/gdb_direct_spy_01/gdb.log",
+      "temp/sn100_host/qc_local_20261025/suite_final_05/calibration_reference_offscreen/qt.txt",
+      "temp/sn100_host/qc_local_20261025/suite_final_05/calibration_reference_offscreen/test.log",
+      "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/calibration_reference/calibration_reference_test.cpp:59",
+      "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/calibration_reference/calibration_reference_test.cpp:175",
+      "06_programs/sn100_host/reagents/reagent_store.cpp:380"
+    ],
+    "repaired_risk": "现测试使用主线程QObject上下文的排队记录，worker屏障等待真实slot及自动load返回，再flush/清空记录；这是已确认风险的测试修正。",
+    "not_recoverable_from_old_evidence": [
+      "原Qt fatal handler尝试GDB attach，被ptrace策略拒绝，没有原崩溃栈；本任务不改ptrace/ASLR/权限。",
+      "旧GDB选行与完整22结果均未复现SIG；有意断点不是崩溃重现。",
+      "旧TSan退出66，unexpected memory mapping，没有得到竞态报告；本轮不重复同一失败方案或安装依赖。",
+      "没有证据把跨线程信号收集直接连到原SIGSEGV某一指令；生产缺陷既未证明也未排除。"
+    ],
+    "shortest_new_experiment": "在独立目录分别取准确旧测试字节和当前测试字节，用同一5123历史正式对象链接，只有测试翻译单元启用AddressSanitizer/UndefinedBehaviorSanitizer及符号信息，各跑一次完整原顺序；保留首个异常栈及原始退出。若能定位，再以该栈决定缩短复现。只改诊断构建选项，不改业务断言或数据行。",
+    "limits": "正式167对象与Qt库不插桩，且地址/未定义行为检查不等于竞态检查；干净结果不能证明原崩溃已修。也不是原57f测试二进制的完全相同执行条件。"
+  },
+  "login": {
+    "failure": {
+      "raw_directory": "temp/sn100_host/qc_local_20261025/suite_final_07/login_xcb",
+      "test_exit": 1,
+      "qt_totals": "4 passed, 1 failed",
+      "method": "legacyOptInAndGuestLogin",
+      "assertion": "available.contains(cardRect)",
+      "old_line": 329
+    },
+    "exact_old_source": {
+      "path": "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/login_geometry/password_login_shell_test.cpp",
+      "sha256": "5accedc33d663270819339e05b1f0323c44cc7a0d1a1d032a9feea0420d28d8f"
+    },
+    "current_test": {
+      "path": "06_programs/sn100_host/tests/password_login_shell_test.cpp",
+      "sha256": "8374aeea26e9a670a7fc27c88538db615ad31cf02c3bc19ecbc6d95ce5984afe",
+      "modified_this_task": false
+    },
+    "traceable_sequence": [
+      "原循环先1600×900，再1920×1080；每次resize和ensureWidgetVisible后立即合成鼠标点击头像。",
+      "requestLogin经业务/草稿守卫创建MaskDlgLogin；CusDialogMask取得parent->window作为宿主，设置覆盖几何并启动原280ms动画。",
+      "CusDialogMask只在宿主Move/Resize时重新对齐；输入就绪条件检查动画结束/展示页，不单独保证宿主原生窗口缩放、激活、曝光均已完成。",
+      "原test等待loginReady后，检查450×571，再立即比较宿主和卡片全局矩形。",
+      "原失败有1600截图而没有1920截图，支持1920轮失败的推断；没有矩形/事件日志，不能恢复当时精确位移。",
+      "此前诊断通过时也出现MousePress/Release未接受警告，不能把此警告当作原失败特征。"
+    ],
+    "confirmed_preparation_risk": "旧测试没有先核实请求尺寸、原生窗口exposed/active及目标完整可达，已有诊断观察到resize后宿主仍inactive，以及对话框show后的Move/Resize/激活事件。",
+    "repaired_risk": "当前仅在头像点击前准备宿主并核稳定事件轮次，保留全局loginReady、450×571和立即contains断言；没有生产布局修复证据。",
+    "production_observation": "当前mask源码含宿主Move/Resize对齐路径；尚无证据证明其生产布局一定错误。不根据猜测更改公共UI/登录实现。",
+    "evidence": [
+      "04_references/sn100_host/password_login_20261024/login_geometry_repair_handoff.json",
+      "04_references/sn100_host/password_login_20261024/login_geometry_repair_20261026/observed_geometry_stages.json",
+      "temp/sn100_host/qc_local_20261025/suite_final_07/login_xcb/qt.txt",
+      "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/login_geometry/password_login_shell_test.cpp:314",
+      "06_programs/sn100_host/ui/cusdialogmask.cpp:54",
+      "06_programs/sn100_host/ui/cusdialogmask.cpp:98",
+      "06_programs/sn100_host/shell/login_shell.cpp:48"
+    ],
+    "shortest_new_experiment": "私有旧/现源码副本分别加入相同的512条有界几何事件缓冲；各跑一次自然时序、一次显式singleShot(0)移动本轮自有宿主的对照，每次只选legacyOptInAndGuestLogin且仍按1600→1920循环。新源只增加观察和已标记的调度扰动，不修改任何原断言。",
+    "evidence_fields": [
+      "单调时间/事件序号",
+      "宿主/viewport/dialog/card的局部、全局和frame矩形",
+      "active/exposed/visible",
+      "滚动位置",
+      "screen/availableGeometry/DPI",
+      "mask_ready",
+      "原contains前的即时几何",
+      "两次人工排队移动实际派发次数",
+      "缓冲溢出"
+    ],
+    "limits": "新增观察和合成宿主移动会改变时序；即使得到同一contains失败，也只证明该显式扰动下的机制，不能在缺原矩形时宣称复现了suite07的确切事件。若自然和扰动均通过，保留原原因未知，不继续无界重跑。"
+  },
+  "execution_contract": {
+    "slot_granted": false,
+    "builds_or_gui_or_tests_or_measurements_started": false,
+    "preparation_executed": "仅源像生成、命令计划导出与Python AST语法解析；均实际退出0，不导入/运行probe、不编译C++、不启动GUI。",
+    "jobs": 1,
+    "protected_paths": [
+      "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+      "06_programs/sn100_host/tests/password_login_shell_test.cpp",
+      "公共shell/启动器/common/collector",
+      "旧04 final与07历史归档"
+    ],
+    "data": "每次新attempt下独立匿名目录；不读历史运行库、不读凭据，不采集输入框文本。",
+    "rollback_scope": "仅新增诊断源码、私有测试副本、命令计划和本交付。正式/测试源码尚无本轮改动，不涉及生产配置恢复。",
+    "preserve": "命令、raw stdout/stderr、Qt文本/XML、异常栈、实际退出、源码/对象/产物SHA先保存再解释；失败和未执行对照明确保留。",
+    "stop_conditions": [
+      "无执行槽不执行",
+      "426/5123或167对象绑定不相等则停止并重新排队",
+      "编译失败不运行旧产物",
+      "观察器超时只清理本轮独立进程组并核回收，不操作其他窗口进程",
+      "Sanitizer无法启动时留证停止，不改系统绕过",
+      "每种条件只运行一次；不把多次通过当根因证据"
+    ],
+    "pending": [
+      "串行执行槽",
+      "C++诊断源码真实编译",
+      "原始异常或几何错位的可重复定位",
+      "必要最小修复及同条件对照",
+      "Windows/RK/仪器及长稳另验"
+    ]
+  }
+}

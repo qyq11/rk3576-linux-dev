@@ -1,0 +1,88 @@
+{
+  "name": "reagents_app",
+  "qmake_project": "reagents/reagents.pro",
+  "target": "sn100_reagents",
+  "kind": "standalone",
+  "passed": true,
+  "phases": [
+    {
+      "name": "qmake",
+      "command": [
+        "/usr/lib/qt5/bin/qmake",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/reagents.pro",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build/Makefile",
+        "-spec",
+        "linux-g++",
+        "CONFIG+=release",
+        "CONFIG-=debug"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build",
+      "started_utc": "2026-10-25T18:23:20.901750+00:00",
+      "timeout_seconds": 120,
+      "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/qmake.log",
+      "exit_code": 0,
+      "timed_out": false,
+      "state": "finished",
+      "seconds": 2.7827300090000335,
+      "finished_utc": "2026-10-25T18:23:23.697487+00:00",
+      "pid": 1258,
+      "cleanup": null,
+      "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/qmake.exit.json"
+    },
+    {
+      "name": "make",
+      "command": [
+        "/usr/bin/make",
+        "-C",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build",
+        "-j2"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build",
+      "started_utc": "2026-10-25T18:23:23.737970+00:00",
+      "timeout_seconds": 900,
+      "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/make.log",
+      "exit_code": 0,
+      "timed_out": false,
+      "state": "finished",
+      "seconds": 87.20314075400006,
+      "finished_utc": "2026-10-25T18:24:50.955311+00:00",
+      "pid": 1291,
+      "cleanup": null,
+      "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/make.exit.json"
+    },
+    {
+      "name": "app",
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build/sn100_reagents",
+        "--data-dir",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/runtime/catalog",
+        "--seed-demo",
+        "--test-engineer",
+        "--quit-after-ms",
+        "1800",
+        "--screenshot",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/page_loaded.png"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/runtime",
+      "started_utc": "2026-10-25T18:25:08.276534+00:00",
+      "timeout_seconds": 30,
+      "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/app.log",
+      "exit_code": 0,
+      "timed_out": false,
+      "state": "finished",
+      "seconds": 1.997682574999999,
+      "finished_utc": "2026-10-25T18:25:10.295465+00:00",
+      "pid": 1455,
+      "cleanup": null,
+      "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/app.exit.json"
+    }
+  ],
+  "binary_sha256": "5b6e524cd33211f26587e81b9d5fc1d8c413ec1c3f0bcc2bcc47a5912eea9350",
+  "checks": {
+    "fresh_release_build": true,
+    "objects_and_binary_unchanged": true,
+    "source_test_driver_native_binding_unchanged": true,
+    "actual_run_exit_zero": true
+  }
+}

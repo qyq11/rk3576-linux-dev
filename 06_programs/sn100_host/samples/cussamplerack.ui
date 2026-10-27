@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CusSampleRack</class>
+ <widget class="QWidget" name="CusSampleRack">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1341</width>
+    <height>116</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="CusView" name="wgtRack" native="true">
+   <property name="geometry">
+    <rect>
+     <x>362</x>
+     <y>6</y>
+     <width>970</width>
+     <height>103</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="CusView" name="wgtRackInfo" native="true">
+   <property name="geometry">
+    <rect>
+     <x>6</x>
+     <y>6</y>
+     <width>307</width>
+     <height>103</height>
+    </rect>
+   </property>
+   <widget class="QLineEdit" name="lineEdit_4">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>33</y>
+      <width>276</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>苹方 粗体</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLineEdit{
+background:transparent;
+color:#444444;
+border-color:#DDDDDD;
+border-style:solid;
+border-top-width:0px;
+border-right-width:0px;
+border-bottom-width:1px;
+border-left-width:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblLeftTime">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>271</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>苹方 粗体</family>
+      <pointsize>13</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:#444444;</string>
+    </property>
+    <property name="text">
+     <string>剩余时间:--:--:--</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblRackId">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>271</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>苹方 粗体</family>
+      <pointsize>13</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:#444444;</string>
+    </property>
+    <property name="text">
+     <string>样本架号:none</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QtMaterialFlatButton" name="btnEdit">
+    <property name="geometry">
+     <rect>
+      <x>259</x>
+      <y>49</y>
+      <width>51</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="../main.qrc">
+      <normaloff>:/samples-image/edit_ico.png</normaloff>:/samples-image/edit_ico.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>26</width>
+      <height>26</height>
+     </size>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtMaterialFlatButton</class>
+   <extends>QPushButton</extends>
+   <header>qtmaterialflatbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CusView</class>
+   <extends>QWidget</extends>
+   <header>cusview.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../main.qrc"/>
+ </resources>
+ <connections/>
+</ui>

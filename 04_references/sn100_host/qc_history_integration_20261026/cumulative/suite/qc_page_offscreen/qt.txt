@@ -1,0 +1,35 @@
+********* Start testing of QcLocalPageTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : QcLocalPageTest::initTestCase()
+QINFO  : QcLocalPageTest::controlProjectsCancelAndReopen() QC_GUI_WARNING_ACK 质控品名称和厂家须以文字或数字开头，为1至16个字符，不能有首尾空白、路径或控制字符。
+QINFO  : QcLocalPageTest::controlProjectsCancelAndReopen() QC_GUI_RULE_METADATA 12.5000 0.25 14:11:15:10 clinical_rules_disabled
+QINFO  : QcLocalPageTest::controlProjectsCancelAndReopen() QC_GUI_COMMIT 1 1 QC_RENAMED FACTOR_B
+PASS   : QcLocalPageTest::controlProjectsCancelAndReopen()
+QINFO  : QcLocalPageTest::duplicateLockRecoveryAndDraft() QC_GUI_WARNING_ACK saveControl失败：UNIQUE constraint failed: quality_control_list.item_name Unable to fetch row；输入保留，可修正或重试。
+QINFO  : QcLocalPageTest::duplicateLockRecoveryAndDraft() QC_GUI_WARNING_ACK saveControl失败：database is locked Unable to fetch row；输入保留，可修正或重试。
+QWARN  : QcLocalPageTest::duplicateLockRecoveryAndDraft() This plugin does not support propagateSizeHints()
+QWARN  : QcLocalPageTest::duplicateLockRecoveryAndDraft() This plugin does not support propagateSizeHints()
+QINFO  : QcLocalPageTest::duplicateLockRecoveryAndDraft() QC_GUI_LOCK_FAILURE_RETRY unchanged_then_committed
+PASS   : QcLocalPageTest::duplicateLockRecoveryAndDraft()
+QINFO  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() QC_GUI_WARNING_ACK 批号须为1至32个字符；有效期须为真实日期yyyy/MM/dd。
+QWARN  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() This plugin does not support raise()
+QWARN  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() This plugin does not support grabbing the keyboard
+WARNING: QcLocalPageTest::batchesDefaultNoopAndInvalidDate() Keyboard event not accepted by receiving widget
+WARNING: QcLocalPageTest::batchesDefaultNoopAndInvalidDate() Keyboard event not accepted by receiving widget
+QWARN  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() This plugin does not support raise()
+QWARN  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() This plugin does not support raise()
+QWARN  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() This plugin does not support grabbing the keyboard
+WARNING: QcLocalPageTest::batchesDefaultNoopAndInvalidDate() Keyboard event not accepted by receiving widget
+WARNING: QcLocalPageTest::batchesDefaultNoopAndInvalidDate() Keyboard event not accepted by receiving widget
+QINFO  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() QC_GUI_WARNING_ACK removeBatch失败：当前/前一批次不能删除；请先明确切换批次。；输入保留，可修正或重试。
+QINFO  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() QC_GUI_WARNING_ACK saveBatch失败：UNIQUE constraint failed: quality_control_batch.batch_name Unable to fetch row；输入保留，可修正或重试。
+QWARN  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() This plugin does not support propagateSizeHints()
+QINFO  : QcLocalPageTest::batchesDefaultNoopAndInvalidDate() QC_GUI_BATCH_SWITCH BATCH_A->BATCH_B same_current_noop
+PASS   : QcLocalPageTest::batchesDefaultNoopAndInvalidDate()
+QINFO  : QcLocalPageTest::filteredControlsKeepStableId() QC_GUI_FILTERED_STABLE_ID 2 VISIBLE_SECOND
+PASS   : QcLocalPageTest::filteredControlsKeepStableId()
+QINFO  : QcLocalPageTest::referenceCleanupWarningSurvivesReload() QC_REFERENCE_NOTICE_RETAINED local_delete_committed=true conservative_hold=1
+PASS   : QcLocalPageTest::referenceCleanupWarningSurvivesReload()
+PASS   : QcLocalPageTest::cleanupTestCase()
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 16178ms
+********* Finished testing of QcLocalPageTest *********

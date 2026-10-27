@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu-24.04",
+    "-u",
+    "qyq",
+    "--exec",
+    "/usr/bin/setsid",
+    "--wait",
+    "/usr/bin/python3",
+    "-B",
+    "-c",
+    "import sys,os,ast,re,subprocess,json,time\nfrom pathlib import Path\nroot=Path(\"/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux\");work=root/'temp/sn100_host/lis_raw_inbox_20261027';out=work/'arm_inputs_01'\nsys.path.insert(0,str(work/'native_drivers_01'))\nfrom common import sha,save,load,now,require,verify_frozen,group_state,stop_owned_group\nsave(out/'driver_identity.json',{'pid':os.getpid(),'pgid':os.getpgrp(),'startedUTC':now()})\nfrozen=load(work/'formal_source_before_01.json');verify_frozen(frozen)\ntest=root/'06_programs/sn100_host/tests/test_shell_arm64_inputs.py';sourceSHA=sha(test);tree=ast.parse(test.read_text(encoding='utf-8-sig'));expected=[n.name for c in tree.body if isinstance(c,ast.ClassDef) and c.name=='ShellArm64InputsTest' for n in c.body if isinstance(n,ast.FunctionDef) and n.name.startswith('test_')];require(expected,'Actual test methods required')\nresult={'passed':False,'startedUTC':now(),'expectedMethods':expected,'sourceSHA':sourceSHA,'scope':'Host source inventory/read-only contract only, no compiler/sysroot restore/RK/network'}\ncmd=['/usr/bin/python3','-B',str(test),'-v'];env=dict(os.environ,SN100_ARM64_INPUT_TEST_DIR=str(out/'runtime'),PYTHONDONTWRITEBYTECODE='1',PYTHONIOENCODING='utf-8');save(out/'command.json',{'argv':cmd,'runtime':str(out/'runtime'),'boundedSeconds':180,'sourceFreezeSHA':sha(work/'formal_source_before_01.json')});p=None;cleanup=None\ntry:\n with (out/'unittest.stdout.log').open('xb') as so,(out/'unittest.stderr.log').open('xb') as se:\n  p=subprocess.Popen(cmd,cwd=root,env=env,stdout=so,stderr=se,start_new_session=True);save(out/'process.json',{'pid':p.pid,'pgid':p.pid,'state':'running'})\n  try:p.wait(timeout=180)\n  finally:\n   p.poll();save(out/'raw_exit.json',{'pid':p.pid,'actual_exit':p.returncode,'observedUTC':now(),'beforeCleanup':True})\n   if not group_state(p.pid)['gone']:cleanup=stop_owned_group(p)\n require(p.returncode==0 and cleanup is None and group_state(p.pid)['gone'],'Actual unittest failed/timed out/needed cleanup')\n text=(out/'unittest.stderr.log').read_text(encoding='utf-8',errors='strict');require(all(re.search(r'^'+name+r' \\(',text,re.M) for name in expected),'Verbose named methods incomplete');require(re.search(r'Ran '+str(len(expected))+r' tests? in ',text) and text.rstrip().endswith('OK') and 'skipped=' not in text,'Actual unittest summary incomplete/skipped')\n verify_frozen(frozen);require(sha(test)==sourceSHA,'Test source changed');result.update(passed=True,actual_exit=0,actualMethods=len(expected),sourceAndExtraInputsUnchanged=True,ownedGroup=group_state(p.pid))\nexcept BaseException as error:result.update(error=repr(error),actual_exit=p.returncode if p else None,cleanup=cleanup)\nfinally:result['finishedUTC']=now();save(out/'verification.json',result)\nprint(json.dumps(result,ensure_ascii=False),flush=True)\nraise SystemExit(0 if result['passed'] else 1)\n"
+  ],
+  "startedUTC": "2026-10-26T19:42:07.803792+00:00",
+  "timeoutSeconds": 220,
+  "explicitSoleSlot": "ROOT_RAW_ARM_INPUTS_01"
+}

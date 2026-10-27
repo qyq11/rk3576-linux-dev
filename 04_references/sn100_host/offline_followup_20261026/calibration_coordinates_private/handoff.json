@@ -1,0 +1,51 @@
+{
+  "schema": "sn100-private-calibration-coordinate-implementation-handoff-v1",
+  "date": "2026-10-26",
+  "status": "private_cxx14_source_and_23_case_test_ready_static_review_only_waiting_slot",
+  "location": "temp/sn100_host/offline_followup_20261026/calibration_coordinates_private",
+  "scope": "Only four documented numerical coordinate modes and inverses; private research leaf, not fitted/approved/applied calibration.",
+  "implemented_files": [
+    "calibration_coordinates.h",
+    "calibration_coordinates.cpp",
+    "calibration_coordinates_test.cpp",
+    "run_core.py"
+  ],
+  "copied_oracle": "oracle.json",
+  "fixed_cases": "cases.tsv",
+  "case_count": 23,
+  "independent_expected_source": "../calibration_next_scope/anonymous_coordinate_cases.json",
+  "manifest": "inputs_manifest.json",
+  "manifest_sha256": "fbd573f1d3628f4d6b6a285bc1d37452fabe9c27bbee2489bec7aaad85fcd4c6",
+  "source_sha256": {
+    "calibration_coordinates.h": "cfff07d75a637788b8ccfbb2519607f0d14a19eb3acb4c21409710873da790ec",
+    "calibration_coordinates.cpp": "d55a149b23bcf1ff4a147cb5f75646f24c177729799e45dfc78355b8980421f5",
+    "calibration_coordinates_test.cpp": "83addb26abb3d5e174c7926d501a2cff335e3d29f60185dd8f65ac69679d0b67",
+    "run_core.py": "fea3f657125c1f47dd03e1946525ebec5754ddc5c6f20982caed91428e885d59",
+    "oracle.json": "2eafd59a859c58a8dd3209245663132c86b999cb66e42c949c2099d494d4e843",
+    "cases.tsv": "eb56d60a53cbad9fcdfc1b61b11ebc48593cf4750ab554d23254472bba0977c4"
+  },
+  "exact_argv": "command_plan.json",
+  "static_review": "static_review.json",
+  "invalid_output_contract": "valid/error readable; numeric payload private. readValue refuses invalid results without modifying caller output. No default successful0 or implicit conversion.",
+  "formulas": "原文0恒等、1log10与10^v、2倒数、3ln与exp；模式4/5保持UnsupportedMode。",
+  "runtime_status": {
+    "compile_executed": false,
+    "test_executed": false,
+    "driver_executed": false,
+    "GUI_DB_DLL_or_device_executed": false
+  },
+  "source_boundary": {
+    "new_06_files": false,
+    "formal_calibration_or_shared_sources_modified": false,
+    "reference_modified": false,
+    "shared_records_or_plans_modified": false,
+    "production_native_objects_used": false
+  },
+  "pending": [
+    "Root explicit serial-slot grant; slot currently occupied by integrator native session10429 per instruction",
+    "Run exact command once in fresh core_01, capture actual compiler/test exit and23 rows",
+    "Inspect failures without changing the approved oracle or claiming clinical efficacy",
+    "Root decides any later product integration; this leaf does not complete calibration fitting migration"
+  ],
+  "no_other_thread_message_or_automation_change": true
+}

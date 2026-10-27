@@ -5,7 +5,10 @@
 // QSS restores the known source/theme colors. Original Windows visual parity,
 // chart/recalculation/LIS and template printing remain separately unverified.
 #include "history_page.h"
+#include "history_current_display_state.h"
 #include "result_statistics.h"
+#include "report_remaining_display_dialog.h"
+#include "report_dictionary_dialog.h"
 #include "ui_frm_report_material.h"
 #include "ui_mask_dlg_query_report.h"
 #include "ui_mask_dlg_report_detail.h"
@@ -15,6 +18,7 @@
 #include <QCalendarWidget>
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDialog>
 #include <QDir>
@@ -32,8 +36,16 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QScreen>
+#include <QSignalBlocker>
+#include <QScopedValueRollback>
+#include <QShowEvent>
+#include <QSet>
+#include <QThread>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <functional>
+#include <algorithm>
+#include <QMap>
 
 namespace {
 QString buttonStyle()
@@ -107,6 +119,115 @@ void setCell(QTableWidget *table, int row, int column, const QString &text)
     item->setTextAlignment(Qt::AlignCenter);
     table->setItem(row, column, item);
 }
+
+bool sameCurrentSource(const HistoryCurrentFormatSource &left,
+                       const HistoryCurrentFormatSource &right)
+{
+    return left.historyDatasetUuid == right.historyDatasetUuid
+        && left.catalogDirectory == right.catalogDirectory
+        && left.catalogDatabasePath == right.catalogDatabasePath
+        && left.catalogVersion == right.catalogVersion
+        && left.formatVersion == right.formatVersion
+        && left.fingerprint == right.fingerprint
+        && left.sourceGeneration == right.sourceGeneration
+        && left.requestRevision == right.requestRevision
+        && left.capturedAtUtc == right.capturedAtUtc
+        && left.configurationNotice == right.configurationNotice;
+}
+
+QString currentGroupKey(const QString &project, int type)
+{
+    return QStringLiteral("result:") + project + QChar(0x1f) + QString::number(type);
+}
+
+QString currentValueInformation(const HistoryResultValue &value)
+{
+    QStringList lines;
+    if (value.formatOrigin != HistoryValueFormatOrigin::CurrentCommitted)
+        lines << QStringLiteral("格式未知；保留原始字符串，单位未指定。");
+    if (!value.selectionKnown)
+        lines << QStringLiteral("结果选择尚未配置，不将未知选择当作启用。");
+    if (!value.formatMessage.trimmed().isEmpty()) lines << value.formatMessage.trimmed();
+    if (!value.currentSource.configurationNotice.trimmed().isEmpty())
+        lines << value.currentSource.configurationNotice.trimmed();
+    lines << QStringLiteral("原始值：") + (value.rawValue.isEmpty()
+        ? QStringLiteral("（空串）") : value.rawValue);
+    return lines.join(QChar('\n'));
+}
+
+QString plainCurrentToolTip(const QString &information)
+{
+    // 原始串中的尖括号仍作为文字显示，不能被tooltip当成富文本标签。
+    return QStringLiteral("<qt>") + information.toHtmlEscaped()
+        .replace(QChar('\n'), QStringLiteral("<br/>")) + QStringLiteral("</qt>");
+}
+
+// 未知格式只生成原值显示行，不进入不识别来源/选择状态的旧统计函数。
+QList<HistoryStatisticGroup> currentDisplayGroups(const HistoryReport &report,
+    const HistoryCurrentFormatSource &source, QSet<QString> *statisticsUnavailable)
+{
+    QList<HistoryStatisticGroup> groups;
+    for (const auto &task : report.results) for (const auto &value : task.values)
+    {
+        auto found = std::find_if(groups.begin(), groups.end(), [&](const HistoryStatisticGroup &group)
+        { return group.project == task.project && group.resultType == value.resultType; });
+        if (found != groups.end()) continue;
+        HistoryStatisticGroup group;
+        group.project = task.project;
+        group.resultType = value.resultType;
+        group.label = value.label;
+        group.unit = value.unit;
+        group.decimals = value.decimals;
+        group.factor = value.factor;
+        groups.append(group);
+    }
+    for (auto &group : groups)
+    {
+        bool known = true;
+        for (const auto &task : report.results)
+        {
+            if (task.project != group.project) continue;
+            HistoryStatisticEntry entry;
+            entry.taskId = task.taskId;
+            entry.testedAt = task.testedAt;
+            entry.abnormalType = task.abnormalType;
+            entry.valuePresent = false;
+            entry.value.resultType = group.resultType;
+            entry.value.label = group.label;
+            entry.value.unit = group.unit;
+            for (const auto &value : task.values) if (value.resultType == group.resultType)
+            {
+                entry.value = value;
+                entry.valuePresent = true;
+                known = known && value.formatOrigin == HistoryValueFormatOrigin::CurrentCommitted
+                    && value.selectionKnown && sameCurrentSource(value.currentSource, source);
+                break;
+            }
+            group.entries.append(entry);
+        }
+        if (known)
+        {
+            HistoryReport selected = report;
+            for (auto &task : selected.results)
+                for (auto value = task.values.begin(); value != task.values.end(); )
+                {
+                    if (task.project != group.project || value->resultType != group.resultType)
+                        value = task.values.erase(value);
+                    else ++value;
+                }
+            const auto calculated = HistoryResultStatistics::groups(selected);
+            if (calculated.size() == 1)
+            {
+                group = calculated.first();
+                continue;
+            }
+        }
+        statisticsUnavailable->insert(currentGroupKey(group.project, group.resultType));
+        group.meanUnavailableReason = QStringLiteral("当前格式或结果选择未知，未进行均值/CV统计。");
+        group.cvUnavailableReason = group.meanUnavailableReason;
+    }
+    return groups;
+}
 }
 
 HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
@@ -125,8 +246,8 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
         "QPushButton{background:#7F7F7F;color:white;border:none;border-radius:8px;}"
         "QPushButton:disabled{background:#686868;color:#B0B0B0;}"));
     const QString unavailable = tr("O04-1 未接入此功能；保留原控件，后续按独立模块验收。");
-    for (QWidget *control : QList<QWidget *>{ui->btnDisplay, ui->btnUpdate,
-                            ui->btnPrinter, ui->btnDel, ui->btn_save_modify})
+    for (QWidget *control : QList<QWidget *>{ui->btnUpdate,
+                            ui->btnPrinter, ui->btn_save_modify})
         disableControl(control, unavailable);
     // Original constructor hides this button; preserve that source behavior.
     ui->btn_save_modify->hide();
@@ -183,6 +304,8 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
     connect(ui->btnQuery, &QPushButton::clicked, this, &HistoryPage::openQuery);
     connect(ui->btnDetail, &QPushButton::clicked, this, &HistoryPage::openDetail);
     connect(ui->btnExport, &QPushButton::clicked, this, &HistoryPage::openExport);
+    connect(ui->btnDel, &QPushButton::clicked, this, &HistoryPage::hideSelectedReports);
+    connect(ui->btnDisplay, &QPushButton::clicked, this, &HistoryPage::openDisplay);
     connect(ui->btnFirstPage, &QPushButton::clicked, this, [this]() { queryPage(0); });
     connect(ui->btnPrvPage, &QPushButton::clicked, this, [this]() { queryPage(m_filter.offset / 20 - 1); });
     connect(ui->btnNextPage, &QPushButton::clicked, this, [this]() { queryPage(m_filter.offset / 20 + 1); });
@@ -196,10 +319,159 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
     ui->btnNextPage->setText(QStringLiteral("▶▶"));
     ui->btnLastPage->setText(QStringLiteral("▶|"));
 
+    m_currentDisplayState = new HistoryCurrentDisplayState(store, this);
+    connect(m_currentDisplayState.data(), &HistoryCurrentDisplayState::cleared, this,
+        [this](const QString &reason)
+    {
+        if (m_localResultsMode) clearCurrentResultPresentation(reason);
+    });
+    connect(m_currentDisplayState.data(), &QObject::destroyed, this, [this]()
+    {
+        if (!m_localResultsMode || m_currentClosing) return;
+        m_currentDisplayState.clear();
+        m_currentClosing = true;
+        m_ready = false;
+        invalidateCurrentResultFormat(tr("实际结果状态对象已销毁，须重新创建页面并重新绑定。"));
+        setBusy(m_busy);
+    });
+    connect(m_currentDisplayState.data(), &HistoryCurrentDisplayState::queryAccepted, this,
+        [this](qint64 id, HistoryReports reports, qint64 total)
+    {
+        if (!m_localResultsMode || id != m_pending || m_operation != QStringLiteral("query")) return;
+        if (m_currentColumnsRequest != id || !m_currentDisplayState)
+        {
+            invalidateCurrentResultFormat(tr("本次查询缺少配对显示设置，未安装结果。"));
+            return;
+        }
+        m_currentSource = m_currentDisplayState->source();
+        m_currentQueryValid = true;
+        m_currentDetailValid = false;
+        m_filter = m_currentPendingFilter;
+        m_reports = reports;
+        m_total = total;
+        m_displayColumns = m_currentPendingColumns;
+        m_displayDefaults = m_currentPendingDefaults;
+        m_currentColumnsRequest = 0;
+        m_currentPendingColumns.clear();
+        m_currentPendingDefaults.clear();
+        displayReports();
+        applyDisplay();
+        status(tr("查询完成：%1 条报告，第 %2 页。 ").arg(total).arg(m_filter.offset / 20 + 1)
+            + m_currentSource.configurationNotice);
+        finish(QStringLiteral("query"), true);
+    });
+    connect(m_currentDisplayState.data(), &HistoryCurrentDisplayState::detailAccepted, this,
+        [this](qint64 id, HistoryReport report)
+    {
+        if (!m_localResultsMode || id != m_pending || m_operation != QStringLiteral("detail")) return;
+        if (!m_currentDisplayState || report.id != m_currentDetailRequestReport
+            || !hasCurrentRow() || m_reports.at(ui->tableResultReportOne->currentRow()).id != report.id)
+        {
+            invalidateCurrentResultFormat(tr("报告选择已改变，未打开迟到明细。"));
+            return;
+        }
+        m_currentSource = m_currentDisplayState->source();
+        m_currentQueryValid = false;
+        m_currentDetailValid = true;
+        showDetail(report);
+        finish(QStringLiteral("detail"), true);
+    });
+    connect(m_currentDisplayState.data(), &HistoryCurrentDisplayState::rejected, this,
+        [this](qint64 id, const QString &reason)
+    {
+        if (!m_localResultsMode || id != m_pending
+            || (m_operation != QStringLiteral("query") && m_operation != QStringLiteral("detail"))) return;
+        const QString operation = m_operation;
+        status(reason);
+        finish(operation, false);
+    });
+    connect(store, &HistoryStore::currentFormatInvalidated, this,
+        [this](qint64 id, quint64, const QString &reason)
+    {
+        if (!m_localResultsMode || id != 0) return;
+        m_ready = false;
+        invalidateCurrentResultFormat(reason);
+        setBusy(m_busy);
+    }, Qt::QueuedConnection);
+    connect(store, &HistoryStore::closed, this, [this]()
+    {
+        if (!m_localResultsMode) return;
+        m_ready = false;
+        m_currentClosing = true;
+        invalidateCurrentResultFormat(tr("结果存储已关闭，旧结果显示失效。"));
+        setBusy(m_busy);
+    }, Qt::QueuedConnection);
+    connect(store, &QObject::destroyed, this, [this]()
+    {
+        if (!m_localResultsMode) return;
+        m_ready = false;
+        m_currentClosing = true;
+        invalidateCurrentResultFormat(tr("结果工作对象已销毁，旧结果显示失效。"));
+        setBusy(m_busy);
+    }, Qt::QueuedConnection);
+    if (QCoreApplication::instance())
+        connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, [this]()
+    {
+        if (!m_localResultsMode) return;
+        m_currentClosing = true;
+        invalidateCurrentResultFormat(tr("应用正在退出，结果显示已停止。"));
+    }, Qt::DirectConnection); // Cache-only: no SQL, waits or worker shutdown here.
+
     connect(this, &HistoryPage::requestQuery, store, &HistoryStore::query, Qt::QueuedConnection);
     connect(this, &HistoryPage::requestDetail, store, &HistoryStore::detail, Qt::QueuedConnection);
     connect(this, &HistoryPage::requestSavePatient, store, &HistoryStore::savePatient, Qt::QueuedConnection);
     connect(this, &HistoryPage::requestExportCsv, store, &HistoryStore::exportCsv, Qt::QueuedConnection);
+    connect(this, &HistoryPage::requestSetSession, store, &HistoryStore::setSession, Qt::QueuedConnection);
+    connect(this, &HistoryPage::requestHideReports, store, &HistoryStore::hideReports, Qt::QueuedConnection);
+    connect(this, &HistoryPage::requestLoadDisplay, store, &HistoryStore::loadDisplay, Qt::QueuedConnection);
+    connect(this, &HistoryPage::requestSaveDisplay, store, &HistoryStore::saveDisplay, Qt::QueuedConnection);
+    connect(store, &HistoryStore::reportsHidden, this, [this](qint64 id, HistoryIds) {
+        if (id != m_pending) return;
+        finish(QStringLiteral("hideReports"), true);
+        // Original refresh_report returns to the first page. Do not calculate
+        // an offset from the old total after deleting the last row of a page.
+        queryPage(0);
+    });
+    connect(store, &HistoryStore::displayLoaded, this,
+            [this](qint64 id, HistoryDisplayColumns columns, HistoryDisplayColumns defaults) {
+        if (id != m_pending) return;
+        if (m_localResultsMode && m_operation == QStringLiteral("query"))
+        {
+            m_currentColumnsRequest = id;
+            m_currentPendingColumns = columns;
+            m_currentPendingDefaults = defaults;
+            return; // queryAccepted installs these together with its proven values.
+        }
+        m_displayColumns = columns;
+        m_displayDefaults = defaults;
+        applyDisplay();
+        if (m_operation != QStringLiteral("loadDisplay")) return;
+        finish(QStringLiteral("loadDisplay"), true);
+        auto *dialog = new ReportRemainingDisplayDialog(columns, defaults, this);
+        m_displayDialog = dialog;
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        connect(dialog, &ReportRemainingDisplayDialog::saveRequested, this, [this, dialog](HistoryDisplayColumns next) {
+            if (isBusy() || !m_canWriteRemaining)
+            {
+                dialog->saveFailed(tr("当前有在途操作或身份已失效；设置未提交，请等待或取消。"));
+                return;
+            }
+            m_pending = ++m_serial;
+            m_operation = QStringLiteral("saveDisplay");
+            dialog->setSaving(true);
+            setBusy(true);
+            emit requestSaveDisplay(m_pending, next);
+        });
+        dialog->open();
+    });
+    connect(store, &HistoryStore::displaySaved, this, [this](qint64 id, HistoryDisplayColumns columns) {
+        if (id != m_pending) return;
+        m_displayColumns = columns;
+        applyDisplay();
+        if (m_displayDialog) m_displayDialog->acceptSaved();
+        status(tr("显示设置已保存；未更改历史结果、单位、倍率或精度。"));
+        finish(QStringLiteral("saveDisplay"), true);
+    });
     connect(store, &HistoryStore::ready, this, [this](qint64, const QString &) {
         m_ready = true;
         emit operationFinished(QStringLiteral("initialize"), true);
@@ -207,7 +479,7 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
     });
     connect(store, &HistoryStore::queryReady, this,
             [this](qint64 id, HistoryFilter filter, HistoryReports reports, qint64 total) {
-        if (id != m_pending) return;
+        if (m_localResultsMode || id != m_pending) return;
         m_filter = filter;
         m_reports = reports;
         m_total = total;
@@ -216,7 +488,7 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
         finish(QStringLiteral("query"), true);
     });
     connect(store, &HistoryStore::detailReady, this, [this](qint64 id, HistoryReport report) {
-        if (id != m_pending) return;
+        if (m_localResultsMode || id != m_pending) return;
         showDetail(report);
         finish(QStringLiteral("detail"), true);
     });
@@ -227,7 +499,10 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
         if (m_detailUi)
         {
             for (auto *edit : m_detailUi->page_4->findChildren<QLineEdit *>())
+            {
                 edit->setProperty("loadedText", edit->text());
+                edit->setProperty("dictionarySelection", false);
+            }
             m_detailUi->cbxSex->setProperty("selectionEdited", false);
         }
         m_dirty = false;
@@ -243,6 +518,17 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
     });
     connect(store, &HistoryStore::error, this, [this](qint64 id, const QString &operation, const QString &message) {
         if (id != 0 && id != m_pending) return;
+        // The state emits exactly one rejected reply for a matching read. Do
+        // not also finish it through the legacy raw Store error connection.
+        if (m_localResultsMode && id != 0
+            && (m_operation == QStringLiteral("query") || m_operation == QStringLiteral("detail"))) return;
+        if (m_localResultsMode && id == 0)
+        {
+            m_ready = false;
+            invalidateCurrentResultFormat(message);
+        }
+        if (m_operation == QStringLiteral("saveDisplay") && m_displayDialog)
+            m_displayDialog->saveFailed(message);
         status(operation + QStringLiteral(": ") + message);
         finish(id == 0 ? QStringLiteral("initialize") : m_operation, false);
     });
@@ -252,17 +538,144 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
 
 HistoryPage::~HistoryPage()
 {
+    m_currentClosing = true;
+    // QWidget deletes child pages after the outer shell's members have died.
+    // Teardown must not send a final status/operation callback into that shell.
+    QObject::disconnect(this, &HistoryPage::statusChanged, nullptr, nullptr);
+    QObject::disconnect(this, &HistoryPage::operationFinished, nullptr, nullptr);
+    if (auto *state = m_currentDisplayState.data())
+    {
+        QObject::disconnect(state, nullptr, this, nullptr);
+        delete state; // Value-only GUI cache; no SQL/worker close or cleared signal.
+        m_currentDisplayState.clear();
+    }
     if (m_detailDialog) delete m_detailDialog.data();
     delete m_detailUi;
     delete ui;
 }
 
-void HistoryPage::setDataDirectory(const QString &directory) { m_directory = directory; }
+void HistoryPage::setDataDirectory(const QString &directory)
+{
+    if (m_localResultsMode && m_directory != directory)
+        invalidateCurrentResultFormat(tr("报告目录设置已改变，等待真实来源重新就绪。"));
+    m_directory = directory;
+}
+
+HistoryCurrentDisplayState *HistoryPage::currentDisplayState() const
+{
+    if (!m_localResultsMode || m_currentClosing || QThread::currentThread() != thread()
+        || !m_currentDisplayState || m_currentDisplayState->thread() != thread()) return nullptr;
+    return m_currentDisplayState.data();
+}
+
+void HistoryPage::clearCurrentResultPresentation(const QString &reason)
+{
+    m_currentQueryValid = false;
+    m_currentDetailValid = false;
+    m_currentSource = HistoryCurrentFormatSource();
+    m_currentColumnsRequest = 0;
+    m_currentPendingColumns.clear();
+    m_currentPendingDefaults.clear();
+    m_currentRefreshPending = false;
+    // 只清派生结果，保留报告身份、患者成功快照和编辑框草稿。
+    // 后到的患者/显示设置回执不能把这批失效结果重新画出来。
+    for (auto &report : m_reports) report.results.clear();
+    m_detailReport.results.clear();
+    ui->tableResultReport->setRowCount(0);
+    ui->tableResultReport->setToolTip(reason);
+    if (m_detailUi)
+    {
+        m_detailUi->projectResultList->setRowCount(0);
+        m_detailUi->projectResultList->setToolTip(reason);
+        m_detailUi->lstResultInfo->clear();
+        m_detailUi->lstErrorInfo->clear();
+        m_detailUi->lstTestInfo->clear();
+    }
+    status(reason);
+}
+
+bool HistoryPage::currentResultPresentationValid(bool detail) const
+{
+    return m_localResultsMode && !m_currentClosing && m_currentDisplayState
+        && m_currentDisplayState->valid()
+        && (detail ? m_currentDetailValid : m_currentQueryValid)
+        && sameCurrentSource(m_currentSource, m_currentDisplayState->source());
+}
+
+void HistoryPage::invalidateCurrentResultFormat(QString reason)
+{
+    if (!m_localResultsMode || QThread::currentThread() != thread()) return;
+    if (m_currentDisplayState) m_currentDisplayState->invalidateConfiguration(reason);
+    else clearCurrentResultPresentation(reason);
+    // cleared also occurs at a legitimate expect/start, so cancellation belongs
+    // here, not in the generic cleared callback. Writes keep their real ACK.
+    if (m_operation == QStringLiteral("query") || m_operation == QStringLiteral("detail"))
+    {
+        const QString operation = m_operation;
+        finish(operation, false);
+    }
+    // The external writer must call refresh() after its actual completion. A
+    // write-start invalidation alone must not reread the old committed format.
+}
+
+void HistoryPage::scheduleCurrentResultRefresh()
+{
+    if (!m_localResultsMode || m_currentClosing || m_currentLeaving || !isVisible() || !m_currentRefreshPending
+        || m_currentRefreshScheduled || !m_ready || isBusy() || m_dirty || m_filling
+        || (m_detailDialog && m_detailDialog->isVisible())) return;
+    m_currentRefreshScheduled = true;
+    QTimer::singleShot(0, this, [this]()
+    {
+        m_currentRefreshScheduled = false;
+        if (!m_localResultsMode || m_currentClosing || m_currentLeaving || !isVisible() || !m_currentRefreshPending
+            || !m_ready || isBusy() || m_dirty || m_filling
+            || (m_detailDialog && m_detailDialog->isVisible())) return;
+        m_currentRefreshPending = false;
+        queryPage(m_filter.offset / 20);
+    });
+}
+
+void HistoryPage::setSession(AccountSession session)
+{
+    if (m_localResultsMode)
+        invalidateCurrentResultFormat(tr("登录身份已改变，旧结果格式回执失效。"));
+    m_canWriteRemaining = session.authenticated && session.role >= 1 && session.role <= 5
+        && session.source != AccountSessionSource::Guest;
+    emit requestSetSession(session);
+    if (!m_canWriteRemaining && m_displayDialog && !isBusy()) m_displayDialog->close();
+    setBusy(m_busy);
+    if (m_localResultsMode) refresh();
+}
+
+bool HistoryPage::hasUnsavedChanges() const
+{
+    return m_dirty || (m_displayDialog && m_displayDialog->isVisible() && m_displayDialog->hasUnsavedChanges());
+}
 
 void HistoryPage::setReportPreviewEnabled(bool enabled)
 {
+    if (m_localResultsMode) enabled = false;
     m_reportPreviewEnabled = enabled;
     ui->btnPrinter->setToolTip(enabled ? tr("使用原版模板预览；脱机不连接物理打印机。") : tr("当前入口未绑定报告预览。"));
+    setBusy(m_busy);
+}
+
+void HistoryPage::setLocalResultsMode(bool enabled)
+{
+    if (m_localResultsMode && !enabled)
+        invalidateCurrentResultFormat(tr("已离开本地原值显示模式。"));
+    const bool changed = m_localResultsMode != enabled;
+    m_localResultsMode = enabled;
+    if (enabled && changed)
+    {
+        if (m_currentDisplayState)
+            m_currentDisplayState->invalidateConfiguration(tr("本地原值模式等待本次已提交格式。"));
+        else clearCurrentResultPresentation(tr("当前结果状态对象不可用。"));
+    }
+    if (enabled) setReportPreviewEnabled(false);
+    ui->btnExport->setToolTip(enabled
+        ? tr("本地原值结果的单位和精度尚未映射，暂不开放文件输出。")
+        : QString());
     setBusy(m_busy);
 }
 
@@ -270,6 +683,132 @@ void HistoryPage::setReportOperationBusy(bool busy)
 {
     m_reportBusy = busy;
     setBusy(m_busy);
+}
+
+void HistoryPage::setHospitalDictionaryAvailable(bool available)
+{
+    registerHospitalDictionaryTypes();
+    m_dictionaryAvailable = available;
+    if (!available)
+    {
+        m_dictionaryWaiting = HospitalDictionaryRequest();
+        m_dictionaryFlight = HospitalDictionaryRequest();
+        if (m_dictionaryDialog)
+        {
+            m_dictionaryDialog->reject();
+        }
+    }
+}
+
+void HistoryPage::bindHospitalDictionary(QLineEdit *edit, const QString &type)
+{
+    edit->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(edit, &QLineEdit::customContextMenuRequested, this,
+            [this, edit, type](const QPoint &)
+    {
+        openHospitalDictionary(edit, type);
+    });
+}
+
+void HistoryPage::openHospitalDictionary(QLineEdit *edit, const QString &type)
+{
+    if (!m_ready || isBusy() || !m_detailDialog || !m_detailDialog->isVisible())
+    {
+        return;
+    }
+    if (!m_dictionaryAvailable)
+    {
+        status(tr("医院字典查询尚未就绪；患者草稿保持不变，可稍后重试。"));
+        return;
+    }
+    auto *dialog = new ReportDictionaryDialog(type, m_detailDialog);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    m_dictionaryDialog = dialog;
+    m_dictionaryBusy = true;
+    const qint64 reportId = m_detailReport.id;
+    const QPointer<QLineEdit> target(edit);
+    connect(dialog, &ReportDictionaryDialog::queryRequested,
+            this, &HistoryPage::queueHospitalDictionary);
+    connect(dialog, &ReportDictionaryDialog::nameSelected, this,
+            [this, dialog, target, reportId](const QString &name)
+    {
+        if (m_dictionaryDialog != dialog || !target || m_detailReport.id != reportId
+                || !m_detailDialog || !m_detailDialog->isVisible())
+        {
+            return;
+        }
+        // 这是显示控件的可表示性检查，不能变成九字符临床/姓名规则。
+        if (name.size() > target->maxLength() || name.contains(QLatin1Char('\r'))
+                || name.contains(QLatin1Char('\n')) || name.contains(QChar(0x2028))
+                || name.contains(QChar(0x2029)) || name.contains(QChar::Null))
+        {
+            status(tr("所选名称无法完整放入单行输入框；未截断，患者草稿保持不变。"));
+            return;
+        }
+        const QString previous = target->text();
+        {
+            const QSignalBlocker blocker(target);
+            target->setText(name);
+            if (target->text() != name)
+            {
+                target->setText(previous);
+                status(tr("所选名称未能完整显示；患者草稿保持不变。"));
+                return;
+            }
+        }
+        target->setProperty("dictionarySelection", true);
+        m_dirty = true;
+    });
+    connect(dialog, &QDialog::finished, this, [this, dialog](int)
+    {
+        if (m_dictionaryDialog != dialog)
+        {
+            return;
+        }
+        m_dictionaryDialog.clear();
+        // 已发出的只读请求仍按编号等待；丢掉未发筛选，重开至多合并一条。
+        m_dictionaryWaiting = HospitalDictionaryRequest();
+        m_dictionaryBusy = false;
+        setBusy(m_busy);
+    });
+    setBusy(m_busy);
+    dialog->openForSelection();
+}
+
+void HistoryPage::queueHospitalDictionary(HospitalDictionaryRequest request)
+{
+    if (!m_dictionaryAvailable || !m_dictionaryDialog || request.requestId.isNull())
+    {
+        return;
+    }
+    m_dictionaryWaiting = request;
+    sendPendingHospitalDictionary();
+}
+
+void HistoryPage::sendPendingHospitalDictionary()
+{
+    if (!m_dictionaryAvailable || !m_dictionaryDialog
+            || !m_dictionaryFlight.requestId.isNull() || m_dictionaryWaiting.requestId.isNull())
+    {
+        return;
+    }
+    m_dictionaryFlight = m_dictionaryWaiting;
+    m_dictionaryWaiting = HospitalDictionaryRequest();
+    emit requestHospitalDictionary(m_dictionaryFlight);
+}
+
+void HistoryPage::receiveHospitalDictionary(HospitalDictionaryReply reply)
+{
+    if (!sameHospitalDictionaryRequest(reply.request, m_dictionaryFlight))
+    {
+        return;
+    }
+    m_dictionaryFlight = HospitalDictionaryRequest();
+    if (m_dictionaryDialog)
+    {
+        m_dictionaryDialog->receiveReply(reply);
+    }
+    sendPendingHospitalDictionary();
 }
 
 void HistoryPage::printReport(bool detail)
@@ -287,7 +826,9 @@ void HistoryPage::printReport(bool detail)
 
 bool HistoryPage::confirmLeave(const QString &action)
 {
-    if (!m_ready || isBusy())
+    // 已关闭的本地来源不再等待ready；初始化未就绪及在途写仍保持原门闸。
+    const bool terminalLocalSource = m_localResultsMode && m_currentClosing;
+    if (isBusy() || (!m_ready && !terminalLocalSource))
     {
         status(tr("历史数据操作尚未结束，请等待结果后再%1。").arg(action));
         return false;
@@ -329,9 +870,23 @@ bool HistoryPage::confirmLeave(const QString &action)
 
 bool HistoryPage::requestLeave(const QString &action)
 {
+    QScopedValueRollback<bool> leaving(m_currentLeaving, true);
     if (!confirmLeave(action))
     {
         return false;
+    }
+    if (m_displayDialog && m_displayDialog->isVisible())
+    {
+        if (m_displayDialog->hasUnsavedChanges())
+        {
+            QMessageBox question(QMessageBox::Question, tr("尚未保存"),
+                tr("%1将放弃显示设置修改，是否继续？").arg(action),
+                QMessageBox::Discard | QMessageBox::Cancel, this);
+            question.setObjectName(QStringLiteral("historyDisplayDiscardDialog"));
+            question.setDefaultButton(QMessageBox::Cancel);
+            if (question.exec() != QMessageBox::Discard) return false;
+        }
+        if (!m_displayDialog->close()) return false;
     }
     if (m_detailDialog && m_detailDialog->isVisible() && !m_detailDialog->close())
     {
@@ -366,6 +921,11 @@ void HistoryPage::setBusy(bool busy)
                           ui->btnPrvPage, ui->btnNextPage, ui->btnLastPage, ui->btnPrvRow, ui->btnNextRow})
         control->setEnabled(m_ready && !busy);
     ui->btnPrinter->setEnabled(m_reportPreviewEnabled && m_ready && !busy);
+    ui->btnExport->setEnabled(!m_localResultsMode && m_ready && !busy);
+    ui->btnDel->setEnabled(m_canWriteRemaining && m_ready && !busy);
+    ui->btnDisplay->setEnabled(m_canWriteRemaining && m_ready && !busy);
+    ui->btnDel->setToolTip(tr("隐藏所选报告，保留关联检测结果和任务；Guest只读。"));
+    ui->btnDisplay->setToolTip(tr("设置显示列和同项目结果次序；Guest只读。"));
     if (m_detailUi)
     {
         m_detailUi->btnSave->setEnabled(!busy);
@@ -374,17 +934,44 @@ void HistoryPage::setBusy(bool busy)
         m_detailUi->page_4->setEnabled(!busy);
         m_detailUi->btnPrinter->setEnabled(m_reportPreviewEnabled && m_ready && !busy);
     }
+    if (m_localResultsMode && !busy) scheduleCurrentResultRefresh();
 }
 
 void HistoryPage::finish(const QString &operation, bool success)
 {
+    if (m_localResultsMode && m_operation == operation
+        && (operation == QStringLiteral("query") || operation == QStringLiteral("detail")))
+    {
+        m_pending = 0;
+        m_operation.clear();
+        m_currentDetailRequestReport = 0;
+        m_currentColumnsRequest = 0;
+        m_currentPendingColumns.clear();
+        m_currentPendingDefaults.clear();
+    }
     setBusy(false);
     emit operationFinished(operation, success);
 }
 
-void HistoryPage::refresh() { queryPage(m_filter.offset / 20); }
+void HistoryPage::refresh()
+{
+    if (!m_localResultsMode) { queryPage(m_filter.offset / 20); return; }
+    if (QThread::currentThread() != thread() || m_currentClosing) return;
+    m_currentRefreshPending = true;
+    if (m_dirty) status(tr("患者信息尚未保存；保留草稿，格式刷新将在安全边界后执行。"));
+    scheduleCurrentResultRefresh();
+}
 void HistoryPage::queryPage(int page)
 {
+    if (m_localResultsMode)
+    {
+        if (m_currentClosing || QThread::currentThread() != thread()) return;
+        if (isBusy() || m_dirty || (m_detailDialog && m_detailDialog->isVisible()))
+        {
+            m_currentRefreshPending = true;
+            return;
+        }
+    }
     if (!m_ready || isBusy()) return;
     const int lastPage = qMax<qint64>(0, (m_total - 1) / 20);
     page = qBound(0, page, lastPage);
@@ -392,6 +979,17 @@ void HistoryPage::queryPage(int page)
     m_filter.limit = 20;
     m_pending = ++m_serial;
     m_operation = QStringLiteral("query");
+    if (m_localResultsMode)
+    {
+        m_currentRefreshPending = false;
+        m_currentPendingFilter = m_filter;
+        if (!m_currentDisplayState || !m_currentDisplayState->expectQuery(m_pending))
+        {
+            clearCurrentResultPresentation(tr("当前格式状态已关闭或请求无效，未发起查询。"));
+            finish(QStringLiteral("query"), false);
+            return;
+        }
+    }
     setBusy(true);
     status(tr("正在查询…"));
     emit requestQuery(m_pending, m_filter);
@@ -442,11 +1040,36 @@ void HistoryPage::displaySelectedResults(int reportRow)
 {
     auto *table = ui->tableResultReport;
     table->setRowCount(0);
+    if (m_localResultsMode && !currentResultPresentationValid(false)) return;
     if (reportRow < 0 || reportRow >= m_reports.size()) return;
     const auto &report = m_reports.at(reportRow);
-    const auto groups = HistoryResultStatistics::groups(report);
+    QSet<QString> statisticsUnavailable;
+    auto groups = m_localResultsMode
+        ? currentDisplayGroups(report, m_currentSource, &statisticsUnavailable)
+        : HistoryResultStatistics::groups(report);
+    QMap<QString, int> projectOrder;
+    QMap<QString, int> columnOrder;
+    QMap<QString, bool> columnVisible;
+    for (const auto &group : groups)
+        if (!projectOrder.contains(group.project)) projectOrder.insert(group.project, projectOrder.size());
+    for (int index = 0; index < m_displayColumns.size(); ++index)
+    {
+        const auto &column = m_displayColumns.at(index);
+        columnOrder.insert(column.key, index);
+        columnVisible.insert(column.key, column.visible);
+    }
+    const auto key = [](const HistoryStatisticGroup &group) {
+        return QStringLiteral("result:") + group.project + QChar(0x1f) + QString::number(group.resultType);
+    };
+    // Original vertical view keeps project order; dragging result types only
+    // changes their order within a project. Saved values remain untouched.
+    std::stable_sort(groups.begin(), groups.end(), [&](const HistoryStatisticGroup &left, const HistoryStatisticGroup &right) {
+        if (left.project != right.project) return projectOrder.value(left.project) < projectOrder.value(right.project);
+        return columnOrder.value(key(left), 1000) < columnOrder.value(key(right), 1000);
+    });
     for (const auto &group : groups)
     {
+        if (!columnVisible.value(key(group), true)) continue;
         for (const auto &entry : group.entries)
         {
             const int row = table->rowCount();
@@ -457,12 +1080,23 @@ void HistoryPage::displaySelectedResults(int reportRow)
                 : QString());
             if (!entry.valuePresent)
                 table->item(row, 1)->setToolTip(tr("任务 %1 未保存此结果类型；显示为空并计入无效复测，不补写原始结果。").arg(entry.taskId));
-            setCell(table, row, 2, entry.value.unit);
+            setCell(table, row, 2, m_localResultsMode
+                && entry.value.formatOrigin != HistoryValueFormatOrigin::CurrentCommitted
+                ? QString() : entry.value.unit);
             setCell(table, row, 3, entry.testedAt.toString(QStringLiteral("HH:mm:ss")));
             setCell(table, row, 4, QString::number(entry.taskId));
             table->setRowHeight(row, 50);
+            if (m_localResultsMode && entry.valuePresent)
+            {
+                QString information = currentValueInformation(entry.value);
+                if (statisticsUnavailable.contains(key(group)))
+                    information += QChar('\n') + group.meanUnavailableReason;
+                for (int column = 0; column < 3; ++column)
+                    table->item(row, column)->setToolTip(plainCurrentToolTip(information));
+            }
         }
-        if (!m_averageEnabled || !group.hasAverageRow())
+        if (!m_averageEnabled || !group.hasAverageRow()
+            || (m_localResultsMode && statisticsUnavailable.contains(key(group))))
             continue;
         const int row = table->rowCount();
         table->insertRow(row);
@@ -483,6 +1117,60 @@ void HistoryPage::displaySelectedResults(int reportRow)
         if (!group.cvUnavailableReason.isEmpty())
             table->item(row, 3)->setToolTip(sampleInfo + QChar('\n') + group.cvUnavailableReason);
     }
+}
+
+void HistoryPage::applyDisplay()
+{
+    const QStringList keys{QStringLiteral("patient:name"), QStringLiteral("patient:age"),
+        QStringLiteral("patient:sex"), QStringLiteral("patient:state")};
+    auto *header = ui->tablePatientInfo->horizontalHeader();
+    int position = 0;
+    for (const auto &column : m_displayColumns)
+    {
+        if (column.group != 1) continue;
+        const int logical = keys.indexOf(column.key);
+        if (logical < 0) continue;
+        header->moveSection(header->visualIndex(logical), position++);
+        ui->tablePatientInfo->setColumnHidden(logical, !column.visible);
+    }
+    displaySelectedResults(ui->tableResultReportOne->currentRow());
+}
+
+void HistoryPage::openDisplay()
+{
+    if (!m_ready || isBusy() || !m_canWriteRemaining || m_dirty) return;
+    if (m_displayDialog && m_displayDialog->isVisible()) return;
+    m_pending = ++m_serial;
+    m_operation = QStringLiteral("loadDisplay");
+    setBusy(true);
+    emit requestLoadDisplay(m_pending);
+}
+
+void HistoryPage::hideSelectedReports()
+{
+    if (!m_ready || isBusy() || !m_canWriteRemaining) return;
+    if (m_dirty || (m_detailDialog && m_detailDialog->isVisible()))
+    { status(tr("请先保存或取消并关闭患者明细，再删除报告。")); return; }
+    HistoryIds ids;
+    for (int row = 0; row < m_reports.size(); ++row)
+        if (ui->tableResultReportOne->item(row, 0)->checkState() == Qt::Checked) ids.append(m_reports.at(row).id);
+    if (ids.isEmpty() && hasCurrentRow()) ids.append(m_reports.at(ui->tableResultReportOne->currentRow()).id);
+    if (ids.isEmpty())
+    { status(tr("请选择需要删除的数据！")); emit operationFinished(QStringLiteral("hideReports"), false); return; }
+    QMessageBox question(QMessageBox::Question, tr("删除报告"),
+        tr("确认删除当前选中%1份报告数据？\n报告将隐藏，关联检测结果和任务仍保留。").arg(ids.size()),
+        QMessageBox::Yes | QMessageBox::No, this);
+    question.setObjectName(QStringLiteral("historyDeleteDialog"));
+    question.setDefaultButton(QMessageBox::No);
+    question.setEscapeButton(QMessageBox::No);
+    if (question.exec() != QMessageBox::Yes) return;
+    // Recheck after the modal event loop: a session may have been revoked.
+    if (isBusy() || !m_canWriteRemaining || m_dirty) return;
+    m_pending = ++m_serial;
+    m_operation = QStringLiteral("hideReports");
+    setBusy(true);
+    status(tr("正在隐藏所选报告，请等待数据库结果…"));
+    emit requestHideReports(m_pending, ids);
 }
 
 bool HistoryPage::hasCurrentRow() const
@@ -573,10 +1261,26 @@ void HistoryPage::openQuery()
 void HistoryPage::openDetail()
 {
     if (!m_ready || isBusy() || !hasCurrentRow()) return;
+    if (m_localResultsMode && (m_currentClosing || m_dirty))
+    {
+        if (m_dirty) status(tr("患者草稿尚未保存，未用新明细覆盖。"));
+        return;
+    }
+    const qint64 reportId = m_reports.at(ui->tableResultReportOne->currentRow()).id;
     m_pending = ++m_serial;
     m_operation = QStringLiteral("detail");
+    if (m_localResultsMode)
+    {
+        m_currentDetailRequestReport = reportId;
+        if (!m_currentDisplayState || !m_currentDisplayState->expectDetail(m_pending))
+        {
+            clearCurrentResultPresentation(tr("当前格式状态已关闭或明细请求无效。"));
+            finish(QStringLiteral("detail"), false);
+            return;
+        }
+    }
     setBusy(true);
-    emit requestDetail(m_pending, m_reports.at(ui->tableResultReportOne->currentRow()).id);
+    emit requestDetail(m_pending, reportId);
 }
 
 void HistoryPage::showDetail(const HistoryReport &report)
@@ -637,6 +1341,11 @@ void HistoryPage::showDetail(const HistoryReport &report)
             edit->setToolTip(tr("沿用原输入校验：首字符为字母/数字，其后 8 个字符；已有数据原样载入。"));
         }
         m_detailUi->ldtBeiZhu->setValidator(new QRegExpValidator(QRegExp(QStringLiteral("^[A-Za-z0-9].+$")), dialog));
+        bindHospitalDictionary(m_detailUi->ldtKeShi, QStringLiteral("keshi"));
+        bindHospitalDictionary(m_detailUi->ldtBingRenLeiXin, QStringLiteral("bingren"));
+        bindHospitalDictionary(m_detailUi->ldtJianYan, QStringLiteral("jianyan"));
+        bindHospitalDictionary(m_detailUi->ldtSongJian, QStringLiteral("songjian"));
+        bindHospitalDictionary(m_detailUi->ldtShenHe, QStringLiteral("shenhe"));
         for (auto *edit : m_detailUi->page_4->findChildren<QLineEdit *>())
             connect(edit, &QLineEdit::textChanged, dialog, [this]() { if (!m_filling) m_dirty = true; });
         connect(m_detailUi->cbxSex, QOverload<int>::of(&QComboBox::currentIndexChanged), dialog,
@@ -652,6 +1361,22 @@ void HistoryPage::showDetail(const HistoryReport &report)
             dialog->close();
         });
         connect(m_detailUi->btnClose, &QPushButton::clicked, dialog, &QDialog::close);
+        connect(dialog, &QDialog::finished, this, [this](int)
+        {
+            if (!m_localResultsMode || m_currentClosing) return;
+            // The single state accepted only the detail request. Requery the
+            // main list instead of reviving the pre-detail numeric cache.
+            if (m_currentDisplayState)
+                m_currentDisplayState->invalidateConfiguration(tr("明细已关闭，重新读取主表当前格式。"));
+            if (m_currentLeaving)
+            {
+                // Navigation/exit guards must not start a new SQL request in a
+                // later peer-page confirmation loop. Reentering this page resumes it.
+                m_currentRefreshPending = true;
+                return;
+            }
+            refresh();
+        });
         // 关闭前的共用守卫已恢复快照；不再靠finished静默清掉未保存标记。
     }
     fillDetail(report);
@@ -680,7 +1405,10 @@ void HistoryPage::fillDetail(const HistoryReport &report)
     // QLineEdit is a single-line editor. Preserve untouched original strings
     // (including legacy newline data) instead of serializing its display text.
     for (auto *edit : m_detailUi->page_4->findChildren<QLineEdit *>())
+    {
         edit->setProperty("loadedText", edit->text());
+        edit->setProperty("dictionarySelection", false);
+    }
     m_detailUi->cbxSex->setProperty("loadedIndex", m_detailUi->cbxSex->currentIndex());
     m_detailUi->cbxSex->setProperty("selectionEdited", false);
     auto *table = m_detailUi->projectResultList;
@@ -688,7 +1416,11 @@ void HistoryPage::fillDetail(const HistoryReport &report)
     m_detailUi->lstResultInfo->clear();
     m_detailUi->lstErrorInfo->clear();
     m_detailUi->lstTestInfo->clear();
-    for (const auto &result : report.results)
+    if (m_localResultsMode)
+    {
+        if (currentResultPresentationValid(true)) fillCurrentDetailResults(report);
+    }
+    else for (const auto &result : report.results)
     {
         if (result.values.isEmpty()) continue;
         const auto &value = result.values.first();
@@ -709,6 +1441,77 @@ void HistoryPage::fillDetail(const HistoryReport &report)
     m_detailUi->stkTestInfo->setCurrentIndex(0);
     m_filling = false;
     m_dirty = false;
+    if (m_localResultsMode) scheduleCurrentResultRefresh();
+}
+
+void HistoryPage::fillCurrentDetailResults(const HistoryReport &report)
+{
+    auto *table = m_detailUi->projectResultList;
+    table->setToolTip(m_currentSource.configurationNotice);
+    m_detailUi->lstResultInfo->setToolTip(m_currentSource.configurationNotice);
+    for (const auto &result : report.results)
+    {
+        const HistoryResultValue *main = nullptr;
+        int mainCount = 0;
+        // 原明细主显示单位独立于used/display；不从竖向筛后清单取首项。
+        for (const auto &value : result.storedValues) if (value.mainResult)
+        {
+            main = &value;
+            ++mainCount;
+        }
+        const int row = table->rowCount();
+        table->insertRow(row);
+        setCell(table, row, 0, result.project);
+        QString information;
+        if (mainCount == 1 && sameCurrentSource(main->currentSource, m_currentSource))
+        {
+            setCell(table, row, 1, (result.abnormalType == QStringLiteral("1")
+                ? QStringLiteral("*") : QString()) + HistoryStore::displayValue(*main));
+            setCell(table, row, 2, main->formatOrigin == HistoryValueFormatOrigin::CurrentCommitted
+                ? main->unit : QString());
+            information = currentValueInformation(*main);
+        }
+        else
+        {
+            const QString reason = mainCount == 0 ? tr("主结果未配置")
+                : mainCount > 1 ? tr("主结果配置冲突") : tr("主结果来源失效");
+            setCell(table, row, 1, reason);
+            setCell(table, row, 2, QString());
+            information = reason + tr("；未以第一项代替主结果，原始数据仍保留。");
+        }
+        setCell(table, row, 3, result.abnormalType == QStringLiteral("1")
+            ? QStringLiteral("*") : QString());
+        setCell(table, row, 4, QString::number(result.taskId));
+        table->setRowHeight(row, 41);
+        for (int column = 0; column < 3; ++column)
+            table->item(row, column)->setToolTip(plainCurrentToolTip(information));
+
+        bool selectionUnknown = false;
+        for (const auto &value : result.storedValues)
+        {
+            if (!value.selectionKnown) { selectionUnknown = true; continue; }
+            if (!value.used) continue; // 原结果信息仅按used，不借display再筛一次。
+            if (!sameCurrentSource(value.currentSource, m_currentSource))
+            {
+                m_detailUi->lstResultInfo->addItem(result.project + tr("：结果来源已失效，未显示旧值。"));
+                continue;
+            }
+            const QString unit = value.formatOrigin == HistoryValueFormatOrigin::CurrentCommitted
+                ? value.unit : QString();
+            m_detailUi->lstResultInfo->addItem(result.project + QStringLiteral(" ")
+                + value.label + QStringLiteral(": ") + HistoryStore::displayValue(value)
+                + (unit.isEmpty() ? QString() : QChar(' ') + unit));
+            m_detailUi->lstResultInfo->item(m_detailUi->lstResultInfo->count() - 1)
+                ->setToolTip(plainCurrentToolTip(currentValueInformation(value)));
+        }
+        if (selectionUnknown)
+            m_detailUi->lstResultInfo->addItem(result.project
+                + tr("：结果选择未配置，原始数据仍保留。"));
+        if (result.storedValues.isEmpty())
+            m_detailUi->lstResultInfo->addItem(result.project + tr("：尚未保存结果原值。"));
+        if (!result.abnormalType.isEmpty() && result.abnormalType != QStringLiteral("0"))
+            m_detailUi->lstErrorInfo->addItem(tr("任务 %1 异常码：%2").arg(result.taskId).arg(result.abnormalType));
+    }
 }
 
 void HistoryPage::savePatient()
@@ -717,6 +1520,7 @@ void HistoryPage::savePatient()
     HistoryPatient patient = m_detailReport.patient;
     patient.reportId = m_detailReport.id;
     const auto editedText = [](QLineEdit *edit, const QString &original) {
+        if (edit->property("dictionarySelection").toBool()) return edit->text();
         return edit->text() == edit->property("loadedText").toString() ? original : edit->text();
     };
     patient.name = editedText(m_detailUi->ldtName, patient.name);
@@ -793,8 +1597,19 @@ void HistoryPage::exportCsv(QString path, bool all)
     emit requestExportCsv(m_pending, m_filter, selected, path);
 }
 
+void HistoryPage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    if (m_localResultsMode) scheduleCurrentResultRefresh();
+}
+
 void HistoryPage::closeEvent(QCloseEvent *event)
 {
     if (!requestLeave(tr("关闭窗口"))) { event->ignore(); return; }
+    if (m_localResultsMode)
+    {
+        m_currentClosing = true;
+        invalidateCurrentResultFormat(tr("报告窗口已关闭，旧结果显示失效。"));
+    }
     QWidget::closeEvent(event);
 }

@@ -1,0 +1,136 @@
+{
+  "passed": true,
+  "source_inputs": {
+    "protocol/soak_main.cpp": "27f939c7662074298a363af6865ee867aa3d03150d0c37b14aa0780f352be363",
+    "protocol/soak.pro": "412ebea152e27fbdd70f7efb68231c1e5fb8e306a95c4b2bb1cb2c24ef6a790c",
+    "protocol/read_only_client.cpp": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+    "protocol/read_only_client.h": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+    "protocol/tcp_transport.cpp": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+    "protocol/tcp_transport.h": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+    "protocol/frame_codec.cpp": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+    "protocol/frame_codec.h": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+    "protocol/read_only_messages.cpp": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+    "protocol/read_only_messages.h": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+    "protocol/status_session.cpp": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+    "protocol/status_session.h": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+    "tests/protocol_soak_timing_test.py": "03775a7a4257b9fef5b0a911354795eb79c3ab47b443c5ba8776094595df0a05",
+    "tests/run_protocol_soak.py": "2709b316036ffdef495c108e40e89f22188efec24ca4137e5b4c1a571adde729"
+  },
+  "source_unchanged": true,
+  "new_binary_sha256": "c6be7102bde8b1fc507afe9f617d31fdc9c48423feb76602cbca83efacb4add4",
+  "old_scope_checker_actual_exit": 1,
+  "old_actual_target_exit": 0,
+  "qmake_actual_exit": 0,
+  "make_actual_exit": 0,
+  "new_checker_actual_exit": 0,
+  "cases": [
+    {
+      "name": "disabled",
+      "actual_target_exit": 0,
+      "expected_exit": 0,
+      "log_scopes": null
+    },
+    {
+      "name": "enabled",
+      "actual_target_exit": 0,
+      "expected_exit": 0,
+      "log_scopes": {
+        "log": {
+          "complete_retained_count": 352,
+          "max_ms": 9.187504
+        },
+        "log.size": {
+          "complete_retained_count": 352,
+          "max_ms": 9.156887
+        },
+        "log.write": {
+          "complete_retained_count": 352,
+          "max_ms": 0.032683
+        },
+        "log.stdout": {
+          "complete_retained_count": 12,
+          "max_ms": 2.997709
+        },
+        "log.segment": {
+          "complete_retained_count": 1,
+          "max_ms": 2.445857
+        },
+        "log.close": {
+          "complete_retained_count": 1,
+          "max_ms": 0.920122
+        }
+      }
+    },
+    {
+      "name": "ring_overwrite",
+      "actual_target_exit": 0,
+      "expected_exit": 0,
+      "log_scopes": {
+        "log": {
+          "complete_retained_count": 788,
+          "max_ms": 9.009646
+        },
+        "log.size": {
+          "complete_retained_count": 788,
+          "max_ms": 8.984552
+        },
+        "log.write": {
+          "complete_retained_count": 788,
+          "max_ms": 0.025099
+        },
+        "log.stdout": {
+          "complete_retained_count": 0,
+          "max_ms": null
+        },
+        "log.segment": {
+          "complete_retained_count": 0,
+          "max_ms": null
+        },
+        "log.close": {
+          "complete_retained_count": 1,
+          "max_ms": 0.567676
+        }
+      }
+    },
+    {
+      "name": "log_budget",
+      "actual_target_exit": 3,
+      "expected_exit": 3,
+      "log_scopes": {
+        "log": {
+          "complete_retained_count": 44,
+          "max_ms": 15.810811
+        },
+        "log.size": {
+          "complete_retained_count": 43,
+          "max_ms": 5.58721
+        },
+        "log.write": {
+          "complete_retained_count": 44,
+          "max_ms": 0.872004
+        },
+        "log.stdout": {
+          "complete_retained_count": 12,
+          "max_ms": 3.255447
+        },
+        "log.segment": {
+          "complete_retained_count": 10,
+          "max_ms": 11.092755
+        },
+        "log.close": {
+          "complete_retained_count": 10,
+          "max_ms": 2.747542
+        }
+      }
+    },
+    {
+      "name": "timing_save_failure",
+      "actual_target_exit": 3,
+      "expected_exit": 3,
+      "log_scopes": null
+    }
+  ],
+  "old8h_direct_cause_confirmed": false,
+  "hardware_or_GUI_used": false,
+  "scope": "Complete optional log scope/size/rotation/stdout/close observation and actual failure paths only; 120ms/one retry and8192 ring unchanged; no old8h fix, long stability, or budget claim"
+}

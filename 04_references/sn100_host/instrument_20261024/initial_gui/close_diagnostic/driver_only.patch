@@ -1,0 +1,27 @@
+diff --git "a/temp\\sn100_host\\instrument_20261024\\source\\06_programs\\sn100_host\\tests\\instrument_page_test.cpp" "b/temp\\sn100_host\\instrument_20261024\\qa_driver\\tests\\instrument_page_test.cpp"
+index d232af0..f15d894 100644
+--- "a/temp\\sn100_host\\instrument_20261024\\source\\06_programs\\sn100_host\\tests\\instrument_page_test.cpp"
++++ "b/temp\\sn100_host\\instrument_20261024\\qa_driver\\tests\\instrument_page_test.cpp"
+@@ -501,6 +501,8 @@ void InstrumentPageTest::shellIntegrationAndLifecycleGuards()
+     QVERIFY(until([&]() { return fixture.shell->accountSession().authenticated
+         && !control<QWidget>(fixture.page,"btnFunTest")->isHidden(); }));
+     QSignalSpy rejected(fixture.shell,&frmMain::navigationRejected);
++    connect(fixture.shell,&frmMain::navigationRejected,this,[](const QString &reason)
++    { qInfo().noquote() << "INSTRUMENT_NAVIGATION_REJECTED" << reason; });
+     QVERIFY(QMetaObject::invokeMethod(fixture.maintenance,[]() { QThread::msleep(150); },Qt::QueuedConnection));
+     control<QDateEdit>(fixture.page,"dateSelect")->setDate(QDate::currentDate().addMonths(-1));
+     QVERIFY(fixture.page->isBusy());
+@@ -527,6 +529,13 @@ void InstrumentPageTest::shellIntegrationAndLifecycleGuards()
+     QVERIFY(until([&]() { return !fixture.shell->accountSession().authenticated; }));
+     QVERIFY(control<QWidget>(fixture.page,"btnFunTest")->isHidden());
+     QVERIFY(fixture.shell->selectMainPage(6));
++    qInfo() << "INSTRUMENT_BEFORE_IDLE_WAIT" << "account_busy" << fixture.shell->accountPage()->isBusy()
++            << "hospital_busy" << fixture.shell->hospitalPage()->isBusy()
++            << "maintenance_busy" << fixture.page->isBusy();
++    // Clearing identity starts an asynchronous account-list refresh. The shell
++    // keeps its close guard until that real read (and all other pages) settles.
++    QVERIFY(until([&]() { return !fixture.shell->accountPage()->isBusy()
++        && !fixture.shell->hospitalPage()->isBusy() && !fixture.page->isBusy(); }));
+     QVERIFY(fixture.shell->close());
+ }
+ 

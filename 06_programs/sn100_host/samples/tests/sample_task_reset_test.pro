@@ -1,0 +1,10 @@
+QT += core testlib
+QT -= gui
+CONFIG += c++14 testcase console warn_on
+CONFIG -= app_bundle
+TARGET = sample_task_reset_test
+INCLUDEPATH += ..
+SOURCES += sample_task_reset_test.cpp ../sample_task_reset.cpp
+HEADERS += ../sample_task_reset.h
+MOC_DIR = .moc
+OBJECTS_DIR = .obj

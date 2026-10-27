@@ -1,0 +1,63 @@
+********* Start testing of CalibrationStoreTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : CalibrationStoreTest::initTestCase()
+QWARN  : CalibrationStoreTest::saveLoadReopenPreservesRawPoints() "UPDATE calibration_records SET is_checked=1" "CHECK constraint failed: is_checked=0 Unable to fetch row"
+QWARN  : CalibrationStoreTest::saveLoadReopenPreservesRawPoints() "UPDATE calibration_records SET is_applied=1" "CHECK constraint failed: is_applied=0 Unable to fetch row"
+QINFO  : CalibrationStoreTest::saveLoadReopenPreservesRawPoints() INPUT concentration mg/dL=100.125; measurements Sec=[12.25,12.75]; OUTPUT reopened exact, checked=0 applied=0
+PASS   : CalibrationStoreTest::saveLoadReopenPreservesRawPoints()
+PASS   : CalibrationStoreTest::updateCopyUsesCommittedRevisionAndDeleteIsSoft()
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-0)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-1)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-2)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-3)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-4)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-5)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-6)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-7)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-8)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-9)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-10)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-11)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-12)
+PASS   : CalibrationStoreTest::validationRejectsEmptyIllegalAndDuplicates(invalid-13)
+PASS   : CalibrationStoreTest::permissionRejectedWithoutWrite(guest)
+PASS   : CalibrationStoreTest::permissionRejectedWithoutWrite(invalid-role)
+PASS   : CalibrationStoreTest::permissionRejectedWithoutWrite(busy-session)
+QINFO  : CalibrationStoreTest::disabledProjectRemoveIsReadOnlyForRowsPointsAndHolds() DISABLED_REMOVE rejected with visible/revision/points/project-and-batch holds unchanged; historical read remains available
+PASS   : CalibrationStoreTest::disabledProjectRemoveIsReadOnlyForRowsPointsAndHolds()
+PASS   : CalibrationStoreTest::staleRevisionAndRepeatedDeleteCannotOverwrite()
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(rename-project)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(delete-project)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(disable-project)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(delete-batch)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(rename-batch)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(reassign-batch)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(change-batch-components)
+QINFO  : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(unit-ratio) HISTORICAL_UNIT_SNAPSHOT_RETAINED "UPDATE option_unit SET ratio=2 WHERE unit='mg/dL'" raw_values_unchanged
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(unit-ratio)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(remove-calibration-result)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(remove-concentration-unit)
+QINFO  : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(rename-original-result-unit) HISTORICAL_UNIT_SNAPSHOT_RETAINED "UPDATE project_result SET unit_name='mg/dL' WHERE result_type='Original'" raw_values_unchanged
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(rename-original-result-unit)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(remove-original-result)
+PASS   : CalibrationStoreTest::catalogChangesRespectSavedIdentityAndUnits(remove-original-unit)
+QINFO  : CalibrationStoreTest::lockFailurePreservesDataAndRetryWorks() INPUT BEGIN IMMEDIATE competing writer; OUTPUT save error, unchanged values; rollback lock then explicit retry succeeds
+PASS   : CalibrationStoreTest::lockFailurePreservesDataAndRetryWorks()
+QINFO  : CalibrationStoreTest::latePointFailureRollsBackHeaderAndAllPoints() INPUT late INSERT trigger failure on point2; OUTPUT revision/header/point1 all rolled back; explicit retry after trigger removal succeeds
+PASS   : CalibrationStoreTest::latePointFailureRollsBackHeaderAndAllPoints()
+PASS   : CalibrationStoreTest::catalogSnapshotIsCommittedReadOnlyAndStableIds()
+PASS   : CalibrationStoreTest::zeroAndDescendingConcentrationsRemainInInputOrder()
+PASS   : CalibrationStoreTest::unboundBatchStoresExplicitEmptyString()
+PASS   : CalibrationStoreTest::savedIdentityCannotBeReassociated(another-live-project)
+PASS   : CalibrationStoreTest::savedIdentityCannotBeReassociated(another-live-batch)
+PASS   : CalibrationStoreTest::savedIdentityCannotBeReassociated(changed-current-concentration-unit)
+PASS   : CalibrationStoreTest::savedIdentityCannotBeReassociated(changed-current-original-unit)
+PASS   : CalibrationStoreTest::savedIdentityCannotBeReassociated(different-method)
+PASS   : CalibrationStoreTest::savedIdentityCannotBeReassociated(different-transform)
+PASS   : CalibrationStoreTest::savedIdentityCannotBeReassociated(different-calibrator-batch)
+PASS   : CalibrationStoreTest::savedIdentityCannotBeReassociated(fabricated-copy-source)
+PASS   : CalibrationStoreTest::unknownExistingFileAndReferencePathsAreRejected()
+PASS   : CalibrationStoreTest::wrongThreadAndClosedStoreCannotAccessSql()
+PASS   : CalibrationStoreTest::cleanupTestCase()
+Totals: 51 passed, 0 failed, 0 skipped, 0 blacklisted, 28510ms
+********* Finished testing of CalibrationStoreTest *********

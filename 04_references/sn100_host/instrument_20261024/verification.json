@@ -1,0 +1,76 @@
+{
+  "schema": "sn100-instrument-offline-delivery-v1",
+  "date": "2026-10-24",
+  "status": "offline_checkpoint_verified_real_device_and_rk_pending",
+  "scope": "Original instrument UI and six manual maintenance actions. Frozen with validated O09-2; later formal password-login work is outside this checkpoint.",
+  "source_file_count": 468,
+  "compiled_source_input_count": 348,
+  "all_private_source_sha256_verified": true,
+  "original_ui_sha256": "4e0f24fa7e99e459a123bced7855d25399b2ce7f6e23cfb3f8cd2f36fb879f4e",
+  "tests": {
+    "maintenance_store_passed": 11,
+    "maintenance_store_failed": 0,
+    "instrument_gui_offscreen_passed": 10,
+    "instrument_gui_xcb_passed": 10,
+    "instrument_gui_failed": 0,
+    "applicable_cumulative_passed": true,
+    "offscreen_physical_viewport_inapplicable_failure_preserved": true,
+    "initial_logout_wait_test_failure_preserved": true
+  },
+  "builds": {
+    "wsl": true,
+    "windows32": true,
+    "arm64": true,
+    "arm64_offline_elf_count": 56,
+    "arm64_dependency_errors": [],
+    "arm_outer_driver_cr_error_preserved_child_build_check_package_exit_0": true
+  },
+  "binaries": {
+    "wsl_main": {
+      "path": "temp/sn100_host/instrument_20261024/native/wsl_release/sn100_shell",
+      "sha256": "c5da853069071eedc12a601cb5cab8be0529e726196b8ce4d79667b7c232aeb3"
+    },
+    "wsl_helper": {
+      "path": "temp/sn100_host/instrument_20261024/native/wsl_release/sn100_report_renderer",
+      "sha256": "a73acc08b9747a4d36d3fae7ecf2034a1880e750936e53fdbecac793c5603c89"
+    },
+    "windows_main": {
+      "path": "temp/sn100_host/instrument_20261024/windows/final_release/sn100_shell.exe",
+      "sha256": "a5c2241ef62dd253d84ccbc07388a8ab6b9919f1dc91933ef41fb2f68e31c3a8"
+    },
+    "windows_helper": {
+      "path": "temp/sn100_host/instrument_20261024/windows/final_release/sn100_report_renderer.exe",
+      "sha256": "a0d8f5afd878c113c7f48ad4f340b175302762563cbfb335b58d7a1571feda05"
+    },
+    "arm64_main": {
+      "path": "temp/sn100_host/instrument_20261024/arm64/sn100_shell",
+      "sha256": "2278c5fc769fb5b9f60a6f7ca54c3d8dfa0ea4e4564bbe34bf2424610fc692e4"
+    },
+    "arm64_helper": {
+      "path": "temp/sn100_host/instrument_20261024/arm64/sn100_report_renderer",
+      "sha256": "6558bf9c791f3b78e88440e183a4cedef5e7102841fd4f1c8665490c050877f1"
+    }
+  },
+  "evidence": {
+    "store": "store/verification.json",
+    "gui": "final_gui/verification.json",
+    "native": "native/verification.json",
+    "windows": "windows/final_update/windows_result.json",
+    "arm64": "arm64/verification.json",
+    "cumulative": "cumulative/verification.json",
+    "resource": "resource/verification.json"
+  },
+  "backup": "07_backups/sn100_host/instrument_offline_20261024",
+  "backup_checksum_entries_verified": 8,
+  "package_sha256": "22b7579395af3f95afcb2bc88ff931bb687fba611ea87762637cfb026e6b423b",
+  "source_archive_sha256": "b0c9b7fe13fcea8f0ca82098caeb31ff06302e206b2b24d823bb83ac11690f30",
+  "hardware_actions_enabled": false,
+  "target_executable_run": false,
+  "deployed": false,
+  "original_windows_active_visual_baseline_verified": false,
+  "rk_screen_input_verified": false,
+  "accepted_resource_budget_or_realtime_qualification": false,
+  "long_term_stability_verified": false,
+  "runtime_databases_or_credentials_archived": false,
+  "git_committed_or_pushed": false
+}

@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>frmSampleMaterial</class>
+ <widget class="QWidget" name="frmSampleMaterial">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1751</width>
+    <height>968</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="CusView" name="sampleFunMenu" native="true">
+   <property name="geometry">
+    <rect>
+     <x>1525</x>
+     <y>0</y>
+     <width>226</width>
+     <height>968</height>
+    </rect>
+   </property>
+   <widget class="QStackedWidget" name="stkFunMenu">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>226</width>
+      <height>968</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="page">
+     <widget class="QtMaterialFlatButton" name="btnDelRackAll">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>310</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>清空预设</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnUpdateLis">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>70</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>同步任务</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnEditRack">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>150</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>编辑预设</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnDelRack">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>230</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>删除预设</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_2">
+     <widget class="QtMaterialFlatButton" name="btnMenuReturn">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>870</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>返回</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnMenuSave">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>790</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>更新设置</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnRepeatHoleTask">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>230</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>批量样本测试</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnHoleDetail">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>70</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>样本测试设置</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnDelHoleTask">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>150</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>删除样本测试</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnSetSample">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>710</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>样本容器</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnResetErr">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>310</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>复位错误状态</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnResetFin">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>390</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>复测样本</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnCombSetting">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>470</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>配置多项测试</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnDelRack_current">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>550</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>删除此样本架</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QtMaterialFlatButton" name="btnDelRackAll_2">
+      <property name="geometry">
+       <rect>
+        <x>26</x>
+        <y>630</y>
+        <width>178</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>苹方 粗体</family>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <stylestrategy>PreferDefault</stylestrategy>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>清空预设</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>37</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="CusRackListWidget" name="rackList">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>18</y>
+     <width>1265</width>
+     <height>931</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:transparent</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnPrvRack">
+   <property name="geometry">
+    <rect>
+     <x>1450</x>
+     <y>320</y>
+     <width>51</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>上
+一
+架</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnNextRack">
+   <property name="geometry">
+    <rect>
+     <x>1450</x>
+     <y>460</y>
+     <width>51</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>下
+一
+架</string>
+   </property>
+  </widget>
+  <widget class="CusBadgeButton" name="btnAdd" native="true">
+   <property name="geometry">
+    <rect>
+     <x>1340</x>
+     <y>35</y>
+     <width>80</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::ClickFocus</enum>
+   </property>
+  </widget>
+  <widget class="QWidget" name="wgtSampleSetting" native="true">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>130</y>
+     <width>1379</width>
+     <height>821</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>苹方 粗体</family>
+    </font>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtMaterialFlatButton</class>
+   <extends>QPushButton</extends>
+   <header>qtmaterialflatbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CusView</class>
+   <extends>QWidget</extends>
+   <header>cusview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CusBadgeButton</class>
+   <extends>QWidget</extends>
+   <header>cusbadgebutton.h</header>
+   <container>1</container>
+  </customwidget>
+
+  <customwidget>
+   <class>CusRackListWidget</class>
+   <extends>QListWidget</extends>
+   <header>cusracklistwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

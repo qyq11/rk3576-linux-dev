@@ -1,0 +1,37 @@
+{
+  "schema": "sn100-report-query-execution-slot-request-v1",
+  "ready": true,
+  "execution_started": false,
+  "requested_slot": "串行WSL编译及GUI；根窗口暂停其他编译/GUI/测量，并保证本轮绑定源码不再变化",
+  "estimated_seconds": 60,
+  "total_hard_bound_seconds": 300,
+  "compiler_jobs": 1,
+  "full_shell_rebuild": false,
+  "build_scope": "新建一个观测测试驱动，只编译测试副本一份翻译单元，链接已验证Release主程序对象（去掉main）",
+  "runtime_scope": "原冻结测试XCB一次；当前观测副本XCB及offscreen各一次；每次只执行原有两项业务用例，各自新匿名目录",
+  "methods": [
+    "committedHospitalAndReportLifecycle",
+    "persistedHospitalAndLegacyEntry"
+  ],
+  "no_load_method": true,
+  "per_gui_process_bound_seconds": 90,
+  "existing_qt_wait_limit_ms": 15000,
+  "argv": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu-24.04",
+    "-u",
+    "qyq",
+    "--",
+    "python3",
+    "-B",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_queue.py",
+    "--execute-slot",
+    "--output-dir",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_01"
+  ],
+  "binding_preconditions": "执行前核426/5123当前源与native收据/所有对象；若其他窗口已改源则拒绝旧对象，整合窗口须改传新--native-build与--snapshot并先完成匹配编译",
+  "new_data_root": "temp/sn100_host/offline_followup_20261026/report_query/run_01",
+  "environment_changes": "仅子进程选择QPA和匿名输入/导出路径；不改全局环境/工具链",
+  "failure_policy": "原失败日志及实际退出原样保留；继续已安排的两项对照，不把重试通过覆盖失败；超界只回收本次进程组"
+}

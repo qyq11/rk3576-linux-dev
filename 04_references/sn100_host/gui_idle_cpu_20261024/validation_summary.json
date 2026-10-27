@@ -1,0 +1,156 @@
+{
+  "schema": "sn100-gui-idle-cpu-validation-v1",
+  "date": "2026-10-24",
+  "state": "WSL x86_64 isolated causal CPU gate passed; not the latest fully integrated instrument-page product",
+  "scope": "Guest, original1600x900 viewport, page7, same anonymous initial data/replay; no reference execution, endpoint or hardware action",
+  "mechanism": "Inherited infinite840ms grow/shrink halo animation calls setHaloScaleFactor each animation tick; old setter requested update unconditionally even when halo transparent or button disabled, provoking repeated header/shadow paints",
+  "change": "Only guard update() for actual visible/enabled button, isHaloVisible and positive haloOpacity/haloSize; always update haloScaleFactor value. Infinite animation timing, focus pulse, ripple/checkable logic, original colors/layout remain",
+  "provenance": {
+    "before_main_sha256": "150c9f0335e564cc0cef367c82a876908afa1177657e3944864e01d12fd54bbc",
+    "isolated_after_main_sha256": "bdb07703b1293e424093ba3ac3d0f38eeb98b79b7d77d54ccd5ec1985cd0405d",
+    "formal_after_internal_source_sha256": "d6e87c7623d978940cedaa2a59612d2c835d3fac1e785b8e65f3752c26cc7b1f",
+    "before_source_matches_readonly_reference_sha256": "d24f96b9fe12277c78f2387b271dbe815c8774177ae2cc9d136c4b62f13918bb",
+    "object_count": 124,
+    "changed_objects": [
+      ".obj/qtmaterialflatbutton_internal.o"
+    ],
+    "artifact_binaries_or_objects_archived": false
+  },
+  "independent_material_test": {
+    "before": {
+      "passed": 2,
+      "failed": 1,
+      "idle_paints_600ms": 37,
+      "expected_defect_reproduction": true
+    },
+    "offscreen_after": {
+      "passed": 3,
+      "failed": 0,
+      "counts": {
+        "after_click_600ms": 0,
+        "clicks": 1,
+        "disabled_600ms": 0,
+        "focused_600ms": 38,
+        "hidden_halo_600ms": 0,
+        "idle_600ms": 0
+      }
+    },
+    "xcb_after": {
+      "passed": 3,
+      "failed": 0,
+      "counts": {
+        "after_click_600ms": 0,
+        "clicks": 1,
+        "disabled_600ms": 0,
+        "focused_600ms": 38,
+        "hidden_halo_600ms": 0,
+        "idle_600ms": 0
+      }
+    },
+    "counts_include_init_cleanup": true
+  },
+  "full_product_event_diagnostic": {
+    "cpu_baseline": false,
+    "method": "LD_PRELOAD constructor plus public QObject eventFilter;6s visible original navigation click;10-20s event window;20s screenshot;21.5s ordinary SIGTERM",
+    "before_with_replay": {
+      "events": 18416,
+      "material_paints": 635,
+      "zero_halo_opacity_paints": 635,
+      "zero_halo_size_paints": 635,
+      "disabled_material_paints": 635
+    },
+    "after_with_replay": {
+      "events": 916,
+      "material_paints": 10,
+      "zero_halo_opacity_paints": 10,
+      "zero_halo_size_paints": 10,
+      "disabled_material_paints": 10
+    },
+    "animation_driver_timer_count_each": 625,
+    "main_clock_timer_count_each": 10,
+    "remaining_paints": "10 after paints with zero halo are concurrent with ordinary1Hz header clock refresh; full product is not claimed to have zero Paint events",
+    "all_complete_runs_page": 7,
+    "all_complete_runs_exit_code": 0,
+    "six_workers_stopped": true,
+    "original_runtime_and_binary_hashes_unchanged": true
+  },
+  "uninstrumented_resource_comparison": {
+    "instrumentation": false,
+    "total_observation_seconds": {
+      "before": 20.200741096,
+      "after": 20.33778608600005
+    },
+    "steady_definition": "Use existing /proc samples with6<=elapsed_seconds<=20; difference of first/last CPU ticks divided by actual sample span and CLK_TCK; one logical core100%",
+    "actual_steady_span_seconds": {
+      "before": 13.988793112999986,
+      "after": 13.876993562000052
+    },
+    "steady_cpu_percent_one_core": {
+      "before": 18.51482096474124,
+      "after": 0.8647406188081039
+    },
+    "whole_run_cpu_percent_includes_startup": {
+      "before": 22.149569751966713,
+      "after": 5.190823240527989
+    },
+    "maximum_RSS_KiB": {
+      "before": 260892,
+      "after": 258112
+    },
+    "maximum_PSS_KiB": {
+      "before": 247611,
+      "after": 244856
+    },
+    "same_initial_data_sha256_map": true,
+    "window": "About20 seconds total; about14 seconds steady span, not20 steady seconds",
+    "limits": "Single paired WSL host observation, no repeated statistical confidence, RK budget, same-board RT or long stability qualification"
+  },
+  "visual": {
+    "before_image": "diagnostic_before/with_replay_filter/notify_435.png",
+    "after_image": "diagnostic_after/with_replay_filter/notify_428.png",
+    "original_images_viewed": true,
+    "original_images_never_rewritten": true,
+    "numerical_exclusion_only": "Original lblSystemTime includes both local time/date; parent geometry produces rectangle[563,37,111,41]. No status rectangle excluded because both show replay EOF.",
+    "pixel_comparison": {
+      "analysis_excluded_rect_xywh": [
+        563,
+        37,
+        111,
+        41
+      ],
+      "changed_bounds_all_xywh": [
+        619,
+        45,
+        8,
+        10
+      ],
+      "changed_bounds_outside_rect_xywh": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "changed_pixels_all": 75,
+      "changed_pixels_outside_rect": 0,
+      "height": 900,
+      "images_rewritten": false,
+      "mask_is_numeric_only": true,
+      "maximum_channel_delta_outside_rect": 0,
+      "mean_absolute_channel_delta_outside_rect": 0,
+      "width": 1600
+    },
+    "scope": "One same-page Guest EOF condition; not a complete original Windows visual or all interaction equivalence claim"
+  },
+  "gdb": {
+    "scope": "Breakpoint stack only, not a CPU baseline",
+    "stack": "gdb/halo_stack.mi",
+    "normal_inferior_exit": true
+  },
+  "failures": "failure_note.json distinguishes raw evidence from tool-output process transcription",
+  "data_boundary": "Only existing closed anonymous runtime four folders copied into temp per run. Database contents, credentials, executables, shared objects and object files are excluded from this archive. Metadata hashes only.",
+  "pending": [
+    "Latest integrated instrument-page application cumulative and cross-platform freeze by root",
+    "Original Windows behavior/activity theme; RK screen/input/resource budget; instrument/long stability/same-board control"
+  ],
+  "reproduction": "reproduction/ and diagnostic_before/ scripts retain actual environment and commands; recorded old paths are intentional provenance, use new isolated output roots for a fresh authorized rerun"
+}

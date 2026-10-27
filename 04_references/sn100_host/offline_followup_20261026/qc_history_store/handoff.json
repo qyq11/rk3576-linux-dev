@@ -1,0 +1,251 @@
+{
+  "schema": "sn100-qc-history-store-handoff-v1",
+  "date": "2026-10-26",
+  "created_utc": "2026-10-26T02:18:45.411040+00:00",
+  "status": "formal readonly worker API and immutable series replies implemented; independent WSL SQL tests passed; GUI/cumulative/platform not claimed",
+  "modified_and_new_owned_files": {
+    "06_programs/sn100_host/quality_control/qc_store.h": {
+      "sha256": "ef8018ecdb8b0c4dd8b56ec6f5e1ad1c8fcd7529780e5025c81c74fb1a3bc897",
+      "bytes": 5729
+    },
+    "06_programs/sn100_host/quality_control/qc_store.cpp": {
+      "sha256": "08ee475cfb534bbfdb02332dadcb7acdd11bf60978aad108b8b76d163d20266a",
+      "bytes": 70684
+    },
+    "06_programs/sn100_host/quality_control/qc_core.pri": {
+      "sha256": "507e5d7c90a6e2c9d49a4c5092234001fd7a9ac21d5cdad344164e295405d5c0",
+      "bytes": 244
+    },
+    "06_programs/sn100_host/quality_control/qc_history_reply.h": {
+      "sha256": "722fd21dff15f52e8e17aa9e437200e752827e3b63461289ed1db415fa5e01d1",
+      "bytes": 3428
+    },
+    "06_programs/sn100_host/tests/qc_history_store_test.cpp": {
+      "sha256": "3ffaa41dbf5b7857a271b2e246eb078f48d528ffbd465eaf6fba41f43cc5f5be",
+      "bytes": 25891
+    },
+    "06_programs/sn100_host/tests/qc_history_store_test.pro": {
+      "sha256": "a5f1c3a4802f23f55f4a3b2153cbde62af0a12bdf8e455da944a266d3d06b647",
+      "bytes": 533
+    }
+  },
+  "source_backup": {
+    "path": "07_backups/sn100_host/offline_followup_20261026/pre_qc_history_sources/quality_control/manifest.json",
+    "sha256": "7d71ced682e15cbf5e3e56418e0dec3a5392802ddc5e63a653e26b2b78821b43",
+    "bytes": 790,
+    "scope": "Exact old store header/implementation/pri only; no database, configuration or environment rollback. New page code must be rolled back using its own matching source checkpoint, not these three files alone."
+  },
+  "dependencies": {
+    "inputs": "run_01/inputs_before.json",
+    "input_count": 17,
+    "before_after_equal": true,
+    "core_owner": "qc_pages: formal qc_history_core.h include adapts to ../quality/statistics.h; cpp byte-identical to executed private core",
+    "statistics": "Existing quality/statistics.h/.cpp linked once through qc_core.pri; no copied implementation",
+    "source_freeze_scope": "Only this independent test roster is checked. Original432/9ff remains historical; this does not claim a new whole-app freeze.",
+    "root_packaging_action": "shell/package_arm64.py must include the two linked quality/statistics inputs; root owns that public edit."
+  },
+  "api": {
+    "slot": "loadHistory(qint64 requestId,qint64 associationId)",
+    "success": "historyReady(requestId,QcHistoryReply): private members with value-copy getters; dataset/control/project/association IDs+names, current/previous batch identity, rule configs, raw HistoryRows, unknown per-row/type unit evidence, worker-prepared per-used-type Selection/Summary/validRawCount",
+    "failure": "historyError(requestId,associationId,code,message); native/driver/database SQL text retained, no success/partial reply. This dedicated channel does not trip the editable CRUD error callbacks.",
+    "thread_and_lifecycle": "GUI issues queued requests; SQL begins/uses/commits/rolls back only in QcStore owning thread. Source SQL handles and QObjects never appear in replies. Normal close resets readiness; later requests report not_initialized.",
+    "identity": "Resolve local stable association ID then selected control/project/current+previous batch names. Recheck live local dataset UUID, registered catalog schema/canonical path/exact hold/project/result identities in read snapshots; disabled history remains readable. Query never runs reconcileReferences or writes missing holds.",
+    "sql_snapshot": "Local read snapshot then catalog read snapshot in existing local->catalog order. SELECT/BEGIN/COMMIT/ROLLBACK only; commits before CPU parsing. No cross-file atomic-write claim.",
+    "boundedness": "10000 rows,65536 UTF16 chars/result,2Mi total result chars,64 date/time chars and up to4 types are private offline budgets, not instrument specs. SQL metadata/byte preflight plus actual UTF16/row count checks; embedded NUL cannot bypass raw byte limits. Over limit returns error, no silently truncated success. No new index/schema/write API.",
+    "query_cost_limit": "Returned data/parser memory is bounded; existing legacy table has no new index, so a very large whole DB can still require scans. Actual max-scale worker CPU/memory/response remains to measure.",
+    "ordering": "Previous batch first then current; each date DESC,time DESC,id DESC. Same-day tuple duplicates retained. time/id order is explicit deterministic completion of old date-only ordering, not claimed original SQL behavior.",
+    "unit_truth": "Legacy quality_data contains no per-point saved unit/ratio/decimals. Every returned point/type is UnknownLegacy (empty unit/NaN ratio), regardless of association or latest catalog snapshots. No automatic unit conversion or unknown/mixed-unit statistics. Raw valid numeric counts stay explicit; no fabricated zero.",
+    "empty_states": "Empty,NoCurrentBatch andNoEnabledResults are distinct complete replies; current batch with no rows may return previous rows but core legacyCardVisible=false retains original hidden card behavior. No implicit default repair.",
+    "cpu_phase": "Worker prepares each used-result Selection and Summary after releasing SQL snapshots; GUI does not repeat parser/statistics. First implementation calls original selectHistory up to4 times. Parse caching/resource optimization is separately pending without changing verified ordering/meaning.",
+    "clinical_boundary": "These are stored daily-result summaries/last daily result, not per-measurement samples, optical waveforms or calibration concentration points. No normal/warning/out-of-control/clinical fit/evaluation/device/write/import API is added."
+  },
+  "verification": {
+    "environment": "Ubuntu-24.04/qyq WSL,Qt5.15.13 x86_64 Release,GCC13.2,QTEST_GUILESS; widgets linked only for real ProjectsStore editor dependency, no GUI execution",
+    "command": "wsl.exe -d Ubuntu-24.04 -u qyq -- python3 -B /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_draft/run_store.py",
+    "runtime_env": "SN100_QC_HISTORY_TEST_ROOT=<run_01>/runtime; no database/INI/configuration copied to04 evidence",
+    "qmake_exit": 0,
+    "make_exit": 0,
+    "test_exit": 0,
+    "passed": 21,
+    "business_cases": 19,
+    "failed": 0,
+    "skipped": 0,
+    "qt_test_ms": 11111,
+    "owned_groups": {
+      "qmake": {
+        "argv": [
+          "/usr/lib/qt5/bin/qmake",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/qc_history_store_test.pro",
+          "-spec",
+          "linux-g++",
+          "CONFIG+=release",
+          "CONFIG-=debug"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/build",
+        "pgid": 389,
+        "actual_exit_code": 0,
+        "timed_out": false,
+        "owned_group_stopped": true,
+        "cleanup_signals": [],
+        "seconds": 0.7334597,
+        "started_utc": "2026-10-26T02:15:25.771755+00:00",
+        "finished_utc": "2026-10-26T02:15:26.505232+00:00"
+      },
+      "make": {
+        "argv": [
+          "make",
+          "-j2"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/build",
+        "pgid": 396,
+        "actual_exit_code": 0,
+        "timed_out": false,
+        "owned_group_stopped": true,
+        "cleanup_signals": [],
+        "seconds": 21.681340643000002,
+        "started_utc": "2026-10-26T02:15:26.532232+00:00",
+        "finished_utc": "2026-10-26T02:15:48.213585+00:00"
+      },
+      "test": {
+        "argv": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/build/qc_history_store_test",
+          "-v1"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/build",
+        "pgid": 443,
+        "actual_exit_code": 0,
+        "timed_out": false,
+        "owned_group_stopped": true,
+        "cleanup_signals": [],
+        "seconds": 11.178229147,
+        "started_utc": "2026-10-26T02:15:48.260091+00:00",
+        "finished_utc": "2026-10-26T02:15:59.438333+00:00"
+      }
+    },
+    "coverage": [
+      "golden true worker query and immutable copies/unknown units; exact QC+catalog hashes unchanged",
+      "same-day duplicate order retains all IDs",
+      "control/project/batch and identical names/IDs across datasets isolated",
+      "malformed/missing type/date invalid explicit NaN/exclusion, not zero",
+      "missing live hold/unbound/unmarked/schema/path/wrong thread fail closed, no read-time repair",
+      "real local/catalog EXCLUSIVE lock errors retain native diagnostics; rollback/retry",
+      "overlarge row/total/10001 rows/date/non-text/embedded NUL/UTF16 boundaries return no partial success",
+      "empty/previous-only/no-current/no-enabled distinguish config and history",
+      "existing history unlink protection, invalid association and closed worker truthful"
+    ],
+    "test_recording": "QueuedSignalRecords use the main test QObject with QueuedConnection value arguments and actual worker synchronization. Qt5 DirectConnection QSignalSpy is not used against worker signals.",
+    "attempts": [
+      {
+        "attempt": 1,
+        "qmake_exit": 0,
+        "make_exit": 0,
+        "test_exit": 0,
+        "passed": 21,
+        "failure": null,
+        "note": "Before first build, static review replaced unsafe cross-thread test recorders. No failed result or business expectation was changed/removed."
+      }
+    ],
+    "artifact": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/build/qc_history_store_test",
+      "sha256": "07529f42aa120bb361e84a16290f881524eea1e9d14dd9c485fe5b1ccde70769",
+      "bytes": 845168,
+      "elf_machine": 62
+    }
+  },
+  "actual_data_receipts": {
+    "path": "data_receipts.json",
+    "sha256": "212c53136d2cb0753406ee20761f0bc2cedce3ef43bc32cac68958091b1f889b",
+    "bytes": 76630,
+    "fixture_directories": 20,
+    "meaning": "Read-only snapshots of actual retained anonymous temp databases. Oversize test payloads are summarized, not archived. This does not reconstruct or claim serialized GUI replies."
+  },
+  "postprocessing_note": "First evidence export exited1 because the intentional non-text fixture contains an actual SQLite BLOB that plain JSON cannot serialize. Exporter was corrected to retain explicit blob storage type/hex/bytes; formal source and passing SQL tests were unchanged. This is separate from the real qmake/make/test receipts.",
+  "raw_evidence": {
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/scope.json": {
+      "sha256": "a3c6e44aeb91146402fd5401cb29a8c23bd07b04e3e0cfb3b1eed445946428d2",
+      "bytes": 279
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/inputs_before.json": {
+      "sha256": "1f9c59cca2ca4be00f7f3c66b828e91e529a29b4b50dd46424359fc6a4c57ff4",
+      "bytes": 2777
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/inputs_after.json": {
+      "sha256": "1f9c59cca2ca4be00f7f3c66b828e91e529a29b4b50dd46424359fc6a4c57ff4",
+      "bytes": 2777
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/artifact.json": {
+      "sha256": "e308aa4721cc3f40b96359d1b863babd562a560f0227eb2cef1a3d27252c9396",
+      "bytes": 303
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/verification.json": {
+      "sha256": "15e32a797313a177e8d9d23f1e21f2fe1ffb7c0600d1406ddf85e927201b8340",
+      "bytes": 300
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/qmake.command.json": {
+      "sha256": "d1682aa7b927513f61511a85c744c98a01e51ab5110993a087e9f7056dbc584e",
+      "bytes": 503
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/qmake.log": {
+      "sha256": "4162364a4c4f0cfc0ee8ad65a25311c9cc02a8c80116d38c923759b0b2237612",
+      "bytes": 184
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/qmake.exit.json": {
+      "sha256": "b38ea05cd30a578efe10a8b03e419f20433aaf0ab0203a8e9d042be9beb9b083",
+      "bytes": 659
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/qmake.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/make.command.json": {
+      "sha256": "f31a91f7055548120566242abceb225a6ed55c3e6a8bf0c9d926658aeba53b07",
+      "bytes": 293
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/make.log": {
+      "sha256": "3b6104ee85ae5b356cd9221ef6170717c42e6e538f0ee2d71372af025f530c76",
+      "bytes": 20982
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/make.exit.json": {
+      "sha256": "385de7c53f334f8f848835b0a923a13a674ffb9b3becc08d75d185a362d3cfc1",
+      "bytes": 457
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/make.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/test.command.json": {
+      "sha256": "db01e01ede46447a41d13317fe75d0689a69b7dc1c0bfc2770d7384da71388dc",
+      "bytes": 454
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/test.log": {
+      "sha256": "5e33bd1326832d41a5bb5070b0c3106ecf338796033dfd933e1f09523e90ef0a",
+      "bytes": 12616
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/test.exit.json": {
+      "sha256": "fa83e841136c89b214d3df588492164a88e95b5897366dbac2d125dee47e4418",
+      "bytes": 613
+    },
+    "04_references/sn100_host/offline_followup_20261026/qc_history_store/run_01/test.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    }
+  },
+  "pending": [
+    "qc_pages actual core/UI tests and original QC cumulative regression",
+    "page stale-reply/selection/busy/draft/exit and row/card interaction validation",
+    "full source freeze, WSL/Windows32/ARM64 app/helper builds/package closure/pair recovery archive",
+    "original active Windows behavior/visual and RK/instrument/real result writing",
+    "fixed workload response/CPU/RSS/PSS/control impact/long stability",
+    "additional disabled-history runtime/true in-flight second-writer snapshot tests; source path already preserves disabled reads"
+  ],
+  "source_writing_stopped": true,
+  "compile_test_slot_released": true,
+  "no_background_process": true,
+  "not_modified": [
+    "quality statistics algorithm",
+    "QC page/chart/resources/core-owned files",
+    "projects/reagents/calibration/shell source",
+    "global README/plan/main record",
+    "existing contracts/private core20x139 executed sources and old handoffs"
+  ]
+}

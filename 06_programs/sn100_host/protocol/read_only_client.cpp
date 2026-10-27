@@ -55,6 +55,18 @@ ReadOnlyClient::~ReadOnlyClient()
     m_transport->close();
 }
 
+void ReadOnlyClient::setTimingEnabled(bool enabled)
+{
+    m_timingEnabled = enabled;
+}
+
+void ReadOnlyClient::traceTiming(const char *stage)
+{
+    if(!m_timingEnabled) return;
+    emit timingEvent(QString::fromLatin1(stage), m_clock.nsecsElapsed(), m_connectionGeneration,
+                     m_requestRevision, m_attempt, m_deadline);
+}
+
 bool ReadOnlyClient::current(quint64 connectionGeneration) const
 {
     return m_connected && m_connectionGeneration == connectionGeneration
@@ -167,6 +179,7 @@ bool ReadOnlyClient::request(ReadOnlyQuery query, QString *error)
     m_attempt = 1;
     m_deadline = m_clock.elapsed() + m_timeoutMs;
     m_requestTimedOut = false;
+    traceTiming("deadline.initial");
     emit queryQueued(query, m_attempt, connectionGeneration);
     return true;
 }
@@ -174,6 +187,7 @@ bool ReadOnlyClient::request(ReadOnlyQuery query, QString *error)
 void ReadOnlyClient::finishRequest(bool success, const QString &detail, quint64 connectionGeneration)
 {
     if(!current(connectionGeneration) || !m_pending) return;
+    traceTiming(success ? "request.success" : "request.failure");
     const ReadOnlyQuery query = m_query;
     m_pending = false;
     m_attempt = 0;
@@ -188,6 +202,7 @@ void ReadOnlyClient::finishRequest(bool success, const QString &detail, quint64 
 void ReadOnlyClient::observe(const QByteArray &message, quint64 connectionGeneration)
 {
     if(!current(connectionGeneration)) return;
+    traceTiming("observe.enter");
     // tick可能超时结束旧请求，其直接槽又发起新请求；当前已收到的旧报文
     // 只能成为观测，不能冒认随后才建立的新等待的回复。
     const quint64 receivedForRevision = m_requestRevision;
@@ -227,6 +242,7 @@ void ReadOnlyClient::tick()
     const quint64 connectionGeneration = m_connectionGeneration;
     if(!current(connectionGeneration) || m_silenceClosing) return;
     const qint64 now = m_clock.elapsed();
+    traceTiming("timer.tick");
     const qint64 lastStatus = m_lastStatusAt >= 0 ? m_lastStatusAt : m_connectedAt;
     if(lastStatus >= 0 && now - lastStatus >= 200000)
     {
@@ -249,6 +265,7 @@ void ReadOnlyClient::tick()
         {
             ++m_attempt;
             m_deadline = m_clock.elapsed() + m_timeoutMs;
+            traceTiming("deadline.retry");
             emit queryQueued(query, m_attempt, connectionGeneration);
         }
         else

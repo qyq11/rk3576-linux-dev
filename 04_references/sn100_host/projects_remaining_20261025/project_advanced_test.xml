@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCase name="ProjectAdvancedTest">
+<Environment>
+    <QtVersion>5.15.13</QtVersion>
+    <QtBuild>Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)</QtBuild>
+    <QTestVersion>5.15.13</QTestVersion>
+</Environment>
+<TestFunction name="initTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1.82676"/>
+</TestFunction>
+<TestFunction name="scalarSaveCopyReopenPreservesExistingContract">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[ADVANCED_SAVE_REOPEN 1 QMap(("first_light", "405nm")("max_test_time", "40")("min_test_time", "5")("sample_change_clean", "8")("second_light", "570nm")("stopTime", "20")) result_unit "s" sample_rate "OFFLINE_RATE_A"]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="565.361"/>
+</TestFunction>
+<TestFunction name="emptyIllegalAndUnknownInputsAreRejected">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="532.004"/>
+</TestFunction>
+<TestFunction name="actionRowsSaveInOrderValidateAndProtectReagentReferences">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[ACTION_REOPEN 2 2 ordered steps; 15.5uL; GUI sample6uL/reagent16.5uL persisted/reopened; unknown reagent/empty/action-volume mismatch refused; reagent FK delete blocked]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1401.65"/>
+</TestFunction>
+<TestFunction name="durableReferencesProtectSeparateDatabaseRecords">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[CROSS_DB_REFERENCE 2 hold persisted; rename/delete refused; external old-unit/12.345 preserved; explicit release permits rename]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1089.93"/>
+</TestFunction>
+<TestFunction name="referencePermissionMissingProjectAndClosedStoreFailClosed">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="622.568"/>
+</TestFunction>
+<TestFunction name="lockFailureAndRetryKeepCommittedData">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[ADVANCED_LOCK_RECOVERY_GUI_TICKS 95]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1439.9"/>
+</TestFunction>
+<TestFunction name="oldCatalogUpgradeAndWriteFailureRollback">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[OLD_CATALOG_UPGRADE baseline IDs/results preserved; injected write failure rolled back all fields; retry/reopen succeeded]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="782.619"/>
+</TestFunction>
+<TestFunction name="guiCancelDraftBusyAndLocalSave">
+<Message type="qwarn" file="" line="0">
+    <Description><![CDATA[This plugin does not support propagateSizeHints()]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="2291.65"/>
+</TestFunction>
+<TestFunction name="corruptStoredPayloadFailsWithoutDroppingUnknownData">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="494.083"/>
+</TestFunction>
+<TestFunction name="cleanupTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1.6473"/>
+</TestFunction>
+<Duration msecs="9234.58"/>
+</TestCase>

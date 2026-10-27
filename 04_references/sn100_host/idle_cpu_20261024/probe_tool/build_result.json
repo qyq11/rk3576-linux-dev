@@ -1,0 +1,25 @@
+{
+  "schema": "sn100-host-idle-probe-build-v1",
+  "scope": "Temporary host-only passive diagnostics, no product source edits or product/test execution by this tool-building agent",
+  "compile_exit_code": 0,
+  "compiler_version": "g++ 13.3.0",
+  "qt_widgets_pkgconfig_version": "5.15.13",
+  "source_sha256": "ce3d8d984a6722895bd5e0b1ba5875c9b9671f83dfaccd7291d019dbf1a6188f",
+  "library_sha256": "57fd2c2b6dc603cc1d16373669a97abb1ddcabcbd87e285bf9d8d4cd179cd5af",
+  "library_architecture": "ELF64 shared object, x86-64",
+  "library_exported_hook_symbols": ["_ZN12QApplication4execEv", "_ZN7QWidget6updateEv"],
+  "target_imported_hook_symbols": ["_ZN12QApplication4execEv@Qt_5", "_ZN7QWidget6updateEv@Qt_5"],
+  "qt_library_hook_symbols": ["_ZN12QApplication4execEv@@Qt_5", "_ZN7QWidget6updateEv@@Qt_5"],
+  "complete_ldd_exit_code": 0,
+  "missing_libraries": [],
+  "runtime_interposition_verified": false,
+  "runtime_verification_owner": "Parent launches the sole bounded product observation; require observation_complete=true and no SN100_IDLE_PROBE_ERROR",
+  "behavior": "Every original event and no-argument QWidget::update is forwarded. GUI-thread counts in elapsed 6..10 seconds from QApplication::exec entry, two snapshots, bounded object/callsite maps and first limited backtraces. No widget text, database values or credentials read.",
+  "limits": [
+    "An instrumented diagnostic with overhead, not a normal process CPU baseline",
+    "Only no-argument QWidget::update is interposed; overloads and locally bound internal library calls may bypass it",
+    "Paint-event delivery does not measure complete raster/GPU work",
+    "haloVisible is not a QObject property in the current product header and remains unknown through generic introspection",
+    "Object addresses can be reused; counts must be interpreted with names/classes/snapshot context"
+  ]
+}

@@ -1,0 +1,10 @@
+QT += core sql testlib
+QT -= gui
+CONFIG += c++14 console testcase warn_on
+TEMPLATE = app
+TARGET = calibration_store_test
+INCLUDEPATH += ../.. ..
+SOURCES += calibration_store_test.cpp ../calibration_store.cpp
+HEADERS += ../calibration_store.h ../calibration_types.h
+MOC_DIR = .moc
+OBJECTS_DIR = .obj

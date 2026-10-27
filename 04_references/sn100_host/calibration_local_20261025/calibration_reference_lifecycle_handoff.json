@@ -1,0 +1,100 @@
+{
+  "schema": "sn100-calibration-reference-lifecycle-repair-handoff-v1",
+  "date": "2026-10-26",
+  "status": "Concrete test signal-collection hazard corrected and bounded regression passed; original SIGSEGV direct cause remains unconfirmed. Sources/processes stopped.",
+  "original_failure": {
+    "directory": "temp/sn100_host/qc_local_20261025/suite_final_05/calibration_reference_offscreen",
+    "actual_test_exit_code": -6,
+    "reported_signal": "SIGSEGV11 then Qt fatal handler ABRT",
+    "actual_summary": "18 passed,1 failed; missing-calibration-type row",
+    "historical_driver_path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/cumulative_build/calibration_reference_test",
+    "actual_driver_sha256": "f1e122139bc6538e179f203bf5bea0e791dbbf8b50bd5964550e738cf2d95a0e",
+    "actual_source_sha256": "5b8cfa9653218b193f5b1f916f651a863ed23ab056fa2328ada128094f48e155",
+    "relocation": "temp/sn100_host/qc_local_20261025/cumulative_build_pre_calibration_reference_01_relocation.json",
+    "preserved_driver": "temp/sn100_host/qc_local_20261025/cumulative_build_pre_calibration_reference_01/calibration_reference_test",
+    "additional_private_preservation": "temp/sn100_host/qc_local_20261025/calibration_reference_repair/original_bound",
+    "warning": "Historical argv/proof are retained unchanged. A later file at the same cumulative_build path is a different driver; use this fingerprint and relocation mapping."
+  },
+  "diagnosis": {
+    "original_sigsegv_reproduced_under_gdb": false,
+    "gdb_exact_row": {
+      "events": [
+        {
+          "event": "exited",
+          "exit_code": 0
+        }
+      ],
+      "inferior_exit_code": 0,
+      "inferior_stop_signal": null
+    },
+    "gdb_original_full22": {
+      "events": [
+        {
+          "event": "exited",
+          "exit_code": 0
+        }
+      ],
+      "inferior_exit_code": 0,
+      "inferior_stop_signal": null
+    },
+    "actual_direct_delivery_trace": {
+      "intentional_breakpoint": true,
+      "selected_thread_number": 2,
+      "main_thread_number": 1,
+      "original_crash_reproduced": false,
+      "(void*)QThread::currentThread()": "unavailable: No symbol table is loaded.  Use the \"file\" command.",
+      "(void*)((QObject*)$rdi)->thread()": "unavailable: No symbol table is loaded.  Use the \"file\" command."
+    },
+    "trace_facts": [
+      "Original same bound executable intentionally stopped at real QSignalSpy::qt_metacall on Thread2/LWP372 from ProjectsStore::ready/initialize worker event.",
+      "Main Thread1/LWP369 was simultaneously in waitFor -> Fixture::initialize -> selected missing-calibration-type test row.",
+      "Receiver address rdi=0x7fffffffcc00 and source constructs/reads recorder containers on the main test thread; all-thread stacks retained."
+    ],
+    "trace_limit": "Intentional direct-delivery breakpoint is not a reproduced crash. Release symbols did not permit QObject affinity getter evaluation; those unavailable attempts are retained.",
+    "tsan": {
+      "actual_exit_code": 66,
+      "result": "FATAL ThreadSanitizer unexpected memory mapping; no race report obtained. Test body only was instrumented; frozen167 production objects were not.",
+      "no_system_workaround": "No ASLR/sysctl/YAMA/permission/dependency changes or repeated TSAN attempts."
+    },
+    "causality_limit": "Direct cross-thread mutable-spy collection is confirmed and unsafe by implementation; it has not been directly tied to the original SIGSEGV source frame. Production cause is neither established nor excluded."
+  },
+  "repair": {
+    "changed_file": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+    "source_before_sha256": "5b8cfa9653218b193f5b1f916f651a863ed23ab056fa2328ada128094f48e155",
+    "source_after_sha256": "25c984c73a5b0d7486edb87aacfea8d21ac4c4f691f99c8dc082adfa883b7239",
+    "unchanged_pro_sha256": "9c8ca0e5d62a90de707893816b5b2c5ca0d855e6a0d83bff84495a88e40193c9",
+    "preimage_manifest": "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/calibration_reference/source_inputs.json",
+    "behavior": [
+      "Replace all cross-thread QSignalSpy instances with test-owned QObject contexts and Qt::QueuedConnection, preserving actual complete typed signal argument values.",
+      "Only the owning main test thread appends/clears/reads record lists; each delivery verifies current thread equals context owner. No synthetic business signal, value or result is emitted.",
+      "Queued recorder destruction disconnects its connection and removes pending MetaCall events before record members are destroyed.",
+      "Real worker no-op queue barriers wait until requested slots and automatic post-save load calls have returned; queued records are flushed before observer clear/replacement/readback.",
+      "No empty/default-data workaround, increased timeout, deleted row, skip or expectedFail introduced. Original business assertion lines and data rows verified unchanged."
+    ],
+    "assertion_evidence": "assertions_preserved.json"
+  },
+  "regression": {
+    "actual_test_exit_code": 0,
+    "timed_out": false,
+    "actual_summary": "Totals: 22 passed, 0 failed, 0 skipped, 0 blacklisted, 13640ms",
+    "actual_checked_owning_thread_deliveries": 285,
+    "qpa": "offscreen; QTEST_GUILESS/QCoreApplication, no GUI or devices",
+    "driver": "temp/sn100_host/qc_local_20261025/calibration_reference_repair/repaired_01/driver_build/calibration_reference_test",
+    "driver_sha256": "b4b910025dc6b4967f5331d9bdd473ecbc89bc902a7e21b3bb34191d06a96cff",
+    "source_snapshot_sha256": "57f3b03290cc3635a5772a7169d22c1713f164186ab3b368028a0f35f8b710ed",
+    "source_inputs": 426,
+    "native_objects": 167,
+    "source_before_after_equal": true,
+    "binding_proof": "repaired/binding_proof.json",
+    "raw_test_exit": "repaired/offscreen/test.exit.json",
+    "production_source_modified": false,
+    "no_old_e65_objects_or_instrumented_production_objects_used": true
+  },
+  "remaining": [
+    "Parent must bind this exact changed test source then rerun the complete35 cumulative suite.",
+    "Keep original SIGSEGV unresolved/not directly attributed despite this22/0 pass; do not turn successful retries into root-cause or long-stability certification.",
+    "Windows GUI/RK/instrument/resource budgets/real-time coexistence/long stability are outside this bounded test-only repair."
+  ],
+  "evidence_policy": "Original failure, all GDB/TSAN outcomes, exact test sources, command/exit/log/proof metadata copied. No runtime DB/INI/secrets, executable/object or private production data archived.",
+  "write_stop": "Only this test CPP changed; PRO and frozen57f3b032 production426/167 remain intact. All diagnostic/build/test processes exited before metadata collection."
+}

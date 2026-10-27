@@ -1,0 +1,532 @@
+{
+  "schema": "sn100-calibration-post-repair-readonly-review-v1",
+  "date": "2026-10-25",
+  "reviewed_at_asia_shanghai": "2026-10-25T23:34:42.7658607+08:00",
+  "status": "CAL-GUARD-01 and CAL-GUARD-02 closed for documented new-version operation protocol; no new confirmed source defect found in reviewed scope",
+  "sole_new_file": "04_references/sn100_host/calibration_local_20261025/post_repair_review.json",
+  "review_limits": {
+    "source_edits": false,
+    "old_reviews_or_handoffs_overwritten": false,
+    "build_test_or_gui_run": false,
+    "resource_or_device_action": false,
+    "database_open_query_write_or_copy": false,
+    "package_install_or_git_commit_push": false,
+    "messages_to_other_chats": false,
+    "new_agents_spawned": false,
+    "method": "只读源码、已有日志/JSON与普通文件SHA256；未运行程序或操作数据库。"
+  },
+  "earlier_findings": [
+    {
+      "id": "CAL-GUARD-01",
+      "status": "closed_in_source_and_private_store_evidence",
+      "source": [
+        "calibration_page.cpp:220-239,545-558",
+        "calibration_store.cpp:1126-1179"
+      ],
+      "repair": "删除按钮同Save/Copy使用ready、idle、current project enabled和canEdit门槛；deleteCurrent在确认前检查已提交项目候选；remove在worker读取匹配revision/visible记录的project_id，再查当前catalog.is_used，停用/缺失不写visible。",
+      "evidence": "store51日志含disabledProjectRemoveIsReadOnlyForRowsPointsAndHolds通过，reference22的停用项目用例也加remove拒绝；gate04 calShell6覆盖角色/草稿/保存/复制/隐藏等一般UI，不声称其另有停用删除按钮专项断言。",
+      "retained": "启用项目仍只做revision检查后的软隐藏，点和项目/批次预约保留。停用项目历史读取/启动保护对账不受误禁。"
+    },
+    {
+      "id": "CAL-GUARD-02",
+      "status": "closed_for_same_catalog_canonical_path_binding_protocol",
+      "source": [
+        "calibration_store.cpp:337-370,378-460,462-540"
+      ],
+      "repair": "共享catalog预约事务先读取/登记catalog_metadata.calibration_dataset_path:<uuid>，值为规范本地DB文件路径。相同规范文件可多worker；另一文件同UUID不等时回滚并拒绝，不换UUID、不释放预约。",
+      "evidence": "reference22已有sameCanonicalFileAllowsTwoWorkersAndSameBinding和sameUuidPhysicalCopyFailsClosedWithoutChangingIdentity；测试明确原文件关闭后真实QFile副本仍拒绝、旧UUID不变、原路径重开成功。",
+      "scope": "限所有合作的新版本writer、同一catalog与规范路径协议。活库替换/raw SQLite/旧版本绕过不纳入保障；迁址、Windows/WSL/RK路径变更或克隆须显式授权迁移与预约对账。不能把它描述成可自动跨平台迁移数据库。"
+    },
+    {
+      "id": "IRR-03 / prior unverified rollback cleanup boundary",
+      "status": "covered_by_conservative_recovery_and_targeted_injection_evidence",
+      "source": [
+        "calibration_store.cpp:337-350,565-600,1023-1124"
+      ],
+      "repair": "QLockFile覆盖完整两库动作而非依赖SQLite旧事务仍存在。失败先rollback旧状态，再仍持操作锁重拿BEGIN IMMEDIATE，读所有已持久project/batch身份（不排除hidden），只释放本次新增且实际无人使用的键。重新锁、读取、释放失败均保留预约并带诊断，不对既有/他dataset/QC键清理。",
+      "evidence": "reference22增加真实RAISE(ROLLBACK)及有限rollback_hook闸门，第二worker被操作锁拒绝、显式重试成功；catalog DELETE ABORT模拟回收失败后保留预约，重开因孤立键闭锁。",
+      "boundary": "这些是已提供的错误注入与只读核验，不推定实板掉电、所有磁盘I/O失败或长稳均已验证。"
+    }
+  ],
+  "unchanged_contracts": [
+    "canEdit仍为authenticated && actionReady && role1..5，Guest和动作未就绪拒绝；所有普通写入口仍经worker check。",
+    "原始点有限数、四位小数、顺序/重复浓度规则和两轴单位/ratio来源不变；既有记录身份不可重绑。当前单位变化不追溯换算旧值；缺Original/Calibration type或历史单位字典仍拒绝；save/copy仍要求项目启用。",
+    "copy只读取匹配revision的已保存可见来源，新本地id、sourceId、时间；不读取未保存编辑，不继承审核/应用效力。",
+    "启动对账包含隐藏记录，保留历史预约；孤立预约保留并拒绝ready。两库仍不具有跨文件外键/一次原子提交。",
+    "菜单3仍为原1751x968校准画布的QScrollArea；会话、已提交项目/批次、busy/草稿/登录/注销/退出守卫和close→quit/wait接线仍在。",
+    "图形只含原始浓度-测试平均值散点，未执行拟合、变换、逆算或仪器测试波形；审核/重算/计算方法/两应用按钮继续禁用，is_checked/is_applied仍只能为0。"
+  ],
+  "production_freeze": {
+    "requested_three_source_fingerprints": [
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_store.cpp",
+        "sha256": "ccff38b39681e0cf199616f018622db7ae60d6ea5efdbc46b60f04a6ba8127b2",
+        "matches_given": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_store.h",
+        "sha256": "760750646b8db248ce1b7e3e53ce2e72bce9eea59ec2d610086aaa66df4e2f18",
+        "matches_given": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_page.cpp",
+        "sha256": "ab18106a9cacb3dfa96c5cdbe9104fa7c40e1747e504ef5a83605fb82392d49d",
+        "matches_given": true
+      }
+    ],
+    "snapshot": {
+      "path": "temp/sn100_host/qc_local_20261025/native/final_before.json",
+      "sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+      "bytes": 45040
+    },
+    "snapshot_after": {
+      "path": "temp/sn100_host/qc_local_20261025/native/final_after.json",
+      "sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+      "bytes": 45040
+    },
+    "declared_sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+    "declared_count": 426,
+    "actual_count": 426,
+    "current_source_or_after_snapshot_mismatches": [],
+    "native_object_count": 167,
+    "native_objects_rehashed_and_compared_to_private_binding": true,
+    "native_object_mismatches": [],
+    "native_makefile": {
+      "path": "temp/sn100_host/qc_local_20261025/native/wsl_release/Makefile",
+      "sha256": "df6bbee134af56a57cac5da631502188c07ab7c62e934eb3b06c62423e7527d0",
+      "bytes": 651354
+    },
+    "native_makefile_matches_binding": true,
+    "main_artifacts": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/native/wsl_release/sn100_shell",
+        "sha256": "013eb363c6cd7a928f62f860c5cbd6755421a81808a4e6ad347cc6db0887f176",
+        "matches_private_shell_handoff": true
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/native/wsl_release/sn100_report_renderer",
+        "sha256": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb",
+        "matches_private_shell_handoff": true
+      }
+    ]
+  },
+  "guard_repair_evidence": {
+    "handoff": {
+      "path": "04_references/sn100_host/calibration_local_20261025/calibration_guard_repair_handoff.json",
+      "sha256": "1ac72b6c482351eb3ea5512a8a8ef887c96f787608a9e602dc342c9d029701c3",
+      "bytes": 10711
+    },
+    "checked_source_inputs": [
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_store.h",
+        "sha256": "760750646b8db248ce1b7e3e53ce2e72bce9eea59ec2d610086aaa66df4e2f18",
+        "bytes": 3310,
+        "matches_handoff": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_store.cpp",
+        "sha256": "ccff38b39681e0cf199616f018622db7ae60d6ea5efdbc46b60f04a6ba8127b2",
+        "bytes": 53721,
+        "matches_handoff": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_page.cpp",
+        "sha256": "ab18106a9cacb3dfa96c5cdbe9104fa7c40e1747e504ef5a83605fb82392d49d",
+        "bytes": 32653,
+        "matches_handoff": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+        "sha256": "5b8cfa9653218b193f5b1f916f651a863ed23ab056fa2328ada128094f48e155",
+        "bytes": 40339,
+        "matches_handoff": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/calibration_reference_test.pro",
+        "sha256": "9c8ca0e5d62a90de707893816b5b2c5ca0d855e6a0d83bff84495a88e40193c9",
+        "bytes": 710,
+        "matches_handoff": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/tests/calibration_store_test.cpp",
+        "sha256": "85d4cb336c1f1736fd320945d13b648f86f79a59dbbd6431297bb903c13ce6f2",
+        "bytes": 34835,
+        "matches_handoff": true
+      }
+    ],
+    "tests": [
+      {
+        "name": "store",
+        "summary": "Totals: 51 passed, 0 failed, 0 skipped, 0 blacklisted, 26590ms",
+        "actual_exit_receipt": "qmake_exit=0\nmake_exit=0\ntest_exit=0",
+        "artifact": {
+          "path": "temp/sn100_host/qc_local_20261025/calibration_guard_repair/store_build/calibration_store_test",
+          "sha256": "b2eb1ddb01f780fcfc91129daa905847815676ede66e85fb82ad88fbe048a5ec",
+          "bytes": 387936
+        },
+        "artifact_matches_handoff": true,
+        "frozen_shared_integration": false,
+        "limit": "51/0为该修复私有QtTest；不是当前主壳GUI验收。",
+        "raw_files": [
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/store/commands.txt",
+            "sha256": "803394ea3ca26b1abfd79800dfcea08648a3729862e2005964534150420071dd",
+            "bytes": 410
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/store/exits.txt",
+            "sha256": "6e3cef66e2a70e2ebdb88a86aa0ac41c6e3ca5321b07888f1b654647b933d67d",
+            "bytes": 37
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/store/qmake.log",
+            "sha256": "256aaa7d9792ab139660042861b32636a0c874425185c6ae16423ffbde276b9c",
+            "bytes": 178
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/store/make.log",
+            "sha256": "cd7934c81b77d5000bf03790743c862b3905639ebd81596eff7c6ffa9610a3ed",
+            "bytes": 5995
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/store/test.log",
+            "sha256": "1110fa827f1f10c1f950ff263a9ec46ca380575de18d5be8e7034bcefc084daf",
+            "bytes": 7558
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/store/artifact.sha256",
+            "sha256": "5f6d2b3d8257e11601b2424173e1a193aeae33c02ea161c96492f95903ea21e4",
+            "bytes": 89
+          }
+        ]
+      },
+      {
+        "name": "reference",
+        "summary": "Totals: 22 passed, 0 failed, 0 skipped, 0 blacklisted, 14156ms",
+        "actual_exit_receipt": "qmake_exit=0\nmake_exit=0\ntest_exit=0",
+        "artifact": {
+          "path": "temp/sn100_host/qc_local_20261025/calibration_guard_repair/reference_build/calibration_reference_test",
+          "sha256": "c75cfce294b12b1c0c05fdd78b700affc26b165b5674b3493c396adc2948e2e4",
+          "bytes": 1065728
+        },
+        "artifact_matches_handoff": true,
+        "frozen_shared_integration": false,
+        "limit": "QC输入只有编译后观察；22/0不是最终冻结QC联测，也不因当前426源码一致而追溯补证。",
+        "raw_files": [
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/commands.txt",
+            "sha256": "3523b49d22f5bf2e473788b89175e0663266324b90587d874956de4da82ab35e",
+            "bytes": 414
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/exits.txt",
+            "sha256": "6e3cef66e2a70e2ebdb88a86aa0ac41c6e3ca5321b07888f1b654647b933d67d",
+            "bytes": 37
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/qmake.log",
+            "sha256": "5cc7175f8b9baf0e7893c9bf64850434ac1f8984b1794d56b0a65c390779e005",
+            "bytes": 182
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/make.log",
+            "sha256": "38f879ae706a6f79a219779e700226bb77d2c012174137b8fa4742c3bef5760f",
+            "bytes": 26205
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/test.log",
+            "sha256": "49c3f4c32307690950aa5d6b338c8aea94312af18a495c8b8d83d17245b8b375",
+            "bytes": 35882
+          },
+          {
+            "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/artifact.sha256",
+            "sha256": "868846810629f474295827200fab72dea473b5e31291271705d7f7543e65b2fd",
+            "bytes": 93
+          }
+        ]
+      }
+    ],
+    "reference22_provenance_warning": "保持原交付限制：QC h/cpp仅编译后观察，不能据后验相同补造精确编译输入；不是最终426冻结QC联测。最终冻结reference套件运行及总收口由根整合窗口登记。"
+  },
+  "shell_harness_repair": {
+    "handoff": {
+      "path": "04_references/sn100_host/calibration_local_20261025/calibration_shell_repair_handoff.json",
+      "sha256": "0d702e00d572c18d61ec4958e6aab6b912c4fbb9663b1403e98914e2a947b0d3",
+      "bytes": 5921
+    },
+    "test_source": {
+      "path": "06_programs/sn100_host/tests/calibration_shell_test.cpp",
+      "sha256": "8defabea59a816908627e10b7f2297c1fcd768d9f50762cc43e552ea145fb145",
+      "bytes": 39658
+    },
+    "preimage": {
+      "path": "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/calibration_shell/calibration_shell_test.cpp",
+      "sha256": "9f285eedfaa3e7409bf15dd3b7bd1691e2d5dd9bb2943a92d3a77e0fc24e654a",
+      "bytes": 36608
+    },
+    "cpp_matches_declared": true,
+    "test_case_bodies_from_initTestCase_equal": true,
+    "assertion_line_count": 127,
+    "assertion_lines_equal": true,
+    "timeout_not_increased": "until默认15000、线程wait5000及product等待20000均在原未变代码/相同测试主体内。",
+    "input_review": "修改集中在可见顶层激活、active modal检查、真实Qt焦点、鼠标选单元格/F2/当前可见delegate、Return提交，和闭合combo的Home/Down键。未新增QTableWidgetItem赋值或伪业务信号；拒绝导航/忙态/数据和退出断言不弱化。",
+    "private_driver": {
+      "path": "temp/sn100_host/qc_local_20261025/calibration_shell_repair/attempt_02/driver_build_01/calibration_shell_test",
+      "sha256": "f4476bc7ddeb5e56a1b9527273e32bf27d91ffe7f3b4d4804eefc076463a3c17",
+      "bytes": 5638848
+    },
+    "private_driver_declared_sha256": "f4476bc7ddeb5e56a1b9527273e32bf27d91ffe7f3b4d4804eefc076463a3c17",
+    "root_cumulative_driver": {
+      "path": "temp/sn100_host/qc_local_20261025/cumulative_build/calibration_shell_test",
+      "sha256": "ea05268c681e8ecfd4a1de7dccdb52ba6919b9e8419845aee52dd2a969a7c31e",
+      "bytes": 5638848
+    },
+    "root_driver_bound_source_sha256": "8defabea59a816908627e10b7f2297c1fcd768d9f50762cc43e552ea145fb145",
+    "root_driver_matches_current_source": true,
+    "root_driver_matches_binary": true,
+    "root_driver_receipt_exits": [
+      0,
+      0,
+      0
+    ],
+    "separate_driver_provenance": "私有attempt02驱动f4476b...与根cumulative驱动ea0526...是不同构建目录/产物；本审查分别核对，未把私有产物SHA冒充gate04。二者共享167个已逐项复核的426原生业务对象。",
+    "gate04_runs": [
+      {
+        "qpa": "offscreen",
+        "stage": "root suite_gate_04",
+        "actual_exit_code": 0,
+        "timed_out": false,
+        "summary": "Totals: 6 passed, 0 failed, 0 skipped, 0 blacklisted, 9607ms",
+        "driver": "temp/sn100_host/qc_local_20261025/cumulative_build/calibration_shell_test",
+        "driver_sha256": "ea05268c681e8ecfd4a1de7dccdb52ba6919b9e8419845aee52dd2a969a7c31e",
+        "driver_matches_binding": true,
+        "raw_files": [
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_offscreen/test.exit.json",
+            "sha256": "95932f3cf1919d0c362d747269c4700c897d7df02d137b834b83f7bfb946fa94",
+            "bytes": 884
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_offscreen/test.command.json",
+            "sha256": "58893b70bf11a8c76e64737648c3684caee54f76cbb83d3d30563139986c7988",
+            "bytes": 702
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_offscreen/test.process.json",
+            "sha256": "f64f7c4ee35f6a33fefeda6db1a9a95cd34691b2a9edd660aff1d3859f45460a",
+            "bytes": 58
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_offscreen/test.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_offscreen/qt.txt",
+            "sha256": "0c08d725e3e6c8eb8fbc3e229b74e1b937a68f39ad7279ccd4d9480e2e7afc3d",
+            "bytes": 5611
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_offscreen/qt.xml",
+            "sha256": "d7848a87af5785164834ad9f2607f63d34132257e70ca2641a11790b6ae8e050",
+            "bytes": 7785
+          }
+        ]
+      },
+      {
+        "qpa": "xcb",
+        "stage": "root suite_gate_04",
+        "actual_exit_code": 0,
+        "timed_out": false,
+        "summary": "Totals: 6 passed, 0 failed, 0 skipped, 0 blacklisted, 10179ms",
+        "driver": "temp/sn100_host/qc_local_20261025/cumulative_build/calibration_shell_test",
+        "driver_sha256": "ea05268c681e8ecfd4a1de7dccdb52ba6919b9e8419845aee52dd2a969a7c31e",
+        "driver_matches_binding": true,
+        "raw_files": [
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_xcb/test.exit.json",
+            "sha256": "58469733a679509b551ff1723d95789a684a9678cf37a1803de8547c3d8f515b",
+            "bytes": 873
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_xcb/test.command.json",
+            "sha256": "597807878d1ae146c2c2e3fa0cdbe1166a5998746fe8e895ea31854173ac52c1",
+            "bytes": 690
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_xcb/test.process.json",
+            "sha256": "a7e78701d80301c7f4c2e8a2037ccfd094fa14337afe66948d730303cc4d59a0",
+            "bytes": 58
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_xcb/test.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_xcb/qt.txt",
+            "sha256": "b8d8a2d1f9145b6a344fc2bf6a1f53773743ab8301ce0f4dca4043c1e9ffe457",
+            "bytes": 3227
+          },
+          {
+            "path": "temp/sn100_host/qc_local_20261025/suite_gate_04/calibration_shell_xcb/qt.xml",
+            "sha256": "8b591c26b580f78af90ee24d8817a38536428e29e4980028b3718b9851ea72a9",
+            "bytes": 4703
+          }
+        ]
+      }
+    ],
+    "private_runs": "原repair handoff中offscreen/xcb各6/0保留为私有运行；根suite_gate04各6/0另有实际退出和Qt原始日志。"
+  },
+  "visual_boundary": {
+    "ui": {
+      "path": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+      "sha256": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+      "bytes": 26423
+    },
+    "original_ui": {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibrationmaterial.ui",
+      "sha256": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+      "bytes": 26423
+    },
+    "byte_identical": true,
+    "expected_ui_sha256": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+    "page_delta": "仅补停用项目删除门控和提示；未更改布局/颜色/资源/图表算法。",
+    "result": "原.ui字节与菜单3承载静态一致；本窗口未启动GUI或重新截图。原Windows活动主题/完整视觉与RK实屏继续待验。"
+  },
+  "new_confirmed_findings": [],
+  "known_boundaries": [
+    "规范路径绑定是保守限制。恢复须停止所有writer并核对匹配catalog/本地数据；跨路径/跨平台移动需显式迁移，不得删路径键/重置UUID/清预约强行解禁。",
+    "QLockFile与路径登记是合作的新版本操作协议；不把旧二进制/raw SQLite/外部活库替换算作已保护入口。",
+    "51/0、私有22/0、冻结gate04两后端各6/0分别登记；均含Qt初始化/清理项，不能相加当独立业务操作数。",
+    "原Windows、Windows32/ARM64最终完整构建闭包及恢复包、RK/仪器、临床拟合/审核/应用效力、资源/同板控制与长稳均不能由本次只读终审关闭。"
+  ],
+  "reviewed_files": [
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_store.cpp",
+      "sha256": "ccff38b39681e0cf199616f018622db7ae60d6ea5efdbc46b60f04a6ba8127b2",
+      "bytes": 53721
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_store.h",
+      "sha256": "760750646b8db248ce1b7e3e53ce2e72bce9eea59ec2d610086aaa66df4e2f18",
+      "bytes": 3310
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_page.cpp",
+      "sha256": "ab18106a9cacb3dfa96c5cdbe9104fa7c40e1747e504ef5a83605fb82392d49d",
+      "bytes": 32653
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_types.h",
+      "sha256": "d7bab3140a86e1b198603c05cc15267414ee8f9f2d96267f15524cb25b45a35a",
+      "bytes": 1295
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibrationchart.cpp",
+      "sha256": "7cc629d9905c0be1dcc10c64aff8d8953fbc3144833645fd36ad06629586c35f",
+      "bytes": 3587
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibrationchart.h",
+      "sha256": "47619adafdc1441fdbcddacb840a5fd14c1d71a439fe20fdcd89adf1bd469b53",
+      "bytes": 755
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+      "sha256": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+      "bytes": 26423
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/tests/calibration_store_test.cpp",
+      "sha256": "85d4cb336c1f1736fd320945d13b648f86f79a59dbbd6431297bb903c13ce6f2",
+      "bytes": 34835
+    },
+    {
+      "path": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+      "sha256": "5b8cfa9653218b193f5b1f916f651a863ed23ab056fa2328ada128094f48e155",
+      "bytes": 40339
+    },
+    {
+      "path": "06_programs/sn100_host/tests/calibration_shell_test.cpp",
+      "sha256": "8defabea59a816908627e10b7f2297c1fcd768d9f50762cc43e552ea145fb145",
+      "bytes": 39658
+    },
+    {
+      "path": "06_programs/sn100_host/tests/calibration_shell_test.pro",
+      "sha256": "54a12a7ce7fb7005bb47af415009de67eb906f977d4242cf6c6b26ce302f2619",
+      "bytes": 317
+    },
+    {
+      "path": "06_programs/sn100_host/shell/calibration_shell.cpp",
+      "sha256": "d859441cb017f8a75b0b5d748f6e4f85f24d492d605ccd4ae7cc81ab68c04c7e",
+      "bytes": 3900
+    },
+    {
+      "path": "06_programs/sn100_host/shell/main.cpp",
+      "sha256": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156",
+      "bytes": 40524
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.cpp",
+      "sha256": "56f28e27c2bc767ebce0afa986aad2f3e703246e65d95822dcfc25ef3cc2337b",
+      "bytes": 21600
+    },
+    {
+      "path": "06_programs/sn100_host/shell/login_shell.cpp",
+      "sha256": "8cf88cc30aee352836c285b258c0c375fedff279bd193f50e87401e4525e5b11",
+      "bytes": 3007
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shutdown_request.cpp",
+      "sha256": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+      "bytes": 5569
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/integration_guard_review.json",
+      "sha256": "a3a3fc2430ff9327229e9ced26479e6ccc6dc8bde5e8f1f2da824e9586b1a28f",
+      "bytes": 36573
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/handoff.json",
+      "sha256": "5a62156bfd55a9cbff1bf31ee2f153c35652d7d683fa226f69e0db44a69bfb80",
+      "bytes": 27379
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/calibration_guard_repair_handoff.json",
+      "sha256": "1ac72b6c482351eb3ea5512a8a8ef887c96f787608a9e602dc342c9d029701c3",
+      "bytes": 10711
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/calibration_shell_repair_handoff.json",
+      "sha256": "0d702e00d572c18d61ec4958e6aab6b912c4fbb9663b1403e98914e2a947b0d3",
+      "bytes": 5921
+    },
+    {
+      "path": "temp/sn100_host/qc_local_20261025/native/final_before.json",
+      "sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+      "bytes": 45040
+    },
+    {
+      "path": "temp/sn100_host/qc_local_20261025/native/final_after.json",
+      "sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+      "bytes": 45040
+    },
+    {
+      "path": "temp/sn100_host/qc_local_20261025/cumulative_build/binding_proof.json",
+      "sha256": "ea9d79a982937cf414d51df01d4a96d00c1d7f646545ee49c7d9412efb47342f",
+      "bytes": 981992
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/calibration_shell_repair_20261025/build/binding_proof.json",
+      "sha256": "d5fe72cc824024e636f470af7ddc37af124fb79b0bfa76b93fe6072d9ac1bbf7",
+      "bytes": 126269
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/qc_post_build_observation/observed.json",
+      "sha256": "f5c07e93e0bfaf8f6b70230d6b44d0d1f8cc07a3925031b1e5150d9c755a3557",
+      "bytes": 1306
+    }
+  ],
+  "write_stop": "本JSON写入及读回后结束停写，不覆盖旧审查或handoff，不改426生产输入、测试、公共文档，也不启动任何运行工作。"
+}

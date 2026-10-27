@@ -1,0 +1,88 @@
+make: Warning: File 'Makefile' has modification time 0.047 s in the future
+g++ -c -pipe -O2 -std=gnu++1y -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_TESTLIB_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR='"/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_page_tests"' -I../../../../06_programs/sn100_host/calibration/tests -I. -I../../../../06_programs/sn100_host/calibration -I../../../../06_programs/sn100_host -I../../../../06_programs/sn100_host/shell/widgets -I../../../../06_programs/sn100_host/shell/widgets/material -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I.moc -I.ui -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -o .obj/calibration_page.o ../../../../06_programs/sn100_host/calibration/calibration_page.cpp
+g++ -Wl,-O1 -o calibration_page_test .obj/calibration_store.o .obj/calibration_page.o .obj/calibrationchart.o .obj/cusview.o .obj/qtmaterialflatbutton.o .obj/qtmaterialflatbutton_internal.o .obj/qtmaterialoverlaywidget.o .obj/qtmaterialripple.o .obj/qtmaterialrippleoverlay.o .obj/qtmaterialstatetransition.o .obj/qtmaterialstyle.o .obj/qtmaterialtheme.o .obj/calibration_page_test.o .obj/moc_calibration_store.o .obj/moc_calibration_page.o .obj/moc_calibrationchart.o .obj/moc_cusview.o .obj/moc_qtmaterialflatbutton.o .obj/moc_qtmaterialflatbutton_internal.o .obj/moc_qtmaterialoverlaywidget.o .obj/moc_qtmaterialripple.o .obj/moc_qtmaterialrippleoverlay.o .obj/moc_qtmaterialstatetransition.o .obj/moc_qtmaterialstyle.o .obj/moc_qtmaterialtheme.o   /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Sql.so /usr/lib/x86_64-linux-gnu/libQt5Test.so /usr/lib/x86_64-linux-gnu/libQt5Core.so -lGL -lpthread   
+make: warning:  Clock skew detected.  Your build may be incomplete.
+********* Start testing of CalibrationPageTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : CalibrationPageTest::initTestCase()
+QWARN  : CalibrationPageTest::normalUiSaveReopenAndShutdown() This plugin does not support propagateSizeHints()
+FAIL!  : CalibrationPageTest::normalUiSaveReopenAndShutdown() Compared values are not the same
+   Actual   (points->item(1, 3)->text()): "18"
+   Expected (QStringLiteral("18.5"))    : "18.5"
+   Loc: [../../../../06_programs/sn100_host/calibration/tests/calibration_page_test.cpp(113)]
+QINFO  : CalibrationPageTest::normalUiSaveReopenAndShutdown() GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-rAEMLZ
+QINFO  : CalibrationPageTest::emptyCatalogAndUnavailableClinicalActions() GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-smiewI
+PASS   : CalibrationPageTest::emptyCatalogAndUnavailableClinicalActions()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::cancellationCopyAndSoftDelete() This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::cancellationCopyAndSoftDelete() GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-butkAL
+PASS   : CalibrationPageTest::cancellationCopyAndSoftDelete()
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(empty-concentration) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(empty-concentration) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-zmJUDP
+PASS   : CalibrationPageTest::illegalInputClearsPlot(empty-concentration)
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(NaN) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(NaN) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-yGfgbU
+PASS   : CalibrationPageTest::illegalInputClearsPlot(NaN)
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(Inf) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(Inf) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-WkUyCN
+PASS   : CalibrationPageTest::illegalInputClearsPlot(Inf)
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(negative) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(negative) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-QlGaIq
+PASS   : CalibrationPageTest::illegalInputClearsPlot(negative)
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(too-large) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(too-large) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-JJtPUg
+PASS   : CalibrationPageTest::illegalInputClearsPlot(too-large)
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(over-precision) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(over-precision) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-NTBxtx
+PASS   : CalibrationPageTest::illegalInputClearsPlot(over-precision)
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(duplicate) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(duplicate) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-JhDrTt
+PASS   : CalibrationPageTest::illegalInputClearsPlot(duplicate)
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(empty-repeat) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(empty-repeat) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-jJlBXe
+PASS   : CalibrationPageTest::illegalInputClearsPlot(empty-repeat)
+QWARN  : CalibrationPageTest::illegalInputClearsPlot(empty-dilution-label) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::illegalInputClearsPlot(empty-dilution-label) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-lEYPmN
+PASS   : CalibrationPageTest::illegalInputClearsPlot(empty-dilution-label)
+QWARN  : CalibrationPageTest::lockFailureKeepsDraftBusyGuardAndRetry() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::lockFailureKeepsDraftBusyGuardAndRetry() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::lockFailureKeepsDraftBusyGuardAndRetry() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::lockFailureKeepsDraftBusyGuardAndRetry() This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::lockFailureKeepsDraftBusyGuardAndRetry() INPUT competing SQL BEGIN IMMEDIATE; OUTPUT one real save error, draft40 retained, original12.25 unchanged; ROLLBACK then explicit retry revision2
+QINFO  : CalibrationPageTest::lockFailureKeepsDraftBusyGuardAndRetry() GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-PdJcFC
+PASS   : CalibrationPageTest::lockFailureKeepsDraftBusyGuardAndRetry()
+QWARN  : CalibrationPageTest::guestCannotEditAndRestoredSessionCan() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::guestCannotEditAndRestoredSessionCan() This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::guestCannotEditAndRestoredSessionCan() GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-qkaKHV
+PASS   : CalibrationPageTest::guestCannotEditAndRestoredSessionCan()
+QWARN  : CalibrationPageTest::staleSnapshotCannotReplaceCurrentRecord() This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::staleSnapshotCannotReplaceCurrentRecord() This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::staleSnapshotCannotReplaceCurrentRecord() GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-YooxNd
+PASS   : CalibrationPageTest::staleSnapshotCannotReplaceCurrentRecord()
+QWARN  : CalibrationPageTest::externalCatalogChangePreservesDraft(rename-project) This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::externalCatalogChangePreservesDraft(rename-project) This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::externalCatalogChangePreservesDraft(rename-project) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::externalCatalogChangePreservesDraft(rename-project) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-eWvhHn
+PASS   : CalibrationPageTest::externalCatalogChangePreservesDraft(rename-project)
+QWARN  : CalibrationPageTest::externalCatalogChangePreservesDraft(delete-project) This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::externalCatalogChangePreservesDraft(delete-project) This plugin does not support propagateSizeHints()
+QWARN  : CalibrationPageTest::externalCatalogChangePreservesDraft(delete-project) This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::externalCatalogChangePreservesDraft(delete-project) GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-mbmdka
+PASS   : CalibrationPageTest::externalCatalogChangePreservesDraft(delete-project)
+QWARN  : CalibrationPageTest::catalogChangeDuringNewDialogRejectsStaleDraft() This plugin does not support propagateSizeHints()
+QINFO  : CalibrationPageTest::catalogChangeDuringNewDialogRejectsStaleDraft() GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/offscreen_fixed/page-BqfHrT
+PASS   : CalibrationPageTest::catalogChangeDuringNewDialogRejectsStaleDraft()
+SKIP   : CalibrationPageTest::screenshotsAndScrollReachability() Set CALIBRATION_SCREENSHOT_DIR for serial GUI screenshot evidence
+   Loc: [../../../../06_programs/sn100_host/calibration/tests/calibration_page_test.cpp(327)]
+PASS   : CalibrationPageTest::cleanupTestCase()
+Totals: 19 passed, 1 failed, 1 skipped, 0 blacklisted, 9610ms
+********* Finished testing of CalibrationPageTest *********

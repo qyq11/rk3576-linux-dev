@@ -1,0 +1,73 @@
+{
+  "schema": "sn100-report-activation-read-only-audit-v1",
+  "source_basis": "当前工作源码及只读原参考；各项已有验证范围沿历史正式交接，不产生本轮新通过结论",
+  "flows": [
+    {
+      "feature": "历史查询/分页/患者资料保存",
+      "enabled": "已启用本地流程",
+      "entry": "history/history_page.cpp:openQuery/queryPage/openDetail/saveDetail；history_store.cpp:query/savePatient",
+      "boundary": "患者资料不改检测数值；旧查询偶发根因未定位",
+      "offline_next": "先定位本次旧查询失败；继续用匿名固定输入核边界和请求/结果时序"
+    },
+    {
+      "feature": "显示列/排序",
+      "enabled": "已启用本地流程",
+      "entry": "history/report_remaining_display_dialog.cpp；report_remaining_store.cpp",
+      "boundary": "仅显示，主显示合同未明列受保护，不改结果/单位/CSV",
+      "offline_next": "现有测试合同内回归保存、取消、重开及损坏配置错误"
+    },
+    {
+      "feature": "删除/软隐藏",
+      "enabled": "已启用隐藏",
+      "entry": "HistoryPage::hideSelectedReports / HistoryStore::hideReports",
+      "boundary": "事务设visible=0，结果/任务/曲线关联保留；本页没有恢复隐藏报告入口",
+      "offline_next": "按已认证本地会话、勾选/当前行、取消/整批失败回滚核对"
+    },
+    {
+      "feature": "CSV/HTML/PDF/预览",
+      "enabled": "已启用离线导出",
+      "entry": "history_page.cpp:openExport / report_controller.cpp:preview/chooseExport；report_renderer.cpp",
+      "boundary": "CSV为GBK；HTML为UTF-8且拒绝含&的原文；PDF原模板；实体打印未验",
+      "offline_next": "按现合同做文件选择保存/取消、新文件限制、错误恢复和输出内容核对，不开放XLSX"
+    },
+    {
+      "feature": "原始曲线及曲线选择",
+      "enabled": "未接入",
+      "entry": "HistoryPage::showDetail中图表提示、光路/坐标/曲线选择控件禁用",
+      "reference": "frm_report/mask_dlg_report_detail.cpp:getChartData",
+      "boundary": "匿名历史库未保存原始AD/OD、波长、采样间隔及ST/EN标记合同",
+      "offline_next": "先只读整理原字段/单位/索引合同及匿名合成金样本；材料明确后可做离线回放/绘图切片，不能据此认定仪器曲线正确"
+    },
+    {
+      "feature": "检测结果手工修改",
+      "enabled": "原维护按钮隐藏，当前未开放",
+      "entry": "history_page.cpp:btn_save_modify隐藏/禁用；原frm_report_material.cpp:save_modified_data",
+      "boundary": "当前详细页保存患者资料不等于修改检测结果；单位反算、权限/审计、日期/状态合同待定",
+      "offline_next": "只读审查原维护路径和需要保留的历史字段；确认业务合同后再安排本地切片"
+    },
+    {
+      "feature": "重算",
+      "enabled": "未接入，控件禁用",
+      "entry": "history_page.cpp:showDetail禁用btn_recal",
+      "reference": "原mask_dlg_report_detail.cpp:on_btn_recal_clicked仅发临时无水无杯调试信号",
+      "boundary": "原按钮名称不构成可运行算法依据",
+      "offline_next": "先明确真实原始输入、参数、算法和认可误差；可离线做合成曲线与现有研究算法对照，未获合同前不接临床结果"
+    },
+    {
+      "feature": "上传/真实结果链/实体打印",
+      "enabled": "未开放真实外设动作",
+      "entry": "主btnUpdate与详细btnUpdateLis禁用；原上传函数先发调试信号后return",
+      "boundary": "本地打印/LIS设置保存只表示意图；当前匿名结果不能代表仪器任务到结果入库/上传成功",
+      "offline_next": "有协议和固定样本后可先做离线报文编码/解析及任务关联契约，不连接真实LIS或设备；真实链路和出纸等设备"
+    },
+    {
+      "feature": "XLSX",
+      "enabled": "原工程未启用，当前保持关闭",
+      "entry": "原QtRPT/config.pri的QXLSX_LIBRARY被注释；当前thirdparty/qtrpt/qtrpt.pri明确不定义",
+      "boundary": "已有Windows二进制/头文件不能当Linux/ARM实现",
+      "offline_next": "本次不解禁，不将CSV改后缀冒充XLSX"
+    }
+  ],
+  "new_production_change": false,
+  "actual_original_windows_rk_or_instrument_execution": false
+}

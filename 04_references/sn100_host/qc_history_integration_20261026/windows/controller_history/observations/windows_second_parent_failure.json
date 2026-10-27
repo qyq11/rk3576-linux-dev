@@ -1,0 +1,54 @@
+{
+  "kind": "post_hoc_parent_tool_observation_not_original_OS_process_receipt",
+  "source": "Parent root task message; tool chunk76f8ed",
+  "observed_parent_exit_code": 1,
+  "tool_exposed": [
+    "exit1",
+    "traceback"
+  ],
+  "parent_OSPID": null,
+  "parent_OSPID_not_exposed": true,
+  "original_native_child_receipt": {
+    "path": "platforms/windows_02/source_before.json.snapshot.log.exit.json",
+    "bytes": 717,
+    "sha256": "316f8c46b264e1dbc80203273741a1abe19031826209f75541ebadef09731c49"
+  },
+  "native_child_exit_code": 127,
+  "native_child_OSPID": 64004,
+  "original_stderr": {
+    "path": "platforms/windows_02/source_before.json.snapshot.log.stderr.log",
+    "bytes": 173,
+    "sha256": "de2db95e9d50503098a10b15d58884df02fe1d77171b712cad9ab94b98f6cba5"
+  },
+  "original_stderr_raw_copy": {
+    "path": "integration_drivers/probes/run_03_normal_exit_grace/windows_02_original_stderr.raw",
+    "bytes": 173,
+    "sha256": "de2db95e9d50503098a10b15d58884df02fe1d77171b712cad9ab94b98f6cba5"
+  },
+  "all_original_attempt_members_unchanged": {
+    "controller_inputs_before.json": "e8e4178261193a610ecdcb5be3379977514725101b02f66bff39861ebb25fbcc",
+    "platform_preparation_input.json": "d3753e945bf5eeb976921aa385ba9ab586cfcb615588fa32a92ce2ab0ae732c5",
+    "source_before.json.snapshot.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_before.json.snapshot.log.command.json": "6bdc4c1e760e423768f43ebfdd284277132160f98a62df3071d4e2f2f2ffffe1",
+    "source_before.json.snapshot.log.exit.json": "316f8c46b264e1dbc80203273741a1abe19031826209f75541ebadef09731c49",
+    "source_before.json.snapshot.log.process.json": "0d00ca206cfd2dca2c42cc62ab93d27e9492376591600a47f6cc621a41f58d75",
+    "source_before.json.snapshot.log.stderr.log": "de2db95e9d50503098a10b15d58884df02fe1d77171b712cad9ab94b98f6cba5",
+    "source_before.json.wsl_executable_before.json": "2515ccfc3ac7cfeb93b5f10bfc67d81aa05c6eaf1bee2e3433a173733158cdc8",
+    "verification.json": "365e81fd786dde251d1136de2a4f0ee55f6b98970386fdb9776f88ee3259d80f"
+  },
+  "exact_preimages": [
+    {
+      "path": "integration_drivers/audit_originals/pre_windows_job_quote_01/native_job.cs",
+      "bytes": 8450,
+      "sha256": "380e2b871cadbd455c443e19ac7345c459c32d11f58d23ef9e9a81bdabdcf147"
+    },
+    {
+      "path": "integration_drivers/audit_originals/pre_windows_job_quote_01/platform_preparation.json",
+      "bytes": 11226,
+      "sha256": "d3753e945bf5eeb976921aa385ba9ab586cfcb615588fa32a92ce2ab0ae732c5"
+    }
+  ],
+  "initial_leading_backslash_hypothesis_rejected": "Source literal and actual reflection both establish first character34",
+  "actual_argument_boundary_fix": "Run quotes only required tokens; Quote primitive remains unchanged",
+  "separate_cleanup_defect": "Immediately after parent signaling Job accounting still active; 19/12ms observed grace reaches0 without termination"
+}

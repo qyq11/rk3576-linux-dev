@@ -1,0 +1,252 @@
+{
+  "module": "O04-1/O04-2 anonymous history, mean/CV, original-template preview and PDF",
+  "date": "2026-10-23",
+  "reference_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "reference_sha256": {
+    "frm_report/frm_report_material.ui": "3690f78e8d7f9d2377dd507189cc47293211b2e8df62d18bd0c94ea2b0614a7d",
+    "frm_report/frm_report_material.h": "e8e1f3d9f4767242d87de261fb561dd035431d542778bf7ec98d809f50d41fe4",
+    "frm_report/frm_report_material.cpp": "a36b21512c9a1db0b0066c83b7efe84626f949b7c6302ba411627a52468781dd",
+    "frm_report/mask_dlg_query_report.ui": "fd96d0dca518961202705909c916b8ac74a155fffd573abf34eb902dd06f49f6",
+    "frm_report/mask_dlg_query_report.h": "80e6ed61b297edf56735b32281726a28709cdf04679d80747af59235c25d3179",
+    "frm_report/mask_dlg_query_report.cpp": "ee208a008f414cb284e528e23f7def4fc09fecdbc2df587bb3c99efc49409ab7",
+    "frm_report/mask_dlg_report_detail.ui": "d0b439966c8789fa76baa589d7396d7a1e1e56dd87961f1d0044825a31031143",
+    "frm_report/mask_dlg_report_detail.h": "001b6ebf22be24ac3a0464f25961023f8bec203ee528d9348fd8ed83da9591f7",
+    "frm_report/mask_dlg_report_detail.cpp": "2a6ed3b7dbe7f93bf98b7eea4064380ec867e35b223ffabee02918bc8c3d70d7",
+    "frm_report/mask_dlg_export.ui": "e053660fe6a0a798a156922108f82ff736f2747d39c8c4119fccac899a70184f",
+    "frm_report/mask_dlg_export.h": "7ebfc496f784886373fb3f56794b0ef2bd4e9c032b5016eaf2babf95bee173e3",
+    "frm_report/mask_dlg_export.cpp": "b01d96cbfe6d129fb3dc9914fb987b6be681e200c4e2aebb01277ec8fd749cb9",
+    "tool/database/report/report_table.h": "0bbc0cb6276fa468ea1eaa8cb62daac3ef85413e280f49d9d9f73e4931fa7361",
+    "tool/database/report/report_table.cpp": "d2b1fd0a9c72cfba332486cc66e6cffc84adcc81e880a57087ab0d300d777ea4",
+    "tool/database/report/report_result_table.h": "5bb4b7716efc5311085435635726b28f1eba791196ea8de9e834b93e95959a5a",
+    "tool/database/report/report_result_table.cpp": "14d8b8c4470ffc19c74a985e9eb6a4b319e7e3a8cb372219af2d25f62a33ae76",
+    "public/systemcommon.cpp": "3d2a1411b9d79821326b5d25e975edfb049aaf7daebac4dca4c9c62a5555d1b3",
+    "public/stylecolor.cpp": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128",
+    "tool/qtrpt_module/qtreport.cpp": "33a9c1979e525f5f2797a2c5afe0f275f37b7019a7b2ede8945fa7e61c8bca94",
+    "thirdparty/QtRptProject/QtRPT/qtrpt.h": "f29141863e14d1aafb923e8b3e8c2b45931272fe473ad8a9532d89b76dd65b8e",
+    "thirdparty/QtRptProject/QtRPT/qtrpt.cpp": "ed805e746b6a598e67d9981abaaeb6156a0533df71a6d20c7fc15666c18b66f5",
+    "main.cpp": "b63c46ae047a2f3006b823cdc9477d498eb0aa2417cfe138845ff3d4c773be09",
+    "SeeRain450.pro": "bc2fe217a77a6260f1f8ae69d2fb30228f7082a8d5ac2ab3bdce99647f4d9cf2",
+    "resource/report_template/report.xml": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2"
+  },
+  "entry_rules": {
+    "query": "ReportDataTable::QueryReportDatas/QueryReportDataCount; actual SQL date and barcode conditions retained",
+    "patient_save": "MaskDlgReportDetail::on_btnSave_clicked; only patient metadata, no result recalculation",
+    "csv": "FrmReportMaterial::exportReport/export_report; six patient columns then explicit result-column contract, GBK",
+    "print": "Original btnPrinter -> HistoryReportDocument immutable snapshot -> embedded report.xml -> QtRPT preview; PDF QProcess helper",
+    "statistics": "FrmReportMaterial::slot_showSingleRowResult; SystemCommon::isOpenAverage=true; sample SD(n-1), signed CV percent"
+  },
+  "differences": [
+    "Standalone history.pro/main and isolated anonymous SQLite schema; no production DB importer",
+    "report_data ID/row_id and result fid semantics retained; result values normalized in report_values; report_columns is explicit anonymous test configuration",
+    "SQL worker, parameter binding, transactions, per-request IDs and bounded requests/CSV limits replace synchronous DAL",
+    "Strict GBK CSV quoting and no-overwrite output in marked exports/; original native CSV quote behavior still needs Windows baseline",
+    "Invalid dates and nonnumeric sample numbers fail explicitly; source checkbox filter ambiguity preserved",
+    "Finite numeric validation preserves zero and rejects NaN/overflow/trailing text as ****; unknown precision preserves raw text",
+    "Untouched long/multiline patient fields and unknown sex preserved to avoid UI display conversion data loss",
+    "Original result values kept; mean/CV works on snapshots; curve/recalculation/LIS and real project/print configuration pending",
+    "Native Qt controls replace Material/mask/chart/ripple wrappers; source geometry/theme retained, external scrolling/fonts adapted; complete Windows visual parity pending"
+  ],
+  "fixture": "../tests/fixtures/history_reports.json; handwritten synthetic data, no patient or clinical configuration source",
+  "visual_evidence": "../../../04_references/sn100_host/offline_history_20261023/visual_geometry_comparison.json",
+  "o04_2": {
+    "template": "templates/report.xml",
+    "template_matches_reference_bytes": true,
+    "template_paper_mm": [
+      210,
+      148
+    ],
+    "template_field_names": "English, explicitly adapted from the legacy pinyin wrapper",
+    "sample_sn": "Daily sampleNumber (sn), not barcode; legacy wrapper ambiguity requires original running baseline",
+    "individual_results_only_in_report": true,
+    "anonymous_print_configuration": "../tests/fixtures/history_report_options.json; no clinical ranges inferred",
+    "statistics_precision_difference": "Keep double until final formatting instead of legacy intermediate default 6-digit QString formatting",
+    "unsupported_statistics": "Missing/nonfinite/zero mean/insufficient valid repeats/overflow/config conflicts remain explicit unavailable, no DB changes",
+    "font_adaptation": "Original family/size retained when usable; missing Chinese family -> Noto Sans CJK SC at same size/position; reject unsupported output glyphs",
+    "text_restrictions": "Reject CR/LF and <>[] template control delimiters with explicit errors; never alter stored data",
+    "pdf_process_bounds": {
+      "snapshot_bytes": 1048576,
+      "rows": 384,
+      "pdf_bytes": 33554432,
+      "timeout_ms": 30000,
+      "in_flight": 1
+    },
+    "no_overwrite": "Marked anonymous exports directory only; temporary render and final new-file publication",
+    "thirdparty_provenance": "../thirdparty/qtrpt/origins.json; qtrpt.h/cpp local patches explicitly listed",
+    "offline_disabled": [
+      "physical printing",
+      "HTML export",
+      "XLSX export"
+    ],
+    "verification": "../../../04_references/sn100_host/offline_report_20261023/",
+    "pending": [
+      "Windows main GUI preview/default printer discovery not isolated or run",
+      "original Windows distribution full behavior/theme",
+      "RK runtime/screen/plugins",
+      "real instrument",
+      "physical printer/paper/driver",
+      "long stability and same-board control"
+    ],
+    "windows_pdf_isolation": "Only independent renderer: register existing system SimHei/SimSun in process, then clear plugin discovery after QApplication to select built-in PDF engine without Windows native printer initialization",
+    "unknown_patient_sex": "Printed as Unknown, same as original qtreport wrapper; DB enum unchanged",
+    "pdf_text_mapping": {
+      "implementation": "report_pdf_mapping.cpp; isolated renderer only, QtCore/Gui without new production dependencies",
+      "rule": "Exact final label context -> original glyph verification -> distinct CID per old glyph/source cluster -> ToUnicode/CIDToGIDMap/W/CIDSet; remove off-page markers before publication",
+      "preserved": "Original embedded font programs, glyph positions, template bytes and all UI forms",
+      "verification": "../../../04_references/sn100_host/pdf_text_20261023/; exact Unicode except layout whitespace, pypdf and pdfplumber with ligature expansion disabled",
+      "bounds": "Only internal Qt5 classic-xref/Type0 Identity-H/CIDFontType2 PDFs. Input/final output 32MiB, 4096 spans; qUncompress allocation hint 64KiB grows before post-decode size check; not an external PDF importer",
+      "unsupported": "Unmatched/ambiguous shaping, RTL or complex multiple-glyph clusters are explicitly rejected before publication; original data retained"
+    }
+  },
+  "current_result_format_20261027": {
+    "date": "2026-10-27",
+    "status": "FORMAL_SOURCE_APPLIED_PRODUCT_BUILD_AND_INTEGRATION_PENDING",
+    "scope": "Current committed local result display configuration and actual GUI cache binding; raw measurement strings and original roles/holds preserved. This is not measurement-time units, clinical formulas or file-output enablement.",
+    "source_handoffs": {
+      "UI03": {
+        "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/handoff.json",
+        "bytes": 1731,
+        "sha256": "5831de662815d1ba8b6288c50bc1200b83a60446f34f9cad04a0c0a32c995424"
+      },
+      "Report02": {
+        "path": "temp/sn100_host/local_results_20261026/result_format_report_ui_candidate_02/handoff.json",
+        "bytes": 1828,
+        "sha256": "b395da8e4d604a46fe48c5fe75fb7586f23924a25ccbb6dffe71eeeeab38e865"
+      },
+      "Root4": {
+        "path": "temp/sn100_host/local_results_20261026/result_format_shell_candidate_01/handoff.json",
+        "bytes": 2092,
+        "sha256": "faa5db8e8b75c2c11ad20c180bdd1904d91c135272d2b50265e3d572ef105897"
+      }
+    },
+    "source_targets": [
+      {
+        "target": "06_programs/sn100_host/history/history_current_display_state.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/history_current_display_state.cpp",
+          "bytes": 6220,
+          "sha256": "3cbf563250ea858e5e74c3d78f3e1063f36070b492d40607d88b5852297de0d0"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/history_current_display_state.h",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/history_current_display_state.h",
+          "bytes": 1898,
+          "sha256": "9400ef60ba72418253e37c92a123309691cc7b3045a4525f111c70f13ee33683"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/history_current_format.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/history_current_format.cpp",
+          "bytes": 9331,
+          "sha256": "189d51890053f9bc39c704db5fa3dbe32233ac91077ad77d1b46ec4bda248074"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/history_store.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/history_store.cpp",
+          "bytes": 46815,
+          "sha256": "6c6754a87bd338f39267fa09635f9c979ba5b54f24dd839831f41f38d1c7c152"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/history_store.h",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/history_store.h",
+          "bytes": 11941,
+          "sha256": "f751e6f2d5ae28ee7aab7c8ed0b4be0522a19716b788a933c2f227a01b0955de"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/history_value_text.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/history_value_text.cpp",
+          "bytes": 1011,
+          "sha256": "dfadacc7ef767180ad255e005c24676be0a4f9214e2632b67f3c1ca6789e0822"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/report_remaining_store.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/report_remaining_store.cpp",
+          "bytes": 13018,
+          "sha256": "87c899bd96d7cb7a0ff2328006b9a2bab96de50198ba20d7ab420b115be43619"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/result_ingest_store.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/result_ingest_store.cpp",
+          "bytes": 37274,
+          "sha256": "1f2e3000c1421823a5fcc41b653fb1c47f736251049c704266a19a65dc4f2c7e"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/result_project_references.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/result_project_references.cpp",
+          "bytes": 8647,
+          "sha256": "f4d0c97bf3a367b7fe1f2fa999c4a9cdf8ed6b1a06f56da318b7bb871be1009c"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/result_project_references.h",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/history/result_project_references.h",
+          "bytes": 1054,
+          "sha256": "04f41b799c42f3569e6204627b69113433b5ffca4c50f90a3cd3bb21f6ee694b"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/history_core.pri",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_shell_candidate_01/candidate/history/history_core.pri",
+          "bytes": 1250,
+          "sha256": "75a15886ca56f1fcd4faf1d99fdeb1594e76419c177d3134a50b8b8ac849df77"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/history_page.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_report_ui_candidate_02/candidate/history/history_page.cpp",
+          "bytes": 76774,
+          "sha256": "fa9fa943a3d53ecdfe0e0ff5ed6e053f9ca51c38bab8bf5077eb36b0e0a12f7c"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/history/history_page.h",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_report_ui_candidate_02/candidate/history/history_page.h",
+          "bytes": 6010,
+          "sha256": "ed1c13ea8c135bad137ad8d5fbeb870326865441738b4da8c697465ace620252"
+        }
+      }
+    ],
+    "project_UI03": "Actual private first GUI method WindowsParent0, Qt3pass, fresh41. Independent Project qmake/make/link0; original controller1 parser counted preprocessor -E output as link. Root readonly exact-target audit0, no build/app rerun; object stats only, no object reuse eligibility.",
+    "report_Page02": {
+      "root_readback": {
+        "path": "temp/sn100_host/local_results_20261026/result_format_report_ui_execution_01/root_readback.json",
+        "bytes": 1425,
+        "sha256": "cc39d4684e9fe7e4dffbfef350e5e3f7d33315b37e1468afbd8597d61334571f"
+      },
+      "actual_report_page_private_pass": true,
+      "fresh_objects": 26,
+      "scope": "Private paired ReportPage02/actualGUI worker SQL only; not fullRoot productMain/configProject UI03/visual/WindowsQt/ARM/RK/resources. Fixed main-versus-used/display, real stale payload, Unknown statistics, patient draft/raw preservation and terminal actual closed/Cancel/Discard verified.",
+      "permission_isolation_passed": false
+    },
+    "root_shared": "Private four-source glue only statically reviewed; bind real GUI-owned currentDisplayState, invalidate on real events, refresh after actual Page load, source close/aboutToQuit clears without SQL. Whole formal product not built or run from this proposed cohort.",
+    "format_contract": "Original=1, Calibration=2, Rate=3, INR=4 require explicit known mapping; Time remains unknown. Selection-known is independent of numeric unit-known. Display/used differ from main. Missing profile is unknown without migration. Positive ratios only from actual catalog. Preserve raw strings and do not add clinical conversions.",
+    "data_safety": "No runtime DB/INI/account or credential copy. Same authenticated Engineer/Administrator canEdit, revision/fingerprint checks and real transaction/readback stay authoritative. Unknown failed rollback disables source until explicit reinitialization; do not clear holds or pretend cancel.",
+    "visual": "Original existing UI/QRC/SVG bytes unchanged; context-only result configuration modal is the authorized additional action. Current native theme/visual, Windows whole-product, ARM/RK, instruments and response/resources remain unverified.",
+    "historical_entries": "All original origin data retained. New semantics are not retroactively attributed to old result-ingest or report checkpoints.",
+    "root_acceptance": {
+      "UI03_handoff": "5831de662815d1ba8b6288c50bc1200b83a60446f34f9cad04a0c0a32c995424",
+      "independent_link_auditSHA": "a06e7411c9abf3defca29a7b104dae24b7b059d873b5854f7741275b5d2e98ef",
+      "Report02_readbackSHA": "cc39d4684e9fe7e4dffbfef350e5e3f7d33315b37e1468afbd8597d61334571f",
+      "whole_formal_product_verified": false,
+      "staged_origin_parentSHA": "4361b53e090eb26195b2d4adfcd05271b55b12b95d7517b05d0b0372026129f9"
+    }
+  }
+}

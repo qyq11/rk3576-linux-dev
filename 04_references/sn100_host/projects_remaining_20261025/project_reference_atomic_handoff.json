@@ -1,0 +1,124 @@
+{
+  "schema": "sn100-project-reference-atomic-repair-handoff-v1",
+  "date": "2026-10-25",
+  "status": "PRR-01 actually reproduced and repaired; code writes and all build/test processes stopped; exclusive slot returned",
+  "production_change": {
+    "file": "06_programs/sn100_host/projects/projects_store.cpp",
+    "before_sha256": "5342e5dbded0eda1f07cdd0bebb3971dac5d3222dd3fdeea61e793fb98219721",
+    "after_sha256": "b234dd9d2609fc1b424396a2d9244f4dc2a9b4929fb0f9dae46a12685141702f",
+    "entry": "ProjectsStore::save",
+    "scope": "BEGIN IMMEDIATE before authoritative read/identity/units/validation/reference check; rollback every early failure; existing write/commit rollback retained. No interface/header/schema/permission change."
+  },
+  "backup": "07_backups/sn100_host/offline_four_windows_20261025/project_reference_atomic_preimage/manifest.json",
+  "backup_verification": "Exact CPP matches original63 manifest and old426 e65 source entry. Frozen original426 manifest SHA e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19; backup includes only CPP plus manifest.",
+  "preserved": "post_repair_review.json and original handoff/63-source/6-artifact records remain unchanged; post_repair_review_pre_fix.json is a separate review copy. Old native main/helper and freeze are historical, not repaired artifacts.",
+  "added_tests": [
+    "06_programs/sn100_host/tests/project_reference_atomic_test.cpp",
+    "06_programs/sn100_host/tests/project_reference_atomic_test.pro"
+  ],
+  "test_method": {
+    "real_stores": "Two actual ProjectsStore workers plus actual repaired QcStore, each opens/uses/closes SQL in its owning thread. Anonymous copied stable project ID2 and real QC control/association/hold.",
+    "gate": "Only A native sqlite3* handle is obtained on A thread before B/QC SQL connections open. QLibrary resolves existing libsqlite3.so.0 sqlite3_set_authorizer. Callback at action SQLITE_TRANSACTION=22/BEGIN prepare only signals semaphores and waits at most5000ms; no SQL or mutation of A connection in callback. Return OK0 or DENY1 on timeout/read-failure injection. Hook unregistered on A thread before worker destruction.",
+    "authority": [
+      "https://www.sqlite.org/c3ref/set_authorizer.html",
+      "https://www.sqlite.org/c3ref/c_alter_table.html",
+      "https://www.sqlite.org/c3ref/c_deny.html",
+      "https://www.sqlite.org/rescode.html#ok"
+    ],
+    "native_dependency": "Existing Qt libqsqlite.so dynamically links libsqlite3.so.0 as verified with ldd. Local sqlite3.h was absent; official primary C-interface declarations/constants were consulted. No install/toolchain/production dependency added.",
+    "ordering": "A save parks before BEGIN executes; B actual rename/fullname save commits, then QC actual setCatalog/setProjects commits hold and matching association, then A resumes. Old implementation read before the gate; repaired implementation reads only after BEGIN. Same unchanged assertions before and after, no weaken/expected-failure masking.",
+    "before": "Actual native167 Release business objects from old426 freeze bound by existing build_shell_drivers.py. Binding proof records source snapshot/object hashes and compiler/linker receipts. Not used to validate repaired code.",
+    "after": "Fresh private qmake source build of ProjectsStore, QcStore, ProjectAdvancedEditor and CusCheckBox. Final fresh second build has identical11-input pre/post hashes; no stale native object reuse. make-j2; QTEST_GUILESS."
+  },
+  "actual_results": {
+    "pre": {
+      "passed": 5,
+      "failed": 2,
+      "process_exit": 2,
+      "detail": "Both project-name and full-name-only races reproduced: A success1/error0, protected name overwritten, durable hold1 remains; raw assertions fail."
+    },
+    "post": {
+      "passed": 7,
+      "failed": 0,
+      "qmake_exit": 0,
+      "make_exit": 0,
+      "test_exit": 0
+    },
+    "final": {
+      "passed": 7,
+      "failed": 0,
+      "qmake_exit": 0,
+      "make_exit": 0,
+      "test_exit": 0,
+      "source_pre_post_equal": true
+    },
+    "covered": [
+      "deterministic protected project name race",
+      "deterministic protected fullname-only race",
+      "QC held association/name/hold consistency and successful rebind",
+      "ordinary unreferenced edit; instrument/fixed identity immutability; immutable Time unit; Calibration unit/precision change preserved",
+      "already-held name/fullname rejection and subsequent non-name retry",
+      "missing project/result count/type/name validation early failures and explicit authorizer READ rejection followed by successful save",
+      "actual write trigger ABORT, actual catalog writer lock, actual COMMIT blocked by reader; rollback preserves prior value and explicit retry succeeds"
+    ]
+  },
+  "evidence_directory": "04_references/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025",
+  "raw_evidence": [
+    "pre_binding_proof.json",
+    "pre_driver_build.log",
+    "pre_build_receipt.json",
+    "pre_test.log",
+    "pre_test.xml",
+    "pre_test_receipt.json",
+    "post_commands.txt",
+    "post_build.log",
+    "post_build_receipt.txt",
+    "post_test.log",
+    "post_test.xml",
+    "post_test_receipt.txt",
+    "final_commands.txt",
+    "final_build.log",
+    "final_build_receipt.txt",
+    "final_test.log",
+    "final_test.xml",
+    "final_test_receipt.txt",
+    "final_source_before.json",
+    "final_source_after.json",
+    "test_assertion_audit.json",
+    "anonymous_data_receipts.json",
+    "artifacts.json",
+    "production_delta.json",
+    "production426_after.json",
+    "projects_store_repaired.cpp",
+    "test_source.cpp",
+    "test_project.pro"
+  ],
+  "commands": {
+    "pre_build": "python3 06_programs/sn100_host/tests/build_shell_drivers.py --build-dir <repo>/temp/sn100_host/qc_local_20261025/native/wsl_release --snapshot <repo>/temp/sn100_host/qc_local_20261025/native/final_before.json --output-dir <private>/pre_driver --jobs 1 project_reference_atomic_test",
+    "pre_run": "SN100_PROJECT_ATOMIC_ROOT=<private>/pre_runtime <private>/pre_driver/project_reference_atomic_test -o <evidence>/pre_test.xml,xml -o -,txt",
+    "final_build_run": "wsl.exe -d Ubuntu-24.04 -u qyq -- bash <repo-wsl>/temp/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025/run_final.sh",
+    "repo_wsl": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "private_wsl": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025",
+    "evidence_wsl": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/04_references/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025"
+  },
+  "artifact_manifest": "project_reference_atomic_20261025/artifacts.json",
+  "integration_required": [
+    "Old426 native objects are now stale for projects_store.cpp. Root must build a fresh current native main/helper and bind this test against the new authoritative source/object snapshot.",
+    "Add project_reference_atomic_test to the35-call cumulative plan; the test source stem is compatible with existing build_shell_drivers.py mapping. Both .cpp/.pro are root/tests and do not increase the426 production input set.",
+    "Root owns final cumulative QC/calibration/page/history regression, Windows32/ARM64 whole-program artifacts, closure/restoration and final serial resources. This delivery is private WSL x86_64 non-GUI only."
+  ],
+  "rollback": "Stop all consumers before any source rollback. Backup restores only this CPP and reopens the demonstrated name race; it is not a data/schema/reference migration and must not be used as a protected production writer. No existing runtime data, system configuration or toolchain was opened/modified.",
+  "not_performed": [
+    "GUI",
+    "long/resource measurement",
+    "Windows/ARM build",
+    "RK/instrument/LIS connection",
+    "schema/role/public-interface change",
+    "shared shell/total documentation edit",
+    "Git commit/push",
+    "automation",
+    "message to another chat"
+  ],
+  "pending": "Final root frozen cumulative native/platform/resources; existing RK/instrument/clinical/long-stability boundaries remain unchanged.",
+  "no_background_process": true
+}

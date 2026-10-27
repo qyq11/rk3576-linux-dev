@@ -1,0 +1,9 @@
+{
+  "schema": "sn100-build-driver-correction-v1",
+  "attempt": "01",
+  "status": "discarded_before_publish",
+  "real_make_exit": "unavailable: PowerShell5 NativeCommandError interrupted wrapper on stderr diagnostic",
+  "product_failure_confirmed": false,
+  "published": false,
+  "correction": "Native ProcessStartInfo redirects stdout/stderr asynchronously, waits for native exit; attempt02 uses fresh qmake/make trees. Single-configuration qmake output is at build-tree root."
+}

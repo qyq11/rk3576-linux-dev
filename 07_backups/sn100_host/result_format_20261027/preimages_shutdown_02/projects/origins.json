@@ -1,0 +1,184 @@
+{
+  "module": "O07 local project and unit basis",
+  "source_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "read_only_sources": [
+    "frmsystem/frmsystemmaterial.ui",
+    "frmsystem/frmsystemmaterial.cpp:frmSystemMaterial/addResultTableDate/loadUnit/slotCusCheckboxChanged/on_btnSave_clicked/on_btnCopy_clicked/on_btnDelProj_clicked",
+    "customwidgets/cuscheckbox.h",
+    "customwidgets/cuscheckbox.cpp",
+    "customwidgets/materialUI/icons/toggle/svg/production/ic_check_box_24px.svg",
+    "customwidgets/materialUI/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg",
+    "public/stylecolor.cpp:buttonStyle/listWidgetStyle/tableStyle::getStrSheet2/comboboxStyle",
+    "public/systemcommon.h:Permission",
+    "public/systemcommon.cpp:lineEditValidator",
+    "main.cpp:getConfig theme loading",
+    "bin/theme_config.ini:visual color keys only",
+    "frmsample/maskdlgsampledetail.cpp:configured sample rate selection"
+  ],
+  "ui_copy": {
+    "byte_identical_to_reference": true,
+    "sha256": "bc08c2e42ef9893b196c6d13d0777bdb58dbb056af1515e998f2f82cef04eaaa",
+    "logical_canvas": [
+      1751,
+      968
+    ],
+    "result_column_default_width_px": 116
+  },
+  "retained": [
+    "Original page geometry, control object names, groups and ordering",
+    "Original shipped visual theme color keys and dynamic styles",
+    "Original result decimal combobox choices 1 through 6",
+    "Original CusCheckBox main-result single-selection behavior and icons",
+    "Original unit editability: Calibration and Rate only",
+    "Original Engineer or Administrator edit gate and fixed-project delete protection",
+    "Copy preserves instrument project_id and makes the new local project nonfixed",
+    "Read-only sample_rate/sample_option/sample_default_option/xuhao snapshots for the next local sample slice"
+  ],
+  "intentional_local_differences": [
+    "Qt SQL connections live on one worker thread per store; requests and snapshots cross threads as values",
+    "Explicit isolated catalog.db uses stable integer ids and foreign keys rather than name-derived project database filenames",
+    "No original DB/config import; seed-demo on a new DB adds only explicitly anonymous DEMO_A and arbitrary s/a.u./a.u.x10 unit labels",
+    "The original helper produces an ASCII-head exact-length regex inconsistent with Chinese full names; local validation accepts Unicode letter/digit heads, maximum 16 characters, rejects path characters, and validates finite ordered numeric ranges",
+    "Local result names allow up to 16 characters so copied anonymous names remain editable; the original result editor requested length 8 through the inconsistent helper",
+    "Noto Sans CJK SC substitutes the current WSL font while retaining UI sizes and hierarchy; original active Windows font/theme comparison is pending",
+    "Six visible test-scheme scalars and original 15/10-column sample/reagent action details now support optional local editing and atomic storage; no instrument, network, algorithm or calibration success is synthesized",
+    "Readonly sample rate fixtures are OFFLINE_RATE_A/B labels only, with no clinical dilution ratio or volume semantics",
+    "Unsaved-draft guard and safe discard/cancel are explicit; failed writes retain the draft for retry"
+  ],
+  "not_migrated": [
+    "Production initial project/unit import and approved clinical parameters",
+    "Remaining original per-project AlgParam/calibration/IBS selector/hidden report fields, QC, clinical algorithms and device synchronization; local action records are not executable device commands",
+    "Unit dictionary CRUD or ratio changes, for which no original write UI was found",
+    "Original Windows active-theme behavior/visual baseline, RK real screen, instrument operation and control coexistence"
+  ],
+  "advanced_local_evidence": "04_references/sn100_host/projects_remaining_20261025/project_original_audit.json",
+  "advanced_local_contract": "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json",
+  "current_result_format_20261027": {
+    "date": "2026-10-27",
+    "status": "FORMAL_SOURCE_APPLIED_PRODUCT_BUILD_AND_INTEGRATION_PENDING",
+    "scope": "Current committed local result display configuration and actual GUI cache binding; raw measurement strings and original roles/holds preserved. This is not measurement-time units, clinical formulas or file-output enablement.",
+    "source_handoffs": {
+      "UI03": {
+        "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/handoff.json",
+        "bytes": 1731,
+        "sha256": "5831de662815d1ba8b6288c50bc1200b83a60446f34f9cad04a0c0a32c995424"
+      },
+      "Report02": {
+        "path": "temp/sn100_host/local_results_20261026/result_format_report_ui_candidate_02/handoff.json",
+        "bytes": 1828,
+        "sha256": "b395da8e4d604a46fe48c5fe75fb7586f23924a25ccbb6dffe71eeeeab38e865"
+      },
+      "Root4": {
+        "path": "temp/sn100_host/local_results_20261026/result_format_shell_candidate_01/handoff.json",
+        "bytes": 2092,
+        "sha256": "faa5db8e8b75c2c11ad20c180bdd1904d91c135272d2b50265e3d572ef105897"
+      }
+    },
+    "source_targets": [
+      {
+        "target": "06_programs/sn100_host/projects/project_current_format.h",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/projects/project_current_format.h",
+          "bytes": 3150,
+          "sha256": "3487b66f99f4bec2ac8ba1249bf180c49a0c00929de5b187a2701ea54fbe4e3f"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/project_format_dialog.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/projects/project_format_dialog.cpp",
+          "bytes": 21475,
+          "sha256": "e722ce0430d143dbaa2f65fdf6970adc18c09e213cfe27d64564ffbf3a5e644d"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/project_format_dialog.h",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/projects/project_format_dialog.h",
+          "bytes": 2025,
+          "sha256": "17264b0339e1436e0ad7d34b601604f63880df58cc67fa2df363f029d8fd51f6"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/project_page.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/projects/project_page.cpp",
+          "bytes": 31586,
+          "sha256": "bfe525a2d1245c475bf819ff336d4d106c6a2274ccf7902a2e1b68a83238236e"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/project_page.h",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/projects/project_page.h",
+          "bytes": 2038,
+          "sha256": "1f9c101c5753ac46ad766995492d383d3c38f8a003a6cf87da3571596d8f988b"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/projects_current_format.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/projects/projects_current_format.cpp",
+          "bytes": 23673,
+          "sha256": "175f7c07431918dfca7804a826472ad95bebbca14960501654d488a252240176"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/projects_store.cpp",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/projects/projects_store.cpp",
+          "bytes": 39800,
+          "sha256": "e655f29f085868b11032b058b85d0d3e5d3fe5a6d8f6f901b6630b69668c37e4"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/projects_store.h",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_ui_candidate_03/candidate/projects/projects_store.h",
+          "bytes": 5155,
+          "sha256": "4aed2c99f0d7c72ed115c616d3698f3a534fabda4449d72ed46a22fe288494a1"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/projects_store_support.pri",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_shell_candidate_01/candidate/projects/projects_store_support.pri",
+          "bytes": 438,
+          "sha256": "5bef0fd84e2f9921744373801349fc694a6fbedd8e16cada8efc7548b3e90d16"
+        }
+      },
+      {
+        "target": "06_programs/sn100_host/projects/projects_core.pri",
+        "source": {
+          "path": "temp/sn100_host/local_results_20261026/result_format_shell_candidate_01/candidate/projects/projects_core.pri",
+          "bytes": 474,
+          "sha256": "7f1ad551d325f631d302ccf9a31f945e733f1c5d4e145741f8e7d44451b00d34"
+        }
+      }
+    ],
+    "project_UI03": "Actual private first GUI method WindowsParent0, Qt3pass, fresh41. Independent Project qmake/make/link0; original controller1 parser counted preprocessor -E output as link. Root readonly exact-target audit0, no build/app rerun; object stats only, no object reuse eligibility.",
+    "report_Page02": {
+      "root_readback": {
+        "path": "temp/sn100_host/local_results_20261026/result_format_report_ui_execution_01/root_readback.json",
+        "bytes": 1425,
+        "sha256": "cc39d4684e9fe7e4dffbfef350e5e3f7d33315b37e1468afbd8597d61334571f"
+      },
+      "actual_report_page_private_pass": true,
+      "fresh_objects": 26,
+      "scope": "Private paired ReportPage02/actualGUI worker SQL only; not fullRoot productMain/configProject UI03/visual/WindowsQt/ARM/RK/resources. Fixed main-versus-used/display, real stale payload, Unknown statistics, patient draft/raw preservation and terminal actual closed/Cancel/Discard verified.",
+      "permission_isolation_passed": false
+    },
+    "root_shared": "Private four-source glue only statically reviewed; bind real GUI-owned currentDisplayState, invalidate on real events, refresh after actual Page load, source close/aboutToQuit clears without SQL. Whole formal product not built or run from this proposed cohort.",
+    "format_contract": "Original=1, Calibration=2, Rate=3, INR=4 require explicit known mapping; Time remains unknown. Selection-known is independent of numeric unit-known. Display/used differ from main. Missing profile is unknown without migration. Positive ratios only from actual catalog. Preserve raw strings and do not add clinical conversions.",
+    "data_safety": "No runtime DB/INI/account or credential copy. Same authenticated Engineer/Administrator canEdit, revision/fingerprint checks and real transaction/readback stay authoritative. Unknown failed rollback disables source until explicit reinitialization; do not clear holds or pretend cancel.",
+    "visual": "Original existing UI/QRC/SVG bytes unchanged; context-only result configuration modal is the authorized additional action. Current native theme/visual, Windows whole-product, ARM/RK, instruments and response/resources remain unverified.",
+    "historical_entries": "All original origin data retained. New semantics are not retroactively attributed to old result-ingest or report checkpoints.",
+    "root_acceptance": {
+      "UI03_handoff": "5831de662815d1ba8b6288c50bc1200b83a60446f34f9cad04a0c0a32c995424",
+      "independent_link_auditSHA": "a06e7411c9abf3defca29a7b104dae24b7b059d873b5854f7741275b5d2e98ef",
+      "Report02_readbackSHA": "cc39d4684e9fe7e4dffbfef350e5e3f7d33315b37e1468afbd8597d61334571f",
+      "whole_formal_product_verified": false,
+      "staged_origin_parentSHA": "e799d3b865f849d88d22f9c838b8048e13666cd1cca205a8090a7a9e20f22537"
+    }
+  }
+}

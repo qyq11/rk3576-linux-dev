@@ -2,6 +2,9 @@
 #include "ui_frmuserset.h"
 #include "ui/frmhospinfosetting.h"
 #include "ui/frmaccountsetting.h"
+#include "ui/frmprintersetting.h"
+#include "ui/frmlissetting.h"
+#include "ui/language_setting_page.h"
 
 #include <QApplication>
 #include <QLabel>
@@ -104,6 +107,42 @@ frmUserSet::~frmUserSet()
     delete ui;
 }
 
+void frmUserSet::attachPrinterPage(frmPrinterSetting *page)
+{
+    if (!page || printer_) return;
+    const int previous = currentUserPage();
+    QWidget *placeholder = ui->stkUserCenter->widget(3);
+    ui->stkUserCenter->removeWidget(placeholder);
+    delete placeholder;
+    printer_ = page;
+    ui->stkUserCenter->insertWidget(3, page);
+    ui->stkUserCenter->setCurrentIndex(previous);
+}
+
+void frmUserSet::attachLisPage(frmLisSetting *page)
+{
+    if (!page || lis_) return;
+    const int previous = currentUserPage();
+    QWidget *placeholder = ui->stkUserCenter->widget(4);
+    ui->stkUserCenter->removeWidget(placeholder);
+    delete placeholder;
+    lis_ = page;
+    ui->stkUserCenter->insertWidget(4, page);
+    ui->stkUserCenter->setCurrentIndex(previous);
+}
+
+void frmUserSet::attachLanguagePage(LanguageSettingPage *page)
+{
+    if (!page || language_) return;
+    const int previous = currentUserPage();
+    QWidget *placeholder = ui->stkUserCenter->widget(2);
+    ui->stkUserCenter->removeWidget(placeholder);
+    delete placeholder;
+    language_ = page;
+    ui->stkUserCenter->insertWidget(2, page);
+    ui->stkUserCenter->setCurrentIndex(previous);
+}
+
 int frmUserSet::currentUserPage() const
 {
     return ui->stkUserCenter->currentIndex();
@@ -120,7 +159,21 @@ void frmUserSet::rememberHospitalFocus()
 
 bool frmUserSet::requestLeave(const QString &action)
 {
+    if (language_) language_->dismissFeedback();
     rememberHospitalFocus();
+    // 先检查全部隐藏页busy，再允许任何草稿放弃。
+    if (lis_ && lis_->isBusy())
+    {
+        lis_->requestLeave(action);
+        emit navigationRejected(tr("LIS设置正在处理，请稍后再%1。").arg(action));
+        return false;
+    }
+    if (printer_ && printer_->isBusy())
+    {
+        printer_->requestLeave(action);
+        emit navigationRejected(tr("打印设置正在处理，请稍后再%1。").arg(action));
+        return false;
+    }
     // Check both pages before asking to discard a hospital draft: a hidden
     // account worker must not let a rejected navigation discard that draft.
     if (account_ && account_->isBusy())
@@ -138,7 +191,9 @@ bool frmUserSet::requestLeave(const QString &action)
         restoreHospitalFocus();
         return false;
     }
-    return !account_ || account_->requestLeave(action);
+    if (account_ && !account_->requestLeave(action)) return false;
+    if (printer_ && !printer_->requestLeave(action)) return false;
+    return !lis_ || lis_->requestLeave(action);
 }
 
 bool frmUserSet::selectUserPage(int index)

@@ -1,0 +1,10 @@
+QT += core network
+QT -= gui
+CONFIG += console c++14 warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = sn100_protocol_loopback
+SOURCES += loopback_main.cpp tcp_transport.cpp read_only_messages.cpp frame_codec.cpp status_session.cpp
+HEADERS += tcp_transport.h read_only_messages.h frame_codec.h status_session.h
+OBJECTS_DIR = .obj
+MOC_DIR = .moc

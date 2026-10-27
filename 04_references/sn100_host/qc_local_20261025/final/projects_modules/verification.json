@@ -1,0 +1,947 @@
+{
+  "schema": "sn100-project-modules-final-v1",
+  "passed": true,
+  "started_utc": "2026-10-25T18:12:15.713054+00:00",
+  "source_inputs": 426,
+  "source_snapshot_sha256": "5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29",
+  "main_artifacts": {
+    "sn100_shell": "054bffa7847881cd084f4792f81c796313396f3e07e72195aa20b89e9417b347",
+    "sn100_report_renderer": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+  },
+  "checks": {
+    "all_six_fresh_release_builds": true,
+    "four_complete_qt_suites": true,
+    "two_loaded_standalones_closed_normally": true,
+    "six_artifact_sha256_present": true,
+    "source_426_test_driver_main_helper_native_objects_unchanged": true,
+    "fresh_objects_and_binaries_unchanged_through_final": true
+  },
+  "stages": [
+    {
+      "name": "project_advanced",
+      "qmake_project": "projects/tests/project_advanced_test.pro",
+      "target": "project_advanced_test",
+      "kind": "test",
+      "passed": true,
+      "phases": [
+        {
+          "name": "qmake",
+          "command": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/projects/tests/project_advanced_test.pro",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/build/Makefile",
+            "-spec",
+            "linux-g++",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/build",
+          "started_utc": "2026-10-25T18:12:27.070733+00:00",
+          "timeout_seconds": 120,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/logs/qmake.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 2.090245601999868,
+          "finished_utc": "2026-10-25T18:12:29.173714+00:00",
+          "pid": 389,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/logs/qmake.exit.json"
+        },
+        {
+          "name": "make",
+          "command": [
+            "/usr/bin/make",
+            "-C",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/build",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/build",
+          "started_utc": "2026-10-25T18:12:29.223487+00:00",
+          "timeout_seconds": 900,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/logs/make.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 57.238638163999894,
+          "finished_utc": "2026-10-25T18:13:26.482325+00:00",
+          "pid": 402,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/logs/make.exit.json"
+        },
+        {
+          "name": "test",
+          "command": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/build/project_advanced_test",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/runtime",
+          "started_utc": "2026-10-25T18:13:42.139981+00:00",
+          "timeout_seconds": 240,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/logs/test.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 8.363362997999957,
+          "finished_utc": "2026-10-25T18:13:50.550063+00:00",
+          "pid": 515,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/logs/test.exit.json"
+        }
+      ],
+      "binary_sha256": "2f3b345087b54fbbe3d26d93900ef8a9450ff5fe22d6011326b2fdd2e9216ebb",
+      "checks": {
+        "fresh_release_build": true,
+        "objects_and_binary_unchanged": true,
+        "source_test_driver_native_binding_unchanged": true,
+        "actual_run_exit_zero": true
+      }
+    },
+    {
+      "name": "project_basis",
+      "qmake_project": "projects/tests/projects_test.pro",
+      "target": "projects_test",
+      "kind": "test",
+      "passed": true,
+      "phases": [
+        {
+          "name": "qmake",
+          "command": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/projects/tests/projects_test.pro",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build/Makefile",
+            "-spec",
+            "linux-g++",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build",
+          "started_utc": "2026-10-25T18:14:25.836855+00:00",
+          "timeout_seconds": 120,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/qmake.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 1.6362463440000283,
+          "finished_utc": "2026-10-25T18:14:27.489456+00:00",
+          "pid": 526,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/qmake.exit.json"
+        },
+        {
+          "name": "make",
+          "command": [
+            "/usr/bin/make",
+            "-C",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build",
+          "started_utc": "2026-10-25T18:14:27.538166+00:00",
+          "timeout_seconds": 900,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/make.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 57.360524752999936,
+          "finished_utc": "2026-10-25T18:15:24.914151+00:00",
+          "pid": 539,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/make.exit.json"
+        },
+        {
+          "name": "test",
+          "command": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build/projects_test",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/runtime",
+          "started_utc": "2026-10-25T18:15:42.679968+00:00",
+          "timeout_seconds": 240,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/test.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 4.745022267999957,
+          "finished_utc": "2026-10-25T18:15:47.454801+00:00",
+          "pid": 649,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/test.exit.json"
+        }
+      ],
+      "binary_sha256": "69ced3b361e60b21bb3553e865255bfb395cb9d6d7f6b36af9d201ff754b8057",
+      "checks": {
+        "fresh_release_build": true,
+        "objects_and_binary_unchanged": true,
+        "source_test_driver_native_binding_unchanged": true,
+        "actual_run_exit_zero": true
+      }
+    },
+    {
+      "name": "reagent_batches",
+      "qmake_project": "reagents/tests/reagent_batch_test.pro",
+      "target": "reagent_batch_test",
+      "kind": "test",
+      "passed": true,
+      "phases": [
+        {
+          "name": "qmake",
+          "command": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/tests/reagent_batch_test.pro",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/build/Makefile",
+            "-spec",
+            "linux-g++",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/build",
+          "started_utc": "2026-10-25T18:16:21.016358+00:00",
+          "timeout_seconds": 120,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/logs/qmake.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 3.5702694770000107,
+          "finished_utc": "2026-10-25T18:16:24.601933+00:00",
+          "pid": 658,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/logs/qmake.exit.json"
+        },
+        {
+          "name": "make",
+          "command": [
+            "/usr/bin/make",
+            "-C",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/build",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/build",
+          "started_utc": "2026-10-25T18:16:24.643219+00:00",
+          "timeout_seconds": 900,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/logs/make.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 102.15453718399999,
+          "finished_utc": "2026-10-25T18:18:06.809752+00:00",
+          "pid": 691,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/logs/make.exit.json"
+        },
+        {
+          "name": "test",
+          "command": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/build/reagent_batch_test",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/runtime",
+          "started_utc": "2026-10-25T18:18:22.701891+00:00",
+          "timeout_seconds": 240,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/logs/test.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 3.9457081689999995,
+          "finished_utc": "2026-10-25T18:18:26.662279+00:00",
+          "pid": 861,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/logs/test.exit.json"
+        }
+      ],
+      "binary_sha256": "55c23a5086d1728b970dc8fc8d70db1b11cb4e24229c0bdbd1a78128500416dc",
+      "checks": {
+        "fresh_release_build": true,
+        "objects_and_binary_unchanged": true,
+        "source_test_driver_native_binding_unchanged": true,
+        "actual_run_exit_zero": true
+      }
+    },
+    {
+      "name": "reagent_basis",
+      "qmake_project": "reagents/tests/tests.pro",
+      "target": "test_reagents",
+      "kind": "test",
+      "passed": true,
+      "phases": [
+        {
+          "name": "qmake",
+          "command": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/tests/tests.pro",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/build/Makefile",
+            "-spec",
+            "linux-g++",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/build",
+          "started_utc": "2026-10-25T18:19:00.682478+00:00",
+          "timeout_seconds": 120,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/logs/qmake.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 4.207018070999993,
+          "finished_utc": "2026-10-25T18:19:04.903725+00:00",
+          "pid": 896,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/logs/qmake.exit.json"
+        },
+        {
+          "name": "make",
+          "command": [
+            "/usr/bin/make",
+            "-C",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/build",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/build",
+          "started_utc": "2026-10-25T18:19:04.958267+00:00",
+          "timeout_seconds": 900,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/logs/make.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 105.45159795100017,
+          "finished_utc": "2026-10-25T18:20:50.426065+00:00",
+          "pid": 929,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/logs/make.exit.json"
+        },
+        {
+          "name": "test",
+          "command": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/build/test_reagents",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/runtime",
+          "started_utc": "2026-10-25T18:21:07.990557+00:00",
+          "timeout_seconds": 240,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/logs/test.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 5.47770380399993,
+          "finished_utc": "2026-10-25T18:21:13.481638+00:00",
+          "pid": 1094,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/logs/test.exit.json"
+        }
+      ],
+      "binary_sha256": "9710bf76316975eedac49dff799a90885e3c1f91bbe5a1b200df455e0b4b5fed",
+      "checks": {
+        "fresh_release_build": true,
+        "objects_and_binary_unchanged": true,
+        "source_test_driver_native_binding_unchanged": true,
+        "actual_run_exit_zero": true
+      }
+    },
+    {
+      "name": "projects_app",
+      "qmake_project": "projects/projects.pro",
+      "target": "sn100_projects",
+      "kind": "standalone",
+      "passed": true,
+      "phases": [
+        {
+          "name": "qmake",
+          "command": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/projects/projects.pro",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/build/Makefile",
+            "-spec",
+            "linux-g++",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/build",
+          "started_utc": "2026-10-25T18:21:45.850881+00:00",
+          "timeout_seconds": 120,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/logs/qmake.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 1.7651922029999696,
+          "finished_utc": "2026-10-25T18:21:47.630964+00:00",
+          "pid": 1129,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/logs/qmake.exit.json"
+        },
+        {
+          "name": "make",
+          "command": [
+            "/usr/bin/make",
+            "-C",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/build",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/build",
+          "started_utc": "2026-10-25T18:21:47.664307+00:00",
+          "timeout_seconds": 900,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/logs/make.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 43.58485293300009,
+          "finished_utc": "2026-10-25T18:22:31.265107+00:00",
+          "pid": 1142,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/logs/make.exit.json"
+        },
+        {
+          "name": "app",
+          "command": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/build/sn100_projects",
+            "--data-dir",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/runtime/catalog",
+            "--seed-demo",
+            "--test-engineer",
+            "--exit-after-ms",
+            "1800"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/runtime",
+          "started_utc": "2026-10-25T18:22:45.562602+00:00",
+          "timeout_seconds": 30,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/logs/app.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 1.9362082600000576,
+          "finished_utc": "2026-10-25T18:22:47.544265+00:00",
+          "pid": 1253,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/logs/app.exit.json"
+        }
+      ],
+      "binary_sha256": "e066a174f87ac4211eef5e0114f808267ff8e6badd3bb86d3f3238dc95ea4e4f",
+      "checks": {
+        "fresh_release_build": true,
+        "objects_and_binary_unchanged": true,
+        "source_test_driver_native_binding_unchanged": true,
+        "actual_run_exit_zero": true
+      }
+    },
+    {
+      "name": "reagents_app",
+      "qmake_project": "reagents/reagents.pro",
+      "target": "sn100_reagents",
+      "kind": "standalone",
+      "passed": true,
+      "phases": [
+        {
+          "name": "qmake",
+          "command": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/reagents.pro",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build/Makefile",
+            "-spec",
+            "linux-g++",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build",
+          "started_utc": "2026-10-25T18:23:20.901750+00:00",
+          "timeout_seconds": 120,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/qmake.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 2.7827300090000335,
+          "finished_utc": "2026-10-25T18:23:23.697487+00:00",
+          "pid": 1258,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/qmake.exit.json"
+        },
+        {
+          "name": "make",
+          "command": [
+            "/usr/bin/make",
+            "-C",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build",
+          "started_utc": "2026-10-25T18:23:23.737970+00:00",
+          "timeout_seconds": 900,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/make.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 87.20314075400006,
+          "finished_utc": "2026-10-25T18:24:50.955311+00:00",
+          "pid": 1291,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/make.exit.json"
+        },
+        {
+          "name": "app",
+          "command": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build/sn100_reagents",
+            "--data-dir",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/runtime/catalog",
+            "--seed-demo",
+            "--test-engineer",
+            "--quit-after-ms",
+            "1800",
+            "--screenshot",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/page_loaded.png"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/runtime",
+          "started_utc": "2026-10-25T18:25:08.276534+00:00",
+          "timeout_seconds": 30,
+          "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/app.log",
+          "exit_code": 0,
+          "timed_out": false,
+          "state": "finished",
+          "seconds": 1.997682574999999,
+          "finished_utc": "2026-10-25T18:25:10.295465+00:00",
+          "pid": 1455,
+          "cleanup": null,
+          "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/logs/app.exit.json"
+        }
+      ],
+      "binary_sha256": "5b6e524cd33211f26587e81b9d5fc1d8c413ec1c3f0bcc2bcc47a5912eea9350",
+      "checks": {
+        "fresh_release_build": true,
+        "objects_and_binary_unchanged": true,
+        "source_test_driver_native_binding_unchanged": true,
+        "actual_run_exit_zero": true
+      }
+    }
+  ],
+  "tests": [
+    {
+      "name": "project_advanced",
+      "target": "project_advanced_test",
+      "actual_exit": 0,
+      "binary_sha256": "2f3b345087b54fbbe3d26d93900ef8a9450ff5fe22d6011326b2fdd2e9216ebb",
+      "raw_txt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/qt.txt",
+      "raw_junitxml": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/qt.xml",
+      "txt_sha256": "24336969d0b56ac788640f1f673af9a92873afffbc23acd055b5a8a3ed652740",
+      "junitxml_sha256": "1abd7dde97c8030aa9a36b91116e5ee5ece2f49bf463228469a4295d17398446",
+      "totals": [
+        11,
+        0,
+        0
+      ],
+      "junit_testcases": [
+        {
+          "result": "pass",
+          "name": "initTestCase"
+        },
+        {
+          "result": "pass",
+          "name": "scalarSaveCopyReopenPreservesExistingContract"
+        },
+        {
+          "result": "pass",
+          "name": "emptyIllegalAndUnknownInputsAreRejected"
+        },
+        {
+          "result": "pass",
+          "name": "actionRowsSaveInOrderValidateAndProtectReagentReferences"
+        },
+        {
+          "result": "pass",
+          "name": "durableReferencesProtectSeparateDatabaseRecords"
+        },
+        {
+          "result": "pass",
+          "name": "referencePermissionMissingProjectAndClosedStoreFailClosed"
+        },
+        {
+          "result": "pass",
+          "name": "lockFailureAndRetryKeepCommittedData"
+        },
+        {
+          "result": "pass",
+          "name": "oldCatalogUpgradeAndWriteFailureRollback"
+        },
+        {
+          "result": "pass",
+          "name": "guiCancelDraftBusyAndLocalSave"
+        },
+        {
+          "result": "pass",
+          "name": "corruptStoredPayloadFailsWithoutDroppingUnknownData"
+        },
+        {
+          "result": "pass",
+          "name": "cleanupTestCase"
+        }
+      ],
+      "junit_failure_error_skipped_cases": [],
+      "junit_root_attributes": {
+        "errors": "6",
+        "failures": "0",
+        "tests": "11",
+        "name": "ProjectAdvancedTest"
+      },
+      "expected_passes_including_init_cleanup": 11,
+      "junit_diagnostic_count_attributes_are_not_business_failures": true
+    },
+    {
+      "name": "project_basis",
+      "target": "projects_test",
+      "actual_exit": 0,
+      "binary_sha256": "69ced3b361e60b21bb3553e865255bfb395cb9d6d7f6b36af9d201ff754b8057",
+      "raw_txt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/qt.txt",
+      "raw_junitxml": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/qt.xml",
+      "txt_sha256": "6ef31d2640ddac84211079b18058169fe3df9d28d994e4b09714b3ac4bf9d14f",
+      "junitxml_sha256": "e8d6f0b178bff171fc2481730e8524774e024354bcbc6f502081b13ba8a98dc2",
+      "totals": [
+        9,
+        0,
+        0
+      ],
+      "junit_testcases": [
+        {
+          "result": "pass",
+          "name": "initTestCase"
+        },
+        {
+          "result": "pass",
+          "name": "copySaveReopenAndDelete"
+        },
+        {
+          "result": "pass",
+          "name": "invalidAndDuplicateAreAtomic"
+        },
+        {
+          "result": "pass",
+          "name": "permissionAndFixedProtection"
+        },
+        {
+          "result": "pass",
+          "name": "externalReferenceProtectsDelete"
+        },
+        {
+          "result": "pass",
+          "name": "lockFailureKeepsGuiEventLoopAlive"
+        },
+        {
+          "result": "pass",
+          "name": "guiDraftCancelPermissionAndUnitSave"
+        },
+        {
+          "result": "pass",
+          "name": "unmarkedAndUnknownInputsArePreserved"
+        },
+        {
+          "result": "pass",
+          "name": "cleanupTestCase"
+        }
+      ],
+      "junit_failure_error_skipped_cases": [],
+      "junit_root_attributes": {
+        "errors": "2",
+        "failures": "0",
+        "tests": "9",
+        "name": "ProjectsTest"
+      },
+      "expected_passes_including_init_cleanup": 9,
+      "junit_diagnostic_count_attributes_are_not_business_failures": true
+    },
+    {
+      "name": "reagent_batches",
+      "target": "reagent_batch_test",
+      "actual_exit": 0,
+      "binary_sha256": "55c23a5086d1728b970dc8fc8d70db1b11cb4e24229c0bdbd1a78128500416dc",
+      "raw_txt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/qt.txt",
+      "raw_junitxml": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/qt.xml",
+      "txt_sha256": "f5c6791e8e1c34726386d833a2420b6e0c5efef14199e5ecd716687012ccf4f9",
+      "junitxml_sha256": "570bfc08e2e0032c7de696ab4fe7c2c4c5f484334376cfcd3f595a7110534108",
+      "totals": [
+        11,
+        0,
+        0
+      ],
+      "junit_testcases": [
+        {
+          "result": "pass",
+          "name": "initTestCase"
+        },
+        {
+          "result": "pass",
+          "name": "saveReopenAndLegacyCompatibility"
+        },
+        {
+          "result": "pass",
+          "name": "emptyIllegalAndDuplicate"
+        },
+        {
+          "result": "pass",
+          "name": "reservationAndMutationProtection"
+        },
+        {
+          "result": "pass",
+          "name": "projectActionReagentProtection"
+        },
+        {
+          "result": "pass",
+          "name": "atomicWriteFailureAndRetry"
+        },
+        {
+          "result": "pass",
+          "name": "permissionsAndReadOnlyReferenceChecks"
+        },
+        {
+          "result": "pass",
+          "name": "pageDraftCancelBusyFailureAndReopen"
+        },
+        {
+          "result": "pass",
+          "name": "removalReleasesMetadata"
+        },
+        {
+          "result": "pass",
+          "name": "unknownVersionAndCorruptionPreserveData"
+        },
+        {
+          "result": "pass",
+          "name": "cleanupTestCase"
+        }
+      ],
+      "junit_failure_error_skipped_cases": [],
+      "junit_root_attributes": {
+        "errors": "52",
+        "failures": "0",
+        "tests": "11",
+        "name": "ReagentBatchTest"
+      },
+      "expected_passes_including_init_cleanup": 11,
+      "junit_diagnostic_count_attributes_are_not_business_failures": true
+    },
+    {
+      "name": "reagent_basis",
+      "target": "test_reagents",
+      "actual_exit": 0,
+      "binary_sha256": "9710bf76316975eedac49dff799a90885e3c1f91bbe5a1b200df455e0b4b5fed",
+      "raw_txt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/qt.txt",
+      "raw_junitxml": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/qt.xml",
+      "txt_sha256": "14c37fa66db49cfa673865a6acb5702ea3763cccaad780e6d25f727baf579116",
+      "junitxml_sha256": "36abeeb51334ea6f44310c4b0d9c654fa491989593eba19b57b33ea47fbb286c",
+      "totals": [
+        11,
+        0,
+        0
+      ],
+      "junit_testcases": [
+        {
+          "result": "pass",
+          "name": "initTestCase"
+        },
+        {
+          "result": "pass",
+          "name": "crudAndReopen"
+        },
+        {
+          "result": "pass",
+          "name": "validationReferencesAndStaleIds"
+        },
+        {
+          "result": "pass",
+          "name": "permissionsAndUiCancel"
+        },
+        {
+          "result": "pass",
+          "name": "draftRefreshSelectionEscapeAndLogout"
+        },
+        {
+          "result": "pass",
+          "name": "bottleEditorCrudReferenceAndCancel"
+        },
+        {
+          "result": "pass",
+          "name": "visualEvidence"
+        },
+        {
+          "result": "pass",
+          "name": "lockedRecoveryKeepsUiResponsive"
+        },
+        {
+          "result": "pass",
+          "name": "pathProtectionAndReopenRecovery"
+        },
+        {
+          "result": "pass",
+          "name": "clearAndDelete"
+        },
+        {
+          "result": "pass",
+          "name": "cleanupTestCase"
+        }
+      ],
+      "junit_failure_error_skipped_cases": [],
+      "junit_root_attributes": {
+        "errors": "8",
+        "failures": "0",
+        "tests": "11",
+        "name": "ReagentsTest"
+      },
+      "expected_passes_including_init_cleanup": 11,
+      "junit_diagnostic_count_attributes_are_not_business_failures": true
+    }
+  ],
+  "standalone": [
+    {
+      "name": "projects_app",
+      "target": "sn100_projects",
+      "actual_exit": 0,
+      "binary_sha256": "e066a174f87ac4211eef5e0114f808267ff8e6badd3bb86d3f3238dc95ea4e4f",
+      "seconds": 1.9362082600000576,
+      "timer_ms": 1800,
+      "close_mode": "existing guarded QWidget::close timer",
+      "timeout_cleanup_used": false,
+      "readiness": {
+        "stdout_marker": "项目/单位已读取；当前仅保存本地配置，未同步仪器。",
+        "count": 1
+      },
+      "rejected_diagnostics_observed": [],
+      "catalog": {
+        "directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/runtime/catalog",
+        "opened_read_only_after_app_exit": true,
+        "marker": "sn100-catalog-offline-v1",
+        "metadata": {
+          "project_advanced_schema": "sn100-project-advanced-local-v1",
+          "schema": "sn100-catalog-offline-v1"
+        },
+        "project_rows": 1,
+        "unit_rows": 3,
+        "result_rows": 2,
+        "sample_rate_rows": 2,
+        "unused_table_counts": {
+          "project_advanced": 0,
+          "catalog_project_reference": 0
+        },
+        "integrity_check": [
+          "ok"
+        ],
+        "foreign_key_errors": [],
+        "runtime_database_hashed": false,
+        "hole_rows_are_not_seeded_by_reagent_initialize": null
+      },
+      "app_log_sha256": "66c546cd31eedd139138fed3634f891ec08d9e1889eca552d5a5b2fb6f339f91"
+    },
+    {
+      "name": "reagents_app",
+      "target": "sn100_reagents",
+      "actual_exit": 0,
+      "binary_sha256": "5b6e524cd33211f26587e81b9d5fc1d8c413ec1c3f0bcc2bcc47a5912eea9350",
+      "seconds": 1.997682574999999,
+      "timer_ms": 1800,
+      "close_mode": "existing guarded QWidget::close timer",
+      "timeout_cleanup_used": false,
+      "readiness": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/page_loaded.png",
+        "sha256": "b961254f1be498a41490378dd85135c815bfd8b5e6d0bcc2ffd7dea4248e6f4d",
+        "dimensions": [
+          1751,
+          968
+        ],
+        "readiness_signal": "ReagentStore::loaded -> ReagentsPage::readyChanged(true) -> CLI screenshot",
+        "positive_stdout_marker_exists": false,
+        "visual_acceptance_performed": false
+      },
+      "rejected_diagnostics_observed": [],
+      "catalog": {
+        "directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/runtime/catalog",
+        "opened_read_only_after_app_exit": true,
+        "marker": "sn100-catalog-offline-v1",
+        "metadata": {
+          "project_advanced_schema": "sn100-project-advanced-local-v1",
+          "schema": "sn100-catalog-offline-v1",
+          "reagent_batch_metadata": "v1"
+        },
+        "project_rows": 1,
+        "unit_rows": 3,
+        "result_rows": 2,
+        "sample_rate_rows": 2,
+        "unused_table_counts": {
+          "project_advanced": 0,
+          "catalog_project_reference": 0,
+          "reagent_list": 0,
+          "reagent_bottle_type": 0,
+          "reagent_batch_group": 0,
+          "reagent_batch_metadata": 0,
+          "catalog_batch_reference": 0,
+          "reagent_barcode": 0,
+          "reagent_setting": 0,
+          "project_action_reagent_reference": 0
+        },
+        "integrity_check": [
+          "ok"
+        ],
+        "foreign_key_errors": [],
+        "runtime_database_hashed": false,
+        "hole_rows_are_not_seeded_by_reagent_initialize": true
+      },
+      "app_log_sha256": "6daa90a81e7a6edec6a8635ffef9cecf8daca1899649f567f7cc13617120199c"
+    }
+  ],
+  "artifacts": {
+    "project_advanced_test": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_advanced/build/project_advanced_test",
+      "sha256": "2f3b345087b54fbbe3d26d93900ef8a9450ff5fe22d6011326b2fdd2e9216ebb",
+      "qmake_project": "projects/tests/project_advanced_test.pro",
+      "freshly_built": true
+    },
+    "projects_test": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build/projects_test",
+      "sha256": "69ced3b361e60b21bb3553e865255bfb395cb9d6d7f6b36af9d201ff754b8057",
+      "qmake_project": "projects/tests/projects_test.pro",
+      "freshly_built": true
+    },
+    "reagent_batch_test": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_batches/build/reagent_batch_test",
+      "sha256": "55c23a5086d1728b970dc8fc8d70db1b11cb4e24229c0bdbd1a78128500416dc",
+      "qmake_project": "reagents/tests/reagent_batch_test.pro",
+      "freshly_built": true
+    },
+    "test_reagents": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagent_basis/build/test_reagents",
+      "sha256": "9710bf76316975eedac49dff799a90885e3c1f91bbe5a1b200df455e0b4b5fed",
+      "qmake_project": "reagents/tests/tests.pro",
+      "freshly_built": true
+    },
+    "sn100_projects": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/projects_app/build/sn100_projects",
+      "sha256": "e066a174f87ac4211eef5e0114f808267ff8e6badd3bb86d3f3238dc95ea4e4f",
+      "qmake_project": "projects/projects.pro",
+      "freshly_built": true
+    },
+    "sn100_reagents": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/reagents_app/build/sn100_reagents",
+      "sha256": "5b6e524cd33211f26587e81b9d5fc1d8c413ec1c3f0bcc2bcc47a5912eea9350",
+      "qmake_project": "reagents/reagents.pro",
+      "freshly_built": true
+    }
+  },
+  "scope": "WSL native Release/offscreen anonymous local tests only",
+  "board_or_instrument_verified": false,
+  "parallel_jobs_maximum": 2,
+  "finished_utc": "2026-10-25T18:25:59.901988+00:00"
+}

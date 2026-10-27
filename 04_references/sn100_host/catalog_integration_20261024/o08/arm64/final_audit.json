@@ -1,0 +1,190 @@
+{
+  "schema": "sn100-final-arm64-audit-v1",
+  "created_utc": "2026-10-24T04:23:02.511813+00:00",
+  "build_round": "incremental_after_sample_layout_fix",
+  "build_exit_code": 0,
+  "environment": "2026-10-24T03:49:04Z\nuid=1000(qyq) gid=1000(qyq) groups=1000(qyq),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users)\nLinux qyq 6.18.54.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Tue Oct  6 19:13:07 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux\naarch64-linux-gnu-g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\nmoc 5.15.13\nSN100_JOBS=2\nRK_BUILD_TYPE=Release\nSN100_RK_WORK_DIR=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final\n",
+  "work_directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final",
+  "binaries": {
+    "sn100_shell": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/build/sn100_shell",
+      "sha256": "9f8c31679bc0e339110841e1fb674f0241c71e8708cc383afdc46a18d1e2c394",
+      "architecture": "ELF64 little-endian AArch64",
+      "file_output": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/build/sn100_shell: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=9383a248e80ef8fcf8db58a2c16bac0313c0ce50, for GNU/Linux 3.7.0, with debug_info, not stripped"
+    },
+    "sn100_report_renderer": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/build/sn100_report_renderer",
+      "sha256": "7699cd6d864896a0fc245d90ce01487ace6300d575486b2300cbd3045591fa64",
+      "architecture": "ELF64 little-endian AArch64",
+      "file_output": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/build/sn100_report_renderer: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=5c57c3a6390ef5788e68951ab258fcee2164a332, for GNU/Linux 3.7.0, with debug_info, not stripped"
+    }
+  },
+  "source_freeze_matches": true,
+  "source_files": 316,
+  "source_snapshot_sha256": "404637fb32dd07dc8e1d3f219fdc3ba94d149fbe680ed01cc957f9aa2e27dd27",
+  "sources_by_module": {
+    "data": 4,
+    "history": 32,
+    "prepare_arm64.sh": 1,
+    "projects": 20,
+    "reagents": 35,
+    "resources": 18,
+    "resources.qrc": 1,
+    "samples": 63,
+    "shell": 86,
+    "tests": 3,
+    "thirdparty": 39,
+    "ui": 14
+  },
+  "closure_status": "offline_closure_passed_board_runtime_pending",
+  "inspected_elf_files": 56,
+  "symbol_version_checks": 393,
+  "dependency_errors": [],
+  "dependency_warnings": [
+    "This is a static archive inspection, not execution or validation of the currently installed board libraries.",
+    "EGLFS discovery, GPU/Mesa/GBM/DRM drivers, permissions, input devices and physical display need RK validation.",
+    "Missing display/input plugins or fonts are board-runtime gaps; they do not make the main+SQLite closure pass false.",
+    "PNG may be built into Qt; absent image-format plugins alone do not prove PNG support is missing.",
+    "Qt plugin metadata/build compatibility and Noto Sans CJK SC glyphs must be verified on the target.",
+    "Version definitions are checked per provider; this does not validate every relocated symbol or the dynamic linker's live search environment."
+  ],
+  "dependency_report_sha256": "bb3a59e010fe79ab0da739714bed3d521a368ae8b5e7a217cf66724090078f0c",
+  "svg_required": true,
+  "runtime_components": {
+    "sqlite": {
+      "archived_files": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/sqldrivers/libqsqlite.so"
+      ],
+      "board_verified": false,
+      "status": "archived_static_check_only"
+    },
+    "report_offscreen": {
+      "archived_files": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqoffscreen.so"
+      ],
+      "board_verified": false,
+      "status": "archived_static_check_only"
+    },
+    "sample_svg": {
+      "archived_files": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqsvg.so"
+      ],
+      "board_verified": false,
+      "status": "archived_static_check_only"
+    },
+    "eglfs_platform": {
+      "archived_files": [],
+      "board_verified": false,
+      "status": "not_archived_board_check_required"
+    },
+    "egl_device_integration": {
+      "archived_files": [],
+      "board_verified": false,
+      "status": "not_archived_board_check_required"
+    },
+    "input": {
+      "archived_files": [],
+      "board_verified": false,
+      "status": "not_archived_board_check_required"
+    },
+    "image_formats": {
+      "archived_files": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqsvg.so"
+      ],
+      "board_verified": false,
+      "status": "archived_static_check_only"
+    },
+    "fonts": {
+      "archived_files": [
+        "usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
+        "usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "usr/share/fonts/opentype/noto/NotoSerifCJK-Bold.ttc",
+        "usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc"
+      ],
+      "requested_family": "Noto Sans CJK SC",
+      "board_verified": false,
+      "family_and_glyph_coverage_verified": false
+    }
+  },
+  "package": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/packages/sn100_shell_91674b00d3762269aabba26596a054393313ef357144033be31057c54a16952c.tar.gz",
+  "package_bytes": 64355182,
+  "package_sha256": "c0d5aff81d2de8a06723c55656bbffe51c93e2efa9bd759d9f52ed1e1b9a74e8",
+  "release_id": "91674b00d3762269aabba26596a054393313ef357144033be31057c54a16952c",
+  "stage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/packages/stage_20261024T042216_224532",
+  "package_file_count": 33,
+  "package_checksums_passed": 31,
+  "packaged_aarch64_elf_files": [
+    "lib/libQt5Charts.so.5",
+    "lib/libQt5Network.so.5",
+    "lib/libQt5PrintSupport.so.5",
+    "lib/libQt5Qml.so.5",
+    "lib/libQt5Sql.so.5",
+    "lib/libQt5Svg.so.5",
+    "lib/libQt5Xml.so.5",
+    "lib/libcom_err.so.2",
+    "lib/libexpat.so.1",
+    "lib/libfontconfig.so.1",
+    "lib/libgssapi_krb5.so.2",
+    "lib/libk5crypto.so.3",
+    "lib/libkeyutils.so.1",
+    "lib/libkrb5.so.3",
+    "lib/libkrb5support.so.0",
+    "lib/libsqlite3.so.0",
+    "plugins/imageformats/libqsvg.so",
+    "plugins/platforms/libqoffscreen.so",
+    "plugins/sqldrivers/libqsqlite.so",
+    "sn100_report_renderer",
+    "sn100_shell"
+  ],
+  "sample_ui_dependencies": {
+    "library": "libQt5Svg.so.5",
+    "image_plugin": "plugins/imageformats/libqsvg.so",
+    "original_qss_svg": ":/image/arrow_drop_down.svg",
+    "license": "licenses/QtSvgCopyright.txt"
+  },
+  "sample_task_scope": {
+    "storage": "local_presets",
+    "instrument_submission": false,
+    "instrument_execution": false
+  },
+  "target_elf_executed": false,
+  "network_or_board_access": false,
+  "board_runtime_verified": false,
+  "logs": [
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/20261024_114904_prepare_3976.log",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/20261024_121538_prepare_688.log",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/launcher.log",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/launcher_incremental.log",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/reuse_policy_tests.log",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/input_tests.log"
+  ],
+  "incremental_reuse": {
+    "allowed_cpp": "samples/sample_page.cpp",
+    "rebuilt_index": 52,
+    "verified_reused_objects": 119,
+    "reused_source_and_object_hashes_equal": true,
+    "generated_ui_headers_before_after_equal": 26,
+    "ui_baseline_provenance": "Captured after the successful full build/capture and before the incremental prepare; the original object manifest has no UI-header field",
+    "manifest_sha256": "86efe430284244368590da41a58cddd6f1c3ec6f2b5811032f0163263aab1757",
+    "ui_baseline_sha256": "9e58273db45d44d1a5b771c0c864ca494656ce9d652e528c73650065691a62ca",
+    "ui_after_sha256": "9e58273db45d44d1a5b771c0c864ca494656ce9d652e528c73650065691a62ca",
+    "build_script_unchanged": true
+  },
+  "incremental_environment": "2026-10-24T04:15:38Z\nuid=1000(qyq) gid=1000(qyq) groups=1000(qyq),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users)\nSN100_JOBS=2\nRK_BUILD_TYPE=Release\nSN100_RK_WORK_DIR=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final\nSN100_ARM64_OBJECT_REUSE_MANIFEST=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/compiled_objects_full_before_sample_fix.json\nSN100_ARM64_REUSE_ALLOWED_CPP=samples/sample_page.cpp\nSN100_ARM64_REUSE_UI_SNAPSHOT=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/ui_headers_full_before_incremental.json\n",
+  "validation": {
+    "test_arm64_object_reuse.py": {
+      "passed": 13,
+      "failed": 0,
+      "log": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/reuse_policy_tests.log",
+      "log_sha256": "64a32f3f130453e7f4db22cd85edeb8f22f1d111b05be5acdde0a43c093c7d73",
+      "test_source_sha256": "f88dea291071620a4c5af9eb7803061924c8b58e85f59a487c78307f3fb2ffc8"
+    },
+    "test_shell_arm64_inputs.py": {
+      "passed": 8,
+      "failed": 0,
+      "log": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/input_tests.log",
+      "log_sha256": "b41901321245f648d742348a1802283019acdb42a3ba6e16fd1f67bf156d5e06",
+      "test_source_sha256": "b73d070a8d6eb4a8a07ae408d8b405d7257ae7dfc1e6d9ca9b3ebadc46b38ff0"
+    }
+  }
+}

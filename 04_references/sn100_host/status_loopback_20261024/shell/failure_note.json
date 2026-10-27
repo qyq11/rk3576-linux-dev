@@ -1,0 +1,22 @@
+{
+  "clean_build": {
+    "outcome": "intentionally interrupted, never used or claimed passed",
+    "reason": "Parent requested linking exact frozen release objects instead of finishing a duplicate full business rebuild",
+    "signal": "SIGINT",
+    "make_pid": 1684,
+    "cwd_verified_before_signal": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o09_loopback/shell_test/wsl_build",
+    "evidence": "logs/clean_build_interrupted.log"
+  },
+  "first_offscreen_run": {
+    "outcome": "3 passed, 4 failed; not accepted",
+    "cause": "Test searched CusBadgeButton (a QWidget) as QAbstractButton, so btnShutDown lookup returned empty",
+    "fix_scope": "New test helper only; separate original menu QPushButtons and CusBadgeButton assertions",
+    "evidence": "runs/offscreen_01/offscreen_01.txt",
+    "production_changed_to_fix": false
+  },
+  "driver_build_warning": {
+    "text": "make: warning: Clock skew detected. Your build may be incomplete.",
+    "evidence": "logs/production_driver_build.log",
+    "handling": "Compiler and linker commands are retained; final test source, linked driver, all 137 production objects and app SHA are recorded; no product object was rebuilt"
+  }
+}

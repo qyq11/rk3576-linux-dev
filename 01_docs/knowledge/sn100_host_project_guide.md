@@ -1,8 +1,24 @@
 # SN100 移植工程、AI 规则与资料入口
 
-更新：2026-10-24。本文件说明当前目录职责、Codex 阅读入口、已建立的 Skill 和已检索资料。当前统一入口已接入O03-4原模板预览/PDF，[运行与维护](../../06_programs/sn100_host/README.md#o03-4)见工程README；日常待办看[下一步清单](../plans/next_steps.md)，模块边界维护在[移植计划](../plans/sn100_host_migration_plan.md)，实际过程统一追加[移植记录](../../02_records/20261022_sn100_host_migration.md)，环境事实继续见[Qt记录](../../02_records/20261022_qt_environment.md)，不复制第二份进度清单。
+**当前功能补齐（2026-10-27）：**本地资料、样本草稿、单孔质控预设、质控历史、报告本地处理及原值结果后端已有正式代码。项目结果显示配置已在真正主程序从原菜单保存，关闭后同目录重开能读回四类结果、单位、小数位及独立主结果/选用/显示。正常关闭暴露了页面销毁仍通知主窗口已释放成员的问题，原程序自然异常退出及调用栈已保留；仅两页析构已作最小修正，新冻结518（2d45ecd8）正在全新编译，修后关闭仍待验。本次未观察到报告自动刷新来源提示，不登记该项通过。报告使用当前已提交配置，四原值不改，不冒检测时单位快照；新原值文件输出仍关。检测调度、完整算法、真实结果、LIS收发、实时告警、正向打印及一致业务备份恢复仍有实现或具体资料缺口。
+
+
+**当前实现结论：**尚未完成全套SN100业务。本地资料、样本草稿、单孔质控预设、质控历史和报告本地处理已有正式实现；检测投递与暂停恢复、完整校准拟合逆算审核、真实质控判定、真实结果与单位映射、LIS收发、实时告警互锁、一致业务备份恢复仍有程序或资料缺口。打印正式接线已有电脑缺设备失败链验证，正向确认与实际出纸待验；离线原报文辅助组件及真正主程序的初始化重开/关闭已通过电脑验证，仍非完整LIS。功能实现与验证范围分别登记，不能说代码全齐只等设备。
+
+
+
+**用户当前重点（2026-10-26 18:33）：**先逐项确认功能有没有实现，再优先补有依据、能离线完成的缺口。已实现但待验证、确实未实现、缺资料、只待设备验证分别登记；测试次数和源码数量不当作功能完成度。原三个窗口继续分担，每10分钟检查保持ACTIVE；新功能和修复做必要针对验证，已有通过项不反复跑。
+更新：2026-10-26。本文件说明目录职责、Codex阅读入口与原版依据。[运行与维护](../../06_programs/sn100_host/README.md)见工程README；日常看[下一步清单](../plans/next_steps.md)，边界在[移植计划](../plans/sn100_host_migration_plan.md)，实际过程统一追加[移植记录](../../02_records/20261022_sn100_host_migration.md)，环境事实见[Qt记录](../../02_records/20261022_qt_environment.md)，不复制第二份进度清单。
+
+上一轮426项输入的四窗口本地检查点已加入质控、校准、项目高级/试剂批组和报告剩余本地功能，保留全部已接业务页；完整离线回归、WSL运行、Windows/ARM主程序与报告辅助程序编译、离线依赖/配对归档和短时响应资源已有证据。[当前总索引](../../04_references/sn100_host/qc_local_20261025/final/verification.json)。此前371等检查点和旧361收据缺口分别保留；实际LIS/打印/仪器、原Windows/RK、预算与长稳另验。
 
 ## 1. 当前目录与工程边界
+
+准备学习业务与代码时，先看[SN100功能与Linux移植分析](sn100_host_function_and_porting_review.md)：包含整体功能、原Windows与正式工程差异、后续建议，以及保存、复测草稿和报告导出的阅读路线。该专题按核查日期说明事实，实时待办仍维护在移植计划。
+
+O10-1打印子页3和O10-2 LIS子页4已接本地设置；本轮新增打印报告接线从`main.cpp`的`PrinterReportShell`追到`HistoryReportController`固定预览与原Print，再到隔离helper；原设置Apply本身不提交打印。`ui/frmlissetting.cpp`→`data/lis_settings_store.cpp`、`shell/lis_shell.cpp`仅保存意图，`data/serial_port_catalog.cpp`只读枚举。主菜单3校准、4质控已接各自本地页面及worker；语言2已落原中文单项页接线，常规两后端各14项通过，统一运行与小屏命中另待验。质控、校准、项目高级方案/试剂批组与报告剩余本地业务已接统一程序；上一轮426项输入（冻结`5123bf14`）的完整35次离线调用、额外4组项目/试剂测试和4个独立界面启动/正常退出均通过。WSL实际运行、Windows32/ARM64主程序与报告辅助程序全量编译、ARM离线依赖及匹配应用/源码归档通过；单次40保存响应与30秒整程序资源基线已留证。[当前索引](../../04_references/sn100_host/qc_local_20261025/final/verification.json)。原Windows完整行为/活动主题、RK实屏/输入、仪器/实际LIS/实体打印、真实结果链、临床校准/质控、认可资源预算/同板实时控制及长稳仍待验；该历史检查点的语言设置仍占位；新中文页状态见上方当前说明，原版未启用的XLSX未开放。旧报告查询、8小时恢复，以及suite05校准引用崩溃和suite07登录1920几何失败的直接原因尚未确证，原失败保留。用法见[操作说明](../../06_programs/sn100_host/README.md#offline-four-window-usage)，全局仍沿第13节F01–F18唯一清单核差异。
+
+新维护入口为`quality_control/quality_control_page.cpp`→`qc_store.cpp`及`calibration/calibration_page.cpp`→`calibration_store.cpp`；主壳接线在`shell/quality_shell.cpp`、`calibration_shell.cpp`及`main.cpp`。两模块维护本地元数据/原始记录，已保存校准记录及质控项目关联各有单位快照；原版质控历史日结果没有逐点单位快照，不能用关联快照补作证明。本轮历史只读查询SQL21项、核心20项、新图卡/真实页面两种后端各10项及原页各7项已通过；447项统一程序WSL鲜编、22个累计驱动绑定、完整35次调用和Windows32主辅编译均通过。ARM64主辅鲜编及56项离线依赖也已通过，180对象全新；匹配恢复归档通过，当前独立启动及短响应资源待核；旧单位未知时统计保持不可用。未开放临床规则、拟合审核应用或仪器动作。引用登记先于本地提交，两库分别提交，启动须对账；UUID绑定规范数据文件路径，同路径恢复可重开，跨Windows/WSL/RK或移位须停写后显式核对绑定，不直接删UUID或保护登记。当前10分钟检查与现有聊天分工按用户最新授权执行。
 
 ```text
 项目根目录/
@@ -212,9 +228,11 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 
 `CurvePoint.timeSeconds`是**相对加试剂起点的非负秒数**，程序不减首点；原始AD索引须由上游换算，起采延迟不能丢失。`CurveDirection`必须显式指定，下降信号不靠猜测反转。`EndpointResult.ok=false`时数值字段不可用；CLI用`candidate_found`和空时间表达失败，并保留原因/警告。基线、平台、幅度、多峰与搜索边缘检查仅是本轮工程启发式，参数默认值不代表SN100或临床阈值。不得把两方法结果平均、失败时静默切换或直接送入患者报告/设备停机。
 
-各模块保留独立入口；**O03-4统一主壳已接医院、账户会话/角色/注销、历史查询/患者保存/统计/CSV及原模板预览/PDF**。[统一入口运行与维护](../../06_programs/sn100_host/README.md#o03-4)说明同目录helper、已提交医院名、匿名项目配置与报告忙态守卫；三store仍各自在所属worker管理SQL。原八项主导航和用户设置菜单、布局/主题保留，未迁入业务仍明确不可用；默认Guest，显式匿名工程师只用于脱机模拟，生产认证与仪器联机另验。协议能力后续在后台供状态/业务使用，凝血研究接口须先经实际项目验证再接结果流程。[同一记录](../../02_records/20261022_sn100_host_migration.md#o03-4-offline)与[证据索引](../../04_references/sn100_host/integrated_report_20261023/index.json)维护实际结果，O03-3保留为历史三页基线。
+各模块保留独立入口。O03-3医院/账户/历史三页与O03-4原模板预览/PDF作为[历史基线](../../02_records/20261022_sn100_host_migration.md#o03-4-offline)保留，原报告[证据索引](../../04_references/sn100_host/integrated_report_20261023/index.json)对应当时范围。**当前统一主壳另已接项目/单位、试剂基础与样本本地预设/任务**；`shell/wsl.sh integrated-run`和RK启动封装均显式启用`--accounts --history --catalog --samples`。医院、账户、历史、项目、试剂、样本六个store各自在所属worker管理SQL；前三者分别使用运行根的`hospital/`、`account/`、`history/`，项目/试剂/样本共用`catalog/catalog.db`，由项目先建schema，再初始化试剂和样本。`shell/main.cpp`负责六worker启动/首读就绪/退出，`shell/catalog_shell.cpp`传递已提交值快照及会话，页面负责草稿守卫；[当前运行与维护](../../06_programs/sn100_host/README.md#o08)给出实际用法。原导航、布局和主题保留，默认Guest，显式匿名工程师只用于脱机模拟，生产认证与仪器联机另验。协议能力后续在后台供状态/业务使用，凝血研究接口须先经实际项目验证再接结果流程。
 
-最新任务与依赖顺序继续见[O03-4整合卡](../plans/sn100_host_migration_plan.md#o03-4-card)及[后续业务顺序](../plans/sn100_host_migration_plan.md#integration-next-steps)：已有报告能力已整合，试剂/样本仍需迁移真实业务代码。根`build.sh`保留医院/账户独立入口，统一壳用`shell/build.sh`同时产出主程序与helper；[RK准备与上机用法](../../06_programs/sn100_host/README.md#rk-prepare)区分本轮ARM构建/闭包/冻结通过与实际部署/插件/显示输入待验。上机条件仍看[RK离线首验卡](../plans/sn100_host_migration_plan.md#rk-offline-card)。O05当前只支持本机回环，仪器V01还需协议/连接参数和显式外部Transport；本知识页只提供入口，不维护另一套勾选任务。
+最新任务与依赖见[O07/O08当前卡](../plans/sn100_host_migration_plan.md#catalog-sample-card)及[业务顺序](../plans/sn100_host_migration_plan.md#integration-next-steps)：报告、项目/单位、试剂基础和样本本地任务已整合，设备下发/执行与消耗/足料另验。根`build.sh`保留医院/账户独立入口，统一壳用`shell/build.sh`产出主程序与helper；新增源码必须重编并纳入freeze，历史ARM包不能代表新业务已发布。当前QtSvg匹配归档及私有恢复见[来源与范围](../../07_backups/qt_environment/sn100_samples_arm64/README.md)，修后ARM最终审计以同一记录为准。[RK用法](../../06_programs/sn100_host/README.md#rk-prepare)与[首验卡](../plans/sn100_host_migration_plan.md#rk-offline-card)区分构建/离线闭包和实屏/输入/资源。O05当前只支持本机回环，仪器V01还需实际协议/参数和显式外部Transport；本知识页只提供入口，不维护另一套勾选任务。
+
+仪器操作另已接入原8子页及6项人工维护，`--instrument`使用第七个SQL worker与运行根`instrument/maintenance.db`；入口`instrument/instrument_page.cpp`、规则/事务`maintenance_store.cpp`，主壳`instrument_shell.cpp`传会话与来源。机器洗针/关机等不允许人工登记，设备动作保持禁用；回放/模拟只显示已核实字段并在失效时清空。存储11/0、两QPA各10/0、适用累计与三平台检查点/30秒资源有证据，[实际结果](../../02_records/20261022_sn100_host_migration.md#instrument-offline-result-20261024)和[匹配源码/包](../../07_backups/sn100_host/instrument_offline_20261024/README.md)固定该版本，后续登录源码另验，RK/仪器/预算及长稳仍待验。
 
 <a id="sn100-code-risks"></a>
 ## 11. 原参考工程的代码风险
@@ -258,9 +276,11 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 <a id="sn100-functional-scope"></a>
 ## 13. 功能范围F01–F18
 
+当前实现状态与优先级见[功能完成账](../plans/sn100_host_migration_plan.md#current-function-completion)；下面是原版范围对照，不代表每项已迁入。
+
 本表承接旧计划3.3节的首轮源码清单；模块实施时继续展开按钮、配置、角色与异常用例。实际SN100启用范围和原有缺陷需与原Windows发行版核对，不能据源码存在、菜单齐全或按钮能点击推定功能完成。
 
-| 功能ID/范围 | 当前主要代码位置 | 必须对照的内容 |
+| 功能ID/范围 | 原版参考主要代码位置 | 必须对照的内容 |
 | --- | --- | --- |
 | F01 启动/全局 | `main.cpp:59,90,222`；`frmmain.cpp:172–307` | 配置/主题/字体/机型、单实例、加载失败、导航/状态栏、退出、再次启动 |
 | F02 登录/用户权限 | `frmlogin/maskdlglogin.cpp:105,145`；`frmmain.cpp:673,2077` | 有效/无效登录、角色、控件编辑权、退出权限回落、重新登录；匿名测试账户 |
@@ -275,7 +295,7 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 | F11 LIS/HL7 | `commlis/liscommsetting.cpp`、`liscommthread.cpp`、`liscommreceiver.cpp` | TCP/串口、MLLP帧/HL7 2.3.1实际限制、QRY/DSR任务、ORU结果、ACK、自动收发、重连和重复/超长报文 |
 | F12 仪器操作/维护 | `frmdriverset/frmdriverset.cpp:356,615,767,927,1002,1046,1364` | 板卡/状态/AD、版本/TCP配置、日周月维护、扫描/泵阀/针/抓手/清洗/标定/耗材测试；先模拟命令，实物逐项授权范围验收 |
 | F13 告警/互锁 | `frmabnormal/maskdlgabnormal.cpp:74,186–239,386–472` | 告警编码/级别/描述、新旧协议、持续/消失/重复/复位/蜂鸣、历史、是否阻止启动 |
-| F14 系统设置 | `frmuserset/`、医院/账户/打印机/LIS页 | 字典/医院信息、账户角色、保存重开、Linux设备名/不存在设备提示；语言占位现状单列 |
+| F14 系统设置 | `frmuserset/`、医院/账户/打印机/LIS页 | 字典/医院信息、账户角色、保存重开、Linux设备名/不存在设备提示；原中文单项页已落与常规专项通过、统一接线待验；英文翻译链未实现 |
 | F15 数据可靠性 | `tool/database/`、`AllDal`、旧`sqlbase` | 原库兼容、schema升级、事务/并发/重启、数据库忙/损坏/磁盘满提示、备份恢复、断电策略 |
 | F16 交互/自绘 | `customwidgets/`、`customtools/Keyboard/`、`public/customeventfilter.cpp` | 键鼠/焦点/Tab/Enter/Esc、中文和软键盘、遮罩、弹窗、自绘孔位命中、曲线游标/缩放和单位 |
 | F17 日志/诊断 | `customtools/logger.*`、`dumpreport.*` | 时间/版本/模块/线程、实际TX/RX和错误、轮转/背压、退出和崩溃取证、敏感字段脱敏 |

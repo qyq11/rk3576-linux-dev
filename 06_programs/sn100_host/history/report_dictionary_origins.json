@@ -1,0 +1,128 @@
+{
+  "schema": "sn100-report-dictionary-formal-origins-v1",
+  "source_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/",
+  "scope": "Read source/form/icon and four visual theme keys only; no reference program, production database, old connection or credential use.",
+  "bindings": [
+    {
+      "path": "frm_report/mask_dlg_report_detail.cpp",
+      "lines": "62-74,108-133",
+      "meaning": "five right-click fields, exact type mapping, selection only sets current text"
+    },
+    {
+      "path": "frm_report/mask_dlg_select.cpp",
+      "lines": "18-36,53-96",
+      "meaning": "type/filter, row number/name/mnemonic, first row, confirm or close"
+    },
+    {
+      "path": "frm_report/mask_dlg_select.ui",
+      "meaning": "original view_frame 491x751 and all inner control geometry/QSS/text; only wrapper widget classes/resource alias replaced"
+    },
+    {
+      "path": "tool/database/hospital/hospital_information_table.cpp",
+      "lines": "71-110",
+      "meaning": "exact type and SQL LIKE on column_one or column_two, no original order clause"
+    },
+    {
+      "path": "public/systemcommon.cpp",
+      "lines": "445-463",
+      "meaning": "length32 Head_Letter_Num has1+32 capacity33; retain query capacity while allowing empty/short/Unicode lookup, reject oversized filters without truncation"
+    },
+    {
+      "path": "public/stylecolor.cpp",
+      "lines": "297-337",
+      "meaning": "dynamic tableStyle2 overrides Designer selection; row border and transparent background"
+    },
+    {
+      "path": "main.cpp",
+      "lines": "94-101,122-128,149-158",
+      "meaning": "theme_config preferred, four visual keys feed button/list/table styles"
+    },
+    {
+      "path": "bin/theme_config.ini",
+      "selected_lines": "34-36,52",
+      "safe_selected_values": {
+        "kBtnNormalColor": "42,118,242,255",
+        "kBtnHoverColor": "42,118,242,170",
+        "kBtnPressedColor": "135,206,250,255",
+        "kListWidgetRowSelected": "183,215,255,255"
+      }
+    },
+    {
+      "path": "customwidgets/cusdialogmask.cpp",
+      "lines": "49-121",
+      "meaning": "screen mask centered content, black100, white radius11, shadow blur11/offset0,3; animation not yet restored"
+    },
+    {
+      "path": "image/close.png",
+      "sha256": "1762d1372fe2cfc6b0aae20febf532484dad3702a9ad1be992617a49b7f643f4",
+      "meaning": "same bytes as current formal close asset copied into private resource alias"
+    }
+  ],
+  "formal_rules_retained": [
+    "history_page.cpp textChanged dirties draft; current 9-character field validators retained, never maxLength9 or hasAcceptableInput save gate; dictionary query33 limit must not restrict selected names or patient saves",
+    "history_page.cpp original Save -> HistoryStore::savePatient -> commit -> patientSaved",
+    "history_store.cpp savePatient existing role behavior unchanged; hide/display Guest restrictions unchanged",
+    "hospital_store.cpp save current name1..6/mnemonic<=6/employee<=6 retained; special SQL-like fixture names are historical-compatibility anonymous rows, not new edit permission"
+  ],
+  "entry_field_map": [
+    {
+      "editor": "ldtKeShi",
+      "label": "科室",
+      "type": "keshi",
+      "patient_field": "department",
+      "sql_column": "department"
+    },
+    {
+      "editor": "ldtBingRenLeiXin",
+      "label": "患者类型",
+      "type": "bingren",
+      "patient_field": "patientType",
+      "sql_column": "patient_type"
+    },
+    {
+      "editor": "ldtJianYan",
+      "label": "检验",
+      "type": "jianyan",
+      "patient_field": "examiner",
+      "sql_column": "jianyan"
+    },
+    {
+      "editor": "ldtSongJian",
+      "label": "送检",
+      "type": "songjian",
+      "patient_field": "sender",
+      "sql_column": "checker"
+    },
+    {
+      "editor": "ldtShenHe",
+      "label": "审核",
+      "type": "shenhe",
+      "patient_field": "auditor",
+      "sql_column": "auditor"
+    }
+  ],
+  "intentional_differences": [
+    "原筛选正则1+32实为固定33且首字母为ASCII字母数字；查询现允许0..33个QString UTF-16单元的中文/短词，validator拒绝超限整次输入；API独立显式失败，禁止截断/trim。查询33上限不用于名称或患者字段。",
+    "原SQL无排序且拼接条件；共享API绑定原条件，单引号安全，保留LIKE百分号/下划线通配符，固定id ASC。显示序号独立于持久id。",
+    "医院字典独立带UUID/type/filter回显通道，不复用医院编辑页loaded/error；每页一在途及一最新待发，关闭/迟到不回填。",
+    "只回填当前字段患者草稿；原保存按钮才写报告，Guest与现患者保存权限不变，字典仍不可由选择器编辑。",
+    "使用原491x751内层内容和原安全主题四键；原生Qt替代mask/Material封装，缺失字体以Noto替代，小屏只加外层滚动。原280ms动画/Material按压效果尚未恢复，视觉单独待验。",
+    "不能完整放进现单行控件的所选名称明确失败并保留草稿；不截断，不新增9/33字符姓名规则。"
+  ],
+  "test_project_path_adaptations": [
+    "dialog_test.pro去掉私有candidate条件分支，直接include正式history/report_dictionary.pri。",
+    "page_test.pro不再用私有HistoryPage覆盖/overlay变量，直接引用正式history_core.pri及正式页面/共享DTO。",
+    "store_contract_test.pro直接引用正式data/hospital_store.cpp/h和同目录共享DTO；三个cpp按冻结私有原件逐字复制，Qt模块/配置/测试断言不变。"
+  ],
+  "verification_boundary": {
+    "formal_compile": "pending",
+    "formal_gui": "pending",
+    "formal_store_test": "pending",
+    "private_store_contract": "Root separately observed10/0 and8/0 Qt incidents under exact private inputs; not relabelled formal GUI or formal build success.",
+    "windows_visual": "pending",
+    "rk_and_instrument": "pending",
+    "public_shell_connection": "root-owned pending",
+    "legacy447": "preimage/recovery checkpoint only, not validation of new formal source"
+  },
+  "runtime_requirement": "后续所有build/对象/日志/运行库仅用根新分配的temp显式目录；设置TMPDIR到该新runtime目录后再运行匿名QTemporaryDir用例。源码目录不产生运行库，不复用旧执行目录。"
+}

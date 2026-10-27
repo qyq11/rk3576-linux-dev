@@ -1,0 +1,614 @@
+{
+  "date": "2026-10-24",
+  "scope": "Current opt-in local-password-login delivery after GUI idle CPU and offline loopback stages",
+  "version_boundary": {
+    "current_source_entries": 353,
+    "native_before_after_current_equal": true,
+    "previous_instrument_checkpoint_source_entries": 348,
+    "note": "The prior O09/instrument 348-input checkpoint is historical and separately frozen; it is not the current 353-input password-login delivery."
+  },
+  "stages": {
+    "independent": {
+      "date": "2026-10-24",
+      "scope": "Independent local password login and original dialog; explicit anonymous SQLite only",
+      "environment": "Ubuntu-24.04/qyq Qt5.15.13 x86_64 Release, Fusion/Noto Sans CJK SC",
+      "tests": {
+        "offscreen": {
+          "passed": 12,
+          "failed": 0,
+          "skipped": 0,
+          "resources": {
+            "command": [
+              "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/wsl_release/login_test",
+              "-o",
+              "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/logs/offscreen_02.txt,txt"
+            ],
+            "pid": 1658,
+            "elapsed_seconds": 6.466170419000036,
+            "exit_code": 0,
+            "timed_out": false,
+            "ordinary_sigterm_requested": false,
+            "sample_period_seconds": 0.1,
+            "sample_count": 63,
+            "scope": "Observed direct child only; WSL host baseline, not RK budget/real-time qualification",
+            "pss_unavailable_samples": 0,
+            "cpu_percent_one_logical_core": 13.526369960457945,
+            "observed_span_seconds": 6.357951190999984,
+            "maximum_VmRSS": 91624,
+            "maximum_VmHWM": 91624,
+            "maximum_Threads": 3,
+            "maximum_fd_count": 10,
+            "maximum_Pss": 86160
+          }
+        },
+        "xcb": {
+          "passed": 12,
+          "failed": 0,
+          "skipped": 0,
+          "resources": {
+            "command": [
+              "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/wsl_release/login_test",
+              "-o",
+              "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/logs/xcb_02.txt,txt"
+            ],
+            "pid": 1695,
+            "elapsed_seconds": 6.668753531000107,
+            "exit_code": 0,
+            "timed_out": false,
+            "ordinary_sigterm_requested": false,
+            "sample_period_seconds": 0.1,
+            "sample_count": 65,
+            "scope": "Observed direct child only; WSL host baseline, not RK budget/real-time qualification",
+            "pss_unavailable_samples": 0,
+            "cpu_percent_one_logical_core": 13.263549773175363,
+            "observed_span_seconds": 6.5593300049999925,
+            "maximum_VmRSS": 141912,
+            "maximum_VmHWM": 145944,
+            "maximum_Threads": 5,
+            "maximum_fd_count": 13,
+            "maximum_Pss": 127319
+          }
+        }
+      },
+      "source_inputs": 33,
+      "original_ui_byte_equal": true,
+      "original_ui_sha256": "588813687e12b880abe7f4e83b625a2a2a1b951c6af425446db07aa888d336ab",
+      "binary_sha256": "ee7794da8892c67270519ca5cf21084ad45d3e5b523cef2db3ea8a8f05698b8e",
+      "build": "qmake release and force make -B -j2 exit 0; forced binary equals first build byte for byte",
+      "first_build_warning": "Makefile modification time was 0.27 s in the future; full forced rebuild retained and both QPA rerun",
+      "behavior": [
+        "Empty password always Guest; no default write",
+        "Bound full credentials and actual row id",
+        "Duplicate identical credentials rejected explicitly",
+        "Remember role<=4 by username, atomic rollback and successful login warning",
+        "Role5/unchecked preserve defaults",
+        "Independent signals do not pollute existing account CRUD observers",
+        "Action state preserved and session origin explicit",
+        "Busy blocks duplicate/close, Esc consumed",
+        "Asynchronous original warning UI and close lifetime, old replies ignored"
+      ],
+      "measurement_limits": [
+        "Short QtTest driver includes fixture setup, GUI interactions and controlled database waits",
+        "Resources are WSL host observations, not product/RK budget or same-board real-time acceptance",
+        "This test does not establish long stability, compositor/input latency or production credential security"
+      ],
+      "pending": [
+        "Unified-shell regression and platform builds handled by integration",
+        "Original Windows active theme/company title and full behavior",
+        "RK, touch keyboard and instrument workflows",
+        "Production identity import, credential storage security and long stability"
+      ],
+      "authentication_database_or_credentials_archived": false,
+      "independent_dialog_image": {
+        "path": "03_photos/20261024_sn100_password_login_independent_1600.png",
+        "sha256": "0fb1d65e81aec3821b645765348f71fcfb0821345f4fdc326b0cbdbe9eee4c40",
+        "scope": "Empty credential fields in the independent host; not an original Windows or composed unified-shell screenshot"
+      }
+    },
+    "shell": {
+      "schema": "sn100-password-login-shell-verification-v1",
+      "results": {
+        "offscreen": {
+          "passed": 5,
+          "failed": 0,
+          "elapsed_ms": 8863,
+          "exit_code": 0,
+          "log": "run_01/offscreen/qt.log",
+          "product_lifecycle": {
+            "application_sha256": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9",
+            "loopback_stopped": true,
+            "normal_exit": 0,
+            "rejected_directory_created": false,
+            "requires_accounts_exit": 2,
+            "stores_closed": 7,
+            "transient_secret_removed_and_not_logged": true
+          },
+          "action_ready_before": false,
+          "action_ready_after": false,
+          "action_ready_unchanged": true,
+          "raw_field_note": "action_ready_preserved=false records the preserved value, not a failed assertion"
+        },
+        "xcb": {
+          "passed": 5,
+          "failed": 0,
+          "elapsed_ms": 8797,
+          "exit_code": 0,
+          "log": "run_01/xcb/qt.log",
+          "product_lifecycle": {
+            "application_sha256": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9",
+            "loopback_stopped": true,
+            "normal_exit": 0,
+            "rejected_directory_created": false,
+            "requires_accounts_exit": 2,
+            "stores_closed": 7,
+            "transient_secret_removed_and_not_logged": true
+          },
+          "action_ready_before": false,
+          "action_ready_after": false,
+          "action_ready_unchanged": true,
+          "raw_field_note": "action_ready_preserved=false records the preserved value, not a failed assertion"
+        }
+      },
+      "application_sha256": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9",
+      "driver_sha256": "165a1f68146adcc429665ed32fbe68e224d884429d4d53c527bf8361e59e1816",
+      "test_source_sha256": {
+        "password_login_shell_test.cpp": "5accedc33d663270819339e05b1f0323c44cc7a0d1a1d032a9feea0420d28d8f",
+        "password_login_shell_test.pro": "9a2afbb0d4eed709c7241202452c843afb1fa9d785887598edfeb9a258dea786"
+      },
+      "exact_production_object_count": 140,
+      "linked_production_object_count": 139,
+      "only_excluded_object": "main.o",
+      "production_sources_and_objects_unchanged_after_tests": true,
+      "production_source_snapshot_count": 353,
+      "private_runtime_databases_excluded": true,
+      "remaining_transient_secret_files": 0,
+      "selected_text_evidence_uuid_secret_candidates": 0,
+      "visual_review": {
+        "source": "Login QDialog::grab only; not an entire desktop/compositor screenshot",
+        "viewports": [
+          "1600x900",
+          "1920x1080"
+        ],
+        "original_card_size": "450x571",
+        "input_and_button_bounds_visible": true,
+        "screenshots_taken_with_empty_password": true,
+        "original_blue_white_card_and_field_positions_retained": true,
+        "unknown_company_header_left_empty": true,
+        "black_or_transparent_mask_pixels_do_not_verify_parent_background_composition": true,
+        "original_windows_active_theme_verified": false
+      },
+      "boundaries": {
+        "instrument_connected": false,
+        "rk_connected": false,
+        "deployed": false,
+        "actual_hardware_action_ready_verified": false,
+        "password_scope": "Isolated anonymous local account database only",
+        "resource_budget_or_long_stability_verified": false
+      },
+      "artifact_paths": [
+        "production_test_driver/verification.json",
+        "production_test_driver/production_objects_before.json",
+        "production_test_driver/source_before.json",
+        "production_test_driver/source_after.json",
+        "production_test_driver/build.log",
+        "production_test_driver/production_driver.pro",
+        "run_01/offscreen/exit_code.txt",
+        "run_01/offscreen/environment.txt",
+        "run_01/offscreen/qt.log",
+        "run_01/offscreen/console.log",
+        "run_01/offscreen/evidence/legacy_guest.json",
+        "run_01/offscreen/evidence/login_1600.png",
+        "run_01/offscreen/evidence/login_1920.png",
+        "run_01/offscreen/evidence/product.log",
+        "run_01/offscreen/evidence/product_lifecycle.json",
+        "run_01/offscreen/evidence/session_guards.json",
+        "run_01/xcb/exit_code.txt",
+        "run_01/xcb/environment.txt",
+        "run_01/xcb/qt.log",
+        "run_01/xcb/console.log",
+        "run_01/xcb/evidence/legacy_guest.json",
+        "run_01/xcb/evidence/login_1600.png",
+        "run_01/xcb/evidence/login_1920.png",
+        "run_01/xcb/evidence/product.log",
+        "run_01/xcb/evidence/product_lifecycle.json",
+        "run_01/xcb/evidence/session_guards.json"
+      ]
+    },
+    "cumulative": {
+      "date": "2026-10-24",
+      "environment": "Ubuntu-24.04/qyq, Qt5.15.13 x86_64 Release/XCB",
+      "scope": "Cumulative legacy flows on current product objects after opt-in local password login integration",
+      "tests": {
+        "core_writeExperiment": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "core_readExperiment": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "core_viewportExperiment": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "core_initializationFailureExperiment": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "core_applicationExitExperiment": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "catalog": {
+          "passed": 7,
+          "failed": 0,
+          "skipped": 0
+        },
+        "replay": {
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        "loopback": {
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        "instrument": {
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        "report": {
+          "passed": 4,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "native_objects_excluding_main": 139,
+      "product_sha256": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9",
+      "renderer_sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b",
+      "driver_sha256": {
+        "integrated_shell_test": "df5b8fd06d782b6b8d210292740eee97e5030ad3cb273073d513c6b9eea4c088",
+        "catalog_shell_test": "75f8716ea5e74341b7c0a4ae0785c46bc73e829f2aed536aee9184d04c08397f",
+        "status_replay_shell_test": "7989deddc374d0c53cfecd76f2e44c654451f3ffe264a29958338d0e540ac0ed",
+        "status_loopback_shell_test": "18695045e768255a1e2c7c8cf185e5560ee54133b18ed8077e3606527272232c",
+        "instrument_page_test": "9d4ba2b24a35b36817ed2fe10b00d4e602ea42ead1d98b9276d6f176fb53cafd",
+        "integrated_report_test": "c579ed46d0d823992294780c6a92074beaf08f2146d546d342cc3e16b5611e59"
+      },
+      "source_snapshot_unchanged": true,
+      "limits": [
+        "Each test invocation bounded to 60 s; no measureExperiment, 60 PDF exports, 25 minute/8 hour or other long run repeated",
+        "Core write/read are separate processes using the same new anonymous root",
+        "Viewport uses XCB because offscreen does not prove physical-screen hit geometry",
+        "Loopback tests create their own LocalHost peers; no external instrument or LIS is contacted",
+        "This validates current cumulative local behavior, not original Windows theme, RK, instrument or production credential security"
+      ],
+      "authentication_database_or_credentials_archived": false
+    },
+    "resource": {
+      "checks": {
+        "exit_0": true,
+        "binaries_unchanged": true,
+        "source_frozen": true,
+        "seven_stores_closed": true,
+        "threads_stopped": true,
+        "loopback_stopped": true,
+        "password_login_enabled": true,
+        "actual_wire": true
+      },
+      "binary_sha256": {
+        "sn100_shell": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9",
+        "sn100_report_renderer": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b"
+      },
+      "source_snapshot_entries": 353,
+      "load": "WSL Release/XCB 1600x900, Guest, original instrument page, seven reopened anonymous stores, 1Hz self-owned loopback Qj, local-password capability idle",
+      "scope": "One 30s ordinary SIGTERM observation with no concurrent task compilation/GUI. Direct child only; no RK, instrument, resource budget, control interference or long stability claim.",
+      "runtime_file_count": 11,
+      "runtime_bytes": 262292,
+      "steady_segment": {
+        "window": "10 <= elapsed_seconds < 30; excludes cold startup",
+        "sample_count": 195,
+        "observed_span_seconds": 19.80780291799988,
+        "cpu_percent_one_logical_core": 2.675713213596117,
+        "minimum_VmRSS": 274972,
+        "maximum_VmRSS": 274972,
+        "minimum_VmHWM": 282384,
+        "maximum_VmHWM": 282384,
+        "minimum_Pss": 257924,
+        "maximum_Pss": 257935,
+        "minimum_Threads": 43,
+        "maximum_Threads": 43,
+        "minimum_fd_count": 61,
+        "maximum_fd_count": 61
+      },
+      "database_rows": {
+        "account/user_Information.db": {
+          "user_information": 5
+        },
+        "catalog/catalog.db": {
+          "catalog_metadata": 3,
+          "option_unit": 3,
+          "project_base": 1,
+          "project_sample_rate": 2,
+          "project_result": 2,
+          "reagent_list": 0,
+          "reagent_bottle_type": 0,
+          "reagent_batch_group": 0,
+          "reagent_barcode": 0,
+          "reagent_setting": 0,
+          "sample_local_rack": 1,
+          "sample_local_hole": 3,
+          "sample_local_task": 0,
+          "sample_combination": 0,
+          "sample_combination_member": 0
+        },
+        "hospital/hospital_Information.db": {
+          "hospital_information": 0,
+          "app_settings": 1
+        },
+        "instrument/maintenance.db": {
+          "day_maintain": 0,
+          "week_maintain": 0,
+          "month_maintain": 0
+        }
+      }
+    },
+    "platforms": {
+      "schema": "sn100-password-login-platforms-v1",
+      "current_source_entries": 353,
+      "current_source_matches_native": true,
+      "build_exit_codes": {
+        "native": 0,
+        "windows_main": 0,
+        "windows_renderer": 0,
+        "arm64_prepare": 0
+      },
+      "safe_artifacts": [
+        {
+          "kind": "native_main",
+          "path": "temp/sn100_host/o02_login/native/wsl_release/sn100_shell",
+          "sha256": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9"
+        },
+        {
+          "kind": "native_renderer",
+          "path": "temp/sn100_host/o02_login/native/wsl_release/sn100_report_renderer",
+          "sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b"
+        },
+        {
+          "kind": "windows_main",
+          "path": "temp/sn100_host/o02_login/platforms/windows/final_release/sn100_shell.exe",
+          "sha256": "56e3857aedf816335fa5ab16bb822cac6f52e25c475f75e6abe3380331709df4"
+        },
+        {
+          "kind": "windows_renderer",
+          "path": "temp/sn100_host/o02_login/platforms/windows/final_release/sn100_report_renderer.exe",
+          "sha256": "0001cee00a743ec3772bce81933b3cc199da5b6aebde3480b2ba33eade38ea82"
+        },
+        {
+          "kind": "arm64_main",
+          "path": "temp/sn100_host/o02_login/platforms/arm64/build/sn100_shell",
+          "sha256": "1be8c669c3b7c6be3b169728cf29da953383606cccf67ca908d1caa4dbb56332"
+        },
+        {
+          "kind": "arm64_renderer",
+          "path": "temp/sn100_host/o02_login/platforms/arm64/build/sn100_report_renderer",
+          "sha256": "0c49bad1c91d8b875cb4799dc9162e18c7deb74edeef984882238e4307c9b71a"
+        },
+        {
+          "kind": "arm64_package_backup",
+          "path": "07_backups/sn100_host/password_login_20261024/sn100_shell_f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2.tar.gz",
+          "sha256": "b8fa6f4c8728c7b03ef8aa76ad29560fe6fa0e65b4e82662784f55f66e6f1660"
+        }
+      ],
+      "formal_package": {
+        "release_id": "f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2",
+        "password_capability_key": "local_password_login",
+        "backup_path": "07_backups/sn100_host/password_login_20261024/sn100_shell_f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2.tar.gz",
+        "sha256": "b8fa6f4c8728c7b03ef8aa76ad29560fe6fa0e65b4e82662784f55f66e6f1660",
+        "source_restore_archive": {
+          "path": "07_backups/sn100_host/password_login_20261024/sn100_source_f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2.tar.gz",
+          "sha256": "55a511242e9c6f3ba85056d6b89e60eef833b6d0064c292583fba8c0127cec28",
+          "member_count": 353,
+          "manifest_path": "07_backups/sn100_host/password_login_20261024/source_snapshot.json",
+          "manifest_sha256": "1f1f054f19c3a5f7b83e464583b707f46d279d06d30d21297423bf51e378c2dd"
+        }
+      },
+      "native_audit": {
+        "actual_compile_commands": 33,
+        "account_header_dependency_objects_recompiled": 19,
+        "all_changed_dependency_objects_compiled": true,
+        "all_140_objects_make_q_exit": 0,
+        "reused_unchanged_objects": 107,
+        "default_make_q_exit": 1,
+        "default_make_q_reason": "Published staging target ../wsl_report_stage/sn100_shell was intentionally moved away by wsl.sh; make -n only proposes relink, no C++ compilation",
+        "original_clock_skew_warning_preserved": true
+      },
+      "windows": {
+        "architecture": "PE32/i386",
+        "main_full_compiled_objects": 140,
+        "renderer_full_compiled_objects": 31,
+        "reused_objects": 0,
+        "existing_warning_count": 22,
+        "warning_notes": "build_warning_notes.json"
+      },
+      "arm64": {
+        "architecture": "AArch64",
+        "full_compiled_objects": 142,
+        "reused_objects": 0,
+        "dependency_file_count": 56,
+        "closure_errors": [],
+        "object_source_proof": "Independent readelf DWARF pairing of existing142 objects with frozen75+57+8 sequence and2 helper sources",
+        "original_parallel_xtrace_single_line_complete": false,
+        "prepare_exit_code": 0,
+        "final_closure_exit_code": 0,
+        "first_wrapper_postprocessor_exit_code": 1,
+        "corrected_read_only_postprocessor_exit_code": 0,
+        "failure_note": "arm64/parser_failure_note.json",
+        "postprocessor_attempt_exit_codes": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "success_json_published_atomically": true,
+        "input_inventory_scope": "Early actual_input_list.tsv enumerates the correct source/form/header/resource order with default include roots; effective_input_list.tsv uses the actual private sysroot/build roots. Executed flags are in original trace/DWARF.",
+        "archive_all_member_sha256_checked": true
+      },
+      "static_arm_input_tests": {
+        "tests": 11,
+        "failed": 0,
+        "exit_code": 0,
+        "log": "static/arm64_inputs.log"
+      },
+      "limits": {
+        "windows_gui_verified": false,
+        "rk_execution_verified": false,
+        "instrument_verified": false,
+        "production_credential_security_verified": false,
+        "deployment_performed": false
+      },
+      "sensitive_data_archived": false,
+      "scope": "Build, source/object/flags and offline dependency/package provenance; business tests/resources are indexed separately by root"
+    }
+  },
+  "stage_entries": {
+    "independent": "04_references/sn100_host/password_login_20261024/independent/verification.json",
+    "shell": "04_references/sn100_host/password_login_20261024/shell/verification.json",
+    "cumulative": "04_references/sn100_host/password_login_20261024/cumulative/verification.json",
+    "resource": "04_references/sn100_host/password_login_20261024/resource/verification.json",
+    "platforms": "04_references/sn100_host/password_login_20261024/platforms/verification.json"
+  },
+  "prior_stage_evidence": {
+    "gui_idle_cpu": {
+      "path": "04_references/sn100_host/gui_idle_cpu_20261024/validation_summary.json",
+      "sha256": "2a4d66280854a89f33b376138f9ceda9c21ae5c125569c42e28e17fa22328697"
+    },
+    "loopback_core": {
+      "path": "04_references/sn100_host/status_loopback_20261024/core/verification.json",
+      "sha256": "7cdeb363f65fb1957339b5751c43dde59b54f921874312457be6f66e1f0e8031"
+    },
+    "loopback_shell": {
+      "path": "04_references/sn100_host/status_loopback_20261024/shell/validation_summary.json",
+      "sha256": "52d071c497341380f4c48e7fa443674c2a5e702c16b5f362e6fc9d1d4201325c"
+    }
+  },
+  "prior_stage_manifests": {
+    "gui_idle_cpu": {
+      "path": "04_references/sn100_host/gui_idle_cpu_20261024/SHA256SUMS",
+      "sha256": "e102ba670023f2ba4a4663f826448a62eee19cfb023afe3a34543794dd8e5ac5",
+      "safe_files_verified": 74,
+      "scope": "Historical immutable public evidence only; does not assert its old source equals the current 353-input login version"
+    },
+    "loopback_core": {
+      "path": "04_references/sn100_host/status_loopback_20261024/core/SHA256SUMS",
+      "sha256": "45df63430f4e95215ce5aba9b1face298790f6d86bf3c1c2c698ca7ecef9ce57",
+      "safe_files_verified": 8,
+      "scope": "Historical immutable public evidence only; does not assert its old source equals the current 353-input login version"
+    },
+    "loopback_shell": {
+      "path": "04_references/sn100_host/status_loopback_20261024/shell/SHA256SUMS",
+      "sha256": "da234d7da55cbf44a22f1566d0fba74ca95680617dd57ce4a4ccb567da5b590e",
+      "safe_files_verified": 40,
+      "scope": "Historical immutable public evidence only; does not assert its old source equals the current 353-input login version"
+    }
+  },
+  "checked_delivery_artifacts": {
+    "native_main": {
+      "path": "temp/sn100_host/o02_login/native/wsl_release/sn100_shell",
+      "sha256": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9"
+    },
+    "native_renderer": {
+      "path": "temp/sn100_host/o02_login/native/wsl_release/sn100_report_renderer",
+      "sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b"
+    },
+    "windows_main": {
+      "path": "temp/sn100_host/o02_login/platforms/windows/final_release/sn100_shell.exe",
+      "sha256": "56e3857aedf816335fa5ab16bb822cac6f52e25c475f75e6abe3380331709df4"
+    },
+    "windows_renderer": {
+      "path": "temp/sn100_host/o02_login/platforms/windows/final_release/sn100_report_renderer.exe",
+      "sha256": "0001cee00a743ec3772bce81933b3cc199da5b6aebde3480b2ba33eade38ea82"
+    },
+    "arm64_main": {
+      "path": "temp/sn100_host/o02_login/platforms/arm64/build/sn100_shell",
+      "sha256": "1be8c669c3b7c6be3b169728cf29da953383606cccf67ca908d1caa4dbb56332"
+    },
+    "arm64_renderer": {
+      "path": "temp/sn100_host/o02_login/platforms/arm64/build/sn100_report_renderer",
+      "sha256": "0c49bad1c91d8b875cb4799dc9162e18c7deb74edeef984882238e4307c9b71a"
+    },
+    "arm64_package_backup": {
+      "path": "07_backups/sn100_host/password_login_20261024/sn100_shell_f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2.tar.gz",
+      "sha256": "b8fa6f4c8728c7b03ef8aa76ad29560fe6fa0e65b4e82662784f55f66e6f1660"
+    }
+  },
+  "formal_arm_package": {
+    "regular_files": 33,
+    "internal_checksums_passed": 31,
+    "release_id": "f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2",
+    "password_capability": "local_password_login",
+    "binary_sha256": "1be8c669c3b7c6be3b169728cf29da953383606cccf67ca908d1caa4dbb56332",
+    "renderer_sha256": "0c49bad1c91d8b875cb4799dc9162e18c7deb74edeef984882238e4307c9b71a",
+    "aarch64_elf_files": [
+      "lib/libQt5Charts.so.5",
+      "lib/libQt5Network.so.5",
+      "lib/libQt5PrintSupport.so.5",
+      "lib/libQt5Qml.so.5",
+      "lib/libQt5Sql.so.5",
+      "lib/libQt5Svg.so.5",
+      "lib/libQt5Xml.so.5",
+      "lib/libcom_err.so.2",
+      "lib/libexpat.so.1",
+      "lib/libfontconfig.so.1",
+      "lib/libgssapi_krb5.so.2",
+      "lib/libk5crypto.so.3",
+      "lib/libkeyutils.so.1",
+      "lib/libkrb5.so.3",
+      "lib/libkrb5support.so.0",
+      "lib/libsqlite3.so.0",
+      "plugins/imageformats/libqsvg.so",
+      "plugins/platforms/libqoffscreen.so",
+      "plugins/sqldrivers/libqsqlite.so",
+      "sn100_report_renderer",
+      "sn100_shell"
+    ]
+  },
+  "formal_source_restore_archive": {
+    "path": "07_backups/sn100_host/password_login_20261024/sn100_source_f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2.tar.gz",
+    "sha256": "55a511242e9c6f3ba85056d6b89e60eef833b6d0064c292583fba8c0127cec28",
+    "member_count": 353,
+    "manifest_path": "07_backups/sn100_host/password_login_20261024/source_snapshot.json",
+    "manifest_sha256": "1f1f054f19c3a5f7b83e464583b707f46d279d06d30d21297423bf51e378c2dd",
+    "exact_current_source_members_verified": true
+  },
+  "checked_test_artifacts": {
+    "independent": "ee7794da8892c67270519ca5cf21084ad45d3e5b523cef2db3ea8a8f05698b8e",
+    "shell": "165a1f68146adcc429665ed32fbe68e224d884429d4d53c527bf8361e59e1816",
+    "integrated_shell_test": "df5b8fd06d782b6b8d210292740eee97e5030ad3cb273073d513c6b9eea4c088",
+    "catalog_shell_test": "75f8716ea5e74341b7c0a4ae0785c46bc73e829f2aed536aee9184d04c08397f",
+    "status_replay_shell_test": "7989deddc374d0c53cfecd76f2e44c654451f3ffe264a29958338d0e540ac0ed",
+    "status_loopback_shell_test": "18695045e768255a1e2c7c8cf185e5560ee54133b18ed8077e3606527272232c",
+    "instrument_page_test": "9d4ba2b24a35b36817ed2fe10b00d4e602ea42ead1d98b9276d6f176fb53cafd",
+    "integrated_report_test": "c579ed46d0d823992294780c6a92074beaf08f2146d546d342cc3e16b5611e59"
+  },
+  "checked_cumulative_native_objects": 139,
+  "checked_child_manifest_entries": {
+    "04_references/sn100_host/password_login_20261024/independent": 18,
+    "04_references/sn100_host/password_login_20261024/shell": 32,
+    "04_references/sn100_host/password_login_20261024/cumulative": 35,
+    "04_references/sn100_host/password_login_20261024/resource": 10,
+    "04_references/sn100_host/password_login_20261024/platforms": 85
+  },
+  "limits": [
+    "Source/UI and offline behavior do not establish original active Windows theme equivalence",
+    "Local pwd VARCHAR compatibility is not a completed production credential-security scheme",
+    "No real instrument/LIS, RK screen/input, hardware action, budget, same-board RT or long-stability acceptance"
+  ],
+  "authentication_databases_credentials_executables_or_objects_archived_in_this_index": false
+}

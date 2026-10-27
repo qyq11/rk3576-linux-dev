@@ -20,7 +20,21 @@
 06_programs/sn100_host/shell/resources.qrc -text
 06_programs/sn100_host/thirdparty/qtrpt/origins.json -text
 06_programs/sn100_host/ui/frmhospinfosetting.ui -text
+# O07/O08 preserve original designer forms and their byte-level provenance.
+06_programs/sn100_host/projects/*.ui -text
+06_programs/sn100_host/reagents/*.ui -text
+06_programs/sn100_host/samples/*.ui -text
+06_programs/sn100_host/projects/origins.json -text
+06_programs/sn100_host/reagents/origins.json -text
+06_programs/sn100_host/samples/origins.json -text
+06_programs/sn100_host/ui/maskdlglogin.ui -text
+06_programs/sn100_host/ui/login_origins.json -text
 
+# Instrument designer/provenance bytes must survive Windows/Linux checkouts.
+06_programs/sn100_host/instrument/frmdriverset.ui -text
+06_programs/sn100_host/instrument/origins.json -text
+06_programs/sn100_host/quality_control/*.ui -text
+06_programs/sn100_host/quality_control/origins.json -text
 # Preserve archived bytes so checksums remain valid on Windows and Linux.
 07_backups/** -text
 # Store immutable image and compressed backup payloads in Git LFS.

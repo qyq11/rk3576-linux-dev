@@ -1,0 +1,140 @@
+--- a/06_programs/sn100_host/tests/test_shell_arm64_inputs.py
++++ b/06_programs/sn100_host/tests/test_shell_arm64_inputs.py
+@@ -33,6 +33,53 @@
+                 raise ValueError("Expected explicit module input: " + token)
+             result.add((path.parent / token[len("$$PWD/"):]).resolve())
+     return result
++
++
++
++# Independent positive oracle: do not derive it from build.sh or its list output.
++LOCAL_FEATURE_INPUTS = {
++    "source": (
++        "shell/language_shell.cpp", "shell/alarm_shell.cpp",
++        "ui/language_setting_page.cpp", "history/report_dictionary_dialog.cpp",
++        "alarm_history/alarm_history_store.cpp", "alarm_history/alarm_history_page.cpp",
++        "alarm_history/alarm_history_host.cpp", "alarm_history/calendar/cuscalendar.cpp",
++    ),
++    "header": (
++        "data/hospital_dictionary_query.h", "ui/language_setting_page.h",
++        "history/report_dictionary_dialog.h", "alarm_history/alarm_history_store.h",
++        "alarm_history/alarm_history_page.h", "alarm_history/alarm_history_host.h",
++        "alarm_history/calendar/cuscalendar.h",
++    ),
++    "form": (
++        "ui/frmlanguagesetting.ui", "history/mask_dlg_select.ui",
++        "alarm_history/maskdlgabnormal.ui", "alarm_history/cusmaskcalendar.ui",
++        "alarm_history/calendar/cuscalendar.ui",
++    ),
++    "resource": (
++        "history/report_dictionary_resources.qrc", "alarm_history/alarm_history_resources.qrc",
++    ),
++}
++LOCAL_FEATURE_HELPER_FORBIDDEN = frozenset(
++    Path(name).name for name in LOCAL_FEATURE_INPUTS["source"]
++) | frozenset((
++    "moc_language_setting_page.cpp", "moc_report_dictionary_dialog.cpp",
++    "moc_alarm_history_store.cpp", "moc_alarm_history_page.cpp",
++    "moc_alarm_history_host.cpp", "moc_cuscalendar.cpp",
++    "qrc_report_dictionary_resources.cpp", "qrc_alarm_history_resources.cpp",
++))
++
++
++def require_local_feature_inventory(program, inputs, frozen):
++    """Reject a missing main input/freeze key or new page input in the helper."""
++    for role, names in LOCAL_FEATURE_INPUTS.items():
++        for name in names:
++            if str(program / name) not in inputs.get(role, ()):
++                raise ValueError("Local feature inventory omission: " + role + ":" + name)
++            if name not in frozen:
++                raise ValueError("Local feature freeze omission: " + name)
++    for name in inputs.get("helper_source", ()):
++        if Path(name).name in LOCAL_FEATURE_HELPER_FORBIDDEN:
++            raise ValueError("Local feature leaked into report helper: " + name)
+ 
+ 
+ class ShellArm64InputsTest(unittest.TestCase):
+@@ -319,5 +366,83 @@
+             "usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqsvg.so"], "plugins/imageformats/libqsvg.so")
+ 
+ 
++    def test_local_feature_main_inputs_freeze_and_helper_isolation(self):
++        frozen = package.snapshot(PROGRAM)
++        require_local_feature_inventory(PROGRAM, self.inputs, frozen)
++        for role, names in LOCAL_FEATURE_INPUTS.items():
++            for name in names:
++                with self.subTest(role=role, name=name):
++                    self.assertEqual(frozen[name], package.sha(PROGRAM / name))
++        for folder in ("alarm_history", "alarm_history/calendar"):
++            self.assertIn("-I" + str(PROGRAM / folder), self.inputs["include"])
++        for name in LOCAL_FEATURE_INPUTS["resource"]:
++            qrc = PROGRAM / name
++            for entry in ET.parse(qrc).findall(".//file"):
++                member = (qrc.parent / entry.text).resolve(strict=True)
++                relative = member.relative_to(PROGRAM).as_posix()
++                self.assertEqual(frozen[relative], package.sha(member))
++
++    def test_local_feature_oracle_rejects_bounded_private_omissions_and_helper_leaks(self):
++        # Pure in-memory copies; no production source deletion or shell mutation.
++        frozen = package.snapshot(PROGRAM)
++        require_local_feature_inventory(PROGRAM, self.inputs, frozen)
++        for role, names in LOCAL_FEATURE_INPUTS.items():
++            for name in names:
++                with self.subTest(omitted_role=role, name=name):
++                    private = {key: list(values) for key, values in self.inputs.items()}
++                    private[role] = [value for value in private[role] if value != str(PROGRAM / name)]
++                    with self.assertRaisesRegex(ValueError, "Local feature inventory omission"):
++                        require_local_feature_inventory(PROGRAM, private, frozen)
++                with self.subTest(omitted_freeze_key=name):
++                    private_frozen = dict(frozen)
++                    del private_frozen[name]
++                    with self.assertRaisesRegex(ValueError, "Local feature freeze omission"):
++                        require_local_feature_inventory(PROGRAM, self.inputs, private_frozen)
++        for name in sorted(LOCAL_FEATURE_HELPER_FORBIDDEN):
++            with self.subTest(helper_leak=name):
++                private = {key: list(values) for key, values in self.inputs.items()}
++                # Generated names here are synthetic oracle inputs, not a claim
++                # that list-only mode generated/compiled these files.
++                private.setdefault("helper_source", []).append(str(self.root / name))
++                with self.assertRaisesRegex(ValueError, "Local feature leaked into report helper"):
++                    require_local_feature_inventory(PROGRAM, private, frozen)
++
++    def test_alarm_directory_changed_and_new_files_invalidate_a_snapshot(self):
++        with tempfile.TemporaryDirectory(prefix="alarm_snapshot_", dir=self.root) as temporary:
++            program = Path(temporary)
++            # Only the explicit files required by snapshot(), no formal-tree copy.
++            fixed = ("prepare_arm64.sh", "resources.qrc", "quality/statistics.h", "quality/statistics.cpp",
++                     "tests/fixtures/accounts.json", "tests/fixtures/history_reports.json",
++                     "tests/fixtures/history_report_options.json",
++                     "protocol/status_replay.h", "protocol/status_replay.cpp",
++                     "protocol/status_session.h", "protocol/status_session.cpp",
++                     "protocol/frame_codec.h", "protocol/frame_codec.cpp",
++                     "protocol/status_loopback.h", "protocol/status_loopback.cpp",
++                     "protocol/read_only_client.h", "protocol/read_only_client.cpp",
++                     "protocol/tcp_transport.h", "protocol/tcp_transport.cpp",
++                     "protocol/read_only_messages.h", "protocol/read_only_messages.cpp")
++            alarm = ("alarm_history/alarm_history_store.cpp", "alarm_history/alarm_history_store.h",
++                     "alarm_history/maskdlgabnormal.ui", "alarm_history/alarm_history_resources.qrc",
++                     "alarm_history/resources/calendar_ico.png")
++            for name in fixed + alarm:
++                path = program / name
++                path.parent.mkdir(parents=True, exist_ok=True)
++                path.write_bytes(b"explicit anonymous private snapshot input\n")
++            before = package.snapshot(program)
++            self.assertTrue(set(alarm).issubset(before))
++            for name in alarm:
++                with self.subTest(changed_alarm_input=name):
++                    path = program / name
++                    path.write_bytes(b"changed anonymous private alarm input\n")
++                    self.assertNotEqual(before[name], package.snapshot(program)[name])
++            added = program / "alarm_history/calendar/new_private_form.ui"
++            added.parent.mkdir(parents=True, exist_ok=True)
++            added.write_text("<ui/>\n", encoding="utf-8")
++            self.assertNotIn("alarm_history/calendar/new_private_form.ui", before)
++            self.assertEqual(package.snapshot(program)["alarm_history/calendar/new_private_form.ui"],
++                             package.sha(added))
++
++
++
+ if __name__ == "__main__":
+     unittest.main()

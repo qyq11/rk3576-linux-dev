@@ -1,0 +1,335 @@
+{
+  "module": "SN100 calibration local-only source audit",
+  "audit_date": "2026-10-25",
+  "reference_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "method": "Read-only source/XML inspection; no reference executable, build, production database or runtime configuration was opened.",
+  "original_entry_and_calls": [
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:23-47",
+      "function": "frmCalibrationMaterial constructor",
+      "behavior": "setupUi -> read three database snapshots -> original dynamic styles -> init_components -> calibrated projects -> initial view. Cancel reloads current project."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:301-348",
+      "function": "loadCalibreationProject / slotProjectSelectChanged",
+      "behavior": "List projects whose result_type Calibration has is_used>0. Project selection rereads reagent groups, calibration batch associations and bases, then visible curves."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:231-299",
+      "function": "refresh_project_curves",
+      "behavior": "Visible curves filtered by project name. Date receives M if edited and C if referenced by Default batch. Current row/default selection does not itself apply a curve."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:351-446",
+      "function": "refresh_curve_selection_data",
+      "behavior": "Clear previous point/date/batch/detail/plot before looking up selection. Current Calibration result unit, multiplier and decimals come from project. Original/test decimals come from project params. Read points by calibration_id. Disable Audit when is_checked."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:1246-1326",
+      "function": "update_curve_table / on_btnSave_clicked / on_btnCopy_clicked",
+      "behavior": "Save asks confirmation, updates selected base datetime/is_edited and reads edited table. Copy asks confirmation, allocates calibration_total_count, inserts new base and copies loaded committed points, ignoring unsaved point edits. No explicit role gate in these slots. Original does not reset is_checked on save/copy and does not check all DAL writes or make base/points/counter atomic; those are deficiencies, not safe local rules."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:1328-1383",
+      "function": "on_btnDelLine_clicked",
+      "behavior": "Any calibration_batch_group reference prohibits delete. Otherwise ask confirmation and set visible=false; original point/history rows remain. No explicit role gate in this slot."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:1385-1417",
+      "function": "on_btnCheck_clicked / check_curve_data",
+      "behavior": "UserPower::canDoPower(1) and confirmation required; set is_checked=true. This is distinct from batch selection/application."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:448-491,996-1099",
+      "function": "batch_set_curve / get_project_is_checked / on_btnApply_clicked / slot_default_batch_set_curve",
+      "behavior": "Select/application requires permission>=Engineer. If project auto_apply is false and curve unchecked, asks to audit and requires UserPower(1). Stores project_name+batch_group -> calibration_id in calibration_batch_group; Default is literal default group. Project auto_apply true bypasses unchecked test. Local display selection must not write these effective mappings."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:90-101,1442-1457",
+      "function": "slotUserChange / on_btnCalculateIDSetting_clicked",
+      "behavior": "Method settings button hidden below Engineer; handler itself has no additional role check. Dialog save changes calculate_id/x_change/y_change then original page recalculates."
+    },
+    {
+      "source": "frmcalibration/frmcalibrationmaterial.cpp:1101-1179",
+      "function": "showPointChart",
+      "behavior": "Only a repeat-test-value cell opens a task_id-linked raw measurement spectrum through MaskDlgSpectrumChart. This is a different chart from concentration/test-value calibration scatter and requires stored instrument measurement data."
+    },
+    {
+      "source": "frmsample/frmsamplematerial.cpp:3241-3274",
+      "function": "calibration base creation during sample task preparation",
+      "behavior": "Original calibration page does not have a blank New button. Initial base comes from sample calibration task: blood/calibrator batch, calibration id, datetime, project, point and repeat counts, Original and Calibration units, project method/transforms, visible=1."
+    }
+  ],
+  "data_contract": {
+    "base_table": "calibration_base: id PK AUTOINCREMENT, calibration_id INTEGER NOT NULL, project_name TEXT, calibration_datetime VARCHAR(yyyyMMddHHmmss serialization), boold_batch TEXT [original misspelling preserved], point_size INTEGER, repeat_number INTEGER, calculate_id TEXT, is_checked INTEGER, is_edited INTEGER, result_unit TEXT, con_unit TEXT, x_change TEXT, y_change TEXT, visible INTEGER",
+    "point_table": "calibration_data: id PK AUTOINCREMENT, calibration_id INTEGER NOT NULL, point_index TEXT bound as integer, sample_rate TEXT, concentration TEXT, result_flag TEXT, result_value TEXT, only_count TEXT; repeated results/flags/task ids delimited by |; queryDataByID orders by id",
+    "association_table": "calibration_batch_group: id PK AUTOINCREMENT, project_name VARCHAR NOT NULL, batch_group VARCHAR NOT NULL, calibration_id INTEGER NOT NULL. Distinct from reagent_batch_group. Independent local DB must not claim cross-DB foreign key/atomicity.",
+    "result_flags": {
+      "0": "normal",
+      "1": "questionable, displayed with * prefix",
+      "4": "error, displayed ****",
+      "5": "empty"
+    },
+    "units": "result_unit belongs to raw Original test values; con_unit belongs to stored concentration. Current original UI displays Calibration unit from live project result metadata and multiplies stored concentration by unit dictionary multiplier; inverse divide occurs on Save. Local immutable unit snapshots are an intentional protection from later catalog unit edits.",
+    "headers": [
+      "索引",
+      "稀释比例",
+      "浓度 + Calibration display unit",
+      "测试值0..repeat-1 + result_unit",
+      "平均值 + result_unit",
+      "反算值 + Calibration display unit"
+    ],
+    "calibrator_batch": "boold_batch/ldtBooldBatch: .ui marks readOnly false, but init_components at line207 sets readOnly(true); runtime original is read-only",
+    "numeric_edit_validation": "set_table_result_data requests nonnegative 0..99999, decimalCount4, through SystemCommon lineValidator_Integer (helper naming/precision semantics need Windows behavior comparison). No safe rule for clinically valid ranges inferred from this input filter.",
+    "unsafe_original_averaging": "queryDataByID counts numeric nonzero results but sums every task-linked result; get_calibration_result_data and ReCalculate divide by numeric repeat count without zero-count guard. Invalid text may become sentinel -999/****. Local implementation should reject invalid nonfinite/empty repeat values and define purely arithmetic raw means explicitly, without presenting it as calibration fitting."
+  },
+  "plot_contract": {
+    "axes": "Final chart x=concentration (display multiplier applied), y=raw Original test value. CalibrationChart explicitly labels axes 浓度 / 测试值.",
+    "point_glyph": "Original tag graph: no line, QPen(QColor(120,120,120),3), black ssCross marker size10.",
+    "fitted_line": "Original line graph: calibrationStyle::getColorLine(), width3, from unverified vendor algorithm output. A local raw scatter must not synthesize this fitted line or report r/formula/inverse values.",
+    "transforms": "caculateValue initially constructs(mean,concentration); it applies y_change to mean and x_change to concentration, then finally swaps into (transformed concentration,transformed mean) for scatter. Raw-only display should leave values untransformed and explicitly say transformations/fitting unavailable.",
+    "methods_in_source": [
+      "",
+      "直线法",
+      "一元三次曲线法",
+      "插值曲线法",
+      "折线法",
+      "双线回归法"
+    ],
+    "x_transforms": [
+      "x",
+      "log(x)",
+      "1/x",
+      "ln(x)",
+      "log(log(x))",
+      "ln(ln(x))"
+    ],
+    "y_transforms": [
+      "y",
+      "log(y)",
+      "1/y",
+      "ln(y)",
+      "log(log(y))",
+      "ln(ln(y))"
+    ],
+    "unsupported_original_method": "双线回归法 is listed in header/dialog but caculateValue switch only handles indices1..4; default returns false. Do not silently enable method5.",
+    "algorithm_risk": "AL4A_OLD is commented out. Active algorithmcore.cpp non-Windows branches of LinearFit(lines679-720), PolyFit(723-766), SplineFit(769-814), CorTransfor(834-863), CorReturn(866-893) discard inputs and return success. These branches are not Linux implementations and must not be reused as successful fit/transform/inverse calculations."
+  },
+  "visual_contract": {
+    "original_ui_canvas": [
+      1797,
+      1013
+    ],
+    "original_business_extent": "Right action bar extends to x1751 y968. Root .ui has no top layout; panel groups use absolute geometry.",
+    "groups": {
+      "project_panel": [
+        30,
+        30,
+        274,
+        901
+      ],
+      "curve_background": [
+        320,
+        29,
+        1181,
+        901
+      ],
+      "curve_list_relative_to_background": [
+        20,
+        24,
+        261,
+        861
+      ],
+      "detail_panel_relative_to_background": [
+        310,
+        24,
+        861,
+        861
+      ],
+      "right_menu": [
+        1525,
+        0,
+        226,
+        968
+      ]
+    },
+    "detail_geometry": {
+      "tabs": [
+        0,
+        0,
+        900,
+        54
+      ],
+      "stack": [
+        0,
+        60,
+        851,
+        791
+      ],
+      "point_table_relative_to_page": [
+        20,
+        70,
+        811,
+        371
+      ],
+      "chart": [
+        20,
+        460,
+        551,
+        321
+      ],
+      "detail_text": [
+        590,
+        460,
+        241,
+        241
+      ],
+      "default_apply_button": [
+        590,
+        710,
+        241,
+        61
+      ]
+    },
+    "right_buttons": [
+      {
+        "name": "btnCheck",
+        "text": "审核曲线",
+        "geometry": [
+          26,
+          70,
+          178,
+          61
+        ]
+      },
+      {
+        "name": "btnShowChart",
+        "text": "查看测试曲线",
+        "geometry": [
+          26,
+          150,
+          178,
+          61
+        ]
+      },
+      {
+        "name": "btnReCalculate",
+        "text": "重新计算绘图",
+        "geometry": [
+          26,
+          230,
+          178,
+          61
+        ]
+      },
+      {
+        "name": "btnDelLine",
+        "text": "删除曲线",
+        "geometry": [
+          26,
+          310,
+          178,
+          61
+        ]
+      },
+      {
+        "name": "btnCalculateIDSetting",
+        "text": "计算方法设置",
+        "geometry": [
+          26,
+          390,
+          178,
+          61
+        ]
+      },
+      {
+        "name": "btnCopy",
+        "text": "复制曲线",
+        "geometry": [
+          26,
+          730,
+          178,
+          61
+        ]
+      },
+      {
+        "name": "btnSave",
+        "text": "保存修改",
+        "geometry": [
+          26,
+          810,
+          178,
+          61
+        ]
+      },
+      {
+        "name": "btnCancel",
+        "text": "取消",
+        "geometry": [
+          26,
+          890,
+          178,
+          61
+        ]
+      }
+    ],
+    "local_colors": "init_components: project CusView white radius10, curve background #F6F6F6 radius10, detail panel white radius15 border #E4E8EB. Text #444444, unselected tabs #AAAAAA, selected tabs #444444 and 5px theme matchColor border. No button icon property is present in original .ui; iconSize alone does not establish an icon.",
+    "font_source": "苹方 粗体 in UI/dynamic QSS, chart 黑体 pointsize10. Linux font substitution needs explicit evidence and separate Windows comparison.",
+    "theme_loading": "Original main.cpp getConfig lines94-159 reads theme_config.ini else config.ini, propagates visual keys into kThemeColors/kIntThemeColors and stylecolor setters. No theme config was read during this audit. Existing working shell/origins.json documents shipped visual keys: right base28,28,28; right button127,127,127; white foreground; ordinary button42,118,242; hover alpha170; pressed135,206,250; accent232,51,35. That established source baseline is available for reuse, but original active Windows theme remains unverified.",
+    "shared_styles": "Constructor uses buttonStyle::getStrSheet, listWidgetStyle::getStrSheet, tableStyle3(curve list),4(batch list),5(points). Exact source functions and hashes are attached. Active selection color is injected through tableStrColor/listStrSheet and is not a fixed literal inside these functions.",
+    "pending": "Original active Windows run/theme/same-state screenshot, real raw measurement chart, clinically valid input ranges/parameters, accepted fit/inverse cases, RK1600x900 actual screen/input, instrument, resource budget and long stability remain unverified."
+  },
+  "required_local_regressions": [
+    "Empty catalog/project/curve selection and empty point array do not dereference null or show stale plot.",
+    "Explicit horizontal/vertical units and stable project ID/snapshot survive later rename, removal, unit changes and batch removal.",
+    "Point order, duplicate concentration, numeric zero, all empty, NaN/Inf/negative/huge/invalid text and varying repeat counts have defined local-only behavior.",
+    "Save/Copy/Delete cancellation changes neither committed DB nor current committed selection. Copy uses committed snapshot or explicitly documents changed behavior.",
+    "Lock/write error/partial point write rolls back base and points together, retains editable draft, reports real error and permits retry.",
+    "Soft deletion preserves history and any active/effective/shared reference prevents unsafe removal; absent cross-DB protection is stated.",
+    "Pending asynchronous reply cannot overwrite later project/curve/session selection; duplicate clicks bounded, busy state and normal shutdown drain correctly.",
+    "Local display selection, local save and local record linkage never mark checked/applied or write clinical effective mappings."
+  ],
+  "source_sha256": {
+    "frmcalibration/frmcalibrationmaterial.cpp": "ccd7ad768e3679a1d6a316167b20a5b98b51f1f293439f9e2478d46b6183142f",
+    "frmcalibration/frmcalibrationmaterial.h": "a29bae2892381922c558565b7adb66fdee56c9b6bd65406f11cc211cd5812b16",
+    "frmcalibration/frmcalibrationmaterial.ui": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+    "frmcalibration/calibration_tables.cpp": "3f387a5b51a8a350d5825fe3904a7a44ef12ac17d21049e028f14ae459df579b",
+    "frmcalibration/calibration_tables.h": "6655a7db8051101b2e64687ff85fde60926d9ee145118b8206e839066a56f584",
+    "frmcalibration/maskdlgcalculateidsetting.cpp": "2e4e5032bb595e5d2eea98f8011c0ce38f4b9c502236165256bf482583345b00",
+    "frmcalibration/maskdlgcalculateidsetting.h": "bf417d5cd6425b5e4529c5e183c1c49b29724de808a6cf053a703ddce5eff6a7",
+    "frmcalibration/maskdlgcalculateidsetting.ui": "e7f4ea567990a23c4a0e7dbd8b68e5a04c2ec28db53c5a375e49cbbb49fd5f05",
+    "frmcalibration/frmcalibration.pri": "ef104fea82db8fde504326ab168d7306e1ddb51c1fece1c792cb46e9aa105ea2",
+    "tool/database/calibration/calibration_base_table.cpp": "8ab063a028b795f70e82354e78e64791eadf63737be0f40a876589609883eef3",
+    "tool/database/calibration/calibration_base_table.h": "6cb5fe353801cae9426d6d14eeee422b50eac4b119acb64323171323f6479ef8",
+    "tool/database/calibration/calibration_data_table.cpp": "d54e5a7590df169b961b1531562c82cd046828b545d2ccd31dd00410a153eb15",
+    "tool/database/calibration/calibration_data_table.h": "f767fcaaf8b20923d28b0283604e4bb032e41fa2cc6693902ee8276fad0f8398",
+    "tool/database/calibration/calibration_batch_table.cpp": "7703802a1683424caa64c5f59f71526820399461208d829f299a1c152991765b",
+    "tool/database/calibration/calibration_batch_table.h": "ad7e96c0ee6fb142c0998b6d67fd7612930e1f25faca87c33a0db27aa906b6ef",
+    "tool/database/calibration/calibration_total_count_table.cpp": "8cd8f2bc24e4ac61199d3c7194a7c3d772367388c193eecd4430c257539e3efb",
+    "tool/database/calibration/calibration_total_count_table.h": "8f5294aa0e056070c86b3922b551dcb6d6fc7b6b517aa5040a63575a32dbadb7",
+    "customwidgets/calibrationchart.cpp": "655c4082284391eb4c93139a9f175674c7097d0157d486a56391ce1f550b6400",
+    "customwidgets/calibrationchart.h": "5d12c8e5e1fd98c443f8521ec43a58ab8c076c07a1a00b4290299830d33ec8ba",
+    "customtools/algorithmcore.cpp": "578a94cb671586e17dd15f1c92b329417a04efcbfc540d1034af076cce5edddc",
+    "customtools/algorithmcore.h": "edd29c66772f841b404eeae95547c021a112e624fbabef65be9f4b9357269a9b",
+    "customtools/userpower.cpp": "117edf8983d7632c5e2d36524af59eff4f971cfe71e4c2096152f516b905ea89",
+    "customtools/userpower.h": "3a6b64d89a575eb6ccd2666b64657789e9d9963be0ac4137015237a2b6bc84a6",
+    "public/stylecolor.cpp": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128",
+    "public/stylecolor.h": "077f4ade15dc68784ac8dc056c4df922495a3242d158ba532d688f9d32b09f6a",
+    "public/systemcommon.h": "d43e93eb435b80e8a27be1360536d4120699bf140e01cb35ace47c5ac6e3de8a",
+    "main.cpp": "b63c46ae047a2f3006b823cdc9477d498eb0aa2417cfe138845ff3d4c773be09",
+    "frmsample/frmsamplematerial.cpp": "f9455d9f89b56cc69a86a268b5a0304468f064d7d8e36e84671cee4755fff244",
+    "frmsystem/frmsystemmaterial.cpp": "dd76908c0c75ff7862fcb4abb123a906894e12efecaf9be770388f6c0fc0a25b"
+  },
+  "shared_style_source_functions": {
+    "void buttonStyle::setStrSheet": "void buttonStyle::setStrSheet(QString str1, QString str2, QString str3)\n{\n    btnStrSheet = QString(\".QPushButton{\\\n                          background-color: rgba(%1);\\\n                          color: #FFFFFF;\\\n                          border-radius: 4px;\\\n                          padding: 2px;\\\n                          }\\\n                          .QPushButton:hover {\\\n                          background-color: rgba(%2);\\\n                          }\\\n                          .QPushButton:pressed {\\\n                          background-color: rgba(%3);\\\n                          }\\\n                          QWidget#widget_2{\\\n                          border:1px solid #E4E8EB;\\\n                          border-radius: 10px;\\\n                          }\").arg(str1).arg(str2).arg(str3);\n}",
+    "QString listWidgetStyle::getStrSheet": "QString listWidgetStyle::getStrSheet()\n{\n    QString str = QString(\"QHeaderView{\\\n                          background-color: transparent;\\\n                          border-radius:5px;\\\n                      }\\\n                      QHeaderView::section {\t\\\n                          color: #444444;\\\n                          font:bold 15px \\\"苹方 粗体\\\";\\\n                          text-align:left;\\\n                          height:40px;\\\n                          background-color: white;\\\n                          border:1px solid #E4E8EB;\\\n                          border-left:none;\\\n                          border-right:none;\\\n                          border-top:none;\\\n                      }\\\n                      QListWidget{\\\n                      background-color: transparent;\\\n                      border:1px solid #E4E8EB;\\\n                      border-radius:5px;\\\n                      }\\\n                      QListWidget::item:selected{\\\n                      background:rgba(%1);\\\n                      color:white\\\n                      }\\\n                      QListWidget::item{ color:#444444;height:40px; }\").arg(listStrSheet);\n    return str;\n}",
+    "QString tableStyle::getStrSheet3": "QString tableStyle::getStrSheet3()\n{\n    QString str = QString(\"QHeaderView{\\\n                          background-color: transparent;\\\n                      }\\\n                      QHeaderView::section {\\\n                          color: #444444;\\\n                          font:bold 18px \\\"苹方 粗体\\\";\\\n                          text-align:left;\\\n                          height:52px;\\\n                          background-color: transparent;\\\n                          border:2px solid #DDDDDD;\\\n                          border-left:none;\\\n                          border-right:none;\\\n                          border-top:none;\\\n                      }\\\n                      QTableWidget::Item{\\\n                      border:0px solid #DDDDDD;\\\n                      border-bottom:1px solid #DDDDDD;\\\n                      color:#444444;\\\n                      }\\\n                      QTableView::item:selected{ background:rgba(%1); }\\\n                      QTableWidget{\\\n                      background-color: #FFFFFF;\\\n                      alternate-background-color: #EEEEEE;\\\n                      border-radius: 10px;\\\n                      border:1px solid #E4E8EB;\\\n                      }\\\n                      QLineEdit { \\\n                          background-color: transparent; \\\n                          border: 0px solid #DDDDDD; \\\n                          border-bottom: 1px solid #DDDDDD; \\\n                      } \\\n                      QLineEdit:selected { \\\n                          background: rgba(%1); \\\n                      }\").arg(tableStrColor);\n                      return str;\n}",
+    "QString tableStyle::getStrSheet4": "QString tableStyle::getStrSheet4()\n{\n    QString str = QString(\"QHeaderView{\\\n                          background-color: transparent;\\\n                      }\\\n                      QHeaderView::section { color: #444444;\\\n                          font:bold 18px \\\"苹方 粗体\\\";\\\n                          text-align:left;\\\n                          height:40px;\\\n                          background-color: transparent;\\\n                          border:1px solid #E4E8EB;\\\n                          border-left:none;\\\n                          border-right:none;\\\n                          border-top:none;\\\n                      }\\\n                      QTableWidget::Item{\\\n                      border:0px solid #DDDDDD;\\\n                      border-bottom:1px solid #DDDDDD;\\\n                      color:#444444;\\\n                      }\\\n                      QTableView::item:selected{background:rgba(%1); }\\\n                      QTableWidget{\\\n                      background-color: transparent;\\\n                      border:1px solid #E4E8EB;\\\n                      border-radius:5px;\\\n                      }\\\n                      QLineEdit { \\\n                          background-color: transparent; \\\n                          border: 0px solid #DDDDDD; \\\n                          border-bottom: 1px solid #DDDDDD; \\\n                      } \\\n                      QLineEdit:selected { \\\n                          background: rgba(%1); \\\n                      }\").arg(tableStrColor);\n                      return str;\n}",
+    "QString tableStyle::getStrSheet5": "QString tableStyle::getStrSheet5()\n{\n    QString str = QString(\"QHeaderView{\\\n                          background-color: transparent;\\\n                      }\\\n                      QHeaderView::section { color: #444444;\\\n                          font:bold 14px \\\"苹方 粗体\\\";\\\n                          text-align:left;\\\n                          height:40px;\\\n                          background-color: transparent;\\\n                          border:1px solid #E4E8EB;\\\n                          border-left:none;\\\n                          border-right:none;\\\n                          border-top:none;\\\n                      }\\\n                      QTableWidget::Item{\\\n                      border:0px solid #DDDDDD;\\\n                      border-bottom:1px solid #DDDDDD;\\\n                      color:#444444;\\\n                      }\\\n                      QTableView::item:selected{ background:rgba(%1); }\\\n                      QTableWidget{\\\n                      background-color: transparent;\\\n                      border:1px solid #E4E8EB;\\\n                      border-radius:5px;\\\n                      }\\\n                      QLineEdit { \\\n                          background-color: transparent; \\\n                          border: 0px solid #DDDDDD; \\\n                          border-bottom: 1px solid #DDDDDD; \\\n                      } \\\n                      QLineEdit:selected { \\\n                          background: rgba(%1); \\\n                      }\").arg(tableStrColor);\n                      return str;\n                      }\n\n\nQString tableStyle::getStrSheet6()\n{\n    QString str = QString(\"QHeaderView{\\\n                          background-color: transparent;\\\n                      }\\\n                      QHeaderView::section {\\\n                          color: #444444;\\\n                          font:bold 15px \\\"苹方 粗体\\\";\\\n                          text-align:left;\\\n                          height:40px;\\\n                          background-color: transparent;\\\n                          border:1px solid #E4E8EB;\\\n                          border-left:none;\\\n                          border-right:none;\\\n                          border-top:none;\\\n                      }\\\n                      QTableWidget::Item{\\\n                      border:0px solid #DDDDDD;\\\n                      border-bottom:1px solid #DDDDDD;\\\n                      color:#444444;\\\n                      }\\\n                      QTableView::item:selected{ background:rgba(%1);}\\\n                      QTableWidget{\\\n                      background-color: transparent;\\\n                      border:1px solid #E4E8EB;\\\n                      border-radius:5px;\\\n                      }\\\n                      QLineEdit { \\\n                          background-color: transparent; \\\n                          border: 0px solid #DDDDDD; \\\n                          border-bottom: 1px solid #DDDDDD; \\\n                      } \\\n                      QLineEdit:selected { \\\n                          background: rgba(%1); \\\n                      }\").arg(tableStrColor);\n                      return str;\n\n                      }\n\nQString tableStyle::getStrSheet7()\n{\n    QString str = QString(\"QHeaderView{\\\n                          background-color: transparent;\\\n                      }\\\n                      QHeaderView::section {\t\\\n                          color: #444444;\\\n                          font:bold 15px \\\"苹方 粗体\\\";\\\n                          text-align:left;\\\n                          height:40px;\\\n                          background-color: transparent;\\\n                          border:1px solid #DDDDDD;\\\n                          border-left:none;\\\n                          border-right:none;\\\n                          border-top:none;\\\n                      }\\\n                      QTableWidget::Item{\\\n                      border:0px solid #DDDDDD;\\\n                      border-bottom:1px solid #DDDDDD;\\\n                      }\\\n                      QTableView::item:selected{ background:rgba(%1); }\\\n                      QTableWidget{\\\n                      background-color: transparent;\\\n                      alternate-background-color: #EEEEEE;\\\n                      }\\\n                      QLineEdit { \\\n                          background-color: transparent; \\\n                          border: 0px solid #DDDDDD; \\\n                          border-bottom: 1px solid #DDDDDD; \\\n                      } \\\n                      QLineEdit:selected { \\\n                          background: rgba(%1); \\\n                      }\").arg(tableStrColor);\n                      return str;\n                      }\n\n\nQString tableStyle::getStrSampleSetSheet()\n{\n    QString str = QString(\"QHeaderView{\\\n                           background-color: transparent;\\\n                      }\\\n                      QHeaderView::section {color: #444444;\\\n                          font:bold 15px \\\"苹方 粗体\\\";\\\n                          text-align:left;\\\n                          height:40px;\\\n                          background-color: transparent;\\\n                          border:1px solid #DDDDDD;\\\n                          border-left:none;\\\n                          border-right:none;\\\n                          border-top:none;\\\n                      }\\\n                      QTableWidget::Item{\\\n                      border:0px solid #DDDDDD;\\\n                      border-bottom:1px solid #DDDDDD;\\\n                      }\\\n                      QTableView::item:selected{\\\n                              background:rgba(%1);}\\\n                      QTableWidget{\\\n                      background-color: transparent;\\\n                      alternate-background-color: #EEEEEE;\\\n                      }\\\n                      QLineEdit { \\\n                          background-color: transparent; \\\n                          border: 0px solid #DDDDDD; \\\n                          border-bottom: 1px solid #DDDDDD; \\\n                      } \\\n                      QLineEdit:selected { \\\n                          background: rgba(%1); \\\n                      }\").arg(tableStrSampleSetColor);\n    return str;\n}"
+  },
+  "established_shell_theme_provenance": {
+    "path": "06_programs/sn100_host/shell/origins.json",
+    "sha256": "72674d7f141375d20c6aee84dae62cfc1e20179e8833fac856fb0d967221c555",
+    "status": "Previously documented shipped visual keys only; no active original Windows theme verification"
+  }
+}

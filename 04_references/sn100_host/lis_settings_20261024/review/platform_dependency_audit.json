@@ -1,0 +1,360 @@
+{
+  "schema": "sn100-lis-settings-platform-dependency-audit-v1",
+  "audited_utc": "2026-10-24T13:28:04.365326+00:00",
+  "audit_completed": true,
+  "purpose": "O10-2 local LIS settings only; choose a candidate-name provider without opening a serial port or connecting an endpoint.",
+  "operations_not_performed": [
+    "No build/qmake generation/compiler invocation",
+    "No GUI or product executable/DLL invocation",
+    "No actual port enumeration or serial-port open/ioctl",
+    "No actual SERIALCOMM registry read",
+    "No production database, historical connection configuration, reference engineering or credentials read",
+    "No system/SDK/sysroot/formal source/shared plan/07/old evidence modifications"
+  ],
+  "native_wsl": {
+    "qmake_query": {
+      "argv": [
+        "qmake",
+        "-query"
+      ],
+      "exit_code": 0,
+      "stdout": "QT_SYSROOT:\nQT_INSTALL_PREFIX:/usr\nQT_INSTALL_ARCHDATA:/usr/lib/x86_64-linux-gnu/qt5\nQT_INSTALL_DATA:/usr/share/qt5\nQT_INSTALL_DOCS:/usr/share/qt5/doc\nQT_INSTALL_HEADERS:/usr/include/x86_64-linux-gnu/qt5\nQT_INSTALL_LIBS:/usr/lib/x86_64-linux-gnu\nQT_INSTALL_LIBEXECS:/usr/lib/x86_64-linux-gnu/qt5/libexec\nQT_INSTALL_BINS:/usr/lib/qt5/bin\nQT_INSTALL_TESTS:/usr/tests\nQT_INSTALL_PLUGINS:/usr/lib/x86_64-linux-gnu/qt5/plugins\nQT_INSTALL_IMPORTS:/usr/lib/x86_64-linux-gnu/qt5/imports\nQT_INSTALL_QML:/usr/lib/x86_64-linux-gnu/qt5/qml\nQT_INSTALL_TRANSLATIONS:/usr/share/qt5/translations\nQT_INSTALL_CONFIGURATION:/etc/xdg\nQT_INSTALL_EXAMPLES:/usr/lib/x86_64-linux-gnu/qt5/examples\nQT_INSTALL_DEMOS:/usr/lib/x86_64-linux-gnu/qt5/examples\nQT_HOST_PREFIX:/usr\nQT_HOST_DATA:/usr/lib/x86_64-linux-gnu/qt5\nQT_HOST_BINS:/usr/lib/qt5/bin\nQT_HOST_LIBS:/usr/lib/x86_64-linux-gnu\nQMAKE_SPEC:linux-g++\nQMAKE_XSPEC:linux-g++\nQMAKE_VERSION:3.1\nQT_VERSION:5.15.13",
+      "stderr": ""
+    },
+    "serialport_packages": {
+      "argv": [
+        "dpkg-query",
+        "-W",
+        "-f=\t\t\n",
+        "libqt5serialport5",
+        "libqt5serialport5-dev"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "dpkg-query: no packages found matching libqt5serialport5\ndpkg-query: no packages found matching libqt5serialport5-dev"
+    },
+    "pkg_config_serialport": {
+      "argv": [
+        "pkg-config",
+        "--modversion",
+        "Qt5SerialPort"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Package Qt5SerialPort was not found in the pkg-config search path.\nPerhaps you should add the directory containing `Qt5SerialPort.pc'\nto the PKG_CONFIG_PATH environment variable\nPackage 'Qt5SerialPort', required by 'virtual:world', not found"
+    },
+    "paths": [
+      {
+        "path": "/usr/include/x86_64-linux-gnu/qt5/QtSerialPort/QSerialPortInfo",
+        "exists": false
+      },
+      {
+        "path": "/usr/include/x86_64-linux-gnu/qt5/QtSerialPort/qserialportinfo.h",
+        "exists": false
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_serialport.pri",
+        "exists": false
+      }
+    ],
+    "libraries": [],
+    "sysroots": [
+      {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/platforms/arm64/sysroot",
+        "exists": true,
+        "serialport_named_paths": [],
+        "libudev_paths": []
+      },
+      {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/arm64_sysroot",
+        "exists": true,
+        "serialport_named_paths": [],
+        "libudev_paths": []
+      }
+    ],
+    "archive_serialport_names": [
+      "07_backups/qt_environment/wsl_amd64/packages/libqt6serialport6_6.4.2-4build2_amd64.deb"
+    ],
+    "cached_native_package_metadata": {
+      "argv": [
+        "apt-cache",
+        "show",
+        "libqt5serialport5",
+        "libqt5serialport5-dev"
+      ],
+      "exit_code": 0,
+      "stdout": "Package: libqt5serialport5\nArchitecture: amd64\nVersion: 5.15.13-1\nMulti-Arch: same\nPriority: optional\nSection: universe/libs\nSource: qtserialport-opensource-src\nOrigin: Ubuntu\nMaintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>\nOriginal-Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>\nBugs: https://bugs.launchpad.net/ubuntu/+filebug\nInstalled-Size: 123\nDepends: libc6 (>= 2.14), libqt5core5t64 (>= 5.15.13+dfsg~), libstdc++6 (>= 5), libudev1 (>= 183), qtbase-abi-5-15-13\nFilename: pool/universe/q/qtserialport-opensource-src/libqt5serialport5_5.15.13-1_amd64.deb\nSize: 34294\nMD5sum: 50940796bd41286a72bf3a7611dea3e1\nSHA1: 76ba78c522192e106c6433799a8e775eb270885f\nSHA256: 981fdf4cd9cc98f126a17fc0d11e0dae0be6f34ad5bd3ab56028ebafc6f15885\nSHA512: b30ae1518ff6251fe3cc8311a62554b74fdedba3c71b5c25a14710e012f65760cee6377841de792e1f6cfc49340f5c53bdf03ec70fe3a5f2305615a986a66571\nHomepage: https://doc.qt.io/qt-5/qtserialport-index.html\nDescription-en: Qt 5 serial port support\n Qt is a cross-platform C++ application framework. Qt's primary feature\n is its rich set of widgets that provide standard GUI functionality.\n .\n This package includes the library to use serial ports from within Qt 5.\nDescription-md5: 495baaf3e432acf5b4e4136a5d0e645a\nTask: kubuntu-desktop, kubuntu-full, ubuntustudio-desktop, edubuntu-desktop-gnome, edubuntu-desktop-gnome-raspi\n\nPackage: libqt5serialport5-dev\nArchitecture: amd64\nVersion: 5.15.13-1\nMulti-Arch: same\nPriority: optional\nSection: universe/libdevel\nSource: qtserialport-opensource-src\nOrigin: Ubuntu\nMaintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>\nOriginal-Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>\nBugs: https://bugs.launchpad.net/ubuntu/+filebug\nInstalled-Size: 68\nDepends: libqt5serialport5 (= 5.15.13-1), qtbase5-dev | qtbase5-gles-dev\nFilename: pool/universe/q/qtserialport-opensource-src/libqt5serialport5-dev_5.15.13-1_amd64.deb\nSize: 10614\nMD5sum: 74815a15ab867de0adbd350f33dadec8\nSHA1: c6d6193e91766276d6f8fa9c563f607ab43da018\nSHA256: cc9c7f7c518f5402e5e882da3efe4aae01c2ac0e3ed662654d342e565848185a\nSHA512: 61e74f5d0ea93afc3706f1457cc95301cb5d384c705984f53f471dc013a8c6f05bc6ec68a2c0d32bceb2b195d4136ed789cf7d06b27ceee98ba76cc48154521b\nHomepage: https://doc.qt.io/qt-5/qtserialport-index.html\nDescription-en: Qt 5 serial port development files\n Qt is a cross-platform C++ application framework. Qt's primary feature\n is its rich set of widgets that provide standard GUI functionality.\n .\n This package includes the development headers for the serial port library.\nDescription-md5: ec6e5c3fc91d00795e2fd511b16872a7",
+      "stderr": ""
+    }
+  },
+  "arm_current_release_sysroot_source": {
+    "path": "04_references/sn100_host/printer_settings_20261024/platforms/arm64/dependencies/dependency_report.json",
+    "sha256": "8404c1fb584fe1840c1b046c745b0ca6b823b9aab94b755af919ab77e16e84fc",
+    "reported_sysroot": "temp/sn100_host/o02_login/platforms/arm64/sysroot",
+    "previous_closure_elf_count": 56,
+    "new_lis_version_must_be_checked_again": true
+  },
+  "windows_sdk": {
+    "root": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32",
+    "qt_version": "5.14.2",
+    "architecture": "PE32/i386",
+    "SerialPort_module_complete": true,
+    "qmake_module_dependency": "core",
+    "qmake_if_used": "win32: QT += serialport",
+    "availablePorts_export": "_ZN15QSerialPortInfo14availablePortsEv",
+    "direct_imports": [
+      "ADVAPI32.dll",
+      "libgcc_s_dw2-1.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "SETUPAPI.dll",
+      "libstdc++-6.dll",
+      "Qt5Core.dll"
+    ],
+    "non_system_recursive_closure": [
+      "Qt5SerialPort.dll",
+      "Qt5Core.dll",
+      "libgcc_s_dw2-1.dll",
+      "libstdc++-6.dll",
+      "libwinpthread-1.dll"
+    ],
+    "system_dlls_not_to_bundle": true,
+    "fingerprints": [
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\bin\\Qt5SerialPort.dll",
+        "bytes": 158752,
+        "sha256": "333df93739e8aefecb4c74e4c56b91d22350869aa24d3ba44c66d310cea0de86"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5SerialPort.a",
+        "bytes": 74974,
+        "sha256": "717a83c2aa0b43276f7cbcd8a9477be017e4361ded49190a38c1fbf0ee1e1bcb"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSerialPort\\qserialportinfo.h",
+        "bytes": 3826,
+        "sha256": "ce6a8cb815c5e1d6ef9f595cbd25ecf153cb922fa238766a848ffa5af9dfc7df"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSerialPort\\QSerialPortInfo",
+        "bytes": 30,
+        "sha256": "df131707a390f458e4c7bc6c1ee7616f7ff9889fd88d04d30264ad4b3d4cb647"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSerialPort\\qserialport.h",
+        "bytes": 10213,
+        "sha256": "99cc46a66c4d59970f68e06351b680c33afc7ed66bd04ed1ddb0469496dbd90c"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSerialPort\\qserialportglobal.h",
+        "bytes": 2452,
+        "sha256": "412f56c414ec7f1c12227f66e8cdda01b429d1d1b17c5fe212581fde406bb44f"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSerialPort\\qtserialportversion.h",
+        "bytes": 237,
+        "sha256": "c9e6579a842e6ed4eaac05b9edd5194f7e098818374add8d14cc4990698a0b61"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\mkspecs\\modules\\qt_lib_serialport.pri",
+        "bytes": 546,
+        "sha256": "186a809d0b6fb225ba3b744db693f5f4d162749596852427a706ef1e4dd5d579"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\mkspecs\\modules\\qt_lib_serialport_private.pri",
+        "bytes": 578,
+        "sha256": "edc5dd312c483cce537e64690e687f78ed4eacde9c53eaecbcb127d3e051f06e"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\mkspecs\\qconfig.pri",
+        "bytes": 747,
+        "sha256": "cf3c2af51f1698f101af40eff80cd9f1dff76722b92dc572f9d9b0bd88ba3db2"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\Qt5SerialPort.prl",
+        "bytes": 1224,
+        "sha256": "7f41b37eef8f85ff1c2798c22fb4bc6d30d54dc8989b9bb02e8773c49b1659c1"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\pkgconfig\\Qt5SerialPort.pc",
+        "bytes": 317,
+        "sha256": "24458411920505c92cf20d0e1b060e218204bf35910f33ec954d4d6f7568ec4f"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\bin\\Qt5Core.dll",
+        "bytes": 8460552,
+        "sha256": "2af418a34f2076b05ee08dc4bedbe6eb7050bcb6b0658a3db2d5d4302af2db45"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\bin\\libgcc_s_dw2-1.dll",
+        "bytes": 113678,
+        "sha256": "aa8180b63a849e755323bb1abe364b654c0eed9b433738fc491e5b64c410ef76"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\bin\\libstdc++-6.dll",
+        "bytes": 1542158,
+        "sha256": "c05b714b94bab75ddfb77339aa5f48772be7ac2c3e9d7322e2d1549fc0a39cfd"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\bin\\libwinpthread-1.dll",
+        "bytes": 47104,
+        "sha256": "ae1b4fe65da58196fea59b4dc0be64ae68d6ef04497027fadbddbc2dc38d843d"
+      },
+      {
+        "path": "C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\bin\\qmake.exe",
+        "bytes": 4166296,
+        "sha256": "3af91a9f11ea8391a2fc0f0292f6066cc513801fa3c6cefef4e2540b9ca5283a"
+      }
+    ],
+    "objdump_tool": {
+      "path": "C:\\Qt5.14\\Qt5.14.2\\Tools\\mingw730_32\\bin\\objdump.exe",
+      "sha256": "d4e624eb32c3549146f64cfd2b039af9b00059db21c2b4adac1383b5a4c363f3"
+    },
+    "actual_runtime_not_exercised": true
+  },
+  "critical_boundaries": [
+    {
+      "platform": "Linux/Qt5.15 upstream",
+      "fact": "availablePorts can call isValidSerial8250 in both udev and sysfs branches. That helper opens the character device O_RDWR|O_NONBLOCK|O_NOCTTY, issues TIOCGSERIAL, then closes it.",
+      "conclusion": "QSerialPortInfo::availablePorts is not a strict zero-open API on Linux. Do not invoke it in the current no-serial-open local-settings slice.",
+      "qualification": "Upstream static source evidence; native and inspected ARM sysroots have no Qt5 SerialPort binary, so no local runtime implementation was exercised."
+    },
+    {
+      "platform": "Windows/Qt5.14.2 upstream",
+      "fact": "availablePorts uses SetupAPI/CM and read/query registry APIs; CreateFile for a COM device appears in separate isBusy/isValid methods.",
+      "conclusion": "Optional Windows QtSerialPort use must never add isBusy/isValid/open checks. It adds a DLL dependency unnecessary for candidate names."
+    },
+    {
+      "platform": "Windows/Qt5.14.2 QSettings",
+      "fact": "The explicit registry-path QSettings constructor uses read_only=false; obtaining a handle can request KEY_READ|KEY_WRITE and fall back to RegCreateKeyEx.",
+      "conclusion": "QSettings NativeFormat is not a strict no-registry-create enumeration adapter even if application code only requests childKeys/value."
+    }
+  ],
+  "root_selected_minimal_adapter": {
+    "QtSerialPort_not_added": true,
+    "libudev_not_added": true,
+    "linux": "QtCore/OS sysfs and /dev path metadata/stat only; never open a character device, call ioctl, write, or derive baud/connection readiness. Return candidate names in the store worker with an injectable anonymous provider.",
+    "windows": "Use fixed HKLM\\HARDWARE\\DEVICEMAP\\SERIALCOMM with RegOpenKeyExW(KEY_QUERY_VALUE), RegEnumValueW, RegCloseKey; no RegCreate/Set, QSettings registry constructor, QSerialPort open/isBusy/isValid, socket or listener.",
+    "windows_link": "win32: LIBS += -ladvapi32 explicitly if direct WinAPI calls are selected; this is a system import, no third-party runtime or system DLL copy.",
+    "windows_import_library": {
+      "path": "C:\\Qt5.14\\Qt5.14.2\\Tools\\mingw730_32\\i686-w64-mingw32\\lib\\libadvapi32.a",
+      "bytes": 633796,
+      "sha256": "f0ae34951a562aa4f74a801ac1421515e154dbb1c481b23dd8093534d9bbb912"
+    },
+    "previous_actual_Makefile_has_explicit_advapi32": false,
+    "root_notified_of_qsettings_create_risk": true,
+    "actual_new_adapter_implementation_verified": false,
+    "candidate_semantics": "Candidate presence is not port availability, access permission, connection success or LIS readiness. Preserve missing saved names, allow a genuine empty list, and keep TCP/serial drafts independently. No guessed endpoint/client-server/parity/baud defaults.",
+    "stop_boundary": "Run enumeration outside GUI and do not promise bounded cancellation of a blocked OS metadata/registry operation without separate proof."
+  },
+  "if_full_QtSerialPort_is_chosen_later": {
+    "native_missing": [
+      "Matching libqt5serialport5 and libqt5serialport5-dev 5.15.13-1; cached Ubuntu package metadata records QtBase ABI5-15-13 and libudev1 dependency. No package installed by this audit."
+    ],
+    "arm_missing": [
+      "Matching ARM64 Qt5 SerialPort development/runtime package",
+      "libudev and any actual transitive providers after inspecting selected package ELFs",
+      "Corresponding redistribution notices and pinned official package-index/SHA provenance"
+    ],
+    "wrong_existing_archive": "Existing libqt6serialport6_6.4.2-4build2_amd64.deb is Qt6/amd64 and is not a Qt5/AArch64 substitute.",
+    "formal_build_deltas": "main qmake module/include plus ARM modules include and main-only -lQt5SerialPort. Keep report renderer closure unchanged. Update prepare_runtime pinned restore providers, report_private_libraries candidates and notices so checked new providers are actually packaged.",
+    "closure_limits": "check_arm64.py follows DT_NEEDED, provider symbols and versions. A dynamic QLibrary udev load is not automatically covered by that graph; explicitly inspect/declare it if the selected SerialPort binary uses that model. Ubuntu cached metadata declares libudev1, but ARM SerialPort bytes were absent and were not inspected."
+  },
+  "reusable_frozen_build_workflow": [
+    "Wait for root final LIS source freeze and before==after; use a new LIS-specific native/Windows/ARM output tree. Do not reuse the361 printer freeze or an old package as the new LIS release.",
+    "Persist source/toolchain/external-input hashes BEFORE compilation and flush each qmake/make/import child exit immediately, before slow parsing. Use the tested PowerShell7 driver path rather than the slow PS5 dependency parser.",
+    "Windows fresh main/helper max-j2; record actual commands/object rules/artifacts/PE/imports and actual top-level exit. With the chosen adapter, only a system Advapi32 import may change; no QtSerialPort DLL should become a product dependency.",
+    "ARM list-input contract, isolated build directories and explicitly verified reuse only as permitted; existing build.sh QtCore include/link is sufficient for the chosen Linux adapter. Re-run fresh ELF closure and compare frozen source after build/package; never execute the target ELF here.",
+    "Check new package internal SHA/release_id/main-helper pair and exact matching source archive and notices, archive only under root ownership after its checks. Capability means local LIS settings intent only, not actual LIS communication.",
+    "Independent provider/INI/GUI tests and cumulative regressions precede release acceptance; resource tests run only after all builds/read-only hashing have finished. Original Windows behavior, RK, real endpoints/ports, budgets and long stability remain separate."
+  ],
+  "source_workflow_observations": [
+    {
+      "path": "06_programs/sn100_host/shell/build.sh",
+      "sha256": "3719d17a9adff5810445c158baa3a0a7c04b8399f8bfe8cc725fdaa733986992",
+      "scope": "Observed mutable development source; not a new release freeze"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/prepare_runtime.sh",
+      "sha256": "c1f8355d2331925483dcbdb36a218870386ada44f08a0f7a7666c55c6c89c0b8",
+      "scope": "Observed mutable development source; not a new release freeze"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/check_arm64.py",
+      "sha256": "7565db6208d76778ed00fd43272e588cefdaf6522e24c7622ed0dd2277787f8e",
+      "scope": "Observed mutable development source; not a new release freeze"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/package_arm64.py",
+      "sha256": "afdf9634d356e2e3686b81eb64895fa72701765263aa2502e57caa281ad0ba68",
+      "scope": "Observed mutable development source; not a new release freeze"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shell.pri",
+      "sha256": "a8e1a35a537844b959f18cc4cc96ad1e8ecf01fd7331578ce7afb2f653c606ce",
+      "scope": "Observed mutable development source; not a new release freeze"
+    }
+  ],
+  "primary_sources": [
+    {
+      "name": "qt515_unix_serialportinfo",
+      "url": "https://raw.githubusercontent.com/qt/qtserialport/5.15/src/serialport/qserialportinfo_unix.cpp",
+      "kind": "Official upstream source; read as text only, never compiled or executed",
+      "sha256": "e4b40426e6c3a59517d3f91f72687545cf97b9a9eabde9d6e61559e0aa0e43d2",
+      "bytes": 16851,
+      "marker_lines": {
+        "static bool isValidSerial8250": [
+          136
+        ],
+        "const mode_t flags = O_RDWR": [
+          139
+        ],
+        "qt_safe_open(systemLocation": [
+          140
+        ],
+        "isSerial8250Driver(driverName) && !isValidSerial8250": [
+          283,
+          439
+        ]
+      }
+    },
+    {
+      "name": "qt5142_windows_serialportinfo",
+      "url": "https://raw.githubusercontent.com/qt/qtserialport/v5.14.2/src/serialport/qserialportinfo_win.cpp",
+      "kind": "Official upstream source; read as text only, never compiled or executed",
+      "sha256": "6912c0b7ae37d1c11cd3e8e935247f69615744fa66bdefacb9bdea53bb5f832a",
+      "bytes": 15044,
+      "marker_lines": {
+        "QSerialPortInfo::availablePorts": [
+          283
+        ],
+        "QSerialPortInfo::isBusy": [
+          351
+        ],
+        "QSerialPortInfo::isValid": [
+          367
+        ]
+      }
+    },
+    {
+      "name": "qt5142_windows_qsettings",
+      "url": "https://raw.githubusercontent.com/qt/qtbase/v5.14.2/src/corelib/io/qsettings_win.cpp",
+      "kind": "Official upstream source; read as text only, never compiled or executed",
+      "sha256": "23e8b8181581cfdb339ff8fd628689d5b891a94de857f6de39b6049b650917e0",
+      "bytes": 27356,
+      "marker_lines": {
+        "KEY_READ | KEY_WRITE": [
+          74
+        ],
+        "RegCreateKeyEx": [
+          165
+        ],
+        "QWinSettingsPrivate::QWinSettingsPrivate": [
+          405,
+          434
+        ]
+      }
+    }
+  ],
+  "scope_limit": "Read-only dependency and safety preparation. New adapter implementation, source freeze, build success, GUI correctness and real hardware/OS runtime behavior are not asserted."
+}

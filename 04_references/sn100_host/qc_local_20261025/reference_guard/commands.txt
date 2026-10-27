@@ -1,0 +1,14 @@
+/usr/lib/qt5/bin/qmake <root>/06_programs/sn100_host/tests/calibration_reference_test.pro CONFIG+=release CONFIG-=debug
+make -j2
+attempt=2
+/usr/lib/qt5/bin/qmake <root>/06_programs/sn100_host/tests/calibration_reference_test.pro CONFIG+=release CONFIG-=debug
+make -j2
+SN100_REFERENCE_TEST_ROOT=<base>/runtime ./calibration_reference_test -v1
+attempt=3
+/usr/lib/qt5/bin/qmake <root>/06_programs/sn100_host/tests/calibration_reference_test.pro CONFIG+=release CONFIG-=debug
+make -j2
+SN100_REFERENCE_TEST_ROOT=<base>/runtime ./calibration_reference_test -v1
+attempt=4
+/usr/lib/qt5/bin/qmake <root>/06_programs/sn100_host/tests/calibration_reference_test.pro CONFIG+=release CONFIG-=debug
+make -j2
+SN100_REFERENCE_TEST_ROOT=<base>/runtime ./calibration_reference_test -v1

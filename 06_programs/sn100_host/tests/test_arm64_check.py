@@ -98,6 +98,19 @@ class DependencyCheckTest(unittest.TestCase):
         self.sqlite.unlink()
         self.assertIn("missing_sqlite_plugin", [item["code"] for item in self.run_check()["errors"]])
 
+    def test_svg_library_does_not_replace_the_sample_qss_image_plugin(self):
+        self.metadata[str(self.binary)]["needed"].append("libQt5Svg.so.5")
+        self.add_target("/usr/lib/aarch64-linux-gnu/libQt5Svg.so.5", elf())
+        report = self.run_check()
+        self.assertTrue(report["svg_required"])
+        self.assertIn("missing_svg_image_plugin", [item["code"] for item in report["errors"]])
+        self.add_target("/" + arm64.PLUGIN_ROOT + "/imageformats/libqsvg.so", elf(["libQt5Svg.so.5"]))
+        self.assertTrue(self.run_check()["offline_link_and_sql_closure_passed"])
+
+    def test_svg_image_plugin_dependencies_are_checked(self):
+        self.add_target("/" + arm64.PLUGIN_ROOT + "/imageformats/libqsvg.so", elf(["libMissingSvg.so.1"]))
+        self.assertTrue(any(item.get("library") == "libMissingSvg.so.1" for item in self.run_check()["errors"]))
+
     def test_version_must_be_defined_by_the_specific_provider(self):
         self.metadata[str(self.binary)]["requirements"] = {"libc.so.6": [{"name": "GLIBC_2.28", "flags": "none"}]}
         # libc defines a newer version but the requested one is absent.

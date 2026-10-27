@@ -1,0 +1,82 @@
+{
+  "schema": "sn100-report-windows-include-handoff-v1",
+  "finished_utc": "2026-10-25T17:14:01.0079195Z",
+  "status": "报告单行头文件修复已落盘；后续校准编译错误按分工停止，构建槽已归还",
+  "change": {
+    "source": "06_programs/sn100_host/history/report_remaining_store.cpp",
+    "before_sha256": "2d325e1b82ac703b2ceba147a92b89b43a8c79a4f4045be7138277463aa72618",
+    "after_sha256": "13709d4d4054c5d03e5a3a361f4a0998063f22026bf89e18d119ecb38142ed6c",
+    "only_added_line": "#include <QVariant>",
+    "only_added_line_verified": true,
+    "business_permissions_api_schema_layout_changes": false
+  },
+  "prior_freeze_sha256": "57f3b03290cc3635a5772a7169d22c1713f164186ab3b368028a0f35f8b710ed",
+  "prior_freeze_entries": 426,
+  "prior_freeze_is_not_repaired_final_freeze": true,
+  "backup_directory": "07_backups/sn100_host/offline_four_windows_20261025/windows_include_preimage",
+  "backup_manifest_sha256": "8fa5cc0112609d6792fe8f69cb400058fbd63dc9215b8dcc8af6eafdb38dfe46",
+  "diagnostic_directory": "04_references/sn100_host/report_remaining_20261025/windows_include_diagnostic_20261026",
+  "evidence_manifest_sha256": "c99131f95a8c87ab90aee3b4d8a29c0d78309ddbfd14fe08c7bb37558e62d885",
+  "toolchain": "PowerShell 7.6.5 / Qt 5.14.2 / MinGW 7.3 32-bit / Release C++14 / make -j2",
+  "toolchain_original_11_hashes_unchanged": true,
+  "original_shell_makefile_fields_and_sha_unchanged": true,
+  "original_shell_makefile_sha256": "26ecf4d3448edc1aa70f36250a7a514f27e4c024d64fcef3adeecb51a1cc0c6c",
+  "original_failure": {
+    "make_exit": 2,
+    "driver_exit": 1,
+    "source": "history/report_remaining_store.cpp",
+    "line": 90,
+    "error": "QSqlQuery::addBindValue(qint64&) cannot convert to QVariant; later QVariant incomplete errors",
+    "copied_evidence_prefix": "original_",
+    "original_files_unchanged": true
+  },
+  "diagnostic_result": {
+    "fresh_release_validation": false,
+    "shell_mode": "Continue original partial failed build tree only",
+    "original_object_count": 27,
+    "final_object_count": 88,
+    "qmake_version_exit": 0,
+    "shell_make_exit": 2,
+    "driver_exit": 1,
+    "report_store_compiled": true,
+    "report_store_object": {
+      "path": "temp/sn100_host/qc_local_20261025/platforms/windows/shell_build/.obj/report_remaining_store.o",
+      "sha256": "47e822766d20cc81af839a60cddb8890a5d72160849254d8c519326c6b3c2505"
+    },
+    "renderer_started": false,
+    "source_changes_during_build": [],
+    "changed_since_prior_freeze": [
+      "history/report_remaining_store.cpp"
+    ]
+  },
+  "next_blocker": {
+    "owner": "校准/统一整合窗口",
+    "source": "06_programs/sn100_host/calibration/calibration_store.cpp",
+    "first_line": 238,
+    "error": "invalid use of incomplete type 'class QVariant'",
+    "additional_line": 263,
+    "failed_target": ".obj/calibration_store.o",
+    "makefile_rule_line": 31629,
+    "error_source_files": [
+      "calibration\\calibration_store.cpp"
+    ],
+    "evidence": "shell_continue_01.log / next_actual_errors.txt",
+    "source_modified_by_this_task": false,
+    "action": "先由模块负责人处理实际校准错误；之后统一生成新冻结并执行最终fresh构建/适用复测，继续排查剩余模块及renderer"
+  },
+  "scope_limits": {
+    "business_logic_modified": false,
+    "other_module_source_modified": false,
+    "global_path_toolchain_or_environment_modified": false,
+    "reference_project_modified": false,
+    "windows_gui_run": false,
+    "registry_enumeration": false,
+    "device_connected": false,
+    "runtime_regressions_rerun_after_include": false,
+    "resource_measurements": false,
+    "final_published": false,
+    "shared_docs_modified": false
+  },
+  "slot_released": true,
+  "remaining_build_processes": []
+}

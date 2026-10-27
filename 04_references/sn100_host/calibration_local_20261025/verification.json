@@ -1,0 +1,235 @@
+{
+  "schema": "sn100-calibration-independent-verification-v1",
+  "started_utc": "2026-10-25T13:22:45.320628+00:00",
+  "receipts": [
+    {
+      "name": "environment",
+      "command": [
+        "bash",
+        "-lc",
+        "uname -a && /usr/lib/qt5/bin/qmake -v && g++ --version && ldd --version"
+      ],
+      "environment_overrides": {},
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.040818,
+      "log": "04_references/sn100_host/calibration_local_20261025/environment.log",
+      "log_sha256": "a93305bb8b318910806ef1e9659479359f433495b8bfa25691b1df0d5ddec1bd"
+    },
+    {
+      "name": "clean_wsl_store_tests",
+      "command": [
+        "make",
+        "-C",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_store_tests",
+        "clean"
+      ],
+      "environment_overrides": {},
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.072568,
+      "log": "04_references/sn100_host/calibration_local_20261025/clean_wsl_store_tests.log",
+      "log_sha256": "c909b6c50fe70e8c8d5a865753e1724ff5ad043399aabb0ddb2d750269a90829"
+    },
+    {
+      "name": "final_store-test",
+      "command": [
+        "bash",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/wsl.sh",
+        "store-test"
+      ],
+      "environment_overrides": {
+        "QT_QPA_PLATFORM": "offscreen",
+        "CALIBRATION_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_offscreen"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 31.024452,
+      "log": "04_references/sn100_host/calibration_local_20261025/final_store-test.log",
+      "log_sha256": "f0ce57b69f8617a316ae8ba2513cb2dadc5813c5752bddb1eb7ea89ac9a456e5",
+      "qt_test_totals": {
+        "passed": 50,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "clean_wsl_page_tests",
+      "command": [
+        "make",
+        "-C",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_page_tests",
+        "clean"
+      ],
+      "environment_overrides": {},
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.22697,
+      "log": "04_references/sn100_host/calibration_local_20261025/clean_wsl_page_tests.log",
+      "log_sha256": "e50ddf103d6b86b2e08c40b234fe70870b88e5d3331657e3a0599f86ff8e3944"
+    },
+    {
+      "name": "final_page-test",
+      "command": [
+        "bash",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/wsl.sh",
+        "page-test"
+      ],
+      "environment_overrides": {
+        "QT_QPA_PLATFORM": "offscreen",
+        "CALIBRATION_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_offscreen",
+        "CALIBRATION_SCREENSHOT_DIR": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/04_references/sn100_host/calibration_local_20261025/screenshots/offscreen"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 47.13103,
+      "log": "04_references/sn100_host/calibration_local_20261025/final_page-test.log",
+      "log_sha256": "05a70e8e16eaf584ace2a6fa2321ea46c6a413596b70dc632e0c6bbb79b6817a",
+      "qt_test_totals": {
+        "passed": 21,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "clean_wsl_release",
+      "command": [
+        "make",
+        "-C",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release",
+        "clean"
+      ],
+      "environment_overrides": {},
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.333892,
+      "log": "04_references/sn100_host/calibration_local_20261025/clean_wsl_release.log",
+      "log_sha256": "0f2f41ceda69f369f08c59aa788eca0997932a965846ca1935f6aa8c608f035f"
+    },
+    {
+      "name": "final_build",
+      "command": [
+        "bash",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/wsl.sh",
+        "build"
+      ],
+      "environment_overrides": {
+        "QT_QPA_PLATFORM": "offscreen",
+        "CALIBRATION_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_offscreen"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 31.790864,
+      "log": "04_references/sn100_host/calibration_local_20261025/final_build.log",
+      "log_sha256": "de070116bb27d4c3c4191792b68f4043f9a981aa5e260a443c3bb3f909b6288b"
+    },
+    {
+      "name": "final_page_xcb",
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_page_tests/calibration_page_test"
+      ],
+      "environment_overrides": {
+        "QT_QPA_PLATFORM": "xcb",
+        "CALIBRATION_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_xcb",
+        "CALIBRATION_SCREENSHOT_DIR": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/04_references/sn100_host/calibration_local_20261025/screenshots/xcb"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 11.534524,
+      "log": "04_references/sn100_host/calibration_local_20261025/final_page_xcb.log",
+      "log_sha256": "157350213f031e777a65d8584a32bf54794e3b7ee3e5c80f3fef87e68612b53e",
+      "qt_test_totals": {
+        "passed": 21,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "create_anonymous_catalog",
+      "command": [
+        "python3",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/tests/calibration_create_catalog.py",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/catalog.db"
+      ],
+      "environment_overrides": {},
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.480814,
+      "log": "04_references/sn100_host/calibration_local_20261025/create_anonymous_catalog.log",
+      "log_sha256": "1871f8ca7b9cbdc1bc2ec45578c4302d932f2d24e70470a341788e151df039b9"
+    },
+    {
+      "name": "standalone_offscreen",
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration",
+        "--data-dir",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/offscreen",
+        "--catalog-db",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/catalog.db",
+        "--exit-after-ms",
+        "1200"
+      ],
+      "environment_overrides": {
+        "QT_QPA_PLATFORM": "offscreen"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 1.297007,
+      "log": "04_references/sn100_host/calibration_local_20261025/standalone_offscreen.log",
+      "log_sha256": "981fcd2a4e46ae031a7266b39ddb1189dc71454c12007cb8a75c3011d6321a37"
+    },
+    {
+      "name": "standalone_xcb",
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration",
+        "--data-dir",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/xcb",
+        "--catalog-db",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/catalog.db",
+        "--exit-after-ms",
+        "1200"
+      ],
+      "environment_overrides": {
+        "QT_QPA_PLATFORM": "xcb"
+      },
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 1.294602,
+      "log": "04_references/sn100_host/calibration_local_20261025/standalone_xcb.log",
+      "log_sha256": "981fcd2a4e46ae031a7266b39ddb1189dc71454c12007cb8a75c3011d6321a37"
+    },
+    {
+      "name": "invalid_cli",
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration"
+      ],
+      "environment_overrides": {
+        "QT_QPA_PLATFORM": "offscreen"
+      },
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "elapsed_seconds": 0.022521,
+      "log": "04_references/sn100_host/calibration_local_20261025/invalid_cli.log",
+      "log_sha256": "31bbcb66cd89553ba48cf0c5c9a6b17e3cc761eb537645e918b653917701f5fb"
+    }
+  ],
+  "scope": "WSL x86_64 Qt5 Release, anonymous local DB; no Windows/ARM/RK/device efficacy/resource qualification",
+  "source_inputs_unchanged_during_verification": true,
+  "artifacts": {
+    "temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration": {
+      "sha256": "6595bd07d7adf13093be5475545d27a1630e029aaaefaf9a6f3786058a7b495a",
+      "bytes": 493408
+    },
+    "temp/sn100_host/calibration_local_20261025/wsl_store_tests/calibration_store_test": {
+      "sha256": "d545438a5480cb973aa5ebeb04dd7922294c1b3da5c212d2abba670f2f6c991f",
+      "bytes": 325400
+    },
+    "temp/sn100_host/calibration_local_20261025/wsl_page_tests/calibration_page_test": {
+      "sha256": "0c35b748c462c49086f50d22fb3b9b941b49f4d4ae58c822381121852db9dcb5",
+      "bytes": 602728
+    }
+  },
+  "ui_byte_identical_to_reference": true,
+  "passed": true,
+  "finished_utc": "2026-10-25T13:24:48.829464+00:00"
+}

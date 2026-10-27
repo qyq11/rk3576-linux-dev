@@ -1,0 +1,150 @@
+--- a/06_programs/sn100_host/samples/sample_page.cpp
++++ b/06_programs/sn100_host/samples/sample_page.cpp
+@@ -185,13 +185,7 @@
+             });
+     connect(ui->btnAdd, &CusBadgeButton::clicked, this, &SamplePage::addRack);
+     connect(ui->btnMenuSave, &QPushButton::clicked, this, &SamplePage::saveRack);
+-    connect(ui->btnEditRack, &QPushButton::clicked, this,
+-            [this]()
+-            {
+-                settingWidget_->show();
+-                settingWidget_->raise();
+-                ui->stkFunMenu->setCurrentIndex(1);
+-            });
++    connect(ui->btnEditRack, &QPushButton::clicked, this, [this]() { showRack(editing_.id); });
+     connect(ui->btnMenuReturn, &QPushButton::clicked, this,
+             [this]()
+             {
+@@ -201,7 +195,9 @@
+                 }
+                 settingWidget_->hide();
+                 ui->stkFunMenu->setCurrentIndex(0);
+-                ui->rackList->setScrollEnabled(true);
++                refreshRackList();
++                ui->btnPrvRack->hide();
++                ui->btnNextRack->hide();
+                 ui->btnAdd->show();
+             });
+     connect(ui->btnHoleDetail, &QPushButton::clicked, this, &SamplePage::detail);
+@@ -572,13 +568,32 @@
+ void SamplePage::refreshRackList()
+ {
+     QSignalBlocker blocker(ui->rackList);
++    const bool editorOpen = !settingWidget_->isHidden();
++    const bool localDraft = editorOpen && !editing_.id && !editing_.holes.isEmpty();
++    auto visibleRacks = snapshot_.racks;
++    if (localDraft)
++    {
++        // A new rack has no persistent ID until saveRack succeeds.
++        visibleRacks.append(editing_);
++    }
++    QListWidgetItem *currentItem = nullptr;
+     ui->rackList->clear();
+-    for (int index = 0; index < snapshot_.racks.size(); ++index)
+-    {
+-        const auto &rack = snapshot_.racks[index];
++    for (int index = 0; index < visibleRacks.size(); ++index)
++    {
++        const auto &rack = visibleRacks[index];
+         auto *item = new QListWidgetItem(ui->rackList);
+-        item->setSizeHint(QSize(ui->rackList->width(), 136));
+-        auto *view = new SampleRackView(rack, index, rack.id == editing_.id, ui->rackList);
++        const bool current = rack.id == editing_.id;
++        item->setSizeHint(QSize(ui->rackList->width(), current && editorOpen ? height() : 136));
++        if (current)
++        {
++            currentItem = item;
++        }
++        auto *view = new SampleRackView(rack, index, current, ui->rackList);
++        view->setProperty("localDraft", localDraft && current);
++        if (localDraft && current)
++        {
++            view->setToolTip(tr("本地草稿，尚未保存；未下发。"));
++        }
+         connect(view, &SampleRackView::selected, this,
+                 [this](qint64 id)
+                 {
+@@ -590,7 +605,7 @@
+         connect(view, &SampleRackView::editRequested, this,
+                 [this](qint64 id)
+                 {
+-                    if (id == editing_.id || prepareToLeave())
++                    if ((id != editing_.id || settingWidget_->isHidden()) && prepareToLeave())
+                     {
+                         showRack(id);
+                     }
+@@ -598,14 +613,27 @@
+         connect(view, &SampleRackView::renameRequested, this,
+                 [this](qint64 id)
+                 {
+-                    if (id == editing_.id || prepareToLeave())
+-                    {
++                    if (id != editing_.id)
++                    {
++                        if (!prepareToLeave())
++                        {
++                            return;
++                        }
+                         showRack(id);
+-                        renameRack();
+-                    }
++                    }
++                    renameRack();
+                 });
+         ui->rackList->setItemWidget(item, view);
+     }
++    // Original editRack expands the current row so its card stays above the editor.
++    ui->rackList->setScrollEnabled(!editorOpen);
++    if (currentItem)
++    {
++        ui->rackList->setCurrentItem(currentItem);
++        ui->rackList->doItemsLayout();
++        ui->rackList->scrollToItem(currentItem, editorOpen ? QAbstractItemView::PositionAtTop
++                                                           : QAbstractItemView::EnsureVisible);
++    }
+ }
+ void SamplePage::showRack(qint64 id)
+ {
+@@ -623,16 +651,18 @@
+     }
+     dirty_ = false;
+     row_ = 0;
+-    refreshRackList();
+     refreshTable();
+     refreshProjects();
+     settingWidget_->setVisible(editing_.id > 0);
+     settingWidget_->raise();
++    refreshRackList();
+     ui->stkFunMenu->setCurrentIndex(1);
+     ui->btnDelRack->setVisible(!editing_.emergency);
+     ui->btnDelRackAll->setVisible(!editing_.emergency);
+-    ui->btnPrvRack->setVisible(snapshot_.racks.size() > 1);
+-    ui->btnNextRack->setVisible(snapshot_.racks.size() > 1);
++    ui->btnPrvRack->setVisible(!snapshot_.racks.isEmpty() && editing_.id != snapshot_.racks.first().id);
++    ui->btnNextRack->setVisible(!snapshot_.racks.isEmpty() && editing_.id != snapshot_.racks.last().id);
++    ui->btnPrvRack->raise();
++    ui->btnNextRack->raise();
+     actions();
+ }
+ void SamplePage::refreshTable()
+@@ -905,6 +935,9 @@
+     refreshProjects();
+     settingWidget_->show();
+     settingWidget_->raise();
++    refreshRackList();
++    ui->btnPrvRack->hide();
++    ui->btnNextRack->hide();
+     ui->stkFunMenu->setCurrentIndex(1);
+     report(tr("新预设仅在编辑中，点更新设置后保存本地；不会下发。"));
+ }
+@@ -1027,6 +1060,10 @@
+                         }
+                         editing_.name = button->text();
+                         markDirty();
++                        if (!editing_.id)
++                        {
++                            refreshRackList();
++                        }
+                         dialog->accept();
+                     });
+         }

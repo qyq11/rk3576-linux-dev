@@ -1,0 +1,564 @@
+{
+  "schema": "sn100-qc-history-page-handoff-v1",
+  "date": "2026-10-26",
+  "status": "formal-code-landed-independent-computer-offline-tests-passed",
+  "scope": "Read-only QC historical result parsing, SQL value reply, original card rendering/tracing and descriptive statistics. Not raw instrument spectra, clinical control judgement, manual point entry/import, unified shell/RK acceptance or complete QC clinical migration.",
+  "source_owner": "qc_pages owns core/chart/presenter/page/widgets/forms/resources/tests and module ARM build list; qc_store owns SQL/DTO/qc_core.pri; root owns shared shell/package files.",
+  "source_inventory": "formal_owned_source_inventory.json",
+  "stages": {
+    "core_pass": {
+      "original_directory": "temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/core",
+      "archive_directory": "core_pass",
+      "verification": {
+        "passed": true,
+        "source_inputs": 8,
+        "source_before_after_equal": true,
+        "stage": "core",
+        "results": [
+          {
+            "anonymous": true,
+            "case_count": 20,
+            "cases": [
+              {
+                "checks": 9,
+                "name": "four-types-and-real-envelope",
+                "passed": true
+              },
+              {
+                "checks": 5,
+                "name": "missing-type-is-invalid-not-zero",
+                "passed": true
+              },
+              {
+                "checks": 18,
+                "name": "invalid-nonfinite-and-overflow-never-zero",
+                "passed": true
+              },
+              {
+                "checks": 3,
+                "name": "signed-and-exponent-values-retain-sign",
+                "passed": true
+              },
+              {
+                "checks": 12,
+                "name": "unsupported-and-duplicate-types-fail-closed",
+                "passed": true
+              },
+              {
+                "checks": 10,
+                "name": "bounded-malformed-envelope",
+                "passed": true
+              },
+              {
+                "checks": 6,
+                "name": "control-project-current-previous-isolation",
+                "passed": true
+              },
+              {
+                "checks": 6,
+                "name": "date-time-rowid-descending-with-batch-concatenation",
+                "passed": true
+              },
+              {
+                "checks": 4,
+                "name": "legacy-trace-suspicion-remains-explicit",
+                "passed": true
+              },
+              {
+                "checks": 10,
+                "name": "golden-10-12-14-and-cv-ratio",
+                "passed": true
+              },
+              {
+                "checks": 7,
+                "name": "integer-and-fractional-unit-ratios",
+                "passed": true
+              },
+              {
+                "checks": 8,
+                "name": "unknown-and-association-units-never-pretend-point-snapshots",
+                "passed": true
+              },
+              {
+                "checks": 8,
+                "name": "invalid-duplicate-and-mixed-unit-evidence",
+                "passed": true
+              },
+              {
+                "checks": 5,
+                "name": "invalid-results-explicitly-counted-not-zero",
+                "passed": true
+              },
+              {
+                "checks": 5,
+                "name": "thirty-five-points-statistics-not-visible-window",
+                "passed": true
+              },
+              {
+                "checks": 4,
+                "name": "single-point-and-zero-mean-availability",
+                "passed": true
+              },
+              {
+                "checks": 3,
+                "name": "constant-empty-and-previous-only",
+                "passed": true
+              },
+              {
+                "checks": 8,
+                "name": "invalid-dates-time-and-row-identity",
+                "passed": true
+              },
+              {
+                "checks": 4,
+                "name": "invalid-requests-and-input-budgets",
+                "passed": true
+              },
+              {
+                "checks": 4,
+                "name": "pure-statistics-reused-guards",
+                "passed": true
+              }
+            ],
+            "checks": 139,
+            "clinical_rule_evaluation": false,
+            "cv_unit": "ratio-not-percent",
+            "database_or_network_or_gui": false,
+            "failed_checks": 0,
+            "qt_version": "5.15.13",
+            "schema": "sn100-private-qc-history-tests-v1"
+          }
+        ],
+        "scope": "Independent current formal sources only; not old432 native, RK, clinical or budget acceptance"
+      },
+      "artifact": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/core/build/qc_history_core_test",
+        "sha256": "8d2f1ba044b66492953a8f1986d638209c4f2ec3a7e3fd3a3ffdca163514278b"
+      },
+      "raw_receipts": {
+        "make.exit.json": {
+          "argv": [
+            "make",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/core/build",
+          "started_utc": "2026-10-26T02:39:49.208251+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 4.264709357,
+          "finished_utc": "2026-10-26T02:39:53.483961+00:00",
+          "cleanup": null
+        },
+        "qmake.exit.json": {
+          "argv": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/qc_history_core_test.pro",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/core/build",
+          "started_utc": "2026-10-26T02:39:47.636496+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 0.37606545300000027,
+          "finished_utc": "2026-10-26T02:39:48.020976+00:00",
+          "cleanup": null
+        },
+        "test.exit.json": {
+          "argv": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/core/build/qc_history_core_test"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/core/build",
+          "started_utc": "2026-10-26T02:39:53.543088+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 0.04497998799999969,
+          "finished_utc": "2026-10-26T02:39:53.596620+00:00",
+          "cleanup": null
+        }
+      },
+      "source_roster_sha256": "d541a64411bad1d84f64a76fb350528aa02bd8d05d62ae1f436dfbaca68fdc39"
+    },
+    "first_gui_failure": {
+      "original_directory": "temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/new_ui",
+      "archive_directory": "first_gui_failure",
+      "verification": {
+        "passed": false,
+        "source_inputs": 95,
+        "source_before_after_equal": true,
+        "stage": "new_ui",
+        "results": [],
+        "scope": "Independent current formal sources only; not old432 native, RK, clinical or budget acceptance"
+      },
+      "artifact": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/new_ui/build/qc_history_page_test",
+        "sha256": "94841ed4fc54a271a3fb3d54583025f060f45429b9258c4c500ec565977eba28"
+      },
+      "raw_receipts": {
+        "make.exit.json": {
+          "argv": [
+            "make",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/new_ui/build",
+          "started_utc": "2026-10-26T02:42:14.640377+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 125.64435451800001,
+          "finished_utc": "2026-10-26T02:44:20.289619+00:00",
+          "cleanup": null
+        },
+        "offscreen/test.exit.json": {
+          "argv": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/new_ui/build/qc_history_page_test",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/new_ui/offscreen/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/new_ui/offscreen/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/new_ui/build",
+          "started_utc": "2026-10-26T02:44:20.370119+00:00",
+          "actual_exit_code": 1,
+          "direct_exit_before_cleanup": 1,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 0.13246220799999264,
+          "finished_utc": "2026-10-26T02:44:20.515259+00:00",
+          "cleanup": null
+        },
+        "qmake.exit.json": {
+          "argv": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/qc_history_page_test.pro",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_01/new_ui/build",
+          "started_utc": "2026-10-26T02:41:49.890146+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 5.998427163999999,
+          "finished_utc": "2026-10-26T02:41:55.894164+00:00",
+          "cleanup": null
+        }
+      },
+      "source_roster_sha256": "7aa1898853c3bedb52cb27fe4e2ae81540214e1b57bd0ebaab4ff137f35d1b21"
+    },
+    "new_gui_pass": {
+      "original_directory": "temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui",
+      "archive_directory": "new_gui_pass",
+      "verification": {
+        "passed": true,
+        "source_inputs": 95,
+        "source_before_after_equal": true,
+        "stage": "new_ui",
+        "results": [
+          {
+            "qpa": "offscreen",
+            "totals": [
+              10,
+              0,
+              0
+            ]
+          },
+          {
+            "qpa": "xcb",
+            "totals": [
+              10,
+              0,
+              0
+            ]
+          }
+        ],
+        "scope": "Independent current formal sources only; not old432 native, RK, clinical or budget acceptance"
+      },
+      "artifact": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/build/qc_history_page_test",
+        "sha256": "36c869117ce9607fac79cd9edcdb0c29a7dbaf61276d7fd2aecace6f1b33280c"
+      },
+      "raw_receipts": {
+        "make.exit.json": {
+          "argv": [
+            "make",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/build",
+          "started_utc": "2026-10-26T02:48:35.225549+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 130.920941285,
+          "finished_utc": "2026-10-26T02:50:46.158935+00:00",
+          "cleanup": null
+        },
+        "offscreen/test.exit.json": {
+          "argv": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/build/qc_history_page_test",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/offscreen/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/offscreen/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/build",
+          "started_utc": "2026-10-26T02:50:46.205849+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 2.8811733200000162,
+          "finished_utc": "2026-10-26T02:50:49.093183+00:00",
+          "cleanup": null
+        },
+        "qmake.exit.json": {
+          "argv": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/qc_history_page_test.pro",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/build",
+          "started_utc": "2026-10-26T02:48:11.685742+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 5.367671027999999,
+          "finished_utc": "2026-10-26T02:48:17.059750+00:00",
+          "cleanup": null
+        },
+        "xcb/test.exit.json": {
+          "argv": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/build/qc_history_page_test",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/xcb/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/xcb/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/new_ui/build",
+          "started_utc": "2026-10-26T02:50:49.129939+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 3.5301080119999995,
+          "finished_utc": "2026-10-26T02:50:52.666680+00:00",
+          "cleanup": null
+        }
+      },
+      "source_roster_sha256": "9305402dc2d9dec0622de6907f796e8967a57aab24287a7f3e869055d3ac6cfa"
+    },
+    "legacy_gui_pass": {
+      "original_directory": "temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui",
+      "archive_directory": "legacy_gui_pass",
+      "verification": {
+        "passed": true,
+        "source_inputs": 94,
+        "source_before_after_equal": true,
+        "stage": "legacy_ui",
+        "results": [
+          {
+            "qpa": "offscreen",
+            "totals": [
+              7,
+              0,
+              0
+            ]
+          },
+          {
+            "qpa": "xcb",
+            "totals": [
+              7,
+              0,
+              0
+            ]
+          }
+        ],
+        "scope": "Independent current formal sources only; not old432 native, RK, clinical or budget acceptance"
+      },
+      "artifact": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/build/qc_local_page_test",
+        "sha256": "5ca7136c306e4333fd0e105920e30954259a29d4785986cb1dcadadee8ab2ce0"
+      },
+      "raw_receipts": {
+        "make.exit.json": {
+          "argv": [
+            "make",
+            "-j2"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/build",
+          "started_utc": "2026-10-26T02:51:54.640957+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 125.53772519300003,
+          "finished_utc": "2026-10-26T02:54:00.185486+00:00",
+          "cleanup": null
+        },
+        "offscreen/test.exit.json": {
+          "argv": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/build/qc_local_page_test",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/offscreen/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/offscreen/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/build",
+          "started_utc": "2026-10-26T02:54:00.239127+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 17.49374313499999,
+          "finished_utc": "2026-10-26T02:54:17.739810+00:00",
+          "cleanup": null
+        },
+        "qmake.exit.json": {
+          "argv": [
+            "/usr/lib/qt5/bin/qmake",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/qc_local_page_test.pro",
+            "CONFIG+=release",
+            "CONFIG-=debug"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/build",
+          "started_utc": "2026-10-26T02:51:30.930267+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 4.765170776000019,
+          "finished_utc": "2026-10-26T02:51:35.708084+00:00",
+          "cleanup": null
+        },
+        "xcb/test.exit.json": {
+          "argv": [
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/build/qc_local_page_test",
+            "-v1",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/xcb/qt.txt,txt",
+            "-o",
+            "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/xcb/qt.xml,junitxml"
+          ],
+          "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_page_20261026_02/legacy_ui/build",
+          "started_utc": "2026-10-26T02:54:17.773501+00:00",
+          "actual_exit_code": 0,
+          "direct_exit_before_cleanup": 0,
+          "timed_out": false,
+          "exception_type": null,
+          "exception": null,
+          "owned_group_stopped": true,
+          "seconds": 17.776636372999974,
+          "finished_utc": "2026-10-26T02:54:35.558334+00:00",
+          "cleanup": null
+        }
+      },
+      "source_roster_sha256": "a78d0c2d5e682da96243f34ef493112b1d668baeb0b0466b5f2bf72e27a7e2ac"
+    }
+  },
+  "first_failure": {
+    "evidence": "first_gui_failure",
+    "actual": "qmake0/make0; offscreen initTestCase actual exit1 before any business cases because runtime/evidence environment variables were not applied to the child process; XCB not started.",
+    "repair": "Driver temporarily applies the explicitly recorded child environment before execute, then restores its own environment. Original input-path assertion and business assertions retained. Final accepted stage freshly rebuilt in attempt02."
+  },
+  "business_path": [
+    "Original control list -> stable control ID -> original project button association ID -> presenter queued QcStore::loadHistory(requestId,associationId).",
+    "Owned SQL worker resolves saved association and batch names/IDs; transaction reads anonymous quality_data rows and closes before bounded core parsing/statistics.",
+    "Immutable reply historyReady is accepted only when request, control and association match; historical errors are separate from metadata CRUD errors.",
+    "GUI renders precomputed per-type selections; no GUI SQL/regexp/statistics. Metadata and historical busy states guard input, leave, close and draft destruction."
+  ],
+  "contract": {
+    "types": [
+      "Original",
+      "Calibration",
+      "Rate",
+      "INR"
+    ],
+    "unsupported": "Time, MDA and Formula are not guessed into enabled historical QC results.",
+    "order": "Original date-DESC within each batch, previous then current concatenation. time/id DESC define same-date ties. Original reverse trace counter and previous-first start remain explicit.",
+    "source_granularity": "Legacy application upserts a daily row by control/project/batch/date; this read-only slice does not invent every-instrument-measurement history.",
+    "units": "Legacy rows have no saved per-point unit evidence. Association/current project snapshots cannot fill that gap. Real SQL replies therefore render raw values and suppress Mean/SD/CV and target/bound overlays.",
+    "known_unit_fixture": "Only explicitly declared anonymous per-point card/core fixture uses ratio0.5: raw10/12/14 -> converted5/6/7, mean6/sampleSD1/CV0.2 ratio. This does not prove any legacy row unit.",
+    "invalid": "Missing types, malformed/nonfinite values remain invalid gaps with reasons, never zero. Invalid date/time rows are counted with reasons even when no current card is visible.",
+    "statistics": "Existing quality/statistics implementation reused once by qc_core.pri; sample SD(n-1), signed CV ratio not percent. No clinical normal/warning/out-of-control computation.",
+    "numerical_display": "[0,1e308] has finite ticks/mapping. [-1e308,1e308] raw values/traces remain intact but unrepresentable span is explicitly not drawable; no infinite painter coordinates or fake zero."
+  },
+  "real_page_fixture": {
+    "owner_schema": "Real ProjectsStore creates fresh anonymous catalog; real QcStore creates control/2 associations/2 batches and reopens normally. Test-only own-thread connection inserts six documented anonymous quality_data rows; no reference/production DB read or copied.",
+    "checks": [
+      "physical stable project and arrow clicks; actual SQL history card/date/value/count and unknown-unit text",
+      "same-project refresh; full SQL row image unchanged",
+      "bounded worker barrier -> busy true and requestLeave refusal -> release and actual completion",
+      "previous real immutable reply delivered during new association request is ignored",
+      "invalid-date rows produce source/excluded counts and a reason with zero cards",
+      "whole page deleted during actual pending worker request; late reply harmless; own stores closed and thread stopped"
+    ],
+    "main_thread_signal_collection": "QObject context plus Qt::QueuedConnection value records; no DirectConnection QSignalSpy container access from worker.",
+    "runtime_summary": "new_gui_pass/xcb/evidence/qc_history_page_runtime.json"
+  },
+  "process_cleanup": "All archived qmake/make/test exit receipts record owned_group_stopped=true and timed_out=false, including the preserved initial failure; build/GUI slot released before evidence archiving.",
+  "retained_qt_diagnostics": "Qt5 JUnit errors attributes are nonzero: new offscreen13/XCB3 and legacy offscreen136/XCB138. The actual accepted cases all report pass, failures=0 with no failure/error/skipped child elements, and process exits0. Raw QWARN/QINFO, including metadata-regression painter/window-support warnings, are preserved. This is not warning-free or pixel-equivalence acceptance.",
+  "preserved_backups": [
+    "07_backups/sn100_host/offline_followup_20261026/pre_qc_history_integration/source_inputs.json",
+    "07_backups/sn100_host/offline_followup_20261026/pre_qc_history_integration/expanded_source_inputs.json",
+    "07_backups/sn100_host/offline_followup_20261026/pre_history_extreme_display_fix/source_inputs.json"
+  ],
+  "related_evidence": {
+    "original_readonly_contract": "../qc_history_contract/handoff.json",
+    "private_core20": "../qc_history_core/handoff.json",
+    "formal_sql21": "../qc_history_store/handoff.json",
+    "shared_ARM_inventory15": "../arm_input_contract/handoff.json"
+  },
+  "not_executed_or_not_accepted": [
+    "new full unified native shell/package regression after this source change",
+    "ARM64 module/build/package actual executable and board runtime",
+    "Windows original runtime/pixel equivalence, RK screen",
+    "real instrument/spectra collection and clinical algorithms",
+    "resource/response budgets, same-board realtime interference, long stability"
+  ],
+  "archive_policy": "Only exact source snapshots, raw argv/exit/log/XML/JSON metadata and anonymous PNGs. No build binaries/objects, Makefiles, runtime DB/INI, credentials or old production data copied.",
+  "source_frozen_after_execution": true,
+  "source_delta": "source_delta.json",
+  "final_formal_source_write_state": "All qc_pages-owned06 cpp/h/pro/pri/ui/qrc/resources/build.sh/origins.json stopped after origins metadata finalization. Only temp/04 archive files changed afterward.",
+  "post_execution_metadata_change": "Only origins.json final documentation updated with actual results; no compiled or tested source/form/resource input changed after the accepted executions."
+}

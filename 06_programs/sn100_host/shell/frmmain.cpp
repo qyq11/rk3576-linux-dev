@@ -3,8 +3,11 @@
 #include "frmuserset.h"
 #include "ui/frmhospinfosetting.h"
 #include "ui/frmaccountsetting.h"
+#include "ui/maskdlglogin.h"
+#include "ui/frmlissetting.h"
 #include "history/history_page.h"
 #include "history/report_controller.h"
+#include "instrument/instrument_page.h"
 
 #include <QButtonGroup>
 #include <QCloseEvent>
@@ -127,6 +130,7 @@ frmMain::frmMain(HospitalStore *store, QWidget *parent, AccountStore *accounts) 
 
     connect(userSet_, &frmUserSet::pageChanged, this, [this](int userIndex)
     {
+        if (currentMainPage() == 6) updateHospitalStatus();
         emit navigationChanged(currentMainPage(),userIndex);
     });
     connect(userSet_, &frmUserSet::navigationRejected, this, &frmMain::navigationRejected);
@@ -135,7 +139,9 @@ frmMain::frmMain(HospitalStore *store, QWidget *parent, AccountStore *accounts) 
     {
         hospitalStatus_ = text;
         hospitalStatusError_ = error;
-        if (currentMainPage() == 2) updateHistoryStatus();
+        if ((currentMainPage() == 0 && reagents_) || (currentMainPage() == 1 && samples_)
+            || (currentMainPage() == 5 && projects_)) updateCatalogStatus();
+        else if (currentMainPage() == 2) updateHistoryStatus();
         else updateHospitalStatus();
         updateAccountStatus();
     });
@@ -165,6 +171,36 @@ frmMain::~frmMain()
 
 void frmMain::updateHospitalStatus()
 {
+    if (calibration_ && currentMainPage() == 3)
+    {
+        updateCalibrationStatus();
+        return;
+    }
+    if (qualityControl_ && currentMainPage() == 4)
+    {
+        updateQualityStatus();
+        return;
+    }
+    if (lisPage() && currentMainPage() == 6 && currentUserPage() == 4)
+    {
+        updateLisStatus();
+        return;
+    }
+    if (printerPage() && currentMainPage() == 6 && currentUserPage() == 3)
+    {
+        updatePrinterStatus();
+        return;
+    }
+    if (instrument_ && currentMainPage() == 7)
+    {
+        updateInstrumentStatus();
+        return;
+    }
+    if (readOnlyStatusEnabled_ && currentMainPage() == 7)
+    {
+        updateReadOnlyStatusDisplay();
+        return;
+    }
     // 沿用原81px状态区，换页时恢复对应业务的最后结果。
     const QString state = hospitalStatusError_ ? tr("脱机／失败")
         : hospitalPage()->isBusy() ? tr("脱机／处理中")
@@ -264,7 +300,8 @@ frmAccountSetting *frmMain::accountPage() const
 
 void frmMain::updateAccountStatus()
 {
-    userSet_->setNavigationLocked(logoutPending_);
+    const bool loginOpen = loginDialog_ && loginDialog_->isVisible();
+    userSet_->setNavigationLocked(logoutPending_ || loginOpen);
     if (!accounts_)
     {
         return;
@@ -276,13 +313,19 @@ void frmMain::updateAccountStatus()
     const QString identity = QStringLiteral("%1: %2").arg(role,name);
     ui->lblUserName->setText(ui->lblUserName->fontMetrics().elidedText(
         identity,Qt::ElideRight,ui->lblUserName->width()));
-    ui->lblUserName->setToolTip(tr("%1；匿名脱机模拟会话，角色来自独立测试库，非正式密码登录。设备动作状态为模拟%2。")
-        .arg(identity,session_.actionReady ? tr("ready") : tr("running")));
-    const bool pagesIdle = !hospitalPage()->isBusy() && accountPage() && !accountPage()->isBusy()
-        && (!history_ || !history_->isBusy());
-    ui->btnLoginOut->setEnabled(session_.authenticated && pagesIdle && !logoutPending_);
-    ui->btnLoginOut->setToolTip(logoutPending_ ? tr("正在清除匿名模拟会话…")
-        : tr("注销匿名模拟会话；数据处理中不可用，未保存更改需先确认。"));
+    const QString source = session_.source == AccountSessionSource::Password
+        ? tr("本地测试库密码认证") : session_.source == AccountSessionSource::Simulated
+        ? tr("显式匿名模拟会话") : tr("Guest访客会话");
+    ui->lblUserName->setToolTip(tr("%1；%2。设备动作状态为模拟%3，登录不改变设备动作条件。")
+        .arg(identity,source,session_.actionReady ? tr("ready") : tr("running")));
+    const bool idle = businessPagesIdle() && !logoutPending_ && !loginOpen;
+    ui->btnUser->setEnabled(passwordLoginEnabled_ && idle);
+    ui->btnUser->setToolTip(passwordLoginEnabled_
+        ? tr("本地密码登录；只验证独立测试库账户，不连接仪器。")
+        : tr("脱机：只使用显式匿名模拟会话；密码登录未启用。"));
+    ui->btnLoginOut->setEnabled(session_.authenticated && idle);
+    ui->btnLoginOut->setToolTip(logoutPending_ ? tr("正在清除本地会话…")
+        : tr("注销本地会话；数据处理中不可用，未保存更改需先确认。"));
 }
 
 void frmMain::applyAccountSession(const AccountSession &session)
@@ -302,13 +345,17 @@ void frmMain::applyAccountSession(const AccountSession &session)
 
 bool frmMain::requestLogout()
 {
+    if (rejectLoginNavigation())
+    {
+        return false;
+    }
     if (!accounts_ || !session_.authenticated || logoutPending_)
     {
         return false;
     }
     // Guard all pages even when the hospital draft is currently hidden. An
     // automatic account-commit logout bypasses this manual navigation path.
-    if (!requestHistoryLeave(tr("注销")) || !userSet_->requestLeave(tr("注销")))
+    if (!requestAlarmHistoryLeave(tr("注销")) || !requestCalibrationLeave(tr("注销")) || !requestQualityLeave(tr("注销")) || !requestInstrumentLeave(tr("注销")) || !requestCatalogLeave(tr("注销")) || !requestHistoryLeave(tr("注销")) || !userSet_->requestLeave(tr("注销")))
     {
         return false;
     }
@@ -346,6 +393,36 @@ void frmMain::restoreMainSelection()
 
 bool frmMain::selectMainPage(int index)
 {
+    if (!requestAlarmHistoryLeave(tr("切换页面")))
+    {
+        restoreMainSelection();
+        return false;
+    }
+    // Export jobs can outlive their preview and can start through the bound
+    // controller while another page is visible. Guard the actual job globally.
+    if (history_ && history_->isBusy())
+    {
+        emit navigationRejected(tr("报告数据正在处理或导出，请稍后再切换页面。"));
+        restoreMainSelection();
+        return false;
+    }
+    if (!qualityPagesIdle() || !calibrationPageIdle())
+    {
+        emit navigationRejected(tr("校准/质控本地数据正在处理，请稍后再切换页面。"));
+        restoreMainSelection();
+        return false;
+    }
+    if (lisPage() && lisPage()->isBusy())
+    {
+        emit navigationRejected(tr("LIS设置正在处理，请稍后再切换页面。"));
+        restoreMainSelection();
+        return false;
+    }
+    if (rejectLoginNavigation())
+    {
+        restoreMainSelection();
+        return false;
+    }
     if (logoutPending_)
     {
         emit navigationRejected(tr("正在注销匿名会话，请稍后再切换页面。"));
@@ -374,6 +451,13 @@ bool frmMain::selectMainPage(int index)
         restoreMainSelection();
         return false;
     }
+    if (!requestCalibrationLeave(tr("切换页面"), true) || !requestQualityLeave(tr("切换页面"), true)
+        || (currentMainPage() == 7 && !requestInstrumentLeave(tr("切换页面")))
+        || !requestCatalogLeave(tr("切换页面"), true))
+    {
+        restoreMainSelection();
+        return false;
+    }
     ui->stkCenterAdptive->setCurrentIndex(index);
     restoreMainSelection();
     if (index == 6 && currentUserPage() == 1)
@@ -385,13 +469,38 @@ bool frmMain::selectMainPage(int index)
         updateHistoryStatus();
         restoreHistoryFocus();
     }
-    else updateHospitalStatus();
+    else if ((index == 0 && reagents_) || (index == 1 && samples_) || (index == 5 && projects_))
+    {
+        updateCatalogStatus();
+        restoreCatalogFocus();
+    }
+    else
+    {
+        updateHospitalStatus();
+        if (index == 4) restoreQualityFocus();
+        if (index == 3) restoreCalibrationFocus();
+    }
     emit navigationChanged(currentMainPage(),currentUserPage());
     return true;
 }
 
 bool frmMain::selectUserPage(int index)
 {
+    if (!requestAlarmHistoryLeave(tr("切换设置页面"))) return false;
+    if (history_ && history_->isBusy())
+    {
+        emit navigationRejected(tr("报告数据正在处理或导出，请稍后再切换设置页面。"));
+        return false;
+    }
+    if (!qualityPagesIdle() || !calibrationPageIdle())
+    {
+        emit navigationRejected(tr("校准/质控本地数据正在处理，请稍后再切换设置页面。"));
+        return false;
+    }
+    if (rejectLoginNavigation())
+    {
+        return false;
+    }
     if (logoutPending_)
     {
         emit navigationRejected(tr("正在注销匿名会话，请稍后再切换页面。"));
@@ -407,13 +516,29 @@ void frmMain::setDataDirectory(const QString &directory)
 
 void frmMain::closeEvent(QCloseEvent *event)
 {
+    if (rejectLoginNavigation())
+    {
+        event->ignore();
+        return;
+    }
     if (logoutPending_)
     {
         emit navigationRejected(tr("正在注销匿名会话，请等待结果后再退出。"));
         event->ignore();
         return;
     }
-    if (!requestHistoryLeave(tr("退出")) || !userSet_->requestLeave(tr("退出")))
+    if (!requestAlarmHistoryLeave(tr("退出")))
+    {
+        alarmHistoryShutdownPending_ = true;
+        event->ignore();
+        return;
+    }
+    if (!requestCalibrationLeave(tr("退出")) || !requestQualityLeave(tr("退出")) || !requestInstrumentLeave(tr("退出")) || !requestCatalogLeave(tr("退出")) || !requestHistoryLeave(tr("退出")) || !userSet_->requestLeave(tr("退出")))
+    {
+        event->ignore();
+        return;
+    }
+    if (!requestLisRawInboxShutdown())
     {
         event->ignore();
         return;

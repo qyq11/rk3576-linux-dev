@@ -1,0 +1,886 @@
+{
+  "schema": "sn100-report-query-run01-observation-v1",
+  "scenarios": [
+    {
+      "name": "original_xcb",
+      "actual_exit": 0,
+      "timed_out": false,
+      "qt_passed": 4,
+      "qt_failed": 0,
+      "qt_skipped": 0,
+      "qt_elapsed_ms": 3082,
+      "queries": [],
+      "scope": "historical executable only",
+      "stage_trace_available": false
+    },
+    {
+      "name": "trace_xcb",
+      "actual_exit": 0,
+      "timed_out": false,
+      "qt_passed": 4,
+      "qt_failed": 0,
+      "qt_skipped": 0,
+      "qt_elapsed_ms": 3163,
+      "queries": [
+        {
+          "method": "committedHospitalAndReportLifecycle",
+          "directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_01/trace_xcb/data/runtime",
+          "legacy": false,
+          "serial_range": [
+            11,
+            34
+          ],
+          "query_clicks": [
+            {
+              "name": "btnQuery",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarStart",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarEnd",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnSave",
+              "clicked_count": 1,
+              "visible": false,
+              "enabled": true
+            }
+          ],
+          "calendar_clicked": [
+            {
+              "field": "ldtStartDate",
+              "date": "2026-10-23"
+            },
+            {
+              "field": "ldtEndDate",
+              "date": "2026-10-23"
+            }
+          ],
+          "calendar_targets": [
+            {
+              "field": "ldtStartDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            },
+            {
+              "field": "ldtEndDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            }
+          ],
+          "date_waits": [
+            {
+              "field": "ldtStartDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            },
+            {
+              "field": "ldtEndDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            }
+          ],
+          "request_id": 2,
+          "actual_request_filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-23T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261023235959",
+            "sql_start": "20261023000000",
+            "start": "2026-10-23T00:00:00.000"
+          },
+          "reply_id": 2,
+          "reply_filter_matches_request": true,
+          "reply_rows": 3,
+          "reply_total": 3,
+          "sql_derived_not_live_observed": {
+            "count": "SELECT COUNT(*) FROM report_data WHERE visible=1 AND data_time BETWEEN ? AND ?",
+            "bindings": [
+              "20261023000000",
+              "20261023235959"
+            ],
+            "page_order": "ORDER BY id LIMIT ? OFFSET ?",
+            "page_bindings_suffix": [
+              20,
+              0
+            ]
+          },
+          "postrun_read_only_count": 3,
+          "postrun_db_sha256": "8ed9ebb9516b195664f00dfeac73ebfb36cbbe32c7cdcaa9bf5dc733893ca7e4",
+          "helper_ok": true,
+          "busy_at_finish": false,
+          "helper_total_ms": 122.614331,
+          "request_to_gui_reply_ms": 10.933473,
+          "failed_wait_stage": null
+        },
+        {
+          "method": "persistedHospitalAndLegacyEntry",
+          "directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_01/trace_xcb/data/runtime",
+          "legacy": false,
+          "serial_range": [
+            98,
+            121
+          ],
+          "query_clicks": [
+            {
+              "name": "btnQuery",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarStart",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarEnd",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnSave",
+              "clicked_count": 1,
+              "visible": false,
+              "enabled": true
+            }
+          ],
+          "calendar_clicked": [
+            {
+              "field": "ldtStartDate",
+              "date": "2026-10-23"
+            },
+            {
+              "field": "ldtEndDate",
+              "date": "2026-10-23"
+            }
+          ],
+          "calendar_targets": [
+            {
+              "field": "ldtStartDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            },
+            {
+              "field": "ldtEndDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            }
+          ],
+          "date_waits": [
+            {
+              "field": "ldtStartDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            },
+            {
+              "field": "ldtEndDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            }
+          ],
+          "request_id": 2,
+          "actual_request_filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-23T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261023235959",
+            "sql_start": "20261023000000",
+            "start": "2026-10-23T00:00:00.000"
+          },
+          "reply_id": 2,
+          "reply_filter_matches_request": true,
+          "reply_rows": 3,
+          "reply_total": 3,
+          "sql_derived_not_live_observed": {
+            "count": "SELECT COUNT(*) FROM report_data WHERE visible=1 AND data_time BETWEEN ? AND ?",
+            "bindings": [
+              "20261023000000",
+              "20261023235959"
+            ],
+            "page_order": "ORDER BY id LIMIT ? OFFSET ?",
+            "page_bindings_suffix": [
+              20,
+              0
+            ]
+          },
+          "postrun_read_only_count": 3,
+          "postrun_db_sha256": "8ed9ebb9516b195664f00dfeac73ebfb36cbbe32c7cdcaa9bf5dc733893ca7e4",
+          "helper_ok": true,
+          "busy_at_finish": false,
+          "helper_total_ms": 118.786559,
+          "request_to_gui_reply_ms": 8.917871,
+          "failed_wait_stage": null
+        },
+        {
+          "method": "persistedHospitalAndLegacyEntry",
+          "directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_01/trace_xcb/data/legacy",
+          "legacy": true,
+          "serial_range": [
+            138,
+            161
+          ],
+          "query_clicks": [
+            {
+              "name": "btnQuery",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarStart",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarEnd",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnSave",
+              "clicked_count": 1,
+              "visible": false,
+              "enabled": true
+            }
+          ],
+          "calendar_clicked": [
+            {
+              "field": "ldtStartDate",
+              "date": "2026-10-23"
+            },
+            {
+              "field": "ldtEndDate",
+              "date": "2026-10-23"
+            }
+          ],
+          "calendar_targets": [
+            {
+              "field": "ldtStartDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            },
+            {
+              "field": "ldtEndDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            }
+          ],
+          "date_waits": [
+            {
+              "field": "ldtStartDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            },
+            {
+              "field": "ldtEndDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            }
+          ],
+          "request_id": 2,
+          "actual_request_filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-23T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261023235959",
+            "sql_start": "20261023000000",
+            "start": "2026-10-23T00:00:00.000"
+          },
+          "reply_id": 2,
+          "reply_filter_matches_request": true,
+          "reply_rows": 3,
+          "reply_total": 3,
+          "sql_derived_not_live_observed": {
+            "count": "SELECT COUNT(*) FROM report_data WHERE visible=1 AND data_time BETWEEN ? AND ?",
+            "bindings": [
+              "20261023000000",
+              "20261023235959"
+            ],
+            "page_order": "ORDER BY id LIMIT ? OFFSET ?",
+            "page_bindings_suffix": [
+              20,
+              0
+            ]
+          },
+          "postrun_read_only_count": 3,
+          "postrun_db_sha256": "8ed9ebb9516b195664f00dfeac73ebfb36cbbe32c7cdcaa9bf5dc733893ca7e4",
+          "helper_ok": true,
+          "busy_at_finish": false,
+          "helper_total_ms": 122.2411,
+          "request_to_gui_reply_ms": 8.571927,
+          "failed_wait_stage": null
+        }
+      ],
+      "scope": "current explicit 432-source native binding",
+      "event_count": 161,
+      "stage_counts": {
+        "operation_finished": 10,
+        "request_query": 6,
+        "query_ready_gui_delivery": 6,
+        "click_before": 50,
+        "click_after": 50,
+        "query_helper_begin": 3,
+        "date_begin": 6,
+        "date_target_before_click": 6,
+        "date_text_changed": 6,
+        "calendar_clicked": 6,
+        "date_wait_finished": 6,
+        "query_before_save": 3,
+        "query_helper_finished": 3
+      },
+      "store_error_events": [],
+      "initial_query_results": [
+        {
+          "id": 1,
+          "filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-26T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261026235959",
+            "sql_start": "20261026000000",
+            "start": "2026-10-26T00:00:00.000"
+          },
+          "rows": 0,
+          "total": 0,
+          "method": "committedHospitalAndReportLifecycle"
+        },
+        {
+          "id": 1,
+          "filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-26T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261026235959",
+            "sql_start": "20261026000000",
+            "start": "2026-10-26T00:00:00.000"
+          },
+          "rows": 0,
+          "total": 0,
+          "method": "persistedHospitalAndLegacyEntry"
+        },
+        {
+          "id": 1,
+          "filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-26T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261026235959",
+            "sql_start": "20261026000000",
+            "start": "2026-10-26T00:00:00.000"
+          },
+          "rows": 0,
+          "total": 0,
+          "method": "persistedHospitalAndLegacyEntry"
+        }
+      ]
+    },
+    {
+      "name": "trace_offscreen",
+      "actual_exit": 0,
+      "timed_out": false,
+      "qt_passed": 4,
+      "qt_failed": 0,
+      "qt_skipped": 0,
+      "qt_elapsed_ms": 2801,
+      "queries": [
+        {
+          "method": "committedHospitalAndReportLifecycle",
+          "directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_01/trace_offscreen/data/runtime",
+          "legacy": false,
+          "serial_range": [
+            11,
+            34
+          ],
+          "query_clicks": [
+            {
+              "name": "btnQuery",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarStart",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarEnd",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnSave",
+              "clicked_count": 1,
+              "visible": false,
+              "enabled": true
+            }
+          ],
+          "calendar_clicked": [
+            {
+              "field": "ldtStartDate",
+              "date": "2026-10-23"
+            },
+            {
+              "field": "ldtEndDate",
+              "date": "2026-10-23"
+            }
+          ],
+          "calendar_targets": [
+            {
+              "field": "ldtStartDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            },
+            {
+              "field": "ldtEndDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            }
+          ],
+          "date_waits": [
+            {
+              "field": "ldtStartDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            },
+            {
+              "field": "ldtEndDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            }
+          ],
+          "request_id": 2,
+          "actual_request_filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-23T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261023235959",
+            "sql_start": "20261023000000",
+            "start": "2026-10-23T00:00:00.000"
+          },
+          "reply_id": 2,
+          "reply_filter_matches_request": true,
+          "reply_rows": 3,
+          "reply_total": 3,
+          "sql_derived_not_live_observed": {
+            "count": "SELECT COUNT(*) FROM report_data WHERE visible=1 AND data_time BETWEEN ? AND ?",
+            "bindings": [
+              "20261023000000",
+              "20261023235959"
+            ],
+            "page_order": "ORDER BY id LIMIT ? OFFSET ?",
+            "page_bindings_suffix": [
+              20,
+              0
+            ]
+          },
+          "postrun_read_only_count": 3,
+          "postrun_db_sha256": "8ed9ebb9516b195664f00dfeac73ebfb36cbbe32c7cdcaa9bf5dc733893ca7e4",
+          "helper_ok": true,
+          "busy_at_finish": false,
+          "helper_total_ms": 88.82445,
+          "request_to_gui_reply_ms": 8.422802,
+          "failed_wait_stage": null
+        },
+        {
+          "method": "persistedHospitalAndLegacyEntry",
+          "directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_01/trace_offscreen/data/runtime",
+          "legacy": false,
+          "serial_range": [
+            98,
+            121
+          ],
+          "query_clicks": [
+            {
+              "name": "btnQuery",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarStart",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarEnd",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnSave",
+              "clicked_count": 1,
+              "visible": false,
+              "enabled": true
+            }
+          ],
+          "calendar_clicked": [
+            {
+              "field": "ldtStartDate",
+              "date": "2026-10-23"
+            },
+            {
+              "field": "ldtEndDate",
+              "date": "2026-10-23"
+            }
+          ],
+          "calendar_targets": [
+            {
+              "field": "ldtStartDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            },
+            {
+              "field": "ldtEndDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            }
+          ],
+          "date_waits": [
+            {
+              "field": "ldtStartDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            },
+            {
+              "field": "ldtEndDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            }
+          ],
+          "request_id": 2,
+          "actual_request_filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-23T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261023235959",
+            "sql_start": "20261023000000",
+            "start": "2026-10-23T00:00:00.000"
+          },
+          "reply_id": 2,
+          "reply_filter_matches_request": true,
+          "reply_rows": 3,
+          "reply_total": 3,
+          "sql_derived_not_live_observed": {
+            "count": "SELECT COUNT(*) FROM report_data WHERE visible=1 AND data_time BETWEEN ? AND ?",
+            "bindings": [
+              "20261023000000",
+              "20261023235959"
+            ],
+            "page_order": "ORDER BY id LIMIT ? OFFSET ?",
+            "page_bindings_suffix": [
+              20,
+              0
+            ]
+          },
+          "postrun_read_only_count": 3,
+          "postrun_db_sha256": "8ed9ebb9516b195664f00dfeac73ebfb36cbbe32c7cdcaa9bf5dc733893ca7e4",
+          "helper_ok": true,
+          "busy_at_finish": false,
+          "helper_total_ms": 104.147071,
+          "request_to_gui_reply_ms": 9.607797,
+          "failed_wait_stage": null
+        },
+        {
+          "method": "persistedHospitalAndLegacyEntry",
+          "directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_01/trace_offscreen/data/legacy",
+          "legacy": true,
+          "serial_range": [
+            138,
+            161
+          ],
+          "query_clicks": [
+            {
+              "name": "btnQuery",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarStart",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnCalendarEnd",
+              "clicked_count": 1,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "name": "btnSave",
+              "clicked_count": 1,
+              "visible": false,
+              "enabled": true
+            }
+          ],
+          "calendar_clicked": [
+            {
+              "field": "ldtStartDate",
+              "date": "2026-10-23"
+            },
+            {
+              "field": "ldtEndDate",
+              "date": "2026-10-23"
+            }
+          ],
+          "calendar_targets": [
+            {
+              "field": "ldtStartDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            },
+            {
+              "field": "ldtEndDate",
+              "row": 4,
+              "column": 5,
+              "x": 269,
+              "y": 121,
+              "viewport_contains": true,
+              "visible_region_contains": true,
+              "shown_year": 2026,
+              "shown_month": 10
+            }
+          ],
+          "date_waits": [
+            {
+              "field": "ldtStartDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            },
+            {
+              "field": "ldtEndDate",
+              "ok": true,
+              "actual_text": "2026/10/23"
+            }
+          ],
+          "request_id": 2,
+          "actual_request_filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-23T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261023235959",
+            "sql_start": "20261023000000",
+            "start": "2026-10-23T00:00:00.000"
+          },
+          "reply_id": 2,
+          "reply_filter_matches_request": true,
+          "reply_rows": 3,
+          "reply_total": 3,
+          "sql_derived_not_live_observed": {
+            "count": "SELECT COUNT(*) FROM report_data WHERE visible=1 AND data_time BETWEEN ? AND ?",
+            "bindings": [
+              "20261023000000",
+              "20261023235959"
+            ],
+            "page_order": "ORDER BY id LIMIT ? OFFSET ?",
+            "page_bindings_suffix": [
+              20,
+              0
+            ]
+          },
+          "postrun_read_only_count": 3,
+          "postrun_db_sha256": "8ed9ebb9516b195664f00dfeac73ebfb36cbbe32c7cdcaa9bf5dc733893ca7e4",
+          "helper_ok": true,
+          "busy_at_finish": false,
+          "helper_total_ms": 100.627917,
+          "request_to_gui_reply_ms": 9.891731,
+          "failed_wait_stage": null
+        }
+      ],
+      "scope": "current explicit 432-source native binding",
+      "event_count": 161,
+      "stage_counts": {
+        "operation_finished": 10,
+        "request_query": 6,
+        "query_ready_gui_delivery": 6,
+        "click_before": 50,
+        "click_after": 50,
+        "query_helper_begin": 3,
+        "date_begin": 6,
+        "date_target_before_click": 6,
+        "date_text_changed": 6,
+        "calendar_clicked": 6,
+        "date_wait_finished": 6,
+        "query_before_save": 3,
+        "query_helper_finished": 3
+      },
+      "store_error_events": [],
+      "initial_query_results": [
+        {
+          "id": 1,
+          "filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-26T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261026235959",
+            "sql_start": "20261026000000",
+            "start": "2026-10-26T00:00:00.000"
+          },
+          "rows": 0,
+          "total": 0,
+          "method": "committedHospitalAndReportLifecycle"
+        },
+        {
+          "id": 1,
+          "filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-26T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261026235959",
+            "sql_start": "20261026000000",
+            "start": "2026-10-26T00:00:00.000"
+          },
+          "rows": 0,
+          "total": 0,
+          "method": "persistedHospitalAndLegacyEntry"
+        },
+        {
+          "id": 1,
+          "filter": {
+            "barcode": "",
+            "by_date": true,
+            "end": "2026-10-26T23:59:59.000",
+            "limit": 20,
+            "offset": 0,
+            "sample_number": "",
+            "sql_end": "20261026235959",
+            "sql_start": "20261026000000",
+            "start": "2026-10-26T00:00:00.000"
+          },
+          "rows": 0,
+          "total": 0,
+          "method": "persistedHospitalAndLegacyEntry"
+        }
+      ]
+    }
+  ],
+  "historical_root_cause_proven": false,
+  "production_defect_proven": false,
+  "test_defect_proven": false,
+  "limits": [
+    "queryReady timing is GUI delivery, not pure SQL execution duration",
+    "SQL predicates are derived from actual request filters and current whereClause source; no live SQLite statement hook was installed",
+    "Post-run read-only count is separately executed against this anonymous DB, not a replay of the old failed process",
+    "File-append tracing adds scheduling overhead and can mask a race"
+  ]
+}

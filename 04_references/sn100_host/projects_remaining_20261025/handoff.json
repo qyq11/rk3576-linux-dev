@@ -1,0 +1,326 @@
+{
+  "module": "SN100项目剩余业务：高级测试方案与试剂批组本地资料",
+  "date": "2026-10-25",
+  "status": "independent_local_delivery_ready_for_integration; stop source writes",
+  "user_scope": "Existing shared dirty checkout preserved; no new worktree/Git commit/push; no RK/instrument/LIS connection or device action; no automation; no shared shell or total documentation edits",
+  "delivered": [
+    "原项目页六项测试方案参数、既有稀释标签的15列加样动作、10列有序试剂步骤，可校验、保存、复制、取消、重开；只保存资料。",
+    "原试剂批组PT入口的ISI与正常测定值，按稳定批组ID附加存储，保留小数文本及旧调用兼容。",
+    "已提交值快照、稳定项目/批组ID引用保留/检查/释放接口，以及项目动作使用试剂的同库引用保护。"
+  ],
+  "modified_files": [
+    {
+      "file": "06_programs/sn100_host/projects/projects_store.h",
+      "sha256": "df2cf40a74415e8aca7a0cf30e17d6f48a860b9bf1f60ede1597ded66402f409"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/projects_store.cpp",
+      "sha256": "5342e5dbded0eda1f07cdd0bebb3971dac5d3222dd3fdeea61e793fb98219721"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/project_page.h",
+      "sha256": "d4b6e8d7803d71ac85608b646c8a7d3cbb5e24b7b3d1b054ccab266d0c6029de"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/project_page.cpp",
+      "sha256": "c8f525beedf239bfa6232ffa029f30a7f231656c899e7f7352583420ff06f090"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/project_advanced.h",
+      "sha256": "cc6660c8e486ef066f761fd7f9aafe51b611b60f8bc039a36c5d94a465cb855c"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/project_advanced.cpp",
+      "sha256": "cd54ec10537b1de4bd01792c96b96feb73741716c9d8c3a0a40ff9c0c1bed365"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/projects_core.pri",
+      "sha256": "f5eff9c9175012c81c0b6e8d6b35a11bc71f66251ccc3112bed2f594ebd3de04"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/build.sh",
+      "sha256": "13aaccd6daf6fb1c84c029eae2ece0efc1f81d3c21448fc9f1a711a9cd6c6770"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/main.cpp",
+      "sha256": "5cd49a60eda922e079168fa567629efcdce92114be2386db977b27e3c49d79ab"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/origins.json",
+      "sha256": "a9409da0b7f47f4b585ae99316490c10e72f47628f7ced572ddc0c4e0ba6e240"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/tests/projects_test.cpp",
+      "sha256": "faf2e15b6977f201d4f52f10eb21755aa11bc4373c845c777c0c0110b0002212"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/tests/project_advanced_test.pro",
+      "sha256": "0e380d108e314a60868d485fe71a6e6869cb647caad18673360730b9bc20ca7d"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/tests/project_advanced_test.cpp",
+      "sha256": "488f78d4fdc102727cd3f2862ef6fbe4afb010b65492cce3c6f5f5e172ff9c84"
+    },
+    {
+      "file": "06_programs/sn100_host/projects/tests/project_advanced_run.sh",
+      "sha256": "ced3064f137d2b9e0a6f2151246eb99daa6e310a5a6ae2593fe703918ef28c89"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_types.h",
+      "sha256": "c22b51bf8494b654ebdaa5d2dcdbcaf955b6802429c722884a4fe4311dbc651e"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_store.h",
+      "sha256": "af84cabfb9fdf8fc382f2157923294a03597046d65ffda9cf3695f4d8fcc4d1d"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_store.cpp",
+      "sha256": "dffce0ddbd9879e5908a1692525f0ccae7a6568f5ebeac515c42e621ff99ed76"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+      "sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/build.sh",
+      "sha256": "7ffdb5041c46e655733663952385ec4d0521d21d9096b78a6e2114cf2da69fb7"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_batch_verify.sh",
+      "sha256": "812b1da8b0338b13bc9ca829646a8fe8a0ce137fdb5a601749909e0ddc534453"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/tests/reagent_batch_test.pro",
+      "sha256": "ca8a0bce20e7ca190f9ccb31140cd5e199fb045dfb5042a99aee6ebd6e0a1eb5"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/tests/reagent_batch_test.cpp",
+      "sha256": "2e604438cd9d31dab13745c11b3f7260186f1850de6b27970c8b47f52cac7287"
+    }
+  ],
+  "full_module_source_manifest": "source_manifest.json",
+  "artifact_manifest": "artifact_manifest.json",
+  "original_sources": [
+    "project_original_audit.json",
+    "reagents_contract.json",
+    "visual_source_comparison.json"
+  ],
+  "interface_contract": "catalog_contract.json",
+  "reagent_detail": "reagents_handoff.json",
+  "implementation_entry": "ProjectPage::save -> editedProject -> ProjectAdvancedEditor::advanced/validate -> ProjectsStore::save/writeProject; ReagentsPage::openBatchEditor -> ReagentStore::saveBatch",
+  "rules_entry": "projects/project_advanced.cpp validate/validateAction; ProjectsStore writeActionReferences; ReagentStore validateBatchMetadata/saveBatch/saveReagent",
+  "test_results": {
+    "project_advanced": {
+      "path": "04_references/sn100_host/projects_remaining_20261025/project_advanced_test.xml",
+      "passed": 11,
+      "failed": 0,
+      "incidents": [
+        {
+          "function": "initTestCase",
+          "type": "pass"
+        },
+        {
+          "function": "scalarSaveCopyReopenPreservesExistingContract",
+          "type": "pass"
+        },
+        {
+          "function": "emptyIllegalAndUnknownInputsAreRejected",
+          "type": "pass"
+        },
+        {
+          "function": "actionRowsSaveInOrderValidateAndProtectReagentReferences",
+          "type": "pass"
+        },
+        {
+          "function": "durableReferencesProtectSeparateDatabaseRecords",
+          "type": "pass"
+        },
+        {
+          "function": "referencePermissionMissingProjectAndClosedStoreFailClosed",
+          "type": "pass"
+        },
+        {
+          "function": "lockFailureAndRetryKeepCommittedData",
+          "type": "pass"
+        },
+        {
+          "function": "oldCatalogUpgradeAndWriteFailureRollback",
+          "type": "pass"
+        },
+        {
+          "function": "guiCancelDraftBusyAndLocalSave",
+          "type": "pass"
+        },
+        {
+          "function": "corruptStoredPayloadFailsWithoutDroppingUnknownData",
+          "type": "pass"
+        },
+        {
+          "function": "cleanupTestCase",
+          "type": "pass"
+        }
+      ]
+    },
+    "project_baseline": {
+      "path": "04_references/sn100_host/projects_remaining_20261025/project_baseline_test.xml",
+      "passed": 9,
+      "failed": 0,
+      "incidents": [
+        {
+          "function": "initTestCase",
+          "type": "pass"
+        },
+        {
+          "function": "copySaveReopenAndDelete",
+          "type": "pass"
+        },
+        {
+          "function": "invalidAndDuplicateAreAtomic",
+          "type": "pass"
+        },
+        {
+          "function": "permissionAndFixedProtection",
+          "type": "pass"
+        },
+        {
+          "function": "externalReferenceProtectsDelete",
+          "type": "pass"
+        },
+        {
+          "function": "lockFailureKeepsGuiEventLoopAlive",
+          "type": "pass"
+        },
+        {
+          "function": "guiDraftCancelPermissionAndUnitSave",
+          "type": "pass"
+        },
+        {
+          "function": "unmarkedAndUnknownInputsArePreserved",
+          "type": "pass"
+        },
+        {
+          "function": "cleanupTestCase",
+          "type": "pass"
+        }
+      ]
+    },
+    "reagent_render_full_suite": {
+      "path": "04_references/sn100_host/projects_remaining_20261025/reagent_screenshot.xml",
+      "passed": 11,
+      "failed": 0,
+      "incidents": [
+        {
+          "function": "initTestCase",
+          "type": "pass"
+        },
+        {
+          "function": "saveReopenAndLegacyCompatibility",
+          "type": "pass"
+        },
+        {
+          "function": "emptyIllegalAndDuplicate",
+          "type": "pass"
+        },
+        {
+          "function": "reservationAndMutationProtection",
+          "type": "pass"
+        },
+        {
+          "function": "projectActionReagentProtection",
+          "type": "pass"
+        },
+        {
+          "function": "atomicWriteFailureAndRetry",
+          "type": "pass"
+        },
+        {
+          "function": "permissionsAndReadOnlyReferenceChecks",
+          "type": "pass"
+        },
+        {
+          "function": "pageDraftCancelBusyFailureAndReopen",
+          "type": "pass"
+        },
+        {
+          "function": "removalReleasesMetadata",
+          "type": "pass"
+        },
+        {
+          "function": "unknownVersionAndCorruptionPreserveData",
+          "type": "pass"
+        },
+        {
+          "function": "cleanupTestCase",
+          "type": "pass"
+        }
+      ]
+    },
+    "project_standalone_build_exit": 0,
+    "project_standalone_run_exit": 0,
+    "reagent_final": "See reagents_handoff.json final receipts, independently re-read by parent"
+  },
+  "commands": [
+    "wsl.exe -d Ubuntu-24.04 -u qyq -- bash <repo-wsl>/06_programs/sn100_host/projects/tests/project_advanced_run.sh advanced",
+    "wsl.exe -d Ubuntu-24.04 -u qyq -- bash <repo-wsl>/06_programs/sn100_host/projects/tests/project_advanced_run.sh baseline",
+    "wsl.exe -d Ubuntu-24.04 -u qyq -- bash <repo-wsl>/06_programs/sn100_host/projects/tests/project_advanced_run.sh app",
+    "QT_QPA_PLATFORM=offscreen <private>/projects/app/sn100_projects --data-dir <private>/projects/app_runtime --seed-demo --test-engineer --exit-after-ms 1800",
+    "QT_QPA_PLATFORM=offscreen SN100_BATCH_TEST_ROOT=<private>/reagents/screenshot_runtime SN100_BATCH_EVIDENCE=<evidence> <private>/reagents/batch_build/reagent_batch_test -o <evidence>/reagent_screenshot.xml,xml -o -,txt"
+  ],
+  "exact_paths": {
+    "repo_wsl": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "private": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/projects_remaining_20261025",
+    "evidence": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/04_references/sn100_host/projects_remaining_20261025"
+  },
+  "anonymous_input_output": [
+    "DEMO_A/OFFLINE-001 stable ID1, s and a.u. plus a.u.x10 ratio10 unchanged",
+    "5/20/40 seconds, 8 seconds delay,405nm/570nm save/copy/reopen; GUI lock retry saved41 seconds",
+    "OFFLINE_RATE_A/B actions5uL, two15.5uL reagent steps persist in order; actual GUI edits sample6uL and second reagent16.5uL save and reopen; unknown reagent/empty/mismatched action volume refused",
+    "External anonymous record old-unit/12.345 unchanged after current unit setting changed; durable hold rejects project rename/delete across reopen",
+    "Reagent PT_ANON batch metadata1.2345/12.3400; GUI lock draft2.5000 retained and retry/reopen persists"
+  ],
+  "failures_and_retests": [
+    "Original reagent build saw project_advanced.h not yet created; actual make failure retained, first wrapper process0/empty receipt not trusted. Corrected fail-fast script and final builds/tests actual0.",
+    "Parent reagent screenshot invocation01 lacked required isolated root: exit1, no test data initialized. Invocation02 ran GUI case alone without prerequisite data: exit1. Full suite with explicit private root03:11/0 actual0; final frozen suite04 also11/0 actual0; both failures preserved.",
+    "Initial root inline shell print showed empty exit_code, so it is not used as final exit evidence. Final script EXIT receipts and native WSL process exits are0.",
+    "Direct API trailing-newline numeric/module inputs were found in review; reject outer numeric whitespace and anchor module regex at absolute end; corresponding invalid-input tests and all affected WSL targets retested.",
+    "Make warns Clock skew detected on Windows/WSL shared files; no clock/toolchain altered. Final artifacts, exact source and logs fingerprinted; final unified clean build remains integration-owned."
+  ],
+  "verification_scope": {
+    "wsl_x86_64": "independent local tests/build/run passed as listed",
+    "original_windows": "not performed",
+    "original_visual": "same original .ui SHA and offscreen source-layout renders only; original active theme/behavior pending",
+    "three_target_builds": "only independent WSL x86_64 executed here; final Windows32/ARM64 and unified build pending",
+    "rk_instrument": "not available, not connected, no clinical/device claim",
+    "resource_budget": "not measured here; final serial owner pending",
+    "long_stability_same_board": "not performed"
+  },
+  "measurement_entry": {
+    "reused": "python3 06_programs/sn100_host/tests/observe_linux_process.py --output-dir <new absolute private dir> --timeout 180 -- env QT_QPA_PLATFORM=xcb <app> --data-dir <anonymous dir> --seed-demo --test-engineer --exit-after-ms 30000",
+    "functional_load": "project_advanced_test includes worker lock/GUI heartbeat and actual save/rollback/reopen cases; not a CPU budget or long-run measurement",
+    "rule": "integration owner serializes actual GUI/resource collection after all source/build writers stop"
+  },
+  "required_integration": [
+    "qmake projects_core.pri already includes project_advanced.cpp/.h; existing ProjectPage/ReagentsPage shell object entry remains compatible.",
+    "IMPORTANT shell/build.sh has explicit ARM sources/headers lists: integration owner must add projects/project_advanced.cpp and projects/project_advanced.h moc, update source/input manifest tests before final ARM build. This window did not edit shell.",
+    "Project and reagent standalone ARM build.sh lists updated locally; syntax only checked, ARM not executed here.",
+    "Calibration/QC external persistence must reserve project and batch IDs and await success before its SQL commit; release only after confirmed deletion/failure outcome. Handle crash-leaked reservations explicitly. No cross-DB FK/transaction claim.",
+    "Connect current session to reference APIs and route dedicated projectReference*/batchReference* replies by requestId without clearing page drafts.",
+    "Use committed snapshots; report history must retain capture-time value/unit/precision. No automatic recalculation from current advanced parameters.",
+    "Refresh ProjectPage after reagent catalog changes when page not dirty/busy so newly committed reagent choices appear; save always rechecks in worker.",
+    "Current optional action data has no approved IBS/diluent selection or AlgParam implementation, so real dilution/execution remains disabled.",
+    "Finish unified draft/busy/logout/close, repeated-entry, cumulative regression, original Windows, three targets and serial GUI/resource checks. Update same total record/plan/README from integration owner only."
+  ],
+  "rollback": [
+    "Only new additive tables/metadata keys, no existing ID/result/sample unit/ratio rewrite or table drop. All actual DB writes here were to new anonymous private temp directories.",
+    "Existing test/production data were never opened; no system/toolchain/environment backup needed for these isolated writes.",
+    "Operational rollback must stop all DB consumers and use matching preupgrade catalog backup or explicitly reconcile additive records. Old371 binaries lack new rename/reference guards and must not mutate extended catalogs with live holds.",
+    "Keep reference originals and all previous dirty changes; no cleanup of unknown files."
+  ],
+  "pending": [
+    "final unified connection and cumulative tests",
+    "complete original Windows behavior and same-state visual comparison",
+    "final Windows32/ARM64 builds",
+    "RK real display/input/instrument/clinical effectiveness",
+    "resource budget/long stability/same-board control"
+  ]
+}

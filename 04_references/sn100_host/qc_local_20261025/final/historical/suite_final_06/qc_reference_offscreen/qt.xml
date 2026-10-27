@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="136" failures="0" tests="12" name="QcReferenceTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="restoreMissingHoldProtectsInactiveHistoryAndSnapshot">
+    <!-- message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;Kyhldo control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 31), QVariant(QString, &quot;save&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="REJECTED (QVariant(qlonglong, 32), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。&quot;))" type="qinfo" -->
+    <!-- message="REJECTED (QVariant(qlonglong, 33), QVariant(QString, &quot;remove&quot;), QVariant(QString, &quot;删除失败；项目可能被试剂/样本引用。FOREIGN KEY constraint failed Unable to fetch row&quot;))" type="qinfo" -->
+    <!-- message="REOPEN_QC_SHA_UNCHANGED &quot;68eec345865a63c63f8e73e1a1a908e5792a1c7593b3ee7efd9913719d10ca0a&quot; hold &quot;dataset:4f6ea281&#x002D;66f3&#x002D;4ca3&#x002D;9166&#x002D;1ef498b708d0:control:1:project:2&quot;" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="corruptedIdentityFailsClosedWithoutLocalWrites">
+    <!-- tag="project&#x002D;renamed" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="project&#x002D;renamed" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="project&#x002D;renamed" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="project&#x002D;renamed" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;ovRsae control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="project&#x002D;renamed" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="project&#x002D;renamed" message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="project&#x002D;renamed" message="COMMITTED (QVariant(qlonglong, 40), QVariant(QString, &quot;save&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="project&#x002D;renamed" message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：质控关联1的项目2已缺失或改名；未更换稳定身份。&quot;))" type="qinfo" -->
+    <!-- tag="project&#x002D;removed" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="project&#x002D;removed" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="project&#x002D;removed" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="project&#x002D;removed" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;IstUKA control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="project&#x002D;removed" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="project&#x002D;removed" message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="project&#x002D;removed" message="COMMITTED (QVariant(qlonglong, 41), QVariant(QString, &quot;remove&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="project&#x002D;removed" message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：质控关联1的项目2已缺失或改名；未更换稳定身份。&quot;))" type="qinfo" -->
+    <!-- tag="missing&#x002D;history&#x002D;association" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="missing&#x002D;history&#x002D;association" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="missing&#x002D;history&#x002D;association" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;history&#x002D;association" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;yBEkmh control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="missing&#x002D;history&#x002D;association" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;history&#x002D;association" message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;history&#x002D;association" message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：质控历史1缺少对应控制品/项目关联/批次；保留历史，不能按名称猜测新身份。&quot;))" type="qinfo" -->
+    <!-- tag="missing&#x002D;control" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="missing&#x002D;control" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="missing&#x002D;control" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;control" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;KVlEck control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="missing&#x002D;control" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;control" message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;control" message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：质控本地表关系损坏：quality_control_batch；需先核对恢复。&quot;))" type="qinfo" -->
+    <!-- tag="missing&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="missing&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="missing&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;snapshot" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;HDkVFR control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="missing&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="missing&#x002D;snapshot" message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：质控关联1历史快照无效：项目未配置可用于质控的结果。&quot;))" type="qinfo" -->
+    <!-- tag="invalid&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="invalid&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="invalid&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="invalid&#x002D;snapshot" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;faoGuv control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="invalid&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="invalid&#x002D;snapshot" message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="invalid&#x002D;snapshot" message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：质控关联1历史快照无效：项目结果类型仅支持原枚举1至4；名称/单位/倍率/精度须来自已提交项目。&quot;))" type="qinfo" -->
+    <!-- tag="mismatched&#x002D;stable&#x002D;project&#x002D;id" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="mismatched&#x002D;stable&#x002D;project&#x002D;id" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="mismatched&#x002D;stable&#x002D;project&#x002D;id" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="mismatched&#x002D;stable&#x002D;project&#x002D;id" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;gDfSyw control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="mismatched&#x002D;stable&#x002D;project&#x002D;id" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="mismatched&#x002D;stable&#x002D;project&#x002D;id" message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="mismatched&#x002D;stable&#x002D;project&#x002D;id" message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：质控关联1的项目3已缺失或改名；未更换稳定身份。&quot;))" type="qinfo" -->
+    <!-- tag="unknown&#x002D;history&#x002D;name" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="unknown&#x002D;history&#x002D;name" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="unknown&#x002D;history&#x002D;name" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="unknown&#x002D;history&#x002D;name" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;nVPBVn control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="unknown&#x002D;history&#x002D;name" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="unknown&#x002D;history&#x002D;name" message="COMMITTED (QVariant(qlonglong, 30), QVariant(QString, &quot;saveBatch&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="unknown&#x002D;history&#x002D;name" message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：质控历史1缺少对应控制品/项目关联/批次；保留历史，不能按名称猜测新身份。&quot;))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="orphanHoldIsRetainedAndOtherDatasetIsNotReleased">
+    <!-- message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;vhbTEw control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 40), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 41), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：本质控数据集有无对应关联的保护预约：dataset:726afa44&#x002D;6050&#x002D;437f&#x002D;beb6&#x002D;18176be4e2e7:control:1:project:2；已保留，需显式核对后释放。&quot;))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="startupLocksAndReservationCommitFailuresRecover">
+    <!-- message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;vVLYlc control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：database is locked Unable to fetch row&quot;))" type="qinfo" -->
+    <!-- message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：database is locked Unable to commit transaction&quot;))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="deterministicDetachAndReattachKeepsNewAssociationProtected">
+    <!-- message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;omGLZO control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="REJECTED (QVariant(qlonglong, 51), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。&quot;))" type="qinfo" -->
+    <!-- message="DETERMINISTIC_DETACH_REATTACH second writer committed before first cleanup &quot;dataset:5faa575b&#x002D;07d6&#x002D;41ae&#x002D;8cf7&#x002D;d92c53edb558:control:1:project:2&quot;" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="deterministicFailedWriterCannotReleaseSuccessfulWriter">
+    <!-- tag="statement&#x002D;abort" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="statement&#x002D;abort" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="statement&#x002D;abort" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="statement&#x002D;abort" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;LmAtvm control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="statement&#x002D;abort" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="statement&#x002D;abort" message="COMMITTED (QVariant(qlonglong, 61), QVariant(QString, &quot;save&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="statement&#x002D;abort" message="REJECTED (QVariant(qlonglong, 62), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。&quot;))" type="qinfo" -->
+    <!-- tag="statement&#x002D;abort" message="DETERMINISTIC_FAILURE_CLEANUP &quot;ABORT&quot; second writer committed before cleanup &quot;dataset:e64078af&#x002D;45ee&#x002D;4404&#x002D;b43d&#x002D;b2a4f8e30122:control:1:project:2&quot;" type="qinfo" -->
+    <!-- tag="automatic&#x002D;transaction&#x002D;rollback" message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- tag="automatic&#x002D;transaction&#x002D;rollback" message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="automatic&#x002D;transaction&#x002D;rollback" message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="automatic&#x002D;transaction&#x002D;rollback" message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;LnVqcq control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- tag="automatic&#x002D;transaction&#x002D;rollback" message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- tag="automatic&#x002D;transaction&#x002D;rollback" message="COMMITTED (QVariant(qlonglong, 61), QVariant(QString, &quot;save&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- tag="automatic&#x002D;transaction&#x002D;rollback" message="REJECTED (QVariant(qlonglong, 62), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。&quot;))" type="qinfo" -->
+    <!-- tag="automatic&#x002D;transaction&#x002D;rollback" message="DETERMINISTIC_FAILURE_CLEANUP &quot;ROLLBACK&quot; second writer committed before cleanup &quot;dataset:0828c595&#x002D;408c&#x002D;43a6&#x002D;9fbf&#x002D;fd0b5db99801:control:1:project:2&quot;" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="deletingControlCannotReleaseAnotherControlsReference">
+    <!-- message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;aIJseR control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="REJECTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(QString, &quot;质控品不存在。&quot;))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 71), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 72), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="failedCleanupKeepsHoldAndRequiresReconciliation">
+    <!-- message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;fknuXb control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="CONSERVATIVE_WARNING (QVariant(QString, &quot;关联已解除；项目保留保护预约待核对：forced cleanup rollback Unable to fetch row&quot;))" type="qinfo" -->
+    <!-- message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：本质控数据集有无对应关联的保护预约：dataset:bf5620cd&#x002D;eb99&#x002D;4003&#x002D;93ca&#x002D;8d7b6fe681a5:control:1:project:2；已保留，需显式核对后释放。&quot;))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="localLockAndCommitFailureDoNotLeakNewHolds">
+    <!-- message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;AnpAHr control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- message="REJECTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(QString, &quot;database is locked Unable to fetch row&quot;))" type="qinfo" -->
+    <!-- message="REJECTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(QString, &quot;database is locked Unable to commit transaction&quot;))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="physicalCloneCannotShareDatasetKeys">
+    <!-- message="COMMITTED (QVariant(qlonglong, 1), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 2))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 2), QVariant(QString, &quot;copy&quot;), QVariant(qlonglong, 3))" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 3), QVariant(QString, &quot;saveControl&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;okwRfR control_id= 1 project_id= 2" type="qinfo" -->
+    <!-- message="COMMITTED (QVariant(qlonglong, 20), QVariant(QString, &quot;setProjects&quot;), QVariant(qlonglong, 1))" type="qinfo" -->
+    <!-- message="BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, &quot;bindCatalog&quot;), QVariant(QString, &quot;项目库未就绪或引用协议不可用：此质控数据集UUID已绑定另一物理文件：/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;okwRfR/qc/quality_control.db；当前/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case&#x002D;okwRfR/qc_clone/quality_control.db。保留副本及预约，需停写核对恢复/迁移后显式更新绑定。&quot;))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-Kyhldo control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 31), QVariant(QString, "save"), QVariant(qlonglong, 2))]]>
+<![CDATA[REJECTED (QVariant(qlonglong, 32), QVariant(QString, "save"), QVariant(QString, "项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。"))]]>
+<![CDATA[REJECTED (QVariant(qlonglong, 33), QVariant(QString, "remove"), QVariant(QString, "删除失败；项目可能被试剂/样本引用。FOREIGN KEY constraint failed Unable to fetch row"))]]>
+<![CDATA[REOPEN_QC_SHA_UNCHANGED "68eec345865a63c63f8e73e1a1a908e5792a1c7593b3ee7efd9913719d10ca0a" hold "dataset:4f6ea281-66f3-4ca3-9166-1ef498b708d0:control:1:project:2"]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-ovRsae control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 40), QVariant(QString, "save"), QVariant(qlonglong, 2))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：质控关联1的项目2已缺失或改名；未更换稳定身份。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-IstUKA control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 41), QVariant(QString, "remove"), QVariant(qlonglong, 2))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：质控关联1的项目2已缺失或改名；未更换稳定身份。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-yBEkmh control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：质控历史1缺少对应控制品/项目关联/批次；保留历史，不能按名称猜测新身份。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-KVlEck control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：质控本地表关系损坏：quality_control_batch；需先核对恢复。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-HDkVFR control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：质控关联1历史快照无效：项目未配置可用于质控的结果。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-faoGuv control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：质控关联1历史快照无效：项目结果类型仅支持原枚举1至4；名称/单位/倍率/精度须来自已提交项目。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-gDfSyw control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：质控关联1的项目3已缺失或改名；未更换稳定身份。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-nVPBVn control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 30), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：质控历史1缺少对应控制品/项目关联/批次；保留历史，不能按名称猜测新身份。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-vhbTEw control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 40), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 41), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：本质控数据集有无对应关联的保护预约：dataset:726afa44-6050-437f-beb6-18176be4e2e7:control:1:project:2；已保留，需显式核对后释放。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-vVLYlc control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：database is locked Unable to fetch row"))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：database is locked Unable to commit transaction"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-omGLZO control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[REJECTED (QVariant(qlonglong, 51), QVariant(QString, "save"), QVariant(QString, "项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。"))]]>
+<![CDATA[DETERMINISTIC_DETACH_REATTACH second writer committed before first cleanup "dataset:5faa575b-07d6-41ae-8cf7-d92c53edb558:control:1:project:2"]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-LmAtvm control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 61), QVariant(QString, "save"), QVariant(qlonglong, 3))]]>
+<![CDATA[REJECTED (QVariant(qlonglong, 62), QVariant(QString, "save"), QVariant(QString, "项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。"))]]>
+<![CDATA[DETERMINISTIC_FAILURE_CLEANUP "ABORT" second writer committed before cleanup "dataset:e64078af-45ee-4404-b43d-b2a4f8e30122:control:1:project:2"]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-LnVqcq control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 61), QVariant(QString, "save"), QVariant(qlonglong, 3))]]>
+<![CDATA[REJECTED (QVariant(qlonglong, 62), QVariant(QString, "save"), QVariant(QString, "项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。"))]]>
+<![CDATA[DETERMINISTIC_FAILURE_CLEANUP "ROLLBACK" second writer committed before cleanup "dataset:0828c595-408c-43a6-9fbf-fd0b5db99801:control:1:project:2"]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-aIJseR control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[REJECTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(QString, "质控品不存在。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 71), QVariant(QString, "saveControl"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 72), QVariant(QString, "setProjects"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-fknuXb control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[CONSERVATIVE_WARNING (QVariant(QString, "关联已解除；项目保留保护预约待核对：forced cleanup rollback Unable to fetch row"))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：本质控数据集有无对应关联的保护预约：dataset:bf5620cd-eb99-4003-93ca-8d7b6fe681a5:control:1:project:2；已保留，需显式核对后释放。"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-AnpAHr control_id= 1 project_id= 2]]>
+<![CDATA[REJECTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(QString, "database is locked Unable to fetch row"))]]>
+<![CDATA[REJECTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(QString, "database is locked Unable to commit transaction"))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 1), QVariant(QString, "copy"), QVariant(qlonglong, 2))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "copy"), QVariant(qlonglong, 3))]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))]]>
+<![CDATA[FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-okwRfR control_id= 1 project_id= 2]]>
+<![CDATA[COMMITTED (QVariant(qlonglong, 20), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))]]>
+<![CDATA[BIND_REJECTED (QVariant(qlonglong, 0), QVariant(QString, "bindCatalog"), QVariant(QString, "项目库未就绪或引用协议不可用：此质控数据集UUID已绑定另一物理文件：/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-okwRfR/qc/quality_control.db；当前/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/qc_reference_offscreen/runtime/case-okwRfR/qc_clone/quality_control.db。保留副本及预约，需停写核对恢复/迁移后显式更新绑定。"))]]>
+  </system-err>
+</testsuite>

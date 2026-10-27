@@ -1,0 +1,229 @@
+{
+  "schema": "sn100-anonymous-coordinate-proposed-vectors-v1",
+  "status": "hand_derived_expected_only_not_executed",
+  "formula_source": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/algorithmcore.h:188-227",
+  "clinical_inputs": false,
+  "unit_ratio_applied": false,
+  "candidate_numerical_tolerance": {
+    "absolute": 1e-12,
+    "relative": 1e-12,
+    "meaning": "pure arithmetic test proposal, not approved clinical error"
+  },
+  "valid": [
+    {
+      "id": "identity_forward",
+      "mode": 0,
+      "direction": "forward",
+      "input": 12.5,
+      "expected": 12.5,
+      "derivation": "f(v)=v"
+    },
+    {
+      "id": "identity_negative_leaf",
+      "mode": 0,
+      "direction": "inverse",
+      "input": -12.5,
+      "expected": -12.5,
+      "derivation": "g(v)=v; leaf mathematical domain only, does not authorize negative clinical raw points"
+    },
+    {
+      "id": "log10_one",
+      "mode": 1,
+      "direction": "forward",
+      "input": 1,
+      "expected": 0,
+      "derivation": "10^0=1"
+    },
+    {
+      "id": "log10_hundred",
+      "mode": 1,
+      "direction": "forward",
+      "input": 100,
+      "expected": 2,
+      "derivation": "10^2=100"
+    },
+    {
+      "id": "pow10_zero",
+      "mode": 1,
+      "direction": "inverse",
+      "input": 0,
+      "expected": 1,
+      "derivation": "10^0=1"
+    },
+    {
+      "id": "pow10_two",
+      "mode": 1,
+      "direction": "inverse",
+      "input": 2,
+      "expected": 100,
+      "derivation": "10^2=100"
+    },
+    {
+      "id": "pow10_minus_two",
+      "mode": 1,
+      "direction": "inverse",
+      "input": -2,
+      "expected": 0.01,
+      "derivation": "10^-2=1/100"
+    },
+    {
+      "id": "reciprocal_four",
+      "mode": 2,
+      "direction": "forward",
+      "input": 4,
+      "expected": 0.25,
+      "derivation": "1/4"
+    },
+    {
+      "id": "reciprocal_inverse_quarter",
+      "mode": 2,
+      "direction": "inverse",
+      "input": 0.25,
+      "expected": 4,
+      "derivation": "1/(1/4)"
+    },
+    {
+      "id": "ln_one",
+      "mode": 3,
+      "direction": "forward",
+      "input": 1,
+      "expected": 0,
+      "derivation": "e^0=1"
+    },
+    {
+      "id": "exp_zero",
+      "mode": 3,
+      "direction": "inverse",
+      "input": 0,
+      "expected": 1,
+      "derivation": "e^0=1"
+    },
+    {
+      "id": "exp_one",
+      "mode": 3,
+      "direction": "inverse",
+      "input": 1,
+      "expected": 2.718281828459045,
+      "expected_symbolic": "e",
+      "derivation": "e^1=e; numeric literal is mathematical reference, not DLL output"
+    }
+  ],
+  "rejected": [
+    {
+      "id": "log10_zero",
+      "mode": 1,
+      "direction": "forward",
+      "input": 0,
+      "expected_error": "Domain",
+      "basis": "real log domain"
+    },
+    {
+      "id": "log10_negative",
+      "mode": 1,
+      "direction": "forward",
+      "input": -1,
+      "expected_error": "Domain",
+      "basis": "real log domain"
+    },
+    {
+      "id": "reciprocal_zero",
+      "mode": 2,
+      "direction": "forward",
+      "input": 0,
+      "expected_error": "Domain",
+      "basis": "division by zero"
+    },
+    {
+      "id": "inverse_reciprocal_zero",
+      "mode": 2,
+      "direction": "inverse",
+      "input": 0,
+      "expected_error": "Domain",
+      "basis": "division by zero"
+    },
+    {
+      "id": "ln_zero",
+      "mode": 3,
+      "direction": "forward",
+      "input": 0,
+      "expected_error": "Domain",
+      "basis": "real log domain"
+    },
+    {
+      "id": "nonfinite_nan",
+      "mode": 0,
+      "direction": "forward",
+      "input_special": "quiet_NaN",
+      "expected_error": "NonFiniteInput",
+      "basis": "proposed finite-only arithmetic contract"
+    },
+    {
+      "id": "nonfinite_inf",
+      "mode": 0,
+      "direction": "inverse",
+      "input_special": "positive_infinity",
+      "expected_error": "NonFiniteInput",
+      "basis": "proposed finite-only arithmetic contract"
+    },
+    {
+      "id": "pow10_overflow",
+      "mode": 1,
+      "direction": "inverse",
+      "input": 400,
+      "expected_error": "Unrepresentable",
+      "basis": "10^400 exceeds binary64 range; proposed contract, no DLL observation"
+    },
+    {
+      "id": "exp_underflow",
+      "mode": 3,
+      "direction": "inverse",
+      "input": -1000,
+      "expected_error": "Unrepresentable",
+      "basis": "positive mathematical result rounds to0 in binary64; explicit new contract, no DLL observation"
+    },
+    {
+      "id": "double_log_deferred",
+      "mode": 4,
+      "direction": "forward",
+      "input": 100,
+      "expected_error": "UnsupportedMode",
+      "basis": "first-slice boundary, not a claim about DLL support"
+    },
+    {
+      "id": "ambiguous_mode5_deferred",
+      "mode": 5,
+      "direction": "forward",
+      "input": 10,
+      "expected_error": "UnsupportedMode",
+      "basis": "first-slice boundary until active SDK naming/behavior clarified"
+    }
+  ],
+  "axis_pair": {
+    "id": "asymmetric_axis_preparation_only",
+    "raw": {
+      "concentration": 100,
+      "concentration_unit": "ANON_C",
+      "mean_measurement": 20,
+      "measurement_unit": "ANON_R"
+    },
+    "modes": {
+      "x_concentration": 1,
+      "y_measurement": 0
+    },
+    "expected_prepared": {
+      "concentration_coordinate": 2,
+      "measurement_coordinate": 20,
+      "legacy_fit_pair_order": [
+        20,
+        2
+      ]
+    },
+    "derivation": "log10(100)=2; identity(20)=20. Original calculator passes (measurement, concentration). No fit performed or expected fit coefficient supplied."
+  },
+  "pending_integration_probe": {
+    "condition": "If a documented concentration-coordinate output were2 in this asymmetric mode setup",
+    "matching_x_inverse_expected": 100,
+    "existing_source_y_inverse_would_give": 2,
+    "meaning": "Static axis-consistency question for a future approved DLL vector, not an observed DLL/patient error or authorization to change current consumers."
+  }
+}

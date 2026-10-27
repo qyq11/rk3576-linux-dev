@@ -1,0 +1,902 @@
+{
+  "schema": "sn100-o05-recovery-probe-terminal-audit-v1",
+  "audited_utc": "2026-10-24T05:45:03.851149+00:00",
+  "audit_result": "passed_with_explicit_diagnostic_limits",
+  "scope": "Independent read-only replay of completed local WSL 12s + 1500s probe. No build, product execution, network, instrument, system configuration change, Git commit or push.",
+  "job_state": "passed",
+  "job_finished_utc": "2026-10-24T05:18:18.805792+00:00",
+  "active_stage": null,
+  "binary_sha256": "5837009027c610e46ed6c8312fde24b6a0848ddb63154f2a13b79b230553b5eb",
+  "frozen_sources": [
+    {
+      "source": "06_programs/sn100_host/protocol/build.sh",
+      "expected_sha256": "ca190b3ec5cbc0387c3de54d28065cdfb966c891001bca4e44fd5d09dae59b2e",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/client.pro",
+      "expected_sha256": "8ff306289ab24238afd740d3cfd03d0701bd7173b85a6f1d861912a4ada037f7",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/client_build.sh",
+      "expected_sha256": "cce7acb8014f70f09abb9a79a152acc9a0018951839b54462c3643ec19a82169",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/client_demo_main.cpp",
+      "expected_sha256": "3c74d1675fa1a2f7a40241c2975b81d5649382f176ee7f79f048f84db04478bd",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/frame_codec.cpp",
+      "expected_sha256": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/frame_codec.h",
+      "expected_sha256": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/loopback.pro",
+      "expected_sha256": "4ccf5c134ecd3f957e8a14c79659baa444bcd9cc5de61288b70f832e32f5c733",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/loopback_main.cpp",
+      "expected_sha256": "a57f195de0df229220a69a70d8fa7b24fdcede2df1a08354ec940e7ae8ee92e1",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/main.cpp",
+      "expected_sha256": "84688d4e112a255bb5e62be1ca75fa8dcf1fa4fb33f5600c85e870ca4fa27e6b",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/prepare_transport_arm64.sh",
+      "expected_sha256": "ebb3439b2a2bb517057249fc536b50fe04356cf8deb3cbbbfc1a5c6b798eb7c2",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/protocol.pro",
+      "expected_sha256": "73983e80e955f41e7b9f123909a793cc9ce44d3f4f3682b05417e2403edbf3c1",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/read_only_client.cpp",
+      "expected_sha256": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/read_only_client.h",
+      "expected_sha256": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/read_only_messages.cpp",
+      "expected_sha256": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/read_only_messages.h",
+      "expected_sha256": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/soak.pro",
+      "expected_sha256": "412ebea152e27fbdd70f7efb68231c1e5fb8e306a95c4b2bb1cb2c24ef6a790c",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/soak_build.sh",
+      "expected_sha256": "efd98e317dd942c6964409e50db9868e8287f7e5a6c508bc68bdc8771571f533",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/soak_main.cpp",
+      "expected_sha256": "735ef434b73339db7231520d888f4c1dba3986930836d2b71cc80c835d2f01b3",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/status_session.cpp",
+      "expected_sha256": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/status_session.h",
+      "expected_sha256": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/tcp_transport.cpp",
+      "expected_sha256": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/tcp_transport.h",
+      "expected_sha256": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/transport_build.sh",
+      "expected_sha256": "e3d5da281af6159d7cfa0e44aa0506ac663fab18e3d74b714183f0f52a11c07f",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/wsl.sh",
+      "expected_sha256": "0735d490dd35f62a5a56aaee3ef0c9283c5d61eeac83820174d1925687b759a4",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/wsl_recovery.sh",
+      "expected_sha256": "fea838d74519c2c66e4a34775581536e792ffd7586cd6de0914ec882b1854a74",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/protocol/wsl_transport.sh",
+      "expected_sha256": "56f25a045002560a7198bf8d36ac0c57ddfec7b4b96a4d409c1339e34e2442f4",
+      "snapshot_and_current_match": true
+    },
+    {
+      "source": "06_programs/sn100_host/tests/run_protocol_soak.py",
+      "expected_sha256": "2709b316036ffdef495c108e40e89f22188efec24ca4137e5b4c1a571adde729",
+      "snapshot_and_current_match": true
+    }
+  ],
+  "frozen_input_boundary": "All 27 source_sha256-listed files, their frozen snapshots, the original built binary and private frozen binary match. Later O09 status_replay.cpp/.h and status_replay fixture/test files are outside this frozen job list and soak.pro input set; their addition is not a source mismatch or an input to this binary.",
+  "stages": [
+    {
+      "stage": {
+        "name": "continuous_12s",
+        "seconds": 12,
+        "reconnect_seconds": 0
+      },
+      "recorded_child_wait_exit_code": 0,
+      "exit_code_provenance": "Frozen supervisor uses child.wait(); recorded code agrees in public verified.json, temp verified.json and final job_status.json. Target stdout terminal summary, progress and wire terminal result independently agree. No target was rerun for this audit.",
+      "target_elapsed_ms": 12022,
+      "supervisor_observed_seconds": 13.117463079000004,
+      "runtime": {
+        "os": "WSL Ubuntu-24.04",
+        "user": "qyq",
+        "architecture": "x86_64",
+        "qt_version": "5.15.13",
+        "build": "Release",
+        "network": "owned local loopback only"
+      },
+      "actual_load": {
+        "required_minimum_fraction": 0.9,
+        "diagnostic_fraction_of_nominal_10_per_second": 0.9916666666666667,
+        "heartbeat_fraction_of_nominal_100_per_second": 0.9983333333333333,
+        "heartbeat_acceptance_ceiling_ms_for_host_pause_only": 120000,
+        "request_timeout_ms": 120,
+        "read_only_retry_limit": 1
+      },
+      "manifest_entries_all_match": 7,
+      "all_public_temp_bytes_match": true,
+      "wire": {
+        "all_events_replayed": 305,
+        "sequence_first": 1,
+        "sequence_last": 305,
+        "kind_counts": {
+          "experiment.started": 1,
+          "client.connected": 1,
+          "client.TX.queued.not_peer_ack": 13,
+          "peer.RX.actual": 13,
+          "peer.TX.queued.not_client_ack": 131,
+          "client.RX.parsed": 131,
+          "client.request.finished": 12,
+          "peer.deliberately.withheld.first.reply": 1,
+          "experiment.draining": 1,
+          "experiment.result": 1
+        },
+        "query_literal_golden_hex": [
+          "0203000600000001516a3a0405",
+          "0203000600000001516b3b0405",
+          "02030006000000015148180405"
+        ],
+        "query_command_counts": {
+          "Qj": 5,
+          "Qk": 4,
+          "QH": 4
+        },
+        "reply_full_frame_golden_and_parsed_counts": {
+          "Qj": 4,
+          "Qq": 119,
+          "Qk": 4,
+          "QH": 4
+        },
+        "all_reply_frame_headers_lengths_metadata_payloads_checksums_tails_checked": true,
+        "diagnostics_sequential": 119,
+        "actual_peer_rx_bytes": 169,
+        "cancelled_unconfirmed_bytes": 0,
+        "log_bytes": 60587,
+        "largest_wire_gaps": [
+          {
+            "duration_ms": 99,
+            "begin_ms": 114,
+            "end_ms": 213,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "peer.TX.queued.not_client_ack"
+          },
+          {
+            "duration_ms": 99,
+            "begin_ms": 513,
+            "end_ms": 612,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "peer.TX.queued.not_client_ack"
+          },
+          {
+            "duration_ms": 99,
+            "begin_ms": 1314,
+            "end_ms": 1413,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "peer.TX.queued.not_client_ack"
+          },
+          {
+            "duration_ms": 99,
+            "begin_ms": 1513,
+            "end_ms": 1612,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "peer.TX.queued.not_client_ack"
+          },
+          {
+            "duration_ms": 99,
+            "begin_ms": 1713,
+            "end_ms": 1812,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "peer.TX.queued.not_client_ack"
+          }
+        ],
+        "largest_query_latencies_from_wire_ms_precision": [
+          {
+            "duration_ms": 133,
+            "begin_ms": 9244,
+            "end_ms": 9377,
+            "command": "Qj",
+            "end_wire_sequence": 241
+          },
+          {
+            "duration_ms": 19,
+            "begin_ms": 4211,
+            "end_ms": 4230,
+            "command": "Qk",
+            "end_wire_sequence": 111
+          },
+          {
+            "duration_ms": 14,
+            "begin_ms": 2111,
+            "end_ms": 2125,
+            "command": "QH",
+            "end_wire_sequence": 59
+          },
+          {
+            "duration_ms": 13,
+            "begin_ms": 5245,
+            "end_ms": 5258,
+            "command": "QH",
+            "end_wire_sequence": 136
+          },
+          {
+            "duration_ms": 12,
+            "begin_ms": 6244,
+            "end_ms": 6256,
+            "command": "Qj",
+            "end_wire_sequence": 161
+          }
+        ]
+      },
+      "timing": {
+        "capacity": 8192,
+        "retained_events": 3361,
+        "events_seen": 3361,
+        "overwritten_events": 0,
+        "sequence_first_last": [
+          1,
+          3361
+        ],
+        "collector_seconds_first_last": [
+          0.001310878,
+          12.023039537
+        ],
+        "retained_span_seconds": 12.021728659,
+        "maximum_adjacent_collector_gap_ms": 32.830516,
+        "source_counts": {
+          "soak": 1035,
+          "client": 1495,
+          "transport": 831
+        },
+        "source_local_and_collector_clock_monotonic": true,
+        "clock_contract": "collector_ns orders all events; source_ns/deadline_ms are local to their source; ns below 2^53 for max 24h",
+        "last_event_stage": "experiment.timing.freeze",
+        "io_within_retained_window_only": {
+          "log.write.begin": {
+            "complete_pairs": 305,
+            "orphan_end": 0,
+            "open_begin": false,
+            "maximum_ms": 0.033086,
+            "last": {
+              "begin_sequence": 3357,
+              "end_sequence": 3358,
+              "begin_collector_ms": 12019.124504,
+              "end_collector_ms": 12019.131923,
+              "duration_ms": 0.007419,
+              "begin_value": 88,
+              "end_value": 88
+            },
+            "all_pairs": null
+          },
+          "log.flush.begin": {
+            "complete_pairs": 2,
+            "orphan_end": 0,
+            "open_begin": false,
+            "maximum_ms": 1.227629,
+            "last": {
+              "begin_sequence": 3359,
+              "end_sequence": 3360,
+              "begin_collector_ms": 12019.135021,
+              "end_collector_ms": 12020.36265,
+              "duration_ms": 1.227629,
+              "begin_value": 0,
+              "end_value": 1
+            },
+            "all_pairs": null
+          },
+          "progress.commit.begin": {
+            "complete_pairs": 1,
+            "orphan_end": 0,
+            "open_begin": false,
+            "maximum_ms": 32.830516,
+            "last": {
+              "begin_sequence": 2740,
+              "end_sequence": 2741,
+              "begin_collector_ms": 9745.272036,
+              "end_collector_ms": 9778.102552,
+              "duration_ms": 32.830516,
+              "begin_value": 0,
+              "end_value": 1
+            },
+            "all_pairs": [
+              {
+                "begin_sequence": 2740,
+                "end_sequence": 2741,
+                "begin_collector_ms": 9745.272036,
+                "end_collector_ms": 9778.102552,
+                "duration_ms": 32.830516,
+                "begin_value": 0,
+                "end_value": 1
+              }
+            ]
+          },
+          "progress.begin": {
+            "complete_pairs": 1,
+            "orphan_end": 0,
+            "open_begin": false,
+            "maximum_ms": 33.304194,
+            "last": {
+              "begin_sequence": 2737,
+              "end_sequence": 2741,
+              "begin_collector_ms": 9744.798358,
+              "end_collector_ms": 9778.102552,
+              "duration_ms": 33.304194,
+              "begin_value": 0,
+              "end_value": 1
+            },
+            "all_pairs": [
+              {
+                "begin_sequence": 2737,
+                "end_sequence": 2741,
+                "begin_collector_ms": 9744.798358,
+                "end_collector_ms": 9778.102552,
+                "duration_ms": 33.304194,
+                "begin_value": 0,
+                "end_value": 1
+              }
+            ]
+          }
+        }
+      },
+      "resources": {
+        "nominal_interval_seconds": 1,
+        "samples": 13,
+        "units": "KiB except Threads/fd",
+        "maximum": {
+          "VmRSS": 15544,
+          "VmHWM": 16372,
+          "Pss": 12331,
+          "Threads": 1,
+          "fd": 8
+        },
+        "first_600_samples_mean_RSS": 14068.0,
+        "last_600_samples_mean_RSS": 14068.0,
+        "first_600_samples_mean_PSS": 10858.615384615385,
+        "last_600_samples_mean_PSS": 10858.615384615385,
+        "cpu_one_core_percent": 0.9148110368392063,
+        "limit": "Sampled baseline and trend, not proof against every leak or an RK resource budget"
+      },
+      "resource_sampling": {
+        "resource_samples": 13,
+        "sample_errors": 0,
+        "first_elapsed_seconds": 0.045023625999988326,
+        "last_elapsed_seconds": 12.113502236999977,
+        "maximum_sample_interval_seconds": 1.0208370320000313,
+        "cpu_ticks_first_last": [
+          0,
+          12
+        ],
+        "clock_ticks_per_second": 100
+      },
+      "heartbeat_summary": {
+        "bucket_width_ms": 1,
+        "maximum_ms": 35.415505,
+        "p95_bucket_upper_ms": 11,
+        "p95_overflow": false,
+        "samples": 1198
+      },
+      "query_latency_summary": {
+        "bucket_width_ms": 1,
+        "maximum_ms": 134,
+        "p95_bucket_upper_ms": 135,
+        "p95_overflow": false,
+        "samples": 12
+      },
+      "closed_terminal": {
+        "pending": false,
+        "fresh_status": false,
+        "link_state": "disconnected"
+      }
+    },
+    {
+      "stage": {
+        "name": "recovery_1500s",
+        "seconds": 1500,
+        "reconnect_seconds": 60
+      },
+      "recorded_child_wait_exit_code": 0,
+      "exit_code_provenance": "Frozen supervisor uses child.wait(); recorded code agrees in public verified.json, temp verified.json and final job_status.json. Target stdout terminal summary, progress and wire terminal result independently agree. No target was rerun for this audit.",
+      "target_elapsed_ms": 1500009,
+      "supervisor_observed_seconds": 1501.0537171279998,
+      "runtime": {
+        "os": "WSL Ubuntu-24.04",
+        "user": "qyq",
+        "architecture": "x86_64",
+        "qt_version": "5.15.13",
+        "build": "Release",
+        "network": "owned local loopback only"
+      },
+      "actual_load": {
+        "required_minimum_fraction": 0.9,
+        "diagnostic_fraction_of_nominal_10_per_second": 0.9983333333333333,
+        "heartbeat_fraction_of_nominal_100_per_second": 0.99522,
+        "heartbeat_acceptance_ceiling_ms_for_host_pause_only": 120000,
+        "request_timeout_ms": 120,
+        "read_only_retry_limit": 1
+      },
+      "manifest_entries_all_match": 8,
+      "all_public_temp_bytes_match": true,
+      "wire": {
+        "all_events_replayed": 38029,
+        "sequence_first": 1,
+        "sequence_last": 38029,
+        "kind_counts": {
+          "experiment.started": 1,
+          "client.connected": 25,
+          "client.TX.queued.not_peer_ack": 1661,
+          "peer.RX.actual": 1661,
+          "peer.TX.queued.not_client_ack": 16485,
+          "client.RX.parsed": 16485,
+          "client.request.finished": 1510,
+          "peer.deliberately.withheld.first.reply": 151,
+          "peer.TX.queued.old.half_frame": 24,
+          "client.disconnected": 24,
+          "experiment.draining": 1,
+          "experiment.result": 1
+        },
+        "query_literal_golden_hex": [
+          "0203000600000001516a3a0405",
+          "0203000600000001516b3b0405",
+          "02030006000000015148180405"
+        ],
+        "query_command_counts": {
+          "Qj": 555,
+          "Qk": 553,
+          "QH": 553
+        },
+        "reply_full_frame_golden_and_parsed_counts": {
+          "Qj": 504,
+          "Qq": 14975,
+          "Qk": 503,
+          "QH": 503
+        },
+        "all_reply_frame_headers_lengths_metadata_payloads_checksums_tails_checked": true,
+        "diagnostics_sequential": 14975,
+        "actual_peer_rx_bytes": 21593,
+        "cancelled_unconfirmed_bytes": 0,
+        "log_bytes": 7902727,
+        "largest_wire_gaps": [
+          {
+            "duration_ms": 396,
+            "begin_ms": 277327,
+            "end_ms": 277723,
+            "before_kind": "peer.RX.actual",
+            "after_kind": "peer.deliberately.withheld.first.reply"
+          },
+          {
+            "duration_ms": 259,
+            "begin_ms": 94976,
+            "end_ms": 95235,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "peer.TX.queued.not_client_ack"
+          },
+          {
+            "duration_ms": 208,
+            "begin_ms": 830307,
+            "end_ms": 830515,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "peer.TX.queued.not_client_ack"
+          },
+          {
+            "duration_ms": 154,
+            "begin_ms": 490252,
+            "end_ms": 490406,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "client.TX.queued.not_peer_ack"
+          },
+          {
+            "duration_ms": 150,
+            "begin_ms": 1030232,
+            "end_ms": 1030382,
+            "before_kind": "client.RX.parsed",
+            "after_kind": "peer.TX.queued.not_client_ack"
+          }
+        ],
+        "largest_query_latencies_from_wire_ms_precision": [
+          {
+            "duration_ms": 410,
+            "begin_ms": 277325,
+            "end_ms": 277735,
+            "command": "Qj",
+            "end_wire_sequence": 7036
+          },
+          {
+            "duration_ms": 233,
+            "begin_ms": 722755,
+            "end_ms": 722988,
+            "command": "Qj",
+            "end_wire_sequence": 18336
+          },
+          {
+            "duration_ms": 173,
+            "begin_ms": 752826,
+            "end_ms": 752999,
+            "command": "Qj",
+            "end_wire_sequence": 19096
+          },
+          {
+            "duration_ms": 167,
+            "begin_ms": 762826,
+            "end_ms": 762993,
+            "command": "Qk",
+            "end_wire_sequence": 19349
+          },
+          {
+            "duration_ms": 162,
+            "begin_ms": 157330,
+            "end_ms": 157492,
+            "command": "Qj",
+            "end_wire_sequence": 3998
+          }
+        ]
+      },
+      "timing": {
+        "capacity": 8192,
+        "retained_events": 8192,
+        "events_seen": 420812,
+        "overwritten_events": 412620,
+        "sequence_first_last": [
+          412621,
+          420812
+        ],
+        "collector_seconds_first_last": [
+          1470.823125479,
+          1500.009955006
+        ],
+        "retained_span_seconds": 29.186829527,
+        "maximum_adjacent_collector_gap_ms": 44.907382,
+        "source_counts": {
+          "client": 3643,
+          "transport": 2031,
+          "soak": 2518
+        },
+        "source_local_and_collector_clock_monotonic": true,
+        "clock_contract": "collector_ns orders all events; source_ns/deadline_ms are local to their source; ns below 2^53 for max 24h",
+        "last_event_stage": "experiment.timing.freeze",
+        "io_within_retained_window_only": {
+          "log.write.begin": {
+            "complete_pairs": 740,
+            "orphan_end": 0,
+            "open_begin": false,
+            "maximum_ms": 0.069168,
+            "last": {
+              "begin_sequence": 420808,
+              "end_sequence": 420809,
+              "begin_collector_ms": 1500008.179858,
+              "end_collector_ms": 1500008.185773,
+              "duration_ms": 0.005915,
+              "begin_value": 92,
+              "end_value": 92
+            },
+            "all_pairs": null
+          },
+          "log.flush.begin": {
+            "complete_pairs": 3,
+            "orphan_end": 0,
+            "open_begin": false,
+            "maximum_ms": 3.189259,
+            "last": {
+              "begin_sequence": 420810,
+              "end_sequence": 420811,
+              "begin_collector_ms": 1500008.188637,
+              "end_collector_ms": 1500008.702862,
+              "duration_ms": 0.514225,
+              "begin_value": 0,
+              "end_value": 1
+            },
+            "all_pairs": null
+          },
+          "progress.commit.begin": {
+            "complete_pairs": 2,
+            "orphan_end": 0,
+            "open_begin": false,
+            "maximum_ms": 44.907382,
+            "last": {
+              "begin_sequence": 418080,
+              "end_sequence": 418081,
+              "begin_collector_ms": 1490328.835725,
+              "end_collector_ms": 1490355.089453,
+              "duration_ms": 26.253728,
+              "begin_value": 0,
+              "end_value": 1
+            },
+            "all_pairs": [
+              {
+                "begin_sequence": 415275,
+                "end_sequence": 415276,
+                "begin_collector_ms": 1480328.792944,
+                "end_collector_ms": 1480373.700326,
+                "duration_ms": 44.907382,
+                "begin_value": 0,
+                "end_value": 1
+              },
+              {
+                "begin_sequence": 418080,
+                "end_sequence": 418081,
+                "begin_collector_ms": 1490328.835725,
+                "end_collector_ms": 1490355.089453,
+                "duration_ms": 26.253728,
+                "begin_value": 0,
+                "end_value": 1
+              }
+            ]
+          },
+          "progress.begin": {
+            "complete_pairs": 2,
+            "orphan_end": 0,
+            "open_begin": false,
+            "maximum_ms": 47.130428,
+            "last": {
+              "begin_sequence": 418077,
+              "end_sequence": 418081,
+              "begin_collector_ms": 1490325.640175,
+              "end_collector_ms": 1490355.089453,
+              "duration_ms": 29.449278,
+              "begin_value": 0,
+              "end_value": 1
+            },
+            "all_pairs": [
+              {
+                "begin_sequence": 415272,
+                "end_sequence": 415276,
+                "begin_collector_ms": 1480326.569898,
+                "end_collector_ms": 1480373.700326,
+                "duration_ms": 47.130428,
+                "begin_value": 0,
+                "end_value": 1
+              },
+              {
+                "begin_sequence": 418077,
+                "end_sequence": 418081,
+                "begin_collector_ms": 1490325.640175,
+                "end_collector_ms": 1490355.089453,
+                "duration_ms": 29.449278,
+                "begin_value": 0,
+                "end_value": 1
+              }
+            ]
+          }
+        }
+      },
+      "resources": {
+        "nominal_interval_seconds": 1,
+        "samples": 1492,
+        "units": "KiB except Threads/fd",
+        "maximum": {
+          "VmRSS": 18960,
+          "VmHWM": 18960,
+          "Pss": 15790,
+          "Threads": 1,
+          "fd": 9
+        },
+        "first_600_samples_mean_RSS": 18788.606666666667,
+        "last_600_samples_mean_RSS": 18960.0,
+        "first_600_samples_mean_PSS": 15612.901666666667,
+        "last_600_samples_mean_PSS": 15789.763333333334,
+        "cpu_one_core_percent": 1.1238771675858314,
+        "limit": "Sampled baseline and trend, not proof against every leak or an RK resource budget"
+      },
+      "resource_sampling": {
+        "resource_samples": 1492,
+        "sample_errors": 0,
+        "first_elapsed_seconds": 0.05249188900000945,
+        "last_elapsed_seconds": 1500.047011359,
+        "maximum_sample_interval_seconds": 1.2956309379999311,
+        "cpu_ticks_first_last": [
+          0,
+          1687
+        ],
+        "clock_ticks_per_second": 100
+      },
+      "heartbeat_summary": {
+        "bucket_width_ms": 1,
+        "maximum_ms": 403.389088,
+        "p95_bucket_upper_ms": 11,
+        "p95_overflow": false,
+        "samples": 149283
+      },
+      "query_latency_summary": {
+        "bucket_width_ms": 1,
+        "maximum_ms": 410,
+        "p95_bucket_upper_ms": 137,
+        "p95_overflow": false,
+        "samples": 1510
+      },
+      "closed_terminal": {
+        "pending": false,
+        "fresh_status": false,
+        "link_state": "disconnected"
+      }
+    }
+  ],
+  "process_close_observation": [
+    {
+      "pid": 371,
+      "exists_in_current_WSL_proc": true,
+      "cmdline_if_present": "bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/build_arm64.sh ",
+      "current_process_started_utc": "2026-10-24T05:40:06.030000+00:00",
+      "current_process_started_after_probe_finished": true,
+      "probe_identity_present": false,
+      "interpretation": "PID reused by later unrelated process; no stop/signal performed"
+    },
+    {
+      "pid": 372,
+      "exists_in_current_WSL_proc": false,
+      "probe_identity_present": false,
+      "interpretation": "recorded PID no longer exists"
+    },
+    {
+      "pid": 373,
+      "exists_in_current_WSL_proc": false,
+      "probe_identity_present": false,
+      "interpretation": "recorded PID no longer exists"
+    }
+  ],
+  "stale_progress_cache": {
+    "job_target_progress_state": "running",
+    "job_target_progress_elapsed_ms": 1490328,
+    "meaning": "Final job keeps its last in-loop progress cache (running at 1490328ms); completed_stages plus active_stage=null and the byte-identical terminal per-stage summary/progress establish closure."
+  },
+  "diagnostic_limits": {
+    "accepted_boundary": "Only 12-second continuous and 1500-second recovery synthetic loopback load passed; 24 planned recoveries. This is not an 8-hour result, RK performance acceptance, realtime deadline acceptance, actual SN100 protocol acceptance or instrument ACK.",
+    "old_1150s_incident": "Old 1150.178-second failed 8h run remains unresolved. The new successful prefix crosses its elapsed-time point but cannot establish the old root cause. In the new run the 1150-second context is earlier than the retained ring start and overwritten.",
+    "heartbeat_maximum_403ms": "403.389088ms is a whole-run aggregate only: heartbeat samples have no timestamped timing event. The retained final ring starts at 1470.823125479s and has maximum adjacent collector gap 44.907382ms, so it contains no comparable 403ms event-loop gap. The full wire retains a 396ms interval at 277.327..277.723s and a 410ms query at 277.325..277.735s; that interval is overwritten in detailed timing and is a candidate context, not proof that it is the maximum heartbeat sample or that synchronous IO caused it. Exact maximum heartbeat timing cannot be reconstructed.",
+    "synchronous_io": "log write/flush and progress commit durations below describe retained tail pairs only. They do not establish the whole-run maxima and cannot exclude an earlier stall or attribute the old failed run to IO.",
+    "resource_boundary": "Nominal 1-second WSL samples and replayed CPU/RSS/PSS/thread/FD trends are host baselines; no RK resource/control budget or leak-free lifetime claim."
+  },
+  "evidence_sha256": {
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/job.json": "f1c78f1c9a1549a543c3ed36f81a60caa0ce6eeb3ff13fb70dcd866326772748",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/job_status.json": "c28278f6f0adbf42f56118ec3dc714b291c00949cd266b4c375432b52e9f3149",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/job.json": "f1c78f1c9a1549a543c3ed36f81a60caa0ce6eeb3ff13fb70dcd866326772748",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/status.json": "c28278f6f0adbf42f56118ec3dc714b291c00949cd266b4c375432b52e9f3149",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/launcher.json": "cee90494244d572b096aac111f52f42583dcab15585aaa4eb215374bf19cf213",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/supervisor.stdout.log": "3b9c9f4d1a2007178d02d44bc66a36ce33941e8b4b7407489dbb6c3e650dd468",
+    "temp/sn100_host/protocol_timing_20261024/terminal_audit_20261024/audit_probe.py": "008b7057896fb27904d3d28c22501abf97f60dc93b6f226e40d1548efe744fe0",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/build.sh": "ca190b3ec5cbc0387c3de54d28065cdfb966c891001bca4e44fd5d09dae59b2e",
+    "06_programs/sn100_host/protocol/build.sh": "ca190b3ec5cbc0387c3de54d28065cdfb966c891001bca4e44fd5d09dae59b2e",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/client.pro": "8ff306289ab24238afd740d3cfd03d0701bd7173b85a6f1d861912a4ada037f7",
+    "06_programs/sn100_host/protocol/client.pro": "8ff306289ab24238afd740d3cfd03d0701bd7173b85a6f1d861912a4ada037f7",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/client_build.sh": "cce7acb8014f70f09abb9a79a152acc9a0018951839b54462c3643ec19a82169",
+    "06_programs/sn100_host/protocol/client_build.sh": "cce7acb8014f70f09abb9a79a152acc9a0018951839b54462c3643ec19a82169",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/client_demo_main.cpp": "3c74d1675fa1a2f7a40241c2975b81d5649382f176ee7f79f048f84db04478bd",
+    "06_programs/sn100_host/protocol/client_demo_main.cpp": "3c74d1675fa1a2f7a40241c2975b81d5649382f176ee7f79f048f84db04478bd",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/frame_codec.cpp": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+    "06_programs/sn100_host/protocol/frame_codec.cpp": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/frame_codec.h": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+    "06_programs/sn100_host/protocol/frame_codec.h": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/loopback.pro": "4ccf5c134ecd3f957e8a14c79659baa444bcd9cc5de61288b70f832e32f5c733",
+    "06_programs/sn100_host/protocol/loopback.pro": "4ccf5c134ecd3f957e8a14c79659baa444bcd9cc5de61288b70f832e32f5c733",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/loopback_main.cpp": "a57f195de0df229220a69a70d8fa7b24fdcede2df1a08354ec940e7ae8ee92e1",
+    "06_programs/sn100_host/protocol/loopback_main.cpp": "a57f195de0df229220a69a70d8fa7b24fdcede2df1a08354ec940e7ae8ee92e1",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/main.cpp": "84688d4e112a255bb5e62be1ca75fa8dcf1fa4fb33f5600c85e870ca4fa27e6b",
+    "06_programs/sn100_host/protocol/main.cpp": "84688d4e112a255bb5e62be1ca75fa8dcf1fa4fb33f5600c85e870ca4fa27e6b",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/prepare_transport_arm64.sh": "ebb3439b2a2bb517057249fc536b50fe04356cf8deb3cbbbfc1a5c6b798eb7c2",
+    "06_programs/sn100_host/protocol/prepare_transport_arm64.sh": "ebb3439b2a2bb517057249fc536b50fe04356cf8deb3cbbbfc1a5c6b798eb7c2",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/protocol.pro": "73983e80e955f41e7b9f123909a793cc9ce44d3f4f3682b05417e2403edbf3c1",
+    "06_programs/sn100_host/protocol/protocol.pro": "73983e80e955f41e7b9f123909a793cc9ce44d3f4f3682b05417e2403edbf3c1",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/read_only_client.cpp": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+    "06_programs/sn100_host/protocol/read_only_client.cpp": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/read_only_client.h": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+    "06_programs/sn100_host/protocol/read_only_client.h": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/read_only_messages.cpp": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+    "06_programs/sn100_host/protocol/read_only_messages.cpp": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/read_only_messages.h": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+    "06_programs/sn100_host/protocol/read_only_messages.h": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/soak.pro": "412ebea152e27fbdd70f7efb68231c1e5fb8e306a95c4b2bb1cb2c24ef6a790c",
+    "06_programs/sn100_host/protocol/soak.pro": "412ebea152e27fbdd70f7efb68231c1e5fb8e306a95c4b2bb1cb2c24ef6a790c",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/soak_build.sh": "efd98e317dd942c6964409e50db9868e8287f7e5a6c508bc68bdc8771571f533",
+    "06_programs/sn100_host/protocol/soak_build.sh": "efd98e317dd942c6964409e50db9868e8287f7e5a6c508bc68bdc8771571f533",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/soak_main.cpp": "735ef434b73339db7231520d888f4c1dba3986930836d2b71cc80c835d2f01b3",
+    "06_programs/sn100_host/protocol/soak_main.cpp": "735ef434b73339db7231520d888f4c1dba3986930836d2b71cc80c835d2f01b3",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/status_session.cpp": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+    "06_programs/sn100_host/protocol/status_session.cpp": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/status_session.h": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+    "06_programs/sn100_host/protocol/status_session.h": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/tcp_transport.cpp": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+    "06_programs/sn100_host/protocol/tcp_transport.cpp": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/tcp_transport.h": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+    "06_programs/sn100_host/protocol/tcp_transport.h": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/transport_build.sh": "e3d5da281af6159d7cfa0e44aa0506ac663fab18e3d74b714183f0f52a11c07f",
+    "06_programs/sn100_host/protocol/transport_build.sh": "e3d5da281af6159d7cfa0e44aa0506ac663fab18e3d74b714183f0f52a11c07f",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/wsl.sh": "0735d490dd35f62a5a56aaee3ef0c9283c5d61eeac83820174d1925687b759a4",
+    "06_programs/sn100_host/protocol/wsl.sh": "0735d490dd35f62a5a56aaee3ef0c9283c5d61eeac83820174d1925687b759a4",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/wsl_recovery.sh": "fea838d74519c2c66e4a34775581536e792ffd7586cd6de0914ec882b1854a74",
+    "06_programs/sn100_host/protocol/wsl_recovery.sh": "fea838d74519c2c66e4a34775581536e792ffd7586cd6de0914ec882b1854a74",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/wsl_transport.sh": "56f25a045002560a7198bf8d36ac0c57ddfec7b4b96a4d409c1339e34e2442f4",
+    "06_programs/sn100_host/protocol/wsl_transport.sh": "56f25a045002560a7198bf8d36ac0c57ddfec7b4b96a4d409c1339e34e2442f4",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/source_snapshot/run_protocol_soak.py": "2709b316036ffdef495c108e40e89f22188efec24ca4137e5b4c1a571adde729",
+    "06_programs/sn100_host/tests/run_protocol_soak.py": "2709b316036ffdef495c108e40e89f22188efec24ca4137e5b4c1a571adde729",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/binary/sn100_protocol_soak": "5837009027c610e46ed6c8312fde24b6a0848ddb63154f2a13b79b230553b5eb",
+    "temp/sn100_host/protocol_timing_20261024/soak_native/sn100_protocol_soak": "5837009027c610e46ed6c8312fde24b6a0848ddb63154f2a13b79b230553b5eb",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/continuous_12s.resources.jsonl": "5fe2570613b025666ec8f3455814b81b62bc6226a575af131adafc977f1485f4",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s.resources.jsonl": "5fe2570613b025666ec8f3455814b81b62bc6226a575af131adafc977f1485f4",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/continuous_12s.stdout.log": "5979e3f655c4b5e22d72b711ac56e722699788d600dd3bc9dc7b8d73f9bc0f6a",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s.stdout.log": "5979e3f655c4b5e22d72b711ac56e722699788d600dd3bc9dc7b8d73f9bc0f6a",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/continuous_12s.verified.json": "61c4b03043178f7521ea0e69f46b9444b405eb90fe0751f5b00b690356739457",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s.verified.json": "61c4b03043178f7521ea0e69f46b9444b405eb90fe0751f5b00b690356739457",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/progress.json": "7b90df68be80db57a4b6ec4a8444ca647efa9799baca221b477b3c622c4e7662",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/progress.json": "7b90df68be80db57a4b6ec4a8444ca647efa9799baca221b477b3c622c4e7662",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/summary.json": "7b90df68be80db57a4b6ec4a8444ca647efa9799baca221b477b3c622c4e7662",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/summary.json": "7b90df68be80db57a4b6ec4a8444ca647efa9799baca221b477b3c622c4e7662",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/timing.json": "35ba8bdfda19ac992150f76499684f1cba0d52dd4c9b643d04e89479233d019e",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/timing.json": "35ba8bdfda19ac992150f76499684f1cba0d52dd4c9b643d04e89479233d019e",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/wire_0001.jsonl": "18a22b2a1f6334ed3a1c401303915defb2c4b45de7e8f4a87e10b3ecbfc89029",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/wire_0001.jsonl": "18a22b2a1f6334ed3a1c401303915defb2c4b45de7e8f4a87e10b3ecbfc89029",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/continuous_12s/SHA256SUMS": "12b84fb768e162733f1912a7ba0ce5a9ed16767f0c351bb4e6202bb5c740a769",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/progress.json": "e050a4ba795b59799971159a105f992ba6046c24e4469acc14dd3539a81e223c",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/progress.json": "e050a4ba795b59799971159a105f992ba6046c24e4469acc14dd3539a81e223c",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/recovery_1500s.resources.jsonl": "13b3b69129466e847a999de8793fbfd2ab0b1f5f1b05b14818704a6efa690d91",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s.resources.jsonl": "13b3b69129466e847a999de8793fbfd2ab0b1f5f1b05b14818704a6efa690d91",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/recovery_1500s.stdout.log": "16d99388045814f53e78cc80c3591c4f6268fd7990db37c006148b3defba237a",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s.stdout.log": "16d99388045814f53e78cc80c3591c4f6268fd7990db37c006148b3defba237a",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/recovery_1500s.verified.json": "8afd750e00a3cd153c046dcb588afb8871cf34ad5a144d5c13edafbd295e4a39",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s.verified.json": "8afd750e00a3cd153c046dcb588afb8871cf34ad5a144d5c13edafbd295e4a39",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/summary.json": "e050a4ba795b59799971159a105f992ba6046c24e4469acc14dd3539a81e223c",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/summary.json": "e050a4ba795b59799971159a105f992ba6046c24e4469acc14dd3539a81e223c",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/timing.json": "a8942e9262ece72b11f5bce4988f5db76e025eff83b0d6492389c96eb658ded3",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/timing.json": "a8942e9262ece72b11f5bce4988f5db76e025eff83b0d6492389c96eb658ded3",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/wire_0001.jsonl": "e88d054e85df8fdd344e7f83d733bd29ab927a561436d9683cadaccd18bfcb1c",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/wire_0001.jsonl": "e88d054e85df8fdd344e7f83d733bd29ab927a561436d9683cadaccd18bfcb1c",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/wire_0002.jsonl": "f60517df3cdae024b3d951f5a4ce82bdb2c3b23e3398599fc94efca83d0d34b9",
+    "temp/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/wire_0002.jsonl": "f60517df3cdae024b3d951f5a4ce82bdb2c3b23e3398599fc94efca83d0d34b9",
+    "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/recovery_1500s/SHA256SUMS": "678cba9a5248fc08d41b00fdc3475307f9c0d56c519b2ee26822cd4af7561bce"
+  }
+}

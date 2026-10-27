@@ -1,0 +1,664 @@
+{
+  "schema": "sn100-lis-local-settings-contract-v1",
+  "reviewed_utc": "2026-10-24T12:07:01.756429+00:00",
+  "status": "Read-only next-candidate preparation against parent frozen O10-1 baseline; no implementation or completion claim.",
+  "safety_scope": "Read selected reference source/header/UI only. No public/systemcommon.cpp, old actual configuration, production database, credentials, patient data, printer/LIS enumeration, GUI, build, TCP/listener/serial device or instrument execution. Output only this independent temp fact artifact.",
+  "original_entry": {
+    "value": "主菜单 用户设置 index6 -> LIS设置 subpage4, constructed frmLisSetting once by frmUserSet",
+    "evidence": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmuserset.cpp",
+        "line": 81,
+        "end_line": 91
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmuserset.cpp",
+        "line": 128,
+        "end_line": 130
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 454,
+        "end_line": 454
+      }
+    ]
+  },
+  "visible_fields": [
+    {
+      "field": "radioBoxTcp/radioBoxCom",
+      "key": "lis/type",
+      "values": [
+        "tcp",
+        "serial"
+      ],
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 125,
+          "end_line": 130
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 144,
+          "end_line": 144
+        }
+      ],
+      "default_source": "getMode treats only exact tcp as TCP; everything else incl missing is Com_Mode. Actual supplied deployment config not read."
+    },
+    {
+      "field": "lblTcpIp",
+      "key": "lis/ip",
+      "values": "text",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 49,
+          "end_line": 53
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 147,
+          "end_line": 147
+        }
+      ],
+      "default_source": "No explicit load fallback; designer empty; no real endpoint inferred."
+    },
+    {
+      "field": "lblTcpPort",
+      "key": "lis/port",
+      "values": "text",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 55,
+          "end_line": 60
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 148,
+          "end_line": 148
+        }
+      ],
+      "default_source": "No explicit load fallback; designer empty; no real port inferred."
+    },
+    {
+      "field": "cbxCom",
+      "key": "lis/commname",
+      "values": "noneditable enumerated QSerialPortInfo.portName",
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 82,
+          "end_line": 94
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/serialportbase.cpp",
+          "line": 77,
+          "end_line": 86
+        }
+      ],
+      "default_source": "No explicit config fallback; original absent-port none insertion is defective."
+    },
+    {
+      "field": "cbxBaudrate",
+      "key": "lis/baudrate",
+      "values": [
+        "1200",
+        "2400",
+        "4800",
+        "9600",
+        "19200",
+        "38400",
+        "57600",
+        "115200"
+      ],
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 95,
+          "end_line": 98
+        }
+      ],
+      "default_source": "No explicit config fallback; do not convert list order into confirmed deployment baud."
+    },
+    {
+      "field": "cmb_SamLis_Mode",
+      "key": "lis/samMode",
+      "values": {
+        "0": "样本模式",
+        "1": "测试模式"
+      },
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 120,
+          "end_line": 120
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 142,
+          "end_line": 142
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "line": 42,
+          "end_line": 42
+        }
+      ],
+      "default_source": "Explicit missing-key fallback 0. Constructor temporary index1 at line41 is overwritten by refresh/getSamMode."
+    },
+    {
+      "field": "ckxAutoGet",
+      "label": "自动获取",
+      "key": "lis/autoget",
+      "values": [
+        "true",
+        "false"
+      ],
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 34,
+          "end_line": 34
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 139,
+          "end_line": 139
+        }
+      ],
+      "default_source": "No explicit load fallback; getter is true only for exact true, so absent reads false."
+    },
+    {
+      "field": "ckxAutoSend",
+      "label": "自动上传",
+      "key": "lis/autosend",
+      "values": [
+        "true",
+        "false"
+      ],
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 35,
+          "end_line": 35
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 138,
+          "end_line": 138
+        }
+      ],
+      "default_source": "No explicit load fallback; getter is true only for exact true, so absent reads false."
+    },
+    {
+      "field": "ckxAutoLink",
+      "label": "应答模式",
+      "key": "lis/link",
+      "values": [
+        "true",
+        "false"
+      ],
+      "source": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 36,
+          "end_line": 36
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 140,
+          "end_line": 140
+        }
+      ],
+      "default_source": "No explicit load fallback; getter exact true only. Despite UI label this flag also gates original startup openComm; do not rename semantics as proven ACK implementation."
+    }
+  ],
+  "hidden_loaded_keys": {
+    "lis/moni": "No explicit fallback; controls getIsMoni/heartbeat branch.",
+    "lis/linkintervalms": "No explicit fallback; toInt getter. No confirmed interval invented.",
+    "lis/databits": "No explicit fallback; not shown on page, preserve.",
+    "lis/parity": "No explicit fallback; not shown on page, preserve.",
+    "lis/stopbits": "No explicit fallback; not shown on page, preserve.",
+    "lis/flowcontrol": "No explicit fallback; not shown on page, preserve.",
+    "lis/tcptype": "No explicit fallback. Only exact client selects client; otherwise server path. Do not infer client/server for new offline root.",
+    "lis/isUploadForHole": "Explicit load fallback false; UI does not edit.",
+    "lis/sequencenumber": "No explicit fallback; actual analyzer identifier unknown, do not invent.",
+    "lis/serverID": "Explicit fallback empty; actual deployment identifier unknown.",
+    "lis/lisCode": "Explicit string fallback false; chooses UTF-8 versus UTF-16 MLLP encoding, not UI editable.",
+    "lis/sampleCodeCanRepeatTest": "Explicit string fallback true; loadConfig also changes SystemCommon sampleCodeCanRepeatTest, so loader is not a pure persistence helper."
+  },
+  "hidden_keys_evidence": [
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+      "line": 31,
+      "end_line": 59
+    }
+  ],
+  "original_persistence": {
+    "path": "QDir.currentPath()/config.ini (source macro only; actual config never read)",
+    "read": "loadConfig fills 21-key static hash. Only 9 keys exposed by this UI. Most values have no explicit fallback; distinguish missing source behavior from actual release defaults.",
+    "save": "Page gets all existing loaded keys, updates 9 visible keys with active-mode address/port or comm/baud only, calls setConfig; setConfig iterates provided keys into UTF-8 QSettings IniFormat. Other unrelated existing config keys survive original QSettings.setValue. No explicit sync/status/write failure handling in original.",
+    "committed_snapshot": "setConfig itself does not update static configSet; original signalConnectLis then openComm -> loadConfig refreshes state while initiating communication. Local-only save must explicitly refresh successful committed snapshot without instantiating transport.",
+    "evidence": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+        "line": 13,
+        "end_line": 13
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+        "line": 31,
+        "end_line": 77
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+        "line": 135,
+        "end_line": 158
+      }
+    ]
+  },
+  "original_validation_and_drafts": {
+    "ip": "Passes lineValidator_Head_Letter_Num, length16; header comment: starts letters/digits, middle may contain spaces/special characters. Exact implementation intentionally not read because it resides in prohibited source. This is not proven IPv4, DNS or IPv6 validation.",
+    "port": "Passes lineValidator_Num with min0,max99999,length5; no explicit final Save validation. Do not present this as a confirmed valid TCP endpoint contract.",
+    "mode_switch": "Switch handler repopulates active-mode controls from committed getters; original can overwrite unsaved edits when toggling away/back. Radio buttons autoExclusive implementation exists.",
+    "missing_serial": "Original appends none to temporary list but then adds a fresh enumeration instead, so none is never inserted by that branch. A missing saved port is not safely represented; do not silently select first detected port in migration.",
+    "cancel": "Original has only 保存设置; no Cancel/reset/dirty marker/leave guard. Keep/discard/busy guards are migration safety additions, not evidence of original behavior.",
+    "evidence": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+        "line": 49,
+        "end_line": 60
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.h",
+        "line": 615,
+        "end_line": 651
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+        "line": 72,
+        "end_line": 111
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.h",
+        "line": 20,
+        "end_line": 27
+      },
+      {
+        "path": "06_programs/sn100_host/samples/material/qtmaterialradiobutton.cpp",
+        "line": 23,
+        "end_line": 31
+      }
+    ]
+  },
+  "original_roles": {
+    "value": "No role, actionReady or UserPower branch in inspected LIS page/parent navigation; direct main-menu setCurrentIndex and plain subpage click. Preserve original access including Guest for local settings; active original Windows global policy still unverified. Do not invent admin-only policy or instrument actions.",
+    "evidence": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+        "line": 14,
+        "end_line": 160
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmuserset.cpp",
+        "line": 128,
+        "end_line": 130
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 454,
+        "end_line": 454
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 970,
+        "end_line": 975
+      }
+    ]
+  },
+  "automatic_side_effects_to_isolate": [
+    {
+      "trigger": "Save",
+      "effect": "signalConnectLis -> frmMain::slotConnectLis -> openComm; even checkbox-only save can reopen real link",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "line": 155,
+          "end_line": 158
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "line": 518,
+          "end_line": 518
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "line": 965,
+          "end_line": 967
+        }
+      ]
+    },
+    {
+      "trigger": "original main construction/startup",
+      "effect": "new LisCommReceiver starts5s timer; new LisCommThread self-moves/starts200ms timer; lis/link true calls openComm before later business use",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "line": 273,
+          "end_line": 283
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommreceiver.cpp",
+          "line": 10,
+          "end_line": 14
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommthread.cpp",
+          "line": 11,
+          "end_line": 17
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommthread.cpp",
+          "line": 116,
+          "end_line": 122
+        }
+      ]
+    },
+    {
+      "trigger": "openComm",
+      "effect": "loadConfig global sample-repeat side effect; stop TCP timer; tcp/client connects stored host/port, otherwise TCP server binds, or opens serial with hidden format; these are outside local-setting scope",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "line": 59,
+          "end_line": 59
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "line": 160,
+          "end_line": 184
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/tcpbase.cpp",
+          "line": 147,
+          "end_line": 185
+        }
+      ]
+    },
+    {
+      "trigger": "mere LisCommSetting construction",
+      "effect": "member TcpBase constructs sockets/server/reconnect timer; do not reuse entire communication object just to get local configuration access",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.h",
+          "line": 72,
+          "end_line": 74
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/tcpbase.cpp",
+          "line": 7,
+          "end_line": 21
+        }
+      ]
+    }
+  ],
+  "protocol_boundary": {
+    "value": "Saving local fields/automatic-mode intent is separate from F11 MLLP/HL7 and V09. No task query, upload, uploaded DB flag, ACK, heartbeat, connection status or instrument readiness is proved by local save.",
+    "actual_original_paths": [
+      "LisCommSetting msgToMllp/mllpToMsg: 0B + message + 1C0D, configurable UTF-8/UTF-16",
+      "LisCommReceiver expects HL7 version2.3.1; ACK AA path changes report/result uploaded flags; DSR maps query response to sample hole/task and sends ACK",
+      "Main connects report/sample ORU/query signals to LisCommThread, and receiver ACK back to outbound queue",
+      "Thread timer processes send/receive/heartbeat and task timeout states; original source contains self-move/raw UI pointers and separate issues, not transferable as verified worker design"
+    ],
+    "evidence": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+        "line": 215,
+        "end_line": 253
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommreceiver.cpp",
+        "line": 17,
+        "end_line": 123
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommreceiver.cpp",
+        "line": 402,
+        "end_line": 415
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 435,
+        "end_line": 449
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommthread.cpp",
+        "line": 186,
+        "end_line": 269
+      }
+    ],
+    "known_original_pending": [
+      "sloLIStDisConnected connect spelling differs from slotLIStDisConnected",
+      "getCommunicationState reads TCP-client state even though serial mode exists; serial/live status semantics need later verification",
+      "Real peer version/encoding/mode/identifiers/ACK/reconnect/deduplication remain unconfirmed; do not use original config to fill them"
+    ]
+  },
+  "visual_contract": {
+    "form_canvas": [
+      0,
+      0,
+      1451,
+      853
+    ],
+    "panel_widget_5": [
+      400,
+      40,
+      611,
+      781
+    ],
+    "relative_geometry": {
+      "title": [
+        38,
+        16,
+        201,
+        30
+      ],
+      "transport_label": [
+        50,
+        110,
+        161,
+        36
+      ],
+      "radioBoxTcp": [
+        210,
+        100,
+        181,
+        45
+      ],
+      "radioBoxCom": [
+        400,
+        100,
+        181,
+        45
+      ],
+      "lblTcpIp/cbxCom": [
+        210,
+        180,
+        321,
+        51
+      ],
+      "lblTcpPort/cbxBaudrate": [
+        210,
+        250,
+        321,
+        51
+      ],
+      "cmb_SamLis_Mode": [
+        210,
+        320,
+        321,
+        51
+      ],
+      "ckxAutoGet": [
+        50,
+        430,
+        201,
+        51
+      ],
+      "ckxAutoSend": [
+        50,
+        490,
+        201,
+        51
+      ],
+      "ckxAutoLink": [
+        50,
+        550,
+        201,
+        51
+      ],
+      "btnSave": [
+        420,
+        690,
+        161,
+        61
+      ]
+    },
+    "preserve": "TCP/serial fields deliberately occupy same positions and are hidden/shown by mode. Preserve panel/labels/control order/object names and Save position. Panel far corner1011,821 fits existing embedded body; no reflow warranted merely for Linux.",
+    "style": "Borders #E4E8EB, dividers #DDDDDD, normal text #444444; title bold15pt, labels13pt, line edits18px; radio checked/unchecked black; match stripe theme kMatchColor. cbxCom/cbxBaudrate runtime comboboxStyle overrides their local designer popup selection style, using theme kListWidgetRowSelected, white selected text, popup20px/row50px and arrow resource. Save inherits user-container buttonStyle.",
+    "source": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.ui",
+        "line": 4,
+        "end_line": 590
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+        "line": 20,
+        "end_line": 47
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/stylecolor.cpp",
+        "line": 221,
+        "end_line": 254
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/cuscheckbox.cpp",
+        "line": 65,
+        "end_line": 109
+      }
+    ],
+    "existing_reusable_runtime_inputs": [
+      "projects/cuscheckbox.{cpp,h} and projects_resources.qrc already provide original checkbox behavior/icons plus disabled guard",
+      "samples/material/qtmaterialradiobutton and checkable sources plus samples_resources.qrc already provide original radio/check icons",
+      "shell/account_resources.qrc provides :/image/arrow_drop_down.svg; avoid duplicate resource aliases and duplicate compiled widget classes"
+    ],
+    "font_theme_limit": "Only existing necessary Noto fallback and actual size/metrics adjustment justified; active original Windows theme/font and RK physical screen remain unverified. Do not claim static source comparison is full visual acceptance."
+  },
+  "current_final_attach_audit": {
+    "status": "missing_page_and_local_business",
+    "value": "frmUserSet constructor makes placeholders2,3,4; later attachPrinterPage removes/replaces3 only. There is no LIS page member/attach method or LIS setting source in shell.pri/main; exact source search finds no frmLisSetting/LisCommSetting integration. Hence index4 remains final offline placeholder, not a temporary placeholder already replaced.",
+    "evidence": [
+      {
+        "path": "06_programs/sn100_host/shell/frmuserset.cpp",
+        "line": 59,
+        "end_line": 90
+      },
+      {
+        "path": "06_programs/sn100_host/shell/frmuserset.cpp",
+        "line": 108,
+        "end_line": 117
+      },
+      {
+        "path": "06_programs/sn100_host/shell/frmuserset.h",
+        "line": 27,
+        "end_line": 46
+      },
+      {
+        "path": "06_programs/sn100_host/shell/shell.pri",
+        "line": 34,
+        "end_line": 51
+      },
+      {
+        "path": "06_programs/sn100_host/shell/main.cpp",
+        "line": 495,
+        "end_line": 514
+      }
+    ],
+    "other_buttons": "Main LIS status remains offline; history detail upload disabled and sample upload reports no implemented device flow. Local settings must not turn those paths on.",
+    "other_evidence": [
+      {
+        "path": "06_programs/sn100_host/shell/frmmain.cpp",
+        "line": 204,
+        "end_line": 233
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_page.cpp",
+        "line": 621,
+        "end_line": 625
+      },
+      {
+        "path": "06_programs/sn100_host/samples/sample_page.cpp",
+        "line": 241,
+        "end_line": 245
+      }
+    ]
+  },
+  "minimal_local_slice_contract": {
+    "scope": "Original LIS settings page + explicit anonymous local persistence only. No commlis object creation, TCP/server/serial open, DNS resolution, timers, HL7, sample/task/upload or device status changes.",
+    "persistence": "Retain the nine original visible keys/types and preserve inactive-mode values, all twelve hidden keys and unrelated accepted keys. Use separate tagged settings/lis.ini or equally isolated explicit root, bounded actual-byte reads, cooperative lock/conflict detection, checked UTF-8 encoding and atomic commit. No current-directory old-config discovery.",
+    "load_defaults": "Missing source behavior may initialize an explicitly incomplete local configuration: no guessed endpoint/device/baud, source-known sample mode0 and flagsfalse; actual deployment defaults remain unknown. Do not mistake initial incomplete state for usable connectivity.",
+    "validation": "At minimum validate enum/type, boolean representation, sampleMode0/1, bounded/control-character-free text and exact declared baud choices locally. Original ip/port validator parameters above are evidence, not proof of real-address validation. Before choosing stricter IPv4/hostname/IPv6 or port0/1..65535 semantics, record the intentional scope/difference; never validate by attempting connection. Unknown legacy values remain visible/preserved until explicitly edited, no silent coercion.",
+    "serial_list": "Use fixed injected anonymous port names for offline tests; read-only platform enumeration is separate and never opens a device. Preserve missing saved name as unavailable. Empty list must not select first device/none as a real usable endpoint.",
+    "drafts": "Keep per-mode draft values on toggling. Save updates committed snapshot only after actual checked commit, reports local-save result with communication still off. Repeat Save no-op may not write unchanged bytes. Reopen restores exact saved visible values and retained hidden/unrelated data.",
+    "failure_and_cancel": "Read/parse/tag/permission/disk/serialization/commit/conflict errors retain original bytes/committed snapshot and draft, report real failure and allow retry. Unified requestLeave handles continue/discard across subpage/main-page switch, login/logout/close; no new Cancel button or business-area layout. Busy states guard all hidden pages and normal exit; use GUI receipt as test completion barrier, not direct worker spy alone.",
+    "identity": "Preserve original local-settings access and single AccountStore session, no role-number-derived new ACL. Login/settings do not change actionReady or LIS connected state.",
+    "release": "Only after independent local cases, replace index4 through actual attach chain, run unified cumulative regression and matching three-target/package validation. Local source compile/runtime/Windows-original behavior/RK screen/input/resources/real LIS remain separate statuses."
+  },
+  "acceptance_observations_needed": [
+    "explicit new isolated root and invalid/foreign config rejection without mutation",
+    "TCP/serial mode controls and exact labels/geometry/resources, per-mode drafts survive toggle",
+    "all nine keys save/reopen; preserve hidden/inactive/unknown keys and Unicode device labels; no guessed live defaults",
+    "empty/unavailable serial list and invalid enum/number/text have truthful UI and no device open",
+    "atomic write/read/parse/conflict failure preserves original bytes/draft and successful retry uses GUI completion signal",
+    "continue/discard, busy hidden page, login/logout and normal exit guards under original role baseline",
+    "unified page6/subpage4 is real page; no socket/listener/serial/HL7/timer/ACK/upload status side effects",
+    "resource timing/CPU/RSS/thread/log growth observed in stated platform; actual budgets/RK/Windows visual/live peer validation remain pending"
+  ],
+  "source_sha256": {
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp": "ba2ce86aa539dce304f3af34faf0ee13c5f33636f0be1b70b921ea607efd7b8e",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.h": "5a99fbb2ddba135d24c8afd4b50cbe089c7df203547bc1858856f5f2459a2cfc",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.ui": "158ff240e1586db7ec1bfbb408cc27d04ade2fb30c2756c0aa44a9684b46666e",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmuserset.cpp": "5572747fd24b54eeabbea5c040bad33258631dc7c04eeb967fc3a8610caa3ca9",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmuserset.h": "e7a7defc07202b8aa48d83ea866b8e4a8261d8474f4582a3b03420793135649c",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmuserset.pri": "4c555f81d79e783578ec44b6be40a539df61ac44b4e9f9b1d0bbddd8119e3d1d",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp": "88dbbbf67c2485374e32780e520a74fefbb7187ce1228765a4567e94ddcdf636",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.h": "f8e73be84d47aef8baab2dfd50e149b0a5f8530fc155c8f20686f421cfe64497",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommdefine.h": "0198c46288cfa3480bca97aff609f366121948e0abd84188bdec35b716e60659",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommthread.cpp": "13bfc6bdd40801a0db4ff50e924f7cdf153535efe74d09eafb921b6340cbcbfb",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommthread.h": "2e12841e7ed21aacd22eea46e79a6ce86a300a091fe45251f61df4bb56989e3c",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommreceiver.cpp": "56534ec2fd00de72194b448bfede3b7e95454e3a9fc87093d020d49045aa5d0b",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/serialportbase.cpp": "57d31dc1259a7c863f6b77063a81eb8098803a2da2b0795b0e16477531d52c60",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/tcpbase.cpp": "ae7b751f9c3f927e15c502056866629f2958d02c191619aa43e925896c7e8eea",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/cuscheckbox.cpp": "a37eb2485303e76893243a05fe6072600cde7dfb5c08637e57a0a7cbfb942503",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/cuscheckbox.h": "ec5bb9e4b3f78af2d101128ae831fdff50922d083e380bcfc1b68b7711a357ac",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/stylecolor.cpp": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.h": "d43e93eb435b80e8a27be1360536d4120699bf140e01cb35ace47c5ac6e3de8a",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp": "90ed19d496a8c029e6379356c06b80950e44d2eb412cd8efc16ed4839a7425f7",
+    "06_programs/sn100_host/shell/frmuserset.cpp": "d7e160b9778f4ab9a371b7a08569bb07d903b541332efa9699939eef0f08743c",
+    "06_programs/sn100_host/shell/frmuserset.h": "af338d52cee571567a75b9ecdc6e5ebd42fe2fed036e6f6a7e1b0e6eff1576f2",
+    "06_programs/sn100_host/shell/main.cpp": "16b8885681619896982f57e31178441a9d3f0b0d5eeec15ac21b6a2c13a7584c",
+    "06_programs/sn100_host/shell/shell.pri": "a8e1a35a537844b959f18cc4cc96ad1e8ecf01fd7331578ce7afb2f653c606ce",
+    "06_programs/sn100_host/shell/frmmain.cpp": "d90ae264635b4c43e7d69c0918caf5c047acce4fce368102166ad4bf7d8ca730",
+    "06_programs/sn100_host/shell/account_resources.qrc": "071ac7dd2b42d5e83183d8b4d68ea61a7f6ee889e4abdf9cfda73604c458c0f5",
+    "06_programs/sn100_host/projects/cuscheckbox.cpp": "6966d9ad624cca47d92e6d500cf2217a986efb6c5f7d4cd08b35cec6de661424",
+    "06_programs/sn100_host/projects/projects_core.pri": "f4006c17180b0d018921e12fe3f50f5199dcb74ad1be15df032ed06f3f0ba8c2",
+    "06_programs/sn100_host/projects/projects_resources.qrc": "89cceb3221d619492c4cc9da4dd449d34922d3054f5383f9d1eacabec984651d",
+    "06_programs/sn100_host/samples/material/qtmaterialradiobutton.cpp": "eb3bc1990e343e8331a5cca109409fbff7301a33b528e46262e6dba780f2a6ee",
+    "06_programs/sn100_host/samples/samples_core.pri": "953efc4de4730fd8c5d8c809641fdb0e000d95e5de21deb9df836d7ca1ead6cc",
+    "06_programs/sn100_host/samples/samples_resources.qrc": "d1a954b364e877b8d1539ecdfd6c245818cdfab298fdfcf176fdee7a46e8ddee",
+    "06_programs/sn100_host/history/history_page.cpp": "0b7173fab4842fa72345c0ea2ea54835d4df85da7cd95f10c9eaedbbab4bdcd9",
+    "06_programs/sn100_host/samples/sample_page.cpp": "6e8fb2b95eec1160a49d7c9499147c781e5cb44faca8c342e0db97853e5977ce"
+  }
+}

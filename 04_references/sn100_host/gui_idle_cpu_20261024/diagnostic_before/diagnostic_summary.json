@@ -1,0 +1,272 @@
+{
+  "schema": "sn100-idle-gui-event-diagnostic-v1",
+  "cpu_baseline": false,
+  "method": "LD_PRELOAD QApplication C1/C2 constructors call RTLD_NEXT original then install global QObject public eventFilter; no virtual-table changes",
+  "scope": "GUI thread Paint and Timer events only,10-20 seconds after preload; normal visible original navigation button clicked at6s, screenshot at20s, ordinary SIGTERM at21.5s",
+  "original_binary_sha256": "150c9f0335e564cc0cef367c82a876908afa1177657e3944864e01d12fd54bbc",
+  "runtime_scope": "Only closed anonymous resource_agent/runtime_01/{hospital,account,history,catalog} copied to separate per-mode temp runtime; no bootstrap.private, no production data or device endpoint",
+  "guest": true,
+  "failures_retained": [
+    "without_replay/: initial direct notify symbol hook did not receive calls; normal product exit0 but no stats, driver failed",
+    "smoke_event_filter/: public filter got808 events in0.1-1s; driver extra page7 assertion failed because it clicked same-name hidden designer button. Visible/enabled selector corrected before successful full runs"
+  ],
+  "results": [
+    {
+      "mode": "without_replay_filter",
+      "pid": 380,
+      "exit_code": 0,
+      "count_window_seconds": [
+        10,
+        20
+      ],
+      "total_Paint_Timer_events": 18376.0,
+      "material_paints": 634.0,
+      "zero_halo_opacity_paints": 634.0,
+      "zero_halo_size_paints": 634.0,
+      "disabled_material_paints": 634.0,
+      "page": 7,
+      "clicked": true,
+      "image_saved": true,
+      "bin_sha_unchanged": true,
+      "source_runtime_unchanged": true,
+      "threads_stopped": true,
+      "top_timer_groups": [
+        {
+          "disabled_material_paints": 0,
+          "events": 625,
+          "key_class_object_event_tid": "QDefaultAnimationDriver||Timer|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 10,
+          "key_class_object_event_tid": "QTimer||Timer|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 1,
+          "key_class_object_event_tid": "QObject||Timer|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        }
+      ],
+      "top_paint_groups": [
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "CusBadgeButton|btnAbnormal|Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 634,
+          "events": 634,
+          "key_class_object_event_tid": "QtMaterialFlatButton|btnLoginOut|Paint|380",
+          "material_paints": 634,
+          "zero_halo_opacity_paints": 634,
+          "zero_halo_size_paints": 634
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_6|Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_5|Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_4|Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_3|Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "QLabel|lblUserName|Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "QtMaterialRippleOverlay||Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "QLabel|flashImage|Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 634,
+          "key_class_object_event_tid": "frmMain|frmMain|Paint|380",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        }
+      ]
+    },
+    {
+      "mode": "with_replay_filter",
+      "pid": 435,
+      "exit_code": 0,
+      "count_window_seconds": [
+        10,
+        20
+      ],
+      "total_Paint_Timer_events": 18416.0,
+      "material_paints": 635.0,
+      "zero_halo_opacity_paints": 635.0,
+      "zero_halo_size_paints": 635.0,
+      "disabled_material_paints": 635.0,
+      "page": 7,
+      "clicked": true,
+      "image_saved": true,
+      "bin_sha_unchanged": true,
+      "source_runtime_unchanged": true,
+      "threads_stopped": true,
+      "top_timer_groups": [
+        {
+          "disabled_material_paints": 0,
+          "events": 625,
+          "key_class_object_event_tid": "QDefaultAnimationDriver||Timer|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 10,
+          "key_class_object_event_tid": "QTimer||Timer|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 1,
+          "key_class_object_event_tid": "QObject||Timer|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        }
+      ],
+      "top_paint_groups": [
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "CusBadgeButton|btnAbnormal|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 635,
+          "events": 635,
+          "key_class_object_event_tid": "QtMaterialFlatButton|btnLoginOut|Paint|435",
+          "material_paints": 635,
+          "zero_halo_opacity_paints": 635,
+          "zero_halo_size_paints": 635
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "QLineEdit|lineEdit|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_6|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_5|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_4|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_3|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "QLineEdit|lineEdit_2|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "QLabel|lblWaterHave|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        },
+        {
+          "disabled_material_paints": 0,
+          "events": 635,
+          "key_class_object_event_tid": "QLabel|lblWasteWater|Paint|435",
+          "material_paints": 0,
+          "zero_halo_opacity_paints": 0,
+          "zero_halo_size_paints": 0
+        }
+      ]
+    }
+  ],
+  "interpretation": "Both modes repeatedly paint disabled Guest logout Material button with haloOpacity=0 and haloSize=0; inherited infinite halo animation requests update and may invalidate header shadows. Counts corroborate mechanism but do not measure production CPU cost or prove all redraw attribution."
+}

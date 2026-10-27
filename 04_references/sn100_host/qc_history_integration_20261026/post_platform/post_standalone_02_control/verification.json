@@ -1,0 +1,217 @@
+{
+  "schema": "sn100-post-platform-controller-v1",
+  "stage": "standalone",
+  "command": [
+    "python3",
+    "-B",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation_02/run_standalone.py",
+    "--root-go",
+    "--name",
+    "post_standalone_02"
+  ],
+  "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026",
+  "timeout_seconds": 2400,
+  "started_utc": "2026-10-26T05:50:54.268849+00:00",
+  "state": "finished",
+  "actual_stage_exit": 0,
+  "timed_out": false,
+  "source_inputs": 447,
+  "native_fresh_objects": 210,
+  "source_snapshot_sha256": "1486686b182dc8d1da55c52b45c91ea72f1b8c41677676cedf16d72b3fc4f401",
+  "passed": true,
+  "pid": 394,
+  "pgid": 394,
+  "start_ticks": 1069,
+  "finished_utc": "2026-10-26T05:54:13.974786+00:00",
+  "outer_group_after": {
+    "pgid": 394,
+    "gone": true
+  },
+  "recorded_group_cleanup": {
+    "groups": [
+      {
+        "pid": 398,
+        "pgid": 398,
+        "start_ticks": 1852,
+        "started_utc": "2026-10-26T05:51:02.140928+00:00",
+        "start_new_session": true,
+        "originating_driver_pid": 394,
+        "command": [
+          "/usr/lib/qt5/bin/qmake",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/quality_control/quality_control.pro",
+          "-spec",
+          "linux-g++",
+          "CONFIG+=release",
+          "CONFIG-=debug"
+        ],
+        "before": {
+          "pgid": 398,
+          "gone": true
+        },
+        "after": {
+          "pgid": 398,
+          "gone": true
+        }
+      },
+      {
+        "pid": 427,
+        "pgid": 427,
+        "start_ticks": 2348,
+        "started_utc": "2026-10-26T05:51:07.096967+00:00",
+        "start_new_session": true,
+        "originating_driver_pid": 394,
+        "command": [
+          "make",
+          "-j2"
+        ],
+        "before": {
+          "pgid": 427,
+          "gone": true
+        },
+        "after": {
+          "pgid": 427,
+          "gone": true
+        }
+      },
+      {
+        "pid": 612,
+        "pgid": 612,
+        "start_ticks": 13676,
+        "started_utc": "2026-10-26T05:53:00.369420+00:00",
+        "start_new_session": true,
+        "originating_driver_pid": 394,
+        "command": [
+          "/usr/lib/qt5/bin/qmake",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/calibration.pro",
+          "-spec",
+          "linux-g++",
+          "CONFIG+=release",
+          "CONFIG-=debug"
+        ],
+        "before": {
+          "pgid": 612,
+          "gone": true
+        },
+        "after": {
+          "pgid": 612,
+          "gone": true
+        }
+      },
+      {
+        "pid": 621,
+        "pgid": 621,
+        "start_ticks": 13882,
+        "started_utc": "2026-10-26T05:53:02.435154+00:00",
+        "start_new_session": true,
+        "originating_driver_pid": 394,
+        "command": [
+          "make",
+          "-j2"
+        ],
+        "before": {
+          "pgid": 621,
+          "gone": true
+        },
+        "after": {
+          "pgid": 621,
+          "gone": true
+        }
+      },
+      {
+        "pid": 715,
+        "pgid": 715,
+        "start_ticks": 18755,
+        "started_utc": "2026-10-26T05:53:51.161855+00:00",
+        "start_new_session": true,
+        "originating_driver_pid": 394,
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02/build/quality_control/sn100_qc_local",
+          "--data-dir",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02/runtime/quality_control",
+          "--seed-demo",
+          "--exit-after-ms",
+          "1800"
+        ],
+        "before": {
+          "pgid": 715,
+          "gone": true
+        },
+        "after": {
+          "pgid": 715,
+          "gone": true
+        }
+      },
+      {
+        "pid": 720,
+        "pgid": 720,
+        "start_ticks": 18965,
+        "started_utc": "2026-10-26T05:53:53.266511+00:00",
+        "start_new_session": true,
+        "originating_driver_pid": 394,
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/native/wsl_release/sn100_shell",
+          "--offline",
+          "--accounts",
+          "--catalog",
+          "--samples",
+          "--seed-catalog-demo",
+          "--seed-anonymous",
+          "--test-secret-file",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02/runtime/.catalog-owner-bootstrap-0ona7uff",
+          "--data-dir",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02/runtime/calibration_catalog_owner",
+          "--viewport",
+          "1600x900"
+        ],
+        "before": {
+          "pgid": 720,
+          "gone": true
+        },
+        "after": {
+          "pgid": 720,
+          "gone": true
+        }
+      },
+      {
+        "pid": 760,
+        "pgid": 760,
+        "start_ticks": 19049,
+        "started_utc": "2026-10-26T05:53:54.097517+00:00",
+        "start_new_session": true,
+        "originating_driver_pid": 394,
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02/build/calibration/sn100_calibration",
+          "--data-dir",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02/runtime/calibration_local",
+          "--catalog-db",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02/runtime/calibration_catalog_owner/catalog/catalog.db",
+          "--exit-after-ms",
+          "1800"
+        ],
+        "before": {
+          "pgid": 760,
+          "gone": true
+        },
+        "after": {
+          "pgid": 760,
+          "gone": true
+        }
+      }
+    ],
+    "all_gone": true,
+    "signals_used": false,
+    "child_exit_codes_inferred_from_cleanup": false
+  },
+  "ephemeral_inputs": {
+    "inputs": [
+      {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02/runtime/.catalog-owner-bootstrap-0ona7uff",
+        "allowed_owned_ephemeral_path": true,
+        "removed": false,
+        "value_read_hashed_or_archived": false,
+        "absent_after": true
+      }
+    ],
+    "all_absent": true
+  }
+}

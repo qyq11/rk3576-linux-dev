@@ -1,0 +1,479 @@
+{
+  "schema": "sn100-calibration-local-handoff-v1",
+  "date": "2026-10-25",
+  "status": "independent_wsl_delivery_ready_waiting_for_integration",
+  "source_writes_stopped": true,
+  "baseline": "Existing 371-input LIS checkpoint remains the prior unified baseline; this independent module is not a new unified Windows/ARM release",
+  "business": {
+    "purpose": "查看、录入、保存本地校准记录及原始点；复制已保存记录、软隐藏删除、查看原始散点",
+    "operation": "选择项目；右键曲线列表或Insert新增，填写校准品批号/可选试剂批次/点数/重复数；逐点输入稀释标签、浓度和原始测试值；保存确认。原按钮位置保留。",
+    "clinical_state": "全部未审核、未应用；当前查看选择不写有效曲线映射，不改变仪器结果",
+    "not_enabled": [
+      "拟合/坐标变换执行",
+      "逆算/重新计算",
+      "审核",
+      "选用/应用曲线",
+      "真实task_id测试波形",
+      "仪器/LIS连接或动作"
+    ]
+  },
+  "write_scope": {
+    "new_source_files": [
+      "06_programs/sn100_host/calibration/build.sh",
+      "06_programs/sn100_host/calibration/calibration.pri",
+      "06_programs/sn100_host/calibration/calibration.pro",
+      "06_programs/sn100_host/calibration/calibration_page.cpp",
+      "06_programs/sn100_host/calibration/calibration_page.h",
+      "06_programs/sn100_host/calibration/calibration_store.cpp",
+      "06_programs/sn100_host/calibration/calibration_store.h",
+      "06_programs/sn100_host/calibration/calibration_types.h",
+      "06_programs/sn100_host/calibration/calibrationchart.cpp",
+      "06_programs/sn100_host/calibration/calibrationchart.h",
+      "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+      "06_programs/sn100_host/calibration/main.cpp",
+      "06_programs/sn100_host/calibration/tests/calibration_create_catalog.py",
+      "06_programs/sn100_host/calibration/tests/calibration_fixture.h",
+      "06_programs/sn100_host/calibration/tests/calibration_observe.sh",
+      "06_programs/sn100_host/calibration/tests/calibration_page_test.cpp",
+      "06_programs/sn100_host/calibration/tests/calibration_page_test.pro",
+      "06_programs/sn100_host/calibration/tests/calibration_store_test.cpp",
+      "06_programs/sn100_host/calibration/tests/calibration_store_test.pro",
+      "06_programs/sn100_host/calibration/tests/calibration_verify.py",
+      "06_programs/sn100_host/calibration/wsl.sh"
+    ],
+    "modified_existing_business_files": [],
+    "shared_shell_build_docs_modified_by_this_window": false,
+    "reference_directory_modified_or_built": false,
+    "git_commit_or_push": false,
+    "runtime": "temp/sn100_host/calibration_local_20261025",
+    "formal_evidence": "04_references/sn100_host/calibration_local_20261025"
+  },
+  "provenance": {
+    "original_audit": "original_audit.json",
+    "original_audit_sha256": "7630a0c9ddd3a35ac858e16989384639b7fd86fc257e15ca24a9841065f299c7",
+    "original_files_and_functions": "29 original file SHA256 entries plus UI/DAL/userPower/theme/task creation chains in original_audit.json",
+    "original_ui_sha256": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+    "ui_byte_identical": true,
+    "integration_review": "integration_review.json"
+  },
+  "entrypoints": {
+    "standalone_qmake": "06_programs/sn100_host/calibration/calibration.pro",
+    "shell_include": "06_programs/sn100_host/calibration/calibration.pri",
+    "page": "CalibrationPage(CalibrationStore*)",
+    "storage": "CalibrationStore worker QObject",
+    "build_native": "bash 06_programs/sn100_host/calibration/wsl.sh build",
+    "repeat_all_checks": "python3 06_programs/sn100_host/calibration/tests/calibration_verify.py",
+    "run_saved_anonymous_example": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration",
+      "--data-dir",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_xcb/page-TsHgDJ",
+      "--catalog-db",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_xcb/page-TsHgDJ/catalog.db",
+      "--test-engineer"
+    ],
+    "create_new_anonymous_catalog": "python3 06_programs/sn100_host/calibration/tests/calibration_create_catalog.py NEW_ABSOLUTE_CATALOG_DB",
+    "arm_build_entry_provided_not_run": "bash 06_programs/sn100_host/calibration/build.sh ABSOLUTE_OUTPUT_FILE"
+  },
+  "interfaces": {
+    "worker_slots": [
+      "initialize(absoluteDataDir,catalogDatabasePath)",
+      "setSession(AccountSession)",
+      "loadCatalog(requestId)",
+      "load(requestId)",
+      "save(requestId,CalibrationRecord)",
+      "copy(requestId,sourceId,sourceRevision)",
+      "remove(requestId,id,revision)",
+      "close()"
+    ],
+    "page_session_and_snapshots": [
+      "setSession(AccountSession)",
+      "setProjects(ProjectRecords,ProjectUnits)",
+      "setReagents(ReagentSnapshot)"
+    ],
+    "page_guards": [
+      "isReady()",
+      "isBusy()",
+      "hasUnsavedChanges()",
+      "prepareToLeave()"
+    ],
+    "page_signals": [
+      "snapshotChanged(CalibrationRecords)",
+      "busyChanged(bool)",
+      "statusChanged(QString)",
+      "operationFinished(QString,bool)"
+    ],
+    "reply_policy": "Only current request id accepted; dirty data not overwritten by reload; busy blocks repeat writes/leave; modal new-record dialog busy and selection rechecked",
+    "catalogReady_limit": "Standalone readonly choices only; ProjectRecords contains base/results subset and must never be republished as complete advanced project configuration",
+    "thread_ownership": "Create store without parent; move to SQL QThread; initialize/use/close both database connections there; values via queued signals; close then quit/wait then deleteLater"
+  },
+  "data_contract": {
+    "schema": "sn100-calibration-local-v3",
+    "file": "Explicit data-dir/calibration_local.db",
+    "tables": [
+      "calibration_metadata",
+      "calibration_records",
+      "calibration_points"
+    ],
+    "catalog_access": "Separate QSQLITE_OPEN_READONLY connection; marker sn100-catalog-offline-v1; no direct shared table writes",
+    "ids": "Local INTEGER AUTOINCREMENT record id and optimistic revision; projectId=project_base.id, batchId=reagent_batch_group.id; never instrument calibration_total_count/id",
+    "immutable_record_identity": [
+      "projectId/name",
+      "batchId/code/component batchGroup",
+      "bloodBatch",
+      "concentrationUnit/resultUnit/unitRatio",
+      "method/xTransform/yTransform provenance",
+      "sourceId"
+    ],
+    "time": "createdAt immutable UTC ISO milliseconds; changedAt updated on successful point save only; UI original date format in OS local time, UTC timestamp tooltip",
+    "axes": "x=explicit concentration in saved concentrationUnit; y=arithmetic mean of repeated Original values in saved resultUnit; no transform, fit, interpolation, inverse or clinical result",
+    "unit_ratio": "Committed catalog snapshot provenance only; values are already in explicitly displayed unit, no silent multiply/divide or later unit reinterpretation",
+    "points": "1..32 ordered contiguous 1-based points; each 1..8 equal repeat count; explicit nonempty sampleRate label <=64; no dilution calculation; finite numbers0..99999, <=4 decimals; duplicate concentration rejected; descending order preserved; duplicate test values and explicit zero allowed",
+    "empty_and_invalid": "Empty record cannot save; blank/invalid editor values clear stale raw plot/means and keep draft; no fabricated initial values",
+    "copy": "Copy committed visible source at matching revision to new local id/sourceId; dirty copy disabled; always unreviewed/unapplied",
+    "delete": "Revision-checked visible=0 soft delete, original points retained; not a catalog batch or project deletion",
+    "durability": "Bound parameters, local transaction header+all points, rollback on failure, synchronous FULL, bounded SQLite busy wait250ms in worker",
+    "bounds": "Visible records2048, catalog projects1024, batches4096; capacity errors explicit; no unbounded write retry",
+    "not_imported": "No original production DB, patient data, task waveform, flagged measurement/error/task-id import or production calibration ID mapping"
+  },
+  "reference_protection": {
+    "implemented": "Fresh readonly lookup rejects missing/renamed/disabled project, missing/changed units or ratio, missing/reassigned/recoded/regrouped batch. Saved identity immutable; historic labels/points readable even if catalog later changes/deletes. No silent reassociation.",
+    "not_claimed": "This readonly independent client does not prevent a later separate catalog write and has no cross-DB FK/atomic transaction; persistent reservation protocol remains an integration gate.",
+    "contracts": [
+      "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json",
+      "04_references/sn100_host/projects_remaining_20261025/reagents_contract.json"
+    ],
+    "must_do_before_unified_writes": "Coordinator must reserve project+batch with owner APIs, await both successes, then fresh catalog validation and local commit, persist durable reference keys/outcome. Current Page calls Store directly: attaching menu alone is insufficient. Until coordinator tested, give calibration page/store a copy of session.actionReady=false while other modules retain their own session.",
+    "hidden_and_crash": "Soft-hidden rows retain history; keep holds. Reconciliation must include hidden rows via a new worker API; current public load only returns visible. Unknown/crash outcomes preserve holds until explicit reconciliation; never release automatically at startup.",
+    "failure": "Only release holds acquired by that save after confirmed local noncommit; do not release prior records or unknown state. See integration_review.json."
+  },
+  "visual": {
+    "original_canvas": "1797x1013 .ui; source business and menu end1751x968; only unused outside margins removed for existing shell canvas",
+    "adaptation": "Original geometry/button order/groups retained; 1600x900 host uses horizontal+vertical scroll instead of reflow; Noto Sans fallback for unavailable PingFang; original default theme key values retained, active Windows theme unverified",
+    "intentional_differences": [
+      "Context menu/Insert manual anonymous input instead of instrument-task creation",
+      "Raw scatter-only chart at original promoted widget geometry; no QCustomPlot fitted line or task waveform",
+      "Unavailable audit/apply/calculation actions disabled, Apply explicitly gray using existing disabled palette",
+      "Local raw unit snapshot saves instead of original live-unit multiplier conversion",
+      "Authenticated offline roles1..5 required for writes, original save/copy/delete slots had no explicit guard",
+      "Copies never inherit audited state; transactions and version conflicts prevent original partial-save risk",
+      "Raw plot y-axis title separated from numeric ticks after actual screenshot review"
+    ],
+    "screenshots": [
+      {
+        "path": "04_references/sn100_host/calibration_local_20261025/screenshots/offscreen/calibration_1600_right_bottom.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "754b92b5ca695fbf431a89def3b41f502353957da2aecf694ccd3994a028369f",
+        "scope": "Actual QWidget host grab, anonymous saved state; QPA in parent folder; not original Windows/RK screenshot"
+      },
+      {
+        "path": "04_references/sn100_host/calibration_local_20261025/screenshots/offscreen/calibration_1600_right_top.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "093b99dbb746dfddb97526a38a4314bd8aeab6e558231eec3db20e5eb52da67b",
+        "scope": "Actual QWidget host grab, anonymous saved state; QPA in parent folder; not original Windows/RK screenshot"
+      },
+      {
+        "path": "04_references/sn100_host/calibration_local_20261025/screenshots/offscreen/calibration_1600_top.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "89d41c0c62feddf5c4bef55345f5a1fa185577727417f6be839a353b740c1804",
+        "scope": "Actual QWidget host grab, anonymous saved state; QPA in parent folder; not original Windows/RK screenshot"
+      },
+      {
+        "path": "04_references/sn100_host/calibration_local_20261025/screenshots/offscreen/calibration_1920.png",
+        "width": 1920,
+        "height": 1080,
+        "sha256": "f218e2449079bbc5d1214533132883798d7fe4bd285c75336a9b7e5c0530916f",
+        "scope": "Actual QWidget host grab, anonymous saved state; QPA in parent folder; not original Windows/RK screenshot"
+      },
+      {
+        "path": "04_references/sn100_host/calibration_local_20261025/screenshots/xcb/calibration_1600_right_bottom.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "aec3134c7d626e07144a9f5f1f66bb086a21baf5908fc4e75052c5825837a264",
+        "scope": "Actual QWidget host grab, anonymous saved state; QPA in parent folder; not original Windows/RK screenshot"
+      },
+      {
+        "path": "04_references/sn100_host/calibration_local_20261025/screenshots/xcb/calibration_1600_right_top.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "1018012c01bb6e30a1186b966afb2cbb9eb701d97aa57efb49636ea36bd5f589",
+        "scope": "Actual QWidget host grab, anonymous saved state; QPA in parent folder; not original Windows/RK screenshot"
+      },
+      {
+        "path": "04_references/sn100_host/calibration_local_20261025/screenshots/xcb/calibration_1600_top.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "89fe4ad50f85880e5003bca45e017674c9c1fd53352d2c6b27f3a6df1c0e4ecd",
+        "scope": "Actual QWidget host grab, anonymous saved state; QPA in parent folder; not original Windows/RK screenshot"
+      },
+      {
+        "path": "04_references/sn100_host/calibration_local_20261025/screenshots/xcb/calibration_1920.png",
+        "width": 1920,
+        "height": 1080,
+        "sha256": "ffc7a75ee7cc44307143d0efc2714b0c33f95862f8e98671bda6dcc4f3fb3e3a",
+        "scope": "Actual QWidget host grab, anonymous saved state; QPA in parent folder; not original Windows/RK screenshot"
+      }
+    ],
+    "inspection": "Final offscreen1920 and1600 right-bottom images visually checked; xcb same-state captures included; full original Windows visual equivalence pending"
+  },
+  "verification": {
+    "receipt_file": "verification.json",
+    "receipt_sha256": "0b42c597a390ee90b9bf7b406ce3dac88d1ed5d6df653434463c1f3118f75f7b",
+    "checks": [
+      {
+        "name": "environment",
+        "command": [
+          "bash",
+          "-lc",
+          "uname -a && /usr/lib/qt5/bin/qmake -v && g++ --version && ldd --version"
+        ],
+        "environment_overrides": {},
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 0.040818,
+        "log": "04_references/sn100_host/calibration_local_20261025/environment.log",
+        "log_sha256": "a93305bb8b318910806ef1e9659479359f433495b8bfa25691b1df0d5ddec1bd"
+      },
+      {
+        "name": "clean_wsl_store_tests",
+        "command": [
+          "make",
+          "-C",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_store_tests",
+          "clean"
+        ],
+        "environment_overrides": {},
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 0.072568,
+        "log": "04_references/sn100_host/calibration_local_20261025/clean_wsl_store_tests.log",
+        "log_sha256": "c909b6c50fe70e8c8d5a865753e1724ff5ad043399aabb0ddb2d750269a90829"
+      },
+      {
+        "name": "final_store-test",
+        "command": [
+          "bash",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/wsl.sh",
+          "store-test"
+        ],
+        "environment_overrides": {
+          "QT_QPA_PLATFORM": "offscreen",
+          "CALIBRATION_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_offscreen"
+        },
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 31.024452,
+        "log": "04_references/sn100_host/calibration_local_20261025/final_store-test.log",
+        "log_sha256": "f0ce57b69f8617a316ae8ba2513cb2dadc5813c5752bddb1eb7ea89ac9a456e5",
+        "qt_test_totals": {
+          "passed": 50,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      {
+        "name": "clean_wsl_page_tests",
+        "command": [
+          "make",
+          "-C",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_page_tests",
+          "clean"
+        ],
+        "environment_overrides": {},
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 0.22697,
+        "log": "04_references/sn100_host/calibration_local_20261025/clean_wsl_page_tests.log",
+        "log_sha256": "e50ddf103d6b86b2e08c40b234fe70870b88e5d3331657e3a0599f86ff8e3944"
+      },
+      {
+        "name": "final_page-test",
+        "command": [
+          "bash",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/wsl.sh",
+          "page-test"
+        ],
+        "environment_overrides": {
+          "QT_QPA_PLATFORM": "offscreen",
+          "CALIBRATION_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_offscreen",
+          "CALIBRATION_SCREENSHOT_DIR": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/04_references/sn100_host/calibration_local_20261025/screenshots/offscreen"
+        },
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 47.13103,
+        "log": "04_references/sn100_host/calibration_local_20261025/final_page-test.log",
+        "log_sha256": "05a70e8e16eaf584ace2a6fa2321ea46c6a413596b70dc632e0c6bbb79b6817a",
+        "qt_test_totals": {
+          "passed": 21,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      {
+        "name": "clean_wsl_release",
+        "command": [
+          "make",
+          "-C",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release",
+          "clean"
+        ],
+        "environment_overrides": {},
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 0.333892,
+        "log": "04_references/sn100_host/calibration_local_20261025/clean_wsl_release.log",
+        "log_sha256": "0f2f41ceda69f369f08c59aa788eca0997932a965846ca1935f6aa8c608f035f"
+      },
+      {
+        "name": "final_build",
+        "command": [
+          "bash",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/wsl.sh",
+          "build"
+        ],
+        "environment_overrides": {
+          "QT_QPA_PLATFORM": "offscreen",
+          "CALIBRATION_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_offscreen"
+        },
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 31.790864,
+        "log": "04_references/sn100_host/calibration_local_20261025/final_build.log",
+        "log_sha256": "de070116bb27d4c3c4191792b68f4043f9a981aa5e260a443c3bb3f909b6288b"
+      },
+      {
+        "name": "final_page_xcb",
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_page_tests/calibration_page_test"
+        ],
+        "environment_overrides": {
+          "QT_QPA_PLATFORM": "xcb",
+          "CALIBRATION_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_xcb",
+          "CALIBRATION_SCREENSHOT_DIR": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/04_references/sn100_host/calibration_local_20261025/screenshots/xcb"
+        },
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 11.534524,
+        "log": "04_references/sn100_host/calibration_local_20261025/final_page_xcb.log",
+        "log_sha256": "157350213f031e777a65d8584a32bf54794e3b7ee3e5c80f3fef87e68612b53e",
+        "qt_test_totals": {
+          "passed": 21,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      {
+        "name": "create_anonymous_catalog",
+        "command": [
+          "python3",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/calibration/tests/calibration_create_catalog.py",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/catalog.db"
+        ],
+        "environment_overrides": {},
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 0.480814,
+        "log": "04_references/sn100_host/calibration_local_20261025/create_anonymous_catalog.log",
+        "log_sha256": "1871f8ca7b9cbdc1bc2ec45578c4302d932f2d24e70470a341788e151df039b9"
+      },
+      {
+        "name": "standalone_offscreen",
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration",
+          "--data-dir",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/offscreen",
+          "--catalog-db",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/catalog.db",
+          "--exit-after-ms",
+          "1200"
+        ],
+        "environment_overrides": {
+          "QT_QPA_PLATFORM": "offscreen"
+        },
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 1.297007,
+        "log": "04_references/sn100_host/calibration_local_20261025/standalone_offscreen.log",
+        "log_sha256": "981fcd2a4e46ae031a7266b39ddb1189dc71454c12007cb8a75c3011d6321a37"
+      },
+      {
+        "name": "standalone_xcb",
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration",
+          "--data-dir",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/xcb",
+          "--catalog-db",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/runtime/final_standalone/20261025_132445/catalog.db",
+          "--exit-after-ms",
+          "1200"
+        ],
+        "environment_overrides": {
+          "QT_QPA_PLATFORM": "xcb"
+        },
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "elapsed_seconds": 1.294602,
+        "log": "04_references/sn100_host/calibration_local_20261025/standalone_xcb.log",
+        "log_sha256": "981fcd2a4e46ae031a7266b39ddb1189dc71454c12007cb8a75c3011d6321a37"
+      },
+      {
+        "name": "invalid_cli",
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration"
+        ],
+        "environment_overrides": {
+          "QT_QPA_PLATFORM": "offscreen"
+        },
+        "exit_code": 2,
+        "expected_exit_code": 2,
+        "elapsed_seconds": 0.022521,
+        "log": "04_references/sn100_host/calibration_local_20261025/invalid_cli.log",
+        "log_sha256": "31bbcb66cd89553ba48cf0c5c9a6b17e3cc761eb537645e918b653917701f5fb"
+      }
+    ],
+    "database_readback": "database_output.json",
+    "source_manifest": "source_inputs.json",
+    "source_inputs_unchanged": true,
+    "artifacts": {
+      "temp/sn100_host/calibration_local_20261025/wsl_release/sn100_calibration": {
+        "sha256": "6595bd07d7adf13093be5475545d27a1630e029aaaefaf9a6f3786058a7b495a",
+        "bytes": 493408
+      },
+      "temp/sn100_host/calibration_local_20261025/wsl_store_tests/calibration_store_test": {
+        "sha256": "d545438a5480cb973aa5ebeb04dd7922294c1b3da5c212d2abba670f2f6c991f",
+        "bytes": 325400
+      },
+      "temp/sn100_host/calibration_local_20261025/wsl_page_tests/calibration_page_test": {
+        "sha256": "0c35b748c462c49086f50d22fb3b9b941b49f4d4ae58c822381121852db9dcb5",
+        "bytes": 602728
+      }
+    },
+    "failures_and_retests": "failures_and_retests.json",
+    "clock_warning": "make logged subsecond Windows/WSL clock-skew warnings. Final targets were first make clean then fully rebuilt; before/after source digest equality and actual tests guard result. No global clock/toolchain change made."
+  },
+  "integration_work": [
+    "Include calibration/calibration.pri once; standalone includes projects_widgets.pri, unified shell already owns CusView/material implementations",
+    "Create/start calibration worker with explicit writable module data root and explicit catalog DB; propagate committed catalog snapshots and authenticated sessions",
+    "Attach original calibration main index3 in QScrollArea fixed1751x968; wire status/busy and draft guards into main page switch/logout/close",
+    "Implement and test durable project/batch reservation coordinator before enabling unified writes; include hidden-row reconciliation API",
+    "Run unified cumulative checks and Windows32/ARM64 fresh builds/closure only after all module source writes end; update sole plan/guide/README/migration record in integration window"
+  ],
+  "resource_and_pending": {
+    "measurement_entry": "bash 06_programs/sn100_host/calibration/tests/calibration_observe.sh ABS_DATA_DIR ABS_ANON_CATALOG_DB NEW_ABS_OUTPUT_DIR",
+    "measurement_run_by_this_window": false,
+    "pending": [
+      "unified shell integration and persistent reference holds",
+      "Windows active theme/behavior/GUI comparison",
+      "Windows32 and ARM64 final integrated build",
+      "real curve/fitting/inverse/recalculation efficacy and accepted parameters/cases",
+      "audit/application effective state and impact on actual results",
+      "RK screen/input/runtime",
+      "instrument validation",
+      "CPU/RSS/PSS/threads/queue/FD/log/database growth and response distributions under representative load",
+      "resource budget, same-board control impact and long stability/power-loss tests"
+    ]
+  },
+  "rollback": "No shared shell/docs/config/catalog table changed by this window. Leave independent include unattached to retain prior371 unified baseline. Keep module DB separately; v1/v2 generated prototypes deliberately rejected/preserved rather than auto-migrated. No original or production data overwritten. If future holds exist, rollback must remain readonly until reconciliation; do not drop unknown holds."
+}

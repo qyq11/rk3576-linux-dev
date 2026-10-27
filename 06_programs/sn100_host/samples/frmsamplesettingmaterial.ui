@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>frmSampleSettingMaterial</class>
+ <widget class="QWidget" name="frmSampleSettingMaterial">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1415</width>
+    <height>795</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="CusView" name="wgtSetTableBg" native="true">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>1397</width>
+     <height>500</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>500</height>
+    </size>
+   </property>
+   <widget class="QTableWidget" name="tblSetting">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>9</y>
+      <width>1341</width>
+      <height>441</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="showGrid">
+     <bool>false</bool>
+    </property>
+    <property name="columnCount">
+     <number>0</number>
+    </property>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>25</number>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>170</number>
+    </attribute>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>true</bool>
+    </attribute>
+   </widget>
+  </widget>
+  <widget class="CusView" name="wgtProjTableBg" native="true">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>515</y>
+     <width>1397</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>10</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>185</height>
+    </size>
+   </property>
+   <widget class="QWidget" name="wgtTabs" native="true">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>9</y>
+      <width>1379</width>
+      <height>54</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>54</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>苹方 粗体</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">/*.QPushButton{
+	color:#AAAAAA;
+	border:none;
+	background-color:transparent;
+	border-bottom:5px solid transparent;
+}
+.QPushButton:checked
+{
+	color:#444444;
+	border-bottom:5px solid #;
+}*/</string>
+    </property>
+    <widget class="QPushButton" name="btnCombProj">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>200</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>苹方 粗体</family>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>样本测试</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>-80</x>
+       <y>33</y>
+       <width>1431</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">	border:none;
+	background-color:transparent;
+	border-bottom:2px solid #DDDDDD;
+</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCalProj">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>0</y>
+       <width>200</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>苹方 粗体</family>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>校准测试</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>860</x>
+       <y>10</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>批量测试</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="repeatComb">
+     <property name="geometry">
+      <rect>
+       <x>970</x>
+       <y>0</y>
+       <width>91</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+    <zorder>lineEdit</zorder>
+    <zorder>btnCombProj</zorder>
+    <zorder>btnCalProj</zorder>
+    <zorder>label</zorder>
+    <zorder>repeatComb</zorder>
+   </widget>
+   <widget class="QStackedWidget" name="stkProjButton">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>69</y>
+      <width>1379</width>
+      <height>193</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>2</number>
+    </property>
+    <widget class="QWidget" name="page">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QListWidget" name="projButtonList2">
+        <property name="styleSheet">
+         <string notr="true">QListWidget{background-color:transparent}</string>
+        </property>
+        <property name="movement">
+         <enum>QListView::Free</enum>
+        </property>
+        <property name="flow">
+         <enum>QListView::LeftToRight</enum>
+        </property>
+        <property name="resizeMode">
+         <enum>QListView::Adjust</enum>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="viewMode">
+         <enum>QListView::IconMode</enum>
+        </property>
+        <property name="itemAlignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="page_2">
+     <widget class="QListWidget" name="projButtonList">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>2</y>
+        <width>1341</width>
+        <height>181</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QListWidget{background-color:transparent}</string>
+      </property>
+      <property name="movement">
+       <enum>QListView::Free</enum>
+      </property>
+      <property name="flow">
+       <enum>QListView::LeftToRight</enum>
+      </property>
+      <property name="resizeMode">
+       <enum>QListView::Adjust</enum>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="viewMode">
+       <enum>QListView::IconMode</enum>
+      </property>
+      <property name="itemAlignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_3">
+     <widget class="QListWidget" name="calProjButtonList">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>9</y>
+        <width>1361</width>
+        <height>145</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QListWidget{background-color:transparent}</string>
+      </property>
+      <property name="movement">
+       <enum>QListView::Free</enum>
+      </property>
+      <property name="flow">
+       <enum>QListView::LeftToRight</enum>
+      </property>
+      <property name="resizeMode">
+       <enum>QListView::Adjust</enum>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="viewMode">
+       <enum>QListView::IconMode</enum>
+      </property>
+      <property name="itemAlignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CusView</class>
+   <extends>QWidget</extends>
+   <header>cusview.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

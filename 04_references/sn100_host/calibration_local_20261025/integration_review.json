@@ -1,0 +1,73 @@
+{
+  "review": "calibration-independent-source-final-review-v1",
+  "review_date": "2026-10-25",
+  "method": "Read-only final source and owner API contract review. This review starts no build, GUI, instrument, network or resource measurement.",
+  "verification_status_at_review": "The initial independent checkpoint was superseded by visual-source fixes. Root is rerunning fresh clean serial verification; final results must be read from current verification.json and hashed logs. Superseded checkpoint/screenshots are retained under pre_visual_fix, and this review does not promote those results to the changed source.",
+  "static_observations": [
+    "New point rows no longer fabricate a 1:1 dilution ratio; dilution labels and numeric cells require explicit entry.",
+    "Store numeric validation and page input both enforce nonnegative finite values no greater than99999 and no more than4 decimal places, with binary representation tolerance only in storage validation.",
+    "checkCatalog rejects missing/changed Calibration unit or ratio and missing/changed Original result unit; batch stable ID, project, code and component-group identity are checked.",
+    "writeRecord checks immutable saved identity, including project, batch, calibrator batch, method, transforms, axis units/ratio and copy source; revision changes cannot silently reassign a historical record.",
+    "Dirty record selection remains in project list after catalog removal, and the new-record modal marks busy and rechecks project/session identity before retaining a draft.",
+    "Request IDs reject stale catalog/record results, repeated reload is bounded while busy/dirty, worker SQL is created/used/closed in its owning thread, and local write transactions preserve base/point consistency.",
+    "Raw scatter shows concentration on x and arithmetic raw-test mean on y. Fitting, inverse calculation, audit/application, method mutation and task waveform actions remain disabled; local schema rejects checked/applied values.",
+    "CalibrationStore opens catalog read-only and does not call external project/batch reservation APIs. Its fresh catalog checks preserve explicit snapshots but do not prevent a subsequent catalog rename/deletion or prove cross-database reference protection."
+  ],
+  "owner_contracts": {
+    "project": "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json",
+    "batch": "04_references/sn100_host/projects_remaining_20261025/reagents_contract.json",
+    "project_api": "ProjectsStore::holdProjectReference(requestId,ownerModule,referenceKey,projectId) and releaseProjectReference(requestId,ownerModule,referenceKey); projectReferenceSucceeded/Error correlate by requestId and operation. checkProjectReferences returns exists plus references.",
+    "batch_api": "ReagentStore::holdBatchReference(requestId,ownerModule,referenceKey,batchId) and releaseBatchReference(requestId,ownerModule,referenceKey); batchReferenceSucceeded/Error correlate by requestId and operation. checkBatchReferences returns exists plus references.",
+    "write_authority": "Only the owning ProjectsStore/ReagentStore workers write their shared catalog tables. Calibration must invoke their value-based APIs through queued connections; it must not execute ad hoc shared-table SQL or share QSqlDatabase handles."
+  },
+  "shell_write_gate_before_reference_coordination": [
+    "Attach the independent page as read-only until reservation coordination, startup reconciliation and integration tests exist. Pass a calibration-local AccountSession copy with actionReady=false to CalibrationPage::setSession; this also queues the same session to CalibrationStore and prevents both UI and direct store writes. Keep real authentication fields truthful.",
+    "Do not enable local Save/New/Copy based only on a successful catalog load, a one-time reference query or an optimistic UI flag. Each write introducing a dependency needs an acknowledged durable reservation before the local record transaction.",
+    "The current page sends save/copy directly to CalibrationStore. Connecting it to a menu alone cannot insert the required reservation phase; introduce an explicit module coordinator or an equivalent checked write boundary before enabling editing in the shared-catalog program.",
+    "Keep catalog rename/delete operations affecting calibration-dependent IDs disabled during migration/backfill or when either store, reconciliation, reservation or release outcome is unknown. Existing standalone anonymous fixture testing remains an independent local slice, not proof of this shared-catalog protocol."
+  ],
+  "reservation_coordinator_integration_steps": [
+    "Choose ownerModule=calibration (valid lowercase module name). Persist a stable calibration database identity and stable reservation keys in calibration-owned metadata/intent storage before requesting holds. Do not derive keys from project names, table row positions, UI selection or a guessed next autoincrement ID. Current schema has no reservation-key linkage; this is required future integration work.",
+    "For a new or copied record, freeze project/batch IDs and immutable units/group snapshot as a value operation. Mark busy, reject duplicate requests, navigation and session changes until completion or explicit failure. Send holdProjectReference for the stable project ID; send holdBatchReference only when batchId>0. Wait for matching success signals for both reservations.",
+    "Same owner/key/ID holds are idempotent; rebinding a key to another ID fails. A failed, missing, locked, stale or permission-denied reservation must fail the write before local data commit, retain the draft and show the real error. No automatic retry or silent fallback to an unprotected write.",
+    "After all holds succeed, reread/validate the current committed catalog identity and units, then perform the calibration record/point transaction and durably link its reservation keys in calibration-owned storage. Catalog and calibration commits remain separate; do not describe them as one transaction or cross-file foreign keys.",
+    "For an update to an existing record, verify or restore its existing durable project/batch holds before accepting new raw points. Existing identity is immutable. Copy gets its own stable reservation ownership/key linkage or an explicitly reference-counted aggregate scheme; never release the source record's protection as part of copy failure.",
+    "If local save fails after holds, determine the final local outcome in the calibration worker, including retained hidden history and concurrent/pending operations. Release only reservations created exclusively for this failed operation and proven unused. If outcome is uncertain, preserve the safe blocking holds and record reconciliation work.",
+    "Current Delete is soft hiding: visible becomes0 but calibration_records and calibration_points remain. A hidden record still has historical project/batch references, so keep its reservations. General owner-contract release-after-delete instructions apply only after an approved physical purge removes every dependent local record/history and its transaction commits.",
+    "On restart, reconcile calibration-owned intents, visible and hidden records against owner reservations before allowing edits or affected catalog renames/deletions. Public CalibrationStore::load returns visible records only; reconciliation needs a dedicated bounded worker-side reference enumeration that includes hidden records. Never use GUI-thread SQL or automatically clear unknown/orphan holds.",
+    "Before enabling writes for pre-existing standalone data, freeze affected catalog changes and backfill project/batch reservations for all visible and hidden records. Missing or already-reused IDs require explicit reconciliation; an old display label alone is not authority to rebind history.",
+    "Call prepareToLeave before changing page, logout, relogin or application exit. Respect busy/draft refusal. Stop new coordinator operations, resolve/record pending outcomes, close databases on their owning workers, then quit/join threads."
+  ],
+  "required_integration_validation": [
+    "Reserve project and batch, then verify rename/delete/group reassignment are rejected while visible and soft-hidden records exist; metadata-only edits follow the owner contract and never rewrite historical calibration values.",
+    "Locked/error/missing reservation APIs fail before local write; errors keep the draft. Repeated save and stale reservation replies cannot issue duplicate commits or attach holds to a later project/session.",
+    "Failure after only project hold, after both holds, during point insert and after local commit preserves/reconciles the correct reservations; retry uses stable keys and remains idempotent.",
+    "Restart at each inter-file boundary, then reopen visible and hidden history. Unknown outcomes remain blocked for reconciliation and do not auto-release protections.",
+    "Verify old executable rollback remains read-only with dependent external records because it may not enforce new catalog reference guards.",
+    "Run final unified Windows32 and ARM64 builds, original Windows same-state behavior/visual comparison, RK real screen, instrument/algorithm efficacy, resource budget and long stability separately. None is covered by this source review."
+  ],
+  "reviewed_source_sha256": {
+    "06_programs/sn100_host/calibration/calibration_page.cpp": "b446968bd583e3bc7e59715560fcbe9c314931fd4d22b624747550fd7d8b556d",
+    "06_programs/sn100_host/calibration/calibration_page.h": "33a12292accbe4362c4005be062466485c054279924cb8c241040d5602356edd",
+    "06_programs/sn100_host/calibration/calibrationchart.cpp": "7cc629d9905c0be1dcc10c64aff8d8953fbc3144833645fd36ad06629586c35f",
+    "06_programs/sn100_host/calibration/calibration_store.cpp": "0b75dd4eb28ef723a808000caf0e36d4a210d5a323c86268f6a2080cde1296b2",
+    "06_programs/sn100_host/calibration/calibration_store.h": "1afc6b6c2627d7e5872b5bff4676bb3b956d87de107fbac2c41888e69f590015",
+    "06_programs/sn100_host/calibration/calibration_types.h": "d7bab3140a86e1b198603c05cc15267414ee8f9f2d96267f15524cb25b45a35a",
+    "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json": "ae22bb51348fee256f9b70a11de657dd6eb53e5e0fb5429b115a05434d995a15",
+    "04_references/sn100_host/projects_remaining_20261025/reagents_contract.json": "a3f53b93c437337857f0905d4de55bae715a51e7919b9c657004cfc4b2a94751",
+    "06_programs/sn100_host/projects/projects_store.h": "df2cf40a74415e8aca7a0cf30e17d6f48a860b9bf1f60ede1597ded66402f409",
+    "06_programs/sn100_host/reagents/reagent_store.h": "af84cabfb9fdf8fc382f2157923294a03597046d65ffda9cf3695f4d8fcc4d1d"
+  },
+  "review_revision": "after-visual-source-fixes",
+  "visual_source_fixes": [
+    "calibrationchart.cpp now reserves90px left plot margin, moves the rotated y-axis title to its own left area and widens/repositions numeric tick labels so title and ticks have separate geometry. Rendering evidence belongs to the final rerun.",
+    "calibration_page.cpp gives disabled ordinary Apply buttons background#E4E4E4/text#AAAAAA from the existing source palette so unavailable actions are visibly disabled; no clinical action was enabled.",
+    "The modification date display uses original yyyy/MM/dd HH:mm:ss local-time formatting while its tooltip preserves the stored UTC ISO timestamp; storage stays explicit UTC.",
+    "Original active Windows theme/font/rendering and same-state visual parity remain unknown and require separate comparison. The original .ui hash and WSL screenshots do not establish active Windows equivalence."
+  ],
+  "unresolved_integration_obligations": [
+    "Persistent project/batch reservation coordination remains unimplemented in the independent module; shared-catalog editing must stay gated until owner API holds and reconciliation are wired and verified.",
+    "Soft-hidden local records retain historical project/batch dependencies and their reservations must be retained.",
+    "Public CalibrationStore::load returns visible records only; startup/backfill reconciliation needs bounded worker-side enumeration including hidden records. No GUI-thread SQL or unverified release of holds."
+  ]
+}

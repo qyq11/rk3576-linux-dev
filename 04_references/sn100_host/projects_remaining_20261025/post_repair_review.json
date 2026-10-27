@@ -1,0 +1,235 @@
+{
+  "schema": "sn100-post-reference-repair-static-review-v1",
+  "review_date": "2026-10-25",
+  "status": "independent static review delivered; production/test source unchanged; stop writing after this report",
+  "scope": "Repaired QC/calibration storage reference protection and related ProjectsStore/ReagentStore identity guards. Read existing formal handoffs and raw exit/test receipts; no test execution, build, GUI or resource sampling.",
+  "original_review_preserved": "integration_reference_review.json and all original handoffs/manifests/raw evidence are unchanged.",
+  "integration_context_reported_by_owner": {
+    "production_input_count": 426,
+    "production_freeze_sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+    "native_main_prefix": "013eb363",
+    "native_helper_prefix": "2de67df",
+    "boundary": "These full-integration build facts were supplied by the integration owner; this review does not independently rehash all426 inputs or certify native/platform artifacts. It fingerprints the exact inspected source subset below."
+  },
+  "closed_initial_findings": [
+    {
+      "id": "IRR-01",
+      "status": "closed_in_current_source; independent QC20 raw evidence reviewed",
+      "locations": [
+        "quality_control/qc_store.cpp:170-189",
+        "quality_control/qc_store.cpp:284-314",
+        "quality_control/qc_store.cpp:316-442"
+      ],
+      "reason": "bindCatalog now calls reconcileReferences before setting referencesReady_ and emitting catalogBound. Reconciliation acquires local BEGIN IMMEDIATE first, checks local FK relationships and unresolved history, scans every saved association without filtering inactive controls/projects, validates snapshot/rule/type identity, restores missing holds and rejects own UUID orphan/conflicting holds. Historical unit/ratio/decimals are validated structurally and retained, not replaced with current presentation. A failed binding closes dependent load/writes; ready retains its narrower local-SQL meaning for existing startup wiring.",
+      "raw_tests": "qc_reference_repair/test_2.log:20 passed/0 failed; test_2_receipt.txt:test_exit=0. Inspected, not rerun."
+    },
+    {
+      "id": "IRR-02",
+      "status": "closed_in_current_source; no remaining deterministic QC mis-release found in reviewed cooperating-writer paths",
+      "locations": [
+        "quality_control/qc_store.cpp:548-568",
+        "quality_control/qc_store.cpp:611-646",
+        "quality_control/qc_store.cpp:648-719"
+      ],
+      "reason": "setProjects obtains the local writer transaction before catalog reservation. Both committed detach cleanup and failed/automatic-ROLLBACK cleanup call releaseReferences, which reacquires a fresh local writer transaction, validates history, parses only own-dataset keys, checks actual pair absence and deletes only absent keys under local->catalog lock ordering. If another writer reattaches first, the key is kept; if the recheck/lock/commit fails, a conservative hold and warning remain. removeControl uses the same safe cleanup.",
+      "raw_tests": "Existing QC20 raw includes deterministic detach/reattach, statement ABORT, automatic transaction ROLLBACK, cleanup failure, actual locks/COMMIT failures and physical clone refusal. No execution by this review."
+    },
+    {
+      "id": "IRR-03",
+      "status": "closed_in_current_source; final frozen shared-object22 cumulative result remains pending",
+      "locations": [
+        "calibration/calibration_store.cpp:337-350",
+        "calibration/calibration_store.cpp:378-459",
+        "calibration/calibration_store.cpp:565-600",
+        "calibration/calibration_store.cpp:1024-1123"
+      ],
+      "reason": "Canonical calibration_local.db.operation.lock is held by RAII across initialization reconciliation/save/copy/remove and both file commits/cleanup. Failure cleanup explicitly ends old SQLite transaction state, reacquires local BEGIN IMMEDIATE and reads every persisted project/batch pair including hidden records before deleting only newly added keys not needed by any real record. Automatic ROLLBACK no longer relies on the old transaction retaining its lock. Failed re-lock/read/delete keeps conservative protection and contextual error.",
+      "raw_tests": "Calibration reference raw22/0 with qmake/make/test exits0 includes real RAISE(ROLLBACK), a second actual worker blocked by operation lock and conservative cleanup-failure recovery. The handoff explicitly records QC dependency provenance as post-build observation only. That22 is not treated here as final426-source frozen-object joint testing."
+    },
+    {
+      "id": "IRR-04",
+      "status": "page-source persistence fix observed; GUI acceptance remains integration-owned",
+      "locations": [
+        "quality_control/quality_control_page.cpp:254-259",
+        "quality_control/quality_control_page.cpp:277-283"
+      ],
+      "reason": "referenceWarning_ stores the reference-cleanup warning separately, and report() appends it across later ordinary successful snapshots and emits error status while it remains. The original text-loss path is removed. This review inspected those focused lines only; it did not rerun page/shell GUI tests or re-certify state/painting.",
+      "owner_supplied_evidence": "Integration owner reports gate03 QC page7/0 in both QPA backends, including actual trigger warning, and QC shell5/0 each. These are not executions by this reviewer."
+    }
+  ],
+  "new_findings": [
+    {
+      "id": "PRR-01",
+      "priority": "P1",
+      "title": "ProjectsStore事务外读取可让并发保存绕过已建立的名称引用保护",
+      "file": "06_programs/sn100_host/projects/projects_store.cpp",
+      "function": "ProjectsStore::save",
+      "lines": [
+        697,
+        702,
+        742,
+        747,
+        759
+      ],
+      "confidence": "high static confidence: current name comparison uses a completed pre-transaction read; runtime interleaving not executed here",
+      "evidence": "read(&projects,&units) and found are obtained before m_database.transaction(). The guard queries catalog_project_reference only when incoming name/fullName differ from that old found row. writeProject then unconditionally updates those name fields, without comparing the actual current row or using a revision predicate. The save function/inspected entry points do not enforce a one-ProjectsStore-per-catalog operation lock. This is a name-guard bypass, not deletion of a hold by repaired QC/calibration cleanup.",
+      "precise_trigger_interleaving": [
+        "P has id2 and name OLD; no external hold yet. Writer A is saving another base/result field with incoming name OLD and completes line697, obtaining found.name=OLD. Pause A after the read has returned and before line742.",
+        "Another legitimate ProjectsStore writer B saves P.name=NEW and commits while no holds exist.",
+        "QcStore C associates project id2/name NEW, or CalibrationStore C saves a matching new record; it commits the durable catalog hold and local NEW-labelled record using the repaired protocol.",
+        "Resume A. It starts a fresh transaction. incoming OLD equals its old found OLD, so line747 is false and the hold query is skipped. writeProject writes name OLD over actual NEW and commits, while C's durable hold still exists.",
+        "C retains saved projectName NEW but the catalog is OLD, despite a valid hold. Subsequent startup reconciliation correctly fails closed, but the protected name has already changed."
+      ],
+      "minimum_fix": "Acquire the catalog write transaction before reading authoritative project identity and validating against it, keep the read/check/write in the same transaction, and rollback every validation/SQL failure. BEGIN IMMEDIATE is a direct consistent choice. Alternatively re-read the current name/fullName under the transaction and enforce an appropriate compare-and-swap/revision condition before write; do not compare only against the old pre-transaction list. No new global service/process workflow is needed.",
+      "focused_test_suggestion": "With two real ProjectsStore workers on one anonymous catalog and one real QC/calibration worker, place a deterministic test-only barrier after A's pre-transaction read. Execute B rename and C reference commit before resuming A. Require A to reject stale save or preserve NEW, keep C's hold/local row unchanged and reopen C successfully. This review creates/runs no test source.",
+      "runtime_status": "not executed; explicit current-source interleaving for integration-owner verification"
+    }
+  ],
+  "new_deterministic_misrelease_in_repaired_qc_calibration": [],
+  "preserved_key_contracts": [
+    "QC owner quality_control and calibration owner calibration remain separate. Dataset UUID/control/project or project/batch keys use stable IDs, not row index/display name. batchId0 means no batch reference, not Default/apply.",
+    "QC historical result name/unit/ratio/decimals remain saved snapshots. Startup type/rule checks do not silently rebase them to current unit settings. Calibration raw values, historical concentration/result units and unitRatio remain unchanged; no current decimal presentation or clinical conversion is injected.",
+    "Calibration startup protects hidden records without the visible-row cap; soft hide retains records/points and holds. Disabled/missing-project mutation gates remain explicit, while historical read/protection is separate.",
+    "QC role/session openness is retained; no new Engineer-only restriction was invented. Calibration writes retain authenticated/actionReady roles1..5. Clinical fitting/check/apply/device actions are not enabled by the reference repairs.",
+    "Reference-first catalog commit and later local commit are still separate file transactions. No cross-database FK or single atomic commit is claimed. Orphans and uncertain cleanup are preserved for explicit reconciliation.",
+    "ProjectsStore held-name guard and FK-restricted delete remain effective for normally serialized current-identity writes; PRR-01 scopes its remaining pre-transaction race. ReagentStore checks batch code/group/project identity under its existing transaction, and project-action references block reagent name/type/disable/delete changes.",
+    "Public generic release APIs are explicit protocol/maintenance entry points; reviewed automatic cleanup uses own-key lists plus local committed-state checks. Raw external SQL/file replacement is not claimed to follow the cooperating application protocol."
+  ],
+  "dataset_clone_repair": {
+    "qc": "reconcileReferences binds catalog_metadata quality_control_dataset_path:<UUID> to canonical local DB path in the same catalog transaction, before full successful catalogBound. A previously bound UUID at another path is refused without UUID/hold rewriting.",
+    "calibration": "checkDatasetPathBinding runs within reserveReferences catalog transaction and binds calibration_dataset_path:<UUID> to the normalized canonical DB path. The canonical operation-lock path is shared by cooperating writers of that file.",
+    "boundary": "The documented same-path restore/explicit authorized relocation contract is retained. For an old unbound dataset the first successful full reconciliation establishes its path; this review does not pretend to distinguish unknown historical copies before any binding existed. No extra migration workflow is requested."
+  },
+  "evidence_readback": {
+    "qc20": {
+      "formal": "04_references/sn100_host/qc_local_20261025/qc_reference_repair_handoff.json",
+      "raw_test": "04_references/sn100_host/qc_local_20261025/qc_reference_repair/test_2.log",
+      "receipt": "04_references/sn100_host/qc_local_20261025/qc_reference_repair/test_2_receipt.txt",
+      "observed_summary": "20 passed,0 failed; test_exit=0",
+      "reviewer_executed": false
+    },
+    "calibration22": {
+      "formal": "04_references/sn100_host/calibration_local_20261025/calibration_guard_repair_handoff.json",
+      "raw_test": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/test.log",
+      "receipt": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/exits.txt",
+      "observed_summary": "22 passed,0 failed; qmake/make/test exits0",
+      "qc_provenance": "qc_post_build_observation/observed.json explicitly states post-build-only observation, not a precompile frozen image",
+      "frozen_shared_object_joint22": "not established by these raw files; pending owner",
+      "reviewer_executed": false
+    }
+  },
+  "reviewed_files": [
+    {
+      "file": "06_programs/sn100_host/quality_control/qc_store.h",
+      "sha256": "50ec9fbc6701e2790e197c511a356d02553f06a16a5f2588723be659f68fbc27",
+      "bytes": 5480
+    },
+    {
+      "file": "06_programs/sn100_host/quality_control/qc_store.cpp",
+      "sha256": "f79cc60b31757526417447f7a436c26965502e93d6011ce32a9f6ea601816c6b",
+      "bytes": 49565
+    },
+    {
+      "file": "06_programs/sn100_host/calibration/calibration_store.h",
+      "sha256": "760750646b8db248ce1b7e3e53ce2e72bce9eea59ec2d610086aaa66df4e2f18",
+      "bytes": 3310
+    },
+    {
+      "file": "06_programs/sn100_host/calibration/calibration_store.cpp",
+      "sha256": "ccff38b39681e0cf199616f018622db7ae60d6ea5efdbc46b60f04a6ba8127b2",
+      "bytes": 53721
+    },
+    {
+      "file": "06_programs/sn100_host/projects/projects_store.h",
+      "sha256": "df2cf40a74415e8aca7a0cf30e17d6f48a860b9bf1f60ede1597ded66402f409",
+      "bytes": 4210
+    },
+    {
+      "file": "06_programs/sn100_host/projects/projects_store.cpp",
+      "sha256": "5342e5dbded0eda1f07cdd0bebb3971dac5d3222dd3fdeea61e793fb98219721",
+      "bytes": 38591
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_store.h",
+      "sha256": "af84cabfb9fdf8fc382f2157923294a03597046d65ffda9cf3695f4d8fcc4d1d",
+      "bytes": 2553
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_store.cpp",
+      "sha256": "dffce0ddbd9879e5908a1692525f0ccae7a6568f5ebeac515c42e621ff99ed76",
+      "bytes": 34287
+    },
+    {
+      "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+      "sha256": "93b1325e51fbf48cc6224fa21d023605e1ee360728cc29acc9fc682fd6168218",
+      "bytes": 39993
+    },
+    {
+      "file": "04_references/sn100_host/qc_local_20261025/qc_reference_repair_handoff.json",
+      "sha256": "106c4d4ec567997bad05bdbd7204dc09deee39f5dc389554d6fede32f6c99c13",
+      "bytes": 12658
+    },
+    {
+      "file": "04_references/sn100_host/qc_local_20261025/qc_reference_repair/source_inputs.json",
+      "sha256": "9eaa78d3028099d5d9671bdd171d5e460d862e7edf8a84bcbc85981a50249482",
+      "bytes": 674
+    },
+    {
+      "file": "04_references/sn100_host/qc_local_20261025/qc_reference_repair/dependency_inputs.json",
+      "sha256": "def1662d0aab5fb638eccdae39224ec945bb421b6eac1d6448cf98b2afd86a83",
+      "bytes": 1160
+    },
+    {
+      "file": "04_references/sn100_host/qc_local_20261025/qc_reference_repair/test_2_receipt.txt",
+      "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+      "bytes": 12
+    },
+    {
+      "file": "04_references/sn100_host/qc_local_20261025/qc_reference_repair/test_2.log",
+      "sha256": "b06b6a4e43c7ccb5faad5442b9431d04a97969b510cace69b4be5dc58762b13b",
+      "bytes": 31814
+    },
+    {
+      "file": "04_references/sn100_host/calibration_local_20261025/calibration_guard_repair_handoff.json",
+      "sha256": "1ac72b6c482351eb3ea5512a8a8ef887c96f787608a9e602dc342c9d029701c3",
+      "bytes": 10711
+    },
+    {
+      "file": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/exits.txt",
+      "sha256": "6e3cef66e2a70e2ebdb88a86aa0ac41c6e3ca5321b07888f1b654647b933d67d",
+      "bytes": 37
+    },
+    {
+      "file": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/reference/test.log",
+      "sha256": "49c3f4c32307690950aa5d6b338c8aea94312af18a495c8b8d83d17245b8b375",
+      "bytes": 35882
+    },
+    {
+      "file": "04_references/sn100_host/calibration_local_20261025/guard_repair_20261025/qc_post_build_observation/observed.json",
+      "sha256": "f5c07e93e0bfaf8f6b70230d6b44d0d1f8cc07a3925031b1e5150d9c755a3557",
+      "bytes": 1306
+    }
+  ],
+  "hash_checks": {
+    "06_programs/sn100_host/projects/projects_store.cpp": true,
+    "06_programs/sn100_host/calibration/calibration_store.h": true,
+    "06_programs/sn100_host/quality_control/qc_store.cpp": true,
+    "06_programs/sn100_host/calibration/calibration_store.cpp": true,
+    "06_programs/sn100_host/quality_control/qc_store.h": true
+  },
+  "not_performed": [
+    "production/test-source edits",
+    "build",
+    "test execution",
+    "GUI",
+    "resource sampling",
+    "database write",
+    "device/network connection",
+    "dependency installation",
+    "Git commit/push",
+    "automation",
+    "message to another chat"
+  ],
+  "only_new_file": "04_references/sn100_host/projects_remaining_20261025/post_repair_review.json",
+  "final_boundary": "IRR01/02/03 source fixes accepted within the inspected cooperating-writer protocol; IRR04 text persistence source fix observed. One separate concrete ProjectsStore pre-transaction name race is reported, with no new QC/calibration mis-release found. Static review does not replace the final frozen cumulative22, platform/GUI/resource/hardware acceptance."
+}

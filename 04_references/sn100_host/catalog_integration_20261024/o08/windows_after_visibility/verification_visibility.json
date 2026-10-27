@@ -1,0 +1,77 @@
+{
+  "phase": "O08 visibility repair",
+  "status": "passed",
+  "baseline": "Passed O08 full -B -j2 build, metadata and original pair preserved",
+  "strategy": "Exact Makefile prerequisite -W forced one cpp; main relinked; identical helper inputs/flags/objects and actual binary retained",
+  "source_sha256": "6E8FB2B95EEC1160A49D7C9499147C781E5CB44FACA8C342E0DB97853E5977CE",
+  "compile_exit": 0,
+  "compile_commands": 1,
+  "compile_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\logs\\windows_catalog_visibility_shell_compile.log",
+  "first_link_invocation_exit": 2,
+  "first_link_failure": "DESTDIR_TARGET variable used a backslash, whereas the actual make rule uses a forward slash; this was a temporary orchestration-script error, not a source/linker error",
+  "failed_link_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\logs\\windows_catalog_visibility_shell_link.log",
+  "recovery_link_target": "bin/sn100_shell.exe",
+  "recovery_link_exit": 0,
+  "recovery_link_compile_commands": 0,
+  "recovery_link_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\logs\\windows_catalog_visibility_shell_link_recovery.log",
+  "object_differences": {
+    "target": "shell",
+    "object": "sample_page.o",
+    "before_sha256": "3A2C2F2EDFBA235258CB243A4AEC7746303AA9BEB4FCF0D1F25FB0088C720BA9",
+    "after_sha256": "51C2835FD0495BEB0C291E92A618D49CA38F627DEA68DE290CC8B6DDFB4732F5"
+  },
+  "targets": [
+    {
+      "target": "shell",
+      "action": "One cpp rebuilt, main relinked",
+      "input_count": 260,
+      "input_differences": {
+        "path": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host\\samples\\sample_page.cpp",
+        "before_sha256": "13A2B12628351DA174030CD29750C1AF1F581B6F26D8ACFF3708B56D69C0AB26",
+        "after_sha256": "6E8FB2B95EEC1160A49D7C9499147C781E5CB44FACA8C342E0DB97853E5977CE"
+      },
+      "flags_unchanged": true,
+      "effective_flags": [
+        "CC            = gcc",
+        "CXX           = g++",
+        "DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DNO_BARCODE -DHAVE_QT5 -DQT_NO_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_CHARTS_LIB -DQT_SVG_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_XML_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_NEEDS_QMAIN",
+        "CFLAGS        = -fno-keep-inline-dllexport -O2 -Wall -Wextra -Wextra $(DEFINES)",
+        "CXXFLAGS      = -fno-keep-inline-dllexport -O2 -std=gnu++1y -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)",
+        "INCPATH       = -I..\\..\\..\\..\\06_programs\\sn100_host\\shell -I. -I..\\..\\..\\..\\06_programs\\sn100_host\\shell -I..\\..\\..\\..\\06_programs\\sn100_host -I..\\..\\..\\..\\06_programs\\sn100_host\\ui -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets\\material -I..\\..\\..\\..\\06_programs\\sn100_host\\history -I..\\..\\..\\..\\06_programs\\sn100_host\\history -I..\\..\\..\\..\\06_programs\\sn100_host\\thirdparty\\qtrpt\\CommonFiles -I..\\..\\..\\..\\06_programs\\sn100_host\\thirdparty\\qtrpt\\QtRPT -I..\\..\\..\\..\\06_programs\\sn100_host\\projects -I..\\..\\..\\..\\06_programs\\sn100_host -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets\\material -I..\\..\\..\\..\\06_programs\\sn100_host\\reagents -I..\\..\\..\\..\\06_programs\\sn100_host -I..\\..\\..\\..\\06_programs\\sn100_host\\projects -I..\\..\\..\\..\\06_programs\\sn100_host\\ui -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets\\material -I..\\..\\..\\..\\06_programs\\sn100_host\\samples -I..\\..\\..\\..\\06_programs\\sn100_host -I..\\..\\..\\..\\06_programs\\sn100_host\\projects -I..\\..\\..\\..\\06_programs\\sn100_host\\ui -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets\\material -I..\\..\\..\\..\\06_programs\\sn100_host\\samples\\material -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtPrintSupport -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtCharts -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSvg -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtWidgets -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtGui -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtANGLE -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSql -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtXml -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtQml -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtNetwork -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtCore -I.moc -I.ui -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\mkspecs\\win32-g++ ",
+        "LINKER      =        g++",
+        "LFLAGS        =        -Wl,-s -Wl,-subsystem,windows -mthreads",
+        "LIBS        =        C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5PrintSupport.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Charts.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Svg.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Widgets.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Gui.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Sql.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Xml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Qml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Network.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Core.a  -lmingw32 C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libqtmain.a -LC:\\openssl\\lib -LC:\\Utils\\my_sql\\mysql-5.7.25-win32\\lib -LC:\\Utils\\postgresql\\pgsql\\lib -lshell32 "
+      ],
+      "qmake_exit": 0,
+      "architecture": "PE32 / i386 / Machine=0x014C / OptionalMagic=0x010B",
+      "bytes": 2535936,
+      "sha256": "E54D5C00573AFF9613DF97682682880ECC8AA6111E2EC7EAFC387CA41482235A",
+      "baseline_binary_sha256": "7622A3F95F51A5A2B42CEDE7AAB7F2136D48EE18C8E210E0A98546E5D4EBCBE3"
+    },
+    {
+      "target": "renderer",
+      "action": "Retained unchanged; not recompiled",
+      "input_count": 50,
+      "input_differences": null,
+      "flags_unchanged": true,
+      "effective_flags": [
+        "CC            = gcc",
+        "CXX           = g++",
+        "DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DNO_BARCODE -DHAVE_QT5 -DQT_NO_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_CHARTS_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_XML_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB",
+        "CFLAGS        = -fno-keep-inline-dllexport -O2 -Wall -Wextra -Wextra $(DEFINES)",
+        "CXXFLAGS      = -fno-keep-inline-dllexport -O2 -std=gnu++1y -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)",
+        "INCPATH       = -I..\\..\\..\\..\\06_programs\\sn100_host\\history -I. -I..\\..\\..\\..\\06_programs\\sn100_host\\history -I..\\..\\..\\..\\06_programs\\sn100_host\\thirdparty\\qtrpt\\CommonFiles -I..\\..\\..\\..\\06_programs\\sn100_host\\thirdparty\\qtrpt\\QtRPT -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtPrintSupport -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtCharts -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtWidgets -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtGui -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtANGLE -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSql -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtXml -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtQml -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtNetwork -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtCore -I.moc -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\mkspecs\\win32-g++ ",
+        "LINKER      =        g++",
+        "LFLAGS        =        -Wl,-s -Wl,-subsystem,console -mthreads",
+        "LIBS        =        C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5PrintSupport.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Charts.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Widgets.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Gui.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Sql.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Xml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Qml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Network.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Core.a   "
+      ],
+      "qmake_exit": 0,
+      "architecture": "PE32 / i386 / Machine=0x014C / OptionalMagic=0x010B",
+      "bytes": 720896,
+      "sha256": "EB17A55A5A2829D19792E8B3935EE9DD281035F087EBE0CB88CE45807B3E4B10",
+      "baseline_binary_sha256": "EB17A55A5A2829D19792E8B3935EE9DD281035F087EBE0CB88CE45807B3E4B10"
+    }
+  ],
+  "application_executed": false,
+  "board_connected": false
+}

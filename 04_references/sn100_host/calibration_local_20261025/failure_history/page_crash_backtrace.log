@@ -1,0 +1,35 @@
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+********* Start testing of CalibrationPageTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : CalibrationPageTest::initTestCase()
+[New Thread 0x7ffff0f456c0 (LWP 3795)]
+QWARN  : CalibrationPageTest::normalUiSaveReopenAndShutdown() This plugin does not support propagateSizeHints()
+
+Thread 1 "calibration_pag" received signal SIGSEGV, Segmentation fault.
+0x0000555555580c8c in CalibrationPage::readEditedRecord(CalibrationRecord*, QString*) const ()
+#0  0x0000555555580c8c in CalibrationPage::readEditedRecord(CalibrationRecord*, QString*) const ()
+#1  0x0000555555581255 in CalibrationPage::updateRawPlot() ()
+#2  0x00007ffff6d12e16 in ?? () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+#3  0x00007ffff7c5b0c4 in QTableWidget::itemChanged(QTableWidgetItem*) () from /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+#4  0x00007ffff7c5c7e0 in ?? () from /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+#5  0x00007ffff6d12dbf in ?? () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+#6  0x00007ffff6c6d851 in QAbstractItemModel::dataChanged(QModelIndex const&, QModelIndex const&, QVector<int> const&) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+#7  0x00007ffff7c6395a in ?? () from /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+#8  0x0000555555583356 in CalibrationPage::renderRecord() ()
+#9  0x0000555555586be7 in CalibrationPage::startNewRecord() ()
+#10 0x00005555555951d3 in (anonymous namespace)::newDraft(CalibrationPage*, bool) ()
+#11 0x000055555559a032 in CalibrationPageTest::normalUiSaveReopenAndShutdown() [clone .isra.0] ()
+#12 0x00007ffff6ce3d3a in QMetaMethod::invoke(QObject*, Qt::ConnectionType, QGenericReturnArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument) const () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+#13 0x00007ffff7f31c4f in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#14 0x00007ffff7f327c7 in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#15 0x00007ffff7f32ca9 in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#16 0x00007ffff7f33210 in QTest::qRun() () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#17 0x00007ffff7f335e7 in QTest::qExec(QObject*, int, char**) () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#18 0x000055555556fbdf in main ()

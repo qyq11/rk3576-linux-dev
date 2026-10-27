@@ -1,0 +1,83 @@
+{
+  "module": "instrument_offline",
+  "date": "2026-10-24",
+  "reference": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "sources": [
+    {
+      "sha256": "4e0f24fa7e99e459a123bced7855d25399b2ce7f6e23cfb3f8cd2f36fb879f4e",
+      "path": "frmdriverset/frmdriverset.ui"
+    },
+    {
+      "sha256": "924a7f3dbd738923d3c1eeac744925b8361e29e4ad070aa242174d2f7547efcf",
+      "path": "frmdriverset/frmdriverset.cpp"
+    },
+    {
+      "sha256": "3648010c43adde28394ab85ec013bd3491c5cf8ce3f7e1e16f78caecd564f4d7",
+      "path": "frmdriverset/frmdriverset.h"
+    },
+    {
+      "sha256": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128",
+      "path": "public/stylecolor.cpp"
+    },
+    {
+      "sha256": "b63c46ae047a2f3006b823cdc9477d498eb0aa2417cfe138845ff3d4c773be09",
+      "path": "main.cpp"
+    },
+    {
+      "sha256": "830fdc19da6962aa11dd5b3892c04bd7eecb457c5dec73bde870fa2c55ce9879",
+      "path": "image/downrow_normal.png"
+    },
+    {
+      "sha256": "f8003caa8399293851aed394f79b7a9ad76779813c6a5f98847409d0f1fc6aff",
+      "path": "image/downrow_hover.png"
+    },
+    {
+      "sha256": "d0d99455ffca5a696f9b3906d1c63310b6fe17b37534a14899972865c39b3d6c",
+      "path": "image/downrow_pressed.png"
+    },
+    {
+      "sha256": "cf76fb19a5e65e594bfb55266a9589882967ea68e03877d9b633f0d0e597e614",
+      "path": "image/uprow_normal.png"
+    },
+    {
+      "sha256": "beeee339c08ce427f4e2df16647940f59f559a3ab584d5810eaa6b777c0070fa",
+      "path": "image/uprow_hover.png"
+    },
+    {
+      "sha256": "1c2566afb22531eea26cb87b6e80682e389bad7c363a691647dc0b94626b93b2",
+      "path": "image/uprow_pressed.png"
+    },
+    {
+      "sha256": "adad079e34c5aaf87d388a32784ed8ea86fbfc5e4cdd0dd1db55823ba4654b12",
+      "path": "image/login_logo.png"
+    }
+  ],
+  "ui_copy": "frmdriverset.ui is byte-for-byte unchanged",
+  "entry": "InstrumentPage: original 1751x968 canvas and original eight subpages",
+  "implemented": [
+    "original local subpage navigation and account role visibility",
+    "six manual maintenance records through worker-owned SQLite",
+    "month lookup and readback only after successful commit",
+    "offline replay of verified model/main/led/error fields with source prefix",
+    "shared read-only value API keeps replay/simulation sources distinct, dynamic labels use plain text",
+    "all unverified hardware values unknown"
+  ],
+  "disabled": [
+    "all real connections and writes",
+    "needle/pump/valve/scanner/gripper/liquid-level actions",
+    "channel switches and AD acquisition",
+    "washing/shutdown completion records",
+    "device self-test/firmware/calibration/task actions",
+    "maintenance print button retained disabled; no matching original print slot found, behavior awaits original release comparison"
+  ],
+  "differences": [
+    "relative/shared resources are Qt resources, preserving original asset bytes",
+    "Linux Noto Sans CJK SC substitutes missing PingFang font",
+    "actual device values unknown; no UI sample data is interpreted as live measurements",
+    "software version explicitly identifies offline migrated build; no vendor DLL version claimed",
+    "no production configuration/database read",
+    "unknown instrument model opens first original board reference layout with explicit tooltip; no real model inference"
+  ],
+  "visual_baseline": "Original UI + source dynamic styles; colors match established shell non-sensitive theme (right background 28,28,28; right buttons 127,127,127; white text; ordinary buttons 42,118,242; hover alpha170; pressed135,206,250; accent232,51,35). Original active Windows theme and same-state screenshots remain unverified",
+  "lifecycle": "Entry owns MaintenanceStore/QThread. Page queues requests; no QWidget or SQL handle crosses thread boundaries."
+}

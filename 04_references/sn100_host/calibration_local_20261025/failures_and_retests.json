@@ -1,0 +1,42 @@
+{
+  "history": [
+    {
+      "log": "04_references/sn100_host/calibration_local_20261025/failure_history/store_test_first.log",
+      "command_exit_code": 0,
+      "sha256": "cad62bfedbec28916fb0d21b8dbde7ebd04693e20603fb31d5bc951af982120d",
+      "fact": "Historical v1 schema preliminary 41/0; superseded by final v3 50/0, not final feature proof"
+    },
+    {
+      "log": "04_references/sn100_host/calibration_local_20261025/failure_history/store_test_v2.log",
+      "command_exit_code": 1,
+      "sha256": "adc6274a3b539e8811f2bbe78c5c41f195edc1cae4972620483e4da9eea1b90a",
+      "fact": "Intermediate v2 batchGroup query read value before next(); first normal save failed; interrupted after failure, no complete-run claim"
+    },
+    {
+      "log": "04_references/sn100_host/calibration_local_20261025/failure_history/store_test_v2_fixed.log",
+      "command_exit_code": 0,
+      "sha256": "9943649d000f8846766ca2a6ca791b1ec09880efb5bb6f199e6084e526369052",
+      "fact": "Intermediate v2 corrected batch query: 50/0; final v3 rerun adds timestamp assertions"
+    },
+    {
+      "log": "04_references/sn100_host/calibration_local_20261025/failure_history/page_test_first.log",
+      "command_exit_code": 1,
+      "sha256": "8b7475d8ea35aa22aabc3fce3743cbcf453c4220bdbf3db9919daf64a0bdfcd0",
+      "fact": "Actual SIGSEGV in partial-table read while renderRecord emitted itemChanged; gdb stack preserved; fixed population guard plus complete-table validation"
+    },
+    {
+      "log": "04_references/sn100_host/calibration_local_20261025/failure_history/page_crash_backtrace.log",
+      "command_exit_code": 0,
+      "sha256": "40f1814c6cf78ff56a018c4175e509b73714350141238d0ebf750124080f25e2",
+      "fact": "Debugger process returned0 after capturing target SIGSEGV; this is diagnostic evidence, not target success"
+    },
+    {
+      "log": "04_references/sn100_host/calibration_local_20261025/failure_history/page_test_fixed.log",
+      "command_exit_code": 1,
+      "sha256": "41cf3e4dee435335ff672fdfb6ed1af579b40c81e52f51f24fd9b31ac672c7b1",
+      "fact": "19 pass/1 fail/1 skip: test checked editor before queued Return commit; corrected to await actual model update"
+    }
+  ],
+  "final_retest": "verification.json",
+  "pre_visual_fix": "pre_visual_fix/verification.json"
+}

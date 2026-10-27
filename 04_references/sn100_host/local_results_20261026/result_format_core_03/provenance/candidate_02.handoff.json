@@ -1,0 +1,65 @@
+{
+  "schema": "sn100-current-format-candidate02-handoff-v1",
+  "status": "DELIVERED_STOP_WRITING_SOURCE_ONLY",
+  "date": "2026-10-27",
+  "directory": "temp/sn100_host/local_results_20261026/result_format_candidate_02",
+  "parent_handoff_sha256": "8ec5f723c77d07ab30a7a4f28e6e9b9315b86900be12a4489099c1b2cb9d0699",
+  "parent_source_manifest_sha256": "9c0b44ced3af103f8e73ddd2126147f90807caa2881d9db703e4366f15743367",
+  "source_manifest": {
+    "path": "source_manifest.json",
+    "sha256": "e37dc3c374d0ca26fafda44197bc0b3476e4fe7f603d40e64dcfa05034b62dc9",
+    "members": 32
+  },
+  "source_base": {
+    "path": "source_base.json",
+    "sha256": "aa7e92d0ec4799d04768582829e85a6607716fa33294db275d5f968b3fe1dbf2"
+  },
+  "delta": {
+    "path": "delta.diff",
+    "sha256": "91e4efcd423e974a6dfd5405bea780bc92436ac4505f740a0de6a31152052ca7",
+    "description": "Exact source01-to02 unified diff across seven paired private source/header files; Git comparison original exit1 retained separately"
+  },
+  "contract": {
+    "path": "local_contract.json",
+    "sha256": "1358ab5a1f0903c2f7ecd6e9a2ad7dd8fd276c6561d46f5c44b3f5ea359564f0"
+  },
+  "regressions": {
+    "path": "regression_inputs_02.json",
+    "sha256": "3a90ff9a74087e17c0391f756c384ef992cbdbe3582ef4e9d12969094f0a43bd",
+    "executed": false
+  },
+  "static_review": {
+    "path": "static_review.json",
+    "sha256": "a2e0f7e256f082bc492d48f159a30b14066999265bd45675ecbc3d6b733c0d3e"
+  },
+  "changes": [
+    "Confirmed selectionKnown (real selection row plus matching fixed resultId/type) is independent of numeric known. Both values and column visibility filter confirmed used/display even with Unknown unit/ratio. Missing selection still Unknown and cannot hide via default false; storedValues preserves all four raw strings.",
+    "All valid owner-thread source releases centrally emit global currentFormatInvalidated0 with incremented actual revision and explicit reason before releasing source. Both initialize paths and their failure cleanup inspected. Rejected wrong-thread/GUI-thread initialization does not reach release and does not pretend source switch. Close still emits actual closed separately; initialization invalidation does not mark state closed.",
+    "Only new replaceCurrentResultFormat reject rollback-false path now marks m_ready=false and closes connection without removeDatabase while local QSqlQuery remains. Outcome Unknown, references not additionally released, explicit initialize required; existing check readiness stops subsequent ordinary remove/load/write."
+  ],
+  "pairing": {
+    "candidate_source_header_pri_files": 21,
+    "changed_from01": 7,
+    "byte_identical": 14,
+    "cpp": 11,
+    "moc_headers": 8,
+    "all19_pri_paths_exist": true,
+    "no_old_objects_or_moc": true
+  },
+  "preserved": [
+    "All original01 members, original01 manifest and handoff remain byte-identical after review.",
+    "No formal06, other candidate, existing runtime data, plan or prior evidence writes.",
+    "No CAS fingerprint serialization, permission/session, raw SQL value, Time mapping, catalog UUID rule, integer unit policy or disabled output change.",
+    "HistoryCurrentDisplayState cpp/header remain byte-identical to01; its existing global invalidation handler now receives all actual source release attempts. Nonactive business errors are not made destructive."
+  ],
+  "execution": {
+    "compile": "NOT_STARTED",
+    "MOC": "NOT_STARTED",
+    "SQL": "NOT_STARTED",
+    "GUI": "NOT_STARTED",
+    "network": "NOT_STARTED",
+    "dependency_install": "NOT_STARTED",
+    "device_or_platform": "NOT_STARTED"
+  },
+  "limits": "This is an uncompiled/unexecuted private source candidate and fixed regression specification, not proof of runtime incident or full functional completion. No new test runner/controller added."
+}

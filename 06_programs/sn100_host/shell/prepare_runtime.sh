@@ -91,6 +91,38 @@ while read -r checksum package; do
         *) echo 'Unexpected offscreen runtime package.' >&2; exit 1 ;;
     esac
 done < "$platform_archive/SHA256SUMS"
+
+# Restore only the signed-index-pinned QtSvg 5.15.13 inputs. These extend the
+# private sysroot for the original sample combo-box SVG arrow; nothing is
+# installed into WSL or the board filesystem.
+svg_archive=$root/07_backups/qt_environment/sn100_samples_arm64
+[[ -f $svg_archive/SHA256SUMS ]] || { echo 'Archived matching ARM64 QtSvg inputs are required.' >&2; exit 1; }
+(cd "$svg_archive" && sha256sum -c SHA256SUMS)
+declare -A svg_packages=()
+while read -r checksum package; do
+    case $package in
+        libqt5svg5_5.15.13-1_arm64.deb)
+            expected=813202055ca9743206d33e955cac3152a3bac7abbbc8254e01c18feda6e39d0d ;;
+        libqt5svg5-dev_5.15.13-1_arm64.deb)
+            expected=690245647bb8fd8ce21feaf8bece72c4cf64c85747fe6baa96dc20dd4eb95c1d ;;
+        *) echo 'Unexpected QtSvg archive package.' >&2; exit 1 ;;
+    esac
+    [[ $checksum == "$expected" && ! ${svg_packages[$package]+present} ]] || { echo 'Invalid or duplicate QtSvg archive entry.' >&2; exit 1; }
+    [[ $(dpkg-deb -f "$svg_archive/$package" Version) == 5.15.13-1 && $(dpkg-deb -f "$svg_archive/$package" Architecture) == arm64 ]] || { echo 'QtSvg archive version or architecture mismatch.' >&2; exit 1; }
+    svg_packages[$package]=1
+    dpkg-deb -x "$svg_archive/$package" "$sysroot"
+done < "$svg_archive/SHA256SUMS"
+[[ ${#svg_packages[@]} == 2 ]] || { echo 'Both matching QtSvg runtime and development inputs are required.' >&2; exit 1; }
+for provider in \
+    /usr/lib/aarch64-linux-gnu/libQt5Svg.so.5.15.13 \
+    /usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqsvg.so \
+    /usr/lib/aarch64-linux-gnu/qt5/plugins/iconengines/libqsvgicon.so; do
+    [[ -f $sysroot$provider ]] || { echo "Archived QtSvg provider is absent: $provider" >&2; exit 1; }
+    printf '%s\n' "$provider" >> "$sysroot/report_private_libraries.txt"
+done
+[[ -f $sysroot/usr/include/aarch64-linux-gnu/qt5/QtSvg/QSvgRenderer && -f $sysroot/usr/share/doc/libqt5svg5/copyright ]] || { echo 'Archived QtSvg development files or notice are absent.' >&2; exit 1; }
+sort -u -o "$sysroot/report_private_libraries.txt" "$sysroot/report_private_libraries.txt"
+
 inspection_archive=$root/07_backups/qt_environment/sn100_report_inspection_arm64
 (cd "$inspection_archive" && sha256sum -c SHA256SUMS)
 while read -r checksum package; do

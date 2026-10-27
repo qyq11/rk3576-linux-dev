@@ -1,0 +1,62 @@
+{
+  "createdUTC": "2026-10-26T19:40:54.763454+00:00",
+  "source": "per-case verification.json contains parsed markers; raw exit.json intentionally predates parsing",
+  "cases": {
+    "B_fresh_guest": {
+      "checks": {
+        "owned_group_gone": true,
+        "no_cleanup": true,
+        "secret_deleted": true,
+        "no_watchdog": true,
+        "actual_exit0": true,
+        "required_markers_once": true,
+        "real_host_ack_once": true,
+        "close_order": true,
+        "one_normal_SIGTERM": true,
+        "no_raw_error": true
+      },
+      "marker_counts": {
+        "SHELL_READY": 1,
+        "LIS_RAW_INBOX_OPENED network=false task_application=false": 1,
+        "LIS_RAW_INBOX_STOPPED true": 1,
+        "HOSPITAL_STORE_CLOSED": 1,
+        "ACCOUNT_STORE_CLOSED": 1,
+        "LIS_SETTINGS_CLOSED": 1,
+        "THREADS_STOPPED true": 1,
+        "EXIT code= 0": 1
+      },
+      "shutdown_observations": [
+        "SHUTDOWN_REQUEST signal= SIGTERM",
+        "SHUTDOWN_REJECTED window_guard_or_unavailable"
+      ]
+    },
+    "C_reopen_guest": {
+      "checks": {
+        "owned_group_gone": true,
+        "no_cleanup": true,
+        "secret_deleted": true,
+        "no_watchdog": true,
+        "actual_exit0": true,
+        "required_markers_once": true,
+        "real_host_ack_once": true,
+        "close_order": true,
+        "one_normal_SIGTERM": true,
+        "no_raw_error": true
+      },
+      "marker_counts": {
+        "SHELL_READY": 1,
+        "LIS_RAW_INBOX_OPENED network=false task_application=false": 1,
+        "LIS_RAW_INBOX_STOPPED true": 1,
+        "HOSPITAL_STORE_CLOSED": 1,
+        "ACCOUNT_STORE_CLOSED": 1,
+        "LIS_SETTINGS_CLOSED": 1,
+        "THREADS_STOPPED true": 1,
+        "EXIT code= 0": 1
+      },
+      "shutdown_observations": [
+        "SHUTDOWN_REQUEST signal= SIGTERM",
+        "SHUTDOWN_REJECTED window_guard_or_unavailable"
+      ]
+    }
+  }
+}

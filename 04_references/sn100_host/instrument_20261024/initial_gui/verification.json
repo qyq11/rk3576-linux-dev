@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "stage": "initial_instrument_gui_checkpoint",
+  "conclusion": "Initial frozen instrument page passed the production-object-linked corrected driver in offscreen and XCB. This is not a conclusion about the final current common source.",
+  "environment": {
+    "os": "Ubuntu-24.04 WSL",
+    "user": "qyq",
+    "qt": "5.15.13",
+    "compiler": "GCC 13.2.0",
+    "architecture": "x86_64",
+    "build": "Release",
+    "canvas": "1751x968 instrument within 1920x1080 shell",
+    "viewport": "1600x900",
+    "font": "Noto Sans CJK SC",
+    "style": "Fusion"
+  },
+  "source_checkpoint": {
+    "manifest": "frozen_inputs.json",
+    "frozen_source_root": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host",
+    "files": 460,
+    "sha256_mismatches": 0,
+    "generic_readonly_api_included": false,
+    "generic_source_replacement_test_included": false,
+    "final_O09_2_common_source_included": false
+  },
+  "production_object_link": {
+    "manifest": "production_objects.json",
+    "count": 129,
+    "sha256_mismatches": 0,
+    "driver_manifest": "drivers/source_manifest.json",
+    "driver": "temp/sn100_host/instrument_20261024/qa_driver/tests/instrument_page_test.cpp",
+    "driver_binary_sha256": "58099b7654951e358bee51476d6099f73cb446697deb3d76700fb64701b82910",
+    "scope": "Corrected test driver linked to the 129 existing production objects listed in the manifest; product logic was not changed to bypass close guards."
+  },
+  "results": [
+    {
+      "qpa": "offscreen",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "navigation_operations": 7,
+      "maximum_sync_click_ms": 1.807353,
+      "scope": "Synchronous navigation call only; excludes paint, physical input and instrument latency"
+    },
+    {
+      "qpa": "xcb",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "navigation_operations": 7,
+      "maximum_sync_click_ms": 1.335489,
+      "scope": "Synchronous navigation call only; excludes paint, physical input and instrument latency"
+    }
+  ],
+  "preserved_failure": {
+    "result": "8 passed / 1 failed",
+    "evidence": [
+      "initial_failure/offscreen.txt",
+      "initial_failure/offscreen.xml"
+    ],
+    "failure": "shellIntegrationAndLifecycleGuards: shell->close() returned false after logout",
+    "diagnostic_result": "2 passed / 1 failed",
+    "diagnostic": "close_diagnostic/close_diagnostic.txt",
+    "finding": "At final close, account_busy=true while hospital_busy=false and maintenance_busy=false. Logout starts a real asynchronous account-list refresh, so the shell correctly rejects closing until it finishes.",
+    "correction": "Only the test driver adds rejection/busy diagnostics and waits for account, hospital and maintenance pages to settle before the existing final close assertion.",
+    "patch": "close_diagnostic/driver_only.patch"
+  },
+  "smoke": {
+    "summary": "smoke/gui_smoke.json",
+    "raw_log": "smoke/gui_smoke.txt",
+    "exit_code": 0,
+    "closed_stores": [
+      "MAINTENANCE",
+      "SAMPLE",
+      "REAGENT",
+      "PROJECT",
+      "HOSPITAL",
+      "ACCOUNT",
+      "HISTORY"
+    ],
+    "closed_store_count": 7,
+    "threads_stopped": true,
+    "status_replay_stopped": true,
+    "runtime_database_archived": false,
+    "resource_claim": false
+  },
+  "screenshots": {
+    "raw_copy_count": 20,
+    "available_subpage_indexes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "additional": [
+      "maintenance_saved.png",
+      "replay_expired.png",
+      "integrated_instrument.png"
+    ],
+    "pixels_edited": false,
+    "source_copy_sha256_mismatches": 0,
+    "scope": "Actual QWidget/host captures from the test process. Original active Windows theme and same-state instrument/RK screen comparison remain pending.",
+    "subpage_5_evidence": {
+      "paths": [
+        "corrected/offscreen/replay_expired.png",
+        "corrected/xcb/replay_expired.png"
+      ],
+      "state": "Expired replay; device values restored to unknown in the original SN600 reference-board subpage.",
+      "source_sequence": "replayNeverEnablesHardware selects fresh replay model SN600, clicks btn_board_status and asserts index 5; replay expiry then clears values without navigating away before replay_expired.png is captured.",
+      "visual_confirmation": "Primary agent inspected replay_expired.png and confirmed the original SN600 reference-board layout with unknown values.",
+      "limits": "This proves the reference-layout subpage is present under the replay branch. Actual instrument model selection, field mapping and real hardware behavior remain pending."
+    }
+  },
+  "navigation_measurement_limit": "Seven synchronous button->click() calls only; excludes event-queue delay, paint, real mouse/keyboard input and instrument response. Not a resource-budget or responsiveness acceptance result.",
+  "build_boundary": {
+    "normal_full_qttest_result": "Not claimed at this checkpoint; the normal full QtTest build was still in progress when this initial linked-driver evidence was collected.",
+    "final_latest_source_result": "Pending separate final_gui evidence after final common-source build and tests.",
+    "runtime_db_tags_bootstrap_or_account_data_copied": false
+  },
+  "archive_manifest": "archive_manifest.json",
+  "copied_file_count": 35,
+  "pending": [
+    "Final common source including generic read-only status API and O09-2 integration",
+    "Normal full QtTest compilation and final tests",
+    "Original Windows active theme/behavior and same-state visual comparison",
+    "Windows/RK screen/input and real instrument actions/replies/interlocks",
+    "Resource budget, same-board realtime interference and long-duration checks"
+  ],
+  "derived_manifest_sha256": {
+    "archive_manifest": "a977dc4a1d627d001354ebc06f1e110aa17eb28bd8de3f23c90c4c3869cf9b77",
+    "driver_source_manifest": "4dad28de0044729f7b448c1231968ffc7434f57876011e96bb59c31498bb10de"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "sn100-cn-only-language-page-origins-v1",
+  "date": "2026-10-26",
+  "implementation": "LanguageSettingPage; only Cn 中文简体, no language storage or switching",
+  "original_sources": {
+    "frmuserset/frmlanguagesetting.h": "f71049d686124202485b47fe56724f1ed4dc76942fa499f6ab3ec7ee07aefc63",
+    "frmuserset/frmlanguagesetting.cpp": "e5e4c9a1cca2c906435e079c98407e9fa3ba6733d5e9dc235666d2d007e21865",
+    "frmuserset/frmlanguagesetting.ui": "ed96acdb96f515ba89cdf78d277b451b54f537082e57181a35adb1e169b20239",
+    "public/stylecolor.cpp": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128"
+  },
+  "original_entry": "frmLanguageSetting::refrashLanguageList adds one Cn 中文简体 item; on_btnApply_clicked is empty",
+  "original_form_identical_bytes": true,
+  "form_sha256": "ed96acdb96f515ba89cdf78d277b451b54f537082e57181a35adb1e169b20239",
+  "original_widget_geometries": {
+    "frmLanguageSetting": {
+      "x": 0,
+      "y": 0,
+      "width": 1451,
+      "height": 853
+    },
+    "widget": {
+      "x": 390,
+      "y": 20,
+      "width": 681,
+      "height": 821
+    },
+    "lblHoleinfo_7": {
+      "x": 38,
+      "y": 26,
+      "width": 261,
+      "height": 30
+    },
+    "ldtLanguageSelect": {
+      "x": 20,
+      "y": 90,
+      "width": 641,
+      "height": 61
+    },
+    "btnApply": {
+      "x": 500,
+      "y": 750,
+      "width": 161,
+      "height": 61
+    },
+    "lineEdit_5": {
+      "x": 20,
+      "y": 170,
+      "width": 641,
+      "height": 20
+    },
+    "lstProject": {
+      "x": 20,
+      "y": 190,
+      "width": 641,
+      "height": 551
+    }
+  },
+  "theme": {
+    "list_source": "public/stylecolor.cpp::listWidgetStyle::getStrSheet1",
+    "reference_key": "bin/theme_config.ini:52 theme/kListWidgetRowSelected=183.215.255.255",
+    "confirmed_formal_color_source": "ui/frmaccountsetting.cpp; shell/frmuserset.cpp",
+    "list_selected_rgba": [
+      183,
+      215,
+      255,
+      255
+    ],
+    "text": "#444444 / selected white",
+    "button_rgba_normal": [
+      42,
+      118,
+      242,
+      255
+    ],
+    "button_rgba_hover": [
+      42,
+      118,
+      242,
+      170
+    ],
+    "button_rgba_pressed": [
+      135,
+      206,
+      250,
+      255
+    ],
+    "active_original_Windows_theme_visual_equivalence": "pending; no reference configuration read at runtime"
+  },
+  "intentional_differences": [
+    {
+      "change": "Original empty Apply now opens existing CusMessageBox warning asynchronously",
+      "reason": "Explain unavailable language switching without claiming a successful apply/save/restart",
+      "message": "当前仅支持简体中文，暂不提供语言切换。"
+    },
+    {
+      "change": "Linux font family uses existing Noto Sans CJK SC locally",
+      "reason": "Original 苹方 粗体 is not assumed present; original .ui bytes, font size/weight and geometry remain"
+    },
+    {
+      "change": "Canvas fixed to original1451x853; no added controls or layout groups",
+      "reason": "Keep original control geometry while host handles any necessary scrolling"
+    },
+    {
+      "change": "Single owned asynchronous card with hide/close/destruction cleanup",
+      "reason": "Replacing an empty callback introduces a dialog lifecycle; page changes cannot leave a hidden modal card"
+    }
+  ],
+  "host_contract": {
+    "constructor": "LanguageSettingPage(QWidget *parent=nullptr)",
+    "optional_status_signal": "statusChanged(QString); lastStatus is the identical displayed warning text",
+    "optional_leave_slot": "dismissFeedback(); automatic hideEvent/closeEvent also dismiss",
+    "root_owned": "Replace settings index2 placeholder, preserve five indices and existing guards; add cpp/h/ui to existing build files",
+    "no_fake_contract": "No saved/languageApplied/store/dirty/busy or translation-selection interface"
+  },
+  "test_target": "tests/language_setting_page_test.pro",
+  "verification": {
+    "static_form_and_sources": "checked",
+    "compiled": false,
+    "widget_tests_run": false,
+    "visual_original_Windows": false,
+    "Windows_ARM_build": false,
+    "RK_or_instrument": false,
+    "response_resource_long_stability": "not measured"
+  },
+  "new_source_sha256": {
+    "ui/language_setting_page.h": "98e800d2c4d103a56275c472c4a40c19fb061eec11ba70881db1726a6996bf02",
+    "ui/language_setting_page.cpp": "e6f3bc868ad1dcefd4ab3cc069ce8c81dda5e9e4e2b70922a615bcde160bfe22",
+    "ui/frmlanguagesetting.ui": "ed96acdb96f515ba89cdf78d277b451b54f537082e57181a35adb1e169b20239",
+    "tests/language_setting_page_test.cpp": "9a6508a0594b5f27cd5d8a9f86987c2d8992e47cd21a49523b78f12c39be5f52",
+    "tests/language_setting_page_test.pro": "73f20dd3acfba2adf3dc9df4a41416e1fb88e9388a0921ab829acee2c9c635cf"
+  }
+}

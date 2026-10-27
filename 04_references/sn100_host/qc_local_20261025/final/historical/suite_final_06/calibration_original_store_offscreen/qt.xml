@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="8" failures="0" tests="17" name="CalibrationStoreTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="saveLoadReopenPreservesRawPoints">
+    <!-- message="&quot;UPDATE calibration_records SET is_checked=1&quot; &quot;CHECK constraint failed: is_checked=0 Unable to fetch row&quot;" type="qwarn" -->
+    <!-- message="&quot;UPDATE calibration_records SET is_applied=1&quot; &quot;CHECK constraint failed: is_applied=0 Unable to fetch row&quot;" type="qwarn" -->
+    <!-- message="INPUT concentration mg/dL=100.125; measurements Sec=[12.25,12.75]; OUTPUT reopened exact, checked=0 applied=0" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="updateCopyUsesCommittedRevisionAndDeleteIsSoft"/>
+  <testcase result="pass" name="validationRejectsEmptyIllegalAndDuplicates"/>
+  <testcase result="pass" name="permissionRejectedWithoutWrite"/>
+  <testcase result="pass" name="disabledProjectRemoveIsReadOnlyForRowsPointsAndHolds">
+    <!-- message="DISABLED_REMOVE rejected with visible/revision/points/project&#x002D;and&#x002D;batch holds unchanged; historical read remains available" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="staleRevisionAndRepeatedDeleteCannotOverwrite"/>
+  <testcase result="pass" name="catalogChangesRespectSavedIdentityAndUnits">
+    <!-- tag="unit&#x002D;ratio" message="HISTORICAL_UNIT_SNAPSHOT_RETAINED &quot;UPDATE option_unit SET ratio=2 WHERE unit=&apos;mg/dL&apos;&quot; raw_values_unchanged" type="qinfo" -->
+    <!-- tag="rename&#x002D;original&#x002D;result&#x002D;unit" message="HISTORICAL_UNIT_SNAPSHOT_RETAINED &quot;UPDATE project_result SET unit_name=&apos;mg/dL&apos; WHERE result_type=&apos;Original&apos;&quot; raw_values_unchanged" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="lockFailurePreservesDataAndRetryWorks">
+    <!-- message="INPUT BEGIN IMMEDIATE competing writer; OUTPUT save error, unchanged values; rollback lock then explicit retry succeeds" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="latePointFailureRollsBackHeaderAndAllPoints">
+    <!-- message="INPUT late INSERT trigger failure on point2; OUTPUT revision/header/point1 all rolled back; explicit retry after trigger removal succeeds" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="catalogSnapshotIsCommittedReadOnlyAndStableIds"/>
+  <testcase result="pass" name="zeroAndDescendingConcentrationsRemainInInputOrder"/>
+  <testcase result="pass" name="unboundBatchStoresExplicitEmptyString"/>
+  <testcase result="pass" name="savedIdentityCannotBeReassociated"/>
+  <testcase result="pass" name="unknownExistingFileAndReferencePathsAreRejected"/>
+  <testcase result="pass" name="wrongThreadAndClosedStoreCannotAccessSql"/>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA["UPDATE calibration_records SET is_checked=1" "CHECK constraint failed: is_checked=0 Unable to fetch row"]]>
+<![CDATA["UPDATE calibration_records SET is_applied=1" "CHECK constraint failed: is_applied=0 Unable to fetch row"]]>
+<![CDATA[INPUT concentration mg/dL=100.125; measurements Sec=[12.25,12.75]; OUTPUT reopened exact, checked=0 applied=0]]>
+<![CDATA[DISABLED_REMOVE rejected with visible/revision/points/project-and-batch holds unchanged; historical read remains available]]>
+<![CDATA[HISTORICAL_UNIT_SNAPSHOT_RETAINED "UPDATE option_unit SET ratio=2 WHERE unit='mg/dL'" raw_values_unchanged]]>
+<![CDATA[HISTORICAL_UNIT_SNAPSHOT_RETAINED "UPDATE project_result SET unit_name='mg/dL' WHERE result_type='Original'" raw_values_unchanged]]>
+<![CDATA[INPUT BEGIN IMMEDIATE competing writer; OUTPUT save error, unchanged values; rollback lock then explicit retry succeeds]]>
+<![CDATA[INPUT late INSERT trigger failure on point2; OUTPUT revision/header/point1 all rolled back; explicit retry after trigger removal succeeds]]>
+  </system-err>
+</testsuite>

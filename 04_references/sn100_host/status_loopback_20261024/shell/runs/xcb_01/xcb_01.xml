@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCase name="StatusLoopbackShellTest">
+<Environment>
+    <QtVersion>5.15.13</QtVersion>
+    <QtBuild>Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)</QtBuild>
+    <QTestVersion>5.15.13</QTestVersion>
+</Environment>
+<TestFunction name="initTestCase">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[environment 5.15.13 "xcb" app_sha256 "0ac098cbb533dc2af7a250e1675a7d168e8e6f4176064e5651523dfe8bb2d7d8"]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="117.824"/>
+</TestFunction>
+<TestFunction name="mappingAndDeviceBoundary">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="859.46"/>
+</TestFunction>
+<TestFunction name="controllerAndBackgroundLifecycle">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 1 elapsed_ms= 0 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 2 elapsed_ms= 2 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 3 elapsed_ms= 1051 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 4 elapsed_ms= 1052 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 4 sequence= 5 elapsed_ms= 1068 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 4 sequence= 6 elapsed_ms= 1069 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WORKER_STOPPED 1 wire_events= 6 wire_bytes= 156]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WIRE run= 2 generation= 2 sequence= 1 elapsed_ms= 0 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WIRE run= 2 generation= 2 sequence= 2 elapsed_ms= 1 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[STATUS_LOOPBACK_WORKER_STOPPED 2 wire_events= 2 wire_bytes= 52]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1538.93"/>
+</TestFunction>
+<TestFunction name="fullProductAndMutualExclusion">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1037.4"/>
+</TestFunction>
+<TestFunction name="cleanupTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1.98657"/>
+</TestFunction>
+<Duration msecs="3563.31"/>
+</TestCase>

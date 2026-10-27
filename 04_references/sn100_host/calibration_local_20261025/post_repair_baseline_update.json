@@ -1,0 +1,61 @@
+{
+  "schema": "sn100-calibration-post-repair-baseline-status-update-v1",
+  "date": "2026-10-25",
+  "recorded_at_asia_shanghai": "2026-10-25T23:44:33.1054171+08:00",
+  "status": "calibration source-specific review retained; e65 checkpoint superseded as final baseline; replacement freeze/build/regression pending root",
+  "prior_review": {
+    "path": "04_references/sn100_host/calibration_local_20261025/post_repair_review.json",
+    "sha256": "e2ed053959a9a4d4927b44dbcd54a2fcccc2446c1af55c19c6a307ef4ef18840",
+    "preserved_without_changes": true
+  },
+  "calibration_source_scope": [
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_store.cpp",
+      "sha256": "ccff38b39681e0cf199616f018622db7ae60d6ea5efdbc46b60f04a6ba8127b2",
+      "matches_reviewed_source": true
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_store.h",
+      "sha256": "760750646b8db248ce1b7e3e53ce2e72bce9eea59ec2d610086aaa66df4e2f18",
+      "matches_reviewed_source": true
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_page.cpp",
+      "sha256": "ab18106a9cacb3dfa96c5cdbe9104fa7c40e1747e504ef5a83605fb82392d49d",
+      "matches_reviewed_source": true
+    }
+  ],
+  "historical_checkpoint": {
+    "snapshot_sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+    "input_count": 426,
+    "classification": "旧联测检查点；不再作为后续最终生产冻结",
+    "prior_facts": "post_repair_review.json中的426输入/167对象一致和suite_gate_04两后端各6/0是当时具体e65源码及产物的历史事实，保留原始SHA/日志，不撤销或追溯篡改。",
+    "no_carry_forward": "不得把这些旧联测、旧对象或旧平台产物视为即将修改ProjectsStore后的最终版本已通过。"
+  },
+  "upstream_change": {
+    "source": "本次用户分工/根整合窗口状态更新",
+    "reported_issue": "ProjectsStore.save在transaction外读取身份，多写者场景中可能把已改名项目按stale快照回写。",
+    "authorized_owner": "项目窗口仅修projects_store.cpp并新增root/tests原子引用回归；根整合窗口负责新冻结和三平台重建。",
+    "review_action": "仅记录基线失效范围；未复审、修改或运行项目源码/测试，也不替项目窗口关闭该问题。"
+  },
+  "calibration_review_result": {
+    "CAL_GUARD_01": "针对上述ab181页面与ccff存储源码，停用项目删除UI/worker门控修复结论保持。",
+    "CAL_GUARD_02": "针对上述ccff/7607存储源码，规范路径绑定、同UUID异路径拒绝与操作锁修复结论保持，限已记录的合作新版操作协议。",
+    "rollback_cleanup": "针对该源码，失败后重取本地写锁并读含隐藏实际身份再清本次新增不用预约的静态结论保持。",
+    "new_confirmed_calibration_risks": "本次只核3个校准源SHA和基线状态，未发现源SHA漂移；没有新增源码风险结论，未据状态更新扩大审查。",
+    "integration_limit": "跨模块引用保护还依赖ProjectsStore在同事务中读取/核验当前身份后写入；因此校准局部结论不能代替修复后的新联合回归。"
+  },
+  "pending": [
+    "项目窗口完成原子身份/引用修复与其回归后，根整合窗口冻结新完整输入并重建/核对Windows32、WSL、ARM64产物。",
+    "在新冻结版本重跑校准/项目/试剂/质控及主壳累计联测、保存复制隐藏与角色/草稿/busy/退出检查。",
+    "原Windows活动主题/视觉、RK/仪器、真实拟合/审核/应用、资源/同板控制与长稳仍各自待验。"
+  ],
+  "scope": {
+    "sole_new_file": "04_references/sn100_host/calibration_local_20261025/post_repair_baseline_update.json",
+    "old_review_or_handoff_modified": false,
+    "source_or_test_modified": false,
+    "build_gui_resource_device_or_database_operation": false,
+    "other_chat_messages": false
+  },
+  "write_stop": "此JSON写入回读后停止；不重建、不操作数据库、不改源码/测试或覆盖旧证据。"
+}

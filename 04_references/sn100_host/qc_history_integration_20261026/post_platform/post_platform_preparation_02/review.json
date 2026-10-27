@@ -1,0 +1,33 @@
+{
+  "schema": "sn100-standalone-target-role-fix-review-v2",
+  "status": "static_preparation_only",
+  "old_failure": "项目/试剂专用ProjectsStore要求误套到校准目标；属于验证器判断错误。",
+  "old01_accounting": {
+    "four_qmake_make_actual_exits": {
+      "quality_control_qmake": 0,
+      "quality_control_make": 0,
+      "calibration_qmake": 0,
+      "calibration_make": 0
+    },
+    "actual_stage_exit": 1,
+    "page_start_invocations": 0,
+    "startup_or_close_acceptance": false,
+    "original_evidence_modified": false
+  },
+  "new_role_checks": {
+    "QC": "正向要求qc_history_core、statistics、qc_store、quality_control_page、qc_history_presenter、两图形源和main，并确认它们实际映射到参与链接的对象。",
+    "calibration": "正向要求calibration_store、calibration_page、calibrationchart及main；不套ProjectsStore要求。",
+    "projects_reagents": "6个已知项目/试剂app及test目标保留ProjectsStore正向要求，且各自还要求其真实业务页面/存储/入口。",
+    "scope_of_rejection": "未知target、缺业务源、业务源无实际对象、声明源与链接对象编译规则不一致均失败。"
+  },
+  "captured_graph_validation": {
+    "positive": 8,
+    "negative": 81,
+    "current447_failed_attempt_fixtures": "QC与Cal的实际捕获Makefile；只读验证源/对象角色，不重分类其启动结果。",
+    "historical426_fixtures": "另6份项目/试剂Makefile仅验证角色分类器和ProjectsStore拒绝条件，不作为当前447的编译或回归证据。"
+  },
+  "fresh02_choice": "Calibration01 had actual make0 but no persisted post-build object/generated inventory before generic verifier raised. Current read-only hashes cannot be retroactively labeled build-time hashes.",
+  "new02_accounting": "尚未编译或启动。将新建02运行/控制目录，重新qmake/make并登记真实时间、对象、源、Makefile和编译收据；不复用01二进制或对象。",
+  "standalone_count": "本阶段仅QC/Cal两个独立程序，另含一次catalog所有者初始化；7阶段。项目阶段另外包含Projects/Reagents两启动，合计4个独立程序。",
+  "unchanged": "所有06、公共文档、旧准备、旧失败、旧控制目录以及原测量准备均未写入。"
+}

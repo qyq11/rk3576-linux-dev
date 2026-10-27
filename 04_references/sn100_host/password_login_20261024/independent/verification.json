@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-24",
+  "scope": "Independent local password login and original dialog; explicit anonymous SQLite only",
+  "environment": "Ubuntu-24.04/qyq Qt5.15.13 x86_64 Release, Fusion/Noto Sans CJK SC",
+  "tests": {
+    "offscreen": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "resources": {
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/wsl_release/login_test",
+          "-o",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/logs/offscreen_02.txt,txt"
+        ],
+        "pid": 1658,
+        "elapsed_seconds": 6.466170419000036,
+        "exit_code": 0,
+        "timed_out": false,
+        "ordinary_sigterm_requested": false,
+        "sample_period_seconds": 0.1,
+        "sample_count": 63,
+        "scope": "Observed direct child only; WSL host baseline, not RK budget/real-time qualification",
+        "pss_unavailable_samples": 0,
+        "cpu_percent_one_logical_core": 13.526369960457945,
+        "observed_span_seconds": 6.357951190999984,
+        "maximum_VmRSS": 91624,
+        "maximum_VmHWM": 91624,
+        "maximum_Threads": 3,
+        "maximum_fd_count": 10,
+        "maximum_Pss": 86160
+      }
+    },
+    "xcb": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "resources": {
+        "command": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/wsl_release/login_test",
+          "-o",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/logs/xcb_02.txt,txt"
+        ],
+        "pid": 1695,
+        "elapsed_seconds": 6.668753531000107,
+        "exit_code": 0,
+        "timed_out": false,
+        "ordinary_sigterm_requested": false,
+        "sample_period_seconds": 0.1,
+        "sample_count": 65,
+        "scope": "Observed direct child only; WSL host baseline, not RK budget/real-time qualification",
+        "pss_unavailable_samples": 0,
+        "cpu_percent_one_logical_core": 13.263549773175363,
+        "observed_span_seconds": 6.5593300049999925,
+        "maximum_VmRSS": 141912,
+        "maximum_VmHWM": 145944,
+        "maximum_Threads": 5,
+        "maximum_fd_count": 13,
+        "maximum_Pss": 127319
+      }
+    }
+  },
+  "source_inputs": 33,
+  "original_ui_byte_equal": true,
+  "original_ui_sha256": "588813687e12b880abe7f4e83b625a2a2a1b951c6af425446db07aa888d336ab",
+  "binary_sha256": "ee7794da8892c67270519ca5cf21084ad45d3e5b523cef2db3ea8a8f05698b8e",
+  "build": "qmake release and force make -B -j2 exit 0; forced binary equals first build byte for byte",
+  "first_build_warning": "Makefile modification time was 0.27 s in the future; full forced rebuild retained and both QPA rerun",
+  "behavior": [
+    "Empty password always Guest; no default write",
+    "Bound full credentials and actual row id",
+    "Duplicate identical credentials rejected explicitly",
+    "Remember role<=4 by username, atomic rollback and successful login warning",
+    "Role5/unchecked preserve defaults",
+    "Independent signals do not pollute existing account CRUD observers",
+    "Action state preserved and session origin explicit",
+    "Busy blocks duplicate/close, Esc consumed",
+    "Asynchronous original warning UI and close lifetime, old replies ignored"
+  ],
+  "measurement_limits": [
+    "Short QtTest driver includes fixture setup, GUI interactions and controlled database waits",
+    "Resources are WSL host observations, not product/RK budget or same-board real-time acceptance",
+    "This test does not establish long stability, compositor/input latency or production credential security"
+  ],
+  "pending": [
+    "Unified-shell regression and platform builds handled by integration",
+    "Original Windows active theme/company title and full behavior",
+    "RK, touch keyboard and instrument workflows",
+    "Production identity import, credential storage security and long stability"
+  ],
+  "authentication_database_or_credentials_archived": false,
+  "independent_dialog_image": {
+    "path": "03_photos/20261024_sn100_password_login_independent_1600.png",
+    "sha256": "0fb1d65e81aec3821b645765348f71fcfb0821345f4fdc326b0cbdbe9eee4c40",
+    "scope": "Empty credential fields in the independent host; not an original Windows or composed unified-shell screenshot"
+  }
+}

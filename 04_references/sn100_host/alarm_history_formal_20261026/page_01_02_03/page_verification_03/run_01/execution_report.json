@@ -1,0 +1,321 @@
+{
+  "schema": "sn100-formal-alarm-page-execution-report-v1",
+  "status": "original8_actual_passed_on_offscreen_and_xcb",
+  "slot": "alarm_history_formal_page_20261026_01",
+  "slot_status": "released",
+  "slot_released_utc": "2026-10-26T17:08:13.1057559+08:00",
+  "actual_parent_exit": 0,
+  "observed_Windows_exec_exit": 0,
+  "source_manifest_sha256": "19ead9bcf67d40c2f9f325a3585f23cc7ea00faccd5276a4b2fa82b02483a483",
+  "tools_manifest_sha256": "7abbe47baa870a5395f2e81fdefe86b5dc12a49913065b8d64de1f5306909ae0",
+  "controller_inputs_sha256": "442ebe78cc512c5998eb0472ef7379f084b756cbdaa169c2c0cbf8a0bd11478f",
+  "controller_sha256": "81a8ff644d017c3b195cbdb3288d621c55a91f9ff89869a62309d6cd85f2ad85",
+  "source_bound_files": 80,
+  "compiled_project_sources": 18,
+  "generated_compiled_sources": 20,
+  "fresh_object_count": 38,
+  "forms": 5,
+  "compiled_qrc": 3,
+  "RCC_assets": 21,
+  "tools_and_resources": 19,
+  "optional_presence_bindings": 2,
+  "source_tool_controller_Python_unchanged": true,
+  "actual_steps": [
+    {
+      "step": "compiler_version.exit.json",
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "--version"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 0.014125058000000301,
+      "timed_out": false,
+      "group_gone": true
+    },
+    {
+      "step": "font_bold.exit.json",
+      "argv": [
+        "/usr/bin/fc-match",
+        "-f",
+        "%{file}",
+        "Noto Sans CJK SC:style=Bold"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016594556999999455,
+      "timed_out": false,
+      "group_gone": true
+    },
+    {
+      "step": "font_regular.exit.json",
+      "argv": [
+        "/usr/bin/fc-match",
+        "-f",
+        "%{file}",
+        "Noto Sans CJK SC"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 0.03427904299999973,
+      "timed_out": false,
+      "group_gone": true
+    },
+    {
+      "step": "ldd.exit.json",
+      "argv": [
+        "/usr/bin/ldd",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/build/alarm_history_page_test"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 0.08903511900000183,
+      "timed_out": false,
+      "group_gone": true
+    },
+    {
+      "step": "make.exit.json",
+      "argv": [
+        "/usr/bin/make",
+        "-C",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/build",
+        "-j2"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 112.128661569,
+      "timed_out": false,
+      "group_gone": true
+    },
+    {
+      "step": "qmake.exit.json",
+      "argv": [
+        "/usr/lib/qt5/bin/qmake",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/build/Makefile",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/alarm_history_page_test.pro",
+        "CONFIG+=release",
+        "CONFIG-=debug",
+        "SN100_FORMAL_ROOT=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 4.5437964079999995,
+      "timed_out": false,
+      "group_gone": true
+    },
+    {
+      "step": "qt_query.exit.json",
+      "argv": [
+        "/usr/lib/qt5/bin/qmake",
+        "-query"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 0.056526632999999826,
+      "timed_out": false,
+      "group_gone": true
+    },
+    {
+      "step": "test_offscreen.exit.json",
+      "argv": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/build/alarm_history_page_test",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/offscreen/qt.txt,txt",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/offscreen/qt_xunit.xml,xunitxml",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/offscreen/qt.xml,xml"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 13.829457450000007,
+      "timed_out": false,
+      "group_gone": true
+    },
+    {
+      "step": "test_xcb.exit.json",
+      "argv": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/build/alarm_history_page_test",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/xcb/qt.txt,txt",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/xcb/qt_xunit.xml,xunitxml",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_03/run_01/xcb/qt.xml,xml"
+      ],
+      "actual_exit": 0,
+      "elapsed_seconds": 15.180688925999988,
+      "timed_out": false,
+      "group_gone": true
+    }
+  ],
+  "backends": [
+    {
+      "backend": "offscreen",
+      "actual_exit": 0,
+      "business": 8,
+      "Qt_total": 10,
+      "Qt_passed": 10,
+      "Qt_failed": 0,
+      "Qt_skipped": 0,
+      "messages_by_type": [
+        {
+          "type": "qinfo",
+          "count": 8
+        }
+      ],
+      "normal_shutdown_receipts": [
+        {
+          "function": "originalGeometryRecentTwenty",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "calendarDraftThenFullIntervalLastBatchBeforeCompletion",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "finalBatchCapacityCancellationNeverCompletesPartial",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "utf8TextCapacityClearsInsteadOfPartialSuccess",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "cancelButtonAfterRealSqlTerminalReleasesGuiAppend",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "calendarEscapeKeepsResultAndLegalEmptyIsComplete",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "missingExistingSourceDoesNotCreateOrFakeEmpty",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "closeQueuedBeforeWorkerReturnsDropsLateRows",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        }
+      ],
+      "SQL_seeded_comparison_count": 7,
+      "SQL_post_images": 7,
+      "all_post_rows_count26": true,
+      "each_metadata_read_file_SHA_unchanged": true,
+      "missing_source_SQLflag_is_vacuous": true
+    },
+    {
+      "backend": "xcb",
+      "actual_exit": 0,
+      "business": 8,
+      "Qt_total": 10,
+      "Qt_passed": 10,
+      "Qt_failed": 0,
+      "Qt_skipped": 0,
+      "messages_by_type": [
+        {
+          "type": "qinfo",
+          "count": 8
+        }
+      ],
+      "normal_shutdown_receipts": [
+        {
+          "function": "originalGeometryRecentTwenty",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "calendarDraftThenFullIntervalLastBatchBeforeCompletion",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "finalBatchCapacityCancellationNeverCompletesPartial",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "utf8TextCapacityClearsInsteadOfPartialSuccess",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "cancelButtonAfterRealSqlTerminalReleasesGuiAppend",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "calendarEscapeKeepsResultAndLegalEmptyIsComplete",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "missingExistingSourceDoesNotCreateOrFakeEmpty",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        },
+        {
+          "function": "closeQueuedBeforeWorkerReturnsDropsLateRows",
+          "store_closed": true,
+          "worker_joined": true,
+          "SQL_unchanged_flag": true,
+          "normal_page_close": true
+        }
+      ],
+      "SQL_seeded_comparison_count": 7,
+      "SQL_post_images": 7,
+      "all_post_rows_count26": true,
+      "each_metadata_read_file_SHA_unchanged": true,
+      "missing_source_SQLflag_is_vacuous": true
+    }
+  ],
+  "component_inputs": "Formal page/host/calendar/UI/RCC/store plus shared QWidget/material dependencies; no shell/main/newglobalfreeze or old objects used",
+  "first_failures": {
+    "page_verification_01": "actualparent1 before qmake; same physical glob members compared with raw ../paths. Original controller/manifest/run preserved",
+    "page_verification_02": "actualparent1 after qmake0 beforemake; realMakefile inline Qt tool recipes, not MOC variable. All5childPGIDs observedgone by owner before parentexit. Original controller/verification preserved",
+    "secondary02_audit": "Later cross-WSL kill0 audit observed number378 in use and returnedfalse; this is preserved as an unqualified late-number audit, not proof originalfc-match survived (ownerwait0/groupgone were already durable). No unrelated process killed.",
+    "page_verification_03": "Root authorized temp-only fixes, replayed02Makefile readonly18source/18moc/5uic/3rcc binding and dependencies0; original expected set and checks retained"
+  },
+  "process_cleanup": "run_01/owned_processes_final.json: independent real parentwait0 plus same-controller final observations all9childPGIDsgone, avoids late-number ambiguity",
+  "SQL_proof": "7seeded complete7field before/after QVariant row images equal perbackend, original8normal-close/workerjoin flags true; extra7post-JSON row images eachbackend and metadata-read fileSHA equality recorded",
+  "missing_DB_case": "No source created; its loggedSQLunchanged true is a default, not an eighth data-image comparison",
+  "source_or_assertions_or_timeouts_modified": 0,
+  "remaining": [
+    "Error acknowledgement/clear/busy release passed; correcting a bad/missing source and re-querying successfully in sameHost/thread is NOT included in original8 and is a separate unexecuted supplement",
+    "No independent currentQScreen available/frame containment or physical-screen hit acceptance; xcb result is the originalQt widget-action suite",
+    "No originalWindows activity theme, fullvisual acceptance, Windows/ARM/RK/wholeapplication/LIS/instrument run",
+    "No longSQL hard-interruption/writer-contention/large-data budget measurement or newresource test"
+  ],
+  "no_further_build_GUI_SQL_after_release": true
+}

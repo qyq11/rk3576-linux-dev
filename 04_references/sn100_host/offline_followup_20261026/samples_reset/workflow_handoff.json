@@ -1,0 +1,383 @@
+{
+  "schema": "sn100-sample-reset-workflow-handoff-v1",
+  "date": "2026-10-26",
+  "status": "independent_local_page_storage_passed",
+  "passed": true,
+  "source_inputs": 432,
+  "source_snapshot_sha256": "9ff28e905fd4df82330fb58b529c208a489b32987692a4131e67e3d86db5fc00",
+  "source_frozen_and_unchanged": true,
+  "formal_and_test_source_edits_during_execution": false,
+  "parent_actual_exit": 0,
+  "controller_actual_exit": 0,
+  "parent_command_process_logs_exit": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01/parent",
+  "test_invocations": [
+    {
+      "name": "workflow",
+      "qpa": "offscreen",
+      "actual_exit": 0,
+      "totals": [
+        14,
+        0,
+        0
+      ],
+      "binary_sha256": "fd9fcaa2b4b605df251ede07dbb828f3bed1d1fb7bf43462df42767ce45568be",
+      "cases": [
+        {
+          "result": "pass",
+          "name": "initTestCase"
+        },
+        {
+          "result": "pass",
+          "name": "resetErrorsOnlyChangesDraftThenSavesAndReopens"
+        },
+        {
+          "result": "pass",
+          "name": "retestCancelDiscardSaveAndReopen"
+        },
+        {
+          "result": "pass",
+          "name": "selectedTestingRefusesBothActionsWithoutPartialDraft"
+        },
+        {
+          "result": "pass",
+          "name": "checkedNonTestingHolesKeepIdentityAndBecomeRevisable"
+        },
+        {
+          "result": "pass",
+          "name": "writeFailureRetainsCommittedStateAndDraftForRetry"
+        },
+        {
+          "result": "pass",
+          "name": "staleDraftAndRevokedIdentityCannotOverwriteTesting"
+        },
+        {
+          "result": "pass",
+          "name": "oldV1UpgradePreservesLegacyFieldsAndDefaultIdle"
+        },
+        {
+          "result": "pass",
+          "name": "malformedStateAndUnknownVersionArePreserved"
+        },
+        {
+          "result": "pass",
+          "name": "emergencyAndZeroNinetyNineRepetitionsRoundTrip"
+        },
+        {
+          "result": "pass",
+          "name": "invalidDraftCannotReplaceCommittedStates"
+        },
+        {
+          "result": "pass",
+          "name": "currentTestingAndDestructiveActionsAreGuarded"
+        },
+        {
+          "result": "pass",
+          "name": "incompleteExtensionIsNotSilentlyRecreated"
+        },
+        {
+          "result": "pass",
+          "name": "cleanupTestCase"
+        }
+      ],
+      "qt_txt_sha256": "8b82c478391d9e83fc0b5fe7e83a53620c526034358e7d2de7b8aae626a056b3",
+      "qt_junitxml_sha256": "c3fa61396d410513b9370722aa2a32a23597dffaf07acb4490eb59d6af7b4ca5"
+    },
+    {
+      "name": "workflow",
+      "qpa": "xcb",
+      "actual_exit": 0,
+      "totals": [
+        14,
+        0,
+        0
+      ],
+      "binary_sha256": "fd9fcaa2b4b605df251ede07dbb828f3bed1d1fb7bf43462df42767ce45568be",
+      "cases": [
+        {
+          "result": "pass",
+          "name": "initTestCase"
+        },
+        {
+          "result": "pass",
+          "name": "resetErrorsOnlyChangesDraftThenSavesAndReopens"
+        },
+        {
+          "result": "pass",
+          "name": "retestCancelDiscardSaveAndReopen"
+        },
+        {
+          "result": "pass",
+          "name": "selectedTestingRefusesBothActionsWithoutPartialDraft"
+        },
+        {
+          "result": "pass",
+          "name": "checkedNonTestingHolesKeepIdentityAndBecomeRevisable"
+        },
+        {
+          "result": "pass",
+          "name": "writeFailureRetainsCommittedStateAndDraftForRetry"
+        },
+        {
+          "result": "pass",
+          "name": "staleDraftAndRevokedIdentityCannotOverwriteTesting"
+        },
+        {
+          "result": "pass",
+          "name": "oldV1UpgradePreservesLegacyFieldsAndDefaultIdle"
+        },
+        {
+          "result": "pass",
+          "name": "malformedStateAndUnknownVersionArePreserved"
+        },
+        {
+          "result": "pass",
+          "name": "emergencyAndZeroNinetyNineRepetitionsRoundTrip"
+        },
+        {
+          "result": "pass",
+          "name": "invalidDraftCannotReplaceCommittedStates"
+        },
+        {
+          "result": "pass",
+          "name": "currentTestingAndDestructiveActionsAreGuarded"
+        },
+        {
+          "result": "pass",
+          "name": "incompleteExtensionIsNotSilentlyRecreated"
+        },
+        {
+          "result": "pass",
+          "name": "cleanupTestCase"
+        }
+      ],
+      "qt_txt_sha256": "b9e96c4ab20d105ea03d8287fe6b023f77df2b3fd95d9b2aa3e557bd6ab0f25d",
+      "qt_junitxml_sha256": "c2e9b5bea083acfb858244ebea3bce3b5e26c1d037623cbea5eefd6354856f28"
+    },
+    {
+      "name": "baseline",
+      "qpa": "offscreen",
+      "actual_exit": 0,
+      "totals": [
+        13,
+        0,
+        0
+      ],
+      "binary_sha256": "d19d2c0fa027a76f39ae350c73fc73261222f14d3079bb46110b8456683b549f",
+      "cases": [
+        {
+          "result": "pass",
+          "name": "initTestCase"
+        },
+        {
+          "result": "pass",
+          "name": "directoryAndSchema"
+        },
+        {
+          "result": "pass",
+          "name": "guestAndRoundtrip"
+        },
+        {
+          "result": "pass",
+          "name": "localPresetWhileInstrumentBusy"
+        },
+        {
+          "result": "pass",
+          "name": "validationAndRollback"
+        },
+        {
+          "result": "pass",
+          "name": "combinationsAndForeignKeys"
+        },
+        {
+          "result": "pass",
+          "name": "rackReferencesAndEmergency"
+        },
+        {
+          "result": "pass",
+          "name": "lockFailureAndRecovery"
+        },
+        {
+          "result": "pass",
+          "name": "pageDraftAndDependencyRefresh"
+        },
+        {
+          "result": "pass",
+          "name": "pageDetailAndBatchBoundary"
+        },
+        {
+          "result": "pass",
+          "name": "pageCombinationSaveAndFailure"
+        },
+        {
+          "result": "pass",
+          "name": "pagePermissionAndBusyClose"
+        },
+        {
+          "result": "pass",
+          "name": "cleanupTestCase"
+        }
+      ],
+      "qt_txt_sha256": "8eaedad974b049411cdb119f6e59df0b13dea710464dac10353ef697a4cb52dd",
+      "qt_junitxml_sha256": "1f43004444af24b36d47a4aea0d9de4ec9d34fde9cd72a44018059d9b7e7164a"
+    },
+    {
+      "name": "baseline",
+      "qpa": "xcb",
+      "actual_exit": 0,
+      "totals": [
+        13,
+        0,
+        0
+      ],
+      "binary_sha256": "d19d2c0fa027a76f39ae350c73fc73261222f14d3079bb46110b8456683b549f",
+      "cases": [
+        {
+          "result": "pass",
+          "name": "initTestCase"
+        },
+        {
+          "result": "pass",
+          "name": "directoryAndSchema"
+        },
+        {
+          "result": "pass",
+          "name": "guestAndRoundtrip"
+        },
+        {
+          "result": "pass",
+          "name": "localPresetWhileInstrumentBusy"
+        },
+        {
+          "result": "pass",
+          "name": "validationAndRollback"
+        },
+        {
+          "result": "pass",
+          "name": "combinationsAndForeignKeys"
+        },
+        {
+          "result": "pass",
+          "name": "rackReferencesAndEmergency"
+        },
+        {
+          "result": "pass",
+          "name": "lockFailureAndRecovery"
+        },
+        {
+          "result": "pass",
+          "name": "pageDraftAndDependencyRefresh"
+        },
+        {
+          "result": "pass",
+          "name": "pageDetailAndBatchBoundary"
+        },
+        {
+          "result": "pass",
+          "name": "pageCombinationSaveAndFailure"
+        },
+        {
+          "result": "pass",
+          "name": "pagePermissionAndBusyClose"
+        },
+        {
+          "result": "pass",
+          "name": "cleanupTestCase"
+        }
+      ],
+      "qt_txt_sha256": "52abbd4aa3b1ca78a6647cab7425b1bbef59b82773aaa25bf5e9e068dc27adbd",
+      "qt_junitxml_sha256": "de1d9702901dcc7181c3de07b345a530926bc0a422d3c9e36ecfce2e3dd16945"
+    }
+  ],
+  "stage_actual_exits": [
+    {
+      "target": "sample_reset_workflow_test",
+      "passed": true,
+      "phases": [
+        {
+          "executable": "/usr/lib/qt5/bin/qmake",
+          "actual_exit": 0,
+          "timeout": false,
+          "pid": 378
+        },
+        {
+          "executable": "/usr/bin/make",
+          "actual_exit": 0,
+          "timeout": false,
+          "pid": 415
+        }
+      ]
+    },
+    {
+      "target": "samples_test",
+      "passed": true,
+      "phases": [
+        {
+          "executable": "/usr/lib/qt5/bin/qmake",
+          "actual_exit": 0,
+          "timeout": false,
+          "pid": 701
+        },
+        {
+          "executable": "/usr/bin/make",
+          "actual_exit": 0,
+          "timeout": false,
+          "pid": 734
+        }
+      ]
+    }
+  ],
+  "actual_artifacts_rehashed": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01/actual_artifacts_recheck.json",
+  "native_main_and_renderer": {
+    "sn100_shell": "0db384d07a634c757c101bd5e289a1edf5fb3bf12cb9e3607ec222e1148a37ed",
+    "sn100_report_renderer": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+  },
+  "native_fresh_objects": 201,
+  "native_source_makefile_objects_artifacts_binding": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01/parent/native_binding_after.json",
+  "native_main_executed": false,
+  "executed_source_images": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01/executed_sources.json",
+  "raw_evidence": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01",
+  "evidence_sha256": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01/evidence_sha256.json",
+  "manifest_entries": 102,
+  "input_output_interpretation": "真实匿名fixture和原按钮调用/断言见执行时源码；Qt原始txt+junitxml给出实际每函数通过结果。保存/重开断言读取真实worker/SQLite值，非手工拼出的通过数据。运行库未归档",
+  "verified_local_scope": [
+    "每次重复独立状态；错误复位仅Error/Reset转Idle且保留Finished，复测将全部普通测试转Idle",
+    "只改草稿，更新设置才提交；Cancel保留、Discard恢复，成功保存关闭重开保留",
+    "当前孔及其他勾选孔Testing整批拒绝；所有目标revise草稿可改",
+    "保存失败事务回滚并保留草稿可重试，旧草稿与撤权不能覆盖已提交Testing",
+    "旧v1字段/默认Idle兼容、未知/损坏状态和缺损/未知版本保留原数据",
+    "普通/急诊、0/99重复，项目/倍率/重复/延长、样本号/容器与原业务回归"
+  ],
+  "baseline_scope": "原11个业务函数两种QPA各13项（含init/cleanup）；mixedLoad响应/资源采样明确另排，不声称旧完整14项全部重验",
+  "scope_limits": [
+    "独立模块功能回归；统一主程序在本窗口未运行，整合累计由root另验",
+    "本轮没有性能/CPU/内存/同板控制/长稳测量",
+    "Windows/ARM新完整版本、原Windows/RK/仪器、真实任务下发/执行另验",
+    "未生成动态状态截图，不由.ui/QRC相同或原状态图片推断视觉等价"
+  ],
+  "screenshot_observer": {
+    "prepared_only": true,
+    "private_source_sha256": "cc8df86b23589d7170fc73e42d1feb2bea7f14b9d62f341c18277691998118f1",
+    "preparation": "temp/sn100_host/offline_followup_20261026/samples_reset/observer_plan_01/execution_preparation.json",
+    "command": "wsl.exe -d Ubuntu-24.04 -u qyq -- python3 -B /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_visual_observer.py --root-go --output /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/observer_01",
+    "reuse_verified_objects": 58,
+    "original_assertions_inputs_waits_preserved": true,
+    "PNG_count_planned": 7,
+    "build_GUI_images_executed": false,
+    "not_original_regression_or_performance": true
+  },
+  "runtime_DB_INI_credentials_objects_or_binaries_archived": false,
+  "source_writes_stopped": true,
+  "runtime_slot_returned": true,
+  "mixed_stderr_excluded": {
+    "schema": "sn100-mixed-stderr-text-exclusion-v1",
+    "raw_origin": "temp/sn100_host/offline_followup_20261026/samples_reset/workflow_parent_01/workflow.stderr.log",
+    "former_formal_copy": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01/parent/workflow.stderr.log",
+    "sha256": "b280c454d6f559e56eb3f5ed39f3ba084b8d1744a3ff7fe016b21ff86dea1aca",
+    "length_bytes": 132,
+    "nul_bytes": 42,
+    "reason": "Mixed WSL bytes contain NUL; not ordinary UTF-8 evidence. Raw temp original retained.",
+    "base64_exception_applied": false,
+    "test_commands_and_exit_receipts_unchanged": true
+  },
+  "historical_source_binding_note": "Pre-discard-feedback-fix 432 source run; does not validate later source edits."
+}

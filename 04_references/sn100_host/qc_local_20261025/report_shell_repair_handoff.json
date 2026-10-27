@@ -1,0 +1,107 @@
+{
+  "schema": "sn100-report-shell-test-repair-handoff-v1",
+  "finished_utc": "2026-10-25T15:31:11.556121+00:00",
+  "status": "Completed; this repair has stopped all source writes, builds and GUI runs",
+  "scope": "Test harness only; no production changes and no Windows/RK/instrument validation",
+  "changed_source": {
+    "path": "06_programs/sn100_host/tests/report_remaining_shell_test.cpp",
+    "sha256": "be49e9384af399d01d891e9ccdce63868e7649d69e8b9cb943d9aa11afe9b822"
+  },
+  "unchanged_pro": {
+    "path": "06_programs/sn100_host/tests/report_remaining_shell_test.pro",
+    "sha256": "8e8f452b148438684c46fd7f6ed3117ac5f3334c598d050cf8a3788e5f310eb5"
+  },
+  "preimage": "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/report_shell",
+  "failure_and_retest": [
+    {
+      "attempt": "root suite_gate_04",
+      "exit_code": 1,
+      "raw_totals": "Totals: 4 passed, 1 failed, 0 skipped, 0 blacklisted, 2026ms"
+    },
+    {
+      "attempt": "attempt_01",
+      "run": "run_01_offscreen",
+      "exit_code": 1,
+      "raw_totals": "Totals: 4 passed, 1 failed, 0 skipped, 0 blacklisted, 7293ms"
+    },
+    {
+      "attempt": "attempt_02",
+      "run": "run_01_offscreen",
+      "exit_code": 1,
+      "raw_totals": "Totals: 4 passed, 1 failed, 0 skipped, 0 blacklisted, 7110ms"
+    },
+    {
+      "attempt": "attempt_03",
+      "run": "run_01_offscreen",
+      "exit_code": 0,
+      "raw_totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 2963ms"
+    },
+    {
+      "attempt": "attempt_03",
+      "run": "run_01_xcb",
+      "exit_code": 0,
+      "raw_totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 2976ms"
+    }
+  ],
+  "repairs": [
+    "Wait for the original toolbar layout and use real mouse clicks on its original action button; click the original extension when overflowed and then its expanded original button or actual QMenu actionGeometry. No QAction::trigger or production geometry changes.",
+    "After Cancel and deferred deletion restore the actual visible preview activation. Before typing activate the real QFileDialog and editor, use Ctrl+A/type and its real Save button, and compare the actual fileSelected path before closing the preview.",
+    "Keep all session/Guest/six-role, display draft Cancel/Discard, SQL hide/reopen, expected-document exact one-row APTT0.00 s HTML, foreground/background export and busy navigation/login/logout/close assertions and original timeout values."
+  ],
+  "observed_toolbar_paths": {
+    "offscreen": [
+      "expanded",
+      "direct"
+    ],
+    "xcb": [
+      "direct",
+      "direct"
+    ]
+  },
+  "binding": {
+    "source_inputs": 426,
+    "source_snapshot_sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+    "native_objects_excluding_main": 167,
+    "native_makefile_sha256": "df6bbee134af56a57cac5da631502188c07ab7c62e934eb3b06c62423e7527d0",
+    "main_artifacts": {
+      "sn100_shell": "013eb363c6cd7a928f62f860c5cbd6755421a81808a4e6ad347cc6db0887f176",
+      "sn100_report_renderer": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+    },
+    "driver": "temp/sn100_host/qc_local_20261025/report_shell_repair/attempt_03/driver_build_01/report_remaining_shell_test",
+    "driver_sha256": "6f693175e87dac3e1485a264d3547add089464ad5afa2a16d3de176ebec34ea9",
+    "binding_proof": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/build/binding_proof.json",
+    "binding_proof_sha256": "a2bad6d4615785aa05b23c3448e0f02ffdfd04439b4ad3be744e390617a6b613"
+  },
+  "runs": [
+    {
+      "qpa": "offscreen",
+      "actual_exit": 0,
+      "totals": [
+        5,
+        0,
+        0
+      ],
+      "elapsed_seconds": 3.317944520000026,
+      "raw": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_offscreen"
+    },
+    {
+      "qpa": "xcb",
+      "actual_exit": 0,
+      "totals": [
+        5,
+        0,
+        0
+      ],
+      "elapsed_seconds": 3.198932581000008,
+      "raw": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_xcb"
+    }
+  ],
+  "raw_evidence": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025",
+  "sha256_manifest": "5db6b4849b51954bbc59c57f0f23c57b04ce882a5db731def601557c26e92443",
+  "privacy": "Explicit source/metadata/compiler and test receipts/raw logs/XML/anonymous PNG and HTML only. Runtime SQLite/INI/secret files, native objects and binaries remain in temp and were excluded.",
+  "parent_followup": "Bind this exact repaired test source/binary/proof into cumulative_build, then run the final cumulative suite. Old cumulative driver is not a pass for the repaired source.",
+  "pending": [
+    "Parent final cumulative suite/platform/archive/resource gates",
+    "Original Windows theme/function comparison, RK and real-instrument validation"
+  ]
+}

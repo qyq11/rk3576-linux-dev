@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Target-side lifecycle for the offline three-page shell. No device commands.
+# Target-side lifecycle for the unified offline shell. No device commands.
 set -Eeuo pipefail
 umask 077
 
@@ -10,6 +10,9 @@ valid_base() {
 }
 has_reports() {
     [[ -f $1/release.json ]] && grep -q '"report_preview_pdf"' "$1/release.json"
+}
+has_samples() {
+    [[ -f $1/release.json ]] && grep -q '"sample_local_presets"' "$1/release.json"
 }
 verify_release() {
     local release=$1 id line name
@@ -39,6 +42,9 @@ verify_release() {
         for name in fonts/NotoSansCJK-Regular.ttc fonts/NotoSansCJK-Bold.ttc fonts/fonts.conf fonts/LICENSE.txt; do
             [[ -f $release/$name && ${listed[$name]+exists} ]] || die "Missing report font resource: $name"
         done
+    fi
+    if has_samples "$release"; then
+        [[ -f $release/plugins/imageformats/libqsvg.so && ${listed[plugins/imageformats/libqsvg.so]+exists} ]] || die 'Missing sample SVG image plugin.'
     fi
 }
 current_release() {
@@ -101,6 +107,7 @@ preflight() {
         /usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqeglfs.so
         /usr/lib/aarch64-linux-gnu/qt5/plugins/egldeviceintegrations/libqeglfs-kms-integration.so)
     if has_reports "$release"; then plugins+=("$release/plugins/platforms/libqoffscreen.so"); fi
+    if has_samples "$release"; then plugins+=("$release/plugins/imageformats/libqsvg.so"); fi
     for plugin in "${plugins[@]}"; do
         [[ -f $plugin ]] || die "Missing target plugin: $plugin"
         output=$(LC_ALL=C ldd "$plugin") || return 1
@@ -214,7 +221,17 @@ KMS
     } > "$run/runtime.txt"
     printf '%s\n' "${release##*/}" > "$run/release_id"
     cd -- "$release"
-    "$release/sn100_shell" --offline --accounts --history --data-dir "$data" --viewport 1600x900 \
+    printer_arguments=()
+    if grep -q '"local_printer_settings"' "$release/release.json"; then printer_arguments=(--printer-settings); fi
+    lis_arguments=()
+    if grep -q '"local_lis_settings"' "$release/release.json"; then lis_arguments=(--lis-settings); fi
+    quality_arguments=()
+    if grep -q '"quality_control_local"' "$release/release.json"; then quality_arguments=(--quality-control); fi
+    calibration_arguments=()
+    if grep -q '"calibration_local"' "$release/release.json"; then calibration_arguments=(--calibration); fi
+    alarm_history_arguments=()
+    if grep -q '"alarm_history_readonly"' "$release/release.json"; then alarm_history_arguments=(--alarm-history); fi
+    "$release/sn100_shell" --offline --accounts --history --catalog --samples --instrument --password-login "${printer_arguments[@]}" "${lis_arguments[@]}" "${quality_arguments[@]}" "${calibration_arguments[@]}" "${alarm_history_arguments[@]}" --data-dir "$data" --viewport 1600x900 \
         "${seed[@]}" "${actor[@]}" > "$run/app.log" 2>&1 &
     child=$!
     printf '%s\n' "$child" > "$run/app.pid"

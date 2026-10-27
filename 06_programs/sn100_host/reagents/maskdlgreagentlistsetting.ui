@@ -1,0 +1,1024 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MaskDlgReagentListSetting</class>
+ <widget class="QDialog" name="MaskDlgReagentListSetting">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>2348</width>
+    <height>1888</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="CusDialogMask" name="mask" native="true">
+       <widget class="QFrame" name="display_frame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QFrame" name="view_frame">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>20</y>
+           <width>961</width>
+           <height>995</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QFrame#view_frame{background:#FFFFFF;border-radius:11px;}
+</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <widget class="QWidget" name="widget" native="true">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>30</y>
+            <width>681</width>
+            <height>691</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QWidget#widget{
+border:1px solid #E4E8EB;
+border-radius: 10px;
+font:14px &quot;苹方 粗体&quot;;
+}</string>
+          </property>
+          <widget class="QLabel" name="label">
+           <property name="geometry">
+            <rect>
+             <x>40</x>
+             <y>216</y>
+             <width>141</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>试剂类型:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_2">
+           <property name="geometry">
+            <rect>
+             <x>40</x>
+             <y>73</y>
+             <width>111</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>生产厂家:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_3">
+           <property name="geometry">
+            <rect>
+             <x>40</x>
+             <y>285</y>
+             <width>141</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>使用试剂针:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_6">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>475</y>
+             <width>161</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>试剂警告量(ul):</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_7">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>545</y>
+             <width>161</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>试剂缺少量(ul):</string>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="cbxNeedle">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>270</y>
+             <width>201</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <item>
+            <property name="text">
+             <string>无</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>左试剂针</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>右试剂针</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>样本针</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QLineEdit" name="ldtFactor">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>60</y>
+             <width>201</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>-1</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border:1px solid #E4E8EB;border-radius:5px;padding:2px 4px;background-color: transparent;color:#444444;
+font:18px &quot;苹方 粗体&quot;;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="cbxReagentType">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>200</y>
+             <width>201</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <item>
+            <property name="text">
+             <string>无</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>试剂</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>缓冲稀释液</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>清洗液</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>质控品</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>校准品</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>因子血浆</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QLineEdit" name="ldtWarningAmount">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>460</y>
+             <width>201</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>-1</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border:1px solid #E4E8EB;border-radius:5px;padding:2px 4px;background-color: transparent;color:#444444;
+font:18px &quot;苹方 粗体&quot;;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="ldtLackAmount">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>530</y>
+             <width>201</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>-1</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border:1px solid #E4E8EB;border-radius:5px;padding:2px 4px;background-color: transparent;color:#444444;
+font:18px &quot;苹方 粗体&quot;;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QListWidget" name="listReagentCode">
+           <property name="geometry">
+            <rect>
+             <x>480</x>
+             <y>60</y>
+             <width>171</width>
+             <height>371</height>
+            </rect>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="btnAddCode">
+           <property name="geometry">
+            <rect>
+             <x>480</x>
+             <y>450</y>
+             <width>171</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+             <stylestrategy>PreferDefault</stylestrategy>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>添加</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_9">
+           <property name="geometry">
+            <rect>
+             <x>480</x>
+             <y>30</y>
+             <width>91</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>试剂条码:</string>
+           </property>
+          </widget>
+          <widget class="QWidget" name="widget_3" native="true">
+           <property name="geometry">
+            <rect>
+             <x>40</x>
+             <y>360</y>
+             <width>361</width>
+             <height>71</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QWidget#widget_3{
+border:1px solid #E4E8EB;
+border-radius: 10px;
+font:14px &quot;苹方 粗体&quot;;
+}</string>
+           </property>
+           <widget class="QComboBox" name="cbxCleanReagent">
+            <property name="geometry">
+             <rect>
+              <x>160</x>
+              <y>10</y>
+              <width>191</width>
+              <height>51</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>苹方 粗体</family>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_8">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>27</y>
+              <width>91</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>苹方 粗体</family>
+              <pointsize>13</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>清洗试剂:</string>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QLineEdit" name="lineEdit_3">
+           <property name="geometry">
+            <rect>
+             <x>440</x>
+             <y>10</y>
+             <width>20</width>
+             <height>671</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">	border:none;
+	background-color:transparent;
+	border-left:2px solid #DDDDDD;
+</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="btnDelCode">
+           <property name="geometry">
+            <rect>
+             <x>480</x>
+             <y>590</y>
+             <width>171</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+             <stylestrategy>PreferDefault</stylestrategy>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>删除</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <widget class="CusCheckBox" name="ckxValid" native="true">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>10</y>
+             <width>181</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+          </widget>
+          <widget class="CusCheckBox" name="ckxClean" native="true">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>320</y>
+             <width>181</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_17">
+           <property name="geometry">
+            <rect>
+             <x>40</x>
+             <y>145</y>
+             <width>141</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>试剂名称：</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="ldtReagentName">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>130</y>
+             <width>201</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>-1</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border:1px solid #E4E8EB;border-radius:5px;padding:2px 4px;background-color: transparent;color:#444444;
+font:18px &quot;苹方 粗体&quot;;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="CusCheckBox" name="ckxCheckDate" native="true">
+           <property name="geometry">
+            <rect>
+             <x>210</x>
+             <y>10</y>
+             <width>211</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="btnEditCode">
+           <property name="geometry">
+            <rect>
+             <x>480</x>
+             <y>520</y>
+             <width>171</width>
+             <height>51</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <family>苹方 粗体</family>
+             <pointsize>13</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+             <stylestrategy>PreferDefault</stylestrategy>
+            </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>编辑</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <zorder>widget_3</zorder>
+          <zorder>label</zorder>
+          <zorder>label_2</zorder>
+          <zorder>label_3</zorder>
+          <zorder>label_6</zorder>
+          <zorder>label_7</zorder>
+          <zorder>cbxNeedle</zorder>
+          <zorder>ldtFactor</zorder>
+          <zorder>cbxReagentType</zorder>
+          <zorder>ldtWarningAmount</zorder>
+          <zorder>ldtLackAmount</zorder>
+          <zorder>listReagentCode</zorder>
+          <zorder>btnAddCode</zorder>
+          <zorder>label_9</zorder>
+          <zorder>lineEdit_3</zorder>
+          <zorder>btnDelCode</zorder>
+          <zorder>ckxValid</zorder>
+          <zorder>ckxClean</zorder>
+          <zorder>label_17</zorder>
+          <zorder>ldtReagentName</zorder>
+          <zorder>ckxCheckDate</zorder>
+          <zorder>btnEditCode</zorder>
+         </widget>
+         <widget class="QPushButton" name="btnSave">
+          <property name="geometry">
+           <rect>
+            <x>760</x>
+            <y>830</y>
+            <width>181</width>
+            <height>61</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>苹方 粗体</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+           </font>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>保存</string>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>37</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QListWidget" name="listReagent">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>30</y>
+            <width>221</width>
+            <height>941</height>
+           </rect>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnAdd">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>820</y>
+            <width>181</width>
+            <height>61</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>苹方 粗体</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+           </font>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>新增</string>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>37</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QtMaterialFlatButton" name="btnClose">
+          <property name="geometry">
+           <rect>
+            <x>920</x>
+            <y>-4</y>
+            <width>41</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../main.qrc">
+            <normaloff>:/image/close.png</normaloff>:/image/close.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>13</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnDel">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>900</y>
+            <width>181</width>
+            <height>61</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>苹方 粗体</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+           </font>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>删除</string>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>37</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnCancel">
+          <property name="geometry">
+           <rect>
+            <x>760</x>
+            <y>900</y>
+            <width>181</width>
+            <height>61</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>苹方 粗体</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+           </font>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>取消</string>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>37</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnCopy">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>740</y>
+            <width>181</width>
+            <height>61</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>苹方 粗体</family>
+            <pointsize>13</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+            <stylestrategy>PreferDefault</stylestrategy>
+           </font>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>复制</string>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>37</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtMaterialFlatButton</class>
+   <extends>QPushButton</extends>
+   <header>qtmaterialflatbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CusDialogMask</class>
+   <extends>QWidget</extends>
+   <header>cusdialogmask.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CusCheckBox</class>
+   <extends>QWidget</extends>
+   <header>cuscheckbox.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../main.qrc"/>
+ </resources>
+ <connections/>
+</ui>

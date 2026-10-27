@@ -1,0 +1,93 @@
+{
+  "schema": "sn100-report-query-followup-handoff-v1",
+  "created_utc": "2026-10-26T00:54:20.7241439Z",
+  "task": "旧报告legacy.query首轮偶发失败定位及报告实际启用范围审查",
+  "status": "只读审查与可执行观测准备完成；等待整合窗口串行执行槽，尚未构建/GUI/回归",
+  "historical_root_cause_proven": false,
+  "historical_defect_fixed": false,
+  "facts": [
+    "原失败3/1、17838ms，位于persistedHospitalAndLegacyEntry的legacy.query断言；原日志没有分阶段/实际筛选参数",
+    "旧冻结测试与helper指纹仍匹配五轮复测清单；五轮通过不能定位根因",
+    "失败与重试通过轮匿名SQLite字节完全相同，6条报告/5条可见；预期2026-10-23过滤各3条，不能认定旧UI实际提交过这些条件"
+  ],
+  "diagnostic_plan": [
+    "旧冻结测试两方法XCB一次，保留原始失败/退出",
+    "一个仅增加观察的测试副本，链接匹配且验证过的Release对象，XCB与offscreen分别一次",
+    "观测按钮clicked、焦点/模态/几何、日历clicked与文本、requestQuery完整过滤和请求编号、queryReady/error及operationFinished",
+    "出现失败后按实际阶段进一步缩小；若全部通过仍登记未复现/根因未知，不声称修复"
+  ],
+  "production_changes": [],
+  "production_change_count": 0,
+  "public_shell_launcher_other_modules_changed": false,
+  "shared_documents_changed": false,
+  "test_assertions_changed": false,
+  "qt_wait_limit_15000_unchanged": true,
+  "actual_build_gui_test_or_resource_started": false,
+  "read_only_anonymous_sqlite_audit_performed": true,
+  "audited_input_files_unchanged": true,
+  "audited_input_file_count": 15,
+  "prepared_sources": {
+    "original_test": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host\\tests\\integrated_report_test.cpp",
+    "original_sha256": "7b500eb86676ffb954ac5e3fd7ea39b6edf17c7700b093488ac82840e39c3a7e",
+    "trace_test": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\report_query\\source\\integrated_report_test.cpp",
+    "trace_sha256": "776fbefe2208590262004447d4e0548163080ef5181769988091626092619561",
+    "trace_header_sha256": "79f086d7c34ffef0ffa492bda35fd3bf420d720127f7d8bd8e28053a851ee9b6",
+    "base_builder_sha256": "ab774a34eb694f404d30bf8b5de3187f39293564e2511747753043fe37b56726",
+    "prepared_builder_sha256": "ae9ac19e1212bd78857cdea00bfec7b58722bc967fedaa8759375830fbfe33b9",
+    "production_modified": false,
+    "tests_assertions_or_wait_limit_modified": false,
+    "observer_effect": "JSON append and observers may change scheduling; a pass does not identify the old failure cause",
+    "compile_or_gui_executed": false
+  },
+  "execution_slot_request": {
+    "schema": "sn100-report-query-execution-slot-request-v1",
+    "ready": true,
+    "execution_started": false,
+    "requested_slot": "串行WSL编译及GUI；根窗口暂停其他编译/GUI/测量，并保证本轮绑定源码不再变化",
+    "estimated_seconds": 60,
+    "total_hard_bound_seconds": 300,
+    "compiler_jobs": 1,
+    "full_shell_rebuild": false,
+    "build_scope": "新建一个观测测试驱动，只编译测试副本一份翻译单元，链接已验证Release主程序对象（去掉main）",
+    "runtime_scope": "原冻结测试XCB一次；当前观测副本XCB及offscreen各一次；每次只执行原有两项业务用例，各自新匿名目录",
+    "methods": [
+      "committedHospitalAndReportLifecycle",
+      "persistedHospitalAndLegacyEntry"
+    ],
+    "no_load_method": true,
+    "per_gui_process_bound_seconds": 90,
+    "existing_qt_wait_limit_ms": 15000,
+    "argv": [
+      "wsl.exe",
+      "-d",
+      "Ubuntu-24.04",
+      "-u",
+      "qyq",
+      "--",
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_queue.py",
+      "--execute-slot",
+      "--output-dir",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/report_query/run_01"
+    ],
+    "binding_preconditions": "执行前核426/5123当前源与native收据/所有对象；若其他窗口已改源则拒绝旧对象，整合窗口须改传新--native-build与--snapshot并先完成匹配编译",
+    "new_data_root": "temp/sn100_host/offline_followup_20261026/report_query/run_01",
+    "environment_changes": "仅子进程选择QPA和匿名输入/导出路径；不改全局环境/工具链",
+    "failure_policy": "原失败日志及实际退出原样保留；继续已安排的两项对照，不把重试通过覆盖失败；超界只回收本次进程组"
+  },
+  "main_scope_is_read_only": "426/5123 final及07配对归档均未写入；原始失败及旧复测未写入；本轮文件只在独立temp与04跟进目录",
+  "flow_audit": "feature_activation_audit.json",
+  "flow_summary": "本地查询/患者资料/CSV及显示/软隐藏/HTML/PDF已有路径；曲线、维护改结果、重算、上传、真实结果链未实现对应当前业务，实体打印待验；原XLSX未启用保持关闭",
+  "offline_next": "先运行有界观测定位旧查询，再按已知输入合同准备曲线/任务关联/报文离线切片；无业务合同不解禁原调试入口",
+  "limitations": [
+    "JSON追踪会有观察开销，副本通过不等于旧事故根因已排除",
+    "尚未编译该新观测副本，C++兼容性待执行槽实际验证",
+    "若协议或其他窗口已改源码导致旧冻结不匹配，执行器会拒绝旧native对象；整合窗口须提供匹配新native-build/snapshot再执行",
+    "原Windows行为与视觉、RK实屏、仪器/LIS/实体打印、真实结果合同仍待相应条件"
+  ],
+  "followup_temporary": "temp/sn100_host/offline_followup_20261026/report_query",
+  "followup_formal": "04_references/sn100_host/offline_followup_20261026/report_query",
+  "build_slot_owned": false,
+  "next_owner": "统一整合窗口排队后通知报告窗口执行"
+}

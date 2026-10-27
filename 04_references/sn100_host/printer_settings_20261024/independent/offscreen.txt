@@ -1,0 +1,34 @@
+********* Start testing of PrinterSettingsTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : PrinterSettingsTest::initTestCase()
+PASS   : PrinterSettingsTest::emptyListAndOriginalGeometry()
+PASS   : PrinterSettingsTest::saveUnicodeAndReopenMissing()
+QINFO  : PrinterSettingsTest::invalidUnavailableAndNoop() 打印机名称不能为空或无效。
+QINFO  : PrinterSettingsTest::invalidUnavailableAndNoop() 所选打印设备当前不可用，请重新读取本机列表。
+QINFO  : PrinterSettingsTest::invalidUnavailableAndNoop() 打印机名称不能为空或无效。
+PASS   : PrinterSettingsTest::invalidUnavailableAndNoop()
+QINFO  : PrinterSettingsTest::storageFailureRetry() 打印设置文件不是普通文件或超过64KiB。
+PASS   : PrinterSettingsTest::storageFailureRetry()
+QINFO  : PrinterSettingsTest::rejectForeignAndSymlink() 打印设置格式/脱机标记无效；未导入旧配置。
+QINFO  : PrinterSettingsTest::rejectForeignAndSymlink() 请指定可写、无符号链接的独立打印设置绝对目录。
+PASS   : PrinterSettingsTest::rejectForeignAndSymlink()
+QINFO  : PrinterSettingsTest::rejectAncestorReplacement() 打印设置路径已变为符号链接，未读取或修改。
+QINFO  : PrinterSettingsTest::rejectAncestorReplacement() 打印设置未就绪或路径已变为符号链接，未读取或修改。
+PASS   : PrinterSettingsTest::rejectAncestorReplacement()
+QINFO  : PrinterSettingsTest::draftCancelDiscardAndBusy() 打印设置正在处理，请等待完成后再离页。
+QWARN  : PrinterSettingsTest::draftCancelDiscardAndBusy() This plugin does not support propagateSizeHints()
+QWARN  : PrinterSettingsTest::draftCancelDiscardAndBusy() This plugin does not support propagateSizeHints()
+QINFO  : PrinterSettingsTest::draftCancelDiscardAndBusy() 打印设置正在处理，请等待完成后再关闭。
+PASS   : PrinterSettingsTest::draftCancelDiscardAndBusy()
+PASS   : PrinterSettingsTest::workerEnumerationKeepsGuiResponsive()
+QINFO  : PrinterSettingsTest::externalSameSizeAndMtimeConflict() 打印设置已被其他写入方改变，请重开读取后再修改。
+PASS   : PrinterSettingsTest::externalSameSizeAndMtimeConflict()
+QINFO  : PrinterSettingsTest::concurrentLockAndEnumerationConflict() 打印设置未就绪或正由其他进程处理。
+QINFO  : PrinterSettingsTest::concurrentLockAndEnumerationConflict() 打印设置已改变，未覆盖其他写入方的数据。
+PASS   : PrinterSettingsTest::concurrentLockAndEnumerationConflict()
+PASS   : PrinterSettingsTest::preserveUnrelatedKeys()
+QINFO  : PrinterSettingsTest::closedStoreRejectsWrite() 打印设置未就绪或路径已变为符号链接，未读取或修改。
+PASS   : PrinterSettingsTest::closedStoreRejectsWrite()
+PASS   : PrinterSettingsTest::cleanupTestCase()
+Totals: 14 passed, 0 failed, 0 skipped, 0 blacklisted, 4252ms
+********* Finished testing of PrinterSettingsTest *********

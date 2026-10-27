@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCase name="ProjectReferenceAtomicTest">
+<Environment>
+    <QtVersion>5.15.13</QtVersion>
+    <QtBuild>Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)</QtBuild>
+    <QTestVersion>5.15.13</QTestVersion>
+</Environment>
+<TestFunction name="initTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="5.91964"/>
+</TestFunction>
+<TestFunction name="renamedThenReferencedCannotBeOverwritten">
+<Message type="qinfo" file="" line="0">
+    <DataTag><![CDATA[project-name]]></DataTag>
+    <Description><![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025/pre_runtime/case-UDZykU stable_project 2]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <DataTag><![CDATA[project-name]]></DataTag>
+    <Description><![CDATA[ATOMIC_INTERLEAVING fullname_only false writerA_success 1 writerA_error 0 saved_names "ATOMIC_OLD" "离线项目A" expected_names "ATOMIC_NEW" "离线项目A" holds QVariant(qlonglong, 1) qc_saved_name QVariant(QString, "ATOMIC_NEW")]]></Description>
+</Message>
+<Incident type="fail" file="/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/project_reference_atomic_test.cpp" line="231">
+    <DataTag><![CDATA[project-name]]></DataTag>
+    <Description><![CDATA[Compared values are not the same
+   Actual   (f.a.errors.count()): 0
+   Expected (1)                 : 1]]></Description>
+</Incident>
+<Message type="qinfo" file="" line="0">
+    <DataTag><![CDATA[full-name-only]]></DataTag>
+    <Description><![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025/pre_runtime/case-PxUltq stable_project 2]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <DataTag><![CDATA[full-name-only]]></DataTag>
+    <Description><![CDATA[ATOMIC_INTERLEAVING fullname_only true writerA_success 1 writerA_error 0 saved_names "ATOMIC_OLD" "离线项目A" expected_names "ATOMIC_OLD" "并发全称" holds QVariant(qlonglong, 1) qc_saved_name QVariant(QString, "ATOMIC_OLD")]]></Description>
+</Message>
+<Incident type="fail" file="/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/project_reference_atomic_test.cpp" line="231">
+    <DataTag><![CDATA[full-name-only]]></DataTag>
+    <Description><![CDATA[Compared values are not the same
+   Actual   (f.a.errors.count()): 0
+   Expected (1)                 : 1]]></Description>
+</Incident>
+    <Duration msecs="725.843"/>
+</TestFunction>
+<TestFunction name="normalSaveHeldNamesAndIdentityRemainCompatible">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025/pre_runtime/case-xsoNSw stable_project 2]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 21), QVariant(QString, "save"), QVariant(QString, "项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。"))]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 22), QVariant(QString, "save"), QVariant(QString, "项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。"))]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="297.678"/>
+</TestFunction>
+<TestFunction name="everyValidationAndReadFailureRollsBackForRetry">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025/pre_runtime/case-bjJDrl stable_project 2]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 30), QVariant(QString, "save"), QVariant(QString, "待保存项目已不存在，请刷新。"))]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 31), QVariant(QString, "save"), QVariant(QString, "本切片不能增删结果类型。"))]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 32), QVariant(QString, "save"), QVariant(QString, "结果类型不能修改。"))]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 33), QVariant(QString, "save"), QVariant(QString, "项目名称和全称须以文字或数字开头，长度1至16，不能有首尾空格或路径字符。"))]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 34), QVariant(QString, "save"), QVariant(QString, "access to option_unit.unit is prohibited Unable to execute statement"))]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="244.299"/>
+</TestFunction>
+<TestFunction name="actualSqlLocksWriteAndCommitFailuresRecover">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/projects_remaining_20261025/project_reference_atomic_20261025/pre_runtime/case-iljUPZ stable_project 2]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 40), QVariant(QString, "save"), QVariant(QString, "atomic write failure Unable to fetch row"))]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 41), QVariant(QString, "save"), QVariant(QString, "database is locked Unable to fetch row"))]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 43), QVariant(QString, "save"), QVariant(QString, "database is locked Unable to commit transaction"))]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="2485.39"/>
+</TestFunction>
+<TestFunction name="cleanupTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1.01085"/>
+</TestFunction>
+<Duration msecs="3765.28"/>
+</TestCase>

@@ -1,0 +1,63 @@
+{
+  "status": "reviewed_and_adapted_in_new_temp_only",
+  "findings": [
+    {
+      "old": "common.py::WORK/NATIVE/DRIVERS",
+      "finding": "直接执行旧路径会读取qc_local_20261025的旧native和累计测试产物。",
+      "adaptation": "仅复制到新目录；同一相对路径计算现在指向qc_history_integration_20261026，且硬门槛447/1486686b、210鲜编对象。"
+    },
+    {
+      "old": "run_projects_modules.py:29-30,325",
+      "finding": "写死426/5123bf14冻结；ProjectsStore的旧固定SHA恰好仍与当前447一致，不能单靠该文件SHA宣称新集成通过。",
+      "adaptation": "使用当前447冻结身份，同时保存原测试源码、驱动、主辅程序、Makefile与对象的首尾绑定。"
+    },
+    {
+      "old": "run_standalone.py:181",
+      "finding": "旧质控启动提示已被新历史页面接入后的文案取代，会误报未加载。",
+      "adaptation": "按当前quality_control_page.cpp的真实元数据加载提示核对；不冒充历史曲线加载完成。"
+    },
+    {
+      "old": "run_response.py:30",
+      "finding": "绑定旧累计构建；且根tests中的响应源码/监测脚本不在447生产冻结中。",
+      "adaptation": "绑定新累计构建的响应binary/moc/object/proof及额外根tests文件，逐一存SHA；不重编响应程序。"
+    },
+    {
+      "old": "tests/qc_local_response_test.cpp:99",
+      "finding": "QTemporaryDir建在可执行文件旁，直接用共享cumulative_build中的程序会在那里写临时运行库。",
+      "adaptation": "把已核字节的测试程序复制到本次新输出/executable后执行，保持共享累计目录不写。"
+    },
+    {
+      "old": "run_response.py module scope",
+      "finding": "没有main保护，导入即可解析参数并进入执行。",
+      "adaptation": "仅AST审阅；控制器以独立进程执行，准备阶段未导入或运行它。"
+    },
+    {
+      "old": "standalone/response/resource environment",
+      "finding": "继承环境清理不完整，可能带入旧SN100、Qt、QMake或交叉工具链变量。",
+      "adaptation": "清除相关变量并使用新的XDG/TMP目录；只写本阶段显式匿名参数。"
+    },
+    {
+      "old": "standalone/projects/response completion",
+      "finding": "旧通用完成路径没有一致的最终进程组消失门槛；仅退出直接子进程不足以推定清场。",
+      "adaptation": "每个新会话登记PID/PGID及Linux启动标识；真实退出先落盘，控制器核对全部组消失。超时仅处理本轮可识别组；身份不明或残留明确失败并交根处理。"
+    },
+    {
+      "old": "common.py::stop_owned_group",
+      "finding": "旧清理中直接子进程提前退出会缩短后代进程的TERM宽限。",
+      "adaptation": "新副本按整个进程组等待后才升级KILL；清理不能制造子进程成功退出结论。"
+    },
+    {
+      "old": "run_standalone.py module build inventory",
+      "finding": "旧独立程序只登记binary/Makefile SHA，未逐项保留私有对象和生成文件。",
+      "adaptation": "复用已审阅的verify_build/build_inventory核对实际源、对象、生成文件和首尾一致。"
+    },
+    {
+      "old": "run_resource.py::steady_window",
+      "finding": "10至30秒是观察器时钟固定窗口，未证明10秒前已就绪；VmHWM为进程全生命周期峰值。",
+      "adaptation": "保留正确口径和原始/proc采样，不改称稳态峰值、严格100ms采样或性能预算通过。"
+    }
+  ],
+  "current_QC_thread_topology": "历史查询复用QcStore与原质控数据库线程；没有新增第十个SQL工作线程。原九个SQL关闭标记及两个INI关闭标记仍按当前shell/main.cpp核对。",
+  "no_prior426_or432_result_reclassified": true,
+  "no_source_shared_controller_public_doc_or_old_evidence_edited": true
+}

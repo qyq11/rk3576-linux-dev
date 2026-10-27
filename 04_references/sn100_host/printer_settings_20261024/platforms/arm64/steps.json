@@ -1,0 +1,145 @@
+[
+  {
+    "name": "compiler_version",
+    "argv": [
+      "aarch64-linux-gnu-g++",
+      "-dumpfullversion"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:04:19.998985+00:00",
+    "stdout_stderr": "compiler_version.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:04:20.009116+00:00"
+  },
+  {
+    "name": "tool_versions",
+    "argv": [
+      "bash",
+      "-c",
+      "aarch64-linux-gnu-g++ --version; aarch64-linux-gnu-ld --version; /usr/lib/qt5/bin/moc -v; /usr/lib/qt5/bin/uic -v; /usr/lib/qt5/bin/rcc -v"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:04:20.025985+00:00",
+    "stdout_stderr": "tool_versions.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:04:20.079657+00:00"
+  },
+  {
+    "name": "snapshot_before",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py",
+      "snapshot",
+      "--output",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/source_before.json"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:04:20.096170+00:00",
+    "stdout_stderr": "snapshot_before.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:04:22.826558+00:00"
+  },
+  {
+    "name": "list_inputs",
+    "argv": [
+      "bash",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/build.sh",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/build/sn100_shell"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:04:22.854105+00:00",
+    "stdout_stderr": "list_inputs.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:04:23.366502+00:00"
+  },
+  {
+    "name": "build",
+    "argv": [
+      "bash",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/build.sh",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/build/sn100_shell"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:04:23.431157+00:00",
+    "stdout_stderr": "build.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:27:03.628402+00:00"
+  },
+  {
+    "name": "snapshot_after_build",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py",
+      "snapshot",
+      "--output",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/source_after_build.json"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:27:03.648672+00:00",
+    "stdout_stderr": "snapshot_after_build.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:27:06.612584+00:00"
+  },
+  {
+    "name": "closure",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/check_arm64.py",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/build/sn100_shell",
+      "--additional-binary",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/build/sn100_report_renderer",
+      "--sysroot",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/platforms/arm64/sysroot",
+      "--output-dir",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/dependencies"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:27:19.041621+00:00",
+    "stdout_stderr": "closure.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:27:33.921066+00:00"
+  },
+  {
+    "name": "package",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py",
+      "package",
+      "--binary",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/build/sn100_shell",
+      "--sysroot",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/platforms/arm64/sysroot",
+      "--snapshot",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/native/final_before.json",
+      "--dependencies",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/dependencies/dependency_report.json",
+      "--output",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/packages"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:27:33.942701+00:00",
+    "stdout_stderr": "package.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:28:02.055401+00:00"
+  },
+  {
+    "name": "snapshot_after_package",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py",
+      "snapshot",
+      "--output",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/platforms/arm64/source_after_package.json"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-24T12:28:06.550784+00:00",
+    "stdout_stderr": "snapshot_after_package.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-24T12:28:09.223156+00:00"
+  }
+]

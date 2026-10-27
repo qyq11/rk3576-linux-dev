@@ -1,0 +1,31 @@
+{
+  "stage": "ARM post-build inventory parser",
+  "tool_session": 9719,
+  "wrapper_exit_code": 1,
+  "source": "Transcription of unified exec write_stdin output, not a separately captured stderr file",
+  "stderr": "Traceback (most recent call last): prepare_inventory.py line 68: assert str(path) in log and any('-c ' in line and str(path) in line for line in log.splitlines()), str(path); AssertionError: /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/platforms/arm64/arm64_build/obj_20.o",
+  "prepare_result": "READY_FOR_TRANSFER=1 reached, original prepare succeeded",
+  "final_check_result": "offline_closure_passed_board_runtime_pending",
+  "fix_scope": "Post-build parser only; same original log and objects; no product source change or rebuild",
+  "second_attempt": {
+    "exit_code": 1,
+    "raw_stderr_log": "postprocess_second_attempt_failed.log",
+    "unaccepted_json": "verification_second_attempt_unaccepted.json",
+    "reason": "Object loop temporary variable record shadowed inventory record; final summary print KeyError arm_input_counts after checks",
+    "fix": "Rename temporary variable only; same existing source/object/package/log inputs; no rebuild"
+  },
+  "final_outcomes": {
+    "prepare_exit_code": 0,
+    "final_closure_exit_code": 0,
+    "postprocessor_attempt_exit_codes": [
+      1,
+      1,
+      0,
+      0
+    ],
+    "third_attempt": "Existing-object/source/DWARF recomputation passed, pre-atomic intermediate retained",
+    "fourth_attempt": "Summary fully serialized and validated before fsync+atomic os.replace; outer tool process actually returned0",
+    "product_recompiled_after_parser_failures": false,
+    "original_build_log_or_objects_modified": false
+  }
+}

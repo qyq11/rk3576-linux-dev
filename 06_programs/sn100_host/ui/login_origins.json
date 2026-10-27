@@ -1,0 +1,40 @@
+{
+  "module": "O02-2 local password login",
+  "reference_root": "../../sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "reference_files": {
+    "frmlogin/maskdlglogin.ui": "588813687e12b880abe7f4e83b625a2a2a1b951c6af425446db07aa888d336ab",
+    "frmlogin/maskdlglogin.cpp": "showDialog, confirmUserInfo, on_btnLogin_clicked, keyPressEvent",
+    "tool/database/user/user_information_table.cpp": "getDefaultUserInfo, setDefaultAccount, getUserRole",
+    "public/stylecolor.cpp": "buttonStyle::setStrSheet",
+    "main.cpp": "theme button colors and theme/name bindings"
+  },
+  "preserved": [
+    "Original designer file is byte-identical: 1427x842 host, 450x571 view_frame and original controls, text, grouping, QSS, Password echo and tab order.",
+    "Original empty password ignores username and remember checkbox, returning to Guest without changing default accounts.",
+    "Nonempty credentials match both name and pwd using bound SQL. Roles 0 through 5 retain their existing meaning.",
+    "Remember only applies to successful nonempty credentials with role at most Engineer (4); Administrator (5) does not change defaults.",
+    "Default update still clears prior flags and marks all records with the authenticated username, retaining the existing duplicate-name CRUD semantics.",
+    "Failure retains the previous identity and the masked input. Escape remains consumed and does not dismiss login.",
+    "Existing setSession simulation and account CRUD APIs/signals remain intact. Authentication never changes actionReady."
+  ],
+  "intentional_differences": [
+    "Authentication and default-name reads run in the existing AccountStore worker; dedicated request-id signals avoid polluting the hidden account CRUD page.",
+    "The login dialog and its original shared warning card use asynchronous open. Pending requests and visible warnings block close/repeated submit; old request replies cannot change a reopened dialog.",
+    "The original credential query returns its first row without an ordering guarantee. Matching multiple identical name-and-password rows now fails explicitly instead of selecting an arbitrary identity or role.",
+    "Default username prefill uses ORDER BY id LIMIT 1, matching the deterministic order of the current account snapshots; the reference query did not specify order.",
+    "Default flag updates are transactional. Failure rolls back the previous flags while the verified login still succeeds with a separate warning.",
+    "The original username validator ^[A-Za-z0-9].{16}$ and its Intermediate submission behavior are retained; no new length policy is imposed.",
+    "The existing public account-page button colors are reused: normal 42,118,242,255; hover 42,118,242,170; pressed 135,206,250,255. No runtime reference theme/configuration is read.",
+    "The original dynamic company title comes from theme/name, whose active value has not been supplied. The designer label remains empty rather than guessing a brand title.",
+    "The shared mask positions the original card relative to the current host, without the reference global mainWinPtr. Linux missing-font fallback and original active Windows theme remain separately pending."
+  ],
+  "data_scope": "Only explicit isolated anonymous account directories. Existing directories are reopened without seeding or resetting. The original pwd VARCHAR storage remains direct text; this is not a completed production credential security design.",
+  "secrets": "Transient test credentials are generated at runtime. No password text, authentication DB, authentication DB digest or password-derived digest belongs in public evidence. Dialog fields are cleared on final close/destruction.",
+  "not_migrated": [
+    "Production identity import and credential-storage hardening",
+    "Reference login-triggered reagent/configuration requests, automatic device linkage or instrument actions",
+    "Original Windows complete behavior and active-theme pixel equality",
+    "RK runtime, physical input and touch keyboard"
+  ],
+  "tests": "../tests/login_test.cpp and login_test.pro; temporary output under temp/sn100_host/o02_login"
+}

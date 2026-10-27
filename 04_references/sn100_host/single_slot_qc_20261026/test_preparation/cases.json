@@ -1,0 +1,66 @@
+{
+  "schema": "sn100-sample-qc-workflow-cases-v1",
+  "state": "prepared-not-built-not-run",
+  "business_functions": 7,
+  "business_data_rows": 8,
+  "cases": [
+    {
+      "name": "selectionCancelAndDetailSaveAreDraftOnly",
+      "why": "Enabled关联自动带出；disabled关联与未关联enabled项目不混入；取消详情、详情保存、离页Cancel/Discard均不写两库",
+      "input": "4真实项目：2 enabled关联、1 disabled关联、1 enabled未关联；1普通S01"
+    },
+    {
+      "name": "rackSaveAndReopenPreserveStableQualityIdentity",
+      "why": "只有整架Save提交；Sample/QC真实关闭重开后dataset/control/batch/association/project和slot/change token不随名字或行号改绑",
+      "input": "真实QC草稿、整架保存及两worker重开"
+    },
+    {
+      "name": "qualityAndOrdinaryConversionReleaseAndReacquireProtection",
+      "why": "QC转普通清身份且释放父/子引用；再转QC重新预约而稳定资料不变；普通样本输入沿4字符规则",
+      "input": "QC -> B002普通 -> QC"
+    },
+    {
+      "name": "referencedQualityNamesAndAssociationsAreProtected",
+      "why": "已引用品/批次禁止改名删除与解除选中项目；非身份厂家/日期可正常修改，不发明全面禁改规则",
+      "input": "REF批次既非当前也非前批，确保删除拒绝不是旧批次标志造成"
+    },
+    {
+      "name": "zeroProjectPresetStillProtectsControlAndBatch",
+      "why": "原版允许空项目QC预设；没有子项目引用仍必须保留控制品/批次父引用；转普通后才可删除",
+      "input": "QC_EMPTY无关联，REF非当前/前批"
+    },
+    {
+      "name": "rollbackPreservesCommittedRackAndHoldsThenRetries",
+      "why": "真实SQL RAISE(ROLLBACK)后整架旧数据与已提交保护逐行不丢，草稿可重试；新取消预约被真实对账",
+      "input": "QC_LINKED -> QC_EMPTY；BEFORE INSERT sample_local_quality_hole匿名故障触发器，失败后移除再原按钮重试"
+    },
+    {
+      "name": "regressedRevisionRejectsFinishAndReconcile:pending-source",
+      "why": "新pending预约预期修订超过恢复后的source修订时父/子与预约头逐行保留；Finish仍服从真实未决结局，reconcile须因修订拒绝",
+      "input": "先真保存额外普通S02推进修订；旧QC final_revision仍<=退回后的修订，隔离新增门槛"
+    },
+    {
+      "name": "regressedRevisionRejectsFinishAndReconcile:aborted-source",
+      "why": "ABORTED也不能在source修订倒退后释放保护；恢复本匿名夹具正确修订后真实Finish/对账只释放额外预约",
+      "input": "合法匿名源journal + 真实reserve/Finish/reconcile；不是UI自然故障复现"
+    }
+  ],
+  "sql_fixture_scope": [
+    "所有数据库只能来自SN100_SAMPLE_QC_TEST_ROOT下全新workflow-XXXXXX；父root必须显式位于temp/sn100_host/single_slot_qc_20261026且初始空",
+    "ProjectsStore真实创建catalog schema与匿名demo，复制/停用项目走真实owner；QcStore真实创建QC元数据和两库保护表",
+    "只在已存在匿名catalog上建立/删除anonymous_qc_rollback触发器；不手造正式schema",
+    "恢复guard两数据行允许匿名SQL准备合法sample_local_quality_change、outcome及本夹具revision；QC hold只能由真实reserve产生，真实Finish/reconcile回收",
+    "逐行JSON image只存在测试进程内用于断言，不读取生产DB/INI，不复制旧运行库"
+  ],
+  "routing": "Only connectSampleQuality, same function called by production main; no duplicated business signal wiring or controlled replies",
+  "thread_observation": "All worker values queued to GUI-owned QObject receiver; main-thread maps only; no cross-thread QSignalSpy",
+  "geometry": "Unchanged 1751x968 product page inside1600x900 scroll host; actual screens enumerated; frame must fit, single host frame move to actual available topLeft; exposed/active/frame containment then original center visibleRegion/widgetAt prerequisite for mouse input",
+  "lifecycle": "Close/delete page, real SampleStore close and wait signal, then QC/Projects close and wait; quit each thread and bounded5000ms joins; no terminate",
+  "bounds": "waitFor default3000ms; exposed3000ms; failed confirmation cleanup3000ms cannot count as actual click success; worker joins5000ms each",
+  "not_claimed": [
+    "未qmake/moc/compile/link/GUI/test",
+    "不证明production main所有worker全程序流程；本target链接真实产品bridge与真实三个worker",
+    "不证明仪器下发、检测、临床失控、真实结果或RK/Windows",
+    "测试数量不是功能数量"
+  ]
+}

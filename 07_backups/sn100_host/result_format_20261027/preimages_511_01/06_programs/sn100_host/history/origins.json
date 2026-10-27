@@ -1,0 +1,100 @@
+{
+  "module": "O04-1/O04-2 anonymous history, mean/CV, original-template preview and PDF",
+  "date": "2026-10-23",
+  "reference_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "reference_sha256": {
+    "frm_report/frm_report_material.ui": "3690f78e8d7f9d2377dd507189cc47293211b2e8df62d18bd0c94ea2b0614a7d",
+    "frm_report/frm_report_material.h": "e8e1f3d9f4767242d87de261fb561dd035431d542778bf7ec98d809f50d41fe4",
+    "frm_report/frm_report_material.cpp": "a36b21512c9a1db0b0066c83b7efe84626f949b7c6302ba411627a52468781dd",
+    "frm_report/mask_dlg_query_report.ui": "fd96d0dca518961202705909c916b8ac74a155fffd573abf34eb902dd06f49f6",
+    "frm_report/mask_dlg_query_report.h": "80e6ed61b297edf56735b32281726a28709cdf04679d80747af59235c25d3179",
+    "frm_report/mask_dlg_query_report.cpp": "ee208a008f414cb284e528e23f7def4fc09fecdbc2df587bb3c99efc49409ab7",
+    "frm_report/mask_dlg_report_detail.ui": "d0b439966c8789fa76baa589d7396d7a1e1e56dd87961f1d0044825a31031143",
+    "frm_report/mask_dlg_report_detail.h": "001b6ebf22be24ac3a0464f25961023f8bec203ee528d9348fd8ed83da9591f7",
+    "frm_report/mask_dlg_report_detail.cpp": "2a6ed3b7dbe7f93bf98b7eea4064380ec867e35b223ffabee02918bc8c3d70d7",
+    "frm_report/mask_dlg_export.ui": "e053660fe6a0a798a156922108f82ff736f2747d39c8c4119fccac899a70184f",
+    "frm_report/mask_dlg_export.h": "7ebfc496f784886373fb3f56794b0ef2bd4e9c032b5016eaf2babf95bee173e3",
+    "frm_report/mask_dlg_export.cpp": "b01d96cbfe6d129fb3dc9914fb987b6be681e200c4e2aebb01277ec8fd749cb9",
+    "tool/database/report/report_table.h": "0bbc0cb6276fa468ea1eaa8cb62daac3ef85413e280f49d9d9f73e4931fa7361",
+    "tool/database/report/report_table.cpp": "d2b1fd0a9c72cfba332486cc66e6cffc84adcc81e880a57087ab0d300d777ea4",
+    "tool/database/report/report_result_table.h": "5bb4b7716efc5311085435635726b28f1eba791196ea8de9e834b93e95959a5a",
+    "tool/database/report/report_result_table.cpp": "14d8b8c4470ffc19c74a985e9eb6a4b319e7e3a8cb372219af2d25f62a33ae76",
+    "public/systemcommon.cpp": "3d2a1411b9d79821326b5d25e975edfb049aaf7daebac4dca4c9c62a5555d1b3",
+    "public/stylecolor.cpp": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128",
+    "tool/qtrpt_module/qtreport.cpp": "33a9c1979e525f5f2797a2c5afe0f275f37b7019a7b2ede8945fa7e61c8bca94",
+    "thirdparty/QtRptProject/QtRPT/qtrpt.h": "f29141863e14d1aafb923e8b3e8c2b45931272fe473ad8a9532d89b76dd65b8e",
+    "thirdparty/QtRptProject/QtRPT/qtrpt.cpp": "ed805e746b6a598e67d9981abaaeb6156a0533df71a6d20c7fc15666c18b66f5",
+    "main.cpp": "b63c46ae047a2f3006b823cdc9477d498eb0aa2417cfe138845ff3d4c773be09",
+    "SeeRain450.pro": "bc2fe217a77a6260f1f8ae69d2fb30228f7082a8d5ac2ab3bdce99647f4d9cf2",
+    "resource/report_template/report.xml": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2"
+  },
+  "entry_rules": {
+    "query": "ReportDataTable::QueryReportDatas/QueryReportDataCount; actual SQL date and barcode conditions retained",
+    "patient_save": "MaskDlgReportDetail::on_btnSave_clicked; only patient metadata, no result recalculation",
+    "csv": "FrmReportMaterial::exportReport/export_report; six patient columns then explicit result-column contract, GBK",
+    "print": "Original btnPrinter -> HistoryReportDocument immutable snapshot -> embedded report.xml -> QtRPT preview; PDF QProcess helper",
+    "statistics": "FrmReportMaterial::slot_showSingleRowResult; SystemCommon::isOpenAverage=true; sample SD(n-1), signed CV percent"
+  },
+  "differences": [
+    "Standalone history.pro/main and isolated anonymous SQLite schema; no production DB importer",
+    "report_data ID/row_id and result fid semantics retained; result values normalized in report_values; report_columns is explicit anonymous test configuration",
+    "SQL worker, parameter binding, transactions, per-request IDs and bounded requests/CSV limits replace synchronous DAL",
+    "Strict GBK CSV quoting and no-overwrite output in marked exports/; original native CSV quote behavior still needs Windows baseline",
+    "Invalid dates and nonnumeric sample numbers fail explicitly; source checkbox filter ambiguity preserved",
+    "Finite numeric validation preserves zero and rejects NaN/overflow/trailing text as ****; unknown precision preserves raw text",
+    "Untouched long/multiline patient fields and unknown sex preserved to avoid UI display conversion data loss",
+    "Original result values kept; mean/CV works on snapshots; curve/recalculation/LIS and real project/print configuration pending",
+    "Native Qt controls replace Material/mask/chart/ripple wrappers; source geometry/theme retained, external scrolling/fonts adapted; complete Windows visual parity pending"
+  ],
+  "fixture": "../tests/fixtures/history_reports.json; handwritten synthetic data, no patient or clinical configuration source",
+  "visual_evidence": "../../../04_references/sn100_host/offline_history_20261023/visual_geometry_comparison.json",
+  "o04_2": {
+    "template": "templates/report.xml",
+    "template_matches_reference_bytes": true,
+    "template_paper_mm": [
+      210,
+      148
+    ],
+    "template_field_names": "English, explicitly adapted from the legacy pinyin wrapper",
+    "sample_sn": "Daily sampleNumber (sn), not barcode; legacy wrapper ambiguity requires original running baseline",
+    "individual_results_only_in_report": true,
+    "anonymous_print_configuration": "../tests/fixtures/history_report_options.json; no clinical ranges inferred",
+    "statistics_precision_difference": "Keep double until final formatting instead of legacy intermediate default 6-digit QString formatting",
+    "unsupported_statistics": "Missing/nonfinite/zero mean/insufficient valid repeats/overflow/config conflicts remain explicit unavailable, no DB changes",
+    "font_adaptation": "Original family/size retained when usable; missing Chinese family -> Noto Sans CJK SC at same size/position; reject unsupported output glyphs",
+    "text_restrictions": "Reject CR/LF and <>[] template control delimiters with explicit errors; never alter stored data",
+    "pdf_process_bounds": {
+      "snapshot_bytes": 1048576,
+      "rows": 384,
+      "pdf_bytes": 33554432,
+      "timeout_ms": 30000,
+      "in_flight": 1
+    },
+    "no_overwrite": "Marked anonymous exports directory only; temporary render and final new-file publication",
+    "thirdparty_provenance": "../thirdparty/qtrpt/origins.json; qtrpt.h/cpp local patches explicitly listed",
+    "offline_disabled": [
+      "physical printing",
+      "HTML export",
+      "XLSX export"
+    ],
+    "verification": "../../../04_references/sn100_host/offline_report_20261023/",
+    "pending": [
+      "Windows main GUI preview/default printer discovery not isolated or run",
+      "original Windows distribution full behavior/theme",
+      "RK runtime/screen/plugins",
+      "real instrument",
+      "physical printer/paper/driver",
+      "long stability and same-board control"
+    ],
+    "windows_pdf_isolation": "Only independent renderer: register existing system SimHei/SimSun in process, then clear plugin discovery after QApplication to select built-in PDF engine without Windows native printer initialization",
+    "unknown_patient_sex": "Printed as Unknown, same as original qtreport wrapper; DB enum unchanged",
+    "pdf_text_mapping": {
+      "implementation": "report_pdf_mapping.cpp; isolated renderer only, QtCore/Gui without new production dependencies",
+      "rule": "Exact final label context -> original glyph verification -> distinct CID per old glyph/source cluster -> ToUnicode/CIDToGIDMap/W/CIDSet; remove off-page markers before publication",
+      "preserved": "Original embedded font programs, glyph positions, template bytes and all UI forms",
+      "verification": "../../../04_references/sn100_host/pdf_text_20261023/; exact Unicode except layout whitespace, pypdf and pdfplumber with ligature expansion disabled",
+      "bounds": "Only internal Qt5 classic-xref/Type0 Identity-H/CIDFontType2 PDFs. Input/final output 32MiB, 4096 spans; qUncompress allocation hint 64KiB grows before post-decode size check; not an external PDF importer",
+      "unsupported": "Unmatched/ambiguous shaping, RTL or complex multiple-glyph clusters are explicitly rejected before publication; original data retained"
+    }
+  }
+}

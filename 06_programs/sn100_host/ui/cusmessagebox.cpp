@@ -31,7 +31,7 @@ CusMessageBox::~CusMessageBox()
     delete ui;
 }
 
-void CusMessageBox::showDialog(const QString &message, const QString &icon,
+void CusMessageBox::prepareDialog(const QString &message, const QString &icon,
                                const QString &buttonPrefix, bool question)
 {
     clickResult_ = QMessageBox::NoButton;
@@ -47,7 +47,19 @@ void CusMessageBox::showDialog(const QString &message, const QString &icon,
     ui->btnSure->show();
     ui->btnCancel->setVisible(question);
     ui->mask->showAnimation();
+}
+
+void CusMessageBox::showDialog(const QString &message, const QString &icon,
+                               const QString &buttonPrefix, bool question)
+{
+    prepareDialog(message, icon, buttonPrefix, question);
     exec();
+}
+
+void CusMessageBox::openWarningBox(QString message)
+{
+    prepareDialog(message, QStringLiteral("message_warning.png"), QStringLiteral("message_warn"), false);
+    open();
 }
 
 void CusMessageBox::showInformationBox(QString message)

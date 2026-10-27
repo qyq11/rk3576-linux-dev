@@ -1,0 +1,40 @@
+{
+  "schema": "sn100-private-coordinate-api-handoff-v1",
+  "status": "supplemental_six_cases_ready_static_only_waiting_explicit_slot",
+  "scope": "Only temp/sn100_host/offline_followup_20261026/calibration_coordinates_private; no formal source, GUI, database, DLL, review or apply changes",
+  "original_23": {
+    "manifest": "inputs_manifest.json",
+    "manifest_sha256": "fbd573f1d3628f4d6b6a285bc1d37452fabe9c27bbee2489bec7aaad85fcd4c6",
+    "execution_status": "not_compiled_or_run_by_this_handoff",
+    "byte_identical": true
+  },
+  "supplemental_6": {
+    "rejected_count": 4,
+    "case_count": 6,
+    "manifest_sha256": "c3da58962b6786ba3890eed8e8ac7e95cc3de8a3738f7db1b06dac418761ceca",
+    "driver": "run_api_boundaries.py",
+    "expectations": "api_boundary_cases.json",
+    "execution_status": "not_compiled_or_run",
+    "test": "calibration_coordinates_api_test.cpp",
+    "valid_count": 2,
+    "manifest": "api_inputs_manifest.json"
+  },
+  "command_plan": "api_command_plan.json",
+  "static_review": "api_static_review.json",
+  "original_handoff_unchanged": "handoff.json",
+  "result_count_policy": "Report original 23 and supplemental 6 independently; no 29-case pass claim before both have real execution evidence",
+  "new_files": [
+    "api_boundary_cases.json",
+    "calibration_coordinates_api_test.cpp",
+    "run_api_boundaries.py",
+    "api_inputs_manifest.json",
+    "api_command_plan.json",
+    "api_static_review.json",
+    "api_handoff.json"
+  ],
+  "outputs_pending": [
+    "core_01 real build/test/exit/source receipts",
+    "api_01 real build/test/exit/source receipts"
+  ],
+  "cross_chat_messages_sent": 0
+}

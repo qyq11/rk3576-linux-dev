@@ -1,0 +1,90 @@
+{
+  "schema": "sn100-o09-independent-final-artifact-audit-v1",
+  "audited_utc": "2026-10-24T06:08:01.368147+00:00",
+  "scope": "Read-only artifact checks; no build, tests, GUI, device connection or archive extraction to disk",
+  "windows": {
+    "evidence_count": 13,
+    "current_actual_inputs": 271,
+    "changed_input_from_full_build": "shell/device_status_shell.cpp",
+    "source_inputs_and_toolchain_unchanged_during_build": true,
+    "main_make_exit": 0,
+    "renderer_make_exit": 0,
+    "pair": [
+      {
+        "name": "sn100_shell.exe",
+        "bytes": 2605568,
+        "sha256": "3b02911a39613d3069c750063853c45f5d9b2a6c34f3e3824009d7c6deccd9d6",
+        "architecture": "PE32 / Intel i386"
+      },
+      {
+        "name": "sn100_report_renderer.exe",
+        "bytes": 720896,
+        "sha256": "1bfd18364d86289a0fdd2532bf3060837d335be16a8820ad5374b03fe7a60060",
+        "architecture": "PE32 / Intel i386"
+      }
+    ],
+    "windows_gui_and_original_behavior_verified": false
+  },
+  "native": {
+    "driver_exit": 0,
+    "frozen_inputs": 323,
+    "current_sources_match": true,
+    "pair": [
+      {
+        "name": "sn100_shell",
+        "bytes": 3552824,
+        "sha256": "150c9f0335e564cc0cef367c82a876908afa1177657e3944864e01d12fd54bbc",
+        "architecture": "ELF64 little-endian / x86_64"
+      },
+      {
+        "name": "sn100_report_renderer",
+        "bytes": 1048272,
+        "sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b",
+        "architecture": "ELF64 little-endian / x86_64"
+      }
+    ]
+  },
+  "arm64": {
+    "driver_exit": 0,
+    "package": "temp/sn100_host/status_replay_20261024/arm64/packages/sn100_shell_8bc2619940aaff1c8909b99acf4e93a487353e262725694b29332dfeae7baf6f.tar.gz",
+    "package_bytes": 65090617,
+    "package_sha256": "ecf43c4f600ab130a6e9f9f5b707d94e26a69a1f9481d9970c57978da52d9cb1",
+    "release_id": "8bc2619940aaff1c8909b99acf4e93a487353e262725694b29332dfeae7baf6f",
+    "tar_regular_files": 33,
+    "tar_directories": 7,
+    "internal_checksum_entries": 31,
+    "exact_regular_file_set": true,
+    "current_source_inputs": 323,
+    "source_snapshot_matches": true,
+    "offline_closure_files": 56,
+    "offline_closure_errors": [],
+    "verified_reused_objects": 123,
+    "recompiled_object_paths": [
+      "temp/sn100_host/status_replay_20261024/arm64/arm64_build/obj_62.o"
+    ],
+    "generated_ui_headers_unchanged": 26,
+    "pair": [
+      {
+        "name": "sn100_shell",
+        "bytes": 52927608,
+        "sha256": "8d195502b7c49270239abcc1e676434b8272ea503ee78fe1830e73af322ef508",
+        "architecture": "ELF64 little-endian / AArch64"
+      },
+      {
+        "name": "sn100_report_renderer",
+        "bytes": 16642856,
+        "sha256": "22ee7dd87c3e12e3874314f4f8448d1c84ec277d7433d653126967828e565308",
+        "architecture": "ELF64 little-endian / AArch64"
+      }
+    ],
+    "board_runtime_verified": false
+  },
+  "passed": true,
+  "not_verified": [
+    "Original Windows behavior/active theme",
+    "RK runtime/display/input/resources",
+    "Instrument protocol/configuration/real actions",
+    "Resource budgets, long stability and same-board realtime impact"
+  ],
+  "audit_script_sha256": "fa3fff2c925c493947f193d7b87284e2d5cc7625c35b7ee8020959d4c2bff3a7"
+}

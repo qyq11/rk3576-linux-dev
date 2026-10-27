@@ -1,0 +1,96 @@
+{
+  "status": "READONLY_INTEGRATION_REVIEW_ONE_DEFINITE_UI_FEEDBACK_OMISSION",
+  "utc": "2026-10-26T16:29:41.8553714Z",
+  "scope": "Root新正式13路径与必要现有调用者的代码审查；不做全树或497项重指纹，不编译/GUI/枚举/运行，不改正式源或旧证据。",
+  "business_flow": "打印设置选择并应用→真实Store提交信号→GUI桥缓存→报告固定值/设备快照→原Print/快捷键→独立确认与提交→主壳结局提示",
+  "implemented_pending_runtime": [
+    {
+      "business": "保存的打印机能进入报告流程",
+      "state": "已实现，正式主程序运行待验",
+      "detail": "main在printer线程启动前创建GUI桥并接到现有historyReports。loaded/saved成功值进入缓存，页面未应用草稿不进入；save失败保留上次提交值，初始化/重读失败、close/destroy则失效。",
+      "refs": [
+        "shell/main.cpp:697-705,776",
+        "shell/printer_report_shell.cpp:9-19,27-59"
+      ]
+    },
+    {
+      "business": "已打开的报告不会被后来保存的设备或报告内容改写",
+      "state": "已实现，主界面时序待验",
+      "detail": "预览固定document、设备名和绑定代次；普通saved只影响下一份报告。失效/重绑会增加代次并禁用旧预览，重新加载不把旧预览改成新设备。",
+      "refs": [
+        "history/report_controller.cpp:224-247,386-400,427-430"
+      ]
+    },
+    {
+      "business": "原预览打印按钮和打印快捷键进入同一受控入口",
+      "state": "已实现，实际工具栏与按键待验",
+      "detail": "保留原动作/图标位置，替换原Print处理；快捷键及自动连发受控。新任务启动后禁用Print，并由controller繁忙标志再次拒绝重入；HTML/PDF与实体任务互斥。",
+      "refs": [
+        "thirdparty/qtrpt/QtRPT/qtrpt.cpp:1987-1999,2367-2377",
+        "history/report_controller.cpp:285,425-426,452-454"
+      ]
+    },
+    {
+      "business": "每次打印先确认设备，缺设备不替用默认设备",
+      "state": "代码已实现；历史私有同字节helper缺设备负例通过，正式主壳与正向确认待验",
+      "detail": "helper先读固定报告再精确查询设备，之后才构造本次Native打印对象并打开标准确认页。明确取消不绘制；确认中明确选择其他现有设备只用于本次，不改保存设置。",
+      "refs": [
+        "history/report_renderer.cpp:192-272"
+      ]
+    },
+    {
+      "business": "异常或不能确认的结局不会冒作成功，也不自动重试",
+      "state": "已实现，正式父进程完整异常路径待验",
+      "detail": "校验请求标识、6字符串字段、阶段顺序、单一终态和实际退出码；提交后超时、崩溃、强停或消息不匹配变为Unknown。Failed/Unknown另发failed，主壳已有普通错误状态接收者。",
+      "refs": [
+        "history/report_controller.cpp:101-132,466-574",
+        "shell/history_shell.cpp:113-118"
+      ]
+    },
+    {
+      "business": "关闭和重复操作有保护",
+      "state": "代码路径对得上，正式关闭/强停时序待验",
+      "detail": "普通主窗口和SIGINT/SIGTERM退出均受history reportBusy守卫，不能在任务繁忙时绕过。关闭预览会kill独立任务并按Unknown收尾；controller销毁前由frmMain先删除，析构阻断晚到UI信号、记token并限时回收。",
+      "refs": [
+        "history/history_page.h:33",
+        "history/history_page.cpp:495-500",
+        "shell/frmmain.cpp:517-542,163-169",
+        "shell/shutdown_request.cpp:174-176",
+        "history/report_controller.cpp:135-158,266-272"
+      ]
+    }
+  ],
+  "definite_findings": [
+    {
+      "id": "PRINT_UI_OUTCOME_01",
+      "priority": "P2",
+      "classification": "DEFINITE_CODE_OMISSION_CONFIRMED_BY_ROOT",
+      "title": "主壳没有接收已提交和已取消的打印结果",
+      "location": "shell/history_shell.cpp:113-138",
+      "producer": "history/report_controller.cpp:554-574",
+      "trigger": "用户在独立确认页明确取消并正常20退出，或报告正常交给系统并以Submitted/0退出；controller完成收尾后发nativePrintFinished。",
+      "proof": "controller:573对所有结局发nativePrintFinished，574只将Failed/Unknown转发failed。主壳history_shell已接failed/pdfExported/htmlExported/previewReady，却没有nativePrintFinished接收者；main/bridge也没有。",
+      "impact": "用户不能在原主壳状态提示中看到本次已交给系统或已取消的结果；预览仍开着时保留普通处理中提示，关预览后只变为普通结束。实际打印机械链不因此被证明失败，但四种终态的用户反馈不完整。",
+      "minimal_fix": "在enableHistoryReports原连接区增加一个nativePrintFinished接收者，仅处理Submitted/Cancelled，先reportHasOutcome_=true，再复用reportStatus。Submitted只说已交给本机打印系统、纸张仍需核对；Cancelled说已取消确认、未开始打印。Failed/Unknown保留现有failed接收者，避免重复提示。",
+      "preserve": "不新增弹框、布局、独立状态系统，不声称Submitted已出纸，不改变controller退出码/Unknown或重试规则。",
+      "root_disposition": "Root已经确认并准备在必要前像之后修复；本审查没有改源，也没有复核修后代码。",
+      "snippet": "minimal_connection_suggestion.txt"
+    }
+  ],
+  "second_definite_closing_omission_found": false,
+  "explicit_non_findings": [
+    "未运行新497主壳不等于代码缺陷；本轮没有编译或运行。",
+    "当前缺少实际命名打印机、驱动/后端或纸张验收属于验证前提，不是本轮确定代码遗漏。",
+    "主壳没有主动调用shutdown()并不单独构成正常关闭缺陷：现有reportBusy守卫先拒绝活跃报告退出；异常退出由析构回收。强制退出的真实时序仍需针对验证。",
+    "新local-results模式故意不启用报告；真实结果的单位/精度和输出映射未补齐时不开放，不把它当新打印接线失效。",
+    "没有将全QtRPT旧API都视为本接线安全边界；本次核对的是主壳现有报告入口和受控Native helper。"
+  ],
+  "actual_completion_boundary": "只完成代码审查。此前私有helper/controller构建和真实缺设备21收据保留原范围；本轮正式主壳497尚未在此窗口构建或运行。",
+  "remaining_prerequisites": [
+    "Root修复已确认的Submitted/Cancelled普通状态提示连接",
+    "新正式主辅全新构建和主壳真实Store/预览/重复点击/关闭时序针对验证",
+    "有效GUI后端及现有命名设备才能验取消/确认/提交正向链",
+    "纸张、RK/EGLFS、真实仪器及认可资源/同板控制分别验收",
+    "真实本地结果单位与精度映射就绪后才接新结果模式输出"
+  ]
+}

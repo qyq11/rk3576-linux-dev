@@ -1,0 +1,35 @@
+--- preserved01/run_standalone.py
++++ new02/run_standalone.py
+@@ -21,9 +21,9 @@
+ 
+ 
+ from common import spawn_owned, clean_environment
+-from run_projects_modules import verify_build, build_inventory
+-
+-STAGE = WORK / 'post_standalone_01'
++from build_verification import verify_build, build_inventory
++
++STAGE = WORK / 'post_standalone_02'
+ 
+ 
+ def run_phase(name, command, cwd, logs, env, timeout):
+@@ -134,7 +134,7 @@
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--root-go', action='store_true', required=True)
+-    parser.add_argument('--name', default='post_standalone_01')
++    parser.add_argument('--name', default='post_standalone_02')
+     args = parser.parse_args()
+     global STAGE
+     require(re.fullmatch(r'[A-Za-z0-9_-]+', args.name), 'Simple fresh attempt name required')
+@@ -250,7 +250,9 @@
+             'real_catalog_owner_ready_closed': all(stages['calibration_catalog_owner']['checks'].values()),
+             'bootstrap_unlinked': secret is not None and not secret.exists(),
+             'standalone_binaries_unchanged': all(sha(STAGE / row['binary']) == row['binary_sha256'] for row in modules.values())}
+-        result = {'schema': 'sn100-four-windows-standalone-v1', 'passed': all(checks.values()),
++        result = {'schema': 'sn100-qc-calibration-standalone-fresh-v2', 'passed': all(checks.values()),
++            'standalone_app_count': 2, 'ordinary_app_names': ['quality_control', 'calibration'],
++            'total_phase_count': 7, 'old01_build_artifacts_reused': False,
+             'finished_utc': now(), 'source_snapshot_sha256': sha(FREEZE), 'source_inputs': len(frozen),
+             'native_verification_sha256': native_verification_sha, 'main_artifacts': main_artifacts,
+             'source_before': source_before, 'source_after': source_after,

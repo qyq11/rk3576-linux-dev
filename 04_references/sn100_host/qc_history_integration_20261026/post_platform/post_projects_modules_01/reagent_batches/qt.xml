@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="52" failures="0" tests="11" name="ReagentBatchTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase">
+    <!-- message="ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_projects_modules_01/reagent_batches/runtime/batch&#x002D;root/batch&#x002D;xncuOp/catalog" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="saveReopenAndLegacyCompatibility">
+    <!-- message="COMMITTED_BATCH 1 1 &quot;LOT_A|LOT_B&quot; &quot;1.2345&quot; &quot;12.3400&quot;" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="emptyIllegalAndDuplicate">
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;&#x002D;1&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;NaN&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;1e2&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;10000&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;9999.0001&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;1.23456&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;01.2&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot; 1&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;1 &quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="REJECTED_ISI_INPUT &quot;1\n&quot;" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 同一项目的该试剂批号已在其他组中，不能重复分组" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 同一项目的该试剂批号已在其他组中，不能重复分组" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批号组每项须为1–32字、无首尾空格，不能有空项或重复批号" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批号组每项须为1–32字、无首尾空格，不能有空项或重复批号" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批号组每项须为1–32字、无首尾空格，不能有空项或重复批号" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="reservationAndMutationProtection">
+    <!-- message="EXTERNAL_WRITE_FAILED hold intentionally retained 1" type="qinfo" -->
+    <!-- message="REFERENCE_ERROR 该引用键已保留另一批组，须显式解除旧引用后再绑定" type="qinfo" -->
+    <!-- message="REFERENCE_ERROR FOREIGN KEY constraint failed Unable to fetch row" type="qinfo" -->
+    <!-- message="REFERENCE_ERROR 模块名、引用键或批组编号不合法" type="qinfo" -->
+    <!-- message="REFERENCE_ERROR 模块名、引用键或批组编号不合法" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批组被其他模块保留引用，不能改名、改组或换项目；先解除引用" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批组被其他模块保留引用，不能改名、改组或换项目；先解除引用" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 删除试剂批号 该资料仍被孔位、条码、批号或项目引用，不能删除；先解除引用" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批组被其他模块保留引用，不能改名、改组或换项目；先解除引用" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="projectActionReagentProtection">
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂资料 试剂仍被项目动作参数引用，不能改名、改类型或停用；先修改项目方案解除引用" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂资料 试剂仍被项目动作参数引用，不能改名、改类型或停用；先修改项目方案解除引用" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂资料 试剂仍被项目动作参数引用，不能改名、改类型或停用；先修改项目方案解除引用" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 删除试剂资料 该资料仍被孔位、条码、批号或项目引用，不能删除；先解除引用" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="atomicWriteFailureAndRetry">
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 injected metadata write failure Unable to fetch row" type="qinfo" -->
+    <!-- message="ATOMIC_FAILURE_RETRY &quot;FAIL_ATOMIC&quot; &quot;12.3400&quot;" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="permissionsAndReadOnlyReferenceChecks">
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 当前账户不可编辑试剂；请选择允许操作的离线身份" type="qinfo" -->
+    <!-- message="REFERENCE_ERROR 当前账户不可修改批组引用" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="pageDraftCancelBusyFailureAndReopen">
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 database is locked Unable to fetch row" type="qinfo" -->
+    <!-- message="This plugin does not support raise()" type="qwarn" -->
+  </testcase>
+  <testcase result="pass" name="removalReleasesMetadata"/>
+  <testcase result="pass" name="unknownVersionAndCorruptionPreserveData">
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 读取试剂 批组2的ISI/正常测定值资料损坏，保留原数据，请核查后恢复" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR 初始化试剂 试剂批组扩展版本不支持，保留现有数据库" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase">
+    <!-- message="NORMAL_EXIT runtime preserved &quot;/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_projects_modules_01/reagent_batches/runtime/batch&#x002D;root/batch&#x002D;xncuOp/catalog&quot;" type="qinfo" -->
+  </testcase>
+  <system-err>
+<![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_projects_modules_01/reagent_batches/runtime/batch-root/batch-xncuOp/catalog]]>
+<![CDATA[COMMITTED_BATCH 1 1 "LOT_A|LOT_B" "1.2345" "12.3400"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT ""]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "-1"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "NaN"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "1e2"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "10000"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "9999.0001"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "1.23456"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "01.2"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT " 1"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "1 "]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[REJECTED_ISI_INPUT "1\n"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 ISI值和正常测定值须同时填写，范围0–9999、最多4位小数；仅保存本地资料]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 同一项目的该试剂批号已在其他组中，不能重复分组]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 同一项目的该试剂批号已在其他组中，不能重复分组]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批号组每项须为1–32字、无首尾空格，不能有空项或重复批号]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批号组每项须为1–32字、无首尾空格，不能有空项或重复批号]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批号组每项须为1–32字、无首尾空格，不能有空项或重复批号]]>
+<![CDATA[EXTERNAL_WRITE_FAILED hold intentionally retained 1]]>
+<![CDATA[REFERENCE_ERROR 该引用键已保留另一批组，须显式解除旧引用后再绑定]]>
+<![CDATA[REFERENCE_ERROR FOREIGN KEY constraint failed Unable to fetch row]]>
+<![CDATA[REFERENCE_ERROR 模块名、引用键或批组编号不合法]]>
+<![CDATA[REFERENCE_ERROR 模块名、引用键或批组编号不合法]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批组被其他模块保留引用，不能改名、改组或换项目；先解除引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批组被其他模块保留引用，不能改名、改组或换项目；先解除引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 删除试剂批号 该资料仍被孔位、条码、批号或项目引用，不能删除；先解除引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 批组被其他模块保留引用，不能改名、改组或换项目；先解除引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂资料 试剂仍被项目动作参数引用，不能改名、改类型或停用；先修改项目方案解除引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂资料 试剂仍被项目动作参数引用，不能改名、改类型或停用；先修改项目方案解除引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂资料 试剂仍被项目动作参数引用，不能改名、改类型或停用；先修改项目方案解除引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 删除试剂资料 该资料仍被孔位、条码、批号或项目引用，不能删除；先解除引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 injected metadata write failure Unable to fetch row]]>
+<![CDATA[ATOMIC_FAILURE_RETRY "FAIL_ATOMIC" "12.3400"]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 当前账户不可编辑试剂；请选择允许操作的离线身份]]>
+<![CDATA[REFERENCE_ERROR 当前账户不可修改批组引用]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 保存试剂批号 database is locked Unable to fetch row]]>
+<![CDATA[This plugin does not support raise()]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 读取试剂 批组2的ISI/正常测定值资料损坏，保留原数据，请核查后恢复]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR 初始化试剂 试剂批组扩展版本不支持，保留现有数据库]]>
+<![CDATA[NORMAL_EXIT runtime preserved "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_projects_modules_01/reagent_batches/runtime/batch-root/batch-xncuOp/catalog"]]>
+  </system-err>
+</testsuite>

@@ -1,0 +1,56 @@
+{
+  "schema": "sn100-private-native-hit-AB-contract-v1",
+  "status": "prepared_not_compiled_not_run",
+  "purpose": "One bounded diagnostic comparison of common XCB scroll-host hit lookup and a CN-specific path; no automatic attribution, no claim UI/instrument migration completion.",
+  "one_run": "Same process, ordinaryControl then cnPage; no retry/loop/alternate coordinate/threshold relaxation. Raw failure stays failure. Two arm receipts even if control assertion fails (unless crash/time budget prevents completion).",
+  "lineage": {
+    "prior_probe": {
+      "path": "temp/sn100_host/language_formal_20261026/viewport_observer_04/source/language_setting_page_test.cpp",
+      "sha256": "c9fcc2c7447ab8fbd74bd4d232c51fc273762f5b215446c80f35dcedbff9c1bc",
+      "bytes": 16910
+    },
+    "prior_failure": "viewport_observer_04/xcb/qt.txt nativeHit=false after exposed+active, actualexit1; source and evidence unchanged",
+    "formal_normal": "verification_02 bothQPA14/0 and offscreen small3/0 remain historical scopes, not evidence this newAB passes"
+  },
+  "fixed_geometry": {
+    "host": [
+      900,
+      600
+    ],
+    "requested_host_position": [
+      20,
+      20
+    ],
+    "scroll_frame": "NoFrame,widgetResizable=false",
+    "canvas": [
+      1451,
+      853
+    ],
+    "nested_panel": [
+      390,
+      20,
+      681,
+      821
+    ],
+    "apply_button": [
+      500,
+      750,
+      161,
+      61
+    ],
+    "ensureWidgetVisible_margins": [
+      12,
+      12
+    ],
+    "hit_point": "apply->mapToGlobal(apply->rect().center()) exactly",
+    "ordinary_control": "QWidget canvas + QWidget panel + ordinary QPushButton, fixed same ancestry/coordinates; ASCII Control label, Fusion and matching13pt Noto/control color. CN uses unmodified formal LanguageSettingPage."
+  },
+  "preconditions": "Both arms wait actual visible, nonzero scrolling, original viewport contains button, exposed and active; waits each<=original5000ms and capped by shared24s source budget. Never wait for nativeHit to become true. Actual window QScreen availableGeometry must contain entire fixed client+frame and button globalRect. If not, outcome prerequisite_unmet_screen_frame_or_button, Qt failure/nonzero and no page-defect attribution; do not reposition/resize target to pass.",
+  "hit_assertion": "QWidget *hit=QApplication::widgetAt(center); const bool nativeHit=hit==apply||(hit&&apply->isAncestorOf(hit)); QVERIFY(nativeHit); one-shot before content grab. No deleted/expectedFail/skipped hit assertion.",
+  "click_endpoint": "Only after original hit predicate passes: QTest::mouseClick(QWindow*,window-local mapped same center). Record QWidget/QWindow local/window/screen press+release positions and clicked_count=1. This is Qt window injection, not OS XTest/physical pointer/compositor proof; QCursor pos is observed without setting it. CN must create original unsupported warning and exact lastStatus. Warning dismissed by existing API solely for cleanup; ACK input is not tested here.",
+  "recorded": "Actual QScreen geometry/availableGeometry/virtualGeometry/availableVirtualGeometry/DPR/DPI for all screens and selected window screen, widget/window/grab DPR; client/frame/global origin, button local/global/viewport rect and center, visibleRegion full rectangles/contains; QWidget/QWindow topLevelAt and childAt, cursor, mouse route, safe selected Qt/DISPLAY/WAYLAND env, monotonic phases, exact raw argv/exits.",
+  "capture": "Original QWidget::grab only after lookup (or precondition refusal), unmodified PNG+size/DPR. It proves local content capture only; cannot prove physical screen visibility, lack of other-window occlusion or compositor presentation.",
+  "time_bound": "One GUI child with25s parent deadline plus independently bounded TERM3s/KILL2s owned-PGID cleanup; observed owned interval>30s cannot pass. Source shares24s for both arms and caps original5s waits. Cleanup is not normal-close proof after timeout/failure.",
+  "classification": "both_passed_this_once / screen_precondition_unmet_not_page_conclusion / control_not_passed_no_CN_specific_attribution / CN_not_passed_after_control_pass_no_automatic_root_cause / incomplete receipt. No automatic CN/WSLg/root-cause classification.",
+  "safety_scope": "Only own two windows; no user-window tests, physical cursor moves, display config changes, devices/network/SQL/auth/production data. All source fixed except newprivate files; runtime/XDG/logs only new private child output."
+}

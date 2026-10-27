@@ -1,0 +1,102 @@
+{
+  "phase": "O08 after visibility repair",
+  "source_seal": "temp/sn100_host/catalog_integration/windows_pair/o08_visibility",
+  "baseline": "Original O08 full -B -j2, 260/50 actual inputs; see ../windows/verification_final.json and ../windows/SHA256SUMS",
+  "base_public_manifest_sha256": "8A277B453238FCB0795F41C7B2AB327536817608FAF50B686ED04F868075087A",
+  "build_scope": "Only sample_page.cpp content differs; header/UI/QRC/resources and all other inputs identical; effective compiler/linker flags identical; -W exact declared cpp prerequisite forces one object independent of mtime; only that object hash changes; main is relinked",
+  "helper_scope": "50 inputs, 31 object hashes, flags and actual PE/SHA match original O08; helper is retained without compilation",
+  "final_verification": "verification_visibility.json: passed, compile exit0, corrected-target main link exit0",
+  "earlier_attempt": "failure_visibility.json and windows_catalog_visibility_shell_link.log retain the first make target spelling error (exit2); finish_windows_visibility.ps1 recovers linking without a second compilation",
+  "application_executed": false,
+  "board_connected": false,
+  "original_o08_history_modified": false,
+  "original_temp_seal_verified": true,
+  "copied_files_verified_against_temp": true,
+  "excluded": "No exe payload, runtime database, secret or credential copied; binary identities retained in metadata and sha256.json",
+  "copies": [
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/build_windows_visibility.ps1",
+      "public_file": "build_windows_visibility.ps1",
+      "bytes": 12598,
+      "sha256": "A5A316E5B12173969C96E6F6AE1CCA9672F3FC2FDD2331F63EACA5A006066FA6"
+    },
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/failure_visibility.json",
+      "public_file": "failure_visibility.json",
+      "bytes": 7965,
+      "sha256": "8D8645F98EF980ABB0B476A3AEC10A806A701B4058DECFD211690F8A532B3A2C"
+    },
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/finish_windows_visibility.ps1",
+      "public_file": "finish_windows_visibility.ps1",
+      "bytes": 10542,
+      "sha256": "398E7721C34F4E72A618085DA432499318B5BA457F68270B48C314FC5533247D"
+    },
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/object_flags_baseline.json",
+      "public_file": "object_flags_baseline.json",
+      "bytes": 33622,
+      "sha256": "57EFF2EB053BB0B04981FEE10D48BF108D1DCB941A69CFDF03601A34F92F7B5F"
+    },
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/renderer_inputs_visibility.json",
+      "public_file": "renderer_inputs_visibility.json",
+      "bytes": 12174,
+      "sha256": "B6E0925767D2AEADB3BFA3A82FD3F980E23EC2E007CD84F068A5508A4218382C"
+    },
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/sha256.json",
+      "public_file": "sha256.json",
+      "bytes": 1561,
+      "sha256": "1709759E56F8BA8C783545452237532D65015085A5FB257785388987F6CEA34B"
+    },
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/shell_inputs_visibility.json",
+      "public_file": "shell_inputs_visibility.json",
+      "bytes": 62990,
+      "sha256": "5CE9FD59714AE9928189ACE3CDF7504B9851AE8035AF48DA1D4893919213A996"
+    },
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/toolchain.json",
+      "public_file": "toolchain.json",
+      "bytes": 684,
+      "sha256": "48EF9CEFC7F003552C8A4BF8498C53E484710E71BA9BD43323DABED80E679857"
+    },
+    {
+      "source": "emp/sn100_host/catalog_integration/windows_pair/o08_visibility/verification_visibility.json",
+      "public_file": "verification_visibility.json",
+      "bytes": 9102,
+      "sha256": "C6FA393D45D6B008605FD29F2529B9C103800D8131F4B6FF82FC4F95E619638B"
+    },
+    {
+      "source": "emp/sn100_host/logs/windows_catalog_visibility_shell_qmake.log",
+      "public_file": "windows_catalog_visibility_shell_qmake.log",
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "source": "emp/sn100_host/logs/windows_catalog_visibility_renderer_qmake.log",
+      "public_file": "windows_catalog_visibility_renderer_qmake.log",
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    {
+      "source": "emp/sn100_host/logs/windows_catalog_visibility_shell_compile.log",
+      "public_file": "windows_catalog_visibility_shell_compile.log",
+      "bytes": 2463,
+      "sha256": "5354A53B868A1F8D317AD5AAAFB416629885D3EF345F548B9C11AA69E6CAF6FE"
+    },
+    {
+      "source": "emp/sn100_host/logs/windows_catalog_visibility_shell_link.log",
+      "public_file": "windows_catalog_visibility_shell_link.log",
+      "bytes": 72,
+      "sha256": "1EB107F94F1167EA585124F6D828CA755555BA4A1190105F522158A1DD9E726A"
+    },
+    {
+      "source": "emp/sn100_host/logs/windows_catalog_visibility_shell_link_recovery.log",
+      "public_file": "windows_catalog_visibility_shell_link_recovery.log",
+      "bytes": 812,
+      "sha256": "E4359B4A2797C723C016C1E97ABCC407E83ABF3FBEB6317883E97FE9FC3F3B9D"
+    }
+  ]
+}

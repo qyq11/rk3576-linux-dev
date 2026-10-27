@@ -1,0 +1,339 @@
+{
+  "schema": "sn100-checkpoint-foundation-coverage-v1",
+  "review_kind": "Read-only static evidence, not a parallel plan or runtime acceptance",
+  "snapshot_root": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host",
+  "snapshot_contract": "temp/sn100_host/instrument_20261024/checkpoint_inputs.json",
+  "reviewed_function_ids": [
+    "F01",
+    "F02",
+    "F14",
+    "F15",
+    "F16",
+    "F17"
+  ],
+  "active_claims": {
+    "local_password_login": "Already owned by chat 01a16be0-04fc-7891-92e2-68481c94345a; not included in this frozen checkpoint; do not duplicate"
+  },
+  "facts": [
+    {
+      "id": "F01.startup-config",
+      "state": "partial_business",
+      "capability": "Unified startup selects optional migrated modules, requires an absolute isolated data root, reports initialization failures and owns store threads. Theme/font/model are fixed for the offline shell.",
+      "gap": "Original production configuration/theme/model initialization is not an integrated configurable startup subsystem. Original config must not be reused or silently imported.",
+      "evidence": [
+        "shell/main.cpp:77-80",
+        "shell/main.cpp:86-105",
+        "shell/main.cpp:199-252",
+        "shell/main.cpp:496-554",
+        "shell/frmmain.cpp:196-197"
+      ],
+      "reference_evidence": [
+        "main.cpp:62-69",
+        "main.cpp:94-104",
+        "main.cpp:162-174",
+        "main.cpp:206-210"
+      ],
+      "remaining_acceptance_condition": "Confirm SN100 configuration keys/defaults and non-sensitive model/theme baseline; controlled anonymous settings, invalid/missing config recovery, restart behavior and explicit difference record. No connection side effects."
+    },
+    {
+      "id": "F01.single-instance",
+      "state": "partial_business",
+      "capability": "RK lifecycle wrappers serialize deployment and prevent another app under their deployment lock.",
+      "gap": "Direct native application entry lacks the original application-level single-instance mechanism; no QLockFile/QSharedMemory/QSystemSemaphore equivalent is in shell main/linked shell sources. This is separate from launch-script locking.",
+      "evidence": [
+        "shell/main.cpp:69-105",
+        "shell/shell.pri:1-43",
+        "shell/rk.sh:39-40",
+        "shell/rk_board.sh:323-324"
+      ],
+      "reference_evidence": [
+        "main.cpp:46"
+      ],
+      "remaining_acceptance_condition": "Define instance scope versus deployment/data roots and explicit independent anonymous test processes, then verify first/second startup, stale lock/restart and safe refusal without data modification."
+    },
+    {
+      "id": "F02.password-login",
+      "state": "claimed_active",
+      "capability": "Account rows, role/list editing checks, explicit simulated identity selection, session propagation and logout-to-Guest exist.",
+      "gap": "Checkpoint has no username/password login dialog or login API. AccountSession.authenticated denotes selection of an anonymous simulated identity, and main accepts test-session. Subsequent local password login is being developed by the owner.",
+      "evidence": [
+        "data/account_store.h:22-29",
+        "data/account_store.h:51-58",
+        "data/account_store.cpp:364-406",
+        "shell/main.cpp:95",
+        "shell/frmmain.cpp:220-223",
+        "shell/frmmain.cpp:295-335"
+      ],
+      "reference_evidence": [
+        "frmlogin/maskdlglogin.h:32-49"
+      ],
+      "remaining_acceptance_condition": "Audit the owner's later login version separately: valid/invalid credentials, role enforcement, failed login recovery, logout/re-login, pending edits/worker guards, persistence and no secret logging. Do not attribute the checkpoint package to that later feature."
+    },
+    {
+      "id": "F02.account-crud",
+      "state": "integrated_offline",
+      "capability": "Real account setting page is instantiated; store exposes sanitized rows, add/remove/update, transaction checks and session refresh. A disabled control due to role/readiness is not evidence of an unimplemented operation.",
+      "evidence": [
+        "shell/frmuserset.cpp:62-69",
+        "data/account_store.h:53-66",
+        "data/account_store.cpp:503-525",
+        "data/account_store.cpp:609-692",
+        "shell/frmmain.cpp:302-335"
+      ],
+      "remaining_acceptance_condition": "Current merged-checkpoint runtime regression and later login integration must be checked from delivery evidence; this static review did not execute tests."
+    },
+    {
+      "id": "F14.hospital-dictionaries",
+      "state": "integrated_offline",
+      "capability": "Hospital information and five dictionary operations are real UI/store paths with busy/draft/focus guards. They are not unresolved settings placeholders.",
+      "evidence": [
+        "shell/frmuserset.cpp:70-77",
+        "shell/frmuserset.cpp:120-141",
+        "ui/frmhospinfosetting.h:20-37",
+        "data/hospital_store.cpp:408-453",
+        "data/hospital_store.cpp:659-666"
+      ],
+      "remaining_acceptance_condition": "Retain prior offline results and verify cumulative merged behavior; original Windows active-theme, RK input/display, full restart/real data scenarios remain separate."
+    },
+    {
+      "id": "F14.printer-setting",
+      "state": "not_ported",
+      "capability": "The original settings navigation contains a printer setting slot, but the final checkpoint page is an offline placeholder. Report PDF capability does not supply this missing settings page.",
+      "gap": "Original printer list/current choice/Apply persistence are absent from the unified settings UI and its data path.",
+      "evidence": [
+        "shell/frmuserset.cpp:38-86",
+        "shell/shell.pri:1-25"
+      ],
+      "reference_evidence": [
+        "frmuserset/frmprintersetting.h:20-29",
+        "frmuserset/frmprintersetting.cpp:35-71"
+      ],
+      "remaining_acceptance_condition": "Original UI layout, host printer enumeration including empty/missing printer, nonempty name validation, save failure and reopen persistence can be verified offline; actual paper printing is a distinct hardware condition."
+    },
+    {
+      "id": "F14.language-setting",
+      "state": "not_ported_page_original_business_unenabled",
+      "gap": "Language page is still a final offline placeholder. However the original implementation lists only simplified Chinese and its Apply slot is empty; a complete translation-switching engine is not established by this reference.",
+      "evidence": [
+        "shell/frmuserset.cpp:38-86"
+      ],
+      "reference_evidence": [
+        "frmuserset/frmlanguagesetting.cpp:27-43"
+      ],
+      "remaining_acceptance_condition": "Separate porting of the existing page from confirmation of an actually enabled original language-Apply requirement; do not invent unsupported multilingual behavior or mark the placeholder complete."
+    },
+    {
+      "id": "F14.lis-setting-entry",
+      "state": "not_ported",
+      "gap": "LIS setting slot is a final offline placeholder, separate from F11's missing protocol/business integration. A current instrument local-loopback control is not LIS settings or HL7.",
+      "evidence": [
+        "shell/frmuserset.cpp:38-86",
+        "shell/shell.pri:34-43"
+      ],
+      "remaining_acceptance_condition": "Port original settings UI and an isolated non-production setting contract; expose actual supported transport/message limits and keep external endpoints inactive until authorized. F11 business details are reviewed separately."
+    },
+    {
+      "id": "F15.local-sql-reliability",
+      "state": "integrated_offline_partial_scope",
+      "capability": "Hospital/account SQL connections belong to workers; isolated-data tags, existing-table schema checks, busy_timeout, transaction/rollback/commit handling and atomic INI/tag writes are implemented.",
+      "evidence": [
+        "shell/main.cpp:207-252",
+        "data/hospital_store.cpp:82-114",
+        "data/hospital_store.cpp:128",
+        "data/hospital_store.cpp:260-311",
+        "data/hospital_store.cpp:675-752",
+        "data/account_store.cpp:127",
+        "data/account_store.cpp:199-239",
+        "data/account_store.cpp:291-311"
+      ],
+      "remaining_acceptance_condition": "Current merged failure/reopen evidence must be inspected. Do not describe all database reliability as missing; actual power-loss, damaged/full disk and RK behavior are additional validation conditions."
+    },
+    {
+      "id": "F15.production-import-upgrade",
+      "state": "conditions_missing_and_not_integrated",
+      "gap": "The offline program intentionally rejects unmarked existing data; this does not implement controlled production-data import, cross-module schema upgrades or full production compatibility. No unified migration/import entry exists in the inspected shell/data/UI.",
+      "evidence": [
+        "data/hospital_store.cpp:82-103",
+        "data/account_store.cpp:236-311",
+        "shell/main.cpp:99-105",
+        "shell/shell.pri:1-43"
+      ],
+      "remaining_acceptance_condition": "Requires authorized anonymized schemas/compatibility rules and an affected-data recovery contract, followed by transaction/rollback/restart validation; never open reference production databases to fill this gap."
+    },
+    {
+      "id": "F15.runtime-data-backup-restore",
+      "state": "not_integrated",
+      "gap": "Application-wide runtime data backup/restore UI/entry and coordinated consistent snapshots of the separate store roots are absent from inspected shell/data/UI. Immutable program release backups and deployment rollback are different capabilities.",
+      "evidence": [
+        "shell/main.cpp:207-252",
+        "shell/main.cpp:535-554",
+        "shell/shell.pri:1-43",
+        "shell/rk_board.sh:305-309"
+      ],
+      "remaining_acceptance_condition": "Define runtime-data scope and consistency/close policy, preserve only affected recoverable data, then verify backup integrity, failed restore, schema mismatch and reopen. Existing release archives do not establish runtime database recovery."
+    },
+    {
+      "id": "F16.soft-keyboard",
+      "state": "not_ported_component",
+      "capability": "WSL has an explicit Fcitx5 launch adapter for Chinese input; business pages retain focus/draft guards and dictionary mnemonic handling.",
+      "gap": "The original custom on-screen Keyboard/NumberKeyboard component and field routing are not in the checkpoint shell build. This does not mean Chinese input as a whole is missing.",
+      "evidence": [
+        "wsl_ime.sh:6-7",
+        "wsl_ime.sh:18-41",
+        "shell/frmuserset.cpp:95-100",
+        "shell/catalog_shell.cpp:144-156",
+        "shell/shell.pri:1-43"
+      ],
+      "reference_evidence": [
+        "customtools/Keyboard/Keyboard.h:43-50",
+        "customtools/Keyboard/AbstractKeyboard.h:18-57"
+      ],
+      "remaining_acceptance_condition": "After display/touch and original input behavior are confirmed, verify Chinese/numeric/password field routing, focus/Tab/Enter/Esc, dialog/scroll interaction and safe text handling. Do not copy reference keystroke-value debug output into credential fields."
+    },
+    {
+      "id": "F16.sample-scroll-correction",
+      "state": "integrated_offline_verification_pending",
+      "capability": "Frozen sample rack already constructs a QScroller, enables ScrollPerPixel and LeftMouseButtonGesture, and changes gesture enablement while an editor is open. Earlier documentation saying it was not connected is stale for this checkpoint.",
+      "evidence": [
+        "samples/cusracklistwidget.cpp:4-21",
+        "samples/sample_page.cpp:629"
+      ],
+      "remaining_acceptance_condition": "Keyboard/mouse and later RK touch/drag reachability remain runtime evidence questions. Do not create a duplicate implementation solely from the older note."
+    },
+    {
+      "id": "F17.application-logging",
+      "state": "partial_business_standalone_only",
+      "capability": "Unified program emits lifecycle/errors and exact simulated TX/RX via qInfo/qWarning/qCritical; launch scripts capture per-run app.log. A separate soak tool has bounded file logging/progress/timing mechanisms.",
+      "gap": "Unified application has not connected the original logger lifecycle or an equivalent persistent categorized/timestamped rotating/bounded log sink; soak logging is not linked by shell.pri.",
+      "evidence": [
+        "shell/main.cpp:261-268",
+        "shell/main.cpp:288",
+        "shell/main.cpp:521-554",
+        "shell/rk_board.sh:224-225",
+        "protocol/status_loopback.cpp:453",
+        "protocol/soak_main.cpp:246-300",
+        "shell/shell.pri:34-43"
+      ],
+      "reference_evidence": [
+        "main.cpp:345-347",
+        "customtools/logger.h:125-133"
+      ],
+      "remaining_acceptance_condition": "Define log location/categories/time/rotation and disk-failure/backpressure semantics across normal UI and communication while redacting secrets; exercise bounded growth and diagnostic collection. Console capture alone is not that release-level logger."
+    },
+    {
+      "id": "F17.crash-diagnostics",
+      "state": "not_ported",
+      "gap": "Original main installs crash handling; checkpoint has only ordinary SIGTERM/SIGINT-to-Qt shutdown and lifecycle output, not an integrated abnormal-crash report/backtrace collection path.",
+      "evidence": [
+        "shell/shutdown_request.cpp:32-37",
+        "shell/shutdown_request.cpp:134-141",
+        "shell/main.cpp:197-201",
+        "shell/shell.pri:1-43"
+      ],
+      "reference_evidence": [
+        "main.cpp:218",
+        "customtools/dumpreport.h:6-17"
+      ],
+      "remaining_acceptance_condition": "Platform-specific crash/report retention with no secret or patient leakage, clearly separated from ordinary guarded close and experimentally verified without risking active data. Original Windows handler cannot be assumed portable to Linux/ARM."
+    }
+  ],
+  "limits": [
+    "Only static checkpoint paths were reviewed; no build, GUI, runtime database, production configuration or instrument access was performed.",
+    "Current live password-login work is a later version and remains claimed_active; a missing checkpoint login path is not an instruction to duplicate that work.",
+    "Reference inspections were limited to source headers and safe local startup/settings lines; no public/systemcommon.cpp or production configuration/database/credential content was read.",
+    "Constructor placeholders were followed through actual attachment/replacement logic. The settings language/printer/LIS placeholders survive in this checkpoint; account and hospital placeholders do not.",
+    "Global resource budgets, original Windows active theme, RK display/input, real device conditions and long stability are not established by this review."
+  ],
+  "source_files": [
+    "shell/main.cpp",
+    "shell/frmmain.cpp",
+    "shell/frmmain.h",
+    "shell/frmuserset.cpp",
+    "shell/frmuserset.h",
+    "shell/shell.pri",
+    "shell/shutdown_request.cpp",
+    "shell/rk.sh",
+    "shell/rk_board.sh",
+    "shell/wsl.sh",
+    "data/account_store.h",
+    "data/account_store.cpp",
+    "data/hospital_store.cpp",
+    "ui/frmhospinfosetting.h",
+    "ui/frmhospinfosetting.cpp",
+    "ui/frmaccountsetting.cpp",
+    "samples/cusracklistwidget.cpp",
+    "samples/sample_page.cpp",
+    "protocol/soak_main.cpp",
+    "protocol/status_loopback.cpp",
+    "wsl_ime.sh"
+  ],
+  "reference_files": [
+    "main.cpp",
+    "frmlogin/maskdlglogin.h",
+    "frmuserset/frmprintersetting.h",
+    "frmuserset/frmprintersetting.cpp",
+    "frmuserset/frmlanguagesetting.h",
+    "frmuserset/frmlanguagesetting.cpp",
+    "customtools/Keyboard/Keyboard.h",
+    "customtools/Keyboard/AbstractKeyboard.h",
+    "customtools/logger.h",
+    "customtools/dumpreport.h"
+  ],
+  "source_sha256": {
+    "shell/main.cpp": "eb99e623f486dd331ab1951507440508cdb594e60e65c408da9fc49c98e6b7af",
+    "shell/frmmain.cpp": "c7d49265e5a2c20860607197938e2bb688c5ab7198eb4741029b7879cd86ac11",
+    "shell/frmmain.h": "d3008dbbeeeb2cd7fa81d4f08abef2982dfb59f5f3aa3564d71d409dbebcb082",
+    "shell/frmuserset.cpp": "a85690a04672e6ce037cc3cae95ff4ca6efcff5ee0d0ee51e4912492d482cc5b",
+    "shell/frmuserset.h": "d959d60dadbc438de5d1089df0a5e319c9381a0c446df37dbda2397165dfe3de",
+    "shell/shell.pri": "87f5da4a0ca54eb39c5b8a7cc7166881d4a828cc5f5aaf3a2e696808363be5d3",
+    "shell/shutdown_request.cpp": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+    "shell/rk.sh": "8a02493a53fe6ff31e95ffd7887b63f2982ea3cb63bdcd00fc22ae6f9f573821",
+    "shell/rk_board.sh": "9da80c54f44fcf93eee9e9bccade9c249fba781fb660bd0d0cf148cd81f9e0f4",
+    "shell/wsl.sh": "8b6296dbda05fca78eb6906f24cc3756ccfa9994632932a30f95e10bd134878b",
+    "data/account_store.h": "16e9b7ac2bbdd94ea9c6b9178cf85ee82871c698040f231938393213a2e1e06a",
+    "data/account_store.cpp": "91b521bd3a6d707f2c602fe5736df0731cd2c8649211dd3408de2b9387cb902c",
+    "data/hospital_store.cpp": "e623a2e3552806414ba9e3f318036e3cdaa1dce2b81ab878d15deeb98f552bec",
+    "ui/frmhospinfosetting.h": "6c24d118e520cf5810ce03a182a4894b41ad77cff202f60f9ab1646014155b44",
+    "ui/frmhospinfosetting.cpp": "f800e9e64ed69f3f5f20419c00b4e09a6104df79e4e7508ec31a890938e99c59",
+    "ui/frmaccountsetting.cpp": "4ca520400ded88361aea99b4ae686f0d70aec52725b961ac6527417b67b9aa10",
+    "samples/cusracklistwidget.cpp": "5b84881256c14fa47c0cf5699e52dac055a4ed2f7d0632db80fe0f325658596a",
+    "samples/sample_page.cpp": "6e8fb2b95eec1160a49d7c9499147c781e5cb44faca8c342e0db97853e5977ce",
+    "protocol/soak_main.cpp": "735ef434b73339db7231520d888f4c1dba3986930836d2b71cc80c835d2f01b3",
+    "protocol/status_loopback.cpp": "37e934d0716abf0f505ba9f0dda7294a7094b7ab1c4ef5eae7acdfd0f87b80a3",
+    "wsl_ime.sh": "f4e93b805302d66d73c770791a803c1b9790c545e7e219a2c54741c517e144ef"
+  },
+  "reference_sha256": {
+    "main.cpp": "b63c46ae047a2f3006b823cdc9477d498eb0aa2417cfe138845ff3d4c773be09",
+    "frmlogin/maskdlglogin.h": "c57e4291c0b9ce47b251f16ba8748d7d99e875c803f99fb2011ca9e6b13577c4",
+    "frmuserset/frmprintersetting.h": "30a2fba913eba650cea6ce33f028cc7661dfc38cc29b1ce8f1821cfb0adffedb",
+    "frmuserset/frmprintersetting.cpp": "b1bb265df924fd98dbac45ba7f21dc6fd973fb8a895667073e1082978b25ae62",
+    "frmuserset/frmlanguagesetting.h": "f71049d686124202485b47fe56724f1ed4dc76942fa499f6ab3ec7ee07aefc63",
+    "frmuserset/frmlanguagesetting.cpp": "e5e4c9a1cca2c906435e079c98407e9fa3ba6733d5e9dc235666d2d007e21865",
+    "customtools/Keyboard/Keyboard.h": "007ac7877b2ab8784d0467a7b4ec59589d91af9359fe65327a7756c9c501f306",
+    "customtools/Keyboard/AbstractKeyboard.h": "26243df5450d0402fdffee4f09d23c8009e5ba0b3dc33b566424b7463dcb967b",
+    "customtools/logger.h": "a2f6e557decbeb6c859ba4d3ec190529f61be0d317f5503d4a4f13178dce5821",
+    "customtools/dumpreport.h": "ee023e191ab48759217261c0ec0744b3ab7d6e3f25e922e438bb4b44bc713f20"
+  },
+  "selected_build_inputs_match_checkpoint": {
+    "shell/main.cpp": true,
+    "shell/frmmain.cpp": true,
+    "shell/frmmain.h": true,
+    "shell/frmuserset.cpp": true,
+    "shell/frmuserset.h": true,
+    "shell/shell.pri": true,
+    "shell/shutdown_request.cpp": true,
+    "shell/rk.sh": true,
+    "shell/rk_board.sh": true,
+    "shell/wsl.sh": true,
+    "data/account_store.h": true,
+    "data/account_store.cpp": true,
+    "data/hospital_store.cpp": true,
+    "ui/frmhospinfosetting.h": true,
+    "ui/frmhospinfosetting.cpp": true,
+    "ui/frmaccountsetting.cpp": true,
+    "samples/cusracklistwidget.cpp": true,
+    "samples/sample_page.cpp": true,
+    "protocol/status_loopback.cpp": true
+  },
+  "reviewed_utc": "2026-10-24T10:10:49.789309+00:00"
+}

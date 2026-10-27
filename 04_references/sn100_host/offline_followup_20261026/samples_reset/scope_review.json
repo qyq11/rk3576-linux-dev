@@ -1,0 +1,1532 @@
+{
+  "schema": "sn100-coverage-reconciliation-20261026-v1",
+  "reviewed_utc": "2026-10-26T00:54:00.288544Z",
+  "not_a_parallel_plan": true,
+  "answer_all_migrated": "否。当前是可运行的本地部分检查点。项目高级/批组/报告HTML等本地流程已有证据，但真实检测/算法结果链、校准质控效力、LIS/实体打印/仪器、若干公共本地功能和完整ResetErr/ResetFin仍未完成。不能按菜单或F01–F18/43条计算完成百分比。",
+  "original_fact_count": 43,
+  "reviewed_function_ids": [
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15",
+    "F16",
+    "F17",
+    "F18"
+  ],
+  "actual_review_scope": "逐项读43条原事实，核三个窗口原handoff、5123总收据，并对本地增量/样本合同读取当前与原版函数。其他公共条目继承原静态范围，未声称本次重新做全库行为/GUI验收。旧事实行号保存在prior_fact，不能误当当前行号。",
+  "prior_snapshot_limit": "global_coverage_20261024的348阶段事实含过时缺口；本表15条增量解释以当前交付/实际总收据校正。原handoff中的统一/Windows/ARM待验项也已由5123总收据补齐，临床/实物/长稳待验继续保留。",
+  "reconciled_delta_count": 15,
+  "historic_checkpoint": {
+    "path": "04_references/sn100_host/qc_local_20261025/final/verification.json",
+    "sha256": "57f2a3d2b11599e5e3154bac8289c9cfaa64de1bfe1fdf74571abc355383a51c",
+    "passed": true,
+    "source_inputs": 426,
+    "source_manifest_sha256": "5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29",
+    "suite_invocations": 35,
+    "project_reagent_qt": {
+      "project_advanced": [
+        11,
+        0,
+        0
+      ],
+      "project_basis": [
+        9,
+        0,
+        0
+      ],
+      "reagent_batches": [
+        11,
+        0,
+        0
+      ],
+      "reagent_basis": [
+        11,
+        0,
+        0
+      ]
+    },
+    "project_reagent_app_exits": {
+      "projects_app": 0,
+      "reagents_app": 0
+    },
+    "remaining_risks": [
+      "Original Windows complete behavior/active-theme and real Windows GUI",
+      "Original suite_final_05 calibration-reference SIGSEGV direct cause remains unconfirmed; current final pass cannot establish long stability",
+      "Original suite_final_07 login1920 containment failure direct cause remains unconfirmed; test-host preparation corrected, no production layout repair claimed",
+      "RK screen/input/actual dependencies and instrument/LIS/printing",
+      "Clinical calibration/QC algorithm effects and real-result identity chain",
+      "Approved resource/same-board RT budgets and long stability",
+      "Existing intermittent legacy report query and old 8 h recovery root causes remain separate"
+    ],
+    "new_slice_covered": false
+  },
+  "input_sha256": {
+    "04_references/sn100_host/global_coverage_20261024/review_summary.json": "d2830e7be9f2a35c8f244f1ae39c697d54a8526fda4b62a8b41a14b31f64ba58",
+    "04_references/sn100_host/global_coverage_20261024/foundation.json": "8ca945e55daea205939f4e4c012eeef8db355077ebaed159a350f1bd32f346be",
+    "04_references/sn100_host/global_coverage_20261024/business.json": "10b17b6d3edc3bb3930f263722233558cc6f1780d89753c9aed8b299661eecc1",
+    "04_references/sn100_host/global_coverage_20261024/services.json": "b94ebe2f991b6e38bc40a506f473070093c55bc90602a3a3a0f390d2cc3dc188",
+    "04_references/sn100_host/qc_local_20261025/final/verification.json": "57f2a3d2b11599e5e3154bac8289c9cfaa64de1bfe1fdf74571abc355383a51c",
+    "04_references/sn100_host/projects_remaining_20261025/handoff.json": "61921ca115e7f72071692739c832c4de0d653ee7d42ef435d9352402f92640a9",
+    "04_references/sn100_host/projects_remaining_20261025/reagents_handoff.json": "ccdf7859a2afdcdea96dbbc7cf65f331e7ee686f55db3e644c58dcafe3a2a1ae",
+    "04_references/sn100_host/report_remaining_20261025/handoff.json": "75b7b137833e637ea73287596c08418514ff4c97ef532a5d5e92432e9c65d409",
+    "04_references/sn100_host/report_remaining_20261025/interface_contract.json": "9fc8c438568bcdaf6ddb5cfd391edfe95feb06851b0b2da6128eebfd26c2ac01",
+    "04_references/sn100_host/calibration_local_20261025/handoff.json": "5a62156bfd55a9cbff1bf31ee2f153c35652d7d683fa226f69e0db44a69bfb80",
+    "04_references/sn100_host/qc_local_20261025/handoff.json": "8a32dc2aec35723cd860b97a6efc69abfb82e752b0952ec41550deb62c952659"
+  },
+  "current_source_sha256": {
+    "samples/sample_types.h": "70adc12eace71f1e788c285a5fdb169fbc8094ffbc942ec2bd4d4b0415b14414",
+    "samples/sample_store.h": "d4de08f59d3d695a8e46f42a88b629da5939a3cb5d75cc20c86f112f60bbe8c4",
+    "samples/sample_store.cpp": "ec734747b954ec97ad62af55a494e4af10c6d8a6af7a203fbbb12381fc62d86f",
+    "samples/sample_page.h": "798f60dc095db6ed8fd2f2b7ecf229ac3a2a9ebb44c85ac3c615f18db6503a08",
+    "samples/sample_page.cpp": "975104907dcb3553ac857cdd859b8795d51f49b10c84d959480dda5469531cd3",
+    "samples/sample_widgets.cpp": "46d2dc040dfb1a31242f0c25867adb67d2adf2a3dbde35d1acb8ad006f6ea5a1",
+    "samples/samples_core.pri": "d7373191ec732a305c3e56fbdc816740f1d5bc63a80bc2e952d41c9daab4e158",
+    "samples/cusracklistwidget.cpp": "5b84881256c14fa47c0cf5699e52dac055a4ed2f7d0632db80fe0f325658596a",
+    "projects/project_advanced.cpp": "cd54ec10537b1de4bd01792c96b96feb73741716c9d8c3a0a40ff9c0c1bed365",
+    "projects/project_page.cpp": "c8f525beedf239bfa6232ffa029f30a7f231656c899e7f7352583420ff06f090",
+    "projects/projects_store.cpp": "b234dd9d2609fc1b424396a2d9244f4dc2a9b4929fb0f9dae46a12685141702f",
+    "reagents/reagents_page.cpp": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc",
+    "reagents/reagent_store.cpp": "dffce0ddbd9879e5908a1692525f0ccae7a6568f5ebeac515c42e621ff99ed76",
+    "calibration/calibration_page.cpp": "ab18106a9cacb3dfa96c5cdbe9104fa7c40e1747e504ef5a83605fb82392d49d",
+    "calibration/calibration_store.cpp": "3c398cde7c968153d7d33c7400cd33fe055a5ad14d7177935a5dd09f01a121c3",
+    "quality_control/quality_control_page.cpp": "93b1325e51fbf48cc6224fa21d023605e1ee360728cc29acc9fc682fd6168218",
+    "quality_control/qc_store.cpp": "f79cc60b31757526417447f7a436c26965502e93d6011ce32a9f6ea601816c6b",
+    "history/history_page.cpp": "bf238e626bcb58ce45de1512cdfe2ef46e5ca6e9578a0e261810d1b863594cce",
+    "history/report_remaining_store.cpp": "13709d4d4054c5d03e5a3a361f4a0998063f22026bf89e18d119ecb38142ed6c",
+    "history/report_controller.cpp": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba",
+    "history/report_renderer.cpp": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581",
+    "history/report_remaining_html.h": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a",
+    "history/report_remaining_display_dialog.cpp": "1400458a5d0d1c51e371e7227d5193bf829ba687c837a45534f234f8494cafa0",
+    "data/lis_settings_store.cpp": "d55d5ab2db4d051ea02a4c923dc04a51324caa8b40a09120b1132082e1dc2d99",
+    "data/printer_settings_store.cpp": "d6c3c7014e8ccd404292c6c1327551b7e07e2afe14fd6ca1ee6d38f4bfb78a8c",
+    "shell/main.cpp": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156",
+    "shell/shell.pri": "59a410c5dced837a7e7622428685e4e1ec08119aa53a8bd4d1581f747dc8e64b",
+    "shell/frmuserset.cpp": "96fe6489641bc4a072fe6fce51f245cd899a0721bfe7fdbd22fca1e6fe8396d0",
+    "shell/frmmain.cpp": "56f28e27c2bc767ebce0afa986aad2f3e703246e65d95822dcfc25ef3cc2337b",
+    "protocol/status_loopback.cpp": "37e934d0716abf0f505ba9f0dda7294a7094b7ab1c4ef5eae7acdfd0f87b80a3",
+    "thirdparty/qtrpt/qtrpt.pri": "64e413f646e3b0d05d1c7874f1bd13e709a14ee670da307180fd1bd9db1d2a76"
+  },
+  "existing_sample_files_match_5123": {
+    "samples/sample_types.h": {
+      "expected_5123": "543d44458de920aaadf0ae12f31d1c1a3c4a0f78fab7d5d381b1c38e13126a70",
+      "actual": "70adc12eace71f1e788c285a5fdb169fbc8094ffbc942ec2bd4d4b0415b14414",
+      "matches": false
+    },
+    "samples/sample_store.h": {
+      "expected_5123": "a6ab304e22c18e7448d253d645ce710f5541bf1598989ed34ffb34198f334c95",
+      "actual": "d4de08f59d3d695a8e46f42a88b629da5939a3cb5d75cc20c86f112f60bbe8c4",
+      "matches": false
+    },
+    "samples/sample_store.cpp": {
+      "expected_5123": "318055b0cf043639088e5dce75227d39df335f790922d95d0672ae8797c10c69",
+      "actual": "ec734747b954ec97ad62af55a494e4af10c6d8a6af7a203fbbb12381fc62d86f",
+      "matches": false
+    },
+    "samples/sample_page.h": {
+      "expected_5123": "a5c9e75917066ad2b5f5515b9083a09c1954830850660b27f978f0e918da6404",
+      "actual": "798f60dc095db6ed8fd2f2b7ecf229ac3a2a9ebb44c85ac3c615f18db6503a08",
+      "matches": false
+    },
+    "samples/sample_page.cpp": {
+      "expected_5123": "6e8fb2b95eec1160a49d7c9499147c781e5cb44faca8c342e0db97853e5977ce",
+      "actual": "975104907dcb3553ac857cdd859b8795d51f49b10c84d959480dda5469531cd3",
+      "matches": false
+    },
+    "samples/sample_widgets.cpp": {
+      "expected_5123": "52d7ce10d18ccbfb67d382bb712898e13a552cc4b1d90e25d82ae9ae11731ca0",
+      "actual": "46d2dc040dfb1a31242f0c25867adb67d2adf2a3dbde35d1acb8ad006f6ea5a1",
+      "matches": false
+    },
+    "samples/samples_core.pri": {
+      "expected_5123": "953efc4de4730fd8c5d8c809641fdb0e000d95e5de21deb9df836d7ca1ead6cc",
+      "actual": "d7373191ec732a305c3e56fbdc816740f1d5bc63a80bc2e952d41c9daab4e158",
+      "matches": false
+    },
+    "samples/cusracklistwidget.cpp": {
+      "expected_5123": "5b84881256c14fa47c0cf5699e52dac055a4ed2f7d0632db80fe0f325658596a",
+      "actual": "5b84881256c14fa47c0cf5699e52dac055a4ed2f7d0632db80fe0f325658596a",
+      "matches": true
+    }
+  },
+  "operation_level_reconciliation": [
+    {
+      "id": "F01.startup-config",
+      "prior_group": "foundation",
+      "prior_ordinal": 1,
+      "prior_fact": {
+        "id": "F01.startup-config",
+        "state": "partial_business",
+        "capability": "Unified startup selects optional migrated modules, requires an absolute isolated data root, reports initialization failures and owns store threads. Theme/font/model are fixed for the offline shell.",
+        "gap": "Original production configuration/theme/model initialization is not an integrated configurable startup subsystem. Original config must not be reused or silently imported.",
+        "evidence": [
+          "shell/main.cpp:77-80",
+          "shell/main.cpp:86-105",
+          "shell/main.cpp:199-252",
+          "shell/main.cpp:496-554",
+          "shell/frmmain.cpp:196-197"
+        ],
+        "reference_evidence": [
+          "main.cpp:62-69",
+          "main.cpp:94-104",
+          "main.cpp:162-174",
+          "main.cpp:206-210"
+        ],
+        "remaining_acceptance_condition": "Confirm SN100 configuration keys/defaults and non-sensitive model/theme baseline; controlled anonymous settings, invalid/missing config recovery, restart behavior and explicit difference record. No connection side effects."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F01.single-instance",
+      "prior_group": "foundation",
+      "prior_ordinal": 2,
+      "prior_fact": {
+        "id": "F01.single-instance",
+        "state": "partial_business",
+        "capability": "RK lifecycle wrappers serialize deployment and prevent another app under their deployment lock.",
+        "gap": "Direct native application entry lacks the original application-level single-instance mechanism; no QLockFile/QSharedMemory/QSystemSemaphore equivalent is in shell main/linked shell sources. This is separate from launch-script locking.",
+        "evidence": [
+          "shell/main.cpp:69-105",
+          "shell/shell.pri:1-43",
+          "shell/rk.sh:39-40",
+          "shell/rk_board.sh:323-324"
+        ],
+        "reference_evidence": [
+          "main.cpp:46"
+        ],
+        "remaining_acceptance_condition": "Define instance scope versus deployment/data roots and explicit independent anonymous test processes, then verify first/second startup, stale lock/restart and safe refusal without data modification."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F02.password-login",
+      "prior_group": "foundation",
+      "prior_ordinal": 3,
+      "prior_fact": {
+        "id": "F02.password-login",
+        "state": "claimed_active",
+        "capability": "Account rows, role/list editing checks, explicit simulated identity selection, session propagation and logout-to-Guest exist.",
+        "gap": "Checkpoint has no username/password login dialog or login API. AccountSession.authenticated denotes selection of an anonymous simulated identity, and main accepts test-session. Subsequent local password login is being developed by the owner.",
+        "evidence": [
+          "data/account_store.h:22-29",
+          "data/account_store.h:51-58",
+          "data/account_store.cpp:364-406",
+          "shell/main.cpp:95",
+          "shell/frmmain.cpp:220-223",
+          "shell/frmmain.cpp:295-335"
+        ],
+        "reference_evidence": [
+          "frmlogin/maskdlglogin.h:32-49"
+        ],
+        "remaining_acceptance_condition": "Audit the owner's later login version separately: valid/invalid credentials, role enforcement, failed login recovery, logout/re-login, pending edits/worker guards, persistence and no secret logging. Do not attribute the checkpoint package to that later feature."
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "已接原密码登录卡及worker验证，默认Guest、失败保留身份、草稿/忙态保护；5123累计两显示模式各5/0。生产凭据安全、原Windows/RK仍待验，旧suite07几何直接原因未明。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F02.account-crud",
+      "prior_group": "foundation",
+      "prior_ordinal": 4,
+      "prior_fact": {
+        "id": "F02.account-crud",
+        "state": "integrated_offline",
+        "capability": "Real account setting page is instantiated; store exposes sanitized rows, add/remove/update, transaction checks and session refresh. A disabled control due to role/readiness is not evidence of an unimplemented operation.",
+        "evidence": [
+          "shell/frmuserset.cpp:62-69",
+          "data/account_store.h:53-66",
+          "data/account_store.cpp:503-525",
+          "data/account_store.cpp:609-692",
+          "shell/frmmain.cpp:302-335"
+        ],
+        "remaining_acceptance_condition": "Current merged-checkpoint runtime regression and later login integration must be checked from delivery evidence; this static review did not execute tests."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F14.hospital-dictionaries",
+      "prior_group": "foundation",
+      "prior_ordinal": 5,
+      "prior_fact": {
+        "id": "F14.hospital-dictionaries",
+        "state": "integrated_offline",
+        "capability": "Hospital information and five dictionary operations are real UI/store paths with busy/draft/focus guards. They are not unresolved settings placeholders.",
+        "evidence": [
+          "shell/frmuserset.cpp:70-77",
+          "shell/frmuserset.cpp:120-141",
+          "ui/frmhospinfosetting.h:20-37",
+          "data/hospital_store.cpp:408-453",
+          "data/hospital_store.cpp:659-666"
+        ],
+        "remaining_acceptance_condition": "Retain prior offline results and verify cumulative merged behavior; original Windows active-theme, RK input/display, full restart/real data scenarios remain separate."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F14.printer-setting",
+      "prior_group": "foundation",
+      "prior_ordinal": 6,
+      "prior_fact": {
+        "id": "F14.printer-setting",
+        "state": "not_ported",
+        "capability": "The original settings navigation contains a printer setting slot, but the final checkpoint page is an offline placeholder. Report PDF capability does not supply this missing settings page.",
+        "gap": "Original printer list/current choice/Apply persistence are absent from the unified settings UI and its data path.",
+        "evidence": [
+          "shell/frmuserset.cpp:38-86",
+          "shell/shell.pri:1-25"
+        ],
+        "reference_evidence": [
+          "frmuserset/frmprintersetting.h:20-29",
+          "frmuserset/frmprintersetting.cpp:35-71"
+        ],
+        "remaining_acceptance_condition": "Original UI layout, host printer enumeration including empty/missing printer, nonempty name validation, save failure and reopen persistence can be verified offline; actual paper printing is a distinct hardware condition."
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "原子页3已接设备列表/选择/Apply、本地printer/name、丢失设备与失败恢复；5123累计各5/0。实体打印仍未完成。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F14.language-setting",
+      "prior_group": "foundation",
+      "prior_ordinal": 7,
+      "prior_fact": {
+        "id": "F14.language-setting",
+        "state": "not_ported_page_original_business_unenabled",
+        "gap": "Language page is still a final offline placeholder. However the original implementation lists only simplified Chinese and its Apply slot is empty; a complete translation-switching engine is not established by this reference.",
+        "evidence": [
+          "shell/frmuserset.cpp:38-86"
+        ],
+        "reference_evidence": [
+          "frmuserset/frmlanguagesetting.cpp:27-43"
+        ],
+        "remaining_acceptance_condition": "Separate porting of the existing page from confirmation of an actually enabled original language-Apply requirement; do not invent unsupported multilingual behavior or mark the placeholder complete."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F14.lis-setting-entry",
+      "prior_group": "foundation",
+      "prior_ordinal": 8,
+      "prior_fact": {
+        "id": "F14.lis-setting-entry",
+        "state": "not_ported",
+        "gap": "LIS setting slot is a final offline placeholder, separate from F11's missing protocol/business integration. A current instrument local-loopback control is not LIS settings or HL7.",
+        "evidence": [
+          "shell/frmuserset.cpp:38-86",
+          "shell/shell.pri:34-43"
+        ],
+        "remaining_acceptance_condition": "Port original settings UI and an isolated non-production setting contract; expose actual supported transport/message limits and keep external endpoints inactive until authorized. F11 business details are reviewed separately."
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "原子页4的本地9键/隐藏保留键与双草稿已接，5123累计各5/0；HL7/MLLP/ACK及外部对端仍未接。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F15.local-sql-reliability",
+      "prior_group": "foundation",
+      "prior_ordinal": 9,
+      "prior_fact": {
+        "id": "F15.local-sql-reliability",
+        "state": "integrated_offline_partial_scope",
+        "capability": "Hospital/account SQL connections belong to workers; isolated-data tags, existing-table schema checks, busy_timeout, transaction/rollback/commit handling and atomic INI/tag writes are implemented.",
+        "evidence": [
+          "shell/main.cpp:207-252",
+          "data/hospital_store.cpp:82-114",
+          "data/hospital_store.cpp:128",
+          "data/hospital_store.cpp:260-311",
+          "data/hospital_store.cpp:675-752",
+          "data/account_store.cpp:127",
+          "data/account_store.cpp:199-239",
+          "data/account_store.cpp:291-311"
+        ],
+        "remaining_acceptance_condition": "Current merged failure/reopen evidence must be inspected. Do not describe all database reliability as missing; actual power-loss, damaged/full disk and RK behavior are additional validation conditions."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F15.production-import-upgrade",
+      "prior_group": "foundation",
+      "prior_ordinal": 10,
+      "prior_fact": {
+        "id": "F15.production-import-upgrade",
+        "state": "conditions_missing_and_not_integrated",
+        "gap": "The offline program intentionally rejects unmarked existing data; this does not implement controlled production-data import, cross-module schema upgrades or full production compatibility. No unified migration/import entry exists in the inspected shell/data/UI.",
+        "evidence": [
+          "data/hospital_store.cpp:82-103",
+          "data/account_store.cpp:236-311",
+          "shell/main.cpp:99-105",
+          "shell/shell.pri:1-43"
+        ],
+        "remaining_acceptance_condition": "Requires authorized anonymized schemas/compatibility rules and an affected-data recovery contract, followed by transaction/rollback/restart validation; never open reference production databases to fill this gap."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F15.runtime-data-backup-restore",
+      "prior_group": "foundation",
+      "prior_ordinal": 11,
+      "prior_fact": {
+        "id": "F15.runtime-data-backup-restore",
+        "state": "not_integrated",
+        "gap": "Application-wide runtime data backup/restore UI/entry and coordinated consistent snapshots of the separate store roots are absent from inspected shell/data/UI. Immutable program release backups and deployment rollback are different capabilities.",
+        "evidence": [
+          "shell/main.cpp:207-252",
+          "shell/main.cpp:535-554",
+          "shell/shell.pri:1-43",
+          "shell/rk_board.sh:305-309"
+        ],
+        "remaining_acceptance_condition": "Define runtime-data scope and consistency/close policy, preserve only affected recoverable data, then verify backup integrity, failed restore, schema mismatch and reopen. Existing release archives do not establish runtime database recovery."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F16.soft-keyboard",
+      "prior_group": "foundation",
+      "prior_ordinal": 12,
+      "prior_fact": {
+        "id": "F16.soft-keyboard",
+        "state": "not_ported_component",
+        "capability": "WSL has an explicit Fcitx5 launch adapter for Chinese input; business pages retain focus/draft guards and dictionary mnemonic handling.",
+        "gap": "The original custom on-screen Keyboard/NumberKeyboard component and field routing are not in the checkpoint shell build. This does not mean Chinese input as a whole is missing.",
+        "evidence": [
+          "wsl_ime.sh:6-7",
+          "wsl_ime.sh:18-41",
+          "shell/frmuserset.cpp:95-100",
+          "shell/catalog_shell.cpp:144-156",
+          "shell/shell.pri:1-43"
+        ],
+        "reference_evidence": [
+          "customtools/Keyboard/Keyboard.h:43-50",
+          "customtools/Keyboard/AbstractKeyboard.h:18-57"
+        ],
+        "remaining_acceptance_condition": "After display/touch and original input behavior are confirmed, verify Chinese/numeric/password field routing, focus/Tab/Enter/Esc, dialog/scroll interaction and safe text handling. Do not copy reference keystroke-value debug output into credential fields."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F16.sample-scroll-correction",
+      "prior_group": "foundation",
+      "prior_ordinal": 13,
+      "prior_fact": {
+        "id": "F16.sample-scroll-correction",
+        "state": "integrated_offline_verification_pending",
+        "capability": "Frozen sample rack already constructs a QScroller, enables ScrollPerPixel and LeftMouseButtonGesture, and changes gesture enablement while an editor is open. Earlier documentation saying it was not connected is stale for this checkpoint.",
+        "evidence": [
+          "samples/cusracklistwidget.cpp:4-21",
+          "samples/sample_page.cpp:629"
+        ],
+        "remaining_acceptance_condition": "Keyboard/mouse and later RK touch/drag reachability remain runtime evidence questions. Do not create a duplicate implementation solely from the older note."
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "当前cusracklistwidget已接QScroller左键手势和ScrollPerPixel；原视图/草稿/滚动补验有证据。RK触屏命中/完整输入仍待实屏。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F17.application-logging",
+      "prior_group": "foundation",
+      "prior_ordinal": 14,
+      "prior_fact": {
+        "id": "F17.application-logging",
+        "state": "partial_business_standalone_only",
+        "capability": "Unified program emits lifecycle/errors and exact simulated TX/RX via qInfo/qWarning/qCritical; launch scripts capture per-run app.log. A separate soak tool has bounded file logging/progress/timing mechanisms.",
+        "gap": "Unified application has not connected the original logger lifecycle or an equivalent persistent categorized/timestamped rotating/bounded log sink; soak logging is not linked by shell.pri.",
+        "evidence": [
+          "shell/main.cpp:261-268",
+          "shell/main.cpp:288",
+          "shell/main.cpp:521-554",
+          "shell/rk_board.sh:224-225",
+          "protocol/status_loopback.cpp:453",
+          "protocol/soak_main.cpp:246-300",
+          "shell/shell.pri:34-43"
+        ],
+        "reference_evidence": [
+          "main.cpp:345-347",
+          "customtools/logger.h:125-133"
+        ],
+        "remaining_acceptance_condition": "Define log location/categories/time/rotation and disk-failure/backpressure semantics across normal UI and communication while redacting secrets; exercise bounded growth and diagnostic collection. Console capture alone is not that release-level logger."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F17.crash-diagnostics",
+      "prior_group": "foundation",
+      "prior_ordinal": 15,
+      "prior_fact": {
+        "id": "F17.crash-diagnostics",
+        "state": "not_ported",
+        "gap": "Original main installs crash handling; checkpoint has only ordinary SIGTERM/SIGINT-to-Qt shutdown and lifecycle output, not an integrated abnormal-crash report/backtrace collection path.",
+        "evidence": [
+          "shell/shutdown_request.cpp:32-37",
+          "shell/shutdown_request.cpp:134-141",
+          "shell/main.cpp:197-201",
+          "shell/shell.pri:1-43"
+        ],
+        "reference_evidence": [
+          "main.cpp:218",
+          "customtools/dumpreport.h:6-17"
+        ],
+        "remaining_acceptance_condition": "Platform-specific crash/report retention with no secret or patient leakage, clearly separated from ordinary guarded close and experimentally verified without risking active data. Original Windows handler cannot be assumed portable to Linux/ARM."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.01",
+      "prior_group": "business",
+      "prior_ordinal": 1,
+      "prior_fact": {
+        "feature": "F03",
+        "area": "试剂资料/瓶型/批号/条码/孔位",
+        "classification": "integrated_offline_partial",
+        "current_source_capability": "原试剂页和相关编辑弹窗已迁入；本地catalog库支持资料/瓶型/批号/条码/孔位保存删除、会话权限与错误反馈，显示本地手工装载量/余量。",
+        "uncovered_operation": "资料CRUD不能代表物理余量、耗用与足料链完成。生产项目/瓶型/批次配置导入和原Windows同输入及RK/实物仍另验。",
+        "dependency_or_confirmation": "需明确生产配置来源/schema与适用机型；实际液位需要已确认设备/只读语义。",
+        "offline_acceptance_boundary": "匿名本地配置、外键引用、权限、失败恢复与重开可验；禁止把手工余量称液位实测。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/main.cpp",
+            "line_start": 390,
+            "line_end": 400,
+            "fact": "实例化Project/Reagent/Sample页并attach统一入口，非最终占位。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "reagents/reagent_store.h",
+            "line_start": 19,
+            "line_end": 37,
+            "fact": "公开worker接口仅本地资料/瓶/批次/条码/孔位CRUD和close。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "reagents/reagent_store.cpp",
+            "line_start": 533,
+            "line_end": 562,
+            "fact": "校验手工amountUl/remainingUl并写本地；无液位推定。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.02",
+      "prior_group": "business",
+      "prior_ordinal": 2,
+      "prior_fact": {
+        "feature": "F03",
+        "area": "扫描/液位探测/换位/优先级/清盘的设备接线",
+        "classification": "ui_only_unavailable_business",
+        "current_source_capability": "按钮/角色布局保留；设备不可用时明确显示未发送命令。",
+        "uncovered_operation": "btnDect/btnDectOne/btnScan/btnChange/btnChangeHole/btnUpdatePriority/btn_clearPanel等仅到showOffline；不执行原扫描、测量、换位、同步或整盘清除业务。",
+        "dependency_or_confirmation": "原命令/应答/状态、当前SN100执行范围及故障恢复合同；硬件操作参数必须经用户确认。",
+        "offline_acceptance_boundary": "可先拆出命令/解析/状态机并用自建端受控验证；真实动作不自动解禁。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "reagents/reagents_page.cpp",
+            "line_start": 101,
+            "line_end": 135,
+            "fact": "扫描禁用、余量标注本地，设备相关按钮统一接showOffline。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "reagents/reagents_page.cpp",
+            "line_start": 209,
+            "line_end": 243,
+            "fact": "角色决定可见/本地可编辑，showOffline仅报告未发送命令。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "protocol/status_loopback.cpp",
+            "line_start": 321,
+            "line_end": 325,
+            "fact": "当前模拟端仅接受Qj，不能覆盖试剂命令。"
+          },
+          {
+            "origin": "reference",
+            "program_relative_path": "frmreagent/frmreagentmaterial.cpp",
+            "line_start": 1500,
+            "line_end": 1512,
+            "fact": "原清盘先清试剂设置并发送getReagentClear；需区分本地和设备联动。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.03",
+      "prior_group": "business",
+      "prior_ordinal": 3,
+      "prior_fact": {
+        "feature": "F03",
+        "area": "剩余测试次数/消耗/足料",
+        "classification": "ui_only_unavailable_business",
+        "current_source_capability": "孔位余量可人工输入，余量显示来自remainingUl。",
+        "uncovered_operation": "切剩余次数页只提示缺项目试剂消耗配置；项目用量/其他试剂用量表强制0行只读，没有按任务消耗扣减/多瓶选用/足料判定。",
+        "dependency_or_confirmation": "依赖项目完整试剂动作/用量配置、样本真实任务状态和认可的消耗/死量/多瓶规则。",
+        "offline_acceptance_boundary": "先建立原单位/体积/去重/预留/失败回滚模型的匿名离线用例；无认可规则不得按猜值给足料成功。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "reagents/reagents_page.cpp",
+            "line_start": 117,
+            "line_end": 135,
+            "fact": "次数页未计算，usage表清空。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "projects/project_page.cpp",
+            "line_start": 49,
+            "line_end": 67,
+            "fact": "所需高级动作/算法/校准配置尚未移植。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "samples/sample_types.h",
+            "line_start": 7,
+            "line_end": 16,
+            "fact": "当前任务仅项目/倍率标签/重复/延长，没有实际执行量。"
+          }
+        ]
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "剩余次数/耗用/足料仍未接，但原依赖描述中高级动作完全未迁已过时：本地动作表现已存取；任务执行/体积预算及多瓶规则另缺。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.04",
+      "prior_group": "business",
+      "prior_ordinal": 4,
+      "prior_fact": {
+        "feature": "F03",
+        "area": "批组ISI/正常值/校准关联",
+        "classification": "ui_partial_business_missing",
+        "current_source_capability": "批组管理弹窗及本地批次/关联CRUD已有。",
+        "uncovered_operation": "ISI、normalValue、相关校准选择/计算入口被显式禁用，不能认为完整批组临床结果业务完成。",
+        "dependency_or_confirmation": "原批组参数schema/单位/方法及校准关联语义需核；数值的临床适用性不能由匿名演示值代替。",
+        "offline_acceptance_boundary": "本地参数的存取/校验/引用可分离准备，计算和临床输出需认可方法/材料。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "reagents/reagents_page.cpp",
+            "line_start": 662,
+            "line_end": 688,
+            "fact": "原批组弹窗中的ISI/normal/相关控件被关闭。"
+          }
+        ]
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "ISI/正常测定值本地校验保存/小数文本/稳定batch引用现已接；5123批组11/0、基础11/0。自动校准关联选择/计算/临床效力仍缺，不再把整个批组本地流程列未迁。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.05",
+      "prior_group": "business",
+      "prior_ordinal": 5,
+      "prior_fact": {
+        "feature": "F03",
+        "area": "restore按钮原版启用范围",
+        "classification": "reference_noop_requires_confirmation",
+        "current_source_capability": "移植版保留角色受限的restore入口并明确不可用。",
+        "uncovered_operation": "不能把这个入口直接列成必须恢复的完整原版业务：检查到原restore处理器定义lambda后，其最终restoreCalibrationPanel调用被注释。",
+        "dependency_or_confirmation": "需要实际SN100发行版/机型启用范围确认；源代码有按钮不等于原功能实际可用。",
+        "offline_acceptance_boundary": "仅登记原版现状/待确认，不能凭按钮存在新增设备动作或擅自删入口。",
+        "evidence": [
+          {
+            "origin": "reference",
+            "program_relative_path": "frmreagent/frmreagentmaterial.cpp",
+            "line_start": 1455,
+            "line_end": 1492,
+            "fact": "末尾调用注释，lambda未被调用；这是原版现状而非已证的移植遗漏。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "reagents/reagents_page.cpp",
+            "line_start": 209,
+            "line_end": 217,
+            "fact": "restore等仍按角色可见。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.06",
+      "prior_group": "business",
+      "prior_ordinal": 6,
+      "prior_fact": {
+        "feature": "F04",
+        "area": "普通/急诊样本本地预设、重复/倍率候选/组合",
+        "classification": "integrated_offline_partial",
+        "current_source_capability": "原架孔/设置/详情/重复/组合UI已迁入并接统一窗口；SampleStore支持架、组合持久化和本地权限/请求关联，项目/试剂快照作为依赖。",
+        "uncovered_operation": "这只是可重开的本地预设，不代表设备任务、真实急诊调度、检测/扣量/结果生成。",
+        "dependency_or_confirmation": "实际机型架孔配置、项目生产参数与真实任务合同仍待验。",
+        "offline_acceptance_boundary": "可验本地普通/急诊架、输入、重复/顺序组合、草稿/外键/权限/重开；不发送任务。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/catalog_shell.cpp",
+            "line_start": 87,
+            "line_end": 119,
+            "fact": "替换index1占位、注入会话/项目/试剂，后续信号同步。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "samples/sample_store.h",
+            "line_start": 18,
+            "line_end": 30,
+            "fact": "公开接口为本地Rack/Combination操作。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "samples/sample_types.h",
+            "line_start": 7,
+            "line_end": 26,
+            "fact": "特意无仪器task/report ID，值对象仅local preset字段。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.07",
+      "prior_group": "business",
+      "prior_ordinal": 7,
+      "prior_fact": {
+        "feature": "F04",
+        "area": "任务下发/应答/真实ID/急诊联动/结果分流",
+        "classification": "business_not_implemented",
+        "current_source_capability": "本地架孔预设及模拟只读状态可用。",
+        "uncovered_operation": "无设备task/report ID分配、下发应答、去重/在途状态、真实急诊插队、失败恢复、扣量和结果分流链；本地保存成功明确未下发/扣量/生成报告。",
+        "dependency_or_confirmation": "需确认原task/执行状态/命令字段与ID规则、项目动作/消耗配置；实际执行还需设备范围确认。",
+        "offline_acceptance_boundary": "可先做原合同下的纯状态/消息/失败用例及模拟端接线；硬件执行与报告发布仍另验。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "samples/sample_types.h",
+            "line_start": 7,
+            "line_end": 26,
+            "fact": "无仪器任务/报告ID及执行状态字段。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "samples/sample_page.cpp",
+            "line_start": 297,
+            "line_end": 321,
+            "fact": "读取/保存只宣告本地预设，并明确未下发/扣量/生成报告。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "protocol/status_loopback.cpp",
+            "line_start": 321,
+            "line_end": 325,
+            "fact": "当前O09端仅Qj，只读状态不能投递样本任务。"
+          },
+          {
+            "origin": "reference",
+            "program_relative_path": "frmsample/frmsamplematerial.cpp",
+            "line_start": 3810,
+            "line_end": 3815,
+            "fact": "原版存在slotSendRackTasks入口，当前移植未接该路径。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.08",
+      "prior_group": "business",
+      "prior_ordinal": 8,
+      "prior_fact": {
+        "feature": "F04",
+        "area": "错误复位/完成后复测的本地业务",
+        "classification": "ui_only_unavailable_business",
+        "current_source_capability": "样本页面保留btnResetErr和btnResetFin。",
+        "uncovered_operation": "当前两按钮与LIS更新一同仅报告尚未接设备流程；原版两处理器在非Testing孔设置revise、重置错误/复测视图及changedView，是可拆出的本地任务编辑语义，不全是机械动作。",
+        "dependency_or_confirmation": "需补任务生命周期/错误完成状态与原revise语义，保持Testing拒绝；真实重新下发另外依赖设备合同。",
+        "offline_acceptance_boundary": "在已确认状态模型后，可先离线实现Testing保护、错误/完成项转待复测草稿、保存/取消/重开，再另验设备重新执行。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "samples/sample_page.cpp",
+            "line_start": 240,
+            "line_end": 246,
+            "fact": "当前ResetErr/ResetFin只到不可用提示。"
+          },
+          {
+            "origin": "reference",
+            "program_relative_path": "frmsample/frmsamplematerial.cpp",
+            "line_start": 5619,
+            "line_end": 5668,
+            "fact": "原处理器先拒绝Testing，再更新revise及本地任务视图，不在该处理器发送机械命令。"
+          }
+        ]
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "本地原按钮、逐次状态/revise持久化已按432/9ff独立两QPA各14/0，旧11业务函数各13/0，父子均0；核心9/0。统一累计/视觉/资源未由本窗口验收，真实任务投递/执行仍缺",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.09",
+      "prior_group": "business",
+      "prior_ordinal": 9,
+      "prior_fact": {
+        "feature": "F04",
+        "area": "样本校准项目/任务与LIS查询",
+        "classification": "ui_only_unavailable_business",
+        "current_source_capability": "普通样本项目选择及本地组合已接。",
+        "uncovered_operation": "btnCalProj明确关闭；btnUpdateLis只有不可用提示；校准/质控任务、LIS取得样本任务的业务入口尚未接入。",
+        "dependency_or_confirmation": "校准/质控的项目批次模型、LIS任务协议/身份及重复处理规则；真实端点需另确认。",
+        "offline_acceptance_boundary": "可做匿名离线任务解析/引用与待选项，不能用普通预设或Qj代替校准/QC/LIS流程。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "samples/sample_page.cpp",
+            "line_start": 127,
+            "line_end": 128,
+            "fact": "校准流程按钮明确尚未移植。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "samples/sample_page.cpp",
+            "line_start": 240,
+            "line_end": 246,
+            "fact": "UpdateLis只提示未接流程。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.10",
+      "prior_group": "business",
+      "prior_ordinal": 10,
+      "prior_fact": {
+        "feature": "F05",
+        "area": "开始/暂停/恢复/真实启动互锁",
+        "classification": "closed_loop_not_implemented",
+        "current_source_capability": "设备按钮保留原位置/禁用图标；只读模拟状态不授予动作权限。",
+        "uncovered_operation": "没有原启动检查→投递→应答→暂停中/暂停/恢复的闭环；连接/足料/校准/未保存配置、急诊/关机状态与业务互锁仍需实现/接线，不能因为状态fresh就启用Start。",
+        "dependency_or_confirmation": "依赖真实任务状态、项目/消耗/校准模型、原命令及拒绝语义；硬件后验必须确认范围。",
+        "offline_acceptance_boundary": "可先把原启动拒绝条件/状态迁移和模拟命令证据拆为离线门槛；设备动作不解禁。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/frmmain.cpp",
+            "line_start": 232,
+            "line_end": 250,
+            "fact": "Start/Pause构造后均setBtnDisabled(true)，只设置文字/样式/tooltip。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "protocol/status_loopback.cpp",
+            "line_start": 321,
+            "line_end": 325,
+            "fact": "自建端只接受Qj。"
+          },
+          {
+            "origin": "reference",
+            "program_relative_path": "frmmain/frmmain.cpp",
+            "line_start": 2020,
+            "line_end": 2040,
+            "fact": "原暂停包含确认、发送PauseCommand及主状态/按钮迁移。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.11",
+      "prior_group": "business",
+      "prior_ordinal": 11,
+      "prior_fact": {
+        "feature": "F06",
+        "area": "项目基本字段/结果/单位",
+        "classification": "integrated_offline_partial",
+        "current_source_capability": "基本名称/LIS码、结果类型/精度/范围/LIS码/单位/主结果、复制/删除引用保护、本地保存/重开已有实现并接主壳。",
+        "uncovered_operation": "只读单位字典和匿名sample-rate标签不是生产项目/高级动作配置，不应将F06整体标完成。",
+        "dependency_or_confirmation": "生产初始配置来源、schema/参数认可及同步协议另需确认；不应擅自新增原本无写入口的单位管理UI。",
+        "offline_acceptance_boundary": "已有本地能力可独立累计验证；生产配置导入/临床计算需新的明确切片。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "projects/projects_store.h",
+            "line_start": 9,
+            "line_end": 54,
+            "fact": "项目对象以基本字段、结果、只读sample-rate标签为边界。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "projects/project_page.cpp",
+            "line_start": 479,
+            "line_end": 544,
+            "fact": "已有save/copy/remove本地操作。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/main.cpp",
+            "line_start": 390,
+            "line_end": 397,
+            "fact": "实际创建并attach目录/样本页。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.12",
+      "prior_group": "business",
+      "prior_ordinal": 12,
+      "prior_fact": {
+        "feature": "F06",
+        "area": "加样/试剂动作、稀释配置、高级算法/校准参数",
+        "classification": "ui_present_business_not_migrated",
+        "current_source_capability": "原完整frmsystemmaterial.ui保留，当前仅基础页可编辑。",
+        "uncovered_operation": "btnSampleAdd/btnReagentAdd/btnCalibrate tabs disabled；浓度/FBG/INR/MDA启用和analysis method disabled，算法系数/温育长度read-only并清空。缺完整project_base/AlgParam/project_reagent/project_sample_rate动作/体积/波长/算法/校准配置的存取业务。",
+        "dependency_or_confirmation": "原字段schema/单位/约束、SN100启用方法及合法参数；计算需算法/校准认可，真实动作另验。",
+        "offline_acceptance_boundary": "可以先保留原高级页面并实现匿名本地参数/引用/事务/草稿与校验，不须等仪器才移植页面；同步和临床输出分别设门槛。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "projects/project_page.cpp",
+            "line_start": 49,
+            "line_end": 67,
+            "fact": "明确关闭高级tabs和算法控件。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "projects/projects_store.h",
+            "line_start": 42,
+            "line_end": 54,
+            "fact": "当前ProjectRecord未承载完整高级动作字段。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "projects/origins.json",
+            "line_start": 37,
+            "line_end": 48,
+            "fact": "来源说明明确生产导入和完整高级字段尚未移植。"
+          },
+          {
+            "origin": "reference",
+            "program_relative_path": "frmsystem/frmsystemmaterial.h",
+            "line_start": 84,
+            "line_end": 124,
+            "fact": "原加样/试剂表、质量表、校准模式、相关增删/保存规则入口存在。"
+          }
+        ]
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "六参数、15列加样、10列有序试剂动作本地校验/保存/复制/重开现已接，5123高级11/0、基础9/0；AlgParam/系数/d_T/IBS及算法执行/临床校准仍缺。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.13",
+      "prior_group": "business",
+      "prior_ordinal": 13,
+      "prior_fact": {
+        "feature": "F07",
+        "area": "校准主页面/曲线浏览、原始点/批号/审核保存等",
+        "classification": "page_and_business_not_ported",
+        "current_source_capability": "只有校准主菜单名/按钮，checkpoint中未找到校准Widget/Store及attach路径。",
+        "uncovered_operation": "index3保留最终占位；曲线/点表、按项目/批号加载、选择默认曲线、显示图、重算、审核、保存/复制/删除及计算ID设置均未迁入统一程序。",
+        "dependency_or_confirmation": "原页面/数据schema/角色、项目批号绑定语义；拟合/逆算/临床应用需认可方法/参数。基础页面和本地CRUD不依赖硬件本身。",
+        "offline_acceptance_boundary": "先移植原版布局及匿名本地点/曲线/选择/保存重开/权限/失败恢复；未认可的拟合/审核发布不能假成功。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/frmmain.cpp",
+            "line_start": 31,
+            "line_end": 81,
+            "fact": "index3标签为校准曲线，非用户设置页时先建占位。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/main.cpp",
+            "line_start": 350,
+            "line_end": 447,
+            "fact": "完整main挂接的是history/catalog/sample/instrument，没有校准挂接。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/shell.pri",
+            "line_start": 14,
+            "line_end": 44,
+            "fact": "统一编译依赖没有校准模块。"
+          },
+          {
+            "origin": "reference",
+            "program_relative_path": "frmcalibration/frmcalibrationmaterial.h",
+            "line_start": 44,
+            "line_end": 66,
+            "fact": "原refresh/LineInfo/LineUse/Apply/ShowChart/ReCalculate/Save/Copy/DelLine/Check/CalculateID入口。"
+          }
+        ]
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "原校准主页面/本地记录、原始点、复制/软隐藏/散点和catalog引用保护已接；5123存储51/0、原页面各21/0、shell各6/0、引用22/0。拟合/逆算/审核/应用及真实波形未接，旧suite05直接崩溃原因未明。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.14",
+      "prior_group": "business",
+      "prior_ordinal": 14,
+      "prior_fact": {
+        "feature": "F08",
+        "area": "质控主页面/控制品项目批次/历史图",
+        "classification": "page_and_business_not_ported",
+        "current_source_capability": "有质控菜单，quality目录已有纯QtCore统计函数与CLI。",
+        "uncovered_operation": "index4最终仍占位；控制品/项目/批号新增编辑保存/默认批、靶值/上下限、历史点/图表、按单位显示及任务/结果关联未迁入统一程序。独立统计CLI不是这些页面/数据业务。",
+        "dependency_or_confirmation": "原控制品/批次schema及角色；图与统计需正确单位倍率和批次范围；规则判定另行确认。",
+        "offline_acceptance_boundary": "可先移植原质控UI与匿名控制品/批次/点存取、图表和统计适配，确认同原版字段/倍率/失败语义；暂不启用未认可失控判定。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/frmmain.cpp",
+            "line_start": 31,
+            "line_end": 81,
+            "fact": "index4质量控制仍由占位构造，未有后续QC attach。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/main.cpp",
+            "line_start": 350,
+            "line_end": 447,
+            "fact": "统一主入口没有QC对象/worker挂接。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/shell.pri",
+            "line_start": 14,
+            "line_end": 44,
+            "fact": "统一编译没有quality/statistics或QC Widgets。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "quality/quality.pro",
+            "line_start": 1,
+            "line_end": 10,
+            "fact": "目标console且QT-=gui network，仅main/statistics。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "quality/origins.json",
+            "line_start": 5,
+            "line_end": 15,
+            "fact": "范围明确不含UI/数据库/失控判定，原调用链需批次数据+单位换算。"
+          },
+          {
+            "origin": "reference",
+            "program_relative_path": "frm_quality/frm_quality.h",
+            "line_start": 41,
+            "line_end": 50,
+            "fact": "原控制选择/项目/图表及控制品增改入口。"
+          },
+          {
+            "origin": "reference",
+            "program_relative_path": "frm_quality/mask_dlg_add_control.h",
+            "line_start": 34,
+            "line_end": 50,
+            "fact": "原控制品项目/结果/批次保存删除等业务入口。"
+          }
+        ]
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "已迁QC控制品/项目/规则/批次/默认批元数据及引用保护；真实点、历史点查询、曲线、统计和追踪/追溯目前尚缺。主页空图/历史引用保护不代表完整原业务链已迁",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.15",
+      "prior_group": "business",
+      "prior_ordinal": 15,
+      "prior_fact": {
+        "feature": "F08",
+        "area": "质控统计与失控规则",
+        "classification": "standalone_statistics_only_rules_unconfirmed",
+        "current_source_capability": "calculateStatistics保留均值/极差/样本方差/SD/CV有效性，CLI可处理显式匿名序列。",
+        "uncovered_operation": "尚未接GUI/DB；不执行失控规则。原SD4_R、上下限顺序、同侧规则/历史窗、T7/X10边界及CV显示存在已登记疑点，不能照搬后宣称临床规则通过。",
+        "dependency_or_confirmation": "必须对照原Windows实际行为并获业务认可的规则、同侧/时序/边界/CV单位精度合同。",
+        "offline_acceptance_boundary": "纯统计可以先给图表/序列适配并验证单位/窗口；规则显示和判定在合同冻结前保持明确未启用。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "quality/statistics.h",
+            "line_start": 11,
+            "line_end": 33,
+            "fact": "仅StatisticsResult及calculateStatistics，明确非失控判定。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "quality/main.cpp",
+            "line_start": 209,
+            "line_end": 220,
+            "fact": "独立QCoreApplication命令行入口。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "quality/origins.json",
+            "line_start": 87,
+            "line_end": 94,
+            "fact": "列有已排除的规则问题，未当移植完成。"
+          }
+        ]
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "本地质控管理已接，但独立统计原型不能证明临床规则；原SD4_R、上下限/同侧/历史窗、T7/X10/CV疑点继续待业务依据，不因界面完成关闭。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "business.16",
+      "prior_group": "business",
+      "prior_ordinal": 16,
+      "prior_fact": {
+        "feature": "F05/F07/F08",
+        "area": "真实曲线→凝血点→项目结果/校准质控/患者报告",
+        "classification": "research_prototype_not_integrated",
+        "current_source_capability": "coagulation独立QtCore CLI有百分比交点/最大导数候选时刻及显式失败/参数。",
+        "uncovered_operation": "不是原AL4A等价实现；缺实时采集/预处理/早停/无凝血和干扰保护、项目结果换算、校准/INR/FIB派生、患者结果保存/报告/设备停止链，也未纳入统一主壳。",
+        "dependency_or_confirmation": "实际SN100光学/AD/参考通道语义、时间零点/方向/单位/采样/掩蔽期、真实匿名曲线、项目参数和认可误差；原Windows库可用范围/接口另核。",
+        "offline_acceptance_boundary": "可继续研究用离线数据及严格失败用例；材料不足时不能发布临床结果/停设备，仍可开发不依赖算法的页面和本地管理。",
+        "evidence": [
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "coagulation/coagulation.pro",
+            "line_start": 1,
+            "line_end": 8,
+            "fact": "console、QT-=gui，只main/clot_endpoint。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "coagulation/clot_endpoint.h",
+            "line_start": 11,
+            "line_end": 70,
+            "fact": "输入为完整曲线/显式方向和工程trial options，仅两种候选端点。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "coagulation/origins.json",
+            "line_start": 3,
+            "line_end": 39,
+            "fact": "范围/默认参数非临床，明确未实现AL4A等价、early stopping、项目结果/校准派生/报告/控制。"
+          },
+          {
+            "origin": "checkpoint",
+            "program_relative_path": "shell/shell.pri",
+            "line_start": 14,
+            "line_end": 44,
+            "fact": "主壳编译没有coagulation。"
+          }
+        ]
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F09-query-patient-csv",
+      "prior_group": "services",
+      "prior_ordinal": 1,
+      "prior_fact": {
+        "id": "F09-query-patient-csv",
+        "classification": "integrated_offline_subset",
+        "operation": "History query, date/sample/barcode filters, paging, selected detail, patient metadata save and selected/all-query GBK CSV",
+        "evidence": [
+          "shell/main.cpp:354 creates HistoryPage and :357 attaches it; :358 enables report controller",
+          "shell/history_shell.cpp:19 replaces actual navigation page2 placeholder",
+          "history/history_page.cpp:185 connects export, :199-202 queues query/detail/patient-save/CSV requests",
+          "history/history_store.h:133-148 exposes initialize/query/detail/savePatient/exportCsv/close",
+          "history/history_store.cpp:471 seeds only embedded anonymous fixture; :742 query, :805 detail, :822 patient metadata save, :866 CSV"
+        ],
+        "limits": "Existing patient-save is not result editing/recalculation. The store accepts a marked anonymous schema; production history import and device-result ingestion are not shown by this entry chain. Do not reimplement this existing subset merely because constructor placeholders exist."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F09-report-display-delete-modify",
+      "prior_group": "services",
+      "prior_ordinal": 2,
+      "prior_fact": {
+        "id": "F09-report-display-delete-modify",
+        "classification": "existing_ui_missing_business_or_enablement_uncertain",
+        "operation": "Report column/display ordering, report deletion, result-value editing/save",
+        "evidence": [
+          "history/history_page.cpp:127-132 disables btnDisplay/btnUpdate/btnDel/btn_save_modify and hides save_modify",
+          "history/history_store.h:133-148 has no report-delete or result-update slot",
+          "reference frm_report/frm_report_material.cpp:1166 implements original delete selection handling, :1313 opens display/column settings, :1979 saves modified results"
+        ],
+        "original_enablement_caveat": "Original save_modify is hidden initially at :169 but shown through a QShortcut path at :367 and hidden again at :401. Confirm intended SN100 shipped enablement, permissions and data/audit semantics before restoring editing; a hidden default does not prove permanent absence.",
+        "conditions": "Deletion, display settings and an explicit anonymous result-edit contract can be verified offline, but deletion/clinical editing semantics and roles must come from the original behavior rather than guesses."
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "显示列/同项目排序与报告软隐藏已接，5123核心各12/0、shell各5/0。患者信息保存不是结果值修改；结果改写仍需核原隐藏/提前return基线。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F09-detail-curve-recalc",
+      "prior_group": "services",
+      "prior_ordinal": 3,
+      "prior_fact": {
+        "id": "F09-detail-curve-recalc",
+        "classification": "partial_ui_with_missing_data_and_algorithm_chain",
+        "operation": "Raw light/AD curve, channel/axis selection, result selection and recalculation",
+        "evidence": [
+          "history/history_page.cpp:621-626 disables btn_recal/cbxLightType/cbxYaixsType/tableResultSelect/row navigation and supplies a pending tooltip to wgtChart",
+          "history/history_store.h:HistoryResult/HistoryResultValue hold normalized result values, not curve storage or a recalculation API",
+          "reference frm_report/mask_dlg_report_detail.cpp:442 refresh_spectrum, :493 result selection; :662 on_btn_recal_clicked emits a no-water/no-cup signal only"
+        ],
+        "conditions": "Separate an offline curve viewer/data contract from a clinically valid algorithm. Actual curve channels/units/zero point, approved algorithm/parameters/error and original debug-button behavior require confirmation; do not make a no-op succeed."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F09-F10-project-report-config-link",
+      "prior_group": "services",
+      "prior_ordinal": 4,
+      "prior_fact": {
+        "id": "F09-F10-project-report-config-link",
+        "classification": "integrated_modules_with_missing_cross_module_business_link",
+        "operation": "Committed project/unit/precision configuration feeding history results and printed report columns",
+        "evidence": [
+          "shell/history_shell.cpp:68 calls HistoryReportDocument::anonymousOptions, :74-80 keeps explicit anonymous project columns and only injects committedHospitalName_",
+          "history/report_document.cpp:25-56 reads :/history_report/anonymous_options.json and explicit columns",
+          "history/report_resources.qrc:4 maps anonymous_options.json to tests/fixtures/history_report_options.json"
+        ],
+        "conditions": "O07 local project/unit UI existing does not prove report configuration integration. A real project identity/result-type/unit/precision mapping and persisted snapshots are needed; do not join clinical entities by guessed display strings."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F10-preview-pdf",
+      "prior_group": "services",
+      "prior_ordinal": 5,
+      "prior_fact": {
+        "id": "F10-preview-pdf",
+        "classification": "integrated_offline_subset_verification_separate",
+        "operation": "Original template preview and isolated PDF export",
+        "evidence": [
+          "shell/history_shell.cpp:65-82 creates shared report controller and enables HistoryPage preview",
+          "history/history_page.cpp:262 enables printer-preview button and :275-286 emits immutable selected report",
+          "history/report_controller.cpp:163-195 constructs QtRPT preview, setsOfflinePreview(true) and routes pdf export",
+          "history/report_controller.cpp:238 onward uses a bounded helper process and temporary job output"
+        ],
+        "limits": "Main and detail print buttons are subsequently enabled for preview by setBusy (:368/:375). Initial disable lists must not be misread as no printing capability. Physical printing, chosen external PDF reader behavior, original Windows and RK remain separate acceptance."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F10-physical-print-html-xlsx",
+      "prior_group": "services",
+      "prior_ordinal": 6,
+      "prior_fact": {
+        "id": "F10-physical-print-html-xlsx",
+        "classification": "library_capabilities_not_exposed_or_original_enablement_uncertain",
+        "operation": "Physical printer/print settings, HTML and XLSX export",
+        "evidence": [
+          "thirdparty/qtrpt/QtRPT/qtrpt.cpp:1895-1905 forces non-direct preview and QPrinter::PdfFormat in offline mode",
+          "thirdparty/qtrpt/QtRPT/qtrpt.cpp:1969-1989 disables physical print controls, HTML and conditional XLSX in offline preview",
+          "thirdparty/qtrpt/QtRPT/qtrpt.cpp:2028-2032 forwards only PDF in offline export handler",
+          "thirdparty/qtrpt/qtrpt.pri:2-5 documents original NO_BARCODE/undefined QXLSX_LIBRARY and explicitly removes QXLSX_LIBRARY",
+          "shell/frmuserset.cpp:38-39 defines printer settings index3; :78-87 leaves that page as offlineUnavailable"
+        ],
+        "conditions": "Local printer-settings UI, HTML and file-export validation may be independent offline slices. Physical printer output needs a chosen device/driver/format. XLSX and barcode must not automatically be called lost original features: original root SeeRain450.pro:15 uses NO_BARCODE, and shipped QXLSX enablement needs confirmation. CSV is already implemented."
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "HTML原工具栏文件导出已接，5123各7/0并有真实按钮/文件框shell各5/0；打印本地设置已接。实体打印仍缺，原XLSX未启用须确认后再做，不能把三者混作同一个未完成项。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F11-LIS-stack",
+      "prior_group": "services",
+      "prior_ordinal": 7,
+      "prior_fact": {
+        "id": "F11-LIS-stack",
+        "classification": "not_ported_in_checkpoint",
+        "operation": "LIS connection/settings, HL7/MLLP parsing/encoding, task query, result upload, ACK, reconnect, deduplication and automatic transfer",
+        "evidence": [
+          "shell/frmuserset.cpp:38-39 gives LIS settings index4; :78-87 is an offline placeholder because only indices0/1 get real pages",
+          "shell/shell.pri:24-44 links history/project/reagent/sample/instrument and device-protocol loopback, no commlis or HL7 component",
+          "protocol/status_loopback.cpp:319-323 accepts Qj only and :388 requests ReadOnlyQuery::Status",
+          "reference commlis/liscommreceiver.cpp:40 constrains version2.3.1, :71 ACK, :118 DSR, :123 sends QRY task result, :415 emits ACK; reference commlis/liscommsender.cpp:8 includes ORU"
+        ],
+        "conditions": "Port settings/codec and anonymous task/result/ACK contracts before using a real LIS service. Device Qj TCP support is not an LIS transport or HL7 business implementation. Confirm dialect, charset and task/result identity for production integration."
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "已完成本地设置入口，原条目不能再称设置也缺；HL7/MLLP任务查询/结果上传/ACK/重连/去重和自动收发业务仍未接。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F09-F11-upload-actions",
+      "prior_group": "services",
+      "prior_ordinal": 8,
+      "prior_fact": {
+        "id": "F09-F11-upload-actions",
+        "classification": "missing_business_with_original_defect_caveat",
+        "operation": "Main report upload and detail upload control",
+        "evidence": [
+          "history/history_page.cpp:127 disables main btnUpdate; :622-625 disables detail btnUpdateLis",
+          "reference frm_report/frm_report_material.cpp:1306-1309 main btnUpdate calls updateResult2Lis(false)",
+          "reference frm_report/mask_dlg_report_detail.cpp:615-620 emits signalUpdateNoWaterAndNoCup(0), returns, then has unreachable SignalUpdateLisResult"
+        ],
+        "conditions": "The main upload is a genuine missing LIS business link. The detail handler contains an original unsafe/debug behavior; do not restore a physical no-water/no-cup action just to match its button name. Record old defect versus confirmed intended business separately."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F12-instrument-offline-maintenance",
+      "prior_group": "services",
+      "prior_ordinal": 9,
+      "prior_fact": {
+        "id": "F12-instrument-offline-maintenance",
+        "classification": "integrated_offline_subset_owner_verification_in_progress",
+        "operation": "Original instrument subpage navigation and six manual maintenance records",
+        "evidence": [
+          "shell/main.cpp:248 creates MaintenanceStore and :445 attaches InstrumentPage",
+          "shell/instrument_shell.cpp:9-30 replaces actual navigation page7 placeholder",
+          "instrument/instrument_page.cpp:43-63 preserves original subpage indices and board-layout route; :65-77 defines manual maintenance table actions",
+          "instrument/maintenance_store.cpp:250-260 creates transaction/schema with unique date; :291 loads month; :373-440 records with role1..5 checks, rejects machine washing/shutdown and uses idempotent completion",
+          "instrument/instrument_page.cpp:379-400 preserves admin/engineer navigation and authenticated manual-write conditions",
+          "shell/shell.pri:38 includes instrument_widgets.pri and :39 links instrument_shell.cpp"
+        ],
+        "limits": "This checkpoint contains source integration, not final build/GUI/resource release acceptance by this reviewer. Busy/dirty guards and store failure recovery must be taken from the active owner final evidence. Do not classify the entire original eight-page instrument area as missing or fully implemented."
+      },
+      "reconciliation": "delta_reconciled_against_handoffs_5123_receipts_and_current_source",
+      "current_interpretation": "原8子页及6类人工维护记录已接统一并完成离线验收；5123累计instrument10/0。真实设备动作、版本/AD等实际观测与同板资源仍待设备。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F12-real-device-functional-gaps",
+      "prior_group": "services",
+      "prior_ordinal": 10,
+      "prior_fact": {
+        "id": "F12-real-device-functional-gaps",
+        "classification": "existing_ui_with_deliberately_disabled_hardware_and_missing_external_business",
+        "operation": "Real TCP connection/config, sensor/temperature/AD/channel status, board/firmware versions, pumps/needles/grabber/washing/calibration tests",
+        "evidence": [
+          "instrument/instrument_page.h:16 states no device send interface; public operations are session/replay/readonly display",
+          "instrument/instrument_page.cpp:191-219 disables all nonlocal actions and combo inputs, clears endpoint inputs rather than loading production config",
+          "instrument/instrument_page.cpp:222-290 clears design-time values to unknown and marks algorithm versions not integrated",
+          "instrument/instrument_page.cpp:487-516 maps only Qj model/mainStatus/ledStatus/errorWorkType and explicitly refuses guessed subsystem mapping",
+          "protocol/status_loopback.cpp:62 owns LocalHost:0, :321-323 rejects non-Qj commands, :368 emits SIMULATED response",
+          "instrument/maintenance_store.cpp:390-393 refuses offline long_clean/shut_down completion"
+        ],
+        "conditions": "Keep hardware actions disabled until exact device/firmware/transport role/endpoint/encoding/command semantics/interlocks/authorized range are confirmed. Offline decoder/state mapping or command-planning tests may be possible, but visible controls are not an implementation of real actions."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F13-alarm-center-interlocks",
+      "prior_group": "services",
+      "prior_ordinal": 11,
+      "prior_fact": {
+        "id": "F13-alarm-center-interlocks",
+        "classification": "protocol_parse_subset_not_integrated_alarm_business",
+        "operation": "Alarm center/current and history, code/severity/description mapping, repeated/cleared alarms, acknowledge/reset/beep and test-start interlocks",
+        "evidence": [
+          "protocol/read_only_messages.h:11-23 supports Alarm as a limited readonly query; read_only_messages.cpp:159-179 builds parsed alarm arrays",
+          "protocol/status_loopback.cpp:108/122/388 restricts unified simulation requests to Status, not alarm lifecycle",
+          "shell/frmmain.cpp:204-215 leaves btnAbnormal/btnCloseBeep disabled; no Alarm page/controller/store is linked by shell.pri",
+          "reference frmabnormal/maskdlgabnormal.cpp:74 canStartTest, :186-239 handles old/new abnormal/alarm lists, :384/400 history, :472 reset"
+        ],
+        "conditions": "A safe local alarm catalog/view/history and injected-event lifecycle can be implemented offline from confirmed mappings. Live reset/beep/stop/start blocking needs confirmed protocol and safety semantics; do not infer it from Qj.errorWorkType or simply enable the existing icon."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    },
+    {
+      "id": "F18-source-enablement-and-variants",
+      "prior_group": "services",
+      "prior_ordinal": 12,
+      "prior_fact": {
+        "id": "F18-source-enablement-and-variants",
+        "classification": "original_scope_or_defect_confirmation_required",
+        "operation": "Language Apply, hidden result editing, task/formula/estimation, barcode/XLSX build variants and different device board layouts",
+        "evidence": [
+          "01_docs/knowledge/sn100_host_project_guide.md:282 records task/formula, language Apply, estimation and450/6600 branches as requiring original release enablement confirmation",
+          "shell/frmuserset.cpp:38-39 and :78-87 keep language index2 as placeholder",
+          "instrument/instrument_page.cpp:60-63 uses only a reference board layout for unknown model and :515 declines guessed SN100 subsystem mapping",
+          "thirdparty/qtrpt/qtrpt.pri:2-5 documents disabled build capabilities",
+          "reference report detail upload/recalc handlers :615/:662 contain debug no-water/no-cup signals rather than the named business"
+        ],
+        "conditions": "Source existence, a hidden menu or another model's layout does not establish SN100 shipped functionality. Separate known old defects and user-authorized enhancements from missing ports; preserve uncertain original source and do not imitate unsafe debug actions."
+      },
+      "reconciliation": "same_scope_carried_from_static_baseline_with_5123_checkpoint_context_no_new_runtime_claim",
+      "current_interpretation": "原条目范围继续保留；读取旧43项不是再次运行验收。不得把本地部分通过扩大为完整业务或设备通过。已知跨条目变化见本表更新项和scope_operations.json。",
+      "latest_checkpoint": "426/5123bf14历史只读；本次新切片没有运行结果",
+      "operation_details": "scope_operations.json按button/input/data/output/source/evidence/remaining细分；未展开部分保留prior_fact的operation/area/capability/evidence/limits，不伪造新按钮或实际启用。"
+    }
+  ],
+  "detailed_operations": [
+    "F06.advanced-scalars",
+    "F06.sample-actions",
+    "F06.reagent-actions",
+    "F03.batch-metadata",
+    "F07.local-calibration",
+    "F08.local-qc",
+    "F09.hide-reports",
+    "F09.display-columns",
+    "F10.html",
+    "F10.xlsx-printer",
+    "F04.reset-errors",
+    "F04.retest-sample",
+    "F04.device-task-chain",
+    "F09.real-results-and-algorithm",
+    "F11.local-settings-vs-lis",
+    "F14.language-and-common-foundation"
+  ],
+  "plan_wording_to_split": [
+    "项目高级方案未接改为：六参数/加样/试剂动作已本地完成，AlgParam/系数/临床方法仍缺",
+    "批组ISI/normalValue改为：本地存取完成，校准关联自动计算/临床效力仍缺",
+    "报告剩余流程改为：显示/软隐藏/HTML已完成局部，曲线/结果改写/重算/上传/真实链仍缺",
+    "HTML/XLSX/打印拆分：HTML文件导出与打印设置完成局部；原未启用XLSX与实体打印分别确认/待验"
+  ],
+  "independent_offline_work": [
+    {
+      "priority": 1,
+      "item": "样本ResetErr/ResetFin普通单孔逐次状态转换",
+      "state": "首个窄切片源码/测试/驱动已准备，待执行槽",
+      "acceptance": "真实qmake/make/test0及9项Qt/JUnit/源对象产物SHA；不是完整页面验收"
+    },
+    {
+      "priority": 2,
+      "item": "样本状态/revise本地存取和原按钮草稿流程",
+      "state": "待首切片运行及批量合同确认",
+      "acceptance": "旧v1兼容、每次重复0/99、普通/急诊、Testing、权限/忙态、取消/放弃、写失败恢复和重开；禁止下发"
+    },
+    {
+      "priority": 3,
+      "item": "受影响统一累计/跨平台/资源",
+      "state": "整合窗口负责新冻结和串行执行",
+      "acceptance": "本轮新源单独对应结果；旧5123不覆盖"
+    },
+    {
+      "priority": 4,
+      "item": "其他仍能离线准备的合同",
+      "state": "本窗口不越界实施",
+      "examples": [
+        "公共单实例/运行数据恢复/有界日志与崩溃取证",
+        "原启用范围内语言页/告警互锁的纯数据合同",
+        "真实项目配置到匿名结果快照映射与协议状态机",
+        "原算法/校准/质控疑点的严格失败输入和原始材料清单"
+      ]
+    }
+  ],
+  "requires_materials": [
+    "生产schema/初始项目/真实曲线与认可参数/误差",
+    "当前SN100实际发行版启用、主题和机型范围",
+    "临床校准/质控方法与失控规则确认"
+  ],
+  "requires_devices": [
+    "RK实际依赖/实屏/输入",
+    "仪器任务/状态/动作/耗用闭环",
+    "外部LIS/实体打印",
+    "认可资源预算/同板实时控制与目标长稳"
+  ],
+  "new_builds_or_gui_or_measurements_executed": true,
+  "shared_plans_or_records_modified": false,
+  "counting_note": "43为旧操作事实总数；15为更新了解释的事实条目；16为重叠的细化操作分组，含已验、未实现、原未启用和本轮准备项，不表示16项新通过。",
+  "new_execution_scope": "432/9ff独立样本新流程两QPA各14/0、原业务各13/0，核心9/0；统一累计、视觉观察及资源仍另排",
+  "current_sample_source_delta": "04_references/sn100_host/offline_followup_20261026/samples_reset/source_delta.json",
+  "current_workflow_receipt": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_handoff.json"
+}

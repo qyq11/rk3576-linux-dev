@@ -1,0 +1,294 @@
+{
+  "schema": "sn100-private-hit-ab-executed-handoff-v1",
+  "status": "diagnostic_executed_screen_precondition_unmet_NOT_PASS",
+  "root_authorized_one_run_only": true,
+  "retry_count": 0,
+  "slot_released": true,
+  "active_owned_processes": 0,
+  "preflight": "preflight.json: prepared handoff/8files/current32 inputs identical; new run_01 absent before launch.",
+  "parent": {
+    "receipt": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_parent_01/controller.exit.json",
+      "sha256": "7d4e69f4ec530fc7c2dff77b5bf02c5da4eeb2cfb324a2f96c0f7dd49b463fc8",
+      "bytes": 875
+    },
+    "actual_exit": 1
+  },
+  "raw_stages": [
+    {
+      "argv": [
+        "/usr/bin/qmake",
+        "CONFIG+=release",
+        "CONFIG-=debug",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/language_formal_20261026/hit_ab_preparation/hit_ab_probe.pro"
+      ],
+      "actual_exit": 0,
+      "timeout": false,
+      "pgid": 365,
+      "cleanup": {
+        "pgid": 365,
+        "term_sent": false,
+        "kill_sent": false,
+        "errors": [],
+        "actual_exit_after_cleanup": 0,
+        "group_gone": true,
+        "state_known": true
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/make",
+        "-j2"
+      ],
+      "actual_exit": 0,
+      "timeout": false,
+      "pgid": 380,
+      "cleanup": {
+        "pgid": 380,
+        "term_sent": false,
+        "kill_sent": false,
+        "errors": [],
+        "actual_exit_after_cleanup": 0,
+        "group_gone": true,
+        "state_known": true
+      }
+    },
+    {
+      "argv": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/build/hit_ab_probe",
+        "ordinaryControl",
+        "cnPage",
+        "-v1",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/qt.txt,txt",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/qt.xml,junitxml"
+      ],
+      "actual_exit": 2,
+      "timeout": false,
+      "pgid": 421,
+      "cleanup": {
+        "pgid": 421,
+        "term_sent": false,
+        "kill_sent": false,
+        "errors": [],
+        "actual_exit_after_cleanup": 2,
+        "group_gone": true,
+        "state_known": true
+      }
+    }
+  ],
+  "raw_Qt": "run_01/qt.txt+xml: init/cleanup pass, ordinaryControl and cnPage each explicit PRECONDITION_UNMET;2passed2failed0skipped0blacklisted, actualQt exit2. No nativeHit assertion or click reached.",
+  "arms": [
+    {
+      "arm": "ordinary_control",
+      "outcome": "prerequisite_unmet_screen_frame_or_button",
+      "stage": "screen_precondition",
+      "active": true,
+      "exposed": true,
+      "client_geometry": [
+        38,
+        59,
+        900,
+        600
+      ],
+      "frame_geometry": [
+        0,
+        0,
+        976,
+        697
+      ],
+      "actual_window_screen": {
+        "availableGeometry": [
+          0,
+          308,
+          2560,
+          1600
+        ],
+        "availableVirtualGeometry": [
+          0,
+          0,
+          5120,
+          1908
+        ],
+        "devicePixelRatio": 1,
+        "geometry": [
+          0,
+          308,
+          2560,
+          1600
+        ],
+        "logicalDpi": 96.10220510656256,
+        "name": "rdp-0",
+        "physicalDpi": 96.10220510656255,
+        "present": true,
+        "virtualGeometry": [
+          0,
+          0,
+          5120,
+          1908
+        ]
+      },
+      "button_global_rect": [
+        751,
+        572,
+        161,
+        61
+      ],
+      "button_global_center": [
+        831,
+        602
+      ],
+      "button_in_viewport": [
+        713,
+        513,
+        161,
+        61
+      ],
+      "frame_in_actual_screen_available": false,
+      "button_in_actual_screen_available": true,
+      "widget_DPR": 1,
+      "window_DPR": 1,
+      "grab_DPR": 1,
+      "visible_region_contains_entire_button": true,
+      "click_injection_attempted": false,
+      "clicked_count": 0
+    },
+    {
+      "arm": "CN",
+      "outcome": "prerequisite_unmet_screen_frame_or_button",
+      "stage": "screen_precondition",
+      "active": true,
+      "exposed": true,
+      "client_geometry": [
+        38,
+        59,
+        900,
+        600
+      ],
+      "frame_geometry": [
+        0,
+        0,
+        976,
+        697
+      ],
+      "actual_window_screen": {
+        "availableGeometry": [
+          0,
+          308,
+          2560,
+          1600
+        ],
+        "availableVirtualGeometry": [
+          0,
+          0,
+          5120,
+          1908
+        ],
+        "devicePixelRatio": 1,
+        "geometry": [
+          0,
+          308,
+          2560,
+          1600
+        ],
+        "logicalDpi": 96.10220510656256,
+        "name": "rdp-0",
+        "physicalDpi": 96.10220510656255,
+        "present": true,
+        "virtualGeometry": [
+          0,
+          0,
+          5120,
+          1908
+        ]
+      },
+      "button_global_rect": [
+        751,
+        572,
+        161,
+        61
+      ],
+      "button_global_center": [
+        831,
+        602
+      ],
+      "button_in_viewport": [
+        713,
+        513,
+        161,
+        61
+      ],
+      "frame_in_actual_screen_available": false,
+      "button_in_actual_screen_available": true,
+      "widget_DPR": 1,
+      "window_DPR": 1,
+      "grab_DPR": 1,
+      "visible_region_contains_entire_button": true,
+      "click_injection_attempted": false,
+      "clicked_count": 0
+    }
+  ],
+  "observed_owned_GUI_seconds": 0.498714884,
+  "screen_interpretation": "Qt reported rdp-0 available=[0,308,2560,1600], rdp-2=[2560,0,2560,1440], virtual bbox=[0,0,5120,1908]. Resolution is large enough, but fixed requested placement/actual frame=[0,0,976,697] is not wholly contained in its reported screen available area. Button=[751,572,161,61] itself IS contained. This refuses the fixed-host screen prerequisite; it neither proves old widgetAt null was caused by clipping nor attributes CN/WSLg defect.",
+  "DPR": "Both arms actualscreen/widget/window/grab=1. Safe DISPLAY=:0, WAYLAND_DISPLAY=wayland-0; QT_SCALE_FACTOR1/AUTO0, other selected scale variablesnull as raw armJSON.",
+  "unexecuted_endpoints": "topLevelAt/childAt/nativeHit and QWindow mouse injection were intentionally not executed after prerequisite refusal. clicked_count0 means no click attempted, not click failure. Widget grabs are content only, not compositor/occlusion proof.",
+  "binding": {
+    "source32_before_after_equal": true,
+    "private_manifest8_unchanged": true,
+    "preparation_sha256": "cadbdaf7bde9721f17f1c4fd7b07df861c3c2e8892c2474a959635a97fd79958",
+    "binary": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/build/hit_ab_probe",
+      "sha256": "4ea8df36ecf7fa8ea5c4fe5aa14ad971b4dbda830396df8dd240c9cde5cb052b",
+      "bytes": 193072
+    },
+    "Makefile": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/build/Makefile",
+      "sha256": "8876d77faf40e3d069b3ec5bb8a68cde18b49c3a691d3be97399c0847978a58f",
+      "bytes": 39263
+    },
+    "tools9_before_after_equal": true,
+    "postcheck": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_parent_01/postcheck.json",
+      "sha256": "cf88518c024c1ea1a5b26a9e69aca686e217eb95504c94d05ae38bc30c43746e",
+      "bytes": 338
+    }
+  },
+  "process_cleanup": "PGID365/380/421 independentlygone in original raw receipts and postcheck; noTERM/KILL/timeouts. Parent/metadataCLI ended; no further build/GUI launched.",
+  "source_and_formal_policy": "Formal sources/assertions/points/timeouts and frozen private8 unchanged. Four actualprivate execution sources copied byte-identically to source_executed; no object archive or runtime DB/secret.",
+  "scope_limit": "One private desktop precondition diagnostic, not old failure cause, repaired small-screen usability, whole application/Windows/RK/instrument/budget acceptance.",
+  "remaining": "Existing small XCB nativeHit failure remains unresolved. No further run or reposition authorized by this task; root decides separately.",
+  "evidence": {
+    "verification": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/verification.json",
+      "sha256": "a30dfcc4a1c466aa65c8eb2eb66cd14fc67a7d5e812b467bd4be0e4b30273364",
+      "bytes": 25903
+    },
+    "raw_Qt_text": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/qt.txt",
+      "sha256": "70706349120809162538f2699e2d9950100ffe23af31dce5c7d79be554f16195",
+      "bytes": 920
+    },
+    "raw_Qt_XML": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/qt.xml",
+      "sha256": "9100b171a44564c4e86d2392d0f79db140f2acda8e6aba09cd0328afbe033d48",
+      "bytes": 923
+    },
+    "environment": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/environment.json",
+      "sha256": "c943c66a2019d5d0e703a25a3710ebcce4fba4c2ee3f98fad15b2233a978a531",
+      "bytes": 2359
+    },
+    "control": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/evidence/control.json",
+      "sha256": "eb46c65aca531c973aa836d0b8af18013306ec460eebffa106c76655190df408",
+      "bytes": 4618
+    },
+    "CN": {
+      "path": "temp/sn100_host/language_formal_20261026/hit_ab_preparation/run_01/evidence/cn.json",
+      "sha256": "c48cafc3207c4368c1b931898a9252ef937b725924994b0efcd1cbc64c468a9c",
+      "bytes": 4606
+    }
+  },
+  "stop": "No source or frozen prepared packet edits; metadata assembly complete, writing stopped."
+}

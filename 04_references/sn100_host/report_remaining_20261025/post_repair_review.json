@@ -1,0 +1,667 @@
+{
+  "schema": "sn100-report-production-post-repair-review-v1",
+  "date_AsiaShanghai": "2026-10-25",
+  "status": "报告生产接线只读终审完成；先前R1已在生产源关闭；未发现新的确定P1/P2；HTML整合成功路径及跨平台/资源验收仍未关闭",
+  "scope": "仅新增此JSON；未修改生产/测试/公共文档/原交付；未读取或哈希正在修改的report_remaining_shell_test.cpp/.pro；未触碰QC/cal引用修复",
+  "executed": {
+    "build": false,
+    "test_binary": false,
+    "GUI": false,
+    "resource": false,
+    "Windows": false,
+    "ARM": false,
+    "RK_instrument_LIS": false,
+    "install": false,
+    "git_commit_push": false,
+    "thread_message": false
+  },
+  "audited_current_production_inputs": [
+    {
+      "path": "06_programs/sn100_host/shell/main.cpp",
+      "sha256": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156",
+      "bytes": 40524
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.cpp",
+      "sha256": "56f28e27c2bc767ebce0afa986aad2f3e703246e65d95822dcfc25ef3cc2337b",
+      "bytes": 21600
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.h",
+      "sha256": "3d8837050345f92535e9975a53ce78e9880b7dde8d59015ee41743a6da28c58a",
+      "bytes": 6680
+    },
+    {
+      "path": "06_programs/sn100_host/shell/history_shell.cpp",
+      "sha256": "3d1ac484b3525edde5dbcf8e8f646ffa8029cf53a4e2953d0955ce43482834c7",
+      "bytes": 7794
+    },
+    {
+      "path": "06_programs/sn100_host/shell/login_shell.cpp",
+      "sha256": "8cf88cc30aee352836c285b258c0c375fedff279bd193f50e87401e4525e5b11",
+      "bytes": 3007
+    },
+    {
+      "path": "06_programs/sn100_host/shell/resources.qrc",
+      "sha256": "d88579511745d0ce025f76970223efc5ab32ff9b8d687fc49b2360e8a7406164",
+      "bytes": 3263
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shell.pri",
+      "sha256": "59a410c5dced837a7e7622428685e4e1ec08119aa53a8bd4d1581f747dc8e64b",
+      "bytes": 3862
+    },
+    {
+      "path": "06_programs/sn100_host/shell/build.sh",
+      "sha256": "9d82588ece30564e2935c2238262a3d650e8d1fdfab461937d10f262079bfae5",
+      "bytes": 18302
+    },
+    {
+      "path": "06_programs/sn100_host/shell/wsl.sh",
+      "sha256": "40fd4b8f634d7c547c089b7cbc2e1aa767c96a5472675dd110488b629d0903c1",
+      "bytes": 5656
+    },
+    {
+      "path": "06_programs/sn100_host/shell/package_arm64.py",
+      "sha256": "d7335c16441b4cc4deeb6d0809dbb61ca67c657d0cebdcf673b4b6451754809e",
+      "bytes": 11066
+    },
+    {
+      "path": "06_programs/sn100_host/shell/arm64_object_reuse.py",
+      "sha256": "dee3973de339f98086676331259d7a64459fe74659810daa6fb8c6cc967c890d",
+      "bytes": 7783
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.cpp",
+      "sha256": "bf238e626bcb58ce45de1512cdfe2ef46e5ca6e9578a0e261810d1b863594cce",
+      "bytes": 47230
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.h",
+      "sha256": "a94ed3e36247811eaa0652b214b8a18ab5de2ceb1af69a865bd4b3c46d658244",
+      "bytes": 3622
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_store.cpp",
+      "sha256": "c6737173a876d7a92e1941c0e3dcbf6e2470d7bf72041fc258e45088b612d5df",
+      "bytes": 44456
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_store.h",
+      "sha256": "8c682ccf824742654c4d5a3581e34c73a80f7e02ca0b1f5fb85de409d63acd6b",
+      "bytes": 6099
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_store.cpp",
+      "sha256": "2d325e1b82ac703b2ceba147a92b89b43a8c79a4f4045be7138277463aa72618",
+      "bytes": 10900
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_display_dialog.cpp",
+      "sha256": "1400458a5d0d1c51e371e7227d5193bf829ba687c837a45534f234f8494cafa0",
+      "bytes": 11922
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_display_dialog.h",
+      "sha256": "0afcfec5f22d5209c622dd118b9c85f32c1d8cfd59aea9b2d8ec50f7871a4f9c",
+      "bytes": 1220
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_view.h",
+      "sha256": "abcb636b46a732c762859471491f6a17291e6d67710d4468afba9780b9d89fb8",
+      "bytes": 659
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_html.h",
+      "sha256": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a",
+      "bytes": 2736
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.cpp",
+      "sha256": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba",
+      "bytes": 13729
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.h",
+      "sha256": "1a085d958309c4f9347eced72858601675d835022ed31026ce3cf52852f6756b",
+      "bytes": 2510
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_renderer.cpp",
+      "sha256": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581",
+      "bytes": 13464
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_document.cpp",
+      "sha256": "ebe25d4f18b8e896f3865f0a18a97ee0c3d3301a96a72b6a982a06715dbe78f8",
+      "bytes": 11064
+    },
+    {
+      "path": "06_programs/sn100_host/history/renderer.pro",
+      "sha256": "e43441cd58a254910979615222a1b9f4922e76b5e86d00a44fe2007fbcd75a7f",
+      "bytes": 525
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_core.pri",
+      "sha256": "2a2c6d2d0f91903c791cf3ba69922e2f0a35d61d5cd82c1388142e8da04a6843",
+      "bytes": 757
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_report.pri",
+      "sha256": "74f7f86afb162760a8e0b95ae53e40d2cc879baa60caa98c2ab4bfe96d193acc",
+      "bytes": 184
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_engine.pri",
+      "sha256": "6443f4db2ca9c2f5fef6b911ef8a766fe3b314410518f4e096c2e64aa91b990f",
+      "bytes": 342
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_resources.qrc",
+      "sha256": "90e45d3956f33bdc91375cf67fa7bf461be3b5c554e31324bd9d00c8ea783389",
+      "bytes": 212
+    },
+    {
+      "path": "06_programs/sn100_host/history/templates/report.xml",
+      "sha256": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2",
+      "bytes": 19908
+    },
+    {
+      "path": "06_programs/sn100_host/tests/fixtures/history_report_options.json",
+      "sha256": "24c79877ece4fb987ae4711d09f9dde297cd7967224bb04c93aa8fe164d6096c",
+      "bytes": 833
+    },
+    {
+      "path": "06_programs/sn100_host/data/account_store.h",
+      "sha256": "212e05178f26a170fdb9138e9705eba72febf4022caed01f83327edce088d07d",
+      "bytes": 3586
+    },
+    {
+      "path": "06_programs/sn100_host/thirdparty/qtrpt/qtrpt.pri",
+      "sha256": "64e413f646e3b0d05d1c7874f1bd13e709a14ee670da307180fd1bd9db1d2a76",
+      "bytes": 280
+    },
+    {
+      "path": "06_programs/sn100_host/thirdparty/qtrpt/QtRPT/config.pri",
+      "sha256": "ba738eddabe2255f420166815cc1f6986d78717ed8f4d1ebe7771222e135def9",
+      "bytes": 441
+    }
+  ],
+  "original_report_delivery": {
+    "fingerprint_file": "04_references/sn100_host/report_remaining_20261025/source_fingerprints.json",
+    "fingerprint_file_sha256": "6de92967c1c3d6d18b94b2c124b335a7bac12da152f997686017b856360aa3fe",
+    "count": 48,
+    "all_48_match": true,
+    "mismatches": [],
+    "comparisons": [
+      {
+        "path": "06_programs/sn100_host/data/account_store.h",
+        "expected_sha256": "212e05178f26a170fdb9138e9705eba72febf4022caed01f83327edce088d07d",
+        "actual_sha256": "212e05178f26a170fdb9138e9705eba72febf4022caed01f83327edce088d07d",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/build.sh",
+        "expected_sha256": "34aebd94ccf01664a837acddc23203e6f139d69158d35e30a469a7124ab69ef3",
+        "actual_sha256": "34aebd94ccf01664a837acddc23203e6f139d69158d35e30a469a7124ab69ef3",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/frm_report_material.ui",
+        "expected_sha256": "ff6c3f81eaff7631fd11e2b1aa417fbc0af20da31e0d4123a2e8d84a41b24b12",
+        "actual_sha256": "ff6c3f81eaff7631fd11e2b1aa417fbc0af20da31e0d4123a2e8d84a41b24b12",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/history.pro",
+        "expected_sha256": "eea54ed103f66676a2da0b4e7e0c909ac8a224322867087540a1670c57ecd7f6",
+        "actual_sha256": "eea54ed103f66676a2da0b4e7e0c909ac8a224322867087540a1670c57ecd7f6",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_core.pri",
+        "expected_sha256": "2a2c6d2d0f91903c791cf3ba69922e2f0a35d61d5cd82c1388142e8da04a6843",
+        "actual_sha256": "2a2c6d2d0f91903c791cf3ba69922e2f0a35d61d5cd82c1388142e8da04a6843",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_page.cpp",
+        "expected_sha256": "bf238e626bcb58ce45de1512cdfe2ef46e5ca6e9578a0e261810d1b863594cce",
+        "actual_sha256": "bf238e626bcb58ce45de1512cdfe2ef46e5ca6e9578a0e261810d1b863594cce",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_page.h",
+        "expected_sha256": "a94ed3e36247811eaa0652b214b8a18ab5de2ceb1af69a865bd4b3c46d658244",
+        "actual_sha256": "a94ed3e36247811eaa0652b214b8a18ab5de2ceb1af69a865bd4b3c46d658244",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_report.pri",
+        "expected_sha256": "74f7f86afb162760a8e0b95ae53e40d2cc879baa60caa98c2ab4bfe96d193acc",
+        "actual_sha256": "74f7f86afb162760a8e0b95ae53e40d2cc879baa60caa98c2ab4bfe96d193acc",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_store.cpp",
+        "expected_sha256": "c6737173a876d7a92e1941c0e3dcbf6e2470d7bf72041fc258e45088b612d5df",
+        "actual_sha256": "c6737173a876d7a92e1941c0e3dcbf6e2470d7bf72041fc258e45088b612d5df",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_store.h",
+        "expected_sha256": "8c682ccf824742654c4d5a3581e34c73a80f7e02ca0b1f5fb85de409d63acd6b",
+        "actual_sha256": "8c682ccf824742654c4d5a3581e34c73a80f7e02ca0b1f5fb85de409d63acd6b",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/main.cpp",
+        "expected_sha256": "4e44cd2a372f5a90c70c5270d69a3285f31373852594a268ac39a23e02cb479e",
+        "actual_sha256": "4e44cd2a372f5a90c70c5270d69a3285f31373852594a268ac39a23e02cb479e",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/mask_dlg_display_setting.ui",
+        "expected_sha256": "abde85d2aba7482641b444ae7ee421340a7c8ee3420245b80de519c159dd6730",
+        "actual_sha256": "abde85d2aba7482641b444ae7ee421340a7c8ee3420245b80de519c159dd6730",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/mask_dlg_export.ui",
+        "expected_sha256": "b212c3d3bc1ff211a05b2216854ec56cf905581bb0938221b4d8cf91149cfd21",
+        "actual_sha256": "b212c3d3bc1ff211a05b2216854ec56cf905581bb0938221b4d8cf91149cfd21",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+        "expected_sha256": "c78b4bd3e7d688f6c3680172b01568c8f7bbc3131d41a6f14a625a2ad0b2368f",
+        "actual_sha256": "c78b4bd3e7d688f6c3680172b01568c8f7bbc3131d41a6f14a625a2ad0b2368f",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+        "expected_sha256": "5804678d88bdf7782e1e7511973e85c1f9d3850705dd88d803c45b428b379e79",
+        "actual_sha256": "5804678d88bdf7782e1e7511973e85c1f9d3850705dd88d803c45b428b379e79",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/origins.json",
+        "expected_sha256": "d4e347008c0451b854e290f2190eb717fd0a93862e003171a11c29e7b880cbf5",
+        "actual_sha256": "d4e347008c0451b854e290f2190eb717fd0a93862e003171a11c29e7b880cbf5",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/prepare_report_arm64.sh",
+        "expected_sha256": "eb38eca2206d6a22056fdc6da7b05e2060ba7bba7fce0cab48c052e1ca1e1985",
+        "actual_sha256": "eb38eca2206d6a22056fdc6da7b05e2060ba7bba7fce0cab48c052e1ca1e1985",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/renderer.pro",
+        "expected_sha256": "e43441cd58a254910979615222a1b9f4922e76b5e86d00a44fe2007fbcd75a7f",
+        "actual_sha256": "e43441cd58a254910979615222a1b9f4922e76b5e86d00a44fe2007fbcd75a7f",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_controller.cpp",
+        "expected_sha256": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba",
+        "actual_sha256": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_controller.h",
+        "expected_sha256": "1a085d958309c4f9347eced72858601675d835022ed31026ce3cf52852f6756b",
+        "actual_sha256": "1a085d958309c4f9347eced72858601675d835022ed31026ce3cf52852f6756b",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_document.cpp",
+        "expected_sha256": "ebe25d4f18b8e896f3865f0a18a97ee0c3d3301a96a72b6a982a06715dbe78f8",
+        "actual_sha256": "ebe25d4f18b8e896f3865f0a18a97ee0c3d3301a96a72b6a982a06715dbe78f8",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_document.h",
+        "expected_sha256": "80b70bf75f85ff1eef234cfebeb395fa9a32619dcb0f2467aadbc04673197d9b",
+        "actual_sha256": "80b70bf75f85ff1eef234cfebeb395fa9a32619dcb0f2467aadbc04673197d9b",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_engine.pri",
+        "expected_sha256": "6443f4db2ca9c2f5fef6b911ef8a766fe3b314410518f4e096c2e64aa91b990f",
+        "actual_sha256": "6443f4db2ca9c2f5fef6b911ef8a766fe3b314410518f4e096c2e64aa91b990f",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_pdf_mapping.cpp",
+        "expected_sha256": "2b8e964c9d1572d9f4b5cb7585db1bb89d2efbb8c8d77833d3b0411de19c9de7",
+        "actual_sha256": "2b8e964c9d1572d9f4b5cb7585db1bb89d2efbb8c8d77833d3b0411de19c9de7",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_pdf_mapping.h",
+        "expected_sha256": "c11e310d26c07045d2a38cdd3873ee7f34fbde4ffe5a68f157cd27ae19c65aae",
+        "actual_sha256": "c11e310d26c07045d2a38cdd3873ee7f34fbde4ffe5a68f157cd27ae19c65aae",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_display_dialog.cpp",
+        "expected_sha256": "1400458a5d0d1c51e371e7227d5193bf829ba687c837a45534f234f8494cafa0",
+        "actual_sha256": "1400458a5d0d1c51e371e7227d5193bf829ba687c837a45534f234f8494cafa0",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_display_dialog.h",
+        "expected_sha256": "0afcfec5f22d5209c622dd118b9c85f32c1d8cfd59aea9b2d8ec50f7871a4f9c",
+        "actual_sha256": "0afcfec5f22d5209c622dd118b9c85f32c1d8cfd59aea9b2d8ec50f7871a4f9c",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_html.h",
+        "expected_sha256": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a",
+        "actual_sha256": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_store.cpp",
+        "expected_sha256": "2d325e1b82ac703b2ceba147a92b89b43a8c79a4f4045be7138277463aa72618",
+        "actual_sha256": "2d325e1b82ac703b2ceba147a92b89b43a8c79a4f4045be7138277463aa72618",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_view.h",
+        "expected_sha256": "abcb636b46a732c762859471491f6a17291e6d67710d4468afba9780b9d89fb8",
+        "actual_sha256": "abcb636b46a732c762859471491f6a17291e6d67710d4468afba9780b9d89fb8",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_wsl.sh",
+        "expected_sha256": "440af44a7854416f8493fe9ec4d1fd1bf62c3e0e1076c0f1df447d90d8dbc291",
+        "actual_sha256": "440af44a7854416f8493fe9ec4d1fd1bf62c3e0e1076c0f1df447d90d8dbc291",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_render.cpp",
+        "expected_sha256": "c8855d2466c0c15917074b20372da4d9d23a916c8d65c6db1e0d853008125707",
+        "actual_sha256": "c8855d2466c0c15917074b20372da4d9d23a916c8d65c6db1e0d853008125707",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_render.h",
+        "expected_sha256": "e39e54e72506c78d429313b21d349ca3cd0d827e5729a382ad87fe479f30488c",
+        "actual_sha256": "e39e54e72506c78d429313b21d349ca3cd0d827e5729a382ad87fe479f30488c",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_renderer.cpp",
+        "expected_sha256": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581",
+        "actual_sha256": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_resources.qrc",
+        "expected_sha256": "90e45d3956f33bdc91375cf67fa7bf461be3b5c554e31324bd9d00c8ea783389",
+        "actual_sha256": "90e45d3956f33bdc91375cf67fa7bf461be3b5c554e31324bd9d00c8ea783389",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/resources.qrc",
+        "expected_sha256": "3dcc69422678c9832c9c10e37424758b662fac41abe1f3deb57858f4e2de7f82",
+        "actual_sha256": "3dcc69422678c9832c9c10e37424758b662fac41abe1f3deb57858f4e2de7f82",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/result_statistics.cpp",
+        "expected_sha256": "8051ad429db0444c751d83da1c5744c0de1c1f83cae2bba955abed0f1e891702",
+        "actual_sha256": "8051ad429db0444c751d83da1c5744c0de1c1f83cae2bba955abed0f1e891702",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/result_statistics.h",
+        "expected_sha256": "91809fab7c16499f019d7bc2590beabf441fd4314c024363c287448c90b48b13",
+        "actual_sha256": "91809fab7c16499f019d7bc2590beabf441fd4314c024363c287448c90b48b13",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/templates/report.xml",
+        "expected_sha256": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2",
+        "actual_sha256": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/history/wsl.sh",
+        "expected_sha256": "c48c22acdfc3f03c21630ca3aa04aec1610a9746434e571dae88a4d777bf48df",
+        "actual_sha256": "c48c22acdfc3f03c21630ca3aa04aec1610a9746434e571dae88a4d777bf48df",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/fixtures/history_report_options.json",
+        "expected_sha256": "24c79877ece4fb987ae4711d09f9dde297cd7967224bb04c93aa8fe164d6096c",
+        "actual_sha256": "24c79877ece4fb987ae4711d09f9dde297cd7967224bb04c93aa8fe164d6096c",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/fixtures/history_reports.json",
+        "expected_sha256": "0869068a20f6d747907f2b249660f86da37e35dbd61bb7dfb9bfdda1842c9f95",
+        "actual_sha256": "0869068a20f6d747907f2b249660f86da37e35dbd61bb7dfb9bfdda1842c9f95",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/report_remaining_html_test.cpp",
+        "expected_sha256": "ec912d54a06b4a71a539b2dfde41d8715d7282fc296a9f17e26b5311985eec57",
+        "actual_sha256": "ec912d54a06b4a71a539b2dfde41d8715d7282fc296a9f17e26b5311985eec57",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/report_remaining_html_test.pro",
+        "expected_sha256": "bbe93fafa77eeec51a8fce56ba6e9302926c9f74af0e6c296fd46a9db0acd8a9",
+        "actual_sha256": "bbe93fafa77eeec51a8fce56ba6e9302926c9f74af0e6c296fd46a9db0acd8a9",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/report_remaining_html_verify.py",
+        "expected_sha256": "2f9398fd212b03dcb96b2d3c3cae7cdafa32c6f77eb8f2b38a317b9a45ddf381",
+        "actual_sha256": "2f9398fd212b03dcb96b2d3c3cae7cdafa32c6f77eb8f2b38a317b9a45ddf381",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/report_remaining_test.cpp",
+        "expected_sha256": "512bbbec714a9cc3145ce969917e8a203f9f49794cbdb23eff8289de5fb4d117",
+        "actual_sha256": "512bbbec714a9cc3145ce969917e8a203f9f49794cbdb23eff8289de5fb4d117",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/report_remaining_test.pro",
+        "expected_sha256": "0ea7161fab31071f4e30dae4da5eac16cf347b1da4002e0ce37e8e33f9811213",
+        "actual_sha256": "0ea7161fab31071f4e30dae4da5eac16cf347b1da4002e0ce37e8e33f9811213",
+        "match": true
+      },
+      {
+        "path": "06_programs/sn100_host/tests/report_remaining_verify_csv.py",
+        "expected_sha256": "27899af557996e7e96ccc565339a678dd837eb15d2c7ae92d1b2ed9b74b925bc",
+        "actual_sha256": "27899af557996e7e96ccc565339a678dd837eb15d2c7ae92d1b2ed9b74b925bc",
+        "match": true
+      }
+    ],
+    "meaning": "原报告剩余业务相关输入未改；这是48项相关输入复核，不冒充本窗口独立审查了全体426项编译输入。"
+  },
+  "reported_checkpoint": {
+    "source": "本次整合窗口派发说明，非本窗口新增运行结果",
+    "production_input_count": 426,
+    "production_frozen": true,
+    "native_main_and_helper_build_exit": 0,
+    "native_source_before_after_equal": true,
+    "gate02": "根旧累计16调用全过，含旧报告4/0；计数含Qt生命周期，仍保留legacy.query偶发未知。",
+    "gate04": "report_remaining_shell_offscreen实际4/1；六角色/actionReady=false/Guest后端、四入口草稿、显示保存/软删除/重开两个business case通过；HTML在真实toolbar按钮不可见处失败，尚未进入成功字段段。",
+    "N1": "整合方已修会话等待；测试仍由专门内部代理修改布局/焦点/toolbar溢出菜单鼠标和文件框，本窗口不审变动中的test源、不追加通过判断。",
+    "unexecuted_at_checkpoint": [
+      "Windows最终构建",
+      "ARM最终构建/闭包",
+      "最终资源与响应测量"
+    ]
+  },
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "result": "生产源码已关闭，集成HTML成功/后台执行动态证据仍待gate04修后",
+      "evidence": [
+        "shell/frmmain.cpp:394 selectMainPage入口history_->isBusy全局拒绝，早于当前页相等快捷返回",
+        "shell/frmmain.cpp:482 selectUserPage入口同样全局拒绝",
+        "shell/history_shell.cpp:94 busyChanged同步传递到HistoryPage::setReportOperationBusy",
+        "history/report_controller.cpp:updateBusy联合engine/chooser/exporting"
+      ],
+      "explanation": "在非报告主页面通过公开controller发起导出后，两种导航都看实际报告忙态，已不依赖currentMainPage()==2；登录、注销和close原有全局报告守卫保留。"
+    },
+    {
+      "id": "W1",
+      "result": "生产脚本已关闭",
+      "evidence": [
+        "shell/wsl.sh默认SN100_JOBS=2，仅接受1或2，所有native make使用$jobs",
+        "shell/build.sh同样限制SN100_JOBS为1或2"
+      ],
+      "explanation": "不再有默认-j4越过本轮预算的路径；本窗口未实际构建。"
+    }
+  ],
+  "production_contracts": [
+    {
+      "id": "P1_session_and_shutdown",
+      "evidence": [
+        "shell/history_shell.cpp:39-40",
+        "shell/login_shell.cpp:businessPagesIdle/requestLogin",
+        "shell/frmmain.cpp:requestLogout/closeEvent",
+        "shell/main.cpp:213,234-240,433-453以及退出尾段"
+      ],
+      "result": "主壳初始session_和sessionChanged均接HistoryPage，页面再排队给报告worker；Guest新删除/显示禁写，role1至5且authenticated且source非Guest允许，设备actionReady不阻本地元数据。HistoryStore元类型在启线程前注册；SQL创建/使用/关闭都在所属worker，正常退出先close再quit/wait。",
+      "limits": "本地模拟/密码来源合同不等于生产认证安全验收。"
+    },
+    {
+      "id": "P2_soft_delete",
+      "evidence": [
+        "history/report_remaining_store.cpp:hideReports",
+        "history/history_page.cpp:reportsHidden回调/hideSelectedReports"
+      ],
+      "result": "以report_data.id作稳定ID，确认取消不排写；worker整批事务只UPDATE visible=0，1至100唯一正ID，缺失/已隐藏/锁/SQL失败整批回滚；成功后回第一页。report_results、report_values、原始任务/曲线及外部引用不物理删除。",
+      "limits": "不可将此操作称清库或资源回收，不自动复活已隐藏记录；真实生产关系和任务数据仍待协议链。"
+    },
+    {
+      "id": "P3_patient_and_immutable_fields",
+      "evidence": [
+        "history/history_store.cpp:832 savePatient",
+        "history/history_store.h:HistoryPatient/HistoryResultValue"
+      ],
+      "result": "患者保存仅name/sex/age/department/patient_type/application_serial/bed_number/jianyan/checker/auditor/remark，WHERE id且visible=1；不改id/row_id/sn/sample_id/data_time/state、task_id/fid、项目及任何原始结果。提交回读后才patientSaved，隐藏后患者保存拒绝。"
+    },
+    {
+      "id": "P4_units_and_project_identity",
+      "evidence": [
+        "history/history_store.cpp:672 readResults",
+        "history/history_store.cpp:displayValue",
+        "shell/history_shell.cpp:reportOptions/updateReportHospitalName",
+        "原interface_contract.json"
+      ],
+      "result": "旧匿名历史用自己的report_columns及report_values读出label/unit/decimals/factor/rawValue，类型2/3只在显示时应用倍率；新接线不读取当前catalog来重解释旧数值。报告Options更新只替换已提交医院名。",
+      "limits": "当前保存项目名是匿名历史合同，不等于catalog.project_base.id或仪器ID；尚无真实项目→任务→结果链，不能按名称猜接，也不称旧格式已成为完整生产快照机制。"
+    },
+    {
+      "id": "P5_display_preferences",
+      "evidence": [
+        "history/report_remaining_store.cpp:saveDisplay/readDisplay/displayDefaults",
+        "history/history_page.cpp:applyDisplay/displaySelectedResults/requestLeave"
+      ],
+      "result": "只在optional report_view_preferences写稳定key、group、position、visible；界面输入title/required被server元数据覆盖。取消/默认排序草稿不改库，保存失败保留；同项目内结果排序不改外层项目顺序。",
+      "limits": "六个匿名结果列没有明确main_result=false合同，因此保守保护不可取消；患者列可隐藏。已存单位/倍率/精度/原值与report_columns均不被偏好表改写；损坏偏好明确报错，无自动静默恢复。"
+    },
+    {
+      "id": "P6_CSV",
+      "evidence": [
+        "history/history_store.cpp:876 exportCsv",
+        "history/history_store.cpp:957导出列查询"
+      ],
+      "result": "CSV列来自已保存report_columns的position，不从显示偏好生成；保留固定六患者列及全部已确认结果列，GBK严格编码、引用/逗号/换行转义，按保存值与格式输出，临时文件完成后不覆盖发布。显示隐藏/重排不改变CSV数据合同。",
+      "limits": "只读导出不更新报告/患者/结果；当前配置缺列或GBK不可表示字符时明确拒绝，不替换字符或静默丢列。"
+    },
+    {
+      "id": "P7_HTML_and_outcome",
+      "evidence": [
+        "history/report_controller.cpp:preview/chooseExport/startExport/finishExport",
+        "history/report_renderer.cpp:--html分支",
+        "history/report_remaining_html.h",
+        "shell/history_shell.cpp:htmlExported/reportStatus"
+      ],
+      "result": "保留原QtRPT HTML action/模板，controller接管异步helper并使用不可变HistoryPrintDocument；只写标记隔离exports中的新.html，不覆盖/不自动开浏览器/不接物理打印。导出进行时即使预览关闭仍busy，HTML/PDF成功失败都设置reportHasOutcome_，状态保留最终路径或错误。",
+      "limits": "源文本任意&（包括字面&amp;）明确拒绝HTML且保留原数据；连续绝对定位HTML没有PDF页数合同；真实toolbar鼠标/溢出菜单/保存框与成功文件字段路径本轮gate04尚未完成。"
+    },
+    {
+      "id": "P8_no_XLSX",
+      "evidence": [
+        "thirdparty/qtrpt/qtrpt.pri",
+        "thirdparty/qtrpt/QtRPT/config.pri",
+        "shell/package_arm64.py:report_remaining_scope"
+      ],
+      "result": "正式qtrpt.pri显式DEFINES -= QXLSX_LIBRARY，原config同宏注释；没有解禁XLSX、重算、上传；不使用CSV改后缀冒充。"
+    },
+    {
+      "id": "P9_helper_and_resource_closure",
+      "evidence": [
+        "shell/build.sh:82,123,134-150,242-264",
+        "shell/shell.pri",
+        "shell/resources.qrc",
+        "history/renderer.pro",
+        "history/report_engine.pri",
+        "history/report_resources.qrc"
+      ],
+      "result": "main含新store/display_dialog及UI/view/HTML头；helper含history_store+report_remaining_store+moc_history_store、document/render、QtRPT源/moc及报告/图标QRC、renderer/pdf_mapping，排除报告页面/显示dialog/catalog。AccountSession仅值对象，不需AccountStore对象/moc进入helper。主壳/fixtures/history_display_contract.json映射已有匿名options，history资源QRC在主壳被排除避免同名重复。helper只读JSON快照、没有构造或初始化HistoryStore，不需要主壳显示fixture。",
+      "limits": "Qt Core/Gui/Widgets/Sql/PrintSupport等已覆盖新增API；仅静态未见漏项，不代替Windows32/ARM64编译、动态库/插件/字体闭包和RK运行。native与Windows qmake共同引用当前shell.pri/renderer.pro，实际Windows工具链结果仍待验。"
+    }
+  ],
+  "confirmed_new_production_findings": [],
+  "acceptance_not_closed": [
+    {
+      "item": "修后HTML统一整合成功路径",
+      "state": "待实际运行",
+      "detail": "当前gate04 4/1不能归为报告整合全部通过；真实鼠标toolbar/溢出菜单/文件框问题由内部代理仅修测试，成功字段/结果/单位/数量须在修后输出再次解析。"
+    },
+    {
+      "item": "R1动态回归",
+      "state": "源码关闭，动态仍待",
+      "detail": "根HTML用例尚未走到成功段，终审不将后台两导航或导出中关预览的全部新动态路径预记通过。"
+    },
+    {
+      "item": "原累计",
+      "state": "整合方报告gate02的16调用已过",
+      "detail": "含报告4/0仍不定位旧legacy.query偶发根因；禁止放宽断言/超时或抹去原失败。"
+    },
+    {
+      "item": "三平台与资源",
+      "state": "native主辅0由整合方提供；Windows/ARM/最终资源此刻未执行",
+      "detail": "本窗口未重新构建/测量，不能把静态输入齐全或旧371包当426的Windows/ARM/依赖/响应预算通过。"
+    },
+    {
+      "item": "实物与生产",
+      "state": "待设备/合同",
+      "detail": "原Windows完整行为/视觉、RK实屏/输入、仪器真实结果/曲线/上传/打印、预算/同板实时性及长稳未关闭。"
+    }
+  ],
+  "recovery_boundary": {
+    "code": "报告切片回退需同步撤回对应shell接线、QRC及main/helper输入并重建匹配产物；不能用旧361/353/348/371产物替换426中的一半。",
+    "data": "保留匿名history.sqlite、标记、所有导出和证据；可选偏好表不改原结果schema，旧报告程序可能忽略偏好，但visible=0必须继续尊重，不自动恢复/清除；完整426跨模块catalog/QC/cal恢复不由报告单片兼容性推断。",
+    "pair": "main/helper必须同批构建并核各自SHA、架构和实际依赖；不同版本helper对--html的支持不相同，不能混搭。",
+    "fail_closed": "缺helper/目标已存在/非法HTML/未知列等拒绝并清理本次私有临时任务；不删除现有文件或猜旧生产库。损坏显示偏好无自动修复，初次查询失败可能使统一入口退出3，须保留原文件再人工核查。",
+    "archive": "正式Windows/ARM最终产物、匹配源/依赖和恢复包须由整合方完成后再归档07_backups；本审查未创建或确认新恢复包。"
+  },
+  "protected_existing_evidence": [
+    {
+      "path": "04_references/sn100_host/report_remaining_20261025/handoff.json",
+      "sha256": "75b7b137833e637ea73287596c08418514ff4c97ef532a5d5e92432e9c65d409"
+    },
+    {
+      "path": "04_references/sn100_host/report_remaining_20261025/integration_shell_review.json",
+      "sha256": "43054f1e62f30366072a645f1c559535f7f35baf8d5f4557935871dfba1a4a43"
+    },
+    {
+      "path": "04_references/sn100_host/report_remaining_20261025/new_shell_test_review.json",
+      "sha256": "8edcacd52977dbdc878b3d611762f4c83e54cdc24a7b11f5765ffd8e0babec4d"
+    }
+  ],
+  "final_scope": "不读取正在变化的新shell测试源；本JSON仅对所列生产SHA有效。写入完成后停止，不向其他聊天发送消息。"
+}

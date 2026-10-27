@@ -1,0 +1,12 @@
+{
+  "schema": "sn100-coordinate-archive-failure-v1",
+  "status": "invalid_partial_archive_manifest_preserved",
+  "failure": "Split-Path -LiteralPath combined with -Parent did not resolve a parameter set; nonterminating PowerShell errors allowed the first loop to continue",
+  "impact": "Root-level text copies existed but nested core_01/api_01 copies were missing. The original first manifest was invalid despite its reported count and must not be used as archive proof.",
+  "invalid_manifest": "archive_attempt01_invalid_manifest.json",
+  "original_test_results_changed": false,
+  "original_source_changed": false,
+  "slot_release_changed": false,
+  "minimal_correction": "Use System.IO.Path.GetDirectoryName; stop on every error, copy only missing files, verify every existing/copied file SHA and rebuild the archive manifest",
+  "no_test_rerun": true
+}

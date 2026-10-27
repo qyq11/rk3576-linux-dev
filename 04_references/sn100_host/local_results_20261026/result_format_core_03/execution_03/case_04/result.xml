@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCase name="ResultFormatTargetedTest">
+<Environment>
+    <QtVersion>5.15.13</QtVersion>
+    <QtBuild>Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)</QtBuild>
+    <QTestVersion>5.15.13</QTestVersion>
+</Environment>
+<TestFunction name="initTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="3.46066"/>
+</TestFunction>
+<TestFunction name="realRollbackFailureClosesWriterUntilExplicitInitialize">
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[PROJECT_ERROR 110 replaceCurrentResultFormat 已提交配置已变化；请重新读取，不使用旧草稿覆盖。]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[PROJECT_ERROR 112 replaceCurrentResultFormat 仅工程师/管理员可在就绪状态修改项目。]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[PROJECT_ERROR 115 replaceCurrentResultFormat candidate02 owned rollback injection Unable to fetch row；配置事务结束未经确认：cannot rollback - no transaction is active Unable to rollback transaction；连接已关闭并停止读写，须显式重新initialize核查。未推断已提交或已取消，未清理引用登记。]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[PROJECT_ERROR 116 remove 项目数据库未就绪。]]></Description>
+</Message>
+<Message type="qinfo" file="" line="0">
+    <Description><![CDATA[PROJECT_ERROR 117 loadCurrentResultFormat 项目数据库未就绪。]]></Description>
+</Message>
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="1280.38"/>
+</TestFunction>
+<TestFunction name="cleanupTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="2.54165"/>
+</TestFunction>
+<Duration msecs="1292.98"/>
+</TestCase>

@@ -1,6 +1,8 @@
 #ifndef HOSPITAL_STORE_H
 #define HOSPITAL_STORE_H
 
+#include "hospital_dictionary_query.h"
+
 #include <QList>
 #include <QMetaType>
 #include <QObject>
@@ -40,6 +42,8 @@ public slots:
     void initialize(QString databasePath, QString iniPath);
     void load(QString type);
     void readAll();
+    // Read only committed dictionary rows; reply identity is independent of editor operations.
+    void queryCommittedDictionary(HospitalDictionaryRequest request);
     // Upsert the supplied current-category rows. Omitted rows are retained;
     // persistent deletion is only performed by remove(). New rows use id = 0.
     void save(QString type, QString hospitalName, HospitalRows rows);
@@ -48,6 +52,7 @@ public slots:
 
 signals:
     void ready();
+    void dictionaryQueryCompleted(HospitalDictionaryReply reply);
     void loaded(QString type, QString hospitalName, HospitalRows rows);
     void allLoaded(QString hospitalName, HospitalRows rows);
     // saved means the authoritative SQLite transaction has committed.

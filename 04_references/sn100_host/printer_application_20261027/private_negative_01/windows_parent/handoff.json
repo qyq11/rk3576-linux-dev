@@ -1,0 +1,147 @@
+{
+  "status": "WSL_PRIVATE_BUILDS_AND_REAL_MISSING_DEVICE_NEGATIVE_PASSED_SLOT_RELEASED",
+  "utc": "2026-10-26T16:01:50.0399429Z",
+  "slot": "CALIBRATION_PRINTER_PRIVATE_01",
+  "slot_release": true,
+  "execution": "temp/sn100_host/local_results_20261026/printer_private_execution_01",
+  "windows_parent": "temp/sn100_host/local_results_20261026/printer_private_execution_parent_01",
+  "reviewed_preparation_sha256": "4dc0e50a3b62258ae848f3ac979e81f2a52e7cd71c11fdf0aef3c87eca4578b1",
+  "reviewed_controller_sha256": "7b3a56dd6bd1e5c5e1531732c28e79f671cb04fa157c8e901df0c4303e780a2c",
+  "actual_windows_parent_exit": 0,
+  "actual_postflight_exit": 0,
+  "actual_outer_windows_launcher_exit": 0,
+  "first_and_only_attempt": true,
+  "source_fixes_or_retries": 0,
+  "environment": "WSL Ubuntu-24.04 / qyq / Qt5 / x86_64 Release / existing xcb DISPLAY. Windows仅作启动和原始字节取证，不是Windows32构建验收。",
+  "builds": [
+    {
+      "stage": "01_helper",
+      "qmake_actual_exit": 0,
+      "make_actual_exit": 0,
+      "parallel_jobs": 2,
+      "object_files": 30,
+      "fresh_object_and_generated_files": 42,
+      "no_undefined_flag": false,
+      "artifact": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/printer_private_execution_01/01_helper/build/sn100_report_renderer",
+        "bytes": 909168,
+        "sha256": "cfe7085824d62168cfd2242631566f58de8056e49ac2b0a03f05f34436debcd1",
+        "controller_library_loaded": false
+      }
+    },
+    {
+      "stage": "02_controller",
+      "qmake_actual_exit": 0,
+      "make_actual_exit": 0,
+      "parallel_jobs": 2,
+      "object_files": 35,
+      "fresh_object_and_generated_files": 50,
+      "no_undefined_flag": true,
+      "artifact": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/printer_private_execution_01/02_controller/build/libsn100_printer_application_linkcheck.so",
+        "bytes": 1106544,
+        "sha256": "b5df1a9ac879497b63013009f9784370649410861a2a6cea3e7751daecb942bc",
+        "controller_library_loaded": false
+      }
+    },
+    {
+      "stage": "03_directory_probe",
+      "qmake_actual_exit": 0,
+      "make_actual_exit": 0,
+      "parallel_jobs": 2,
+      "object_files": 1,
+      "fresh_object_and_generated_files": 1,
+      "no_undefined_flag": false,
+      "artifact": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/printer_private_execution_01/03_directory_probe/build/sn100_printer_names_probe",
+        "bytes": 18464,
+        "sha256": "700369f11f44ca981b4058ccb5840d0e5f6cf2a8e14c2b335ec777779e5bb7dc",
+        "controller_library_loaded": false
+      }
+    }
+  ],
+  "fresh_totals": {
+    "objects": 66,
+    "objects_plus_generated": 93,
+    "no_reused_objects_moc_rcc": true,
+    "controller_shared_loaded": false
+  },
+  "directory": {
+    "actual_qpa": "xcb",
+    "actual_names": [],
+    "actual_probe_exit": 0,
+    "read_only": "Actual QPrinterInfo::availablePrinterNames; empty actual directory retained. Not a fake directory and not a printing-success claim."
+  },
+  "negative_case": {
+    "selected_absent_name": "SN100_ABSENT_91d19338-1a0a-4f23-9402-08cf5469a707",
+    "token": "d4e85b5c-4246-4a93-906a-73a0d392a660",
+    "snapshot_sha256": "fad0db285e0e4b35065f1b0c762c178e42b6371e351afe3ec9a012dd11c8b713",
+    "actual_helper_exit": 21,
+    "raw_exit_source": "actual Popen.wait return",
+    "stdout_lines": 1,
+    "phase_lines": 0,
+    "exact_six_string_terminal": {
+      "kind": "terminal",
+      "message": "本机未找到指定打印设备：SN100_ABSENT_91d19338-1a0a-4f23-9402-08cf5469a707；未提交打印。",
+      "printer": "SN100_ABSENT_91d19338-1a0a-4f23-9402-08cf5469a707",
+      "protocol": "sn100-native-print-v1",
+      "token": "d4e85b5c-4246-4a93-906a-73a0d392a660",
+      "value": "Failed"
+    },
+    "expected_nonzero_retained": "helper failed/leaked/needed cleanup; original command, exit and log retained",
+    "source_branch": "The exact missing-device message comes after successful readSnapshot and failed exact device lookup, before the application local QPrinter constructor. No confirming/submit_started/dialog/report draw/spool path was entered.",
+    "limitation": "Actual directory is empty; no installed/default-device positive scenario was exercised."
+  },
+  "readonly_inputs": {
+    "repository_files_before_after": 1029,
+    "tool_sdk_before_after": 19,
+    "formal_sources": 494,
+    "sealed_package_files": 523,
+    "changed_inputs": [],
+    "windows_executor_inputs_unchanged": true,
+    "formal_freeze_sha256": "04d92ada0e5201db7834069c965b6a2578f687c7b5ebfa8105a99fdab54b445f"
+  },
+  "process_clearance": {
+    "owned_command_groups": 13,
+    "driver_group": 298,
+    "all_checked_groups": 14,
+    "all_gone": true,
+    "group_receipt": "postflight.json",
+    "windows_wsl_pid": 78408,
+    "windows_wsl_process_gone": true
+  },
+  "raw_windows_bytes": [
+    {
+      "file": "postflight.stderr.bytes",
+      "bytes": 132,
+      "sha256": "b280c454d6f559e56eb3f5ed39f3ba084b8d1744a3ff7fe016b21ff86dea1aca"
+    },
+    {
+      "file": "postflight.stdout.bytes",
+      "bytes": 965,
+      "sha256": "1b3c059619ea0cb6739f2c2dc47886275098ac3e41f3babbeaddfd2fed1fdf8a"
+    },
+    {
+      "file": "stderr.bytes",
+      "bytes": 132,
+      "sha256": "b280c454d6f559e56eb3f5ed39f3ba084b8d1744a3ff7fe016b21ff86dea1aca"
+    },
+    {
+      "file": "stdout.bytes",
+      "bytes": 243,
+      "sha256": "196a7ac0619e9c9015680fd28681ebf170f2ca4e0ef023bd247f2d1c38fcafcb"
+    }
+  ],
+  "scope": "本轮通过的是WSL全新编译、controller静态链接和真实helper缺设备拒绝。没有合入正式源码，没有真实打印、RK/ARM64运行、Native正向确认或仪器验证。",
+  "remaining": [
+    "Main UI/Store/controller runtime binding and saved-device preview lifecycle",
+    "Existing named-device Native confirmation and actual system print submission",
+    "Physical paper/driver/backend behavior",
+    "RK/EGLFS display/input, actual instrument behavior, accepted resource budget/long-run/same-board control"
+  ],
+  "writes": "Only new execution and Windows-parent evidence directories. Reviewed prep02/03, probe/controller preparation, common tools, current494 formal source and runtime/system configuration not modified.",
+  "evidence_manifest": "evidence_files_sha256.json",
+  "evidence_manifest_sha256": "e9b1dc69c9cdaef0f609a8aca87b38ddd9fb2ec5851de543a59962ec9ffcc247",
+  "evidence_files": 111,
+  "stopped_writing": true
+}

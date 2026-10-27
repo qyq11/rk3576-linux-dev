@@ -1,0 +1,143 @@
+{
+  "module": "reagent batches / ISI and normalValue local metadata",
+  "state": "final independent WSL local delivery verified; source writes stopped; pending unified integration",
+  "date": "2026-10-25",
+  "modified_files": [
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_types.h",
+      "sha256": "c22b51bf8494b654ebdaa5d2dcdbcaf955b6802429c722884a4fe4311dbc651e"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_store.h",
+      "sha256": "af84cabfb9fdf8fc382f2157923294a03597046d65ffda9cf3695f4d8fcc4d1d"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_store.cpp",
+      "sha256": "dffce0ddbd9879e5908a1692525f0ccae7a6568f5ebeac515c42e621ff99ed76"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+      "sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/build.sh",
+      "sha256": "7ffdb5041c46e655733663952385ec4d0521d21d9096b78a6e2114cf2da69fb7"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagent_batch_verify.sh",
+      "sha256": "812b1da8b0338b13bc9ca829646a8fe8a0ce137fdb5a601749909e0ddc534453"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/tests/reagent_batch_test.pro",
+      "sha256": "ca8a0bce20e7ca190f9ccb31140cd5e199fb045dfb5042a99aee6ebd6e0a1eb5"
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/tests/reagent_batch_test.cpp",
+      "sha256": "2e604438cd9d31dab13745c11b3f7260186f1850de6b27970c8b47f52cac7287"
+    }
+  ],
+  "contract": "reagents_contract.json",
+  "implementation_entry": "ReagentsPage::openBatchEditor -> requestSaveBatch -> ReagentStore::saveBatch -> reagent_batch_group + reagent_batch_metadata transaction",
+  "rules_entry": "ReagentStore::validateBatchMetadata, saveBatch, saveReagent; reference reserve/release/check worker slots",
+  "data_scope": "anonymous explicit own temp catalog only; no old production/config/RK/instrument/LIS access",
+  "original_layout": {
+    "ui": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+    "sha256": "5f90074f739fdd39e70ea146e020a112a48969910230c76f769eef17c9e3a781",
+    "reference_ui_sha256": "5f90074f739fdd39e70ea146e020a112a48969910230c76f769eef17c9e3a781",
+    "change": "none; existing proportional host fitting and style retained; PT prefix toggles original metadata fields",
+    "windows_active_theme": "pending"
+  },
+  "commands": [
+    "wsl -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/reagent_batch_verify.sh test",
+    "wsl -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/reagent_batch_verify.sh basis"
+  ],
+  "test_evidence": [
+    {
+      "kind": "specialized local metadata/reference/GUI",
+      "command": "wsl -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/reagent_batch_verify.sh test",
+      "passed": 11,
+      "failed": 0,
+      "process_exit_code": 0,
+      "log": "reagents_batch_test.log",
+      "receipt": "reagents_batch_receipt.json",
+      "details": "normal decimal text, legacy four-field caller preserves metadata, reopen, empty/illegal, duplicate group members, permission, independent external DB failure retained hold, idempotent references, rename/delete/disabled reagent protection, atomic write failure, cancel/new draft/selection/busy, lock error recovery, unknown version and corrupt metadata preservation, normal exit; strict trailing-newline rejection; externally reloaded committed snapshots preserve dirty metadata text"
+    },
+    {
+      "kind": "existing reagent basis cumulative",
+      "command": "wsl -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/reagent_batch_verify.sh basis",
+      "passed": 11,
+      "failed": 0,
+      "process_exit_code": 0,
+      "log": "reagents_basis_test.log",
+      "receipt": "reagents_basis_receipt.json",
+      "details": "existing CRUD/bottles/barcode/holes/permission/path/lock/clear/delete and reopen; no visual evidence requested in this run"
+    },
+    {
+      "kind": "standalone WSL actual startup and exit",
+      "command": "wsl -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/reagents/reagent_batch_verify.sh standalone --data-dir /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/projects_remaining_20261025/reagents/runtime/standalone_catalog --test-engineer --quit-after-ms 1000",
+      "process_exit_code": 0,
+      "receipt": "reagents_standalone_receipt.json",
+      "details": "actual QApplication startup, own anonymous catalog, normal guarded close, stores and threads closed; no instrument connection or action"
+    },
+    {
+      "kind": "read-only final catalog audit",
+      "process_exit_code": 0,
+      "json": "reagents_database_check.json",
+      "details": "actual persisted batch2 ISI1.2345 normal12.3400; integrity ok; FK violations0; external holds0 after explicit release; action refs0 after explicit test cleanup"
+    },
+    {
+      "kind": "ARM script syntax only",
+      "command": "wsl -d Ubuntu-24.04 -u qyq -- bash -n .../reagents/build.sh",
+      "process_exit_code": 0,
+      "details": "manual lists include project_advanced.cpp and moc header; ARM compile intentionally left to final serial integration"
+    }
+  ],
+  "first_failure": {
+    "log": "temp/sn100_host/projects_remaining_20261025/reagents/logs/build_01.log",
+    "failure": "parent project header temporarily included project_advanced.h before that file was created; Make Error1, no artifact",
+    "runner_exit_observed": 0,
+    "actual_make_exit_code": null,
+    "receipt_limit": "Initial inline shell wrapper incorrectly returned0 and printed an empty BUILD_EXIT; actual make exit was not correctly captured. Failure retained; replaced with reagent_batch_verify.sh set -Eeuo pipefail and EXIT receipt."
+  },
+  "gui_evidence_entry": "QT_QPA_PLATFORM=xcb SN100_BATCH_EVIDENCE=<absolute evidence dir> bash .../reagent_batch_verify.sh test; screenshot captured from actual populated editable batch dialog; run only when integration GUI measurement is clear",
+  "resource_entry": "bash .../reagent_batch_verify.sh standalone --data-dir <absolute own anonymous dir> --seed-demo --test-engineer --quit-after-ms <duration>; use existing tests/observe_linux_process.py from integration owner",
+  "required_shell_wiring": [
+    "Existing projects/reagents .pri and page public methods retain compatibility. Existing reagent shell entry automatically gains local metadata behavior on rebuild.",
+    "Calibration/QC external local saves must queue holdProjectReference plus holdBatchReference, wait success before their own SQL commit, and release only after corresponding record removal. No external linkage code is installed in reagents.",
+    "Rebuild final unified source, Windows32/ARM64 after all writers stop; root integration owner handles total sources/SHA, GUI/resources and cumulative tests."
+  ],
+  "rollback": [
+    "New tables/metadata key are additive and existing batch/project IDs unchanged; no existing field/drop/rename migration.",
+    "Restore source files from prior matching checkpoint only with all DB consumers stopped. Old371 code does not enforce new durable reference semantics; do not use old binaries to mutate an extended catalog with live holds/action references.",
+    "Use a matching preupgrade catalog backup for operational rollback, or reconcile/export new metadata/holds explicitly before a planned rollback. No production catalog was opened or migrated in this task.",
+    "Unknown reagent_batch_metadata version is rejected without overwriting; corrupt stored decimal metadata emits error without new snapshot or mutation."
+  ],
+  "pending": [
+    "Populated batch dialog screenshot via SN100_BATCH_EVIDENCE and original Windows active visual/behavior comparison; integration owner runs serially",
+    "Calibration/QC actual reserve/release wiring and unified cumulative regression",
+    "Final integrated Windows32/ARM64 builds and source/restore package",
+    "RK screen/instrument/calibration clinical effectiveness",
+    "Resource budget/long-run/same-board control coexistence"
+  ],
+  "artifacts": [
+    {
+      "file": "temp/sn100_host/projects_remaining_20261025/reagents/batch_build/reagent_batch_test",
+      "sha256": "a94aaf549d08805c675f7f67607abd36ba8d180964389c07dd3802c27b266d51"
+    },
+    {
+      "file": "temp/sn100_host/projects_remaining_20261025/reagents/basis_build/test_reagents",
+      "sha256": "8d3ba6e7709d1829b2a454e2ee2bda65eebe0c1999a18da2bd641de981612280"
+    },
+    {
+      "file": "temp/sn100_host/projects_remaining_20261025/reagents/standalone_build/sn100_reagents",
+      "sha256": "3017f9f08ee662e71e7ed8131225877a630ff956a7e8a7d65400b5080f7e5856"
+    }
+  ],
+  "resource_scope": "No new long measurement. The short lock-heartbeat timings in reagent basis logs are an event-loop proxy only, not resource or response budget acceptance. Full CPU/RSS/PSS/growth/budget/long-run/control evaluation belongs to final integration.",
+  "final_review_fixes": [
+    "Rejected trailing newline/outer whitespace for metadata numeric inputs; owner-module regex uses strict end anchor.",
+    "Committed snapshot refresh cannot overwrite dirty batch metadata editor text; test explicitly reloads during draft before cancel.",
+    "Unknown metadata extension version refuses initialization without overwriting the marker; corrupt persisted numeric text refuses new snapshot and preserves original value.",
+    "ARM standalone script includes new project_advanced.cpp and its moc header; syntax checked only."
+  ]
+}

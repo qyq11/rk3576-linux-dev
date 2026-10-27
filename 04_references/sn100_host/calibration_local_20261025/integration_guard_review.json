@@ -1,0 +1,660 @@
+{
+  "schema": "sn100-calibration-integration-guard-static-review-v1",
+  "date": "2026-10-25",
+  "reviewed_at_asia_shanghai": "2026-10-25T22:08:09.2081922+08:00",
+  "status": "static_review_complete_with_policy_and_restore_concurrency_findings; final_runtime_acceptance_owned_by_integration_window",
+  "scope": {
+    "read_only_review": true,
+    "sole_new_file": "04_references/sn100_host/calibration_local_20261025/integration_guard_review.json",
+    "production_source_tests_public_files_or_original_handoff_modified": false,
+    "build_test_gui_resource_device_or_network_connection_run": false,
+    "installation_git_commit_push_or_automation": false,
+    "messages_to_other_chats": false,
+    "new_agents_spawned": false,
+    "evidence_recheck": "Read existing source, contracts, logs and SHA256 only; guard18/0 is independently re-read evidence, not a test run by this review."
+  },
+  "conclusion": "普通同一数据库文件的数据集内，角色、历史单位/原始点、已保存记录复制、隐藏历史引用、菜单3与会话/草稿/busy/退出接线静态成立；停用项目软删除策略及同UUID数据库副本并发范围仍需整合窗口处理。18项guard证据不替代完整主程序/三目标/视觉/资源验收。",
+  "confirmed_contracts": [
+    {
+      "topic": "roles",
+      "source": "calibration_store.cpp:90-93,160-177; calibration_page.cpp:220-241",
+      "result": "canEdit保持authenticated && actionReady && role1..5；Guest拒绝save/copy/remove。原页save/copy/delete槽没有显式角色检查，独立版新增的登录限制保持不变；工程师方法按钮仍role>=4才显示，但所有临床动作禁用。启动保护登记是系统保守恢复，不会启用临床操作。"
+    },
+    {
+      "topic": "sql_ownership_and_order",
+      "source": "calibration_store.cpp:190-328,342-531,953-1051",
+      "result": "同worker创建/使用/关闭本地、只读catalog、预约catalog三连接。本地BEGIN IMMEDIATE先锁同一数据文件，再catalog BEGIN IMMEDIATE提交本数据集预约，再本地事务提交。未声称跨文件外键或一次原子提交。共享schema不由校准创建/升级，只写既有两张预约表。"
+    },
+    {
+      "topic": "dataset_identity_and_startup",
+      "source": "calibration_store.cpp:336-421",
+      "result": "持久UUID+协议元数据仅在已知v3且两键均缺时追加；缺一键/未知协议/空UUID失败。启动查询所有记录的DISTINCT身份，不按visible筛选；隐藏记录也登记保护。按dataset前缀核对孤立预约，失败保留数据和已有预约，不发ready。"
+    },
+    {
+      "topic": "hold_ownership",
+      "source": "calibration_store.cpp:423-529",
+      "result": "owner=calibration，键含dataset UUID/projectId/batchId；批次0仅项目预约。同键同ID幂等；同键异ID拒绝。只回收当前动作新建键，不释放以前记录、其他dataset或QC owner键。软隐藏不释放预约。此保证的同数据集并发测试只覆盖同一物理本地数据库文件。"
+    },
+    {
+      "topic": "historical_raw_and_identity",
+      "source": "calibration_store.cpp:758-951",
+      "result": "保存记录的project/batch/code/group/bloodBatch/method/x/y/两轴单位/ratio/sourceId按已有revision逐项不可改写。原始点顺序与数值直接保存，当前单位/倍率变化不会自动换算。新记录须匹配当前单位；历史记录更新或复制保留原两轴单位/ratio，仍须Original/Calibration类型及当前/历史单位字典行存在。"
+    },
+    {
+      "topic": "copy_and_clinical_state",
+      "source": "calibration_store.cpp:997-1051; calibration_page.cpp:535-545",
+      "result": "copy从数据库读取已保存可见来源并匹配revision，不从未保存编辑缓冲复制；sourceId记直接来源，新增本地ID/创建修改时间。is_checked/is_applied始终受0约束，无拟合、逆算、审核或有效曲线映射写入。"
+    },
+    {
+      "topic": "disabled_project_save_copy",
+      "source": "calibration_store.cpp:758-777,976,1033",
+      "result": "allowDisabledHistory仅在启动对账调用true，save/copy默认false，项目is_used=false仍拒绝本次save/copy；历史读取本身不作临床应用。remove另有下述策略缺口。"
+    },
+    {
+      "topic": "menu3_and_lifecycle",
+      "source": "shell/calibration_shell.cpp; shell/main.cpp:512-538,674-738; shell/frmmain.cpp:348-519; shell/login_shell.cpp",
+      "result": "attach前要求项目/试剂页已接；替换主菜单索引3为原1751x968页面的QScrollArea，传播真实账户会话和已提交项目/试剂快照。--calibration依赖--catalog，catalog依赖--accounts。等待项目→试剂（如有样本再等样本）建表完成后初始化；仅成功load且ready且idle才承认校准ready。busy阻止切页/设置/登录/注销/退出，草稿先Cancel/Discard。正常退出先close校准SQL，再停线程并wait，日志不声称临床有效。"
+    },
+    {
+      "topic": "visual_and_clinical_boundaries",
+      "source": "calibration_page.cpp, calibrationchart.cpp, frmcalibrationmaterial.ui; original_audit.json",
+      "result": "页面、图表、值类型、原.ui与独立交付SHA未变，原.ui仍逐字节一致；菜单接入沿原按钮/分组/原色值，只加原画布滚动承载。审核、重算、方法、测试波形和两应用按钮仍禁用；原始散点不冒充拟合或仪器task波形。未启动原Windows/当前GUI，活动主题及统一1600/1920视觉仍需整合窗口实际取证。"
+    }
+  ],
+  "historical_unit_test_delta": {
+    "verdict": "有来源且合理的有意行为变化，仅适用于本地未审核/未应用历史原始点，不代表原Windows完全等价或临床效力通过。",
+    "former_cases": [
+      "catalogRenameDeleteBatchAndUnitChangesRejectStaleWrites/unit-ratio",
+      "catalogRenameDeleteBatchAndUnitChangesRejectStaleWrites/rename-original-result-unit"
+    ],
+    "old_behavior": "只要当前字典ratio或Original单位与旧快照不同，既有记录save/copy一概拒绝。",
+    "new_behavior": "保持旧concentrationUnit/resultUnit/unitRatio和全部原始数值，可在仍启用项目且两类结果/相关单位行存在时保存旧记录或复制它；新记录仍要匹配当前单位。",
+    "reason": "项目和试剂合同规定历史值/单位快照不得被当前设置追溯重写；独立版单位倍率本来就是来源信息而非执行换算。保留旧单位的记录不是重新解释成新单位。",
+    "explicit_example": "历史100.125 mg/dL、Sec测试值[12.25,12.75]、ratio1；当前mg/dL字典ratio改2或Original当前单位改成另一仍存在单位：历史save/copy仍保留100.125、Sec、ratio1，散点均值12.5；当前新建草稿不能假装已用新单位完成换算。",
+    "remain_rejected": [
+      "缺Original结果type",
+      "缺Calibration结果type",
+      "当前type单位JOIN字典无行",
+      "任一历史两轴单位字典行被删",
+      "项目缺失/改名",
+      "批次缺失/改号/改属/组分变化",
+      "记录调用参数试图改单位/ratio/身份",
+      "save或copy时项目停用"
+    ],
+    "current_test_source": "已只读看到整合窗口把用例重命名为catalogChangesRespectSavedIdentityAndUnits；仅两项历史单位变化走成功分支，load新revision再copy并断言旧单位/ratio/原始点未变；身份重绑测试仍拒绝。未由本窗口执行新测试。",
+    "catalog_hash_delta": "预约写入会有意改变catalog文件字节。当前saveLoadReopen测试已改为比对业务表内容快照、显式检查本模块两类预约，再在已有预约状态核重开哈希；loadCatalog只读测试仍要求全文件哈希不变。这种细化合理，不能笼统删除只读/业务不变断言。",
+    "baseline_preservation": "原50/21/21及原handoff保持为独立旧源证据；新guard18/0及后续累计回归应单独登记，不把旧二进制当作包含guard。原启动示例旧匿名catalog若缺预约schema，不能当新版已验入口。"
+  },
+  "findings": [
+    {
+      "id": "CAL-GUARD-01",
+      "priority": 2,
+      "status": "confirmed_static_policy_gap",
+      "title": "停用项目仍可软隐藏删除校准记录",
+      "source": [
+        "06_programs/sn100_host/calibration/calibration_page.cpp:230",
+        "06_programs/sn100_host/calibration/calibration_store.cpp:1053"
+      ],
+      "trigger": "项目已有可见校准记录，随后is_used设0；使用authenticated/actionReady角色1..5和匹配revision点击删除或调用remove。",
+      "observed_from_source": "Save/Copy和编辑按currentProject.enabled禁用，但删除按钮不含currentProject条件；remove只查会话、版本、可见和未审核应用，直接UPDATE visible=0。因而停用项目仍能产生本地状态写入。",
+      "relation_to_requested_contract": "本次请求写明停用项目只允许历史读回/启动对账；按此严格范围，软删除也应禁止。此行为由原独立版沿用，并非guard新增，但整合范围仍未覆盖。数据/点和预约会保留，不是物理删除或临床应用。",
+      "recommendation": "根整合窗口如维持严格只读范围，应在UI删除门控和worker remove中都核项目enabled，并增加停用后remove拒绝、visible/revision/points/holds均不变用例。如有意允许历史软隐藏，须明确记为上述只读规则的窄例外，不能称全部写操作已禁止。",
+      "runtime_reproduced_by_this_review": false
+    },
+    {
+      "id": "CAL-GUARD-02",
+      "priority": 2,
+      "status": "conditional_static_concurrency_gap_for_cloned_dataset_files",
+      "title": "同UUID的不同数据库副本不受同一文件写锁串行保护",
+      "source": [
+        "06_programs/sn100_host/calibration/calibration_store.cpp:330",
+        "06_programs/sn100_host/calibration/calibration_store.cpp:336",
+        "06_programs/sn100_host/calibration/calibration_store.cpp:423",
+        "06_programs/sn100_host/calibration/calibration_store.cpp:985",
+        "06_programs/sn100_host/tests/calibration_reference_test.cpp:399"
+      ],
+      "trigger": "把带dataset_uuid但尚无该项目/批次记录的v3本地库复制为两个不同文件；两个副本连接同一catalog且同时运行，保留相同UUID。普通同一文件多连接不触发此问题。",
+      "static_interleaving": [
+        "A副本获取自己的本地写锁，新建组合键K的catalog预约并提交。",
+        "B副本持另一文件写锁，看到相同UUID/组合键K已存在，复用K并成功提交本地记录。",
+        "A写点失败，因K记在A的newProjects/newBatches中，cleanupFailedReferences删除K；B的已提交记录仍在，却失去项目/批次预约。"
+      ],
+      "evidence_limit": "现有sameDatasetConcurrentFailureCannotReleaseCommittedHold让两worker打开同一calibrationDirectory；它验证同一文件写锁，未验证相同UUID的不同文件。新数据集各生不同UUID的用例也不覆盖复制文件保留UUID。该交错为源码静态推导，本窗口未复制数据库或执行并发实验。",
+      "recommendation": "恢复/克隆范围应明确一个UUID只允许一个活动物理数据库；在启用并行副本或恢复入口前实施可验证的UUID单活锁/登记并拒绝第二活动副本，或提供显式fork生成新UUID及引用对账流程。若产品保证单一规范路径，验收结论必须限定该路径，不能把same-dataset并发测试扩大到任意副本。",
+      "runtime_reproduced_by_this_review": false
+    }
+  ],
+  "unverified_failure_boundary": {
+    "source": "calibration_store.cpp:985-990,1042-1046",
+    "observation": "writeRecord失败与本地commit返回false共用分支：先清新预约，再调用rollback；rollback返回值未检查，也无未确认提交结果分支。",
+    "existing_evidence": "18项中的localCommitFailureRecoversReservations用明确的读锁造成可复现的提交失败，并断言本地无记录，覆盖这一已知失败；不是磁盘I/O异常或恢复结果不明的实测。",
+    "conclusion": "未在此声称已发生数据损坏。结果不明/回滚失败时保留预约并闭锁仍是未验故障边界，不应从读锁提交失败用例推定所有存储错误都可安全释放。",
+    "recommendation": "根整合窗口后续区分可确认未提交的错误与结果不明；无法确认时保留hold、关闭写入，显式恢复读回后再决定释放。不得为避免残留预约而扩大自动清理。"
+  },
+  "evidence_rechecked": {
+    "guard_handoff": {
+      "path": "04_references/sn100_host/qc_local_20261025/reference_guard_handoff.json",
+      "sha256": "5a63efb5f15b055ced0ce379a63fbfa2ba3c474ef8a9388d2446b19678da54a4",
+      "bytes": 12601
+    },
+    "guard_source_log_and_manifest_checks": [
+      {
+        "section": "changed_files",
+        "path": "06_programs/sn100_host/calibration/calibration_store.h",
+        "sha256": "9c36dd1e7cc9b6936f0ee6808c39f1baab1d0e72b49c2a262d03dd8e4a237edc",
+        "bytes": 3124,
+        "matches_declared": true
+      },
+      {
+        "section": "changed_files",
+        "path": "06_programs/sn100_host/calibration/calibration_store.cpp",
+        "sha256": "980a717c61c0613c5247b455be8078557057e1a3bc694fe02cf6cf5bc1486dbc",
+        "bytes": 48600,
+        "matches_declared": true
+      },
+      {
+        "section": "changed_files",
+        "path": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+        "sha256": "0aad1ea448ad6bb17ba19cf0c971fd0fe203e32f569be7de5bfe889c901ce81f",
+        "bytes": 31120,
+        "matches_declared": true
+      },
+      {
+        "section": "changed_files",
+        "path": "06_programs/sn100_host/tests/calibration_reference_test.pro",
+        "sha256": "9c8ca0e5d62a90de707893816b5b2c5ca0d855e6a0d83bff84495a88e40193c9",
+        "bytes": 710,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/commands.txt",
+        "sha256": "d8ccc1416496406e289dd6e1d3166b596462c4eb20fd5a1dddff7ded74519622",
+        "bytes": 768,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/run.sh",
+        "sha256": "a1ee822d91e55b6841fe527215130ccfc9d54fd0f9c9d32d12937f62a2cd9d3f",
+        "bytes": 1395,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/build_1.log",
+        "sha256": "f5015b891718c63624aa7ff9fdd2d3c3942258c6f918e300dc11c79c0c85bd81",
+        "bytes": 23623,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/build_1_receipt.txt",
+        "sha256": "387597a7eba65c7530987ffd4b690004024a25aed214f613c39ecc1bff7f52d0",
+        "bytes": 25,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/build_2.log",
+        "sha256": "a26ffad1204a04444e3081b7d342d884074b3ce996cb3ad745a6329a441a224a",
+        "bytes": 4418,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/build_2_receipt.txt",
+        "sha256": "64ed149d223d46e5f0e4793eaf94b188600bf71e3757f5325173c377ebb1787e",
+        "bytes": 25,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/test_2.log",
+        "sha256": "b5bb3fb3ae03ebff96838465295caffbb2259c4ded37981154025e77b8e4c3df",
+        "bytes": 22268,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/test_2_receipt.txt",
+        "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+        "bytes": 12,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/build_3.log",
+        "sha256": "97a354de5b81274d4002223a4f05a0e29893a48f82055d140187ca7b82dfd510",
+        "bytes": 4572,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/build_3_receipt.txt",
+        "sha256": "64ed149d223d46e5f0e4793eaf94b188600bf71e3757f5325173c377ebb1787e",
+        "bytes": 25,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/test_3.log",
+        "sha256": "f286bf8a80086dbd36f8e83e3847c373b35d6f2ee7cfc9efcb8b7e1316f49d28",
+        "bytes": 28438,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/test_3_receipt.txt",
+        "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+        "bytes": 12,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/build_4.log",
+        "sha256": "2f1160d314f95f76183c5279749b5a688371d8c50d3d40b99c485e1313946bfe",
+        "bytes": 1890,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/build_4_receipt.txt",
+        "sha256": "64ed149d223d46e5f0e4793eaf94b188600bf71e3757f5325173c377ebb1787e",
+        "bytes": 25,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/test_4.log",
+        "sha256": "2daddc61c0873f8c9d9c474cf9af68f2972c11e707325a4da812da50e1277597",
+        "bytes": 28476,
+        "matches_declared": true
+      },
+      {
+        "section": "raw_evidence",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/test_4_receipt.txt",
+        "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+        "bytes": 12,
+        "matches_declared": true
+      },
+      {
+        "section": "verification_files",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/source_inputs.json",
+        "sha256": "617be3a796889330725f29d05af2e5afac4dc83816ee23440d3fa0ed1516811a",
+        "bytes": 702,
+        "matches_declared": true
+      },
+      {
+        "section": "verification_files",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/dependency_inputs.json",
+        "sha256": "da82d582e9dbe5d5ab258bc6b4e2db9c2b42e2a35ec2104c9d2f8f9a03185b0b",
+        "bytes": 2473,
+        "matches_declared": true
+      },
+      {
+        "section": "verification_files",
+        "path": "04_references/sn100_host/qc_local_20261025/reference_guard/data_receipts.json",
+        "sha256": "f69de44526673d7b5c0a2a536dbb2c27fcfcc4f1f168527d793b706af7dc749c",
+        "bytes": 67323,
+        "matches_declared": true
+      }
+    ],
+    "guard_artifact": {
+      "path": "temp/sn100_host/qc_local_20261025/reference_guard/build/calibration_reference_test",
+      "sha256": "86c225e8e18fbd73a790461cee6f297b2d69b906c0738ecee324ba2797304780",
+      "bytes": 992896,
+      "matches_declared": true
+    },
+    "declared_log_totals": "Totals: 18 passed, 0 failed, 0 skipped, 0 blacklisted, 15595ms",
+    "declared_receipt": "test_exit=0",
+    "original_source_checks": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibrationmaterial.cpp",
+        "sha256": "ccd7ad768e3679a1d6a316167b20a5b98b51f1f293439f9e2478d46b6183142f",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibrationmaterial.h",
+        "sha256": "a29bae2892381922c558565b7adb66fdee56c9b6bd65406f11cc211cd5812b16",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibrationmaterial.ui",
+        "sha256": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/calibration_tables.cpp",
+        "sha256": "3f387a5b51a8a350d5825fe3904a7a44ef12ac17d21049e028f14ae459df579b",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/calibration_tables.h",
+        "sha256": "6655a7db8051101b2e64687ff85fde60926d9ee145118b8206e839066a56f584",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/maskdlgcalculateidsetting.cpp",
+        "sha256": "2e4e5032bb595e5d2eea98f8011c0ce38f4b9c502236165256bf482583345b00",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/maskdlgcalculateidsetting.h",
+        "sha256": "bf417d5cd6425b5e4529c5e183c1c49b29724de808a6cf053a703ddce5eff6a7",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/maskdlgcalculateidsetting.ui",
+        "sha256": "e7f4ea567990a23c4a0e7dbd8b68e5a04c2ec28db53c5a375e49cbbb49fd5f05",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibration.pri",
+        "sha256": "ef104fea82db8fde504326ab168d7306e1ddb51c1fece1c792cb46e9aa105ea2",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_base_table.cpp",
+        "sha256": "8ab063a028b795f70e82354e78e64791eadf63737be0f40a876589609883eef3",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_base_table.h",
+        "sha256": "6cb5fe353801cae9426d6d14eeee422b50eac4b119acb64323171323f6479ef8",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_data_table.cpp",
+        "sha256": "d54e5a7590df169b961b1531562c82cd046828b545d2ccd31dd00410a153eb15",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_data_table.h",
+        "sha256": "f767fcaaf8b20923d28b0283604e4bb032e41fa2cc6693902ee8276fad0f8398",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_batch_table.cpp",
+        "sha256": "7703802a1683424caa64c5f59f71526820399461208d829f299a1c152991765b",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_batch_table.h",
+        "sha256": "ad7e96c0ee6fb142c0998b6d67fd7612930e1f25faca87c33a0db27aa906b6ef",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_total_count_table.cpp",
+        "sha256": "8cd8f2bc24e4ac61199d3c7194a7c3d772367388c193eecd4430c257539e3efb",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_total_count_table.h",
+        "sha256": "8f5294aa0e056070c86b3922b551dcb6d6fc7b6b517aa5040a63575a32dbadb7",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/calibrationchart.cpp",
+        "sha256": "655c4082284391eb4c93139a9f175674c7097d0157d486a56391ce1f550b6400",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/calibrationchart.h",
+        "sha256": "5d12c8e5e1fd98c443f8521ec43a58ab8c076c07a1a00b4290299830d33ec8ba",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/algorithmcore.cpp",
+        "sha256": "578a94cb671586e17dd15f1c92b329417a04efcbfc540d1034af076cce5edddc",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/algorithmcore.h",
+        "sha256": "edd29c66772f841b404eeae95547c021a112e624fbabef65be9f4b9357269a9b",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/userpower.cpp",
+        "sha256": "117edf8983d7632c5e2d36524af59eff4f971cfe71e4c2096152f516b905ea89",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/userpower.h",
+        "sha256": "3a6b64d89a575eb6ccd2666b64657789e9d9963be0ac4137015237a2b6bc84a6",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/stylecolor.cpp",
+        "sha256": "f261e001114acd4c4cc25ee72754df8b090211d9e101774b31a9e6671cab9128",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/stylecolor.h",
+        "sha256": "077f4ade15dc68784ac8dc056c4df922495a3242d158ba532d688f9d32b09f6a",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.h",
+        "sha256": "d43e93eb435b80e8a27be1360536d4120699bf140e01cb35ace47c5ac6e3de8a",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/main.cpp",
+        "sha256": "b63c46ae047a2f3006b823cdc9477d498eb0aa2417cfe138845ff3d4c773be09",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsample/frmsamplematerial.cpp",
+        "sha256": "f9455d9f89b56cc69a86a268b5a0304468f064d7d8e36e84671cee4755fff244",
+        "matches_original_audit": true
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsystem/frmsystemmaterial.cpp",
+        "sha256": "dd76908c0c75ff7862fcb4abb123a906894e12efecaf9be770388f6c0fc0a25b",
+        "matches_original_audit": true
+      }
+    ],
+    "original_preintegration_backup_checks": [
+      {
+        "path": "07_backups/sn100_host/offline_four_windows_20261025/pre_integration_sources/calibration/calibration_store.cpp",
+        "sha256": "0b75dd4eb28ef723a808000caf0e36d4a210d5a323c86268f6a2080cde1296b2",
+        "bytes": 35441,
+        "matches_independent_input": true
+      },
+      {
+        "path": "07_backups/sn100_host/offline_four_windows_20261025/pre_integration_sources/calibration/calibration_store.h",
+        "sha256": "1afc6b6c2627d7e5872b5bff4676bb3b956d87de107fbac2c41888e69f590015",
+        "bytes": 2270,
+        "matches_independent_input": true
+      },
+      {
+        "path": "07_backups/sn100_host/offline_four_windows_20261025/pre_integration_sources/calibration/tests/calibration_store_test.cpp",
+        "sha256": "70f47ed02d56235b8fab28a9284cadd58a653271151e3fcaf96739e71dd9e10e",
+        "bytes": 29380,
+        "matches_independent_input": true
+      },
+      {
+        "path": "07_backups/sn100_host/offline_four_windows_20261025/pre_integration_sources/calibration/tests/calibration_fixture.h",
+        "sha256": "88d2507e88bdcf43aaba5fb00a06a38fd2c3e3d04e38bd9a00716d0260c9330d",
+        "bytes": 6577,
+        "matches_independent_input": true
+      },
+      {
+        "path": "07_backups/sn100_host/offline_four_windows_20261025/pre_integration_sources/calibration/tests/calibration_create_catalog.py",
+        "sha256": "412660ad7d673ac833d948ae55b48f8300d23d6db7f96ed7da9cb2948918c08a",
+        "bytes": 2249,
+        "matches_independent_input": true
+      }
+    ],
+    "unchanged_module_visual_and_type_inputs": [
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_types.h",
+        "sha256": "d7bab3140a86e1b198603c05cc15267414ee8f9f2d96267f15524cb25b45a35a",
+        "matches_independent_input": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_page.cpp",
+        "sha256": "b446968bd583e3bc7e59715560fcbe9c314931fd4d22b624747550fd7d8b556d",
+        "matches_independent_input": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/calibration_page.h",
+        "sha256": "33a12292accbe4362c4005be062466485c054279924cb8c241040d5602356edd",
+        "matches_independent_input": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/calibrationchart.cpp",
+        "sha256": "7cc629d9905c0be1dcc10c64aff8d8953fbc3144833645fd36ad06629586c35f",
+        "matches_independent_input": true
+      },
+      {
+        "path": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+        "sha256": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+        "matches_independent_input": true
+      }
+    ]
+  },
+  "reviewed_inputs": [
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_store.cpp",
+      "sha256": "980a717c61c0613c5247b455be8078557057e1a3bc694fe02cf6cf5bc1486dbc",
+      "bytes": 48600
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_store.h",
+      "sha256": "9c36dd1e7cc9b6936f0ee6808c39f1baab1d0e72b49c2a262d03dd8e4a237edc",
+      "bytes": 3124
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_types.h",
+      "sha256": "d7bab3140a86e1b198603c05cc15267414ee8f9f2d96267f15524cb25b45a35a",
+      "bytes": 1295
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_page.cpp",
+      "sha256": "b446968bd583e3bc7e59715560fcbe9c314931fd4d22b624747550fd7d8b556d",
+      "bytes": 32492
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_page.h",
+      "sha256": "33a12292accbe4362c4005be062466485c054279924cb8c241040d5602356edd",
+      "bytes": 2184
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibrationchart.cpp",
+      "sha256": "7cc629d9905c0be1dcc10c64aff8d8953fbc3144833645fd36ad06629586c35f",
+      "bytes": 3587
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+      "sha256": "212ac49f805ceb1467e0a025cb042dd5ce151bdecf778a5fb6f74d4fbb4848ec",
+      "bytes": 26423
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/tests/calibration_store_test.cpp",
+      "sha256": "6594ecd5186f92ada71d130b5a6442eb19930bf1e29defa5a1076c11a552278a",
+      "bytes": 32924
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/tests/calibration_fixture.h",
+      "sha256": "b5c99bba02bd25048e6436d03b317022124bb69616bb28bde3b7c72e9ad318ee",
+      "bytes": 7262
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/tests/calibration_create_catalog.py",
+      "sha256": "2cbc29f5ddde6cee15988c8bb6afa642f40e4a7aede2e3341ecef7eda2e0a179",
+      "bytes": 2831
+    },
+    {
+      "path": "06_programs/sn100_host/shell/calibration_shell.cpp",
+      "sha256": "d859441cb017f8a75b0b5d748f6e4f85f24d492d605ccd4ae7cc81ab68c04c7e",
+      "bytes": 3900
+    },
+    {
+      "path": "06_programs/sn100_host/shell/main.cpp",
+      "sha256": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156",
+      "bytes": 40524
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.cpp",
+      "sha256": "9c54f9254774a5f83d9c2213f8f0bd6ae740abc1b664efa5b2461b1ef5e752cd",
+      "bytes": 21036
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.h",
+      "sha256": "3d8837050345f92535e9975a53ce78e9880b7dde8d59015ee41743a6da28c58a",
+      "bytes": 6680
+    },
+    {
+      "path": "06_programs/sn100_host/shell/login_shell.cpp",
+      "sha256": "8cf88cc30aee352836c285b258c0c375fedff279bd193f50e87401e4525e5b11",
+      "bytes": 3007
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shutdown_request.cpp",
+      "sha256": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+      "bytes": 5569
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shell.pri",
+      "sha256": "59a410c5dced837a7e7622428685e4e1ec08119aa53a8bd4d1581f747dc8e64b",
+      "bytes": 3862
+    },
+    {
+      "path": "06_programs/sn100_host/shell/build.sh",
+      "sha256": "9d82588ece30564e2935c2238262a3d650e8d1fdfab461937d10f262079bfae5",
+      "bytes": 18302
+    },
+    {
+      "path": "06_programs/sn100_host/projects/projects_store.cpp",
+      "sha256": "5342e5dbded0eda1f07cdd0bebb3971dac5d3222dd3fdeea61e793fb98219721",
+      "bytes": 38591
+    },
+    {
+      "path": "06_programs/sn100_host/reagents/reagent_store.cpp",
+      "sha256": "dffce0ddbd9879e5908a1692525f0ccae7a6568f5ebeac515c42e621ff99ed76",
+      "bytes": 34287
+    },
+    {
+      "path": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+      "sha256": "0aad1ea448ad6bb17ba19cf0c971fd0fe203e32f569be7de5bfe889c901ce81f",
+      "bytes": 31120
+    },
+    {
+      "path": "06_programs/sn100_host/tests/calibration_shell_test.cpp",
+      "sha256": "9f285eedfaa3e7409bf15dd3b7bd1691e2d5dd9bb2943a92d3a77e0fc24e654a",
+      "bytes": 36608
+    },
+    {
+      "path": "04_references/sn100_host/qc_local_20261025/reference_guard_handoff.json",
+      "sha256": "5a63efb5f15b055ced0ce379a63fbfa2ba3c474ef8a9388d2446b19678da54a4",
+      "bytes": 12601
+    },
+    {
+      "path": "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json",
+      "sha256": "6aed7eb67ca11dd7c9038484a3c8e84f516a0c597e7885cc41c5444d0a207cfa",
+      "bytes": 5357
+    },
+    {
+      "path": "04_references/sn100_host/projects_remaining_20261025/reagents_contract.json",
+      "sha256": "a3f53b93c437337857f0905d4de55bae715a51e7919b9c657004cfc4b2a94751",
+      "bytes": 6924
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/handoff.json",
+      "sha256": "5a62156bfd55a9cbff1bf31ee2f153c35652d7d683fa226f69e0db44a69bfb80",
+      "bytes": 27379
+    }
+  ],
+  "checks_not_run_and_pending": [
+    "本窗口未执行任何构建、QtTest、GUI或资源/设备操作",
+    "停用项目remove策略复测及同UUID副本边界处理",
+    "根整合窗口更新后独立/统一累计回归与主菜单实际保存重开/权限/草稿/busy/正常退出",
+    "新源Windows32/ARM64完整构建、依赖闭包与成对恢复归档",
+    "原Windows活动主题/实际行为及统一1600/1920截图",
+    "RK/仪器、算法认可用例、真实波形与校准审核应用效力",
+    "资源预算、同板控制、长稳及存储I/O未知结果恢复"
+  ],
+  "write_stop": "本JSON写入并回读后本窗口结束；原handoff、生产源码、测试和公共记录均未改，根整合窗口负责修复和最终回归。"
+}

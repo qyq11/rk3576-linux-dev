@@ -1,0 +1,97 @@
+{
+  "schema": "sn100-calibration-shell-test-repair-handoff-v1",
+  "status": "Completed; all source/build/GUI activity stopped",
+  "date": "2026-10-25",
+  "scope": "Test harness only: real Qt mouse/keyboard/focus/delegate handling; no production/page/backend/role/unit changes",
+  "changed_source": {
+    "path": "06_programs/sn100_host/tests/calibration_shell_test.cpp",
+    "sha256": "8defabea59a816908627e10b7f2297c1fcd768d9f50762cc43e552ea145fb145"
+  },
+  "unchanged_owned_source": {
+    "path": "06_programs/sn100_host/tests/calibration_shell_test.pro",
+    "sha256": "54a12a7ce7fb7005bb47af415009de67eb906f977d4242cf6c6b26ce302f2619"
+  },
+  "preimage_backup": "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/calibration_shell/source_inputs.json",
+  "root_failed_evidence": "temp/sn100_host/qc_local_20261025/suite_gate_03/calibration_shell_offscreen",
+  "failure_and_retest": [
+    {
+      "attempt": "root suite_gate_03",
+      "actual_driver_exit": 3,
+      "summary": "3 passed / 3 failed",
+      "failures": [
+        "second newDraft never visited its dialog",
+        "fillPoints had no active delegate editor"
+      ]
+    },
+    {
+      "attempt": "private attempt_01",
+      "actual_driver_exit": 3,
+      "summary": "3 passed / 3 failed",
+      "evidence": "04_references/sn100_host/calibration_local_20261025/calibration_shell_repair_20261025/attempt_01_failed",
+      "confirmed": "Batch input was correct; CAL_NEW_RESULT accept=true visited=false and CAL_CELL_EDITOR_MISSING focus=null revealed lost active-window/focus after a native modal closed.",
+      "source_provenance": "Byte-exact intermediate test source reconstructed by reversing only later activation/focus patch and checked against its actual prebuild source SHA d3490488b83aff5894343de1e65bc529a27e9d7b6c85798a4412520393760c37"
+    },
+    {
+      "attempt": "private attempt_02",
+      "actual_driver_exits": [
+        0,
+        0
+      ],
+      "actual_summaries": [
+        "offscreen6/0",
+        "xcb6/0"
+      ],
+      "result": "Real keyboard/mouse actions, actual data/SQLite/copy/hide/reference/reopen/lock recovery and product startup/exit assertions unchanged and passed."
+    }
+  ],
+  "repairs": [
+    "Before input activate the visible harness top-level and establish real Qt focus; refuse to cross an unrelated active modal. QApplication::setActiveWindow establishes test-backend activation after a native modal closes. No business signals or values are synthesized.",
+    "Select a real table cell with mouse and F2; use the visible current-focus QLineEdit delegate, not a hidden or deferred-delete editor from the prior cell; Return commits and exact item text is checked.",
+    "Keep combo closed while keyboard Home/Down selects actual stable batch ID, then click real OK. Avoid leftover popup grabs consuming the next click.",
+    "Drain existing rejected-navigation focus-restoration callbacks before resuming modal input; retain and log every busy/navigation/login/logout/close refusal."
+  ],
+  "not_changed": [
+    "All production426 frozen source inputs and 167 native objects",
+    "No table item value assignments or business signal fakes added; no timeout increase",
+    "Original independent calibration/tests sources and its 21 tests",
+    "Original roles/Guest/units/ratios/precision/history or clinical gates",
+    "Old failure logs, runtime directories and binaries preserved"
+  ],
+  "binding": {
+    "source_inputs": 426,
+    "source_snapshot_sha256": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+    "native_objects_excluding_main": 167,
+    "native_makefile_sha256": "df6bbee134af56a57cac5da631502188c07ab7c62e934eb3b06c62423e7527d0",
+    "main_artifacts": {
+      "sn100_shell": "013eb363c6cd7a928f62f860c5cbd6755421a81808a4e6ad347cc6db0887f176",
+      "sn100_report_renderer": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+    },
+    "driver": "temp\\sn100_host\\qc_local_20261025\\calibration_shell_repair\\attempt_02/driver_build_01/calibration_shell_test",
+    "driver_sha256": "f4476bc7ddeb5e56a1b9527273e32bf27d91ffe7f3b4d4804eefc076463a3c17",
+    "binding_proof": "04_references/sn100_host/calibration_local_20261025/calibration_shell_repair_20261025/build/binding_proof.json",
+    "test_sources_before_after_equal": true
+  },
+  "runs": [
+    {
+      "qpa": "offscreen",
+      "actual_exit_code": 0,
+      "actual_summary": "Totals: 6 passed, 0 failed, 0 skipped, 0 blacklisted, 9141ms",
+      "elapsed_seconds": 9.469989382999998,
+      "raw_evidence": "04_references\\sn100_host\\calibration_local_20261025\\calibration_shell_repair_20261025\\offscreen"
+    },
+    {
+      "qpa": "xcb",
+      "actual_exit_code": 0,
+      "actual_summary": "Totals: 6 passed, 0 failed, 0 skipped, 0 blacklisted, 9812ms",
+      "elapsed_seconds": 10.011099700000003,
+      "raw_evidence": "04_references\\sn100_host\\calibration_local_20261025\\calibration_shell_repair_20261025\\xcb"
+    }
+  ],
+  "parent_followup": "Parent should incorporate this exact test source/driver proof into cumulative binding and final suites; current previous cumulative_build cal-shell driver still has the pre-repair test source until parent updates it.",
+  "privacy": "Only explicit metadata, compiler/test logs, anonymous screenshot/export logs and exact test source copied. No runtime SQLite/INI/secret, executable, object, native library or production data copied.",
+  "pending": [
+    "Original Windows full behavior/theme comparison, Windows GUI and RK/instrument validation",
+    "Final parent cumulative suite provenance/update, three-platform and resource/restore gates"
+  ],
+  "write_stop": "Final test source SHA stable from attempt02 build through both QPA runs and final checks. All GUI/build processes completed with their original exits retained."
+}

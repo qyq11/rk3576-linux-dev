@@ -30,6 +30,8 @@ public:
     bool hasFreshStatus() const;
     QString linkState() const;
     quint64 generation() const;
+    // 默认关闭；专用诊断槽只采集，不改变请求或在事件线程写盘。
+    void setTimingEnabled(bool enabled);
 
 signals:
     void connected(quint64 generation);
@@ -39,6 +41,9 @@ signals:
     void notice(QString message, quint64 generation);
     // planned入队，第1次attempt=1；不表示socket已写出或模拟对端已收到。
     void queryQueued(ReadOnlyQuery query, int attempt, quint64 generation);
+    // elapsedNs和deadlineMs均来自本client时钟；不与transport起点混算。
+    void timingEvent(QString stage, qint64 elapsedNs, quint64 generation,
+                     quint64 revision, int attempt, qint64 deadlineMs);
 
 private:
     bool current(quint64 generation) const;
@@ -48,6 +53,7 @@ private:
     void observe(const QByteArray &message, quint64 generation);
     void tick();
     void finishRequest(bool success, const QString &detail, quint64 generation);
+    void traceTiming(const char *stage);
 
     ReadOnlyTcpTransport *m_transport = nullptr;
     QTimer *m_timer = nullptr;
@@ -69,6 +75,7 @@ private:
     bool m_pending = false;
     bool m_fresh = false;
     bool m_requestTimedOut = false;
+    bool m_timingEnabled = false;
 };
 
 } // namespace Sn100Protocol

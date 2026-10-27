@@ -1,0 +1,124 @@
+{
+  "schema": "sn100-o10-printer-final-wiring-review-v1",
+  "reviewed_utc": "2026-10-24T11:32:38.472843+00:00",
+  "scope": "Read-only final store/page/shell connection and original form audit; no build/GUI/enumeration or source/docs edits; current formal sources only, parent owns frozen build.",
+  "observations": [
+    {
+      "kind": "integrated",
+      "name": "final page replacement",
+      "source": [
+        "shell/main.cpp:495-501",
+        "shell/frmuserset.cpp:108-117"
+      ],
+      "result": "--printer-settings creates worker/page; removes final subpage3 placeholder, inserts same page once and restores prior subpage."
+    },
+    {
+      "kind": "integrated",
+      "name": "readiness and store ownership",
+      "source": [
+        "shell/main.cpp:261-267",
+        "shell/main.cpp:293-310",
+        "shell/main.cpp:502-513",
+        "shell/main.cpp:557-563"
+      ],
+      "result": "Store moves to dedicated worker, initialization runs there; SHELL_READY requires printer success. Init failure exits3. No physical job or system-default change."
+    },
+    {
+      "kind": "integrated",
+      "name": "busy/draft/navigation and identity",
+      "source": [
+        "shell/frmuserset.cpp:134-162",
+        "shell/frmuserset.cpp:165-191",
+        "shell/login_shell.cpp:11-16",
+        "shell/login_shell.cpp:63-73",
+        "shell/frmmain.cpp:285-312",
+        "shell/frmmain.cpp:330-356",
+        "shell/frmmain.cpp:397-418",
+        "shell/frmmain.cpp:459-478",
+        "ui/frmprintersetting.cpp:118-147"
+      ],
+      "result": "Hidden printer busy blocks user-page switch, login, logout and normal close. Dirty draft requires keep/discard before accepted navigation/logout/close. Keeping draft cancels; discard restores committed name without write. Original no printer role gate preserved; no instrument readiness changes."
+    },
+    {
+      "kind": "integrated",
+      "name": "save error and commit",
+      "source": [
+        "data/printer_settings_store.cpp:257-301",
+        "ui/frmprintersetting.cpp:40-61",
+        "ui/frmprintersetting.cpp:91-115"
+      ],
+      "result": "Only saved/loaded render committed snapshot. Errors leave draft and prior in-memory committed value; controls reenable. Dirty false disables no-op Apply; unavailable persisted name remains visible."
+    },
+    {
+      "kind": "verified_static",
+      "name": "form geometry",
+      "source": [
+        "ui/frmprintersetting.ui",
+        "ui/frmprintersetting.cpp:15-32"
+      ],
+      "result": "Current .ui bytes exactly match original; C++ font adaptation and source QSS added without geometry change. Original active Windows visual comparison remains unverified."
+    },
+    {
+      "kind": "integrated",
+      "name": "shutdown",
+      "source": [
+        "shell/main.cpp:581-604"
+      ],
+      "result": "Queued blocking close then thread quit/wait, finished->deleteLater. CUPS enumeration remains synchronous and noncancelable; this audit does not claim bounded shutdown."
+    },
+    {
+      "kind": "integrated",
+      "name": "build membership",
+      "source": [
+        "shell/shell.pri:50-51",
+        "ui/printer_settings.pri:1-4",
+        "shell/build.sh:77",
+        "shell/build.sh:115",
+        "shell/package_arm64.py:108-113"
+      ],
+      "result": "New page/store/shell/form enter qmake/native build and package feature metadata. Actual parent build/package outcomes not reviewed here."
+    }
+  ],
+  "finding": {
+    "severity": "P2 candidate sent to parent",
+    "title": "Successful save drops other accepted INI keys",
+    "source": [
+      "data/printer_settings_store.cpp:103-111",
+      "data/printer_settings_store.cpp:130-142"
+    ],
+    "trigger": "Start from any tagged printer.ini containing a non-printer/name key, initialize successfully, choose another available name, Apply.",
+    "observed_code": "readStored accepts unknown keys; writeStored creates an empty temporary INI and writes only schema/name, so successful atomic commit removes all other keys.",
+    "impact": "Breaks original setValue single-key preservation and prior contract recommendation. Dedicated file boundary narrows impact but accepted unrelated data is silently removed.",
+    "suggested_minimal_action": "Preserve expected original bytes into unique temporary before QSettings edits, or explicitly reject unsupported keys before accepting data; validate with anonymous extra key. Parent decides scope and owns edits/revalidation.",
+    "status": "reported_read_only_unfixed"
+  },
+  "not_findings": [
+    "No printer-page role restriction matches inspected original; not an admin-policy bug.",
+    "Printer setting does not feed or enable physical report print; explicit accepted scope, not a missing connection bug.",
+    "Synchronous CUPS enumeration cannot be interrupted and target conditions remain pending; already documented, no new bounded-exit claim."
+  ],
+  "current_form_sha256": "bc995dda80a42cc0c8a88504f3d377b74c61972310ecc8492fd7e1f7df98cf69",
+  "reference_form_sha256": "bc995dda80a42cc0c8a88504f3d377b74c61972310ecc8492fd7e1f7df98cf69",
+  "form_byte_identical": true,
+  "source_sha256": {
+    "06_programs/sn100_host/data/printer_settings_store.cpp": "247d9caacd8af518955468e33337691f8f0f176247b076fa6f7d0ee87c307796",
+    "06_programs/sn100_host/data/printer_settings_store.h": "fa2afce0d46449eda0c911fe14f4f6d1b7761a5c69c22a7dd32b4fd6f2331e10",
+    "06_programs/sn100_host/ui/frmprintersetting.cpp": "e30e18adf31f4ba96e8ef29351c2492de43c646142a2283078514b513d9976ed",
+    "06_programs/sn100_host/ui/frmprintersetting.h": "20253d569b8fd54f3fbc74daaa4653b3083ffe425d44dc166d80b68604232ac6",
+    "06_programs/sn100_host/ui/frmprintersetting.ui": "bc995dda80a42cc0c8a88504f3d377b74c61972310ecc8492fd7e1f7df98cf69",
+    "06_programs/sn100_host/ui/printer_origins.json": "7ce231ab63191c2711dd948ebd6d23b8993bfe35fd437b6d485daaba2003183e",
+    "06_programs/sn100_host/ui/printer_settings.pri": "6e7c4b1d1d8f4ce368ffedca85c5aa5bdd6cebeac928e774987d5a325b831043",
+    "06_programs/sn100_host/shell/frmuserset.cpp": "d7e160b9778f4ab9a371b7a08569bb07d903b541332efa9699939eef0f08743c",
+    "06_programs/sn100_host/shell/frmuserset.h": "af338d52cee571567a75b9ecdc6e5ebd42fe2fed036e6f6a7e1b0e6eff1576f2",
+    "06_programs/sn100_host/shell/printer_shell.cpp": "1e41650daa63f0dc9a901dad90a999b05aa7cb4ed69d904a4a83b7c56b0bab97",
+    "06_programs/sn100_host/shell/login_shell.cpp": "64287225fe1bfa2706e27df568291173d3e6f09fbfe869917031ede2e401efad",
+    "06_programs/sn100_host/shell/main.cpp": "16b8885681619896982f57e31178441a9d3f0b0d5eeec15ac21b6a2c13a7584c",
+    "06_programs/sn100_host/shell/frmmain.cpp": "d90ae264635b4c43e7d69c0918caf5c047acce4fce368102166ad4bf7d8ca730",
+    "06_programs/sn100_host/shell/frmmain.h": "ca5da67f22cf67dac4ec441276b330ab209b9b912d62abd70c4122985302c087",
+    "06_programs/sn100_host/shell/shell.pri": "a8e1a35a537844b959f18cc4cc96ad1e8ecf01fd7331578ce7afb2f653c606ce",
+    "06_programs/sn100_host/shell/build.sh": "3719d17a9adff5810445c158baa3a0a7c04b8399f8bfe8cc725fdaa733986992",
+    "06_programs/sn100_host/shell/package_arm64.py": "afdf9634d356e2e3686b81eb64895fa72701765263aa2502e57caa281ad0ba68",
+    "06_programs/sn100_host/tests/printer_settings_test.cpp": "18648a1fcd5f91a1e81c3fa45b085dd7fc55be843f580e7c2740a18704e0f786",
+    "06_programs/sn100_host/tests/printer_settings_shell_test.cpp": "0f79d766ee3252ee008782a346ba86d6aee52f97e4be18a0e7d79428c867d74b"
+  }
+}

@@ -24,6 +24,14 @@ bool validLineEditText(const QString &text)
     return text.size() <= kLineEditLimit && !text.contains(QChar::Null);
 }
 
+QString loginDatabaseFailure(const QString &action, const QSqlError &error)
+{
+    // 不把驱动的SQL/参数文本转给界面，避免认证输入进入日志或证据。
+    bool numeric = false;
+    const int code = error.nativeErrorCode().toInt(&numeric);
+    return numeric ? action + QStringLiteral("（SQLite代码%1）").arg(code) : action;
+}
+
 bool prepareAccountPath(QString directory, QString *databasePath,
                         bool *existingDatabase, QString *message)
 {
@@ -184,6 +192,7 @@ void AccountStore::registerTypes()
     qRegisterMetaType<AccountRow>("AccountRow");
     qRegisterMetaType<AccountRows>("AccountRows");
     qRegisterMetaType<AccountSession>("AccountSession");
+    qRegisterMetaType<AccountSessionSource>("AccountSessionSource");
 }
 
 QString AccountStore::roleName(int role)
@@ -400,7 +409,155 @@ void AccountStore::setSession(QString name, bool actionReady)
     m_session.name = name;
     m_session.role = role;
     m_session.authenticated = true;
+    m_session.source = AccountSessionSource::Simulated;
     emit sessionChanged(m_session);
+}
+
+bool AccountStore::loginAvailable(QString *message) const
+{
+    if (QThread::currentThread() != thread())
+    {
+        *message = QStringLiteral("登录请求必须排队发送至账户所属工作线程");
+        return false;
+    }
+    if (!m_ready || !m_database.isOpen())
+    {
+        *message = QStringLiteral("账户数据库尚未初始化或已经关闭");
+        return false;
+    }
+    return true;
+}
+
+void AccountStore::loadLoginDefault(quint64 requestId)
+{
+    QString message;
+    const QString guest = QStringLiteral("Guest");
+    if (!loginAvailable(&message))
+    {
+        emit defaultLoginLoaded(requestId, guest, message);
+        return;
+    }
+    QSqlQuery query(m_database);
+    // 原界面只预填一条默认用户名；这里与现账户快照一样固定按id顺序。
+    if (!query.exec(QStringLiteral("SELECT name FROM user_information "
+                                   "WHERE isdefault=1 ORDER BY id LIMIT 1")))
+    {
+        emit defaultLoginLoaded(requestId, guest,
+            loginDatabaseFailure(QStringLiteral("默认用户名读取失败，请稍后重试"), query.lastError()));
+        return;
+    }
+    const QString name = query.next() ? query.value(0).toString() : guest;
+    if (query.lastError().isValid())
+    {
+        emit defaultLoginLoaded(requestId, guest,
+            loginDatabaseFailure(QStringLiteral("默认用户名读取未完成"), query.lastError()));
+        return;
+    }
+    emit defaultLoginLoaded(requestId, name, QString());
+}
+
+bool AccountStore::saveDefaultLoginName(const QString &name, QString *message)
+{
+    QSqlQuery query(m_database);
+    if (!query.exec(QStringLiteral("BEGIN IMMEDIATE")))
+    {
+        *message = loginDatabaseFailure(QStringLiteral("默认账户保存失败，原默认标记未改变"), query.lastError());
+        return false;
+    }
+    bool saved = query.exec(QStringLiteral("UPDATE user_information SET isdefault=0"));
+    if (saved)
+    {
+        // 原规则按用户名更新全部同名记录，不擅自把旧重名账户规则改成唯一键。
+        query.prepare(QStringLiteral("UPDATE user_information SET isdefault=1 WHERE name=:name"));
+        query.bindValue(QStringLiteral(":name"), name);
+        saved = query.exec() && query.numRowsAffected() > 0;
+    }
+    if (!saved)
+    {
+        *message = loginDatabaseFailure(QStringLiteral("默认账户保存失败，原默认标记已回滚"), query.lastError());
+        m_database.rollback();
+        return false;
+    }
+    if (!m_database.commit())
+    {
+        *message = loginDatabaseFailure(QStringLiteral("默认账户提交失败，原默认标记已回滚"), m_database.lastError());
+        m_database.rollback();
+        return false;
+    }
+    return true;
+}
+
+void AccountStore::authenticate(quint64 requestId, QString name, QString password, bool remember)
+{
+    QString message;
+    if (!loginAvailable(&message))
+    {
+        password.clear();
+        emit loginFinished(requestId, false, false, message, QString());
+        return;
+    }
+    if (password.isEmpty())
+    {
+        // 原登录界面空密码始终回落Guest，忽略所填用户名和默认账户勾选。
+        clearSession();
+        emit loginFinished(requestId, true, false, QString(), QString());
+        return;
+    }
+    if (!validLineEditText(name) || !validLineEditText(password))
+    {
+        password.clear();
+        emit loginFinished(requestId, false, false, QStringLiteral("登录输入超出范围或含空字符"), QString());
+        return;
+    }
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("SELECT id,name,role FROM user_information "
+                                 "WHERE name=:name AND pwd=:password LIMIT 2"));
+    query.bindValue(QStringLiteral(":name"), name);
+    query.bindValue(QStringLiteral(":password"), password);
+    const bool executed = query.exec();
+    password.clear();
+    if (!executed || !query.next())
+    {
+        message = query.lastError().isValid()
+            ? loginDatabaseFailure(QStringLiteral("读取登录账户失败，请稍后重试"), query.lastError())
+            : QStringLiteral("用户名或密码错误!");
+        emit loginFinished(requestId, false, false, message, QString());
+        return;
+    }
+    bool validId = false;
+    bool validRole = false;
+    const qint64 id = query.value(0).toLongLong(&validId);
+    const QString accountName = query.value(1).toString();
+    const int role = query.value(2).toInt(&validRole);
+    if (query.next())
+    {
+        // 原查询未规定多条相同凭据的角色选择；不任意取得一个高权限身份。
+        emit loginFinished(requestId, false, false,
+            QStringLiteral("相同登录凭据对应多条账户，请先处理账户歧义"), QString());
+        return;
+    }
+    if (query.lastError().isValid())
+    {
+        emit loginFinished(requestId, false, false,
+            loginDatabaseFailure(QStringLiteral("登录账户读取未完成"), query.lastError()), QString());
+        return;
+    }
+    query.finish();
+    if (!validId || id <= 0 || !validRole || role < 0 || role > 5)
+    {
+        emit loginFinished(requestId, false, false, QStringLiteral("账户角色或标识无效，不能登录"), QString());
+        return;
+    }
+    QString warning;
+    const bool defaultSaved = remember && role <= 4 && saveDefaultLoginName(accountName, &warning);
+    m_sessionId = id;
+    m_session.name = accountName;
+    m_session.role = role;
+    m_session.authenticated = true;
+    m_session.source = AccountSessionSource::Password;
+    // 登录只改变身份，不改变设备动作状态；默认账户写失败也不伪装为认证失败。
+    emit sessionChanged(m_session);
+    emit loginFinished(requestId, true, defaultSaved, QString(), warning);
 }
 
 bool AccountStore::refreshSession(QString *message)

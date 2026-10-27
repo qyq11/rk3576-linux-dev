@@ -1,0 +1,36 @@
+{
+  "schema": "sn100-report-query-binding-revision-02-v1",
+  "scope": "仅私有驱动/准备脚本和本次交接；生产/公共shell/旧冻结/旧native/final/07检查点均未修改",
+  "problem": "旧脚本仅给common的NATIVE/FREEZE全局变量赋值，但common.verify_native内部仍固定读取NATIVE/wsl_release；独立builder原check_sources仅遍历旧key会漏新增文件",
+  "fixes": [
+    "runner要求显式传入native-build、snapshot及SHA、真实native-verification及SHA和renderer，所有参数均无旧检查点默认值",
+    "native_binding.py直接使用传入路径，不调用common.verify_native，也不改写其全局变量；common只用于日志/通用文件辅助",
+    "调用当前正式packager的完整snapshot逻辑，先核新增/删除集合，再核每个SHA；builder直接调用时也保留同样完整门槛",
+    "核真实成功receipt的passed/actual_exit/source_inputs/snapshot_sha256、指定Makefile、主辅文件SHA，以及相对收据目录的全部fresh_objects SHA和created_after_start",
+    "指定Makefile的真实OBJECTS必须全部在fresh_objects收据内，并恰一个main.o；不因构建目录名称改变而另读旧路径",
+    "runner和builder编译/运行前后均重新核同一显式绑定；driver输出目录必须新建",
+    "诊断源仍来自原7b500测试的观测副本，编译源名固定integrated_report_test，禁止缓存driver复用；原所有断言和15秒等待保留",
+    "原1f2b25测试/cc1c0d helper固定SHA，只作historical scope；各运行单独标scope，旧运行current_snapshot_sha256=null"
+  ],
+  "input_mapping": {
+    "current_program": "当前同一06_programs/sn100_host，由正式packager确定完整集合",
+    "diagnostic_source": "temp/sn100_host/offline_followup_20261026/report_query/source/integrated_report_test.cpp",
+    "diagnostic_original_sha256": "7b500eb86676ffb954ac5e3fd7ea39b6edf17c7700b093488ac82840e39c3a7e",
+    "fresh_receipt_object_root": "显式传入verification的父目录，禁止路径逃逸；与native-build分开核，不固定wsl_release",
+    "current_renderer": "显式传入，需属于新收据根并匹配artifact SHA",
+    "historical_test_sha256": "1f2b25e41552fecbf8c2a2deede92c21ddddc84bf9743398513ba4af6948c96a",
+    "historical_renderer_sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b"
+  },
+  "accepted_receipt_fields": [
+    "passed",
+    "actual_exit",
+    "source_inputs",
+    "snapshot_sha256",
+    "makefile_sha256",
+    "artifacts",
+    "fresh_objects"
+  ],
+  "verification_scope": "仅语法解析和静态接口检查；未调用新旧native验证器，未运行C++编译/GUI/功能测试/资源测量",
+  "runtime_binding_verified": false,
+  "next": "等整合窗口给新完整snapshot/native及真实verification/SHA和执行槽，填齐模板后才执行；格式与实际收据不一致时明确失败，不猜字段或跳过核验"
+}

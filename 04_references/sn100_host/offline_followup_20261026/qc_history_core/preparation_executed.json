@@ -1,0 +1,116 @@
+{
+  "schema": "sn100-private-qc-history-slice-preparation-v1",
+  "date": "2026-10-26",
+  "status": "prepared_not_built_not_tested",
+  "authorized_scope": "temp/sn100_host/offline_followup_20261026/qc_history_slice/ only",
+  "formal_source_modified": false,
+  "qc_history_page_completed": false,
+  "clinical_rule_evaluation": false,
+  "build_test_gui_resource_or_device_executed": false,
+  "actual_qmake_exit": null,
+  "actual_make_exit": null,
+  "actual_test_exit": null,
+  "source_inputs": {
+    "qc_history_core.h": "3664bde5ebb16436ee56441b6bb67a0132158bdccd75e1879fe350bcde8b3504",
+    "qc_history_core.cpp": "3caf5241743ea605919d9c3fc7f69db9b299b54159e2417d4125cac33b864db0",
+    "qc_history_slice.pro": "d9beb87727d5a5e1ff2eafd37e2e07fc35bee75b524f8243955bc466968f88ee",
+    "tests.cpp": "c6196aa340955697e788c18f5d2fb786da775f2187097a387fc65485147ade9d",
+    "run_slice.py": "7f05c4330c78fe0fac2ff8998679e9ab4d7dd4e529a6819a9fb5990ca01643ae",
+    "statistics/statistics.h": "04388558193519fb831aec3d74ddb9e321f510f92cb2f39804424049af879ad8",
+    "statistics/statistics.cpp": "17c48489ef4af997adb358c27d00b11498f6ef71cf782dd203ea4895755511dc",
+    "origins.json": "d2f3fe5a4307de10c8785c9f5e3674aaa2223b3eff88b79c8323e7d37ed1314b"
+  },
+  "source_origins": "origins.json",
+  "implemented_private_api": [
+    "parseResult: strict single-project QC writer envelope; exactly known Original/Calibration/Rate/INR; missing and invalid values are explicit errors with NaN, not fabricated zero.",
+    "selectHistory: exact control/project/current-or-previous batch isolation; strict date/time/positive unique row ID; per-batch date DESC,time DESC,row ID DESC; previous then current concatenation.",
+    "pointAtPlotIndex and explicitly named legacyTraceAtCounter: preserve original reverse-index suspicion independently rather than silently changing chronology.",
+    "Per-row/type unit evidence: unknown or association-only snapshot cannot become a historical point snapshot. Known declared anonymous/stored-per-point provenance can convert full-precision values.",
+    "summarize: count invalid requested-result exclusions explicitly; refuse unknown/mixed historical units; call byte-identical copied Sn100Quality::calculateStatistics for known same-unit values. No thresholds/status/device/SQL API."
+  ],
+  "prepared_test_case_count": 20,
+  "test_cases": [
+    "four-types-and-real-envelope",
+    "missing-type-is-invalid-not-zero",
+    "invalid-nonfinite-and-overflow-never-zero",
+    "signed-and-exponent-values-retain-sign",
+    "unsupported-and-duplicate-types-fail-closed",
+    "bounded-malformed-envelope",
+    "control-project-current-previous-isolation",
+    "date-time-rowid-descending-with-batch-concatenation",
+    "legacy-trace-suspicion-remains-explicit",
+    "golden-10-12-14-and-cv-ratio",
+    "integer-and-fractional-unit-ratios",
+    "unknown-and-association-units-never-pretend-point-snapshots",
+    "invalid-duplicate-and-mixed-unit-evidence",
+    "invalid-results-explicitly-counted-not-zero",
+    "thirty-five-points-statistics-not-visible-window",
+    "single-point-and-zero-mean-availability",
+    "constant-empty-and-previous-only",
+    "invalid-dates-time-and-row-identity",
+    "invalid-requests-and-input-budgets",
+    "pure-statistics-reused-guards"
+  ],
+  "expected_test_behavior": "Every case is anonymous source-level input/expected assertion. No result below is claimed until the actual future QtCore executable compiles and returns a genuine exit0 with 20 cases and zero failed checks.",
+  "contract_notes": [
+    "Original date DESC is retained. time DESC/id DESC is a documented deterministic extension for same-date rows, not a claim that old SQL already ordered by them.",
+    "Original last30 sequence-position window is preserved; because each batch is date DESC this must not be called the latest30 chronological records.",
+    "Original reverse trace counter starts at N-1 and selects plotOrder[0]. It remains explicit for comparison; future UI correction needs a separate intentional-difference decision.",
+    "Signed/scientific numeric text uses an explicit finite parser rather than legacy '-' token splitting; unsupported/ambiguous result envelopes fail closed.",
+    "Both the existing statistics CLI and this reused helper expose signed CV ratio, not percent. Mean/SD/CV availability flags matter for single-point/near-zero mean cases.",
+    "The pure value API assumes the caller supplies rows and unit evidence from one verified dataset. It does not authenticate SQL/catalog UUID or real-world unit provenance."
+  ],
+  "private_limits_not_instrument_specs": {
+    "rows": 10000,
+    "characters_per_result": 65536,
+    "total_result_characters": 2097152,
+    "unit_evidence_rows": 40000,
+    "numeric_text_characters": 128,
+    "unit_decimals": "0..16"
+  },
+  "future_driver": {
+    "path": "run_slice.py",
+    "execution_gate": "root explicitly assigns the serial build/test slot and invokes --root-go; do not run during the current sample freeze.",
+    "example_argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_slice/run_slice.py",
+      "--root-go",
+      "--jobs",
+      "2",
+      "--output-dir",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_slice/run_01"
+    ],
+    "stages": [
+      "qmake CONFIG+=release CONFIG-=debug",
+      "make -j2 (or explicit -j1)",
+      "new qc_history_core_tests only"
+    ],
+    "receipts": [
+      "source inputs before/after",
+      "exact executed source copies",
+      "qmake/make/test raw argv+log+actual exit before assertions",
+      "actual test JSON",
+      "new binary SHA",
+      "verification.json with no QC-page/clinical completion claim"
+    ],
+    "fail_closed": "New absolute output under this private directory only; exact prepared source SHA required; no old binary fallback. Build/test failures keep actual exit and logs."
+  },
+  "remaining": [
+    "Actual Release compile and 20-case QtCore test execution, only after root assigns a slot.",
+    "Worker SQL read API and immutable thread-bound replies, original chart card/paint/interaction integration, point date/time/value browsing, UI statistics and guards remain unimplemented.",
+    "Any later move into06 requires sn100-project-files path/reference review plus new build/GUI/cumulative evidence. This temporary core cannot close QC historical page migration.",
+    "Windows/RK/instrument/clinical rules/resources/long stability are not measured or claimed."
+  ],
+  "stop": "Preparation only; stop writing and return control to root for scheduling.",
+  "static_review": {
+    "scope": "Read-only source review only; no compiler, test, GUI or cleanup execution",
+    "reviewer": "integration_audit",
+    "identified_and_addressed": [
+      "Bounded owned-PGID TERM/KILL and group disappearance confirmation, including descendants after direct process exit; no unbounded wait.",
+      "Exact eight-source roster plus immutable preparation SHA before/after; exact manifest bytes copied before execution.",
+      "Resolved new output must stay under private source directory, including parent symlinks."
+    ],
+    "runtime_validation": "pending root serial slot"
+  }
+}

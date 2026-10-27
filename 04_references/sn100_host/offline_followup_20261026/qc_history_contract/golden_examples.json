@@ -1,0 +1,55 @@
+{
+  "schema": "sn100-qc-history-contract-golden-examples-v1",
+  "evidence": "anonymous-handcrafted-contract-only",
+  "executed": false,
+  "purpose": "后续历史只读/点图/逐点查看/描述性统计切片的验收输入；本次未建立数据库、未运行CLI或GUI，expected不是实测结果。",
+  "provenance": "全部名称、日期、任务号和数值为本次人工构造，不取自参考运行库、患者、仪器或认证。",
+  "metadata_fixture_requirements": {
+    "control_name": "QC_DEMO",
+    "project_name": "PROJ_QC_DEMO",
+    "previous_batch": "LOT_PREV",
+    "current_batch": "LOT_CUR",
+    "project_owner": "后续测试须通过真实ProjectsStore建立匿名catalog和结果/单位，再由正式QcStore建立控制品/关联/批次；不能手造不完整共享schema。",
+    "test_population": "仅在专属匿名测试库中由受控夹具准备已有quality_data记录；这不是面向用户的录点、导入或结果写入功能。",
+    "known_result_snapshot": {"type":1,"type_name":"Original","result_name":"ANON_RESULT","unit":"ANON_UNIT","ratio":1.0,"decimals":1},
+    "unit_source": "本匿名夹具明确声明的关联单位快照；不能推导任意旧历史的保存时单位。"
+  },
+  "history_rows": [
+    {"fixture_key":"previous-day","control_name":"QC_DEMO","project_name":"PROJ_QC_DEMO","control_batch":"LOT_PREV","date":"2026/10/23","time":"09:00:00","result_val":"[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101|Rate-1:1/1-101|INR-1:1/1-101]"},
+    {"fixture_key":"current-first-day","control_name":"QC_DEMO","project_name":"PROJ_QC_DEMO","control_batch":"LOT_CUR","date":"2026/10/24","time":"10:00:00","result_val":"[PROJ_QC_DEMO|0|=Original-12:1/1-102|Calibration-120:1/1-102|Rate-1.2:1/1-102|INR-1.2:1/1-102]"},
+    {"fixture_key":"current-second-day","control_name":"QC_DEMO","project_name":"PROJ_QC_DEMO","control_batch":"LOT_CUR","date":"2026/10/25","time":"11:00:00","result_val":"[PROJ_QC_DEMO|0|=Original-14:1/1-103|Calibration-140:1/1-103|Rate-1.4:1/1-103|INR-1.4:1/1-103]"}
+  ],
+  "baseline_expectations": {
+    "original_query_previous_values": [10],
+    "original_query_current_values_date_desc": [14,12],
+    "original_plot_concatenation": [10,14,12],
+    "count": 3,
+    "mean": 12,
+    "sample_variance": 4,
+    "sample_stddev": 2,
+    "legacy_cv_ratio_formula": "2 / (12 + 1e-12)",
+    "legacy_cv_ratio_approx": 0.16666666666665278,
+    "numeric_tolerance_absolute": 1e-12,
+    "original_labels_one_decimal": {"Mean":"12.0","SD":"2.0","CV":"0.2","Count":"3"},
+    "cv_is_percent": false,
+    "expected_clinical_state": "未评价/不显示正常警告失控结论；只验描述性统计。",
+    "original_trace_suspicion": "原初始化count=total-1，traceData再反向索引，三条记录会先读previous-day/10；需单列对照，不当作已运行确认的合理最新点行为。"
+  },
+  "known_unit_variants": [
+    {"ratio":2.0,"expected_plot_values":[20,28,24],"mean":24,"sample_stddev":4,"legacy_cv_ratio_formula":"4 / (24 + 1e-12)","cv_approximately_same_within":1e-12},
+    {"ratio":0.5,"expected_plot_values":[5,7,6],"mean":6,"sample_stddev":1,"legacy_cv_ratio_formula":"1 / (6 + 1e-12)","check":"图中点与右侧逐点值必须一致；原traceData对倍率toInt会把0.5变成0，不能沿用该错误。"}
+  ],
+  "boundary_acceptance_cases": [
+    {"case":"empty-current-with-previous","check":"明确记录原版跳过图卡的基线；若后续显示仅前批须列为有意差异，不能假装原样。"},
+    {"case":"singleton","statistics_values":[9],"expected_mean":9,"expected_range":0,"safe_current_statistics_contract":"sampleEstimateAvailable=false,cvAvailable=false；不把样本SD/CV不可用显示为已评价。"},
+    {"case":"zero-mean-statistics-only","statistics_values":[-1,0,1],"expected_mean":0,"expected_sample_stddev":1,"expected_cv_available":false,"restriction":"这是统计辅助函数向量，不意味着旧字符串负号分割器可正确解析Original--1；旧格式负数支持需独立明确与回归。"},
+    {"case":"constant","statistics_values":[7,7,7],"expected_mean":7,"expected_sample_stddev":0,"expected_cv_ratio":0,"check":"图轴不得因min=max退化；具体安全显示是后续实现待验。"},
+    {"case":"thirty-five-points","input_generator":"1..35（35个已知同单位有限结果）","expected_count_all_points":35,"expected_mean":18,"expected_sample_variance":105,"original_initial_visible_window_points":30,"check":"统计数量不能被图上初始30点窗口截断；全部记录仍能逐点到达。"},
+    {"case":"missing-result-type","input":"只保留Calibration，不含Original","check":"Original卡应明确缺结果；不得由QString::toDouble或默认QHash值变成伪0点并混入统计。"},
+    {"case":"malformed-or-non-numeric","input_examples":["broken","[PROJ_QC_DEMO|0|=Original-****:1/1-101]","[PROJ_QC_DEMO|0|=Original-NaN:1/1-101]"],"check":"有界解析并明确无效；不崩溃、不伪造0、不生成临床状态。"},
+    {"case":"identity-isolation","check":"同名/异名项目、其他控制品/批次和跨数据集记录不能串图；用正式稳定ID解析本库已核名称，不猜历史归属。"},
+    {"case":"unit-provenance-unknown","check":"旧记录无保存时单位证据时明确来源未知，不按最新字典静默换算；不同或未知单位不得无说明混合统计。"},
+    {"case":"disabled-project-history","check":"已有历史仍只读可核，不能因历史展示重新启用项目、改关联或放开生产写入/删除守卫。"},
+    {"case":"read-only-reopen","check":"历史查询、选项目/批次、左右追溯与重开不得修改quality_data或既有引用登记；验证精确行值和正常线程关闭。"}
+  ]
+}

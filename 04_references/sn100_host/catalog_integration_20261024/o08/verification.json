@@ -1,0 +1,440 @@
+{
+  "date": "2026-10-24",
+  "scope": "O07/O08 local project/unit, reagent basis and sample presets/tasks in the unified offline shell",
+  "stage_order": "O07 independent gates, O07 unified 5/0, O08 implementation, independent 14/0, unified/cumulative/platform builds",
+  "environment": "Ubuntu-24.04 qyq, Qt5.15.13 x86_64 Release, Fusion/Noto Sans CJK SC, XCB/offscreen",
+  "tests": {
+    "offscreen": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "xcb": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "mixed": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "existing_core_regression": {
+    "writeExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "readExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "measureExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "applicationExitExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "viewportExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "initializationFailureExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "existing_report_regression": {
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0
+  },
+  "existing_report_first_attempt": {
+    "passed": 3,
+    "failed": 1,
+    "skipped": 0
+  },
+  "report_retry_scope": "Same frozen executable and sources, new anonymous directory; first legacy.query() UI failure retained, cause not isolated and not declared fixed",
+  "native_binaries_sha256": {
+    "sn100_shell": "c20cf47339599833a5591dd0ada18c3f18886f1c984cbdcea628b700b7af9f48",
+    "sn100_report_renderer": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b",
+    "catalog_shell_test": "c8399df799f9805068a30bceb7556b91aba7b0ac919219acba6e9d45801e5ac5",
+    "integrated_shell_test": "32f9730bac70afe4f329f561c6d0fd661e42e3e02a4a9b8310fa1118b58abf02",
+    "integrated_report_test": "1f2b25e41552fecbf8c2a2deede92c21ddddc84bf9743398513ba4af6948c96a"
+  },
+  "windows": {
+    "phase": "O08 visibility repair",
+    "status": "passed",
+    "baseline": "Passed O08 full -B -j2 build, metadata and original pair preserved",
+    "strategy": "Exact Makefile prerequisite -W forced one cpp; main relinked; identical helper inputs/flags/objects and actual binary retained",
+    "source_sha256": "6E8FB2B95EEC1160A49D7C9499147C781E5CB44FACA8C342E0DB97853E5977CE",
+    "compile_exit": 0,
+    "compile_commands": 1,
+    "compile_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\logs\\windows_catalog_visibility_shell_compile.log",
+    "first_link_invocation_exit": 2,
+    "first_link_failure": "DESTDIR_TARGET variable used a backslash, whereas the actual make rule uses a forward slash; this was a temporary orchestration-script error, not a source/linker error",
+    "failed_link_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\logs\\windows_catalog_visibility_shell_link.log",
+    "recovery_link_target": "bin/sn100_shell.exe",
+    "recovery_link_exit": 0,
+    "recovery_link_compile_commands": 0,
+    "recovery_link_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\logs\\windows_catalog_visibility_shell_link_recovery.log",
+    "object_differences": {
+      "target": "shell",
+      "object": "sample_page.o",
+      "before_sha256": "3A2C2F2EDFBA235258CB243A4AEC7746303AA9BEB4FCF0D1F25FB0088C720BA9",
+      "after_sha256": "51C2835FD0495BEB0C291E92A618D49CA38F627DEA68DE290CC8B6DDFB4732F5"
+    },
+    "targets": [
+      {
+        "target": "shell",
+        "action": "One cpp rebuilt, main relinked",
+        "input_count": 260,
+        "input_differences": {
+          "path": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host\\samples\\sample_page.cpp",
+          "before_sha256": "13A2B12628351DA174030CD29750C1AF1F581B6F26D8ACFF3708B56D69C0AB26",
+          "after_sha256": "6E8FB2B95EEC1160A49D7C9499147C781E5CB44FACA8C342E0DB97853E5977CE"
+        },
+        "flags_unchanged": true,
+        "effective_flags": [
+          "CC            = gcc",
+          "CXX           = g++",
+          "DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DNO_BARCODE -DHAVE_QT5 -DQT_NO_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_CHARTS_LIB -DQT_SVG_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_XML_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_NEEDS_QMAIN",
+          "CFLAGS        = -fno-keep-inline-dllexport -O2 -Wall -Wextra -Wextra $(DEFINES)",
+          "CXXFLAGS      = -fno-keep-inline-dllexport -O2 -std=gnu++1y -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)",
+          "INCPATH       = -I..\\..\\..\\..\\06_programs\\sn100_host\\shell -I. -I..\\..\\..\\..\\06_programs\\sn100_host\\shell -I..\\..\\..\\..\\06_programs\\sn100_host -I..\\..\\..\\..\\06_programs\\sn100_host\\ui -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets\\material -I..\\..\\..\\..\\06_programs\\sn100_host\\history -I..\\..\\..\\..\\06_programs\\sn100_host\\history -I..\\..\\..\\..\\06_programs\\sn100_host\\thirdparty\\qtrpt\\CommonFiles -I..\\..\\..\\..\\06_programs\\sn100_host\\thirdparty\\qtrpt\\QtRPT -I..\\..\\..\\..\\06_programs\\sn100_host\\projects -I..\\..\\..\\..\\06_programs\\sn100_host -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets\\material -I..\\..\\..\\..\\06_programs\\sn100_host\\reagents -I..\\..\\..\\..\\06_programs\\sn100_host -I..\\..\\..\\..\\06_programs\\sn100_host\\projects -I..\\..\\..\\..\\06_programs\\sn100_host\\ui -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets\\material -I..\\..\\..\\..\\06_programs\\sn100_host\\samples -I..\\..\\..\\..\\06_programs\\sn100_host -I..\\..\\..\\..\\06_programs\\sn100_host\\projects -I..\\..\\..\\..\\06_programs\\sn100_host\\ui -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets -I..\\..\\..\\..\\06_programs\\sn100_host\\shell\\widgets\\material -I..\\..\\..\\..\\06_programs\\sn100_host\\samples\\material -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtPrintSupport -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtCharts -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSvg -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtWidgets -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtGui -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtANGLE -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSql -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtXml -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtQml -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtNetwork -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtCore -I.moc -I.ui -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\mkspecs\\win32-g++ ",
+          "LINKER      =        g++",
+          "LFLAGS        =        -Wl,-s -Wl,-subsystem,windows -mthreads",
+          "LIBS        =        C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5PrintSupport.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Charts.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Svg.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Widgets.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Gui.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Sql.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Xml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Qml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Network.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Core.a  -lmingw32 C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libqtmain.a -LC:\\openssl\\lib -LC:\\Utils\\my_sql\\mysql-5.7.25-win32\\lib -LC:\\Utils\\postgresql\\pgsql\\lib -lshell32 "
+        ],
+        "qmake_exit": 0,
+        "architecture": "PE32 / i386 / Machine=0x014C / OptionalMagic=0x010B",
+        "bytes": 2535936,
+        "sha256": "E54D5C00573AFF9613DF97682682880ECC8AA6111E2EC7EAFC387CA41482235A",
+        "baseline_binary_sha256": "7622A3F95F51A5A2B42CEDE7AAB7F2136D48EE18C8E210E0A98546E5D4EBCBE3"
+      },
+      {
+        "target": "renderer",
+        "action": "Retained unchanged; not recompiled",
+        "input_count": 50,
+        "input_differences": null,
+        "flags_unchanged": true,
+        "effective_flags": [
+          "CC            = gcc",
+          "CXX           = g++",
+          "DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DNO_BARCODE -DHAVE_QT5 -DQT_NO_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_CHARTS_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_XML_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB",
+          "CFLAGS        = -fno-keep-inline-dllexport -O2 -Wall -Wextra -Wextra $(DEFINES)",
+          "CXXFLAGS      = -fno-keep-inline-dllexport -O2 -std=gnu++1y -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)",
+          "INCPATH       = -I..\\..\\..\\..\\06_programs\\sn100_host\\history -I. -I..\\..\\..\\..\\06_programs\\sn100_host\\history -I..\\..\\..\\..\\06_programs\\sn100_host\\thirdparty\\qtrpt\\CommonFiles -I..\\..\\..\\..\\06_programs\\sn100_host\\thirdparty\\qtrpt\\QtRPT -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtPrintSupport -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtCharts -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtWidgets -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtGui -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtANGLE -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtSql -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtXml -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtQml -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtNetwork -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\include\\QtCore -I.moc -IC:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\mkspecs\\win32-g++ ",
+          "LINKER      =        g++",
+          "LFLAGS        =        -Wl,-s -Wl,-subsystem,console -mthreads",
+          "LIBS        =        C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5PrintSupport.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Charts.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Widgets.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Gui.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Sql.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Xml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Qml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Network.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Core.a   "
+        ],
+        "qmake_exit": 0,
+        "architecture": "PE32 / i386 / Machine=0x014C / OptionalMagic=0x010B",
+        "bytes": 720896,
+        "sha256": "EB17A55A5A2829D19792E8B3935EE9DD281035F087EBE0CB88CE45807B3E4B10",
+        "baseline_binary_sha256": "EB17A55A5A2829D19792E8B3935EE9DD281035F087EBE0CB88CE45807B3E4B10"
+      }
+    ],
+    "application_executed": false,
+    "board_connected": false
+  },
+  "arm64": {
+    "schema": "sn100-final-arm64-audit-v1",
+    "created_utc": "2026-10-24T04:23:02.511813+00:00",
+    "build_round": "incremental_after_sample_layout_fix",
+    "build_exit_code": 0,
+    "environment": "2026-10-24T03:49:04Z\nuid=1000(qyq) gid=1000(qyq) groups=1000(qyq),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users)\nLinux qyq 6.18.54.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Tue Oct  6 19:13:07 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux\naarch64-linux-gnu-g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\nmoc 5.15.13\nSN100_JOBS=2\nRK_BUILD_TYPE=Release\nSN100_RK_WORK_DIR=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final\n",
+    "work_directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final",
+    "binaries": {
+      "sn100_shell": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/build/sn100_shell",
+        "sha256": "9f8c31679bc0e339110841e1fb674f0241c71e8708cc383afdc46a18d1e2c394",
+        "architecture": "ELF64 little-endian AArch64",
+        "file_output": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/build/sn100_shell: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=9383a248e80ef8fcf8db58a2c16bac0313c0ce50, for GNU/Linux 3.7.0, with debug_info, not stripped"
+      },
+      "sn100_report_renderer": {
+        "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/build/sn100_report_renderer",
+        "sha256": "7699cd6d864896a0fc245d90ce01487ace6300d575486b2300cbd3045591fa64",
+        "architecture": "ELF64 little-endian AArch64",
+        "file_output": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/build/sn100_report_renderer: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=5c57c3a6390ef5788e68951ab258fcee2164a332, for GNU/Linux 3.7.0, with debug_info, not stripped"
+      }
+    },
+    "source_freeze_matches": true,
+    "source_files": 316,
+    "source_snapshot_sha256": "404637fb32dd07dc8e1d3f219fdc3ba94d149fbe680ed01cc957f9aa2e27dd27",
+    "sources_by_module": {
+      "data": 4,
+      "history": 32,
+      "prepare_arm64.sh": 1,
+      "projects": 20,
+      "reagents": 35,
+      "resources": 18,
+      "resources.qrc": 1,
+      "samples": 63,
+      "shell": 86,
+      "tests": 3,
+      "thirdparty": 39,
+      "ui": 14
+    },
+    "closure_status": "offline_closure_passed_board_runtime_pending",
+    "inspected_elf_files": 56,
+    "symbol_version_checks": 393,
+    "dependency_errors": [],
+    "dependency_warnings": [
+      "This is a static archive inspection, not execution or validation of the currently installed board libraries.",
+      "EGLFS discovery, GPU/Mesa/GBM/DRM drivers, permissions, input devices and physical display need RK validation.",
+      "Missing display/input plugins or fonts are board-runtime gaps; they do not make the main+SQLite closure pass false.",
+      "PNG may be built into Qt; absent image-format plugins alone do not prove PNG support is missing.",
+      "Qt plugin metadata/build compatibility and Noto Sans CJK SC glyphs must be verified on the target.",
+      "Version definitions are checked per provider; this does not validate every relocated symbol or the dynamic linker's live search environment."
+    ],
+    "dependency_report_sha256": "bb3a59e010fe79ab0da739714bed3d521a368ae8b5e7a217cf66724090078f0c",
+    "svg_required": true,
+    "runtime_components": {
+      "sqlite": {
+        "archived_files": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/sqldrivers/libqsqlite.so"
+        ],
+        "board_verified": false,
+        "status": "archived_static_check_only"
+      },
+      "report_offscreen": {
+        "archived_files": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqoffscreen.so"
+        ],
+        "board_verified": false,
+        "status": "archived_static_check_only"
+      },
+      "sample_svg": {
+        "archived_files": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqsvg.so"
+        ],
+        "board_verified": false,
+        "status": "archived_static_check_only"
+      },
+      "eglfs_platform": {
+        "archived_files": [],
+        "board_verified": false,
+        "status": "not_archived_board_check_required"
+      },
+      "egl_device_integration": {
+        "archived_files": [],
+        "board_verified": false,
+        "status": "not_archived_board_check_required"
+      },
+      "input": {
+        "archived_files": [],
+        "board_verified": false,
+        "status": "not_archived_board_check_required"
+      },
+      "image_formats": {
+        "archived_files": [
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/sysroot/usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqsvg.so"
+        ],
+        "board_verified": false,
+        "status": "archived_static_check_only"
+      },
+      "fonts": {
+        "archived_files": [
+          "usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
+          "usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+          "usr/share/fonts/opentype/noto/NotoSerifCJK-Bold.ttc",
+          "usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc"
+        ],
+        "requested_family": "Noto Sans CJK SC",
+        "board_verified": false,
+        "family_and_glyph_coverage_verified": false
+      }
+    },
+    "package": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/packages/sn100_shell_91674b00d3762269aabba26596a054393313ef357144033be31057c54a16952c.tar.gz",
+    "package_bytes": 64355182,
+    "package_sha256": "c0d5aff81d2de8a06723c55656bbffe51c93e2efa9bd759d9f52ed1e1b9a74e8",
+    "release_id": "91674b00d3762269aabba26596a054393313ef357144033be31057c54a16952c",
+    "stage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/packages/stage_20261024T042216_224532",
+    "package_file_count": 33,
+    "package_checksums_passed": 31,
+    "packaged_aarch64_elf_files": [
+      "lib/libQt5Charts.so.5",
+      "lib/libQt5Network.so.5",
+      "lib/libQt5PrintSupport.so.5",
+      "lib/libQt5Qml.so.5",
+      "lib/libQt5Sql.so.5",
+      "lib/libQt5Svg.so.5",
+      "lib/libQt5Xml.so.5",
+      "lib/libcom_err.so.2",
+      "lib/libexpat.so.1",
+      "lib/libfontconfig.so.1",
+      "lib/libgssapi_krb5.so.2",
+      "lib/libk5crypto.so.3",
+      "lib/libkeyutils.so.1",
+      "lib/libkrb5.so.3",
+      "lib/libkrb5support.so.0",
+      "lib/libsqlite3.so.0",
+      "plugins/imageformats/libqsvg.so",
+      "plugins/platforms/libqoffscreen.so",
+      "plugins/sqldrivers/libqsqlite.so",
+      "sn100_report_renderer",
+      "sn100_shell"
+    ],
+    "sample_ui_dependencies": {
+      "library": "libQt5Svg.so.5",
+      "image_plugin": "plugins/imageformats/libqsvg.so",
+      "original_qss_svg": ":/image/arrow_drop_down.svg",
+      "license": "licenses/QtSvgCopyright.txt"
+    },
+    "sample_task_scope": {
+      "storage": "local_presets",
+      "instrument_submission": false,
+      "instrument_execution": false
+    },
+    "target_elf_executed": false,
+    "network_or_board_access": false,
+    "board_runtime_verified": false,
+    "logs": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/20261024_114904_prepare_3976.log",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/20261024_121538_prepare_688.log",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/launcher.log",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/launcher_incremental.log",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/reuse_policy_tests.log",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/input_tests.log"
+    ],
+    "incremental_reuse": {
+      "allowed_cpp": "samples/sample_page.cpp",
+      "rebuilt_index": 52,
+      "verified_reused_objects": 119,
+      "reused_source_and_object_hashes_equal": true,
+      "generated_ui_headers_before_after_equal": 26,
+      "ui_baseline_provenance": "Captured after the successful full build/capture and before the incremental prepare; the original object manifest has no UI-header field",
+      "manifest_sha256": "86efe430284244368590da41a58cddd6f1c3ec6f2b5811032f0163263aab1757",
+      "ui_baseline_sha256": "9e58273db45d44d1a5b771c0c864ca494656ce9d652e528c73650065691a62ca",
+      "ui_after_sha256": "9e58273db45d44d1a5b771c0c864ca494656ce9d652e528c73650065691a62ca",
+      "build_script_unchanged": true
+    },
+    "incremental_environment": "2026-10-24T04:15:38Z\nuid=1000(qyq) gid=1000(qyq) groups=1000(qyq),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users)\nSN100_JOBS=2\nRK_BUILD_TYPE=Release\nSN100_RK_WORK_DIR=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final\nSN100_ARM64_OBJECT_REUSE_MANIFEST=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/compiled_objects_full_before_sample_fix.json\nSN100_ARM64_REUSE_ALLOWED_CPP=samples/sample_page.cpp\nSN100_ARM64_REUSE_UI_SNAPSHOT=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/ui_headers_full_before_incremental.json\n",
+    "validation": {
+      "test_arm64_object_reuse.py": {
+        "passed": 13,
+        "failed": 0,
+        "log": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/reuse_policy_tests.log",
+        "log_sha256": "64a32f3f130453e7f4db22cd85edeb8f22f1d111b05be5acdde0a43c093c7d73",
+        "test_source_sha256": "f88dea291071620a4c5af9eb7803061924c8b58e85f59a487c78307f3fb2ffc8"
+      },
+      "test_shell_arm64_inputs.py": {
+        "passed": 8,
+        "failed": 0,
+        "log": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/arm64_final/logs/input_tests.log",
+        "log_sha256": "b41901321245f648d742348a1802283019acdb42a3ba6e16fd1f67bf156d5e06",
+        "test_source_sha256": "b73d070a8d6eb4a8a07ae408d8b405d7257ae7dfc1e6d9ca9b3ebadc46b38ff0"
+      }
+    }
+  },
+  "source_input_count": 265,
+  "product_idle": {
+    "command": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/native/wsl_release/sn100_shell",
+      "--offline",
+      "--accounts",
+      "--history",
+      "--catalog",
+      "--samples",
+      "--data-dir",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/offscreen_o08_round02/full_product_runtime",
+      "--viewport",
+      "1600x900"
+    ],
+    "pid": 1908,
+    "elapsed_seconds": 60.178207982,
+    "exit_code": 0,
+    "timed_out": false,
+    "ordinary_sigterm_requested": true,
+    "sample_period_seconds": 0.1,
+    "sample_count": 590,
+    "scope": "Observed direct child only; WSL host baseline, not RK budget/real-time qualification",
+    "pss_unavailable_samples": 0,
+    "cpu_percent_one_logical_core": 18.92798309404335,
+    "observed_span_seconds": 60.06979160699984,
+    "maximum_VmRSS": 260204,
+    "maximum_VmHWM": 263444,
+    "maximum_Threads": 41,
+    "maximum_fd_count": 55,
+    "maximum_Pss": 246374
+  },
+  "mixed_gui_load": {
+    "elapsed_ms": 60147,
+    "navigation": "Project/sample/reagent/user pages via the real shell navigation handler",
+    "project_save_complete": {
+      "max_ms": 170.567315,
+      "p95_ms": 127.041274,
+      "p99_ms": 146.415448,
+      "samples": 268
+    },
+    "runtime_files_bytes_after": 176212,
+    "runtime_files_bytes_before": 176212,
+    "sample_save_complete": {
+      "max_ms": 101.396461,
+      "p95_ms": 73.414508,
+      "p99_ms": 80.951066,
+      "samples": 268
+    },
+    "scope": "WSL QtTest load includes driver overhead; timer is an event-loop proxy, not pixel latency or RK qualification",
+    "successful_project_commits": 268,
+    "successful_sample_commits": 268,
+    "timer_10ms_intervals": {
+      "max_ms": 56.262449,
+      "p95_ms": 45.47411,
+      "p99_ms": 47.998249,
+      "samples": 3773
+    }
+  },
+  "mixed_process_observation": {
+    "command": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/tests/catalog_shell_test",
+      "mixedLoad",
+      "-o",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/catalog_integration/logs/load_o08_v2.txt,txt"
+    ],
+    "pid": 1830,
+    "elapsed_seconds": 60.97702912700015,
+    "exit_code": 0,
+    "timed_out": false,
+    "ordinary_sigterm_requested": false,
+    "sample_period_seconds": 0.1,
+    "sample_count": 598,
+    "scope": "Observed direct child only; WSL host baseline, not RK budget/real-time qualification",
+    "pss_unavailable_samples": 0,
+    "cpu_percent_one_logical_core": 74.60202387224341,
+    "observed_span_seconds": 60.86966230000007,
+    "maximum_VmRSS": 280260,
+    "maximum_VmHWM": 280260,
+    "maximum_Threads": 41,
+    "maximum_fd_count": 55,
+    "maximum_Pss": 264287
+  },
+  "measurement_limits": [
+    "Idle is a real six-worker product; mixed QtTest uses five stores and includes its driver overhead",
+    "Shared WSL host also built software; no globally isolated resource/RT qualification or same-load before/after comparison",
+    "Timer intervals are event-loop proxies, not compositor/pixel/input latency",
+    "End-to-start runtime byte delta does not capture transient journal peaks; resource budgets remain unagreed"
+  ],
+  "known_warnings": [
+    "Original Material transient QPainter warnings in independent dialog tests remain unlocalized; logs retained",
+    "Existing report vendor unused-variable build warnings retained; no claim of warning-free build",
+    "One old legacy.query() GUI check failed in the first cumulative report attempt; unchanged retry passed, original failure retained, cause unresolved"
+  ],
+  "not_validated": [
+    "Original Windows complete behavior/active theme and pixel equality",
+    "RK deployment/live libraries/display/input/resources",
+    "Instrument submission/execution, real hole setup, reagent consumption/sufficiency, physical dilution/action scheme",
+    "Production login/import, long stability, RT same-board control"
+  ],
+  "runtime_databases_credentials_or_executables_archived_here": false
+}

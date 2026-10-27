@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="3" failures="0" tests="10" name="InstrumentPageTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="originalCanvasAndNavigation"/>
+  <testcase result="pass" name="permissionsAndUnknownDevice"/>
+  <testcase result="pass" name="manualRecordsAndReopen"/>
+  <testcase result="pass" name="cancellationAndBusyGuard"/>
+  <testcase result="pass" name="lockedDatabaseRecovers"/>
+  <testcase result="pass" name="replayNeverEnablesHardware"/>
+  <testcase result="pass" name="readOnlySourceReplacementKeepsPermissionsAndExpires"/>
+  <testcase result="pass" name="shellIntegrationAndLifecycleGuards">
+    <!-- message="INSTRUMENT_NAVIGATION_REJECTED 仪器操作：请等待维护记录处理完成，再切换页面。" type="qinfo" -->
+    <!-- message="INSTRUMENT_NAVIGATION_REJECTED 仪器操作：请等待维护记录处理完成，再注销。" type="qinfo" -->
+    <!-- message="INSTRUMENT_NAVIGATION_REJECTED 仪器操作：请等待维护记录处理完成，再退出。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[INSTRUMENT_NAVIGATION_REJECTED 仪器操作：请等待维护记录处理完成，再切换页面。]]>
+<![CDATA[INSTRUMENT_NAVIGATION_REJECTED 仪器操作：请等待维护记录处理完成，再注销。]]>
+<![CDATA[INSTRUMENT_NAVIGATION_REJECTED 仪器操作：请等待维护记录处理完成，再退出。]]>
+  </system-err>
+</testsuite>

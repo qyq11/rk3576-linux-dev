@@ -1,0 +1,59 @@
+{
+  "schema": "sn100-post-platform-target-role-fix-preparation-v2",
+  "status": "prepared_static_checks_passed",
+  "source_inputs": 447,
+  "source_snapshot_sha256": "1486686b182dc8d1da55c52b45c91ea72f1b8c41677676cedf16d72b3fc4f401",
+  "native_fresh_objects": 210,
+  "native_verification_sha256": "8cec733957ed1941c03be158a3ee1ab1dded20f5d2dce61fd099878bd94ca641",
+  "native_makefile_sha256": "f4eae0693b49947e9dfc6946def180f76f0fad206112b4df005c40c25634b13e",
+  "native_artifacts": {
+    "sn100_shell": "97b8a8f57192bc260c0c84ff461a790bffd2b6a94a37d50ed84bd12f9ae78dd8",
+    "sn100_report_renderer": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+  },
+  "executed_inputs_sha256": {
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation_02/common.py": "a750515b4744194e966798579849ae0f5433321dca62efea3281103bec3ef665",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation_02/execute_stage.py": "cf7cdfdba6c6970a333827d3049741a017eb062df7f74a9435cc6fea362ba31b",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation_02/run_standalone.py": "68bf22dbc810d7058fd4fab783af421dabf6e1589b746b9f8b14ac33c908ce32",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation_02/build_verification.py": "a01060092ebe68aba24853a39ecaa9cfe9f1526773b6c2bb021d1a1fa93a4c7f",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation_02/build_roles.py": "f2a647bd48d7e9c785766f9c3c255c259f046090a2985a33a3f821792179b5a9"
+  },
+  "fresh_build_required": true,
+  "old01_objects_or_binaries_reused": false,
+  "reason_for_fresh02": "Calibration01 had actual make0 but no persisted post-build object/generated inventory before generic verifier raised. Current read-only hashes cannot be retroactively labeled build-time hashes.",
+  "old01_actual_compilation_exits": {
+    "quality_control_qmake": 0,
+    "quality_control_make": 0,
+    "calibration_qmake": 0,
+    "calibration_make": 0
+  },
+  "old01_stage_actual_exit": 1,
+  "old01_GUI_invocations": 0,
+  "new02_build_or_GUI_invocations": 0,
+  "standalone_scope": "Only QC and calibration two independent apps, plus one catalog-owner initialization; seven phases total",
+  "four_app_accounting": "Projects and reagents two apps belong to the separate projects stage; combined total four independent apps, not four here",
+  "command": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu-24.04",
+    "-u",
+    "qyq",
+    "--",
+    "python3",
+    "-B",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation_02/execute_stage.py",
+    "--root-go",
+    "--stage",
+    "standalone",
+    "--name",
+    "post_standalone_02"
+  ],
+  "new_output_paths_absent": [
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_standalone_02_control"
+  ],
+  "original_preparation_failed01_control_measurement_preparation_unchanged": true,
+  "static_positive_graphs": 8,
+  "static_negative_cases": 81,
+  "role_check_source_bound": true,
+  "executed_build_or_GUI": false
+}

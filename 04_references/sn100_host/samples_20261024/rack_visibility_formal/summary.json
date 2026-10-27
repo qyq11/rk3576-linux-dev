@@ -1,0 +1,18 @@
+{
+  "source_sha256": "6e8fb2b95eec1160a49d7c9499147c781e5cb44faca8c342e0db97853e5977ce",
+  "scope": "Only sample_page.cpp changed from the previous63-file freeze; original tests/origins and62 other inputs unchanged",
+  "original_evidence": "frmsamplematerial.cpp:382-386 expands current item/scrollToItem/disables scrolling;397-398 raises navigation buttons;367-380 first/last navigation;1116-1123 returns compact rows/scrolling",
+  "fix": "Current edited rack expands to page height and scrolls to top, edit scrolling disabled, return restores136px compact rows, navigation shows only legal adjacent directions",
+  "draft": "Only local UI list appends editing_ with id0, localDraft=true and unsaved tooltip; no catalog/snapshot mutation or fake ID. Same-card double click/rename preserves the draft. Cancel retains; Discard removes; successful save replaces with real snapshot ID",
+  "formal_probe": "rack_visibility_formal/{offscreen.log,xcb.log}",
+  "formal_probe_exit_codes": {
+    "xcb": 0,
+    "offscreen": 0
+  },
+  "candidate_probe": "rack_visibility_candidate/summary.json (separately labelled candidate only)",
+  "object_sha256": "1d96e1bb17c999cd26460c69d51f100c197ba75b76240c63bebe4f6fad44f5d6",
+  "object_note": "Formal native object is byte-identical to independently validated candidate object",
+  "preserved_prior_freeze": "SOURCE_SHA256SUMS.before_rack_visibility_r7",
+  "newline": "git apply retained CRLF; normalized content matched candidate and final formal file was written with exact validated candidate LF bytes before rebuild",
+  "hardware_actions": 0
+}

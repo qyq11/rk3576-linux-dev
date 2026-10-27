@@ -1,0 +1,277 @@
+{
+  "schema": "sn100-pdf-exact-text-v1",
+  "pdf_sha256": "e72b0af7608d864d895b3f36a0a3cd78cd0496b5f97c98f5d59f74d5438489d6",
+  "snapshot_sha256": "8124a7efc580bcecd3ea3c32232850e245e22c67155a3d3ccbabe76f0df35112",
+  "expected_pages": 1,
+  "comparison": "exact Unicode; ignore layout whitespace only; no normalization or radical substitution",
+  "parsers": [
+    {
+      "parser": "pypdf 6.10.0",
+      "pages": [
+        {
+          "width_pt": 595.0,
+          "height_pt": 420.0,
+          "text": "匿名移植验证医院检验报告单姓名：匿名中文甲性别：女年龄：23床号：测试床9科室：匿名血液科送检医生：测试送检甲样本序号：987 病人类型：匿名门诊类别：血凝\n 第1页 共1页\n项目代号 项目名称 结果参考范围 单位 PT 匿名 PT 时间 9001.1 s PT 匿名 PT 时间 9002.1 s PT 匿名 PT 时间 9003.1 s报告日期：2026-10-2509:30:00备注：中文备注'单引号'和\"双引号\" 检验医生：测试检验乙审核医生：测试审核丙"
+        }
+      ],
+      "field_checks": {
+        "name": {
+          "expected": "姓名：匿名中文甲",
+          "found_exact_unicode": true
+        },
+        "sex": {
+          "expected": "性别：女",
+          "found_exact_unicode": true
+        },
+        "age": {
+          "expected": "年龄：23",
+          "found_exact_unicode": true
+        },
+        "bed_number": {
+          "expected": "床号：测试床9",
+          "found_exact_unicode": true
+        },
+        "department": {
+          "expected": "科室：匿名血液科",
+          "found_exact_unicode": true
+        },
+        "sample_provider": {
+          "expected": "送检医生：测试送检甲",
+          "found_exact_unicode": true
+        },
+        "sample_sn": {
+          "expected": "样本序号：987",
+          "found_exact_unicode": true
+        },
+        "patient_type": {
+          "expected": "病人类型：匿名门诊",
+          "found_exact_unicode": true
+        },
+        "report_date": {
+          "expected": "报告日期：2026-10-25 09:30:00",
+          "found_exact_unicode": true
+        },
+        "mark": {
+          "expected": "备注：中文备注'单引号'和\"双引号\"",
+          "found_exact_unicode": true
+        },
+        "checker": {
+          "expected": "检验医生：测试检验乙",
+          "found_exact_unicode": true
+        },
+        "reviewer": {
+          "expected": "审核医生：测试审核丙",
+          "found_exact_unicode": true
+        },
+        "hospital_name": {
+          "expected": "匿名移植验证医院检验报告单",
+          "found_exact_unicode": true
+        }
+      },
+      "row_checks": [
+        {
+          "row": 1,
+          "expected": "PT匿名PT时间9001.1s",
+          "found_in_order_exact_unicode": true
+        },
+        {
+          "row": 2,
+          "expected": "PT匿名PT时间9002.1s",
+          "found_in_order_exact_unicode": true
+        },
+        {
+          "row": 3,
+          "expected": "PT匿名PT时间9003.1s",
+          "found_in_order_exact_unicode": true
+        }
+      ],
+      "numeric_checks": [
+        {
+          "expected_value": "9001.1",
+          "expected_count": 1,
+          "actual_count": 1
+        },
+        {
+          "expected_value": "9002.1",
+          "expected_count": 1,
+          "actual_count": 1
+        },
+        {
+          "expected_value": "9003.1",
+          "expected_count": 1,
+          "actual_count": 1
+        }
+      ],
+      "footer_checks": [
+        {
+          "page": 1,
+          "expected": "第1页共1页",
+          "found_once_exact_unicode": true
+        }
+      ],
+      "repeated_field_checks": [
+        {
+          "page": 1,
+          "checks": {
+            "name": true,
+            "sex": true,
+            "age": true,
+            "bed_number": true,
+            "department": true,
+            "sample_provider": true,
+            "sample_sn": true,
+            "patient_type": true,
+            "report_date": true,
+            "mark": true,
+            "checker": true,
+            "reviewer": true,
+            "hospital_name": true,
+            "column:项目代号": true,
+            "column:项目名称": true,
+            "column:结果": true,
+            "column:参考范围": true,
+            "column:单位": true,
+            "category": true
+          }
+        }
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "parser": "pdfplumber 0.11.9",
+      "pages": [
+        {
+          "width_pt": 595.0,
+          "height_pt": 420.0,
+          "text": "匿名移植验证医院检验报告单\n姓名：匿名中文\n甲\n性别：女 年龄：23\n床号：测试床9\n科室：匿名血液科\n送检医生：测试送检甲 样本序号：987\n病人类型：匿名门诊\n类别：血凝\n第1页 共1页\n项目代号 项目名称 结果 参考范围 单位\nPT 匿名PT时间 9001.1 s\nPT 匿名PT时间 9002.1 s\nPT 匿名PT时间 9003.1 s\n报告日期：2026-10-25\n09:30:00\n备注：中文备注'单引号'和\"双引号\"\n检验医生：测试检验乙\n审核医生：测试审核丙",
+          "text_geometric_order": "匿名移植验证医院检验报告单\n姓名：匿名中文\n科室：匿名血液科 性别：女 年龄：23 病人类型：匿名门诊\n甲\n床号：测试床9 送检医生：测试送检甲 样本序号：987 类别：血凝\n项目代号 项目名称 结果 参考范围 单位\nPT 匿名PT时间 9001.1 s\nPT 匿名PT时间 9002.1 s\nPT 匿名PT时间 9003.1 s\n报告日期：2026-10-25\n检验医生：测试检验乙\n09:30:00\n备注：中文备注'单引号'和\"双引号\" 审核医生：测试审核丙\n第1页 共1页"
+        }
+      ],
+      "field_checks": {
+        "name": {
+          "expected": "姓名：匿名中文甲",
+          "found_exact_unicode": true
+        },
+        "sex": {
+          "expected": "性别：女",
+          "found_exact_unicode": true
+        },
+        "age": {
+          "expected": "年龄：23",
+          "found_exact_unicode": true
+        },
+        "bed_number": {
+          "expected": "床号：测试床9",
+          "found_exact_unicode": true
+        },
+        "department": {
+          "expected": "科室：匿名血液科",
+          "found_exact_unicode": true
+        },
+        "sample_provider": {
+          "expected": "送检医生：测试送检甲",
+          "found_exact_unicode": true
+        },
+        "sample_sn": {
+          "expected": "样本序号：987",
+          "found_exact_unicode": true
+        },
+        "patient_type": {
+          "expected": "病人类型：匿名门诊",
+          "found_exact_unicode": true
+        },
+        "report_date": {
+          "expected": "报告日期：2026-10-25 09:30:00",
+          "found_exact_unicode": true
+        },
+        "mark": {
+          "expected": "备注：中文备注'单引号'和\"双引号\"",
+          "found_exact_unicode": true
+        },
+        "checker": {
+          "expected": "检验医生：测试检验乙",
+          "found_exact_unicode": true
+        },
+        "reviewer": {
+          "expected": "审核医生：测试审核丙",
+          "found_exact_unicode": true
+        },
+        "hospital_name": {
+          "expected": "匿名移植验证医院检验报告单",
+          "found_exact_unicode": true
+        }
+      },
+      "row_checks": [
+        {
+          "row": 1,
+          "expected": "PT匿名PT时间9001.1s",
+          "found_in_order_exact_unicode": true
+        },
+        {
+          "row": 2,
+          "expected": "PT匿名PT时间9002.1s",
+          "found_in_order_exact_unicode": true
+        },
+        {
+          "row": 3,
+          "expected": "PT匿名PT时间9003.1s",
+          "found_in_order_exact_unicode": true
+        }
+      ],
+      "numeric_checks": [
+        {
+          "expected_value": "9001.1",
+          "expected_count": 1,
+          "actual_count": 1
+        },
+        {
+          "expected_value": "9002.1",
+          "expected_count": 1,
+          "actual_count": 1
+        },
+        {
+          "expected_value": "9003.1",
+          "expected_count": 1,
+          "actual_count": 1
+        }
+      ],
+      "footer_checks": [
+        {
+          "page": 1,
+          "expected": "第1页共1页",
+          "found_once_exact_unicode": true
+        }
+      ],
+      "repeated_field_checks": [
+        {
+          "page": 1,
+          "checks": {
+            "name": true,
+            "sex": true,
+            "age": true,
+            "bed_number": true,
+            "department": true,
+            "sample_provider": true,
+            "sample_sn": true,
+            "patient_type": true,
+            "report_date": true,
+            "mark": true,
+            "checker": true,
+            "reviewer": true,
+            "hospital_name": true,
+            "column:项目代号": true,
+            "column:项目名称": true,
+            "column:结果": true,
+            "column:参考范围": true,
+            "column:单位": true,
+            "category": true
+          }
+        }
+      ],
+      "failures": [],
+      "passed": true
+    }
+  ],
+  "passed": true
+}

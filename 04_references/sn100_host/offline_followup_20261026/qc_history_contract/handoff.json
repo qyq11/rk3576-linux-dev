@@ -1,0 +1,96 @@
+{
+  "schema": "sn100-qc-history-readonly-contract-handoff-v1",
+  "date": "2026-10-26",
+  "status": "只读源码合同已核；正式QC历史点/图/逐点查看/描述性统计尚未实施，本证据不是编译或运行验收。",
+  "repository_relative_paths": true,
+  "reference_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "current_root": "06_programs/sn100_host",
+  "source_fingerprints": "source_fingerprints.json",
+  "anonymous_acceptance_examples": "golden_examples.json",
+  "authorization_boundary": {
+    "written": "仅本证据目录3个JSON",
+    "production_source_modified": false,
+    "reference_source_modified": false,
+    "build_or_gui_or_reference_execution": false,
+    "runtime_database_or_authentication_read": false,
+    "runtime_or_binary_or_large_file_hash": false,
+    "implementation_gate": "样本窗口当前新native冻结保持；QC实现等待root另行安排。"
+  },
+  "original_enabled_entry": [
+    {"path":"SeeRain450.pro","line":130,"evidence":"include frm_quality/frm_quality.pri，后者实际列入frm_quality/cus_quality_chart/quality_rule_algth源码和原ui，非注释占位。"},
+    {"path":"frmmain/frmmain.cpp","function":"frmMain constructor/connectSignalSlot","lines":[69,147,180,201,212,454],"evidence":"创建质量控制菜单，实例化frmQuality，插入页4、加入菜单组4并连接buttonClicked→setCurrentIndex。源码可达性已核，未运行参考发行版。"},
+    {"path":"frm_quality/frm_quality.cpp","function":"frmQuality::slotBtnProjClick","line":189,"evidence":"选择控制品和项目后按rule.type排序，仅used规则创建结果图卡；按cur_batch/prv_batch读取当前/前批记录。当前批无记录时直接continue，不创建仅前批图卡。"},
+    {"path":"frm_quality/frm_quality.cpp","function":"frmQuality::init_component","line":99,"evidence":"btnPrint原本setVisible(false)。"},
+    {"path":"frm_quality/cus_quality_chart.cpp","function":"CusQualityChart constructor","line":21,"evidence":"原ui的btnAddCode文字查看详细，但构造中隐藏；该类没有对应点击槽。未找到本入口的手工录点/导入/任意日期历史表UI依据，不能凭隐藏控件发明业务。"}
+  ],
+  "original_data_source_chain": [
+    {"path":"communication/commandreceiver.cpp","function":"result receive calculation path","lines":[432,511,530],"evidence":"光谱经SpectrumCalculate::getTotalResult产生result_original/result_calibration/result_rate/result_inr及calibration_id，再emit signalResultReceive(taskType,resultHash)。真实光谱/算法/结果写入不属于本只读切片。"},
+    {"path":"frmmain/frmmain.cpp","function":"frmMain::connectSignalSlot","line":406,"evidence":"signalResultReceive接frmSampleMaterial::slotResultReceive。"},
+    {"path":"frmsample/frmsamplematerial.cpp","function":"frmSampleMaterial::slotResultReceive","line":4552,"evidence":"QC分支同时调用qualityResultReceive和sampleResultReceive，再刷新报告；历史QC专表来自前者。"},
+    {"path":"frmsample/frmsamplematerial.cpp","function":"frmSampleMaterial::qualityResultReceive","line":5057,"evidence":"从实际rack/hole/task匹配控制品名和批次，标准非MDA任务生成四结果集合；存当前日期时间和getReportResultsString结果，经upAddQualityData写入。taskSendDelete=true分支为空；mdaName非空不构建该标准结果集合。"},
+    {"path":"tool/database/all_dal.h","line":44,"evidence":"旧合同路径./result/quality_Data.db；本次仅读声明，没有打开该运行库。"}
+  ],
+  "legacy_history_contract": {
+    "path":"tool/database/quality/quality_data_table.cpp",
+    "functions":{"schema":10,"read":"QualityDataTable::getQualityData:80","write":"QualityDataTable::upAddQualityData:125"},
+    "table":"quality_data",
+    "columns":[{"name":"id","type":"INTEGER PRIMARY KEY AUTOINCREMENT"},{"name":"control_name","type":"VARCHAR NOT NULL"},{"name":"project_name","type":"VARCHAR NOT NULL"},{"name":"control_batch","type":"VARCHAR NOT NULL"},{"name":"result_val","type":"VARCHAR NOT NULL"},{"name":"date","type":"VARCHAR NOT NULL","format":"yyyy/MM/dd"},{"name":"time","type":"VARCHAR NOT NULL","format":"HH:mm:ss"}],
+    "read_selection":"project_name=? AND control_name=? AND control_batch=? ORDER BY date DESC",
+    "daily_update_identity":["project_name","control_name","control_batch","date"],
+    "granularity":"已有同日匹配时覆盖查询首条result_val/time，否则新增；是每日结果汇总/最后一次结果，不能声称保留每次测量。该组合没有数据库UNIQUE约束，旧异常重复行不能靠新代码静默删除。",
+    "stored_value_meaning":"检测完成后的结果汇总，不是原始光学采样曲线，也不是校准浓度散点。",
+    "serialization_source":"frm_report/report_string_pasher.cpp::getReportResults/getReportResultsString",
+    "serialization":"[project_name|calibration_id|abnormal_type=ResultType-value:sample_rate-task_id|ResultType-value:sample_rate-task_id...]",
+    "four_active_result_types":[{"name":"Original","enum":1},{"name":"Calibration","enum":2},{"name":"Rate","enum":3},{"name":"INR","enum":4}],
+    "other_enums_limit":"database_com.h另有MDA/Formula枚举/映射，但活动QC写入和报告字符串解析所核标准结果分支只处理上述四种；不能用枚举存在证明其他QC结果可用。"
+  },
+  "original_plot_and_navigation": {
+    "card_source":"frm_quality/cus_quality_chart.ui and CusQualityChart::refreshChart/traceData",
+    "plot_source":"customwidgets/qualitychart.cpp::QualityChart::qualityChart",
+    "card_height":235,
+    "previous_line":{"color":"#62D93D","line":true,"circle_size":5},
+    "current_line":{"color":"#3593F8","line":true,"circle_size":5},
+    "x_axis":"隐藏刻度轴，按序号拼接前批再当前批，非日期横轴。",
+    "initial_window":"总数超过30时x轴定位最后30点；统计仍使用全部前批+当前批结果。",
+    "interactions":["范围拖动","缩放","双击恢复原范围","左右逐点读取值/单位/日期/时间","图卡单选"],
+    "reference_lines":"target/lower_limit/upper_limit三字符串均非空才画目标线和范围带；只是配置参考线，不能因此宣称临床阈值已认可。",
+    "legacy_trace_suspicion":"初始count=total-1；traceData先index+1，再取lineDataTotal[total-index]，有前批时会先读取拼接首条/前批第一条。排序和所谓最新点的意图需单列核对，不能静默换成时间升序再称原样。"
+  },
+  "units_and_precision": {
+    "original_sources":["frm_quality/cus_quality_chart.cpp::refreshChart:96-130","frm_quality/cus_quality_chart.cpp::traceData:282-321","frmsystem/frmsystemmaterial.cpp::getUnit:2162（unitHash来自option_unit(unit,ratio)）"],
+    "original_unit_name_and_decimals":"按project_name和规则result name从kAllProjectInformations.projectResult的unit_name/decimal_point查当前项目字典。",
+    "original_plot_ratio":"unitHash[resultUnit].toDouble()，未找到时默认1。",
+    "original_trace_ratio":"同一倍率旧代码toInt()；非整数倍率可能与图中结果不一致，后续应以明确金样例对照并记录必要修正。",
+    "historical_snapshot_absent":"旧quality_data未存逐条unit、ratio或decimals，result_val也不携带这些字段。本次未读取旧库，不能补猜保存时单位。",
+    "current_snapshot_limit":"当前qc_project_snapshot是关联创建时的结果单位/倍率/精度快照；当前无历史点写入API，不能据此宣称任意既有quality_data逐条保存时单位已获证。",
+    "safe_boundary":"未知来源须明确未知，不按最新字典静默重算历史；已知同单位匿名快照可验换算和统计，不把不同/未知单位混成同一序列。"
+  },
+  "descriptive_statistics_contract": {
+    "original_source":"frm_quality/quality_rule_algth.cpp::staticInfo_Impl:19/getStaticInfo:296",
+    "input":"QualityChart::qualityChart返回的全部前批+当前批有效结果向量，不是初始可见30点。",
+    "mean":"sum(x)/n",
+    "range":"max(x)-min(x)",
+    "sample_variance":"[sum((x-mean)^2)-sum(x-mean)^2/n]/(n-1)，小负误差夹为0；不是总体方差。",
+    "sample_standard_deviation":"sqrt(sample_variance)",
+    "legacy_cv":"sample_stddev/(mean+1e-12)，有符号ratio，不乘100；原ui CV无百分号，Mean/SD/CV以1位小数显示。",
+    "legacy_empty_singleton":"旧函数初始化统计为0；n=0直接返回，n=1不计算SD/CV。不能把该零值直接当新页面样本估计有效性结论。",
+    "current_statistics_cli":{"directory":"06_programs/sn100_host/quality","target":"sn100_quality_statistics","function":"Sn100Quality::calculateStatistics","input":"显式匿名JSON数值序列；QtCore命令行工具，无QC历史SQL/Widgets页面接线。","meaning":"只迁统计辅助算法，不等于QC原始点、历史浏览、图卡或临床规则已迁。","existing_guards":["空序列拒绝","非有限数值/溢出拒绝","10000点单序列离线预算","单点sampleEstimateAvailable=false","abs(mean)<=1e-12时CV不可用"],"reuse_limit":"后续可复用已核数值函数并补页面行为验收；本次没有运行CLI或继承其旧测试结果作为新页面证据。"}
+  },
+  "current_metadata_and_gap": {
+    "store_header":"quality_control/qc_store.h",
+    "implemented":["控制品名称/厂家","稳定项目关联及结果快照","规则元数据/used/九策略值存储","批次增删改查与当前/前批切换","历史引用和项目catalog对账保护"],
+    "store_evidence":[{"path":"quality_control/qc_store.cpp","line":262,"evidence":"建立quality_data结构，但没有公开历史记录值对象或load/save API。"},{"path":"quality_control/qc_store.cpp","line":221,"function":"QcStore::historyExists","evidence":"供改名/移除保护查询。"},{"path":"quality_control/qc_store.cpp","line":316,"function":"QcStore::validateHistoryReferences","evidence":"启动/引用对账核历史控制品/项目/批次归属，不等于读取展示历史点。"}],
+    "page_evidence":{"path":"quality_control/quality_control_page.cpp","function":"QualityControlPage::renderProjects","line":357,"evidence":"clear qualityChartList并仅创建关联项目按钮；无图卡、历史查询、统计或左右追溯。"},
+    "not_implemented":["QC历史结果点查询/展示API","原质控图卡/当前与前批点图","逐点日期时间值浏览","从QC历史结果到描述性统计的页面闭环","真实QC测量结果写入链","九规则临床失控判定/审核应用"],
+    "do_not_count_as_qc_history":["calibration/CalibrationChart的浓度-测量原始散点","quality/sn100_quality_statistics的独立JSON统计CLI","quality_data建表及引用保护测试中插入的任意字符串"]
+  },
+  "minimum_safe_offline_slice_proposal": {
+    "state":"仅范围建议，待root安排，不是已实现计划或交付。",
+    "sequence":["worker按稳定control/association/batch ID查询本匿名库已核历史，返回请求号、row ID、完整结果、日期时间、已知单位来源；不按不明名称猜新身份。","保留原cus_quality_chart.ui布局和前批/当前图色，建立结果点图及左右追溯。","在明确同单位有效点集合上接Count/Mean/样本SD/CV描述性统计；缺失/畸形数据显式无效，不用toDouble默认0伪造点。"],
+    "data_input":"用真实ProjectsStore/QcStore创建专属匿名元数据，由受控测试夹具准备既有quality_data；不读取/复制旧运行库，不增加人工录点/导入UI。",
+    "clinical_state":"只显示未评价含义，不由策略未启用或纯数值统计推断正常；原状态位的具体文案与必要差异后续对照。",
+    "separate_gates":["旧排序/追溯索引、同日重复行与缺结果解析需先定义，任何修正单列有意差异。","单位来源不明的历史展示/统计边界需明确，不伪称保存时快照。","真实QC数据来自仪器/光谱算法完成后的结果通道，不能靠新录入界面替代。","九策略阈值与正常/警告/失控的临床效力、真实仪器结果及LIS另验；描述性数学可用匿名金样例离线验。"],
+    "acceptance":"见golden_examples.json；所有例子均为待执行输入/期望，不是本轮实测通过。"
+  },
+  "stop": "证据保存后停止；不改正式源、不构建、不运行GUI、不建立运行数据库，不打断样本新native冻结。"
+}

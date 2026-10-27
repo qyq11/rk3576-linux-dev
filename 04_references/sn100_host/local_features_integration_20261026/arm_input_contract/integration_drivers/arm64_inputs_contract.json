@@ -1,0 +1,87 @@
+{
+  "schema": "sn100-arm64-input-test-increment-preparation-v1",
+  "prepared_utc": "2026-10-26T08:15:03.511539+00:00",
+  "status": "PATCH_PREPARED_NOT_APPLIED_NOT_EXECUTED",
+  "target": "06_programs/sn100_host/tests/test_shell_arm64_inputs.py",
+  "preimage": {
+    "bytes": 19955,
+    "sha256": "95e69d29adfbbdf9e3745834ca5b1710cdc714cef5b69d58793d9f6e283dbd30"
+  },
+  "candidate": {
+    "bytes": 27282,
+    "sha256": "647e700f5bc481a05d975f645858a36e480bd87d90bded92d009911f338d94f9",
+    "AST_parse": "actual0; source parsed only, no imports/exec"
+  },
+  "patch": {
+    "path": "temp/sn100_host/local_features_integration_20261026/integration_drivers/arm64_inputs_contract.patch",
+    "bytes": 8005,
+    "sha256": "b1f1b79b6b672c1ae4c00a9f502848c2ae232d3ca68195cdc29f4e6c2c415cdf"
+  },
+  "existing_contracts": {
+    "old_test_methods": 15,
+    "old_method_AST_bodies_exactly_unchanged": true,
+    "names": [
+      "test_inventory_is_read_only_without_sysroot_or_output",
+      "test_catalog_build_matches_explicit_qmake_modules",
+      "test_status_build_and_freeze_cover_replay_and_restricted_loopback",
+      "test_instrument_build_freeze_and_startup_include_offline_module",
+      "test_main_does_not_compile_independent_entries_or_tests",
+      "test_password_login_build_freeze_and_offline_scope",
+      "test_printer_settings_build_freeze_and_local_only_scope",
+      "test_lis_local_settings_build_and_release_scope",
+      "test_report_helper_keeps_only_its_previous_source_closure",
+      "test_quality_control_closure_and_reference_scope",
+      "test_calibration_local_closure_and_startup",
+      "test_freeze_covers_catalog_code_forms_qrc_and_all_qrc_members",
+      "test_changed_and_new_catalog_files_invalidate_a_snapshot",
+      "test_package_refuses_mismatched_catalog_freeze_before_creating_stage",
+      "test_sample_release_metadata_limits_tasks_to_local_presets"
+    ]
+  },
+  "additions": {
+    "new_test_methods": [
+      "test_alarm_directory_changed_and_new_files_invalidate_a_snapshot",
+      "test_local_feature_main_inputs_freeze_and_helper_isolation",
+      "test_local_feature_oracle_rejects_bounded_private_omissions_and_helper_leaks"
+    ],
+    "total_after_application": 18,
+    "independent_positive_inventory_counts": {
+      "source": 8,
+      "header": 7,
+      "form": 5,
+      "resource": 2
+    },
+    "negative_in_memory_cases": 60,
+    "negative_case_bound_basis": "22 omitted inventory entries +22 omitted freeze keys +16 helper leaks =60 bounded private-copy oracle cases; no subprocess or production file mutation added.",
+    "alarm_private_snapshot_fixture": "21 fixed mandatory small paths +5 alarm paths;5 changed inputs and1 new nested UI checked. TemporaryDirectory lives under existing test-owned self.root and is cleaned by context.",
+    "helper_isolation": "Original exact helper source closure test unchanged. New independent basename deny-set adds8 main-only sources and6moc/2qrc names; synthetic generated leak entries test only the oracle, not actual generation.",
+    "resource_members": "New positive method checks report-dictionary and alarm qrc member source hashes are in the snapshot.",
+    "no_scope_inference": "No GUI/SQL behavior, generated ELF link map, board runtime or clinical correctness is inferred from these input checks."
+  },
+  "observed_current_producer_inputs": [
+    {
+      "path": "06_programs/sn100_host/shell/build.sh",
+      "bytes": 20496,
+      "sha256": "b6b20f11dda2aae381fca586b2b7650b9664bf1884e809d30761ae83ae5e0a56",
+      "basis": "small source read only; no new freeze declared"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/package_arm64.py",
+      "bytes": 11933,
+      "sha256": "e82a3ffaec49f394bb08907f9cb6717f8eb3e941d167e227f74514ff209a2cbd",
+      "basis": "small source read only; no new freeze declared"
+    }
+  ],
+  "apply_guard": "Root must confirm exact target preimage SHA before applying. No production file was edited; no git/apply check or test was run here.",
+  "future_execution_boundary": "Existing setUpClass invokes read-only LIST_INPUTS and tests call snapshot only after root separately applies/reviews and grants execution. This preparation invoked none of LIST_INPUTS/snapshot/test/qmake/GUI.",
+  "not_performed": [
+    "patch application",
+    "target/package module import",
+    "LIST_INPUTS",
+    "snapshot",
+    "unittest/Qt tests",
+    "build/GUI/measurement/network",
+    "object/ELF/sysroot byte hashing",
+    "old447 controller/prep changes"
+  ]
+}

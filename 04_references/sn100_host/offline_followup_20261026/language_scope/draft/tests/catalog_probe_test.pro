@@ -1,0 +1,10 @@
+QT = core testlib
+CONFIG += c++14 console testcase warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = language_catalog_test
+INCLUDEPATH += $$PWD/..
+SOURCES += $$PWD/tst_language_catalog.cpp $$PWD/../language_catalog_probe.cpp
+HEADERS += $$PWD/../language_catalog_probe.h
+MOC_DIR = .moc
+OBJECTS_DIR = .obj

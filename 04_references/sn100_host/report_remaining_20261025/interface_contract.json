@@ -1,0 +1,26 @@
+{
+  "schema": "sn100-report-remaining-contract-v1",
+  "data_root": "显式独立匿名目录；沿sn100-o04-anonymous-v1、history.sqlite和原标记文件；不读生产库。",
+  "ids": {
+    "report_id": "report_data.id，仅此ID用于隐藏/患者保存",
+    "report_row_id": "report_data.row_id -> report_results.fid，绝不以可见行号删除",
+    "task_id": "report_results.task_id -> report_values.task_id",
+    "saved_project_key": "当前匿名历史仅保存project_name快照；不假定等于catalog.project_base.id或instrumentProjectId",
+    "display_key": "patient:name/age/sex/state；result:<保存项目名>+U+001F+<result_type>；不按翻译文本或视觉位置匹配"
+  },
+  "unit_contract": "report_columns是匿名已保存格式合同；HistoryResultValue保存rawValue/unit/factor/decimals，类型2/3应用倍率。新显示设置只改显示和顺序；不读当前catalog重新解释历史。未来真实结果需保存稳定项目ID及单位/倍率/精度快照，不能按名称猜接。",
+  "catalog_contract_read": {
+    "path": "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json",
+    "bytes": 5357,
+    "sha256": "6aed7eb67ca11dd7c9038484a3c8e84f516a0c597e7885cc41c5444d0a207cfa"
+  },
+  "catalog_reference_policy": "本批不创建新catalog关联、结果或任务；软删保留原关联。未来新增真实结果关联须先使用项目负责人holdProjectReference/释放协议；跨库不具备外键或一次事务，不擅自改catalog。",
+  "soft_delete": "hideReports(id,ids)：1至100个唯一正ID；worker验证角色后同事务UPDATE visible=0 WHERE id=? AND visible=1；混合非法/锁/写入/提交失败整批回滚；已隐藏重复请求明确拒绝；保留全部关联记录；成功回第一页。",
+  "permissions": "原报告无角色门槛；新增Guest只读为离线安全补全。setSession(AccountSession)通过队列，authenticated且role1..5且source非Guest可执行新写；actionReady是设备标志，不阻止本地元数据。不是新增生产认证方案；原患者保存权限不在本批扩大修改。",
+  "display": "loadDisplay/requestId -> displayLoaded(columns,defaults)；saveDisplay -> displaySaved仅提交后发送；optional report_view_preferences(column_key PK,group_id,position,visible,UNIQUE(group_id,position))只在首次保存时建立。默认排序是草稿；取消/X不写；失败保留草稿；busy阻关闭/重复；撤权拒绝恢复可取消。",
+  "display_limits": "患者列可切换；本批匿名合同只有PT/1和APTT/1明确main_result=true，其余没有false，按未知保守保留，因此当前六个结果列全受保护不可取消。支持同项目内结果排序，不改外层项目顺序；非主结果隐藏仅对有明确false合同才可用，未声称生产规则完成。患者默认保留旧移植姓名/年龄/性别/状态，与原姓名/性别/年龄/状态的已有差异单列。",
+  "corruption_policy": "损坏/未知显示键或必选列隐藏明确报错，不静默复位；当前无界面内自动修复入口，须在保留原文件后核查；断电/磁盘满恢复未验。",
+  "exports": "列表仍GBK CSV；预览原HTML action改走immutable HistoryPrintDocument -> helper --html ->新.html原模板UTF-8；不覆盖已有文件/不打开浏览器/不接打印机。HTML连续绝对定位无PDF页数合同；&明确拒绝。PDF原模式保持兼容。",
+  "threading": "页面只持值快照；所有新增SQL在HistoryStore所属worker连接内执行/关闭；其他测试检查连接在各自创建线程使用。",
+  "limits": "本轮仍匿名库；并发生产导入/schema迁移、真实结果/算法/任务/曲线/重算/上传/实体打印均未开启。"
+}

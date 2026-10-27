@@ -1,0 +1,415 @@
+{
+  "schema": "sn100-lis-original-contract-independent-audit-v1",
+  "reviewed_utc": "2026-10-24T13:25:38.692763+00:00",
+  "scope": "Static original-source/Designer/previous-contract review only. No migration completion, GUI, build, test, enumeration, network, serial or instrument run.",
+  "read_scope_sha256": {
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp": "ba2ce86aa539dce304f3af34faf0ee13c5f33636f0be1b70b921ea607efd7b8e",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.h": "5a99fbb2ddba135d24c8afd4b50cbe089c7df203547bc1858856f5f2459a2cfc",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.ui": "158ff240e1586db7ec1bfbb408cc27d04ade2fb30c2756c0aa44a9684b46666e",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp": "88dbbbf67c2485374e32780e520a74fefbb7187ce1228765a4567e94ddcdf636",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.h": "f8e73be84d47aef8baab2dfd50e149b0a5f8530fc155c8f20686f421cfe64497",
+    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/commlis.pri": "c41339b9d89c65bcbb7e7165cb22b4fb8adc7b1d6a95c5b8a92f0096c4fc7206"
+  },
+  "prepared_contract": {
+    "path": "temp/sn100_host/global_coverage_20261024/lis_settings_contract.json",
+    "sha256": "0602714f1b610b0edf301befe66903062b5ecc2f66b8016dbe9374ed4e0b9ba5",
+    "selected_original_inputs_match_prepared_fingerprints": true,
+    "visible_key_count": 9,
+    "hidden_key_count": 12,
+    "overall_consistent": true
+  },
+  "original_field_semantics": {
+    "visible_keys": [
+      "lis/type",
+      "lis/ip",
+      "lis/port",
+      "lis/commname",
+      "lis/baudrate",
+      "lis/samMode",
+      "lis/autoget",
+      "lis/autosend",
+      "lis/link"
+    ],
+    "type": {
+      "values": [
+        "tcp",
+        "serial"
+      ],
+      "source_getter": "Only exact lowercase tcp means TCP; every other raw value including missing selects Com_Mode. A serial radio label is not a proven configured serial endpoint."
+    },
+    "sample_upload_mode": {
+      "control": "cmb_SamLis_Mode",
+      "items": {
+        "0": "sample mode",
+        "1": "test mode"
+      },
+      "missing_default": "0",
+      "constructor_index1_is_transient": true,
+      "unknown_index_save_hazard": "setCurrentIndex with unknown/out-of-range stored int can leave no selection; original Save maps any index other than0, including-1, to string1."
+    },
+    "intent_flags": {
+      "lis/autoget": "auto acquisition",
+      "lis/autosend": "auto upload",
+      "lis/link": "response/acknowledgment mode; UI text is not automatic connection or connected-state indicator",
+      "original_getters": "Only exact string true is true; missing, TRUE,1 or other strings are false."
+    },
+    "serial": {
+      "name_control": "noneditable cbxCom",
+      "baud_control": "noneditable cbxBaudrate",
+      "baud_choices": [
+        "1200",
+        "2400",
+        "4800",
+        "9600",
+        "19200",
+        "38400",
+        "57600",
+        "115200"
+      ],
+      "no_known_deployment_defaults": true
+    },
+    "hidden_keys": [
+      "lis/moni",
+      "lis/linkintervalms",
+      "lis/databits",
+      "lis/parity",
+      "lis/stopbits",
+      "lis/flowcontrol",
+      "lis/tcptype",
+      "lis/isUploadForHole",
+      "lis/sequencenumber",
+      "lis/serverID",
+      "lis/lisCode",
+      "lis/sampleCodeCanRepeatTest"
+    ],
+    "explicit_load_fallbacks": {
+      "lis/samMode": "0",
+      "lis/isUploadForHole": "QVariant bool false, then toString",
+      "lis/serverID": "",
+      "lis/lisCode": "false",
+      "lis/sampleCodeCanRepeatTest": "true"
+    },
+    "other_load_fallbacks": "No explicit default argument; values load as strings. Do not infer device, TCP role, baud or8N1 from an empty config or first combo item.",
+    "hidden_semantics": {
+      "lis/tcptype": "Only exact client chooses client in openComm; all other values take server branch. Preserve raw and do not infer role.",
+      "lis/sampleCodeCanRepeatTest": "loadConfig mutates SystemCommon::sampleCodeCanRepeatTest: only exact false disables, everything else enables. It is not a pure settings reader.",
+      "lis/lisCode": "Only exact false selects UTF-8 MLLP; any other value selects original UTF-16 path. Preserve hidden string; do not activate codec/HL7 in local slice.",
+      "lis/linkintervalms": "Original getter uses toInt; missing/invalid interpretation is not a confirmed physical interval.",
+      "lis/isUploadForHole": "Original getter uses toInt despite bool false load default; do not normalize hidden values from presumed bool type."
+    }
+  },
+  "original_persistence_and_switching": {
+    "path": "QDir::currentPath()/config.ini in reference; migration must not discover/read this path.",
+    "encoding": "QSettings IniFormat with UTF-8.",
+    "save_scope": "Common type/sample-mode/3flags plus current-mode endpoint pair are updated. Inactive-mode pair comes from previously loaded configSet. The nine keys are the union of both modes.",
+    "cache": "setConfig writes each supplied key but does not update configSet; getConfig/getters remain cached. Original Save immediately emits signalConnectLis, causing later openComm/loadConfig to refresh the cache. A connection-free migration needs its own success-only committed snapshot.",
+    "failure": "Original Save has no checked QSettings sync/status failure result and still emits connection signal/success message. New actual failure reporting/atomicity is a deliberate safety improvement.",
+    "switch": "Both radio toggled signals connect to no-argument handler. Handler reloads the selected mode from committed getters, so drafts can be lost on toggling. Per-mode draft preservation is an intentional improvement.",
+    "unknown_keys": "Original QSettings setValue does not clear unrelated persisted keys; writing a new file from only known keys would regress preservation. Twelve loaded hidden keys are also part of preserved state."
+  },
+  "independent_findings": [
+    {
+      "priority": "high",
+      "item": "Do not interpret label_23 as TCP client/server selector",
+      "detail": "label_23 at50,390 is only the group title above auto flags. tcptype has no visible editor. ckxAutoLink says response mode, not connected or automatic connection.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            34,
+            36
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.ui",
+          "lines": [
+            1,
+            590
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "lines": [
+            160,
+            184
+          ]
+        }
+      ]
+    },
+    {
+      "priority": "high",
+      "item": "Replacement loader/cache must not depend on removed connect side effect",
+      "detail": "Original setConfig does not assign configSet. A copied helper followed by refresh will read old values when openComm is correctly isolated. Update the new committed snapshot only after actual commit and GUI acknowledgment.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "lines": [
+            62,
+            77
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            135,
+            159
+          ]
+        }
+      ]
+    },
+    {
+      "priority": "high",
+      "item": "Freeze inactive-draft Save semantics explicitly",
+      "detail": "Original Save commits active endpoint pair only. Keeping both drafts does not automatically imply saving both pairs. If new Save commits both edited pairs, document that behavior difference and test reopen; if it keeps inactive edits pending, preserve dirty state and leave guards truthfully.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            135,
+            154
+          ]
+        }
+      ]
+    },
+    {
+      "priority": "high",
+      "item": "Unknown sample mode must not silently become test mode",
+      "detail": "Original Save ternary maps any nonzero/no-selection index to1. Test invalid stored2/-1/noninteger text separately from legitimate missing-key default0.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            41,
+            43
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            120,
+            120
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            142,
+            142
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "lines": [
+            42,
+            42
+          ]
+        }
+      ]
+    },
+    {
+      "priority": "high",
+      "item": "Missing serial selection must not become first real device",
+      "detail": "Original appends none to a temporary list but then adds a fresh enumeration, omitting none. Saved-case comparison is insensitive but setCurrentText has no explicit normalized match handling. Use one enumeration snapshot and test missing/case-colliding/stale names; never silently choose a device.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            82,
+            94
+          ]
+        }
+      ]
+    },
+    {
+      "priority": "medium",
+      "item": "First baud is not a confirmed default",
+      "detail": "Original empties/adds the fixed list then calls setCurrentText on a noneditable combo. An absent/unmatched saved baud can leave first item1200 rather than a truthful unknown state. Preserve unknown/unconfigured value until explicit selection.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            95,
+            98
+          ]
+        }
+      ]
+    },
+    {
+      "priority": "high",
+      "item": "Preserve exact string/type/key semantics outside edited visible fields",
+      "detail": "Do not use broad toBool or normalize hidden mixed-case keys. Keep missing versus present values and inactive/hidden/unrelated values when modifying visible settings. Hidden repeat-test getter differs from exact-true visible flag getters.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "lines": [
+            31,
+            59
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "lines": [
+            109,
+            158
+          ]
+        }
+      ]
+    },
+    {
+      "priority": "medium",
+      "item": "Validator call parameters are not endpoint validation proof",
+      "detail": "IP caller requests Head_Letter_Num length16; port Num min0/max99999/length5. There is no final Save hasAcceptableInput/status check in the original. Exact validator implementation was deliberately not read from prohibited systemcommon.cpp. Choose/record any stricter local address/port/incomplete-save policy without DNS/connect validation.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            49,
+            60
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "lines": [
+            135,
+            159
+          ]
+        }
+      ]
+    },
+    {
+      "priority": "high",
+      "item": "Do not instantiate commlis objects for local getters",
+      "detail": "LisCommSetting owns TcpBase and SerialPortBase by value; constructor wires I/O signals. openComm can bind server/connect client/open serial and loadConfig changes a business global. No Save/connect signal, comm receiver/thread/sender, packet builder or connection-state getter belongs in this local slice.",
+      "evidence": [
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.h",
+          "lines": [
+            72,
+            74
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "lines": [
+            21,
+            28
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "lines": [
+            59,
+            59
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "lines": [
+            160,
+            214
+          ]
+        },
+        {
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/commlis.pri",
+          "lines": [
+            1,
+            12
+          ]
+        }
+      ]
+    }
+  ],
+  "visual_and_dependency_checks": {
+    "original_form_geometry": [
+      0,
+      0,
+      1451,
+      853
+    ],
+    "panel_geometry": [
+      400,
+      40,
+      611,
+      781
+    ],
+    "save_geometry_relative_to_panel": [
+      420,
+      690,
+      161,
+      61
+    ],
+    "overlaid_controls": "lblTcpIp and cbxCom share210,180,321,51; lblTcpPort and cbxBaudrate share210,250,321,51. Hide/show existing groups without reflow.",
+    "radio_check_style": "Radio checked/unchecked black from constructor; preserve existing checkbox/radio and parent theme resources. No duplicate compiled widget class or resource alias.",
+    "group_title_not_transport_role": "Master-computer mode label only heads three intent checkboxes; no client/server editor.",
+    "source_encoding": "Selected .ui is valid parsed UTF-8 and has no replacement-character bytes; console GBK display must not motivate rewriting source.",
+    "enumeration": "Read-only serial-name provider may be injected for deterministic tests. QSerialPortInfo/backend dependency and actual ARM closure need explicit inventory; do not copy SerialPortBase or entire commlis.pri to obtain enumeration."
+  },
+  "root_contract_decisions_to_freeze": [
+    "Does Save commit only active endpoint pair or both preserved drafts? Specify dirty/leave behavior for remaining inactive edits.",
+    "May an explicitly incomplete local configuration be saved? Keep unknown role/device/baud as unknown and never describe it as connected.",
+    "Exact active address and port policy: original0..99999 validator intent is not confirmed endpoint validity. Any narrower policy is an intentional safety difference; preserve inactive/hidden raw values.",
+    "Case matching policy for missing/renamed serial names across Windows and Linux; never select first real device by fallback."
+  ],
+  "offline_acceptance_recommendations": [
+    {
+      "group": "defaults_and_exact_semantics",
+      "checks": [
+        "New explicit tagged root: no endpoint/device/baud/8N1/client-server defaults guessed; samMode0 and false visible intents are source-derived only.",
+        "Missing versus unknown type/samMode and exact true/FALSE/1 string handling; invalid combo selection cannot become mode1 silently."
+      ]
+    },
+    {
+      "group": "two_mode_drafts_and_persistence",
+      "checks": [
+        "Edit TCP, switch serial, edit serial, switch back: both drafts intact before Save.",
+        "Exercise chosen active-only or both-draft commit policy and exact reopen behavior.",
+        "Repeated unchanged Save is a no-op; no rewrite of hidden/inactive/unrelated values.",
+        "GUI committed snapshot must reflect actual durable save, not stale original static cache."
+      ]
+    },
+    {
+      "group": "serial_snapshot_cases",
+      "checks": [
+        "Injected empty list, missing saved port, one available port, changed enumeration, case-different/duplicate names, unavailable original baud and all8 valid baud choices.",
+        "Unavailable saved name remains truthful; no none token or first enumerated device reported as configured.",
+        "One consistent enumeration snapshot per refresh; slow/failing enumeration must not block GUI or create a device handle."
+      ]
+    },
+    {
+      "group": "data_and_failure_safety",
+      "checks": [
+        "Preserve12 hidden keys with deliberate sentinel strings, both endpoint pairs, unrelated groups, mixed-case key spelling and Unicode values.",
+        "Actual invalid/foreign/oversize/UTF-8/path/permission/lock/conflict/commit failures leave original bytes and committed state intact; draft remains for successful retry.",
+        "Test control characters/length/enum/number boundaries under declared local policy, with no DNS or network validation."
+      ]
+    },
+    {
+      "group": "unified_ui_and_lifecycle",
+      "checks": [
+        "Real final main6/subpage4, original geometry/theme/overlap and1600/1920 reachability; reach Save by actual scroll/hit path, not only direct click().",
+        "No invented role restriction; existing account actionReady and real LIS/device status do not change.",
+        "Continue/discard guards for subpage/main-page change, login/logout and close; busy hidden pages remain guarded.",
+        "Use GUI-side operation completion/snapshot as barrier, then read back the anonymous file; no worker-spy-only success."
+      ]
+    },
+    {
+      "group": "side_effect_boundary_and_release",
+      "checks": [
+        "Save and all3 intent flags leave sockets/listeners/serial/DNS/LIS threads/timers/HL7/ACK/query/upload counters at zero; no original commlis object constructed.",
+        "Native/Windows/ARM actual enumeration dependency and frozen source/package inputs checked separately from runtime backend availability.",
+        "Bounded same-input response/resource observation and cumulative old pages after integration; no repeated long test or instrument action."
+      ]
+    }
+  ],
+  "not_verified": [
+    "Exact prohibited shared validator implementation",
+    "Original Windows active theme/complete behavior",
+    "Real port enumeration/device availability and actual ARM serial backend",
+    "TCP role/endpoint/format/HL7/ACK/upload behavior",
+    "RK physical display/input, resource budgets/RT and long stability"
+  ],
+  "forbidden_reference_systemcommon_cpp_read": false,
+  "runtime_configs_databases_credentials_read": false,
+  "reference_or_product_executed_or_built": false,
+  "formal_source_plan_record_or_original_evidence_modified": false
+}

@@ -1,0 +1,19 @@
+[standalone] start quality_control_qmake
+[standalone] finished quality_control_qmake exit=0
+[standalone] start quality_control_make
+[standalone] finished quality_control_make exit=0
+[standalone] start calibration_qmake
+[standalone] finished calibration_qmake exit=0
+[standalone] start calibration_make
+[standalone] finished calibration_make exit=0
+Traceback (most recent call last):
+  File "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation/run_standalone.py", line 274, in <module>
+    main()
+  File "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation/run_standalone.py", line 184, in main
+    inventory, proof = verify_build(build_dir, binary, frozen, build_started_ns)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation/run_projects_modules.py", line 189, in verify_build
+    require(any(row['source_relative'] == 'projects/projects_store.cpp' for row in source_rows),
+  File "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation/common.py", line 45, in require
+    raise RuntimeError(message)
+RuntimeError: The repaired ProjectsStore was not a source of this target

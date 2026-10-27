@@ -1,0 +1,175 @@
+{
+  "schema": "sn100-response-resource-readonly-preflight-v1",
+  "review_date": "2026-10-26",
+  "status": "static_issues_found_no_measurements_run",
+  "scope": "仅静态阅读指定驱动、测试和启动/关闭/回环日志源码；此文件不构成构建、响应、资源、RK或实物验收结果。",
+  "actions": {
+    "source_or_driver_modified": false,
+    "old_evidence_or_shared_documents_modified": false,
+    "build_gui_benchmark_resource_observer_or_collector_run": false,
+    "runtime_database_ini_or_credentials_read": false,
+    "existing_measurement_results_used": false,
+    "only_created": "temp/sn100_host/calibration_local_20261025/response_resource_preflight_20261026.json"
+  },
+  "source_binding": {
+    "formal_manifest": "temp/sn100_host/qc_local_20261025/native/final_before.json",
+    "manifest_sha256": "5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29",
+    "manifest_input_count": 426,
+    "reviewed_production_source_hashes_match_manifest": true,
+    "comparison_scope": "只比较下列已读的六个正式源码条目；没有重新核对整个426项集合，没有确认本轮native构建完成或通过。",
+    "compared_entries": [
+      "shell/main.cpp",
+      "shell/shutdown_request.cpp",
+      "protocol/status_loopback.cpp",
+      "protocol/frame_codec.cpp",
+      "quality_control/quality_control_page.cpp",
+      "history/report_controller.cpp"
+    ],
+    "response_test_and_observer_in_formal_inventory": false,
+    "separate_binding_needed": "测试与观察脚本不在426项正式集合中。响应驱动静态检查binding_proof中的测试源码/二进制SHA和正式构建快照；资源驱动单独记录观察器/自身SHA。实际运行时仍须保留这些独立证据。",
+    "build_or_test_success_inferred": false
+  },
+  "reviewed_source_sha256": {
+    "temp/sn100_host/qc_local_20261025/integration_drivers/run_response.py": "7296b742ec84173fd11849314d182783266e4a776ef78f205efd38f085e4aa92",
+    "temp/sn100_host/qc_local_20261025/integration_drivers/run_resource.py": "24efc008fbebdf958f60a3de3f982493b2000f9707edc0820c292578a5cdf496",
+    "temp/sn100_host/qc_local_20261025/integration_drivers/common.py": "87e36ba3135a9b2e76b025e025ce693bac77bad4f806ed4ebe1cef7942ced4d0",
+    "06_programs/sn100_host/tests/qc_local_response_test.cpp": "71d90e9af12f0d17547d774ae7c9d0805e7537f625fcf88b26fd22346cbf9211",
+    "06_programs/sn100_host/tests/observe_linux_process.py": "d32f759feb1f6736426fe9b59086818760f03976ced9cfc49637b19c95769f70",
+    "06_programs/sn100_host/protocol/status_loopback.cpp": "37e934d0716abf0f505ba9f0dda7294a7094b7ab1c4ef5eae7acdfd0f87b80a3",
+    "06_programs/sn100_host/protocol/frame_codec.cpp": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+    "06_programs/sn100_host/shell/main.cpp": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156",
+    "06_programs/sn100_host/shell/shutdown_request.cpp": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+    "06_programs/sn100_host/quality_control/quality_control_page.cpp": "93b1325e51fbf48cc6224fa21d023605e1ee360728cc29acc9fc682fd6168218",
+    "06_programs/sn100_host/history/report_controller.cpp": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba"
+  },
+  "definite_findings": [
+    {
+      "id": "CAL-PREFLIGHT-01",
+      "priority": "P2",
+      "category": "wire_audit_timing_label",
+      "title": "请求时间和间隔取自TCP读取块，没有按已解码请求对应时间",
+      "evidence": [
+        {
+          "path": "temp/sn100_host/qc_local_20261025/integration_drivers/run_resource.py",
+          "lines": "80-103",
+          "fact": "帧数由拼接后的逐方向字节流解码；times却直接收集所有TX行的elapsed_ms，并命名为request_elapsed_ms/request_intervals_ms。"
+        },
+        {
+          "path": "06_programs/sn100_host/protocol/status_loopback.cpp",
+          "lines": "297-326",
+          "fact": "TX记录来自模拟对端一次read(kReadBytes)的实际读取块，记录发生在peerDecoder.feed前；一次读取可以包含半帧或多帧。"
+        },
+        {
+          "path": "06_programs/sn100_host/protocol/status_loopback.cpp",
+          "lines": "437-455",
+          "fact": "每次recordWire只为这一读取块递增sequence并保存该次elapsedMs。"
+        }
+      ],
+      "trigger": "TCP把一个Qj帧拆为两次读取，或把多个完整帧合并为一次读取。",
+      "consequence": "帧/载荷校验仍可正确通过，但请求时间条数与实际请求数不一致；所谓请求间隔可能是块间隔。若用它说明实际1Hz请求节拍，会得出错误解释。",
+      "static_example": "同一13字节Qj查询分为t=1000和t=1001的两条TX读取记录时，解码请求数为1，现有请求时间却有2条并产生1ms间隔。此例仅推导，没有执行模拟。",
+      "suggested_driver_only_fix": "把字段改为wire_chunk_elapsed_ms/wire_chunk_intervals_ms并说明语义；若需要请求时刻，则用每个已解码完整帧最后一个字节所属读取块的时间，为每条完整Qj建立一条时间记录。不要假定一条TX日志等于一条请求。",
+      "native_source_change_required": false,
+      "measurement_run_to_reproduce": false
+    },
+    {
+      "id": "CAL-PREFLIGHT-02",
+      "priority": "P2",
+      "category": "timeout_owned_process_cleanup",
+      "title": "外层观察器超时路径没有保证回收本轮应用子进程",
+      "evidence": [
+        {
+          "path": "temp/sn100_host/qc_local_20261025/integration_drivers/run_resource.py",
+          "lines": "171-194",
+          "fact": "subprocess.run(timeout=65)没有创建本轮独立进程会话；TimeoutExpired分支仅保存child state unknown及输出后抛出，finally只删除引导文件。"
+        },
+        {
+          "path": "06_programs/sn100_host/tests/observe_linux_process.py",
+          "lines": "51-74",
+          "fact": "应用由观察器Popen启动；直接子进程清理依赖观察器自己的finally。外层强制结束观察器时，这一finally无法保证执行。"
+        },
+        {
+          "path": "temp/sn100_host/qc_local_20261025/integration_drivers/common.py",
+          "lines": "80-97,101-135",
+          "fact": "响应运行路径已有start_new_session加本轮进程组清理；资源运行路径没有使用等价保障。"
+        }
+      ],
+      "trigger": "观察器卡在采样或其他步骤直到外层65秒超时，或其内部超时/回收未能在外层限时前结束。",
+      "consequence": "观察器终止后本轮sn100_shell可能继续存活，带来后续测量负载干扰和残留运行目录占用。当前代码如实记录失败及子进程状态未知，不会由此误报成功，也不会进入数据库统计。",
+      "suggested_driver_only_fix": "为本轮观察器及其应用子进程创建可识别的独立进程组；外层超时/异常时只终止该组并核查停止状态，保留原始超时和退出收据。无法核实回收时应保持失败，先清理本轮已知进程再开始下一次串行测量。",
+      "native_source_change_required": false,
+      "measurement_run_to_reproduce": false
+    }
+  ],
+  "static_contract_checks": {
+    "response": {
+      "evidence": [
+        "tests/qc_local_response_test.cpp:85-146,157-284",
+        "quality_control/quality_control_page.cpp:195-227",
+        "integration_drivers/run_response.py:17-69"
+      ],
+      "load": "独立原版质控页面、一个匿名质控品、ProjectsStore与QcStore两条工作线程；连续40次修改同一质控品名称/厂家并点击原保存按钮。不是九数据库加两INI整套应用的并发响应测试，也不是40条独立质控品。",
+      "start": "每次编辑字段完成后记录queued_ns，再用singleShot(0)派发QTest合成鼠标点击；字段输入时间不计入该次三个保存响应时间。",
+      "endpoints": {
+        "queued_to_busy": "排队时刻至active期间第一次busyChanged(true)；不代表忙碌提示已绘制到屏幕。",
+        "queued_to_finished": "排队时刻至saveControl的operationFinished。页面源码在收到重新加载的snapshot并调用render、解除busy后发出该信号，包含保存后的页面重载，不只是SQL提交耗时。",
+        "queued_to_committed_page": "轮询观察到页面不忙、同一id的名称/厂家与预期一致，且编辑框文字一致的时刻。包含轮询和事件处理开销，不是显示器呈现完成时刻。"
+      },
+      "raw_arithmetic_and_percentiles": "C++和Python均按最近秩ceil(p*n)-1计算p95/p99/max；40个样本时p99即最大值。Python逐条复算三个端点差值及保存字段一致性。",
+      "heartbeat": "PreciseTimer配置5ms，planned=前一次实际回调时刻+5ms，delay=max(0,observed-planned)，interval=observed-前一次实际回调时刻；不是固定绝对节拍累计偏差，也没有单独统计遗漏回调次数。",
+      "heartbeat_window": "初始化及首次新增质控品完成后开始，覆盖40次编辑/保存循环，在页面/存储关闭前停止；不包含启动和退出阶段。",
+      "heartbeat_verifier_limit": "驱动复算delay_ns/interval_ns的分位数；没有再从planned_ns/observed_ns及前一条记录独立复算所有心跳原始关系。当前C++产生这些字段的公式一致，未确认算术实现错误。",
+      "exit": "QtTest真实退出码由run_logged先保存并要求0；metrics中的process_exit_code=null明确交给外部收据，test_function_passed不能单独替代进程退出。页面正常离开、两存储closed和线程停止也有断言。",
+      "execution_result": null
+    },
+    "resources": {
+      "evidence": [
+        "integration_drivers/run_resource.py:49-64,159-165,205-273",
+        "tests/observe_linux_process.py:13-93",
+        "shell/main.cpp:323-367,683-738",
+        "history/report_controller.cpp:252-305"
+      ],
+      "configured_load": "匿名新目录，开启医院、账户、历史、项目、试剂、样本、仪器维护、质控、校准九个SQL存储及打印/LIS两个本地INI线程，默认Guest密码登录入口、演示项目种子和本机Qj回环；主界面切到仪器页7。",
+      "readiness_and_shutdown": "SHELL_READY在九存储、两INI及所需会话/绑定就绪条件全部成立后产生；驱动要求相关ready、九SQL closed、两INI closed各一次，以及全部线程和回环停止、应用与观察器退出0。",
+      "load_limit": "属于上述功能加载后的短时整套应用基线，主要持续活动是本机状态查询。没有报告导出/打印任务、LIS通信、仪器采集、质控/校准持续写入或多业务并发压力。报告渲染器是需要导出时才启动的子进程，本次配置没有触发它。",
+      "time_origin": "观察器在Popen前启动单调计时；30秒时请求SIGTERM，50秒内部超时强制停止，实际总时长可包含退出回收时间，并非严格持续采满30秒。",
+      "steady_window": "严格筛选观察器elapsed_seconds满足10<=t<30的原始样本。0.1秒是目标睡眠间隔，实际间隔还含/proc读取开销。",
+      "fixed_window_limit": "没有记录并校验全部就绪发生于t<10；ready标记只检查存在次数。因此应称第10到30秒固定观察窗口，若要称就绪后的稳定窗口，须另取就绪时刻证明或增加校验。没有据此确认本次漏载，因为本次没有运行。",
+      "cpu": "/proc直接子进程stat的utime+stime计数增量，除SC_CLK_TCK及窗口首末实际采样时间差后乘100；100%相当于一个逻辑核，多线程可超过100%，不是整机归一化百分比。只覆盖该进程各线程，不包含独立子进程及整机其他负载。",
+      "memory": "VmRSS、Pss单位KiB，窗口内给出采样min/max；Pss不可读保留null并计数。VmHWM是进程从启动以来的RSS高水位，在窗口内读取也可能反映启动期峰值，不能当作第10到30秒专属新增峰值。",
+      "sampling_limit": "采样内存峰值可能遗漏两次采样之间的瞬时峰值；RSS/PSS和线程/文件描述符是分次读取，非原子快照。CPU由窗口首末累计计数求平均。",
+      "disk_growth": "只在观察器确认子进程已回收后统计schema表名/count(*)和文件字节数；从新目录0到退出后总量，包含初始化与关闭写入，不是第10到30秒存储增长斜率。本预核没有调用该函数或读取运行数据库。",
+      "execution_result": null
+    },
+    "wire_audit": {
+      "evidence": [
+        "integration_drivers/run_resource.py:68-107",
+        "protocol/frame_codec.cpp:8-34,72-88",
+        "protocol/status_loopback.cpp:160-168,297-374,437-455"
+      ],
+      "framing": "与当前短Qj帧编码一致：TX头0203尾0405，RX头0607尾0809，2字节大端packet长度；packet含2字节分片序号0及2字节总数1，随后业务载荷；XOR覆盖packet，整帧长度packet_size+7。",
+      "payloads": "TX只接受ASCII Qj；RX只接受Qj[4][SIMULATED][2][1][0][0]。这是自建模拟对端，不是实物型号/就绪证明。",
+      "raw_log_semantics": "TX在自建对端实际读取时记录，RX在客户端收到字节时记录；没有把计划发送队列或bytesWritten当作对端应答。worker直接输出原始HEX，GUI批次不是唯一证据源。",
+      "parser_checks": "逐方向先拼接再解码，能处理读取块拆开或合并；检查原始行无遗漏、sequence连续、单run/generation、时间不倒退、每帧长度/分片/XOR/尾、准确载荷；TX与RX各至少20条完整消息，允许退出时最多一个已接收查询尚无完整应答。",
+      "remaining_limit": "请求节拍字段有CAL-PREFLIGHT-01；至少20对报文只证明这些字节数量，不能单独证明严格1Hz或每次查询延迟达标。此解析器专门验证两个短载荷，不是通用多分片协议验收。",
+      "execution_result": null
+    },
+    "provenance": {
+      "evidence": [
+        "integration_drivers/common.py:48-76,101-135",
+        "integration_drivers/run_response.py:17-41,66-69",
+        "integration_drivers/run_resource.py:186-245"
+      ],
+      "guards": "正式集合校验同时比较条目集合和值，防止只核旧条目遗漏新增文件；native收据还要求当前快照、Makefile、主程序/渲染器和fresh-object散列对应。响应驱动另核测试绑定证明，资源驱动在观察前后核正式源码/产物及自身/观察脚本。",
+      "receipt_order": "实际进程退出收据先于结果解析/散列/断言保存，解析失败不应覆盖真实退出事实。资源外层超时缺少进程组回收的问题另列CAL-PREFLIGHT-02。",
+      "environment_condition": "--root-go及inputs中的无其他构建/GUI/重散列声明依赖主集成窗口串行协调；源码检查本身不能证明整机当时安静。",
+      "review_limit": "本次只核代码逻辑及所列文件SHA，没有运行这些守卫、复核全部正式源文件/对象/二进制，没有把旧57f/e65检查点转用为新5123成功结果。"
+    }
+  },
+  "pending_acceptance": [
+    "先由主集成窗口修正或明确降级CAL-PREFLIGHT-01字段语义，并补齐CAL-PREFLIGHT-02外层失败回收后，再按授权串行测量。",
+    "新5123快照的native构建、QtTest、响应与资源真实输出/退出收据，均由主集成窗口后续确认；此预核不提前登记通过。",
+    "用户响应/CPU/内存预算尚未形成通过依据；不能从短时WSL观察推导Windows原版一致、RK运行、同板实时控制影响或长时间稳定。",
+    "实物仪器、临床规则/拟合/反算/应用、打印实作业、LIS真实通信等均不在本预核和这套短时测量的验证范围。"
+  ]
+}

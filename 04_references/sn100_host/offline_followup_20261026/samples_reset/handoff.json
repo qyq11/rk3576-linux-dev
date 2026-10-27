@@ -1,0 +1,365 @@
+{
+  "schema": "sn100-sample-reset-handoff-v4",
+  "date": "2026-10-26",
+  "status": "discard_feedback_targeted_local_passed_source_stopped",
+  "source_writes_stopped": true,
+  "runtime_slot_released": true,
+  "headline": "放弃提示最小修正已通过原复测方法：两后端各3/0；102依赖首尾一致，57复用/2重编，六组已结束并释放槽。",
+  "counting_note": "43是原操作事实总数，15是更新状态/解释的事实条目，16是含已验/缺口/原未启用等的重叠操作分组，不能当作16项新通过。",
+  "scope_review": "04_references/sn100_host/offline_followup_20261026/samples_reset/scope_review.json",
+  "operation_details": "04_references/sn100_host/offline_followup_20261026/samples_reset/scope_operations.json",
+  "qc_scope_correction": "仅QC存储/项目/规则/批次元数据与引用保护已迁，历史点查询/曲线/统计/追踪目前尚缺，主页空图不能当作完整原业务已迁",
+  "overall_remaining": [
+    "样本本轮新按钮/存储与旧业务累计待实际验收；真实任务投递、执行、急诊、扣量/足料和结果分流仍缺",
+    "项目本地方案/批组资料与HTML已实现，AlgParam/算法系数、临床校准/质控效力、配置到真实结果链仍缺",
+    "真实LIS、实体打印、仪器、生产导入/运行恢复、部分公共启动/告警/日志/输入能力",
+    "原Windows行为/主题、RK实屏/实际依赖、认可资源/同板实时和长稳"
+  ],
+  "core_actual_result": {
+    "receipt": "04_references/sn100_host/offline_followup_20261026/samples_reset/core_run_handoff.json",
+    "qmake_actual_exit": 0,
+    "make_actual_exit": 0,
+    "test_actual_exit": 0,
+    "qt_totals": [
+      9,
+      0,
+      0
+    ],
+    "test_counts_include_init_cleanup": true,
+    "core_cpp_sha256": "492965f0f823954fb91630b3f4c6b2635ded90afbf805b5c3bd9d0394721b501",
+    "binary_sha256": "deb9a0ba244141e56275114716e692674494ad4b4b9119181a3617efb0856365",
+    "original_command_process_exit_logs_txt_junitxml": "04_references/sn100_host/offline_followup_20261026/samples_reset/core_run_01",
+    "source_objects_binary_unchanged": true
+  },
+  "implementation": {
+    "entry": "samples/sample_page.cpp::resetTasks <- 原btnResetErr/btnResetFin",
+    "rules": "samples/sample_task_reset.cpp::prepareSampleTaskReset（已执行9/0）",
+    "state_values": "SampleTask.states按每次重复保存；空列表兼容旧v1为全部Idle；SampleHole.revise表示本地可改/再提交，不等于设备完成",
+    "storage": "SampleStore在本地catalog追加有版本hole_state/task_state，不改旧表列；SQL在原worker，写事务内读/保护Testing，再与原保存同事务提交或回滚",
+    "feedback": "只改编辑草稿；成功保存后刷新已提交快照；失败保留草稿；取消/放弃走原prepareToLeave契约",
+    "render": "原t_set/t_testing/t_errored/t_finshed图片显示逐次本地状态，无UI布局/主题替换",
+    "real_execution": "无真实task/report ID、状态输入、任务提交、网络/仪器/LIS动作"
+  },
+  "intentional_differences": [
+    "对勾选行并当前行全部预检查，任一Testing整批拒绝；原代码只先检查当前孔",
+    "所有目标revise=true，避免原只标记当前孔造成批量草稿不可改",
+    "带版本的本地状态持久化是离线切片补全，旧原版内存视图不能代表已持久化；完整原Windows行为待验"
+  ],
+  "changed_file_count": 14,
+  "modified_existing_count": 8,
+  "new_file_count": 6,
+  "source_delta": "04_references/sn100_host/offline_followup_20261026/samples_reset/source_delta.json",
+  "source_changes": [
+    {
+      "program_relative": "samples/sample_types.h",
+      "before_sha256": "543d44458de920aaadf0ae12f31d1c1a3c4a0f78fab7d5d381b1c38e13126a70",
+      "after_sha256": "70adc12eace71f1e788c285a5fdb169fbc8094ffbc942ec2bd4d4b0415b14414",
+      "change": "modified"
+    },
+    {
+      "program_relative": "samples/sample_store.h",
+      "before_sha256": "a6ab304e22c18e7448d253d645ce710f5541bf1598989ed34ffb34198f334c95",
+      "after_sha256": "d4de08f59d3d695a8e46f42a88b629da5939a3cb5d75cc20c86f112f60bbe8c4",
+      "change": "modified"
+    },
+    {
+      "program_relative": "samples/sample_store.cpp",
+      "before_sha256": "318055b0cf043639088e5dce75227d39df335f790922d95d0672ae8797c10c69",
+      "after_sha256": "ec734747b954ec97ad62af55a494e4af10c6d8a6af7a203fbbb12381fc62d86f",
+      "change": "modified"
+    },
+    {
+      "program_relative": "samples/sample_page.h",
+      "before_sha256": "a5c9e75917066ad2b5f5515b9083a09c1954830850660b27f978f0e918da6404",
+      "after_sha256": "798f60dc095db6ed8fd2f2b7ecf229ac3a2a9ebb44c85ac3c615f18db6503a08",
+      "change": "modified"
+    },
+    {
+      "program_relative": "samples/sample_page.cpp",
+      "before_sha256": "6e8fb2b95eec1160a49d7c9499147c781e5cb44faca8c342e0db97853e5977ce",
+      "after_sha256": "e9542708ea9225a615b2a91807f9692fb964fb0e2fc236f0e88f9745d2172a7a",
+      "change": "modified",
+      "pre_discard_feedback_fix_sha256": "975104907dcb3553ac857cdd859b8795d51f49b10c84d959480dda5469531cd3"
+    },
+    {
+      "program_relative": "samples/sample_widgets.h",
+      "before_sha256": "01ea7767655937941de10981771ada162ea1b5cf161558b205f9de8447f65d09",
+      "after_sha256": "b1fb3ac6ffe3687095df4897ad5a559f84ed56a83b5e5a051fb7108feeeb37fd",
+      "change": "modified"
+    },
+    {
+      "program_relative": "samples/sample_widgets.cpp",
+      "before_sha256": "52d7ce10d18ccbfb67d382bb712898e13a552cc4b1d90e25d82ae9ae11731ca0",
+      "after_sha256": "46d2dc040dfb1a31242f0c25867adb67d2adf2a3dbde35d1acb8ad006f6ea5a1",
+      "change": "modified"
+    },
+    {
+      "program_relative": "samples/samples_core.pri",
+      "before_sha256": "953efc4de4730fd8c5d8c809641fdb0e000d95e5de21deb9df836d7ca1ead6cc",
+      "after_sha256": "d7373191ec732a305c3e56fbdc816740f1d5bc63a80bc2e952d41c9daab4e158",
+      "change": "modified"
+    },
+    {
+      "program_relative": "samples/sample_task_reset.h",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "1def9fdbfa62a83abacc20754cbc258871c75f56c3234c7d682bdd8e0d485629"
+    },
+    {
+      "program_relative": "samples/sample_task_reset.cpp",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "492965f0f823954fb91630b3f4c6b2635ded90afbf805b5c3bd9d0394721b501"
+    },
+    {
+      "program_relative": "samples/tests/sample_task_reset_test.cpp",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "3c5b3ea9bc98cc0f126d64767757289d3cfa02eb4906494d2f86e14cf9adb36c"
+    },
+    {
+      "program_relative": "samples/tests/sample_task_reset_test.pro",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "5bbaed28baaccfc1212c28e240fe6855a6f8b5dcf8b52996ef753dfd01ffa0ed"
+    },
+    {
+      "program_relative": "samples/tests/sample_reset_workflow_test.cpp",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "c4ff4d35db058f8df40816e78b0e950da0c3dc48910be320fe13e72af099efa9",
+      "pre_discard_feedback_fix_sha256": "2edfd93fdc2519949015f128ad18b163b4ad8c7733ab68025c7c7e3d69e1b1c7"
+    },
+    {
+      "program_relative": "samples/tests/sample_reset_workflow_test.pro",
+      "change": "new",
+      "before_sha256": null,
+      "after_sha256": "b55af97c6c06c77738db32eaa3752b40887b41501a8ce09b5fe596dd5bf09d1b"
+    }
+  ],
+  "module_file_count": 69,
+  "source_ready_for_root_new_freeze": true,
+  "old_native_or_426_5123_valid_for_new_feature": false,
+  "next_execution_request": "No further sample build/GUI work queued; root may unify the next source freeze",
+  "next_exact_command": null,
+  "expected_result_schema": "sn100-discard-feedback-targeted-v2",
+  "expected_result_path": "temp/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_01/verification.json",
+  "next_driver_sha256": "60c59e0f9fb548dd50be972ef75eba6935b123a6ea04fae8a146d139c78140ed",
+  "current_validation": {
+    "core": "WSL实际9/0",
+    "new_cpp_compilation": "actual two fresh private builds qmake/make all0",
+    "page_storage": "workflow14/0 offscreen +14/0 xcb",
+    "old_business_regression": "selected11 functions13/0 offscreen +13/0 xcb; mixedLoad not run",
+    "whole_main_cumulative": "not run here",
+    "native_main_build": "root actual receipt and files/201 objects independently rechecked; main not executed here",
+    "visual": "Historical seven real QWidget PNGs reviewed; discard feedback defect confirmed; Windows/RK pending",
+    "resource_and_long_run": "not run",
+    "post_discard_feedback_fix": "Actual targeted original retest method offscreen3/0 + xcb3/0; six phases and parent0",
+    "historical_validation_scope": "Core9/0; workflow14/0x2 and baseline13/0x2 are pre-fix evidence",
+    "post_fix_validation_scope": "Only status/dirty/memory/saved SQL and original Cancel/save/reopen assertions in this method; full suites remain historical"
+  },
+  "required_followup": "Root另排短槽，仅编私有观察test并复用58已验对象，保留原断言/输入/等待；7张真实QWidget图和状态/滚动日志单列，不能算原回归或性能。随后由root安排统一累计/平台/资源；源继续冻结",
+  "preservation": "04_references/sn100_host/offline_followup_20261026/samples_reset/preservation_workflow.json",
+  "evidence_sha256": {
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/scope_review.json": "1eba87c9248182769defb393e49749eb13c3217b90c32e9707b0de6872ee09d3",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/scope_operations.json": "2222b4604151da06420f6e71bad1bf3fce5469869fe6da1f65af421e577437ca",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/sample_reset_contract.json": "6714061eab2bd0ab8bf5777783d74c0a45a82ec7450e0aa4235ba6636344e429",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/source_delta.json": "3d6936edb7ba5bd143baee2d66ce6b753b0a235f8019af333f9eae782bf46f00",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_handoff.json": "756270c09b26882144ad1db0af4eaa2b1251233b3a691a5baaade120ca861cf5",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01/evidence_sha256.json": "e9076882d7281af5769482a4b403e0baa6ff67d866c0d1fa65e9d404f1f007f6",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/visual_pending.json": "8f09f0927a6476d0d12044d5342acdd7dca517334c592a1dc431db104c451560",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/observer_plan_01/plan.json": "e6c793970f9b26e3b2306e0c44cdb52492800e5e3e28de14b588d55b66dfd2b0",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/observer_plan_01/execution_preparation.json": "3a1a3388f1ccc06903f5d4669f9012a67e2a291007270cd192ba43ec457bd258",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/observer_plan_01/source/sample_reset_workflow_test.cpp": "cc8df86b23589d7170fc73e42d1feb2bea7f14b9d62f341c18277691998118f1",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/run_visual_observer.py": "9db2e2cbf4a9250db0ca9c73017bd8d0b29e66b4bd0b6fb65633b8220c22b948",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/observer_handoff.json": "765771019dced6d58f2df3c4ca399da709e9b82776e092e980920d075afada8a",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/observer_run_01/evidence_sha256.json": "786c01c910028f58d8c48171b3075456abb2d37eda31beaa5f42f6b64575e505",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_preparation_01/evidence_sha256.json": "6b8d7e938758f0890fb78ab7b8b4398e4dee9cf8a13f95f895da4d14105bcedd",
+    "07_backups/sn100_host_sample_discard_feedback_20261026/pre_fix/backup_manifest.json": "851f048e6013f91340e5f2d294053a08a3d11a012ac4415d5ae16f203d69c183",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_preparation.json": "7b81e99aabd225560e8bf65c973dc261cd22d8366405afb5187eb2c6203317a1",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/run_discard_feedback.py": "9dab32b638bc0fbedcbeefa4c7945e6f9a222b21f81e7ea6fd926ec5eb591984",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/run_discard_feedback_dependencies.py": "60c59e0f9fb548dd50be972ef75eba6935b123a6ea04fae8a146d139c78140ed",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/sample_discard_dependencies.py": "a9d78b2a3cc525316d93b007c8a318bf3c961642dac560cdfb0fe5cff714b6d8",
+    "temp/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_dependency_preparation.json": "baa99270ee2ed08b4afee6b22c34f2d5d1e37ec5158e76089cb5ea6e0f642ef1",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_preparation_02/evidence_sha256.json": "e2dab06e2a9e9fb253733e9a1a70740e4ed5bfc2e0844afc403ce817289afd16",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_handoff.json": "d098a64dda568b7be8af1a6194bec3e9122e4caaeacefe0817caaf8595bad626",
+    "04_references/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_run_01/evidence_sha256.json": "99c4cb080d25dddc7b58eb8f0878308b2f3fce122f3bcb9e80f298062cd5fb26"
+  },
+  "shared_shell_launchers_public_docs_or_main_record_modified": false,
+  "worktree_commit_push_install_or_toolchain_change": false,
+  "workflow_actual_result": {
+    "receipt": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_handoff.json",
+    "source_inputs": 432,
+    "snapshot_sha256": "9ff28e905fd4df82330fb58b529c208a489b32987692a4131e67e3d86db5fc00",
+    "invocations": 4,
+    "actual_exits": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "new_flow_qt": [
+      14,
+      0,
+      0
+    ],
+    "baseline_qt": [
+      13,
+      0,
+      0
+    ],
+    "parent_exit": 0,
+    "raw_evidence": "04_references/sn100_host/offline_followup_20261026/samples_reset/workflow_run_01"
+  },
+  "source_delta_is_pre_execution_stop_receipt": true,
+  "observer_actual_result": {
+    "schema": "sn100-sample-observer-handoff-v1",
+    "observation_passed": true,
+    "source_binding": {
+      "phase": "Before discard feedback repair",
+      "inputs": 432,
+      "snapshot_sha256": "9ff28e905fd4df82330fb58b529c208a489b32987692a4131e67e3d86db5fc00"
+    },
+    "private_two_methods_qt_totals_including_init_cleanup": [
+      4,
+      0,
+      0
+    ],
+    "not_original_regression_or_performance": true,
+    "real_png_count": 7,
+    "actual_phase_exits": {
+      "/usr/lib/qt5/bin/moc:370": 0,
+      "/usr/bin/g++:374": 0,
+      "/usr/bin/g++:380": 0,
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/observer_01/build/sample_reset_visual_observer:383": 0
+    },
+    "parent_attempts": [
+      {
+        "name": "observer_parent_01",
+        "wsl_actual_exit": 2,
+        "controller_actual_exit": 1,
+        "reason": "Unsupported --snapshot controller argv; before build/GUI; retained"
+      },
+      {
+        "name": "observer_parent_02",
+        "wsl_actual_exit": 0,
+        "controller_actual_exit": 0,
+        "reason": "Only corrected controller argv; same private source/driver"
+      }
+    ],
+    "all_owned_groups_gone": true,
+    "runtime_slot_released": true,
+    "process_receipt": "04_references/sn100_host/offline_followup_20261026/samples_reset/observer_run_01/observer/process_cleanup.json",
+    "raw_evidence": "04_references/sn100_host/offline_followup_20261026/samples_reset/observer_run_01",
+    "visual_index": "04_references/sn100_host/offline_followup_20261026/samples_reset/observer_run_01/visual_index.json",
+    "manifest_entries": 64,
+    "evidence_manifest_sha256": "786c01c910028f58d8c48171b3075456abb2d37eda31beaa5f42f6b64575e505",
+    "stderr_byte_envelopes": [
+      {
+        "path": "04_references/sn100_host/offline_followup_20261026/samples_reset/observer_run_01/observer_parent_01/observer.stderr.bytes.json",
+        "sha256": "f160d0aca3c560df5a58e1b0ef08bf3e367fc8aea8dd55c3c70d9b095ef28056",
+        "raw_sha256": "a5c91227b8d00406272accf41871477b620e9800e1824b69321d524e41ac6600",
+        "raw_length_bytes": 394
+      },
+      {
+        "path": "04_references/sn100_host/offline_followup_20261026/samples_reset/observer_run_01/observer_parent_02/observer.stderr.bytes.json",
+        "sha256": "74d9c581ce4da6b0edcd6e1d4acd24083846efe131918712a6343e54e9621a94",
+        "raw_sha256": "b280c454d6f559e56eb3f5ed39f3ba084b8d1744a3ff7fe016b21ff86dea1aca",
+        "raw_length_bytes": 132
+      }
+    ],
+    "private_observer_cpp_remains_temp_only": true,
+    "runtime_DB_INI_objects_or_binary_archived": false,
+    "current_post_fix_source_tested_by_this_run": false,
+    "discard_feedback_defect_confirmed": true
+  },
+  "discard_feedback_preparation": "04_references/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_preparation_02/preparation.json",
+  "discard_feedback_current_source_sha256": {
+    "samples/sample_page.cpp": "e9542708ea9225a615b2a91807f9692fb964fb0e2fc236f0e88f9745d2172a7a",
+    "samples/tests/sample_reset_workflow_test.cpp": "c4ff4d35db058f8df40816e78b0e950da0c3dc48910be320fe13e72af099efa9"
+  },
+  "historical_432_results_validate_current_changed_sources": false,
+  "standalone_regression_requires_full_source_freeze": false,
+  "discard_feedback_actual_result": {
+    "schema": "sn100-discard-feedback-result-handoff-v1",
+    "status": "targeted_local_regression_passed",
+    "parent_actual_exit": 0,
+    "all_six_phase_actual_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "test_invocations": [
+      {
+        "qpa": "offscreen",
+        "qt_totals": [
+          3,
+          0,
+          0
+        ],
+        "actual_exit": 0
+      },
+      {
+        "qpa": "xcb",
+        "qt_totals": [
+          3,
+          0,
+          0
+        ],
+        "actual_exit": 0
+      }
+    ],
+    "Qt_count_note": "One original business method plus init/cleanup =3 per QPA; not a full 14/13 rerun",
+    "dependency_sources": 102,
+    "reused_objects": 57,
+    "recompiled_objects": 2,
+    "original_objects_rehashed": 59,
+    "generated_artifacts_rehashed": 42,
+    "dependency_and_private_artifact_before_after_equal": true,
+    "whole_source_freeze_required": false,
+    "QC_source_or_native_artifacts_modified_or_built": false,
+    "source_writes_stopped": true,
+    "runtime_slot_released": true,
+    "all_owned_groups_gone": true,
+    "owned_PGIDs": [
+      374,
+      375,
+      381,
+      387,
+      390,
+      394
+    ],
+    "assertion_evidence": "04_references/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_run_01/executed_assertions.json",
+    "raw_evidence": "04_references/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_run_01",
+    "manifest_entries": 55,
+    "evidence_manifest_sha256": "99c4cb080d25dddc7b58eb8f0878308b2f3fce122f3bcb9e80f298062cd5fb26",
+    "binary_sha256": "e3d9327e776e4de6cb3b8f6a7bdbd83b6c8f50cf8b89f011a88a2465fe3117f4",
+    "executed_changed_sources": {
+      "samples/sample_page.cpp": "e9542708ea9225a615b2a91807f9692fb964fb0e2fc236f0e88f9745d2172a7a",
+      "samples/tests/sample_reset_workflow_test.cpp": "c4ff4d35db058f8df40816e78b0e950da0c3dc48910be320fe13e72af099efa9"
+    },
+    "scope_limits": [
+      "Local single-method regression only",
+      "No whole-main regression, new screenshots, resource or long-run test",
+      "No Windows behavior equivalence, RK display/runtime or instrument acceptance"
+    ],
+    "original_7_images_and_14_13_results": "Preserved as historical pre-fix evidence; not overwritten or relabeled"
+  },
+  "last_exact_command": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu-24.04",
+    "-u",
+    "qyq",
+    "--",
+    "python3",
+    "-B",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_discard_feedback_dependencies.py",
+    "--root-go",
+    "--output",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_01"
+  ]
+}

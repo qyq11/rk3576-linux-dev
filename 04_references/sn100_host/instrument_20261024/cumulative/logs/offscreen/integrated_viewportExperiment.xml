@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCase name="IntegratedShellTest">
+<Environment>
+    <QtVersion>5.15.13</QtVersion>
+    <QtBuild>Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)</QtBuild>
+    <QTestVersion>5.15.13</QTestVersion>
+</Environment>
+<TestFunction name="initTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="6.20265"/>
+</TestFunction>
+<TestFunction name="viewportExperiment">
+<Message type="qwarn" file="" line="0">
+    <Description><![CDATA[This plugin does not support raise()]]></Description>
+</Message>
+<Message type="qwarn" file="" line="0">
+    <Description><![CDATA[This plugin does not support raise()]]></Description>
+</Message>
+<Message type="qwarn" file="" line="0">
+    <Description><![CDATA[VIEWPORT_REACHABILITY_FAILURE "btnUserSettingAdptive" rectangle= QRect(4,601 165x80) whole_visible= false hit= "none" screen= QRect(0,0 0x0) "[{\"horizontal\":0,\"horizontal_max\":336,\"object\":\"\",\"vertical\":0,\"vertical_max\":196}]"]]></Description>
+</Message>
+<Incident type="fail" file="../../source/06_programs/sn100_host/tests/integrated_shell_test.cpp" line="1053">
+    <Description><![CDATA['accessibleClick(session.window, "btnUserSettingAdptive")' returned FALSE. ()]]></Description>
+</Incident>
+    <Duration msecs="3224.95"/>
+</TestFunction>
+<TestFunction name="cleanupTestCase">
+<Incident type="pass" file="" line="0" />
+    <Duration msecs="2.07621"/>
+</TestFunction>
+<Duration msecs="3240.82"/>
+</TestCase>

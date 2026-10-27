@@ -1,0 +1,122 @@
+{
+  "schema": "sn100-calibration-login-offline-followup-handoff-v1",
+  "created_local": "2026-10-26T08:56:02.0648493+08:00",
+  "stage": "prepared_waiting_serial_execution_slot",
+  "original_sigsegv_direct_cause": "unknown",
+  "original_login_contains_direct_cause": "unknown",
+  "production_or_formal_test_modified": false,
+  "formal_test_before_after": [
+    {
+      "path": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+      "before_sha256": "25c984c73a5b0d7486edb87aacfea8d21ac4c4f691f99c8dc082adfa883b7239",
+      "after_sha256": "25c984c73a5b0d7486edb87aacfea8d21ac4c4f691f99c8dc082adfa883b7239",
+      "modified_by_this_task": false
+    },
+    {
+      "path": "06_programs/sn100_host/tests/password_login_shell_test.cpp",
+      "before_sha256": "8374aeea26e9a670a7fc27c88538db615ad31cf02c3bc19ecbc6d95ce5984afe",
+      "after_sha256": "8374aeea26e9a670a7fc27c88538db615ad31cf02c3bc19ecbc6d95ce5984afe",
+      "modified_by_this_task": false
+    }
+  ],
+  "new_diagnostic_scope": [
+    "private runner and geometry observer",
+    "four private exact-origin test variants",
+    "read-only findings and exact compile/link command plans"
+  ],
+  "runner_sha256": "b167159c351f4dfe20a52613cfd37d057d272ab2d20d4351c0eb2e466a327e4a",
+  "geometry_probe_sha256": "4de21de89b4e4b973f2c7ebfb3ed48462bd094f823681dd3207c271cbebd1915",
+  "artifact_manifest_sha256": "1870816c38acdb8546d62885b47ae8deeb2c282614d079bbf606e2c7e6de378e",
+  "input_cohort": {
+    "formal_inputs": 426,
+    "formal_snapshot_sha256": "5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29",
+    "use": "Historical native production objects only, explicitly bound for a new diagnostic; not a new full-product pass",
+    "all_current_sources_objects_or_binaries_verified_now": false,
+    "pending": "Runner will check exact inventory, source/object/binary SHA before/after execution; if formal sources changed, stop for re-planning"
+  },
+  "read_only_findings": "read_only_findings.json",
+  "exact_command_plan": "command_plan.json",
+  "preparation_checks": {
+    "private_source_generation_exit": 0,
+    "command_plan_export_exit": 0,
+    "python_AST_parse_only_exit": 0,
+    "four_source_and_header_hashes_match": true,
+    "all_original_assertion_lines_preserved": true,
+    "CXX_moc_link_executed": false,
+    "GUI_QtTest_resource_or_device_executed": false
+  },
+  "slot_requests": [
+    {
+      "phase": "calibration",
+      "estimated_minutes": "3-5",
+      "compiler_jobs": 1,
+      "GUI": false,
+      "argv": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu-24.04",
+        "-u",
+        "qyq",
+        "--",
+        "python3",
+        "-B",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_login/bounded_probes.py",
+        "execute",
+        "--phase",
+        "calibration",
+        "--attempt",
+        "calibration_slot_01",
+        "--slot-id",
+        "GRANTED_SLOT_ID"
+      ],
+      "evidence_directory": "temp/sn100_host/offline_followup_20261026/calibration_login/calibration_slot_01",
+      "slot_granted": false
+    },
+    {
+      "phase": "login",
+      "estimated_minutes": "2-4",
+      "compiler_jobs": 1,
+      "GUI": true,
+      "argv": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu-24.04",
+        "-u",
+        "qyq",
+        "--",
+        "python3",
+        "-B",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_login/bounded_probes.py",
+        "execute",
+        "--phase",
+        "login",
+        "--attempt",
+        "login_slot_01",
+        "--slot-id",
+        "GRANTED_SLOT_ID"
+      ],
+      "evidence_directory": "temp/sn100_host/offline_followup_20261026/calibration_login/login_slot_01",
+      "slot_granted": false
+    }
+  ],
+  "diagnostic_limits": [
+    "ASan/UBSan instrument test translation units only; Qt/167 production objects remain Release",
+    "No repeated-until-pass attempts; a clean outcome keeps old causes unknown",
+    "Synthetic queued own-host movement is an explicit perturbation, not the old suite07 event history",
+    "No larger timeout, removed row, skipped assertion, forged signal or production-layout change"
+  ],
+  "old_checkpoints_read_only": [
+    "04_references/sn100_host/qc_local_20261025/final",
+    "07_backups/sn100_host/offline_four_windows_20261025",
+    "all original failure/diagnosis handoffs"
+  ],
+  "archive_scope": "Source code and anonymous metadata only. Archived runner is a source image: use the exact temp command path; do not execute the copy under 04_references because its relative workspace root differs.",
+  "waiting_reason": "Integrator currently owns the WSL compile/run slot; explicit serial slot has not arrived. No skill-imposed approval requirement is inferred.",
+  "pending": [
+    "granted serial execution slot",
+    "real diagnostic builds/runs and raw exits",
+    "root-cause evidence or explicit unresolved result",
+    "evidence-supported minimal repair and matched controls",
+    "main record updated centrally by integrator"
+  ]
+}

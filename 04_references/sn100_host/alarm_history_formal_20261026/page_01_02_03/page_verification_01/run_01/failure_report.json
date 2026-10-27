@@ -1,0 +1,59 @@
+{
+  "schema": "sn100-formal-alarm-page-first-failure-v1",
+  "status": "controller_path_normalization_defect_before_any_build_or_GUI",
+  "actual_parent_exit": 1,
+  "failed_command": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu-24.04",
+    "-u",
+    "qyq",
+    "--",
+    "python3",
+    "-B",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/alarm_history_formal_20261026/page_verification_01/verify_page.py",
+    "--slot-id",
+    "alarm_history_formal_page_20261026_01",
+    "--inputs-sha256",
+    "c9376c4a94b3d336d2a909c0b94ef685aa40770d08c08f9664c55c766cf3e950"
+  ],
+  "source_manifest_sha256": "19ead9bcf67d40c2f9f325a3585f23cc7ea00faccd5276a4b2fa82b02483a483",
+  "controller_inputs_sha256": "c9376c4a94b3d336d2a909c0b94ef685aa40770d08c08f9664c55c766cf3e950",
+  "controller_sha256": "372d7a9f0d84a698e551c7c42ab1261436b60413aa317b93ccabc7979a8e9753",
+  "real80_source_bytes_unchanged": true,
+  "source_files_checked": 80,
+  "real_globs_unchanged": [
+    {
+      "pattern": "06_programs/sn100_host/projects/../shell/widgets/material/*.cpp",
+      "actual_count": 2,
+      "normalized_sets_equal": true
+    },
+    {
+      "pattern": "06_programs/sn100_host/projects/../shell/widgets/material/lib/*.cpp",
+      "actual_count": 6,
+      "normalized_sets_equal": true
+    },
+    {
+      "pattern": "06_programs/sn100_host/projects/../shell/widgets/material/*.h",
+      "actual_count": 3,
+      "normalized_sets_equal": true
+    },
+    {
+      "pattern": "06_programs/sn100_host/projects/../shell/widgets/material/lib/*.h",
+      "actual_count": 9,
+      "normalized_sets_equal": true
+    }
+  ],
+  "mechanism": "bind_sources computes glob Path under projects/../shell and calls path.relative_to(ROOT) without resolve(); textual ../ survives. Frozen Windows inventory uses normalized paths, so same physical files compare unequal.",
+  "required_narrow_temp_fix": "Normalize glob result path.resolve(strict=True) before relative_to(ROOT); preserve source/tool manifests, original8 source/expected/timeouts and first attempt. No rerun performed.",
+  "qmake_exit": null,
+  "make_exit": null,
+  "offscreen_exit": null,
+  "xcb_exit": null,
+  "reason": "Not started",
+  "business_cases_executed": 0,
+  "child_processes_started": 0,
+  "owned_parent_gone": true,
+  "original_source_changes": 0,
+  "retry_count": 0
+}

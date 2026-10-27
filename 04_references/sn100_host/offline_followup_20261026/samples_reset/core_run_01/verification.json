@@ -1,0 +1,118 @@
+{
+  "schema": "sn100-sample-task-reset-slice-v1",
+  "passed": true,
+  "source_before": {
+    "samples/sample_task_reset.h": "1def9fdbfa62a83abacc20754cbc258871c75f56c3234c7d682bdd8e0d485629",
+    "samples/sample_task_reset.cpp": "492965f0f823954fb91630b3f4c6b2635ded90afbf805b5c3bd9d0394721b501",
+    "samples/tests/sample_task_reset_test.cpp": "3c5b3ea9bc98cc0f126d64767757289d3cfa02eb4906494d2f86e14cf9adb36c",
+    "samples/tests/sample_task_reset_test.pro": "5bbaed28baaccfc1212c28e240fe6855a6f8b5dcf8b52996ef753dfd01ffa0ed"
+  },
+  "driver_sha256": "589e092c92843da4eaa1917cbc92f6a72610a44f7fb224abb5d9d6b90ce1c02b",
+  "phases": [
+    {
+      "command": [
+        "/usr/lib/qt5/bin/qmake",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_task_reset_test.pro",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_01/build/Makefile",
+        "-spec",
+        "linux-g++",
+        "CONFIG+=release",
+        "CONFIG-=debug"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_01/build",
+      "timeout_seconds": 30,
+      "started_unix_ns": 1792976174235104864,
+      "state": "finished",
+      "actual_exit": 0,
+      "pid": 392,
+      "timeout": false,
+      "cleanup": {
+        "term": false,
+        "kill": false
+      },
+      "finished_unix_ns": 1792976174468792136
+    },
+    {
+      "command": [
+        "/usr/bin/make",
+        "-C",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_01/build",
+        "-j2"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_01/build",
+      "timeout_seconds": 120,
+      "started_unix_ns": 1792976174492783861,
+      "state": "finished",
+      "actual_exit": 0,
+      "pid": 399,
+      "timeout": false,
+      "cleanup": {
+        "term": false,
+        "kill": false
+      },
+      "finished_unix_ns": 1792976178593940144
+    },
+    {
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_01/build/sample_task_reset_test",
+        "-v1",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_01/qt.txt,txt",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_01/qt.xml,junitxml"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_01",
+      "timeout_seconds": 20,
+      "started_unix_ns": 1792976178720177524,
+      "state": "finished",
+      "actual_exit": 0,
+      "pid": 412,
+      "timeout": false,
+      "cleanup": {
+        "term": false,
+        "kill": false
+      },
+      "finished_unix_ns": 1792976178859186520
+    }
+  ],
+  "scope": "QtCore pure local draft contract only; no GUI/SQL/device/whole-program acceptance",
+  "existing_sample_ui_store_modified": false,
+  "binary_sha256_before": "deb9a0ba244141e56275114716e692674494ad4b4b9119181a3617efb0856365",
+  "objects_before": {
+    ".obj/sample_task_reset.o": "bd81386e673fde0fb34b9762eee67c159baba5999537cae23c7d05a042537f48",
+    ".obj/sample_task_reset_test.o": "01db5fafeaabcba6f4d54fd0c3b324a35a86925c274342f497adde6f12247f94"
+  },
+  "makefile_sha256": "948c1b0442983034052625485f326593572f96c568c7aa628dcbe7571bc7f71e",
+  "qt_totals": [
+    9,
+    0,
+    0
+  ],
+  "testcase_names": [
+    "initTestCase",
+    "errorResetPreservesFinishedAndIdle",
+    "retestResetsAllOrdinaryStates",
+    "mixedTestingRefusesWholeHoleForBothActions",
+    "calibrationAndUnknownStatesPreserveInput",
+    "holePriorityMatchesOriginalSn100",
+    "everyThreeRepetitionCombinationHonorsContract",
+    "emptyAndAlreadyIdleStillPrepareRevise",
+    "cleanupTestCase"
+  ],
+  "qt_txt_sha256": "97b5896064547b2e9d2702b8ea7933c299eabd4c95bd37dfc4298d889f3beb82",
+  "qt_junitxml_sha256": "03d9908d3d0427c265fe31af10856725e5230a5c47be68a17415c7f404b2042b",
+  "objects_after": {
+    ".obj/sample_task_reset.o": "bd81386e673fde0fb34b9762eee67c159baba5999537cae23c7d05a042537f48",
+    ".obj/sample_task_reset_test.o": "01db5fafeaabcba6f4d54fd0c3b324a35a86925c274342f497adde6f12247f94"
+  },
+  "binary_sha256_after": "deb9a0ba244141e56275114716e692674494ad4b4b9119181a3617efb0856365",
+  "makefile_sha256_after": "948c1b0442983034052625485f326593572f96c568c7aa628dcbe7571bc7f71e",
+  "source_after": {
+    "samples/sample_task_reset.h": "1def9fdbfa62a83abacc20754cbc258871c75f56c3234c7d682bdd8e0d485629",
+    "samples/sample_task_reset.cpp": "492965f0f823954fb91630b3f4c6b2635ded90afbf805b5c3bd9d0394721b501",
+    "samples/tests/sample_task_reset_test.cpp": "3c5b3ea9bc98cc0f126d64767757289d3cfa02eb4906494d2f86e14cf9adb36c",
+    "samples/tests/sample_task_reset_test.pro": "5bbaed28baaccfc1212c28e240fe6855a6f8b5dcf8b52996ef753dfd01ffa0ed"
+  },
+  "driver_sha256_after": "589e092c92843da4eaa1917cbc92f6a72610a44f7fb224abb5d9d6b90ce1c02b"
+}

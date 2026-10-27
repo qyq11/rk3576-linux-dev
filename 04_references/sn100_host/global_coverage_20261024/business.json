@@ -1,0 +1,680 @@
+{
+  "schema": "sn100-readonly-business-coverage-evidence-v1",
+  "scope": "Static source audit only for frozen instrument+CPU+O09-2 checkpoint, F03-F08 and coagulation result chain. No build/GUI/device or runtime acceptance is claimed.",
+  "not_a_parallel_plan": true,
+  "checkpoint_root": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host",
+  "checkpoint_inputs_hash": "11a77cf8db1670f9918aec0960dcd6a4069b3f2826eb03e437548c41534862a2",
+  "checkpoint_input_count": 348,
+  "checkpoint_hash_mismatches": [],
+  "active_ownership_note": "Other active chats own instrument/O09-2 and subsequent password login; no shared source/docs touched, no new implementation started.",
+  "status_legend": {
+    "integrated_offline_partial": "source has real local capability and shell wiring; complete device/business acceptance not claimed",
+    "ui_only_unavailable_business": "controls exist but route only to explicit unavailable/no-send path",
+    "page_and_business_not_ported": "menu placeholder remains without actual widget/store/attach",
+    "standalone_statistics_only_rules_unconfirmed": "existing CLI/function does not imply migrated page/domain service",
+    "research_prototype_not_integrated": "independent candidate algorithm, no clinical/result-chain equivalence"
+  },
+  "findings": [
+    {
+      "feature": "F03",
+      "area": "试剂资料/瓶型/批号/条码/孔位",
+      "classification": "integrated_offline_partial",
+      "current_source_capability": "原试剂页和相关编辑弹窗已迁入；本地catalog库支持资料/瓶型/批号/条码/孔位保存删除、会话权限与错误反馈，显示本地手工装载量/余量。",
+      "uncovered_operation": "资料CRUD不能代表物理余量、耗用与足料链完成。生产项目/瓶型/批次配置导入和原Windows同输入及RK/实物仍另验。",
+      "dependency_or_confirmation": "需明确生产配置来源/schema与适用机型；实际液位需要已确认设备/只读语义。",
+      "offline_acceptance_boundary": "匿名本地配置、外键引用、权限、失败恢复与重开可验；禁止把手工余量称液位实测。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/main.cpp",
+          "line_start": 390,
+          "line_end": 400,
+          "fact": "实例化Project/Reagent/Sample页并attach统一入口，非最终占位。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "reagents/reagent_store.h",
+          "line_start": 19,
+          "line_end": 37,
+          "fact": "公开worker接口仅本地资料/瓶/批次/条码/孔位CRUD和close。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "reagents/reagent_store.cpp",
+          "line_start": 533,
+          "line_end": 562,
+          "fact": "校验手工amountUl/remainingUl并写本地；无液位推定。"
+        }
+      ]
+    },
+    {
+      "feature": "F03",
+      "area": "扫描/液位探测/换位/优先级/清盘的设备接线",
+      "classification": "ui_only_unavailable_business",
+      "current_source_capability": "按钮/角色布局保留；设备不可用时明确显示未发送命令。",
+      "uncovered_operation": "btnDect/btnDectOne/btnScan/btnChange/btnChangeHole/btnUpdatePriority/btn_clearPanel等仅到showOffline；不执行原扫描、测量、换位、同步或整盘清除业务。",
+      "dependency_or_confirmation": "原命令/应答/状态、当前SN100执行范围及故障恢复合同；硬件操作参数必须经用户确认。",
+      "offline_acceptance_boundary": "可先拆出命令/解析/状态机并用自建端受控验证；真实动作不自动解禁。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "reagents/reagents_page.cpp",
+          "line_start": 101,
+          "line_end": 135,
+          "fact": "扫描禁用、余量标注本地，设备相关按钮统一接showOffline。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "reagents/reagents_page.cpp",
+          "line_start": 209,
+          "line_end": 243,
+          "fact": "角色决定可见/本地可编辑，showOffline仅报告未发送命令。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "protocol/status_loopback.cpp",
+          "line_start": 321,
+          "line_end": 325,
+          "fact": "当前模拟端仅接受Qj，不能覆盖试剂命令。"
+        },
+        {
+          "origin": "reference",
+          "program_relative_path": "frmreagent/frmreagentmaterial.cpp",
+          "line_start": 1500,
+          "line_end": 1512,
+          "fact": "原清盘先清试剂设置并发送getReagentClear；需区分本地和设备联动。"
+        }
+      ]
+    },
+    {
+      "feature": "F03",
+      "area": "剩余测试次数/消耗/足料",
+      "classification": "ui_only_unavailable_business",
+      "current_source_capability": "孔位余量可人工输入，余量显示来自remainingUl。",
+      "uncovered_operation": "切剩余次数页只提示缺项目试剂消耗配置；项目用量/其他试剂用量表强制0行只读，没有按任务消耗扣减/多瓶选用/足料判定。",
+      "dependency_or_confirmation": "依赖项目完整试剂动作/用量配置、样本真实任务状态和认可的消耗/死量/多瓶规则。",
+      "offline_acceptance_boundary": "先建立原单位/体积/去重/预留/失败回滚模型的匿名离线用例；无认可规则不得按猜值给足料成功。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "reagents/reagents_page.cpp",
+          "line_start": 117,
+          "line_end": 135,
+          "fact": "次数页未计算，usage表清空。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "projects/project_page.cpp",
+          "line_start": 49,
+          "line_end": 67,
+          "fact": "所需高级动作/算法/校准配置尚未移植。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "samples/sample_types.h",
+          "line_start": 7,
+          "line_end": 16,
+          "fact": "当前任务仅项目/倍率标签/重复/延长，没有实际执行量。"
+        }
+      ]
+    },
+    {
+      "feature": "F03",
+      "area": "批组ISI/正常值/校准关联",
+      "classification": "ui_partial_business_missing",
+      "current_source_capability": "批组管理弹窗及本地批次/关联CRUD已有。",
+      "uncovered_operation": "ISI、normalValue、相关校准选择/计算入口被显式禁用，不能认为完整批组临床结果业务完成。",
+      "dependency_or_confirmation": "原批组参数schema/单位/方法及校准关联语义需核；数值的临床适用性不能由匿名演示值代替。",
+      "offline_acceptance_boundary": "本地参数的存取/校验/引用可分离准备，计算和临床输出需认可方法/材料。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "reagents/reagents_page.cpp",
+          "line_start": 662,
+          "line_end": 688,
+          "fact": "原批组弹窗中的ISI/normal/相关控件被关闭。"
+        }
+      ]
+    },
+    {
+      "feature": "F03",
+      "area": "restore按钮原版启用范围",
+      "classification": "reference_noop_requires_confirmation",
+      "current_source_capability": "移植版保留角色受限的restore入口并明确不可用。",
+      "uncovered_operation": "不能把这个入口直接列成必须恢复的完整原版业务：检查到原restore处理器定义lambda后，其最终restoreCalibrationPanel调用被注释。",
+      "dependency_or_confirmation": "需要实际SN100发行版/机型启用范围确认；源代码有按钮不等于原功能实际可用。",
+      "offline_acceptance_boundary": "仅登记原版现状/待确认，不能凭按钮存在新增设备动作或擅自删入口。",
+      "evidence": [
+        {
+          "origin": "reference",
+          "program_relative_path": "frmreagent/frmreagentmaterial.cpp",
+          "line_start": 1455,
+          "line_end": 1492,
+          "fact": "末尾调用注释，lambda未被调用；这是原版现状而非已证的移植遗漏。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "reagents/reagents_page.cpp",
+          "line_start": 209,
+          "line_end": 217,
+          "fact": "restore等仍按角色可见。"
+        }
+      ]
+    },
+    {
+      "feature": "F04",
+      "area": "普通/急诊样本本地预设、重复/倍率候选/组合",
+      "classification": "integrated_offline_partial",
+      "current_source_capability": "原架孔/设置/详情/重复/组合UI已迁入并接统一窗口；SampleStore支持架、组合持久化和本地权限/请求关联，项目/试剂快照作为依赖。",
+      "uncovered_operation": "这只是可重开的本地预设，不代表设备任务、真实急诊调度、检测/扣量/结果生成。",
+      "dependency_or_confirmation": "实际机型架孔配置、项目生产参数与真实任务合同仍待验。",
+      "offline_acceptance_boundary": "可验本地普通/急诊架、输入、重复/顺序组合、草稿/外键/权限/重开；不发送任务。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/catalog_shell.cpp",
+          "line_start": 87,
+          "line_end": 119,
+          "fact": "替换index1占位、注入会话/项目/试剂，后续信号同步。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "samples/sample_store.h",
+          "line_start": 18,
+          "line_end": 30,
+          "fact": "公开接口为本地Rack/Combination操作。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "samples/sample_types.h",
+          "line_start": 7,
+          "line_end": 26,
+          "fact": "特意无仪器task/report ID，值对象仅local preset字段。"
+        }
+      ]
+    },
+    {
+      "feature": "F04",
+      "area": "任务下发/应答/真实ID/急诊联动/结果分流",
+      "classification": "business_not_implemented",
+      "current_source_capability": "本地架孔预设及模拟只读状态可用。",
+      "uncovered_operation": "无设备task/report ID分配、下发应答、去重/在途状态、真实急诊插队、失败恢复、扣量和结果分流链；本地保存成功明确未下发/扣量/生成报告。",
+      "dependency_or_confirmation": "需确认原task/执行状态/命令字段与ID规则、项目动作/消耗配置；实际执行还需设备范围确认。",
+      "offline_acceptance_boundary": "可先做原合同下的纯状态/消息/失败用例及模拟端接线；硬件执行与报告发布仍另验。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "samples/sample_types.h",
+          "line_start": 7,
+          "line_end": 26,
+          "fact": "无仪器任务/报告ID及执行状态字段。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "samples/sample_page.cpp",
+          "line_start": 297,
+          "line_end": 321,
+          "fact": "读取/保存只宣告本地预设，并明确未下发/扣量/生成报告。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "protocol/status_loopback.cpp",
+          "line_start": 321,
+          "line_end": 325,
+          "fact": "当前O09端仅Qj，只读状态不能投递样本任务。"
+        },
+        {
+          "origin": "reference",
+          "program_relative_path": "frmsample/frmsamplematerial.cpp",
+          "line_start": 3810,
+          "line_end": 3815,
+          "fact": "原版存在slotSendRackTasks入口，当前移植未接该路径。"
+        }
+      ]
+    },
+    {
+      "feature": "F04",
+      "area": "错误复位/完成后复测的本地业务",
+      "classification": "ui_only_unavailable_business",
+      "current_source_capability": "样本页面保留btnResetErr和btnResetFin。",
+      "uncovered_operation": "当前两按钮与LIS更新一同仅报告尚未接设备流程；原版两处理器在非Testing孔设置revise、重置错误/复测视图及changedView，是可拆出的本地任务编辑语义，不全是机械动作。",
+      "dependency_or_confirmation": "需补任务生命周期/错误完成状态与原revise语义，保持Testing拒绝；真实重新下发另外依赖设备合同。",
+      "offline_acceptance_boundary": "在已确认状态模型后，可先离线实现Testing保护、错误/完成项转待复测草稿、保存/取消/重开，再另验设备重新执行。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "samples/sample_page.cpp",
+          "line_start": 240,
+          "line_end": 246,
+          "fact": "当前ResetErr/ResetFin只到不可用提示。"
+        },
+        {
+          "origin": "reference",
+          "program_relative_path": "frmsample/frmsamplematerial.cpp",
+          "line_start": 5619,
+          "line_end": 5668,
+          "fact": "原处理器先拒绝Testing，再更新revise及本地任务视图，不在该处理器发送机械命令。"
+        }
+      ]
+    },
+    {
+      "feature": "F04",
+      "area": "样本校准项目/任务与LIS查询",
+      "classification": "ui_only_unavailable_business",
+      "current_source_capability": "普通样本项目选择及本地组合已接。",
+      "uncovered_operation": "btnCalProj明确关闭；btnUpdateLis只有不可用提示；校准/质控任务、LIS取得样本任务的业务入口尚未接入。",
+      "dependency_or_confirmation": "校准/质控的项目批次模型、LIS任务协议/身份及重复处理规则；真实端点需另确认。",
+      "offline_acceptance_boundary": "可做匿名离线任务解析/引用与待选项，不能用普通预设或Qj代替校准/QC/LIS流程。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "samples/sample_page.cpp",
+          "line_start": 127,
+          "line_end": 128,
+          "fact": "校准流程按钮明确尚未移植。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "samples/sample_page.cpp",
+          "line_start": 240,
+          "line_end": 246,
+          "fact": "UpdateLis只提示未接流程。"
+        }
+      ]
+    },
+    {
+      "feature": "F05",
+      "area": "开始/暂停/恢复/真实启动互锁",
+      "classification": "closed_loop_not_implemented",
+      "current_source_capability": "设备按钮保留原位置/禁用图标；只读模拟状态不授予动作权限。",
+      "uncovered_operation": "没有原启动检查→投递→应答→暂停中/暂停/恢复的闭环；连接/足料/校准/未保存配置、急诊/关机状态与业务互锁仍需实现/接线，不能因为状态fresh就启用Start。",
+      "dependency_or_confirmation": "依赖真实任务状态、项目/消耗/校准模型、原命令及拒绝语义；硬件后验必须确认范围。",
+      "offline_acceptance_boundary": "可先把原启动拒绝条件/状态迁移和模拟命令证据拆为离线门槛；设备动作不解禁。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/frmmain.cpp",
+          "line_start": 232,
+          "line_end": 250,
+          "fact": "Start/Pause构造后均setBtnDisabled(true)，只设置文字/样式/tooltip。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "protocol/status_loopback.cpp",
+          "line_start": 321,
+          "line_end": 325,
+          "fact": "自建端只接受Qj。"
+        },
+        {
+          "origin": "reference",
+          "program_relative_path": "frmmain/frmmain.cpp",
+          "line_start": 2020,
+          "line_end": 2040,
+          "fact": "原暂停包含确认、发送PauseCommand及主状态/按钮迁移。"
+        }
+      ]
+    },
+    {
+      "feature": "F06",
+      "area": "项目基本字段/结果/单位",
+      "classification": "integrated_offline_partial",
+      "current_source_capability": "基本名称/LIS码、结果类型/精度/范围/LIS码/单位/主结果、复制/删除引用保护、本地保存/重开已有实现并接主壳。",
+      "uncovered_operation": "只读单位字典和匿名sample-rate标签不是生产项目/高级动作配置，不应将F06整体标完成。",
+      "dependency_or_confirmation": "生产初始配置来源、schema/参数认可及同步协议另需确认；不应擅自新增原本无写入口的单位管理UI。",
+      "offline_acceptance_boundary": "已有本地能力可独立累计验证；生产配置导入/临床计算需新的明确切片。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "projects/projects_store.h",
+          "line_start": 9,
+          "line_end": 54,
+          "fact": "项目对象以基本字段、结果、只读sample-rate标签为边界。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "projects/project_page.cpp",
+          "line_start": 479,
+          "line_end": 544,
+          "fact": "已有save/copy/remove本地操作。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/main.cpp",
+          "line_start": 390,
+          "line_end": 397,
+          "fact": "实际创建并attach目录/样本页。"
+        }
+      ]
+    },
+    {
+      "feature": "F06",
+      "area": "加样/试剂动作、稀释配置、高级算法/校准参数",
+      "classification": "ui_present_business_not_migrated",
+      "current_source_capability": "原完整frmsystemmaterial.ui保留，当前仅基础页可编辑。",
+      "uncovered_operation": "btnSampleAdd/btnReagentAdd/btnCalibrate tabs disabled；浓度/FBG/INR/MDA启用和analysis method disabled，算法系数/温育长度read-only并清空。缺完整project_base/AlgParam/project_reagent/project_sample_rate动作/体积/波长/算法/校准配置的存取业务。",
+      "dependency_or_confirmation": "原字段schema/单位/约束、SN100启用方法及合法参数；计算需算法/校准认可，真实动作另验。",
+      "offline_acceptance_boundary": "可以先保留原高级页面并实现匿名本地参数/引用/事务/草稿与校验，不须等仪器才移植页面；同步和临床输出分别设门槛。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "projects/project_page.cpp",
+          "line_start": 49,
+          "line_end": 67,
+          "fact": "明确关闭高级tabs和算法控件。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "projects/projects_store.h",
+          "line_start": 42,
+          "line_end": 54,
+          "fact": "当前ProjectRecord未承载完整高级动作字段。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "projects/origins.json",
+          "line_start": 37,
+          "line_end": 48,
+          "fact": "来源说明明确生产导入和完整高级字段尚未移植。"
+        },
+        {
+          "origin": "reference",
+          "program_relative_path": "frmsystem/frmsystemmaterial.h",
+          "line_start": 84,
+          "line_end": 124,
+          "fact": "原加样/试剂表、质量表、校准模式、相关增删/保存规则入口存在。"
+        }
+      ]
+    },
+    {
+      "feature": "F07",
+      "area": "校准主页面/曲线浏览、原始点/批号/审核保存等",
+      "classification": "page_and_business_not_ported",
+      "current_source_capability": "只有校准主菜单名/按钮，checkpoint中未找到校准Widget/Store及attach路径。",
+      "uncovered_operation": "index3保留最终占位；曲线/点表、按项目/批号加载、选择默认曲线、显示图、重算、审核、保存/复制/删除及计算ID设置均未迁入统一程序。",
+      "dependency_or_confirmation": "原页面/数据schema/角色、项目批号绑定语义；拟合/逆算/临床应用需认可方法/参数。基础页面和本地CRUD不依赖硬件本身。",
+      "offline_acceptance_boundary": "先移植原版布局及匿名本地点/曲线/选择/保存重开/权限/失败恢复；未认可的拟合/审核发布不能假成功。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/frmmain.cpp",
+          "line_start": 31,
+          "line_end": 81,
+          "fact": "index3标签为校准曲线，非用户设置页时先建占位。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/main.cpp",
+          "line_start": 350,
+          "line_end": 447,
+          "fact": "完整main挂接的是history/catalog/sample/instrument，没有校准挂接。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/shell.pri",
+          "line_start": 14,
+          "line_end": 44,
+          "fact": "统一编译依赖没有校准模块。"
+        },
+        {
+          "origin": "reference",
+          "program_relative_path": "frmcalibration/frmcalibrationmaterial.h",
+          "line_start": 44,
+          "line_end": 66,
+          "fact": "原refresh/LineInfo/LineUse/Apply/ShowChart/ReCalculate/Save/Copy/DelLine/Check/CalculateID入口。"
+        }
+      ]
+    },
+    {
+      "feature": "F08",
+      "area": "质控主页面/控制品项目批次/历史图",
+      "classification": "page_and_business_not_ported",
+      "current_source_capability": "有质控菜单，quality目录已有纯QtCore统计函数与CLI。",
+      "uncovered_operation": "index4最终仍占位；控制品/项目/批号新增编辑保存/默认批、靶值/上下限、历史点/图表、按单位显示及任务/结果关联未迁入统一程序。独立统计CLI不是这些页面/数据业务。",
+      "dependency_or_confirmation": "原控制品/批次schema及角色；图与统计需正确单位倍率和批次范围；规则判定另行确认。",
+      "offline_acceptance_boundary": "可先移植原质控UI与匿名控制品/批次/点存取、图表和统计适配，确认同原版字段/倍率/失败语义；暂不启用未认可失控判定。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/frmmain.cpp",
+          "line_start": 31,
+          "line_end": 81,
+          "fact": "index4质量控制仍由占位构造，未有后续QC attach。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/main.cpp",
+          "line_start": 350,
+          "line_end": 447,
+          "fact": "统一主入口没有QC对象/worker挂接。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/shell.pri",
+          "line_start": 14,
+          "line_end": 44,
+          "fact": "统一编译没有quality/statistics或QC Widgets。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "quality/quality.pro",
+          "line_start": 1,
+          "line_end": 10,
+          "fact": "目标console且QT-=gui network，仅main/statistics。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "quality/origins.json",
+          "line_start": 5,
+          "line_end": 15,
+          "fact": "范围明确不含UI/数据库/失控判定，原调用链需批次数据+单位换算。"
+        },
+        {
+          "origin": "reference",
+          "program_relative_path": "frm_quality/frm_quality.h",
+          "line_start": 41,
+          "line_end": 50,
+          "fact": "原控制选择/项目/图表及控制品增改入口。"
+        },
+        {
+          "origin": "reference",
+          "program_relative_path": "frm_quality/mask_dlg_add_control.h",
+          "line_start": 34,
+          "line_end": 50,
+          "fact": "原控制品项目/结果/批次保存删除等业务入口。"
+        }
+      ]
+    },
+    {
+      "feature": "F08",
+      "area": "质控统计与失控规则",
+      "classification": "standalone_statistics_only_rules_unconfirmed",
+      "current_source_capability": "calculateStatistics保留均值/极差/样本方差/SD/CV有效性，CLI可处理显式匿名序列。",
+      "uncovered_operation": "尚未接GUI/DB；不执行失控规则。原SD4_R、上下限顺序、同侧规则/历史窗、T7/X10边界及CV显示存在已登记疑点，不能照搬后宣称临床规则通过。",
+      "dependency_or_confirmation": "必须对照原Windows实际行为并获业务认可的规则、同侧/时序/边界/CV单位精度合同。",
+      "offline_acceptance_boundary": "纯统计可以先给图表/序列适配并验证单位/窗口；规则显示和判定在合同冻结前保持明确未启用。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "quality/statistics.h",
+          "line_start": 11,
+          "line_end": 33,
+          "fact": "仅StatisticsResult及calculateStatistics，明确非失控判定。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "quality/main.cpp",
+          "line_start": 209,
+          "line_end": 220,
+          "fact": "独立QCoreApplication命令行入口。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "quality/origins.json",
+          "line_start": 87,
+          "line_end": 94,
+          "fact": "列有已排除的规则问题，未当移植完成。"
+        }
+      ]
+    },
+    {
+      "feature": "F05/F07/F08",
+      "area": "真实曲线→凝血点→项目结果/校准质控/患者报告",
+      "classification": "research_prototype_not_integrated",
+      "current_source_capability": "coagulation独立QtCore CLI有百分比交点/最大导数候选时刻及显式失败/参数。",
+      "uncovered_operation": "不是原AL4A等价实现；缺实时采集/预处理/早停/无凝血和干扰保护、项目结果换算、校准/INR/FIB派生、患者结果保存/报告/设备停止链，也未纳入统一主壳。",
+      "dependency_or_confirmation": "实际SN100光学/AD/参考通道语义、时间零点/方向/单位/采样/掩蔽期、真实匿名曲线、项目参数和认可误差；原Windows库可用范围/接口另核。",
+      "offline_acceptance_boundary": "可继续研究用离线数据及严格失败用例；材料不足时不能发布临床结果/停设备，仍可开发不依赖算法的页面和本地管理。",
+      "evidence": [
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "coagulation/coagulation.pro",
+          "line_start": 1,
+          "line_end": 8,
+          "fact": "console、QT-=gui，只main/clot_endpoint。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "coagulation/clot_endpoint.h",
+          "line_start": 11,
+          "line_end": 70,
+          "fact": "输入为完整曲线/显式方向和工程trial options，仅两种候选端点。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "coagulation/origins.json",
+          "line_start": 3,
+          "line_end": 39,
+          "fact": "范围/默认参数非临床，明确未实现AL4A等价、early stopping、项目结果/校准派生/报告/控制。"
+        },
+        {
+          "origin": "checkpoint",
+          "program_relative_path": "shell/shell.pri",
+          "line_start": 14,
+          "line_end": 44,
+          "fact": "主壳编译没有coagulation。"
+        }
+      ]
+    }
+  ],
+  "examined_source_hashes": {
+    "checkpoint:shell/main.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/shell/main.cpp",
+      "sha256": "eb99e623f486dd331ab1951507440508cdb594e60e65c408da9fc49c98e6b7af"
+    },
+    "checkpoint:reagents/reagent_store.h": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/reagents/reagent_store.h",
+      "sha256": "3b9b2fa1d7fa81e801b64547c9bc8030a7bd1f8813b600a9cf83095e75bc0ed5"
+    },
+    "checkpoint:reagents/reagent_store.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/reagents/reagent_store.cpp",
+      "sha256": "3ba809990d72de78289881474ed8e0023d8b832686c5b4f23cbcd9dcebc9546d"
+    },
+    "checkpoint:reagents/reagents_page.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/reagents/reagents_page.cpp",
+      "sha256": "c592b018fe9e492f5dd559a7741e634077842cb0ff797ffcc84ce687d16d110e"
+    },
+    "checkpoint:protocol/status_loopback.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/protocol/status_loopback.cpp",
+      "sha256": "37e934d0716abf0f505ba9f0dda7294a7094b7ab1c4ef5eae7acdfd0f87b80a3"
+    },
+    "reference:frmreagent/frmreagentmaterial.cpp": {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmreagent/frmreagentmaterial.cpp",
+      "sha256": "557290538e062e14151dc49749da41f8f8dfcf038779fb3dab921cac90106e79"
+    },
+    "checkpoint:projects/project_page.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/projects/project_page.cpp",
+      "sha256": "be275eaf65c58b3b6f6ff72331abbd363593dcaef502b1690691e279ea34f5c5"
+    },
+    "checkpoint:samples/sample_types.h": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/samples/sample_types.h",
+      "sha256": "543d44458de920aaadf0ae12f31d1c1a3c4a0f78fab7d5d381b1c38e13126a70"
+    },
+    "checkpoint:shell/catalog_shell.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/shell/catalog_shell.cpp",
+      "sha256": "1847f893bb506e32f9187ffa5d594587d60399e8ffeb5eaf6d549d2aa13b9d40"
+    },
+    "checkpoint:samples/sample_store.h": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/samples/sample_store.h",
+      "sha256": "a6ab304e22c18e7448d253d645ce710f5541bf1598989ed34ffb34198f334c95"
+    },
+    "checkpoint:samples/sample_page.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/samples/sample_page.cpp",
+      "sha256": "6e8fb2b95eec1160a49d7c9499147c781e5cb44faca8c342e0db97853e5977ce"
+    },
+    "reference:frmsample/frmsamplematerial.cpp": {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsample/frmsamplematerial.cpp",
+      "sha256": "f9455d9f89b56cc69a86a268b5a0304468f064d7d8e36e84671cee4755fff244"
+    },
+    "checkpoint:shell/frmmain.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/shell/frmmain.cpp",
+      "sha256": "c7d49265e5a2c20860607197938e2bb688c5ab7198eb4741029b7879cd86ac11"
+    },
+    "reference:frmmain/frmmain.cpp": {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+      "sha256": "90ed19d496a8c029e6379356c06b80950e44d2eb412cd8efc16ed4839a7425f7"
+    },
+    "checkpoint:projects/projects_store.h": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/projects/projects_store.h",
+      "sha256": "31dd29fe5e78b7e151e350eecbdf0466402200909004102cf4fd63ab8369da22"
+    },
+    "checkpoint:projects/origins.json": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/projects/origins.json",
+      "sha256": "fe76e9f2174f136dfdee99d484ebf56be679f8f992090f27f7329df6f99b8052"
+    },
+    "reference:frmsystem/frmsystemmaterial.h": {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsystem/frmsystemmaterial.h",
+      "sha256": "0abdd9d69036d358e84c42849d011a9f02adfb18a00ac6a29752a3667c574c50"
+    },
+    "checkpoint:shell/shell.pri": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/shell/shell.pri",
+      "sha256": "87f5da4a0ca54eb39c5b8a7cc7166881d4a828cc5f5aaf3a2e696808363be5d3"
+    },
+    "reference:frmcalibration/frmcalibrationmaterial.h": {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibrationmaterial.h",
+      "sha256": "a29bae2892381922c558565b7adb66fdee56c9b6bd65406f11cc211cd5812b16"
+    },
+    "checkpoint:quality/quality.pro": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/quality/quality.pro",
+      "sha256": "10442ffd67545eff7c6b22df7b488741219a482ef66481a5aaa5a6ee529c9210"
+    },
+    "checkpoint:quality/origins.json": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/quality/origins.json",
+      "sha256": "1b91db7b4cd526caf09f3073d8ebc98e8e936985754581026139fbdd8946a0c7"
+    },
+    "reference:frm_quality/frm_quality.h": {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/frm_quality.h",
+      "sha256": "2b045e1b5e85cadafd339153c876855c86de178c89ae7cce52af68d28e2f0c20"
+    },
+    "reference:frm_quality/mask_dlg_add_control.h": {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/mask_dlg_add_control.h",
+      "sha256": "ea8f2084d21523f55f0285763c33cecf2510f9108591066d22ae66b51f8dc1c3"
+    },
+    "checkpoint:quality/statistics.h": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/quality/statistics.h",
+      "sha256": "04388558193519fb831aec3d74ddb9e321f510f92cb2f39804424049af879ad8"
+    },
+    "checkpoint:quality/main.cpp": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/quality/main.cpp",
+      "sha256": "daca84864a66e2e8234f435645e168ff401177c9821b0d246df166be6e123ea6"
+    },
+    "checkpoint:coagulation/coagulation.pro": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/coagulation/coagulation.pro",
+      "sha256": "05d11cfc36843ec018330ae2681b6d4b6512714a165180803a42f8fe2c170baf"
+    },
+    "checkpoint:coagulation/clot_endpoint.h": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/coagulation/clot_endpoint.h",
+      "sha256": "df950b735c2b2d670ff804b4de5f75223f669eef59e70398eea8482315d35183"
+    },
+    "checkpoint:coagulation/origins.json": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/coagulation/origins.json",
+      "sha256": "d192802dcd35d9f2db22c2aaa3661bfad17653c935b61bec030d8e63c6394b7c"
+    }
+  },
+  "limits": [
+    "No tests rerun; prior test pass statements not independently recertified here",
+    "No production DB/config/credential/patient data opened or copied; reference snippets limited to UI/domain declarations and selected safe handlers",
+    "Snapshot facts cannot represent subsequent login changes; active current modules must be rechecked at their own final frozen version",
+    "Missing hardware does not by itself block local page/CRUD/business-state development, but true actions need confirmed equipment and range",
+    "Only parent should merge validated findings into the existing plans/record when shared documentation has no active writer"
+  ]
+}

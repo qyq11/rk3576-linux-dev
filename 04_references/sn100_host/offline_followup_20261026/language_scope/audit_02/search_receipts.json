@@ -1,0 +1,99 @@
+[
+  {
+    "name": "translator_api",
+    "command": [
+      "rg",
+      "-n",
+      "--hidden",
+      "--no-ignore",
+      "-g",
+      "!**/bin/**",
+      "-g",
+      "*.{cpp,h}",
+      "QTranslator|installTranslator|removeTranslator",
+      "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host_reference\\Seerain450_PC\\Seerain450_PC"
+    ],
+    "actual_exit": 1,
+    "matches": 0,
+    "output": "translator_api.txt"
+  },
+  {
+    "name": "language_change",
+    "command": [
+      "rg",
+      "-n",
+      "--hidden",
+      "--no-ignore",
+      "-g",
+      "!**/bin/**",
+      "-g",
+      "*.{cpp,h}",
+      "LanguageChange",
+      "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host_reference\\Seerain450_PC\\Seerain450_PC"
+    ],
+    "actual_exit": 1,
+    "matches": 0,
+    "output": "language_change.txt"
+  },
+  {
+    "name": "catalog_build_resource",
+    "command": [
+      "rg",
+      "-n",
+      "--hidden",
+      "--no-ignore",
+      "-g",
+      "!**/bin/**",
+      "-g",
+      "*.{pro,pri,qrc}",
+      "TRANSLATIONS|[.]qm([^A-Za-z0-9_]|$)|[.]ts([^A-Za-z0-9_]|$)",
+      "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host_reference\\Seerain450_PC\\Seerain450_PC"
+    ],
+    "actual_exit": 1,
+    "matches": 0,
+    "output": "catalog_build_resource.txt"
+  },
+  {
+    "name": "configuration_key",
+    "command": [
+      "rg",
+      "-n",
+      "--hidden",
+      "--no-ignore",
+      "-g",
+      "!**/bin/**",
+      "-i",
+      "-g",
+      "*.{cpp,h}",
+      "-g",
+      "!**/include/**",
+      "-g",
+      "!**/thirdparty/**",
+      "-g",
+      "!**/resource/Keyboard/**",
+      "(^|[^A-Za-z0-9_])(value|setValue|beginGroup|readEntry|writeEntry)[ ]*[(].*(language|locale|语言)",
+      "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host_reference\\Seerain450_PC\\Seerain450_PC"
+    ],
+    "actual_exit": 1,
+    "matches": 0,
+    "output": "configuration_key.txt"
+  },
+  {
+    "name": "language_callers",
+    "command": [
+      "rg",
+      "-n",
+      "--hidden",
+      "--no-ignore",
+      "-g",
+      "!**/bin/**",
+      "-g",
+      "*.{cpp,h,pri}",
+      "frmLanguageSetting|frmlanguagesetting|on_btnLanguage_clicked",
+      "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host_reference\\Seerain450_PC\\Seerain450_PC"
+    ],
+    "actual_exit": 0,
+    "matches": 21,
+    "output": "language_callers.txt"
+  }
+]

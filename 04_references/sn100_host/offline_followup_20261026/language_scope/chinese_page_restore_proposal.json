@@ -1,0 +1,90 @@
+{
+  "schema": "sn100-language-chinese-page-minimal-restore-proposal-v1",
+  "status": "仅文件/行为差异草案，未创建或修改06正式文件，未编译/GUI",
+  "scope": "恢复原中文单项页面的外观和可理解反馈；不是全程序中英切换",
+  "original_behavior": "原语言入口已接，只有Cn中文简体；Apply可点击但函数体为空，无保存键/语言草稿/取消或重启应用链",
+  "planned_new_formal_files": [
+    {
+      "path": "06_programs/sn100_host/ui/frmlanguagesetting.ui",
+      "purpose": "原UI同名复制，保留1451x853画布与控件objectName、父子位置、字号/字体层级、固定色，不引入新菜单/横幅"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/frmlanguagesetting.h",
+      "purpose": "轻量Qt Widgets叶子页及负向能力提示接口；不提供setLanguage/saved/语言配置store"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/frmlanguagesetting.cpp",
+      "purpose": "展示唯一Cn行、只读文本；原Apply空操作改为明确不可切换提示，仍不读写语言设置"
+    },
+    {
+      "path": "06_programs/sn100_host/ui/language_settings.pri",
+      "purpose": "只登记该页cpp/h/ui，复用已存在QtWidgets和公共提示框，不引入翻译库/旧系统全局"
+    }
+  ],
+  "root_owned_touch_points": [
+    {
+      "path": "06_programs/sn100_host/shell/frmuserset.cpp",
+      "change": "由root替换index2占位并保持五页数量/索引；保留原菜单按钮样式和全局导航/草稿/忙态/注销守卫"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmuserset.h",
+      "change": "若需单独挂接/测试，仅增加语言页指针和受控attach/getter，避免重复挂接"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shell.pri",
+      "change": "由root包含language_settings.pri；uic产物留构建目录"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.cpp/h",
+      "change": "可选，仅当root选择统一状态提示/集成测试getter时增加接线；只恢复叶子页不强制扩展主壳"
+    }
+  ],
+  "do_not_import": [
+    "参考public/systemcommon全局与连接配置",
+    "原main.cpp启动链/旧数据库/登录全局",
+    "旧main.qrc整包或语言存储伪模块",
+    "QtTranslator安装或英文选项"
+  ],
+  "build_resource_dependencies": {
+    "qt": "现有Qt5 Widgets/qmake/C++14",
+    "ui": "原语言UI resources为空，无专有图片/翻译资源",
+    "common_prompt": "现有ui/cusmessagebox.h/.cpp/.ui与已编入的公共资源；不新引入外部依赖",
+    "state_store": "不新增data/language_store或语言配置键；当前无可保存业务"
+  },
+  "style_sources": {
+    "ui_contract": "audit_02/layout_contract.json，reference_snapshot/frmlanguagesetting.ui",
+    "ancestor_buttons": "正式shell/frmuserset.cpp已有normal rgba(42,118,242,255)、hover rgba(42,118,242,170)、pressed rgba(135,206,250,255)、白字、radius4、padding2，应继承不重画",
+    "ancestor_background": "现有白色圆角背景与灰色右菜单；语言叶子不修改父容器",
+    "fixed_page": "透明容器、border #E4E8EB/radius5、文字#444444、分隔线#DDDDDD，保留原UI值",
+    "list_style": "原stylecolor.cpp:listWidgetStyle::getStrSheet1，选中背景取theme/kListWidgetRowSelected、白字、18px粗体；通过现有统一主题已确认值注入，不读取旧配置、不随意套试剂页整张样式",
+    "list_color_pending": "原活动主题实值本轮未读取；须root选定已有确认值后再做视觉对照，不能拿源码结构标视觉通过",
+    "font": "原苹方粗体；Linux必要时仅替换为现有Noto Sans CJK SC，保留字号/粗细/几何并取证，不安装字体"
+  },
+  "recommended_apply_difference": {
+    "original": "原按钮外观/文字/启用保持，但点击什么也不发生",
+    "proposal": "优先保留原按钮外观，点击时显示明确不可切换反馈，不显示已应用/保存成功/请重启",
+    "user_text": "当前仅支持简体中文，暂不提供语言切换。",
+    "presentation": "复用现有公共状态提示，或CusMessageBox::openWarningBox非阻塞警告卡；不加业务区说明条/新控件",
+    "lifecycle": "若采用警告卡，仅允许一个页拥有的提示；关闭/切页/退出须正常回收，不产生保存busy/草稿；公共生命周期接线由root负责",
+    "persistence": "零语言写入，不安装翻译器，不改locale/系统语言，不增英文选项",
+    "difference_class": "相对原可点击空函数增加负向能力说明，是有意行为差异，须root在正式恢复任务中明确采用",
+    "alternative": "直接禁用Apply并说明当前仅中文也可，但禁用态会改变按钮视觉；不是本草案优先方案"
+  },
+  "future_widget_checks": [
+    "唯一Cn行、只读文本和原父子坐标/字号/颜色引用",
+    "点击Apply只出现不可切换反馈，无saved/languageApplied及磁盘配置变化",
+    "重复点击不叠多提示，切页/关闭无隐藏模态残留",
+    "重新进入/重启仍为原中文单项，不伪造保存或重启生效",
+    "五设置页位置/数量不变，全局导航/草稿/忙态/注销守卫不回退",
+    "原Windows活动主题与WSL/RK实屏视觉分别验收，字体替代单列"
+  ],
+  "unimplemented_business": [
+    "应用业务英文TS/QM与全消息覆盖",
+    "语言持久化/启动读取/热切换或重启语义",
+    "全窗口retranslate与运行时硬编码中文处理",
+    "真实语言写权限与失败回滚"
+  ],
+  "formal_feature_integration_authorized": false,
+  "source_changes_made": 0,
+  "visual_or_widget_tests_run": false
+}

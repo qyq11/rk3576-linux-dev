@@ -19,14 +19,16 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 build_dir=$work/wsl_release
 renderer_build_dir=$work/wsl_renderer_release
 stage_dir=$work/wsl_report_stage
+jobs=${SN100_JOBS:-2}
+[[ $jobs == 1 || $jobs == 2 ]] || { echo 'SN100_JOBS must be 1 or 2.' >&2; exit 2; }
 mkdir -p "$build_dir" "$work/logs"
 build()
 {
     mkdir -p "$renderer_build_dir" "$stage_dir"
     (
         flock -n 9 || { echo 'This native shell build is already in use.' >&2; exit 1; }
-        (cd "$renderer_build_dir" && "$qmake" "$module_dir/../history/renderer.pro" -spec linux-g++ CONFIG+=release CONFIG-=debug "DESTDIR=$stage_dir" && make -j"${SN100_JOBS:-4}")
-        (cd "$build_dir" && "$qmake" "$module_dir/shell.pro" -spec linux-g++ CONFIG+=release CONFIG-=debug "DESTDIR=$stage_dir" && make -j"${SN100_JOBS:-4}")
+        (cd "$renderer_build_dir" && "$qmake" "$module_dir/../history/renderer.pro" -spec linux-g++ CONFIG+=release CONFIG-=debug "DESTDIR=$stage_dir" && make -j"$jobs")
+        (cd "$build_dir" && "$qmake" "$module_dir/shell.pro" -spec linux-g++ CONFIG+=release CONFIG-=debug "DESTDIR=$stage_dir" && make -j"$jobs")
         [[ -x $stage_dir/sn100_shell && -x $stage_dir/sn100_report_renderer ]]
         mv -f -- "$stage_dir/sn100_report_renderer" "$build_dir/sn100_report_renderer"
         mv -f -- "$stage_dir/sn100_shell" "$build_dir/sn100_shell"
@@ -66,7 +68,7 @@ case $mode in
             seed=(--seed-anonymous --test-secret-file "$secret_file")
         fi
         features=(--accounts)
-        if [[ $mode == integrated-run ]]; then features+=(--history); fi
+        if [[ $mode == integrated-run ]]; then features+=(--history --catalog --samples --instrument --password-login --printer-settings --lis-settings --quality-control --calibration --alarm-history); fi
         cd "$build_dir"
         # No implicit test-session: Guest remains the default. An explicit
         # --test-session engineer is passed through as an offline simulation.
@@ -78,7 +80,7 @@ case $mode in
         mkdir -p "$work/wsl_tests"
         cd "$work/wsl_tests"
         "$qmake" "$module_dir/../tests/integrated_shell_test.pro" -spec linux-g++ CONFIG+=release CONFIG-=debug
-        make -j"${SN100_JOBS:-4}"
+        make -j"$jobs"
         file "$work/wsl_tests/integrated_shell_test"
         echo "Built $work/wsl_tests/integrated_shell_test; GUI execution requires its separate coordinated slot."
         ;;
@@ -87,7 +89,7 @@ case $mode in
         mkdir -p "$work/wsl_tests"
         cd "$work/wsl_tests"
         "$qmake" "$module_dir/../tests/shell_test.pro" -spec linux-g++ CONFIG+=release CONFIG-=debug
-        make -j"${SN100_JOBS:-4}"
+        make -j"$jobs"
         exec env QT_QPA_PLATFORM=xcb SN100_SHELL_APP="$build_dir/sn100_shell" ./shell_test "$@"
         ;;
     account-test)
@@ -95,14 +97,14 @@ case $mode in
         mkdir -p "$work/wsl_account_tests"
         cd "$work/wsl_account_tests"
         "$qmake" "$module_dir/../tests/shell_account_test.pro" -spec linux-g++ CONFIG+=release CONFIG-=debug
-        make -j"${SN100_JOBS:-4}"
+        make -j"$jobs"
         exec env QT_QPA_PLATFORM=xcb SN100_SHELL_APP="$build_dir/sn100_shell" ./shell_account_test "$@"
         ;;
     hospital-test)
         mkdir -p "$work/hospital_regression"
         cd "$work/hospital_regression"
         "$qmake" "$module_dir/../tests/offline_test.pro" -spec linux-g++ CONFIG+=release CONFIG-=debug
-        make -j"${SN100_JOBS:-4}"
+        make -j"$jobs"
         exec env QT_QPA_PLATFORM=xcb ./offline_test "$@"
         ;;
     *) echo 'Usage: bash shell/wsl.sh {build|run|test|account-test|hospital-test|integrated-build|integrated-run|integrated-test} [arguments]' >&2; exit 2 ;;

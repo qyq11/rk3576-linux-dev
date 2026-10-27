@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="15" failures="0" tests="11" name="ReportRemainingTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase">
+    <!-- message="ANONYMOUS_EVIDENCE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/report_remaining_20261025/core_run_01 Qt 5.15.13 QPA offscreen" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="guestEmptyInvalidAndDuplicate">
+    <!-- message="Guest, empty, zero, negative, duplicate: no visibility changes" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="linkedRowsRemainAndBatchRollback">
+    <!-- message="id=2 hidden; references/results/values unchanged; invalid mixed batch rolled back; repeated deletion rejected" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="databaseLockAndWriteFailureRecovery">
+    <!-- message="real SQLite lock and injected SQL write failure rolled back; same store retry hid 2 reports" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="displayValidationFailureAndRecovery">
+    <!-- message="10 stable columns; invalid key/duplicate/required/count rejected; lock and INSERT failure restored saved settings" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="persistenceWrite"/>
+  <testcase result="pass" name="persistenceRead">
+    <!-- message="reopened persisted hidden id=2, patient:sex first, patient:age hidden; 4 reports visible" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="csvFrozenUnitPrecisionAndTextRegression">
+    <!-- message="GBK CSV 5 reports/6 rows, Chinese/quotes/newlines, D&#x002D;D factor1000 &#x002D;&gt;123.456, PT 1dp; byte&#x002D;identical after display reorder/hide" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="dialogCancelRequiredAndBusy">
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="required cannot uncheck; reset retains visibility; busy close/Escape/duplicate rejected; failure draft retried; cancel emitted no write" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="actualPageDeleteCancelBusyAndDisplayReopen">
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="actual widget+worker+SQLite: cancel unchanged, checked id selected, busy guard, committed age hide, Guest revoke and normal close" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[ANONYMOUS_EVIDENCE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/report_remaining_20261025/core_run_01 Qt 5.15.13 QPA offscreen]]>
+<![CDATA[Guest, empty, zero, negative, duplicate: no visibility changes]]>
+<![CDATA[id=2 hidden; references/results/values unchanged; invalid mixed batch rolled back; repeated deletion rejected]]>
+<![CDATA[real SQLite lock and injected SQL write failure rolled back; same store retry hid 2 reports]]>
+<![CDATA[10 stable columns; invalid key/duplicate/required/count rejected; lock and INSERT failure restored saved settings]]>
+<![CDATA[reopened persisted hidden id=2, patient:sex first, patient:age hidden; 4 reports visible]]>
+<![CDATA[GBK CSV 5 reports/6 rows, Chinese/quotes/newlines, D-D factor1000 ->123.456, PT 1dp; byte-identical after display reorder/hide]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[required cannot uncheck; reset retains visibility; busy close/Escape/duplicate rejected; failure draft retried; cancel emitted no write]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[actual widget+worker+SQLite: cancel unchanged, checked id selected, busy guard, committed age hide, Guest revoke and normal close]]>
+  </system-err>
+</testsuite>

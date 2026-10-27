@@ -1,0 +1,79 @@
+{
+  "schema": "sn100-language-draft-deferred-build-plan-v1",
+  "execute_now": false,
+  "requires_root_slot": true,
+  "formal_feature_integration_authorized": false,
+  "new_output": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01",
+  "must_create_fresh_output_and_subdirs": [
+    "build_probe",
+    "build_test",
+    "fixtures"
+  ],
+  "prerequisite": "root另行安排；只能用现有Qt5/编译器，不安装依赖、不运行旧工程、不接设备",
+  "steps": [
+    {
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/build_probe",
+      "argv": [
+        "/usr/lib/qt5/bin/qmake",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/draft/catalog_probe.pro",
+        "-spec",
+        "linux-g++",
+        "CONFIG+=release",
+        "CONFIG-=debug",
+        "CONFIG-=debug_and_release"
+      ]
+    },
+    {
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/build_probe",
+      "argv": [
+        "make",
+        "-j2"
+      ]
+    },
+    {
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/build_test",
+      "argv": [
+        "/usr/lib/qt5/bin/qmake",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/draft/tests/catalog_probe_test.pro",
+        "-spec",
+        "linux-g++",
+        "CONFIG+=release",
+        "CONFIG-=debug",
+        "CONFIG-=debug_and_release"
+      ]
+    },
+    {
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/build_test",
+      "argv": [
+        "make",
+        "-j2"
+      ]
+    },
+    {
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01",
+      "argv": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/build_test/language_catalog_test",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/qt.txt,txt",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/qt.xml,xml"
+      ],
+      "bound_seconds": 30,
+      "environment": {
+        "LANGUAGE_SCOPE_TEST_DIR": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/test_data"
+      },
+      "data_guard": "test_data必须是显式新绝对目录且预先不存在；测试只在其内建QTemporaryDir，不使用系统默认/tmp。"
+    },
+    {
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01",
+      "prepare": "只在新fixtures目录按fixtures/qt_en_catalog.json的hex重建23字节qt_en.qm，核SHA，不读生产配置",
+      "argv": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/build_probe/language_catalog_probe",
+        "--catalog",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/language_scope/verification_01/fixtures/qt_en.qm"
+      ],
+      "bound_seconds": 10,
+      "expected": "载入结果需实测；该侧文件不应被认定语言页应用覆盖，按实际exit2或3/JSON分别记录，不把非0当错误吞掉"
+    }
+  ]
+}

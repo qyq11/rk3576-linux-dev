@@ -1,0 +1,70 @@
+{
+  "kind": "post_hoc_parent_tool_observation_not_original_OS_process_receipt",
+  "source": "Parent root task message; tool chunk f6aa72",
+  "observed_parent_exit_code": 1,
+  "tool_exposed": [
+    "exit1",
+    "PowerShell traceback"
+  ],
+  "OSPID": null,
+  "OSPID_not_exposed": true,
+  "no_OS_process_identity_invented": true,
+  "failure": "Bare wsl.exe resolved to three Application candidates; unique existing application guard rejected before Add-Type/native child/qmake/make",
+  "reported_candidates": [
+    "C:/Windows/system32/wsl.exe",
+    "C:/Program Files/WSL/wsl.exe",
+    "WindowsApps/wsl.exe"
+  ],
+  "native_job_CSharp_compiled_or_started": false,
+  "qmake_make_started": false,
+  "original_child_receipt": {
+    "path": "platforms/windows/source_before.json.snapshot.log.exit.json",
+    "bytes": 173,
+    "sha256": "4a530a5b25370c0f4e6010f32a5c28da2420ffb01d9cc41745f0ce14f16babd0"
+  },
+  "original_parent_verification": {
+    "path": "platforms/windows/verification.json",
+    "bytes": 1138,
+    "sha256": "8cd802af42917b10a09115766f54257f091f80d9e417b1cd08e5588b82dc8418"
+  },
+  "original_failed_directory_members": [
+    {
+      "path": "platforms/windows/controller_inputs_before.json",
+      "bytes": 1205,
+      "sha256": "379b46599074d259a65e895efb44300500314001c5c9d062db9507439f0c2f7e"
+    },
+    {
+      "path": "platforms/windows/platform_preparation_input.json",
+      "bytes": 9900,
+      "sha256": "80b88043e10e1aef24d8575d3a3425052114c62d35f96d2f6080c8fbc0c9b918"
+    },
+    {
+      "path": "platforms/windows/source_before.json.snapshot.log.command.json",
+      "bytes": 1057,
+      "sha256": "aa5e0c466273695758f7c6e560be2a2bc16e18d414f3afe15b359b141c9673c4"
+    },
+    {
+      "path": "platforms/windows/source_before.json.snapshot.log.exit.json",
+      "bytes": 173,
+      "sha256": "4a530a5b25370c0f4e6010f32a5c28da2420ffb01d9cc41745f0ce14f16babd0"
+    },
+    {
+      "path": "platforms/windows/verification.json",
+      "bytes": 1138,
+      "sha256": "8cd802af42917b10a09115766f54257f091f80d9e417b1cd08e5588b82dc8418"
+    }
+  ],
+  "exact_affected_preimages": [
+    {
+      "path": "integration_drivers/audit_originals/pre_windows_explicit_system_wsl_01/build_windows.ps1",
+      "bytes": 18557,
+      "sha256": "10861d1bd8fa27a4c1358fc7f39b51af14aec77fac74139cd75bd3fe82d29191"
+    },
+    {
+      "path": "integration_drivers/audit_originals/pre_windows_explicit_system_wsl_01/platform_preparation.json",
+      "bytes": 9900,
+      "sha256": "80b88043e10e1aef24d8575d3a3425052114c62d35f96d2f6080c8fbc0c9b918"
+    }
+  ],
+  "correction": "Only Get-FrozenSnapshot caller selects Environment.SystemDirectory/wsl.exe; generic unique application guard unchanged"
+}

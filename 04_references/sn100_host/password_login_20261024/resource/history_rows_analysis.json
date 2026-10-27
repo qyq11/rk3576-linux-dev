@@ -1,0 +1,215 @@
+{
+  "schema": "sn100-post-exit-history-rows-v1",
+  "source": "temp/sn100_host/o02_login/resource_runtime_01/history/history.sqlite",
+  "phase": "Post-exit read-only structure/row-count verification; supplemental analysis only",
+  "reason": "Original run_resource.py rglob('*.db') omitted the closed history.sqlite extension",
+  "connection": "SQLite URI mode=ro; PRAGMA query_only=ON",
+  "original_execution_exit_code": 0,
+  "tables": [
+    {
+      "table": "offline_metadata",
+      "columns": [
+        {
+          "name": "schema_marker",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        }
+      ],
+      "row_count": 1
+    },
+    {
+      "table": "report_columns",
+      "columns": [
+        {
+          "name": "position",
+          "declared_type": "INTEGER",
+          "primary_key_order": 0
+        },
+        {
+          "name": "project",
+          "declared_type": "TEXT",
+          "primary_key_order": 1
+        },
+        {
+          "name": "result_type",
+          "declared_type": "INTEGER",
+          "primary_key_order": 2
+        },
+        {
+          "name": "label",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "unit",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "decimals",
+          "declared_type": "INTEGER",
+          "primary_key_order": 0
+        },
+        {
+          "name": "factor",
+          "declared_type": "REAL",
+          "primary_key_order": 0
+        }
+      ],
+      "row_count": 6
+    },
+    {
+      "table": "report_data",
+      "columns": [
+        {
+          "name": "id",
+          "declared_type": "INTEGER",
+          "primary_key_order": 1
+        },
+        {
+          "name": "row_id",
+          "declared_type": "INTEGER",
+          "primary_key_order": 0
+        },
+        {
+          "name": "sn",
+          "declared_type": "INTEGER",
+          "primary_key_order": 0
+        },
+        {
+          "name": "sample_id",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "data_time",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "visible",
+          "declared_type": "INTEGER",
+          "primary_key_order": 0
+        },
+        {
+          "name": "state",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "name",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "sex",
+          "declared_type": "INTEGER",
+          "primary_key_order": 0
+        },
+        {
+          "name": "age",
+          "declared_type": "INTEGER",
+          "primary_key_order": 0
+        },
+        {
+          "name": "department",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "patient_type",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "application_serial",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "bed_number",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "jianyan",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "checker",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "auditor",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "remark",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        }
+      ],
+      "row_count": 6
+    },
+    {
+      "table": "report_results",
+      "columns": [
+        {
+          "name": "task_id",
+          "declared_type": "INTEGER",
+          "primary_key_order": 1
+        },
+        {
+          "name": "fid",
+          "declared_type": "INTEGER",
+          "primary_key_order": 0
+        },
+        {
+          "name": "project_name",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "date_time",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        },
+        {
+          "name": "abnormal_type",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        }
+      ],
+      "row_count": 11
+    },
+    {
+      "table": "report_values",
+      "columns": [
+        {
+          "name": "task_id",
+          "declared_type": "INTEGER",
+          "primary_key_order": 1
+        },
+        {
+          "name": "result_type",
+          "declared_type": "INTEGER",
+          "primary_key_order": 2
+        },
+        {
+          "name": "raw_value",
+          "declared_type": "TEXT",
+          "primary_key_order": 0
+        }
+      ],
+      "row_count": 16
+    }
+  ],
+  "row_values_read": false,
+  "database_hashed_or_copied": false,
+  "new_product_execution_or_growth_measurement": false,
+  "original_raw_evidence_modified": false,
+  "note": "This supplements the initial eight-file archive with this JSON and its reproducer. The original five raw files/verification and initial archive_metadata remain unchanged; this is not a new run or a storage-growth measurement."
+}

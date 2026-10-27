@@ -2,7 +2,7 @@
 
 开始：2026-10-22。**这是本次Qt上位机移植的唯一过程主记录，后续模块开发、构建、部署、仪器验证、资源测量、代码调整/删减、问题和复测持续追加到本文。**
 
-当前状态（2026-10-23）：**O03-3三页统一入口的RK部署/图形启动封装、ARM64交叉构建、离线主程序/SQLite依赖及冻结包已完成，Windows32和离线生命周期/发布防护回归通过。** [本轮准备与证据](#rk-prepare-20261023)；医院、账户、历史查询/CSV及其它独立切片的原离线结果继续保留。 O05小时级任务尚未完成；原Windows完整对照、生产认证、RK业务实屏/资源、真实SN100协议/曲线、仪器与整机长稳仍待验。[最新盘点与上机判断](#progress-review-20261023)区分当前结论和后续任务，下文旧段保留各轮历史事实。本次盘点未连接或修改RK/仪器，未改参考原件。
+当前状态（2026-10-24）：**O07项目/单位、试剂基础及O08样本本地预设/任务已独立离线通过并接统一程序，修后offscreen/XCB各7/0、60秒项目/样本各268次保存；WSL/Windows32/ARM64主辅构建及新ARM包通过。** [本轮证据与边界](#catalog-sample-offline-20261024)保留来源、实测与未验；医院/账户/历史/报告原结论保留，报告累计首次旧查询UI失败与原样复测4/0均留档，原因未定位。原Windows完整行为/活动主题、生产参数、RK业务实屏/资源、真实下发/执行/扣减、实际SN100协议/曲线及整机长稳仍待验，O05的8h恢复失败未关闭；本轮没有连接设备或改参考原件。下文旧段保留各轮历史事实。
 
 入口：[详细移植计划](../01_docs/plans/sn100_host_migration_plan.md) · [工程/Skill管理说明](../01_docs/knowledge/sn100_host_project_guide.md) · [局部工程约定](../06_programs/sn100_host/AGENTS.md) · [既有Qt环境实测](20261022_qt_environment.md)
 
@@ -1569,3 +1569,1095 @@ ARM失败/修复分别保留：早期输入变化使冻结拒绝发布；首次�
 本次仅调整进度/说明/忽略规则及新增公开审计，不改变业务源、UI/模板或系统配置；清理因策略受限保留为待办。按用户明确授权，在审查暂存内容后提交并正常推送当前main，禁止force；最终提交号及远端一致性在交付回复中报告，不为回填hash再产生重复提交。等候窗口结束的sn100自动跟进已删除，避免后续重复执行。
 
 暂存进一步核查：241个LFS指针的OID/大小与本机归档逐一匹配，temp/参考工程/pyc/secret均不在暂存区。发现4个冻结输入会被Git自动转码换行，已为history/origins.json、shell/resources.qrc、thirdparty/qtrpt/origins.json和ui/frmhospinfosetting.ui增加精确字节保留属性并重新暂存；197个索引blob与冻结SHA全部一致，工作源码字节未改。全暂存空白检查提示了保真SVG/证据/供应商及原UI的原始空白，未为了消除提示改写校验原件；本轮编辑的文档、规则和入口说明专项空白检查通过。所有167个候选仍实际存在，删除计数保持0。
+
+<a id="catalog-sample-offline-20261024"></a>
+## 2026-10-24：继续项目/单位、试剂基础与样本任务离线移植
+
+用户明确要求按“项目/单位和试剂基础 → 离线验证通过接统一程序 → 样本和任务”继续，并保持原版界面颜色和布局。开始时 Git 工作树干净；读取根/局部约定、当前计划/工程说明、模块与文件技能及业务验收参考。项目/单位、试剂按独立文件范围并行实施，统一入口由同一整合方修改，样本先只读准备原规则与接口，前置通过接入后再实现。
+
+本轮只使用正式源码和新的显式匿名运行目录，不运行/修改参考工程，不读取参考生产数据库、密码或连接配置，不连接 RK/仪器。开始登记时尚无新增构建、功能或视觉通过结论；各实际结果在本节继续追加。数据、配置/环境无覆盖时不额外备份，不自动提交或推送。
+
+### O07：项目/单位与试剂基础独立通过，再接统一程序
+
+项目业务入口为`projects/project_page.cpp`，校验/事务在`projects/projects_store.cpp`；按原基本页保留名称/全称/通道号/启用、10列结果、精度1–6、Calibration/Rate单位与唯一主显示、复制和固定/外部引用删除保护。原`.ui`逐字节一致；原版单位字典仅有读取入口，本轮不发明单位CRUD。四字段sampleRates候选/默认按原表只读交给样本，演示标签无物理比例含义。独立offscreen与XCB各9/0，真实启动/退出及ARM64构建通过；初次种子NULL绑定和ARM链接依赖路径失败修复后重新验证，原失败日志保留。[来源/差异](../06_programs/sn100_host/projects/origins.json)与[独立证据](../04_references/sn100_host/projects_20261024/verification.json)维护原字段与实际SHA。
+
+试剂入口为`reagents/reagents_page.cpp`，存储在`reagents/reagent_store.cpp`；实现资料、瓶型、条码、项目批号、20个试剂位和4个稀释位的本地配置、容量/手工余量、保存重开/引用保护/权限/草稿/锁库恢复。最终独立QtTest11/0，XCB及本轮统一图形验证有对应证据，独立ARM64构建通过。7份原UI的控件次序/几何/文字/样式/字体均对照；资料UI只去掉与共享mask冲突的布局包装，961×995资料卡在1751×968宿主按928/995等比缩放；本地瓶型管理与余量编辑为离线新增弹窗，原业务区域不重排。10张原位图SHA相同，孔位显示仍为原ml格式；WSLg抓图全黑会拒用并回退真实有效画面，抓图导致的绘制警告不当成功能失败或视觉通过。[来源](../06_programs/sn100_host/reagents/origins.json)与[独立证据](../04_references/sn100_host/reagents_20261024/verification.json)保留差异和失败/复验。
+
+独立通过后才将两模块加入`shell.pri`与原主导航0/5；统一入口持有worker，页面归stack/scroll，项目快照按稳定id交给试剂，停用项目保留引用名称、写入再核启用状态。同一显式`catalog/catalog.db`由项目先提交schema/marker，再开试剂连接，FK在事务前开启并读回1，未标记目录/未知库/参考路径拒绝。既有医院/账户/历史目录不覆盖。原1751×968内容画布使用内部滚动，外层保留1920×1080逻辑布局；离页守卫、全局注销/关闭和账户回落覆盖隐藏草稿。
+
+O07阶段统一offscreen/XCB各**5 passed/0 failed**：匿名输入复制LOCAL_A、试剂/瓶型/项目批号、R_1装载5000µL/本地余量4000µL，跨worker删项目/被引试剂拒绝，Guest和注销后拒写；项目草稿取消保留、放弃恢复，两尺寸截图；真实产品遇未标记catalog目录退出3且sentinel字节不变。复核修复原启动身份门槛：初始化Guest不代表请求actor成功，不存在的模拟身份退出3、无SHELL_READY，首次账户读取失败也不继续空等；实际线程停止/退出均核对。[统一证据](../04_references/sn100_host/catalog_integration_20261024/o07/verification.json)包含204个源码/资源输入SHA、主辅/测试程序SHA及23份公开证据，未归档账户库、认证字段或任何可变运行DB。
+
+资源负载为WSL Qt5.15.13/x86_64 Release/XCB，测试驱动在60.025秒中完成374次真实项目提交并往返项目/试剂/用户页：保存完成p95 **127.580ms**、最大179.261ms；10ms心跳3665样本，p99 **50.589ms**、最大64.717ms。外部100ms采样590点/60.912秒，直接QtTest子进程CPU **68.02%单核口径**、RSS/HWM273088KiB、PSS260183KiB、线程40/FD53观测峰值；包括测试驱动及库线程，不冒称正式产品预算。运行文件前后均131156字节；临时journal峰值未测。没有把候选100ms当已约定门槛，也不据不同负载与旧三页数值推断开销改善；RK/温度/同板控制/长稳仍待验。
+
+统一ARM构建输入与freeze白名单原漏新目录，已补项目/试剂及真实UI/moc/QRC，报告helper仍只带报告闭包；新增输入核查7/0。最初两条Windows→WSL内联构建调度丢失状态/路径变量，未作为通过结论；改用保存的严格退出脚本，正式native/test构建退出0，并在模块冻结后强制重编新增输入才运行本轮用例。O07阶段统一Windows32构建继续执行，最终样本版的修后构建结果见下文。没有部署或连接RK/仪器。
+
+**范围与下一阶段：**生产项目/单位导入、测试动作方案、逐项目试剂消耗/足料、实测余量、ISI/校准、设备同步/探测/换位/清盘、原Windows活动主题/完整行为、RK、仪器及长稳未关闭。O07统一门槛通过后已启动O08样本本地预设/任务实施，实际结果继续在本节追加；本地草稿不伪装成已下发或执行结果。
+
+### O08：样本与本地任务独立门槛
+
+O07独立及统一门槛通过后才实施样本。入口`samples/sample_page.cpp`沿原样本架/设置/明细/组合/批量/架号界面进入，规则与事务在`samples/sample_store.cpp`，值对象在`sample_types.h`。普通架S01–S98、每架8孔及急诊3孔来自原默认配置，真实机型孔位仍待确认；保留容器、0–4位字母数字样本号、项目任务、0–99次重复、延长测试标志、原sampleRates候选与组合成员顺序/重复。缺默认或候选失效明确拒绝，不猜生产1:1比例。
+
+**有意差异：**原普通架预设在内存中，本轮把已提交预设保存到隔离catalog中的`sample_local_*`，未提交内容仍只在页面；原组合`sample_combination`字段保留，另用有序FK成员保护项目引用。局部id不是设备任务/报告id。Guest只读，显式匿名角色1–5可本地编辑；原版普通预设没有全局running禁止，故模拟`actionReady=false`仍可准备本地预设。原急诊更新在Testing/Prepared/Pause会自动调用下发，本轮隔离该副作用；没有Transport/LIS、TX、报告生成、试剂扣减或真实执行状态。试剂快照仅作本地候选来源，无逐项目消耗映射时不声称足料或可测试次数。
+
+最终冻结源码独立**offscreen 14/0、XCB 14/0、均无跳过**（含init/cleanup与12个业务方法），覆盖未知schema/链接路径拒绝、空字段重开、重复0/99/越界回滚、组合空/重复/引号名、FK、急诊删除保护、锁库失败与重试、Guest及运行态、跨弹窗草稿守卫/关闭状态撤回。初轮页面把store ready当首load完成导致测试读取空表崩溃，已分开initialized/ready并复测；XCB人审又发现延迟删除的旧列表控件引用，已限定当前可见itemWidget并断言99次选中状态一致。mask动画初始缓存图不作输入证据，最终等待动画可交互后取图；[来源/差异](../06_programs/sn100_host/samples/origins.json)、[独立证据](../04_references/sn100_host/samples_20261024/validation_summary.json)及`03_photos/20261024_sn100_samples_*_03.png`保留实际状态。7份原UI/原图、Material控件、颜色与布局保留，Linux字体/资源路径/脱离全局mainWinPtr的Popup所有权与屏幕定位逐项登记；Material瞬态QPainter警告仍保留、原因待定位，不能声称无警告。原Windows发行版完整像素/主题一致性仍待验。普通8孔末两孔批量、容器保存、组合应用重复数及真实task引用FK另有补充探针exit0，不重复计入14项。
+
+架定位修复前的独立XCB历史基线：固定3孔本地样本号连续保存60.037秒、660次提交、0失败：保存至读回p95 85.834ms、最大96.816ms；10ms心跳2966点，p95 37.475ms、最大48.296ms。外部100ms观察约60.47秒/592点，CPU约72.60%单逻辑核、RSS峰136708KiB、PSS124593KiB、6线程/16FD；属于QtTest驱动+GUI+存储代理负载，主机另有构建，不能当完整产品或RK达标结论。[固定负载](../04_references/sn100_host/samples_20261024/mixed_measurement.json)与完整资源摘要保留测量范围。
+
+独立门槛后接原导航索引1，统一壳沿用原逻辑尺寸/配色；项目→试剂→样本顺序提交schema，每个worker单独SQL连接。会话与已提交项目/试剂值快照进入页面，草稿/过期回复不覆盖编辑；全局离页/注销/关闭守卫覆盖新页与隐藏草稿，启动必须等全部首读。统一集成及最终构建结果在下文追加，尚不以独立门槛替代累计回归。
+
+### O08联调发现与原版定位修复
+
+统一窗口人审发现普通S01架虽显示8孔，左侧当前卡仍露出急诊3孔卡标题。对照原`frmsamplematerial.cpp:367–386,5613`，补回编辑时当前item按页面高度展开、`scrollToItem(PositionAtTop)`及禁止滚动，返回总览恢复136像素/允许滚动，重新编辑和前后架切换再次定位；首末架前后按钮沿原规则显隐。新增未保存普通架使用仅在UI存在的临时卡，明确标记“未保存/未下发”，不写入已提交快照或数据库；取消保留、放弃撤回、保存以真实本地id替换。
+
+只修改`sample_page.cpp`，最终SHA-256为`6e8fb2b95eec1160a49d7c9499147c781e5cb44faca8c342e0db97853e5977ce`；样本其余62项输入未变。先在影子副本验证再更新正式源码，正式offscreen/XCB各14/0，额外可视状态探针两平台退出0，覆盖8/3孔当前卡、总览/重进、前后架与新草稿取消/放弃/保存替换。[最终样本清单](../04_references/sn100_host/samples_20261024/SOURCE_SHA256SUMS) SHA为`af03d902e27056f508735ec5890b5ef88358b2b1b03e9e0227e9174d84254db7`；三张`03_photos/20261024_sn100_samples_*_visibility_04.png`已目视核对。上文660次/60秒数据属于修复前源码历史基线，修后独立短负载与本轮统一60秒数据分别登记，不混为同一次测量。
+
+Windows完整构建在修复前已通过；修后核对260/50项主辅输入仅该CPP变化、9项编译/链接参数不变，实际仅重编1个对象并重链，辅助程序输入/对象/产物SHA不变。首次临时调度脚本把链接目标斜杠写错导致make退出2，改用Makefile实际目标后链接退出0且未额外重编；失败与恢复日志均保留。[修后Windows证据](../04_references/sn100_host/catalog_integration_20261024/o08/windows_after_visibility/verification_visibility.json)是编译证据，未运行Windows程序或完成原版活动主题对照。
+
+### 修后统一与累计回归
+
+修后统一offscreen/XCB各**7 passed/0 failed/0 skipped**，包括O07引用/草稿/权限、O08本地任务保存重开、当前普通/急诊卡定位、总览/重进与新架草稿撤回、真实六store产品就绪/关闭、未标记catalog及无效身份拒绝。统一截图已目视确认S01/8孔蓝色架与表格对应。原441px高表格配60px表头及至少51px行高，原本就不能首屏显示全部8行；当前Material滚动条可淡出，末行用常规滚轮/滑块访问。原QScroller左键拖动和ScrollPerPixel两句尚未接入，触屏拖拽一致性明确待验，没有把截图截断视作缺孔或声称触摸通过。
+
+既有核心六组`write/read/measure/applicationExit/viewport/initializationFailure`各**3/0**（各含init/cleanup）。报告累计首次`committedHospitalAndReportLifecycle`通过，但`persistedHospitalAndLegacyEntry`在`legacy.query()`失败；同一冻结可执行文件/源码、新匿名目录复测两方法合计**4/0**。首轮3/1日志与复测4/0均保留，原因尚未定位，未宣称问题已修复或首轮全绿；该旧入口只创建医院/账户/历史，不实例化新样本页。后续长稳需继续观察这项UI用例。offscreen不支持raise/propagateSizeHints及样本自定义加号的MousePress/Release提示亦保留，业务状态断言按实际结果判断。
+
+新增接线经独立只读审阅未发现新P1/P2：worker线程归属、共享catalog串行schema初始化、会话和值快照、ready前首读失败退出、反向关闭及隐藏草稿守卫均核查；没有据此替代运行验证或扩大设备范围。
+
+### 修后响应与资源基线
+
+统一Release/XCB固定负载60.147秒，真实项目保存**268次**、样本保存**268次**，均成功，并往返项目/样本/试剂/用户页。项目保存至完成p95 **127.041ms**、p99 146.415ms、最大170.567ms；样本p95 **73.415ms**、p99 80.951ms、最大101.396ms。10ms心跳3773点，p95 45.474ms、p99 47.998ms、最大**56.262ms**；运行文件前后均176212字节。外部100ms采样598点/60.977秒，CPU **74.60%单逻辑核**、RSS/HWM280260KiB、PSS264287KiB、线程41/FD55观测峰值。该驱动创建五个store（无历史），包含QtTest与GUI/库线程开销。
+
+另用实际**六store**产品进程、Guest、1600×900/XCB观察60.178秒/590点，普通SIGTERM后退出0，SHELL_READY与全部关闭/THREADS_STOPPED核对通过。CPU **18.93%单逻辑核**、RSS260204KiB、HWM263444KiB、PSS246374KiB、线程41/FD55观测峰值。它是空载显示基线，不能与上述混合驱动相减推断新业务开销。主机同期有构建，时钟心跳不是输入/合成器像素时延；文件前后字节不覆盖journal瞬时峰值。资源预算、RK温度/降频、RT同板共载与长稳均未验收。
+
+### 跨平台依赖与发布核对
+
+样本沿用原SVG图标，需要与现有ARM Qt5.15.13匹配的QtSvg库及`imageformats/libqsvg.so`。从Ubuntu官方noble/universe获取`libqt5svg5`与dev 5.15.13-1 ARM64，验证Ubuntu签名InRelease、完整Packages.xz摘要及包SHA，归档到[恢复输入](../07_backups/qt_environment/sn100_samples_arm64/README.md)，`.deb`沿用Git LFS。仅恢复隔离sysroot/私有包，未安装系统包或修改板端Qt；来源、许可与恢复范围可追溯。闭包检查新增SVG插件合同，发布主包能力仅声明本地预设/任务，不声明仪器执行。
+
+构建输入测试**8/0**、依赖检查**18/0**、部署发布模拟**7/0**；后者仅WSL本机模拟，不代表板端执行。单CPP复用工具新增显式允许路径，默认仍拒绝业务输入变化；要求唯一源、无路径逃逸、全部其他输入/flags/工具链/源顺序与逐对象SHA匹配，且26个生成UI头键/SHA前后相等。只允许本次`sample_page.cpp`失配重编，未把旧sample对象列为复用；检测到直接/计算include CPP或其他失配即拒绝。工具针对性用例**13/0**，默认正式`build.sh`仍全量编译。完整构建及修前包保留为历史，再按严格合同复用119个未变对象、重编当前样本并重链；helper重新构建，最终闭包/冻结与实际SHA见本轮公开结果。
+
+最终主/辅实际产物SHA-256如下；Windows仅编译，ARM仅构建/静态闭包，没有上板执行：
+
+| 平台 | 统一主程序 | 报告helper |
+| --- | --- | --- |
+| WSL Qt5.15.13/x86_64 Release | `c20cf47339599833a5591dd0ada18c3f18886f1c984cbdcea628b700b7af9f48` | `cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b` |
+| Windows Qt5.14.2/MinGW32 PE32 | `e54d5c00573aff9613df97682682880ecc8aa6111e2ec7eafc387ca41482235a` | `eb17a55a5a2829d19792e8b3935ee9dd281035f087ebe0cb88ce45807b3e4b10` |
+| ARM64 Qt5.15.13/GCC Release | `9f8c31679bc0e339110841e1fb674f0241c71e8708cc383afdc46a18d1e2c394` | `7699cd6d864896a0fc245d90ce01487ace6300d575486b2300cbd3045591fa64` |
+
+ARM最终prepare退出0，检查56个ELF、393项provider符号版本、errors=0；新release ID `91674b00d3762269aabba26596a054393313ef357144033be31057c54a16952c`，包位于`temp/sn100_host/catalog_integration/arm64_final/packages/sn100_shell_<release-id>.tar.gz`，64355182字节，SHA `c0d5aff81d2de8a06723c55656bbffe51c93e2efa9bd759d9f52ed1e1b9a74e8`。包内33个普通文件，其中SHA清单31项全部匹配，另核release ID及清单本身；全部ELF AArch64、QtSvg库/插件/许可及316项当前源码快照均核对。修后审计SHA `fc65e0ba5d8dfd40828eb67c6d5c0efeaafe05baf665bdd34f85a0afd9b9a4a9`，状态仍为`offline_closure_passed_board_runtime_pending`。
+
+[本轮统一结果](../04_references/sn100_host/catalog_integration_20261024/o08/verification.json)及同目录SHA清单归档当前输入、两QPA截图/日志、首次报告失败/复测、累计与资源、Windows修后证据和ARM最终审计；不归档运行DB、临时认证字段或可执行文件。修前完整ARM和Windows产物只作历史，未以它们代表修后交付。没有业务删减、系统安装/配置覆盖、自动提交/推送或设备连接；回退只撤接线/新模块及相应构建项，保留运行数据、草稿和全部新旧证据，不降级覆盖当前数据库。
+
+收口只读复核：七份文档451个本地链接/锚点、三计划四部分与勾选结构通过；O08公开107项、O07及其Windows历史清单、修后Windows15项、项目/试剂/样本独立证据与源码清单均逐项SHA匹配。统一265项直接构建/测试输入、316项运行程序冻结源码及五个WSL主辅/测试产物与当前一致；Git专项差异空白检查通过。复核指出的工程README残留“ARM审计进行中”及包内33文件/31项SHA清单表述已修正，未改链接或源码。原有窗口/用户草稿、参考原件与167项旧清理候选均保留，没有自动提交或推送。
+
+<a id="followup-20261024"></a>
+## 2026-10-24：另一窗口完成核对与O05离线接续
+
+用户要求检查另一窗口是否完成，完成后更新计划并直接执行下一步。目标聊天“查明试剂样本业务未移植原因”本轮已真实结束（turnCompleted，无错误），同仓库未发现其他活动写入方；保留全部O07/O08未提交成果，未提交或推送Git。根README、三计划及上一节已登记O07/O08结果，本轮据证据独立复核后增加当前可执行的O05诊断卡，真实任务下发仍等待协议、参数与设备，不重复移植已通过的本地页面。
+
+独立核对O07 23项及其Windows 11项、O08公开107项、修后Windows 15项、ARM最终13项、样本57项及其源码63项、统一直接输入265项和ARM源码快照316项，SHA均一致；WSL、Windows和ARM最终主辅实际SHA与上节一致。最终ARM包64,355,182字节、33个普通文件、31项SHA及release ID核对通过，包SHA仍为`c0d5aff81d2de8a06723c55656bbffe51c93e2efa9bd759d9f52ed1e1b9a74e8`；本次审计没有重新构建或新增RK/仪器通过结论。独立样本摘要中的“交整合方完成”是历史交接口径，现由O08统一最终证据覆盖，不改写旧证据。
+
+### 旧报告偶发查询：原程序五轮复测，未定位原因
+
+使用上轮冻结`integrated_report_test`及同一helper、WSL Ubuntu24.04/qyq、Qt5.15.13/x86_64 Release/XCB，在五个新的显式匿名目录依次运行`committedHospitalAndReportLifecycle`和`persistedHospitalAndLegacyEntry`。五轮分别为2875、2708、2514、2718、3013ms，均**4 passed/0 failed/0 skipped，退出0**；4项含初始化/清理，不计为四个独立业务用例。测试和产品源码均未因本次报告复测修改，没有读取原生产库或操作仪器。
+
+[五轮原始日志、退出码和程序SHA](../04_references/sn100_host/followup_20261024/report_frozen/result.json)已归档。原首轮`legacy.query()`失败保留；本次未复现不构成根因定位或修复，缺陷保持待定位，不增加超时或放宽断言。
+
+### 当前接续：O05有界时序与短受控实验
+
+依据原1150.178秒失败，先补默认关闭的client/transport单调时标及专用本机回环诊断：固定容量内存采集、结束后落盘，区分deadline建立/tick/observe、入队/pump/write/bytesWritten、peer实际读取。仍使用120ms与一次重试；正常、预算内短停顿、超预算停顿分别验证，失败后只在测试驱动有界排空取证，不能将迟到观测改成成功。超预算注入只能说明可发生的机制，不能据此倒推旧长测根因；同步progress/log落盘仍为待证候选。
+
+本段是本轮实施与合同登记，O05诊断/短回归/跨平台实际结果待后续追加。运行和日志放`temp/sn100_host/protocol_timing_20261024/`，必要证据放`04_references/sn100_host/protocol_timing_20261024/`；没有重新启动8h、修改系统配置、部署RK或连接仪器。当前改动无不可恢复配置/数据覆盖，不额外备份。每30分钟跟进已更新为接续当前工作，避免反复轮询已完成窗口或重复构建。
+
+<a id="o05-timing-20261024"></a>
+### O05诊断切片实际交付与下一轮运行
+
+正式维护入口为`protocol/read_only_client.{h,cpp}`、`tcp_transport.{h,cpp}`的默认关闭`setTimingEnabled()`及`timingEvent`，以及`soak_main.cpp --timing-trace`。采集槽只收集、不重入控制或写盘；原120ms/一次重试、迟到观测、连接代次及收发策略保留。client/transport各自源时钟分别登记，统一collector单调时钟用于跨源排序，不相减不同源的起点。Soak用8192容量的最近事件环，公开覆盖计数，终态一次保存`timing.json`；包括日志write/flush、progress commit前后及peer实际读取，文件保存失败明确退出3。监督脚本冻结同名开关、独立核对环容量/序号/时间顺序，非默认时长使用实际秒数命名阶段，避免把缩短实验写成2h/8h。
+
+WSL Ubuntu24.04/qyq、Qt5.15.13/x86_64 Release实测：
+
+| 检查 | 实际结果 |
+| --- | --- |
+| 专用受控时序 | 四场景＋init/cleanup共6 passed/0 failed；默认关闭零timing事件，无停顿/40ms停顿成功，240ms超预算仍单一失败终态，两次Qk均与独立13字节金样本一致 |
+| 旧客户端/传输/异常/协议累计 | 分别19/27/14/63 passed，均0 failed/0 skipped，退出0；含init/cleanup，迟到观测不回转失败语义保留 |
+| 长测工具CLI | 关闭/开启各12秒退出0；50条/秒24秒覆盖环16253事件、保留8192、覆盖8061，序号及采集时钟顺序一致；日志预算耗尽、timing保存目标为目录两项均按预期退出3，outputs_saved=false |
+| 监督链 | 最终脚本两个2秒阶段均退出0，冻结开关与独立wire/timing复核通过；仅监督入口冒烟，不计小时级通过 |
+| 跨平台 | 同一长测工具WSL实际构建运行、Windows Qt5.14.2/MinGW32及ARM64构建通过；Windows诊断QtTest另构建通过。未运行Windows目标、未部署ARM |
+
+240ms驱动故意在attempt2的`queryQueued`直连回调停顿，异步pump已排队但尚未执行。统一采集时钟实际顺序为第二次`write.returned(13)`约361.456ms → 失败终态361.461ms → `bytesWritten`361.501ms → peer实际读取361.514ms → 迟到有效观测361.559ms；失败未回转成功。**这证明一种事件线程饥饿机制，不证明旧1150.178秒故障由同步文件IO、TCP丢包或transport阻塞引起。**Soak原正常结束/失败立即关闭策略保留，只有专用短测试驱动在终态后继续250ms排空取证。
+
+同一12秒、10条Qq/秒、2秒重连、每2次请求故意不回首答的Release负载，用现有host-only观察器100ms采样各121点，关闭/开启诊断均退出0：CPU为单逻辑核口径1.077%/1.243%，观察RSS/HWM峰12816/16640KiB、PSS9595/13445KiB，线程均1、FD均8。仅是该轮短基线，未隔离操作系统共载，终态JSON的瞬时峰值可能遗漏；不是RK资源预算或同板实时性放行。
+
+长测工具实际SHA：WSL `5837009027c610e46ed6c8312fde24b6a0848ddb63154f2a13b79b230553b5eb`，Windows `af4cfbe1069e5cf05714c814f80024be401707138efd7eec3b4404525f8264a0`，ARM64 `4d9efcd523fd0dfb57e76cf1f54ff71217e3ed30231aff20dd94050023e79ff6`。原始用例/线日志、负例、资源、构建和当前源码SHA见[诊断证据](../04_references/sn100_host/protocol_timing_20261024/verification.json)；O07/O08只读复核见[正式审计](../04_references/sn100_host/followup_20261024/o07_o08_audit.json)。本次protocol不在统一壳316项编译/发布快照内，没有以协议诊断冒充新增统一页面或重跑其构建。
+
+保留驱动纠正：首个12秒环覆盖实验实际8134事件、未满8192，覆盖断言失败；改为24秒固定负载后只重跑未完成覆盖/负例，产品未因该失败修改。首次内联Windows→bash ARM命令参数丢失、mkdir被拒，改绝对脚本后构建通过；监督首次因证据父目录不存在拒绝，建立本轮父目录后冒烟通过。原始失败输出/说明保留，不将其算产品修复。独立只读代码审查未发现新P1/P2；启用诊断的直连槽须遵守只采集合同。
+
+**已实际执行下一项：**在同一工作目录冻结新binary/源码/监督器并后台启动`recovery_probe_25m`，先12秒连续、再**1500秒恢复**，10条Qq/秒、每秒Qj/Qk/QH、60秒重连、每10请求故意不回首答、120ms与一次重试，开启时序，1秒采CPU/RSS/PSS/线程/FD。监督进程PID371，监督器启动UTC为2026-10-24T04:53:03.266786（北京时间12:53:03），精确时标与SHA以[冻结合同](../04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/job.json)和[运行状态](../04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/job_status.json)为准；当前仅登记启动，不勾完成。此轮覆盖旧19分10秒附近用于诊断，不是8h重测或长期通过。后台只写专属日志/证据，不覆盖共用计划；每30分钟跟进回收终态、失败前后时序后再决定下一步，不重启重复任务。
+
+交付核查：诊断静态证据154项SHA（排除仍变化的25分钟任务目录）、O07/O08审计及五轮报告8项、诊断32项当前源码、原统一壳316项冻结输入均一致；本轮六份文档417个本地文件链接、三计划四部分结构和两个Python辅助程序AST检查通过，专项Git差异空白检查通过。25分钟任务已进入`recovery_1500s`，完成的只是前置12秒阶段，恢复终态仍待回收；没有自动提交或推送。
+
+<a id="probe-result-and-status-replay-20261024"></a>
+## 2026-10-24：回收25分钟恢复诊断，继续O09-1状态文件回放
+
+用户要求确认诊断是否完成，核对后更新计划并继续下一步。`recovery_probe_25m`已在UTC05:18:18（北京时间13:18:18）结束，两个阶段真实退出0；1500秒阶段目标实际1500009ms，14975条Qq连续收齐、1510次逻辑查询、1661次计划发送对应peer实际21593字节、151次故意不回首答、24次重连及25次连接。终态无待写/在途、关闭状态清空，原始wire/时序/冻结SHA正独立重核，最终审计在本段追加。当前没有重启该任务或改120ms/一次重试规则，旧8h失败及报告偶发原因继续保留。
+
+下一可执行离线切片为O09-1：只把原Qj状态回放接到统一窗口已有状态区。读取根/局部约定、模块与文件技能、原`frmmain.cpp::slotTimeTickerOut()`文字/配色和正式`StatusSession/FrameDecoder`；新增纯QtCore逐步文件回放，不引入socket/线程、旧连接配置/生产库或仪器动作。单一主壳仍负责接线，独立核心/边界用例与本次25分钟审计分开文件范围并行。
+
+明确输入→输出边界：显式绝对匿名timeline，schema/动作/整数时间/hex白名单及容量上限；记录时间是虚拟协议时间，250ms仅为展示步频，不作为响应实测。仅仪器操作第7页的原81px状态文字呈现“回放/…”和来源tooltip，其余页保留当前业务状态；型号/耗材实际状态未知，原开始/暂停/告警/维护仍禁用。回放值绝不写入`AccountSession.actionReady`或发送任何物理命令；EOF/stop/断开/超时清空有效显示。新增编译输入须进入新冻结，旧O07/O08包及所有证据/草稿保留；源码、运行数据及系统配置无不可恢复覆盖，不额外备份，不自动提交或推送。
+
+### 25分钟终态独立核对通过
+
+[终态审计](../04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/terminal_audit.json)及单独SHA清单已归档；原有阶段清单不改。公开与temp原件字节一致，27项冻结源码、原binary和私有冻结binary一致，95份证据指纹一致。两阶段wire共**38334条事件**逐项重读，独立核对查询literal金字节、所有应答帧头/长度/分片/载荷/XOR/尾、解析字段、Qq连续序号、字节守恒、重连及关闭；恢复阶段实测**1500.009秒、退出0**，24次重连、25次连接、14975条Qq全收、1510次查询全部完成，1661次发送的peer实际RX为21593字节。没有待写/在途残留或不明取消字节，12.022秒前置阶段也退出0。
+
+资源按1秒独立复算1492个样本，无采样错误：RSS/HWM峰18960KiB、PSS峰15790KiB、线程1、FD峰9、CPU约1.123877%单逻辑核。首/末600样本平均RSS为18788.607/18960KiB，PSS为15612.902/15789.763KiB；只能说明本轮观察值，不据25分钟否定长期增长或放行RK预算。日志7902727字节、2段，全部保存。
+
+时序环共420812事件，保留sequence412621..420812，collector约1470.823125479..1500.009955006秒，**仅尾部29.18683秒**，覆盖412620事件。因此旧1150秒附近现场已经不在环里。尾部log write/flush/progress commit最大分别0.069168/3.189259/44.907382ms；不能外推全程IO上界。全程摘要心跳最大403.389088ms，但没有该心跳样本的时间戳；全wire在277.327..277.723秒有396ms间隔、同处一次查询约410ms，详细时序已覆盖，不能归因为同步IO、TCP丢包或pump阻塞。查询总时延含调度和有限重试，不等于单次入队后的120ms预算。
+
+结论仅关闭本轮25分钟诊断与证据核对子项，**旧1150.178秒失败根因仍未知，8h未通过**，未修改超时/重试以求通过。PID371/372/373在后来O09构建中已复用，审计按启动时间和实际命令区分，没有把旧PID存在误判为长测仍运行或停止新进程。job_status的`target_progress`保留的是终态前缓存，判断结果以两个completed_stages、各自summary/verified/原始日志和实际退出为准。
+
+### O09-1当前实施
+
+纯QtCore回放核心已实际**30 passed/0 failed/0 skipped、506ms、退出0**，包括init/cleanup；≤1MiB/256步/每RX8192字节/总RX128KiB/24h整数记录时间、拆粘包/坏包恢复、120ms一次重试、静默、重连清半帧及EOF/stop等均有用例。[独立核心结果](../04_references/sn100_host/status_replay_20261024/core/verification.json)与14步匿名fixture可重放。最新合法Qj是模拟观测，不是旧请求成功或仪器ACK；迟到后新观测可fresh，但不改变真实业务操作条件。统一UI、累计回归与三目标交付仍在本轮执行，后续结果继续追加。
+
+<a id="o09-status-replay-result-20261024"></a>
+### O09-1最终离线交付：状态文件回放接统一窗口
+
+25分钟恢复诊断已按上一节收口，本轮继续实际完成独立可做的统一状态接线。源码/计划由主窗口统一写入；Windows构建、六store实际产品资源验证和最终发布审计分别交子代理，构建目录互相隔离，资源段等待本轮构建、QtTest及审计IO结束。保留已有未提交成果、数据和草稿，没有提交或推送Git、部署RK、连接仪器或运行参考原工程。
+
+正式维护入口为`protocol/status_replay.{h,cpp}`、`shell/device_status_shell.cpp`及`main.cpp`的显式`--status-replay`。全部文件在建库/建窗口前校验；六个存储就绪后每250ms推进一条，协议时间严格取文件`at_ms`，不是实测响应时间。第7页原状态区显示“回放/…”及来源/虚拟时间tooltip，其他页面恢复各自业务状态，后台医院状态不覆盖回放。日志分别标记`STATUS_REPLAY_PLANNED_TX`和`STATUS_REPLAY_FILE_RX`，计划TX不发送，没有接入socket/client/transport或原首次收包的同步/机械联动。断开、超时、静默、EOF和stop使旧快照失效；迟到合法帧只作最新模拟观测，不回转旧请求超时，不更新账户`actionReady`或启用设备、告警、耗材按钮。
+
+**界面依据与差异：**按原`slotTimeTickerOut()`及状态枚举对照文字/颜色，保留原状态区81px几何、字体、导航、1920画布和滚动。仅增加回放前缀及来源提示；文本过长按原宽度省略，全文放tooltip，避免把模拟状态显示为真实仪器就绪。暂停颜色核对后由初稿红色修为既有非敏感默认主题蓝色`rgb(42,118,242)`，并加专项断言；绿/黄/错误/未知色按源码映射保留。原Windows活动主题与同状态截图仍缺，不能据源码/WSL宣布完整原版视觉通过。仪器操作页主体仍是脱机占位，并未开发设备动作。
+
+| 验证 | 实际结果与范围 |
+| --- | --- |
+| 核心 | 30/0/0、506ms、退出0；输入边界、半帧/坏帧、断开/重连/迟到、EOF/stop均有用例 |
+| 最终GUI05 | offscreen 5/0/0、4627ms；XCB 5/0/0、4461ms，均退出0，运行前后最终native/测试/fixture SHA一致；3个业务方法及init/cleanup |
+| 项目/试剂/样本累计 | offscreen 7/0/0、7074ms；XCB 7/0/0、7044ms，均退出0；引用/权限、错误启动、样本预设与完整启动关闭，未重复旧60秒mixedLoad |
+| 原三页累计 | 写入、重开、实际产品退出、两尺寸、初始化失败五项分别独立进程，各3/0/0、退出0；本轮未重复旧60秒measureExperiment |
+| 报告累计 | 原模板/医院名快照/PDF生命周期与legacy入口两方法共4/0/0、2392ms、退出0；未重复60轮长负载。旧`legacy.query()`偶发原因仍未知，未因本次通过关闭 |
+| 构建输入合同 | 9项Python检查通过、退出0；实际ARM编译及冻结覆盖回放/session/frame codec，排除未链接transport/client。累计QtTest的定义、CXXFLAGS、include集合和750条头文件解析均核对一致后链接当前对象 |
+
+原始图为[1600×900](../03_photos/20261024_sn100_status_replay_1600.png)、[1920×1080](../03_photos/20261024_sn100_status_replay_1920.png)及[结束失效](../03_photos/20261024_sn100_status_replay_finished.png)，另有[独立SVG标注](../03_photos/20261024_sn100_status_replay_1600_annotated.svg)，未改写原图像素。截图来自使用实际shell类的匿名QtTest宿主；下面的六store验证来自最终真实产品进程，二者不混同。
+
+首轮核心测试的helper命名/QByteRef编译错误、GUI01错误地在GUI线程初始化测试store触发线程守卫、GUI02用QPushButton查找原自定义QWidget按钮均已保留原日志，修正的是测试驱动。产品线程校验及按钮禁用门槛未放宽。GUI04 offscreen启动早于最终native发布结束，不能据其成功确认最终产品；随后已在最终构建退出0后，用前后SHA绑定的GUI05收齐两QPA结果。
+
+**三平台主辅与冻结：**
+
+| 平台 | 最终main SHA-256 | 最终helper SHA-256 |
+| --- | --- | --- |
+| WSL Qt5.15.13 / x86_64 Release | `150c9f0335e564cc0cef367c82a876908afa1177657e3944864e01d12fd54bbc` | `cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b` |
+| Windows Qt5.14.2 / MinGW32 PE i386 | `3b02911a39613d3069c750063853c45f5d9b2a6c34f3e3824009d7c6deccd9d6` | `1bfd18364d86289a0fdd2532bf3060837d335be16a8820ad5374b03fe7a60060` |
+| ARM64 Release | `8d195502b7c49270239abcc1e676434b8272ea503ee78fe1830e73af322ef508` | `22ee7dd87c3e12e3874314f4f8448d1c84ec277d7433d653126967828e565308` |
+
+三个平台均先完成隔离全量构建；暂停颜色修正后，Windows严格核271项实际输入仅该CPP变化、main仅重编该对象、helper make=0且无需重编，初版pair完整保留。ARM按既有显式复用合同核编译器/flags/源码顺序/对象/生成源/26个UI头SHA，仅重编该独立CPP的obj62，123个对象复用后重新链接主辅；helper按正式脚本重编。最终prepare真实退出0、56项ELF离线闭包errors=[]。native最终前后323项冻结输入与当前源码一致。
+
+[独立发布审计](../04_references/sn100_host/status_replay_20261024/final_audit.json)逐项重核570项指纹通过，包含Windows新旧pair及13项证据、native和ARM对象、包内容及当前源码。最终ARM包65,090,617字节、33普通文件/7目录、31项内部SHA；release ID `8bc2619940aaff1c8909b99acf4e93a487353e262725694b29332dfeae7baf6f`，包SHA `ecf43c4f600ab130a6e9f9f5b707d94e26a69a1f9481d9970c57978da52d9cb1`。正式压缩包、SHA与恢复范围归档[07_backups](../07_backups/sn100_host/status_replay_20261024/README.md)，受现有Git LFS规则管理；旧包保留。`offline_status_replay`只表示编译能力，默认启动仍不自动回放，外部输入文件不随运行包播种。
+
+**实际六store与资源：**最终native以`--offline --accounts --history --catalog --samples --status-replay`和新的匿名数据根/XCB1600×900运行60.121秒，591个100ms样本，正常SIGTERM、退出0。回放14步/EOF fresh=false、六store全部关闭、`THREADS_STOPPED true`与`STATUS_REPLAY_STOPPED true`均真实核对，主辅/fixture前后SHA不变。临时bootstrap凭据已删除且未归档；匿名DB保留temp，正式证据仅有行数/文件大小，无字段值和凭据。
+
+全程CPU为单逻辑核17.117%，包含冷启动/匿名播种、六store就绪后名义约3.5秒回放及其后空载；RSS/HWM峰260180/263728KiB、PSS峰246520KiB、线程峰41、FD峰56。最后29.916秒295样本CPU仍为单核16.045%，线程9–41、FD23–55，来源未据此归因。驱动最后目录采样229496字节/9文件；EOF日志前缀在独立驱动5.217秒采样可见，只是1秒采样的可见性上界。另测GUI14次同步状态到控件更新最大offscreen0.156907ms/XCB0.170094ms，不含排队、绘制、网络或仪器响应。
+
+[60秒原始验证](../04_references/sn100_host/status_replay_20261024/resource/verification.json)和[尾段独立复算](../04_references/sn100_host/status_replay_20261024/resource/idle_tail_analysis.json)均保留。该负载不是持续60秒通信/业务负载，没有认可预算、同负载旧版对照或同板RT测量，不能宣称资源已放行；尾段持续CPU另做同版本有/无回放参数的短对照，结果继续追加，不盲改计时器或减少必要告警。
+
+本轮只关闭O09-1离线功能/构建/基线子项。原Windows完整行为/活动主题及Windows GUI、RK实屏/实际依赖/输入、仪器/真实协议与动作、资源预算/同板实时性和长稳均待验；旧O05恢复根因及旧报告偶发保留未知。[统一最终索引](../04_references/sn100_host/status_replay_20261024/verification.json)汇总本轮证据。下一可执行切片为既有计划O09-2：显式自建本机回环后台只读状态，先核worker/协议/失败与退出，不猜真实设备参数或重启8h长测。
+
+### 空载CPU观测的短对照（保留限制）
+
+基于上述尾段16.045%单核观测，追加一次成对短实验，各12秒正常SIGTERM，没有重启25分钟/8h或修改产品。两组从已关闭的匿名runtime复制9个文件，源/两副本初始SHA一致，不再播种账号/项目或生成凭据；原目录及冻结主辅/fixture未变。无回放/有回放实际12.170/12.177秒、各118样本、退出0，六store与线程均正常停；前者没有`STATUS_REPLAY`，后者14步EOF失效并停止。
+
+6–12秒观测尾段，无回放CPU19.449%单核、有回放24.606%；两组线程41、FD55。按100Hz内核计数，主要增量分别在主线程112/143ticks，XCB事件线程各2ticks，其他采到的线程为0。这里只识别CPU计数所在的线程，不定位具体回调/绘制栈或根因；短10Hz采样可能漏掉瞬态线程，不能据0ticks认定工作线程永远不运行。
+
+[成对正式验证](../04_references/sn100_host/status_replay_20261024/resource_pair/verification.json)明确`visible_page_controlled=false`：回放就绪自动切第7页，无回放沿用默认页。因此这不是同页面的纯回放开销对照，不能把5.157个百分点差值归因于回放、主线程缺陷或统计显著性。无回放也观察到持续CPU，说明该现象不以打开回放参数为必要条件；仍不能据此排除本轮修改的其他影响。源码确认EOF执行`statusReplayTimer.stop()`，本轮未盲停其他计时器/动画或删代码求低数值。
+
+下一卡O09-2已把固定同页面/同数据、主GUI周期回调/绘制栈取证列为首项，再接后台本机回环只读状态；预算/同板实时性仍待验。没有第三次重复资源运行。三份现有计划及README已同步本轮实际结果和该待定位项。
+
+<a id="o09-loopback-cpu-20261024"></a>
+## 2026-10-24：GUI空载CPU定位与统一本机回环后台只读状态
+
+用户继续授权按“先定位GUI空载CPU → 本机回环后台只读状态接统一程序 → 离线验证通过后继续依赖满足的后续模块”实施，并保持原版颜色和布局。开始时保留O07/O08、O05时标及O09-1全部已有未提交成果；未启动原版、未连接RK/仪器、不猜外部端点，不重复8h或25分钟长测。
+
+CPU阶段先固定同一匿名数据副本、Guest、第7页、1600×900/XCB及Release二进制，以事件/栈证据定位周期绘制，再比较相同条件下修前/候选的CPU、Paint/Timer及交互状态；诊断插桩开销不计作产品CPU基线。已确认原Material按钮840ms双向无限halo动画会逐帧请求update，即halo透明/不可见时仍可能重绘；这只是静态候选，须实测后才修复，保留原动画时相、颜色、布局及可见焦点/按压/勾选效果，不盲停计时器或告警。素材/业务源与构建产物分开，临时诊断和私有匿名运行副本位于`temp/sn100_host/o09_loopback/`，不归档运行DB或认证字段。
+
+本机回环阶段仅接本轮显式自建127.0.0.1模拟端和实际分配端口，复用只读client/transport；socket/timer在所属worker创建和关闭，GUI通过queued值快照更新原状态区。保持120ms/一次重试及断线/迟到/代次/退出语义，不触发校时、配置/试剂同步、机械动作、任务下发或actionReady解禁。CPU定位门槛通过后才实施接线，实际功能、测量与构建结果继续追加。
+
+### CPU定位、最小修复与同条件对照
+
+正式Material按钮继承原版840ms双向无限halo动画；即使光晕透明、尺寸0、按钮禁用，`setHaloScaleFactor()`仍每帧调用`update()`。独立测试在修前`haloOpacity=0`时600ms实际37次Paint，按预定检查失败2/1，原日志保留。完整产品第7页诊断的10秒窗口，可见Guest注销按钮分别634/635次Paint，均透明、尺寸0且disabled；动画驱动各625次Timer、主时钟各10次。GDB实际调用栈为`QUnifiedTimer → QPropertyAnimation → qt_metacall → setHaloScaleFactor`，另一聊天独立取证亦捕获父阴影渲染路径；没有用线程名字代替具体原因。
+
+仅为`setHaloScaleFactor()`增加可见/启用/halo可见/opacity和size均大于0的重绘门控，持续保存原scale值与动画时相。其他属性setter、焦点/按压/勾选/ripple及主时钟不改。修后独立offscreen/XCB各3/0：透明/隐藏halo、禁用及点击渐出后600ms均0 Paint，可见焦点仍38次/600ms。完整产品同10秒窗口的注销按钮从635次降至10次，动画驱动仍625次，主时钟仍10次；剩余1Hz刷新保留，未宣称整机0绘制。
+
+无插桩实际六store产品采用同Guest、同第7页、1600×900/XCB、同已关闭匿名数据副本及同回放结束状态，各约20秒后正常SIGTERM/退出0。筛6–20秒稳定窗口实际跨度13.9888/13.8770秒，CPU为单逻辑核口径**18.51482% → 0.86474%**；RSS峰260892/258112KiB、PSS247611/244856KiB。因同目录另一个聊天接仪器页期间曾出现引用先于文件落盘，当前共享壳不能作为纯CPU对照；本次使用旧已验124个对象，仅替换Material一个对象并核其余SHA、flags相同，候选`bdb07703…`只作CPU因果实验，不冒充最终综合产物。主机非资源隔离，单次短对照不外推RK、预算上界或长稳。修前/修后原图除明确时钟矩形外0差异像素，原图未改写。
+
+[CPU证据](../04_references/sn100_host/gui_idle_cpu_20261024/validation_summary.json)含74项SHA、原始计数/图/栈、独立测试、源/对象/flags与无插桩样本。首次notify拦截无调用、smoke误选原隐藏同名按钮、构建撞到尚未落盘的仪器头，以及分析脚本误把最后disconnect当作EOF等失败均保留/说明；分析脚本仅对已结束的原样本修正断言重算，没有重复before采样或伪造原始stderr。
+
+用户明确授权向“梳理原版仪器操作界面功能”和“梳理计划并确定下一步”两个聊天协调共享源码和GUI时段。仪器聊天保留instrument模块、先完成接线后把公共主壳交本轮追加O09-2；自动跟进聊天停止重复Material/主壳/worker实施，保留其独立只读证据。GUI测试串行；最终共同冻结源的主辅native/Windows/ARM构建集中一次核验，模块功能和实物待验分别登记，不覆盖彼此成果。
+
+### O09-2后台只读核心与统一入口接线
+
+`protocol/status_loopback.{h,cpp,pri}`中worker在所属线程创建`QTcpServer(LocalHost:0)`，只连接本轮自己拥有的实际临时端口，控制器不接受外部host/port。复用既有`ReadOnlyClient(120ms,1次重试)`、`TcpTransport`和只读消息解析器，正常场景仅每1000ms发Qj、在途不叠加；匿名应答`Qj[4][SIMULATED][2][1][0][0]`不代表真实机型或就绪。原client/transport终态规则未改，迟到合法状态可以成为最新观测，但不能反转已失败请求。
+
+状态按runId/revision/连接代次排队交付，未消费时只保留最新值；wire队列128条/65536字节，另有一个在途批次最多16条/16384字节，超限明确失败并停止，不静默丢原始证据。实际TX定义为本机peer实际read，RX为client实际read，每块≤4096字节立即以`STATUS_LOOPBACK_WIRE`记录hex；GUI转发日志另标TX/RX，不能把write入队当收到。停止先停轮询、关闭client/peer/server、撤回fresh，再退出线程；app.exec返回后可不依赖GUI ack回收，最终计数仍留存。
+
+[独立核心验证](../04_references/sn100_host/status_loopback_20261024/core/verification.json)最终QCore **13/0、2835ms、退出0**，覆盖金字节/1s轮询、全部socket/timer线程归属、半包/坏包、120ms/一次重试、迟到终态、重连旧半包、在途取消、stop/start、worker延迟时主线程心跳、有界trace超限、无GUI ack退出与实际wire计数；最终构建/运行无QObject线程或编译警告，首轮clock-skew提示另留。独立证据不代替统一窗口与最终跨平台验收。
+
+主程序新增显式`--status-loopback`，与`--status-replay`互斥、在建库前拒绝冲突；存储SHELL_READY后才启动后台回环，SHELL_READY不表示模拟或仪器已就绪。GUI以“模拟/…”在原第7页状态区显示已确认字段和本机单调时标，回放继续用“回放/…”及虚拟记录时间，两者共享原主状态/LED文字和颜色映射；旧回放公开接口/属性保留。仪器页通过通用只读值接口展示已确认四类字段，故障/记录超限/停止清旧值，不猜传感器，不改变账户actionReady或解禁设备动作。其他页面后台更新不覆盖该页业务提示。
+
+首次综合链接漏列`read_only_messages.cpp/.h`，出现真实undefined reference；已补齐native/ARM/冻结/输入合同，原失败日志保留，未用旧产物冒充。随后348项正式程序输入前后相等的native主辅构建退出0，主`0ac098cb…`、helper`cc1c0d45…`；这是本轮中间门槛版本，最终共同源另冻结。该真实程序offscreen新匿名副本、七store、只读回环5秒启动检查退出0，实际wire10条/260字节、七store关闭、`STATUS_LOOPBACK_STOPPED true`及`THREADS_STOPPED true`通过。首对真实字节为TX `02 03 00 06 00 00 00 01 51 6a 3a 04 05`，RX业务为上述SIMULATED状态；完整帧/log保留temp，统一窗口专项继续执行。
+
+### O09-2统一门槛通过与后续版本边界
+
+统一专项[正式证据](../04_references/sn100_host/status_loopback_20261024/shell/validation_summary.json)：offscreen **5/0、3311ms**，XCB **5/0、3562ms**，均退出0。覆盖原色/几何及两尺寸、fresh/error/overflow清旧值、四类已知仪器字段/传感器未知、真实后台wire和重连/stop-start、切页不覆盖业务状态、实际七store与正常SIGTERM回收、互斥参数建库前退出2。初轮驱动把原CusBadgeButton当QAbstractButton查找而失败，修测试类型后复验；未放宽产品禁用或状态断言。测试驱动/MOC按Release编译，链接该次实际136个生产对象（仅排除main.o），137对象/348源及主辅SHA前后不变；中途停止的重复全量测试编译不记通过。正式40项SHA只收源/日志/图/flags/分析，不收DB、凭据、对象和可执行文件。
+
+O09离线门槛通过后，仪器聊天复制了相同348项程序快照及完整468项私有源码检查点，独立做Windows/ARM/累计和资源收口；本聊天随后开始O02-2本地登录。该检查点包含CPU/O09/仪器页，但不含后续登录；后续新源必须另外构建和验证，不能拿检查点产物宣称登录版本通过。两个版本均保留，GUI时段继续串行。
+
+<a id="o02-password-login-20261024"></a>
+## 2026-10-24：原版本地密码登录卡接统一入口
+
+按用户“离线验证通过后继续后续模块”授权，在O09-2核心/统一门槛通过后推进现有账户设置尚缺的本地登录。原`maskdlglogin.ui`逐字节提取，SHA `588813687e12b880abe7f4e83b625a2a2a1b951c6af425446db07aa888d336ab`，保留白卡/蓝按钮、字段/顺序/遮罩动画；公开主题颜色复用已有账户页，原动态公司名/活动Windows主题未知，未读取参考配置或生产库。
+
+入口为原用户头像→`shell/login_shell.cpp::requestLogin()`→`MaskDlgLogin`异步卡→账户worker的`loadLoginDefault()/authenticate()`→专用request-id回执和`sessionChanged`。SQL绑定用户名与密码，角色0–5；空密码忽略用户名/记住勾选、回Guest；错误保持旧身份和掩码输入。角色≤4且勾选记住才按原用户名范围设置默认，管理员不改；默认更新改为事务，失败回滚默认标记，但认证成功以独立警告告知。相同凭据多行明确拒绝，避免原无ORDER BY任意身份；默认用户名预填固定id顺序，是有意差异。完整来源/差异见`ui/login_origins.json`。
+
+专用登录信号不触发隐藏账户页CRUD回执，SQL/工作线程归属不变。对话框及提示卡用parent拥有的异步open，避免新嵌套exec；旧CusMessageBox四个同步helper不改。请求号跨弹窗不复用；加载/认证/提示/关闭动画期间禁止重复提交/关闭，Esc沿用原版不退出。主壳在打开前先检查全部页忙态，再询问隐藏草稿；取消保留草稿和身份，登录失败不预先注销。登录卡可见期间切页/注销/主窗关闭拒绝，结束后恢复原导航。
+
+显式`--password-login`需要`--accounts`，建库前拒绝缺依赖；全部模块首读成功后启用头像，默认仍Guest，旧未启用模式保留。集成启动器和后续新包显式启用该卡。身份新增Guest/Simulated/Password来源供提示区区分，认证只改身份，不改变actionReady，不迁移原首次登录的校时/试剂/配置自动联动或设备动作。原`pwd VARCHAR`兼容仍为直接文本，生产凭据安全/导入策略未验。
+
+独立两QPA首轮各12/0；首编Makefile未来0.27秒提示保留，另force全量小目标重编，二进制与首轮相同且无尾clock-skew警告。最终offscreen **12/0、6418ms**，XCB **12/0、6581ms**，退出0；[独立18项SHA证据](../04_references/sn100_host/password_login_20261024/independent/verification.json)包含十个业务方法、33个源/资源输入、原图及两个后端的短资源观察，不含认证DB/凭据。XCB约6.67秒QtTest含fixture/交互/受控锁等待，CPU13.26%单核、RSS141912/PSS127319KiB，不是统一产品预算或空载对照。
+
+新native采用独立缓存目录，qmake按新头依赖实际编译33个对象，再链接主程序；353项源前后相同，main `2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9`，helper `cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b`。独立审计核140个明确对象目标make-q=0，全部19个AccountSession头依赖已真实重编且mtime晚于头，22个变化依赖对象都有编译命令，其余107个缓存对象SHA相同；不把旧ABI对象直接混用。原clock-skew提示保留，默认make-q=1仅因脚本已把staging产物发布移走，make-n无CPP/MOC/UI待生成，并非忽略潜在漏编。ARM输入合同11项通过。
+
+[统一登录专项](../04_references/sn100_host/password_login_20261024/shell/verification.json)offscreen **5/0、8863ms**，XCB **5/0、8797ms**，退出0；驱动只新编QtTest源/MOC，链接139个新生产对象、排除唯一main.o，140对象/APP前后SHA未变。旧模式头像禁用、显式模拟来源；启用后原卡两尺寸、空密码Guest不改默认、Esc和空闲关窗；正确/错误重登录、role4→2、actionReady前后均false、隐藏医院草稿取消/放弃、数据库忙拒打开、提交期重复/切页/注销/关闭拒绝、隐藏账户CRUD不被登录回执污染通过。真实新产品七store+回环+密码登录正常退出0，缺accounts负例退出2且不建目录。原始session_guards.json的`action_ready_preserved:false`存的是保留后的动作状态值false，不是失败结论，前后不变的断言已通过。登录截图为对话框自身grab，不用于证明整桌面背景合成或原Windows主题。
+
+当前新源[累计验证](../04_references/sn100_host/password_login_20261024/cumulative/verification.json)十组全部退出0：五个核心方法（写入、独立进程重开、viewport、初始化失败恢复、真实applicationExit）各3/0；项目/样本7/0、文件回放5/0、本机回环5/0、仪器页10/0、报告两方法4/0，无跳过。六个driver只编自身CPP/MOC，139个当前native公共对象及各实际源前后SHA相同，QtTest增加的宏/头/库与生产flags区别明确登记，运行后353源仍与native冻结一致。本轮累计用XCB执行含物理屏幕命中的viewport；未将offscreen不可用命中算通过，未重复measure60s、60轮报告或长测。旧报告偶发与O05恢复根因继续未知，不因本次通过关闭。
+
+新源[实际产品资源](../04_references/sn100_host/password_login_20261024/resource/verification.json)采用Release/XCB1600×900、Guest、第7页、七个重开匿名store、1Hz自建回环Qj及已启用但空闲的登录入口，30.113秒/295个100ms样本、正常SIGTERM退出0。暂停本组所有编译、其他GUI及大文件复制/哈希后才观测；正常系统后台仍存在，不称WSL完全隔离。主辅/353源前后不变，七store、loopback与线程全部停；实际wire58条/1508字节，即29对Qj实际收发，不将write排队当收到。原匿名副本11文件/262292字节，正式只留行数/大小，不归档DB或凭据摘要。
+
+全程含冷启动的单核CPU **6.3328%**，RSS/HWM峰274972/282384KiB、PSS峰257935KiB，线程/FD峰43/61。另固定筛`10 <= elapsed_seconds < 30`的195点、实际19.8078秒段，CPU **2.6757%**，RSS274972、PSS257924–257935KiB，线程43/FD61。本组是七store+仪器页+持续1Hz模拟通信的新版本负载；前述CPU因果实验是六store固定回放终态，两者不能作单模块开销差或直接效果对照。预算、GUI排队/合成响应、RK温频/同板控制和长稳未放行，不因这次短测再调低必要刷新。
+
+初始计数脚本只匹配`.db`，遗漏`history/history.sqlite`；保留原5份raw和verification字节，另在exit0后只读该精确匿名文件的结构/行数，未读字段值或hash/copy库。补充[分析](../04_references/sn100_host/password_login_20261024/resource/history_rows_analysis.json)为offline_metadata=1、report_columns=6、report_data=6、report_results=11、report_values=16，资源安全清单从8追加为10项并全部读回通过；这是扩展名过滤的取证补充，不是重跑、数据增长或新功能结论。
+
+### 新353项版本的跨平台构建、冻结与恢复
+
+两组串行资源观测结束后才启动Windows/ARM构建；[平台证据](../04_references/sn100_host/password_login_20261024/platforms/verification.json)已封存85项SHA。Windows fresh全量140个主对象/31个helper对象、0复用；ARM fresh全量75个正式源+57个moc+8个qrc，即140个主对象，另编2个helper专用对象，原正式prepare及最终路径离线闭包均真实退出0。353项源与native前后相同，工具链/外部输入核对通过，56项ELF递归闭包errors=[]。Windows仅验证PE32/i386构建/imports，ARM仅交叉构建/静态闭包，均不代替对应GUI/板端执行。
+
+| 平台 | 主程序SHA-256 | helper SHA-256 |
+| --- | --- | --- |
+| WSL x86_64 Qt5.15.13 Release | `2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9` | `cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b` |
+| Windows32 Qt5.14.2 MinGW | `56e3857aedf816335fa5ab16bb822cac6f52e25c475f75e6abe3380331709df4` | `0001cee00a743ec3772bce81933b3cc199da5b6aebde3480b2ba33eade38ea82` |
+| ARM64 Qt5.15.13 Release | `1be8c669c3b7c6be3b169728cf29da953383606cccf67ca908d1caa4dbb56332` | `0c49bad1c91d8b875cb4799dc9162e18c7deb74edeef984882238e4307c9b71a` |
+
+ARM后验首轮要求源码与对象参数位于同一xtrace行，obj_20遇并行交错，wrapper真实退出1；编译、prepare和closure已各自通过。保留原日志/脚本/Traceback，不修原始输出；改用142个既存对象的ELF64 REL/AArch64及DWARF真实源名、GNU C++14 13.3.0、-O2/-g和fresh目录时间独立配对，再核原日志全部输出路径、源/对象SHA。第二轮后验摘要因临时变量遮蔽又退出1，提前写出的0字段未被接受。修临时脚本后同批只读复算退出0，再原子发布退出0，实际阶段为`[1,1,0,0]`；未改业务源、对象或包，未重编。原同行命令不完整明确留false，不伪称已恢复完整原命令。
+
+Windows保留22条既有警告：原仪器ui重复layoutWidget17、主辅QtRPT未用band变量4、原MaterialScrollBar Q_D1；ARM19条为同ui17及QtRPT2。对应源码与旧检查点相同，不为消警告改原UI或清理第三方；不称零警告。native的clock-skew及对象新鲜度独立核验亦如前保留。
+
+正式[07恢复归档](../07_backups/sn100_host/password_login_20261024/README.md)含新ARM包68,534,566字节，release ID `f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2`，包SHA `b8fa6f4c8728c7b03ef8aa76ad29560fe6fa0e65b4e82662784f55f66e6f1660`；包内33普通文件、31项校验。另存严格353成员构建输入源码包910,175字节，SHA `55a511242e9c6f3ba85056d6b89e60eef833b6d0064c292583fba8c0127cec28`，及source_snapshot.json，逐成员SHA等于当前冻结。目录6文件/5项SHA全过，两个gz均核Git LFS规则；未自动提交/推送。恢复范围是当前应用/私有依赖/字体/模板和该版构建输入，既有业务库/系统配置不在包内，不替代运行数据备份。
+
+[最终总索引](../04_references/sn100_host/password_login_20261024/verification.json)已独立复核并真实退出0，stderr为空；根186项清单再次读回退出0。五子目录18/32/35/10/85项，加五个子清单和本索引共186；另核七个交付物、353成员源码恢复包、139个累计生产对象/8个测试驱动，以及历史CPU/O09的74/8/40项安全证据。总索引SHA `9f753985afdbe5efd873ff29db2a7a98d47f9d74f1800d263f949135c06bdac0`，根清单SHA `f3088d619d536125c632c48d042ebbf5679a20acb9a5ed38e05aad3007c53eb5`。真实命令、stdout/stderr/退出码在`temp/sn100_host/o02_login/final_collection_01/`；未把提前写的JSON当成功依据。
+
+旧348项仪器检查点保持原位置，不当作新353项登录版本；后续修改源码需另冻。当前只关闭CPU修复、O09-2与O02-2已验离线子项；原Windows完整行为/活动主题、生产凭据安全、RK实屏/输入/实际依赖、仪器与真实任务、预算/同板控制和长稳继续待验。本轮不连接RK或仪器，不覆盖已有匿名目录，不归档运行账户DB、密码或密码派生摘要，不自动提交/推送。
+
+另一协调聊天完成了[全局静态盘点](../04_references/sn100_host/global_coverage_20261024/review_summary.json)，覆盖F01–F18、43项操作事实，61个读取路径SHA及旧348项检查点；只是源码覆盖依据，不冒充运行验收。剩余打印机/语言/LIS设置、项目高级方案、项目配置→结果/报告列、报告曲线/修改/重算/上传、校准/质控和告警等缺口及前置条件已并回同一四段计划。核查当前CusRackListWidget已接原QScroller左键手势/ScrollPerPixel，README原“尚未接入”描述已更正；这次只纠正文档，不称新做或触屏已通过。
+
+<a id="monitor-checkpoints-20261024"></a>
+### 2026-10-24：本监控独立核验两个完成批次及全局差异
+
+本轮先核聊天实际终态、同仓库活动方和真实构建/GUI进程；两个交付窗口确认本轮无活动写入，未因idle直接推定业务完成。保留所有未提交成果，不重复运行既有测试、构建或资源观测。仪器348检查点独立审计见[固定证据](../04_references/sn100_host/monitor_audits_20261024/instrument_checkpoint/verification.json)：232项公开清单、8项备份、468源成员/348编译输入、六个主辅和56项闭包一致；真实store11/0、两QPA各10/0及七store正常关闭/30.134秒295点资源留证。旧外层驱动exit1和早期失败保留，累计退出证据按实际协调器粒度登记，不凭后写JSON补造独立OS收据。
+
+新登录353检查点随后另行完成[独立审计](../04_references/sn100_host/monitor_audits_20261024/password_checkpoint/verification.json)，索引SHA `74f36bd7c6f743392705a95e5fdf6b5d970ce01b3e38d79c55b84f9746dd95b4`，四份审计文件清单读回通过。186项公开清单、正式备份、六个三平台主辅、353成员恢复源码包、ARM33文件/31内部SHA及56项闭包与当前源一致；142个ARM对象的DWARF另行核对。登录独立两QPA各12/0、统一各5/0有原始QtTest文本与真实退出0；本批没有XML，十组累计按严格协调器支持的通过登记，未声称有每调用独立退出文件。重算资源为30.113秒295点，10–30秒CPU2.6757%单核，RSS274972KiB/PSS257935KiB、43线程/FD61，58条真实本机wire、七store/回环/线程正常停止。仅离线兼容行为，不关闭生产凭据安全、Windows活动主题/完整行为、RK/仪器、预算/RT或长稳。
+
+对照原F01–F18的43项操作事实，本轮353与348源清单差异为新增5项、改变12项、删除0；新增是本地登录及其接线/构建闭包，其他功能缺口没有因本批编译通过而关闭。原计划已补齐报告删除/列排序/HTML、样本ResetErr/ResetFin本地草稿、试剂ISI/normalValue、应用启动/单实例、生产导入/schema/多store运行数据恢复及分类轮转/崩溃诊断，并将校准/质控本地页面CRUD与真实计算前置拆开。七组漏项修订已复读，无新的实质偏差；首次旧文档审核JSON仅作修订历史，不重复报已解决遗漏。
+
+<a id="o10-printer-settings-20261024"></a>
+### O10-1开始：原打印机本地设置
+
+在新353审计收束且原开发窗口明确交接后，本监控认领正式源/主壳/同一记录与计划单写，其他窗口只读。按全局缺口选择设置子页3，保留353主/源码包与全部历史证据原字节。原`frmuserset/frmprintersetting.{cpp,h,ui}`为只读名称、设备列表与Apply，原键`printer/name`、UTF-8；原无角色门槛、刷新或取消按钮，不虚构管理员权限。原业务框`(390,20,681,821)`和各控件几何保留；字体沿现有Linux必要替代、活动Windows主题待验。
+
+本切片使用显式匿名根的`printer.ini`及专用脱机schema，worker枚举/读写，保持名称原文。原页未检查QSettings同步状态，本移植改为实际字节读取/唯一临时INI解析、零等待协作锁、提交前源字节复核和QSaveFile原子提交，成功后才更新提交快照，并保留无关键。离页继续编辑/放弃为统一程序安全补全，不加业务区域。原报告仅`printExec(true)`未传该名称，当前仍是脱机预览/PDF；本切片不修改CUPS/系统默认设备或执行打印，勾选见[当前卡](../01_docs/plans/sn100_host_migration_plan.md#o10-printer-settings-card)。
+
+### O10-1实际结果、原失败与冻结
+
+[最终总索引](../04_references/sn100_host/printer_settings_20261024/verification.json)SHA为`6d1c814dab7fba5147d584177ddbf4fb9fd14df8f3e131b2fd27cf20199d9874`；361项最终源清单SHA `119cfab52d54bd61d4fb765a7666a8dddf74d2e110baf1a4207eab1d68cef83f`，基础309项公开清单已读回。源/入口、原Qt页面、实际测试及退出、对象/driver、三平台主辅与ARM主/源码包分层核对；不是完整SN100或实物放行。
+
+| 已验切片 | 实际证据及边界 |
+| --- | --- |
+| 独立设置页/worker | offscreen/XCB各14/0、真实退出0；保存重开、空列表/失联原值、非法/不可用名称、原路径/锁失败与重试、祖先链接替换、同size/mtime外改、枚举期间冲突、无关键保留及GUI完成屏障通过。QtTest数字含init/cleanup。 |
+| 统一最终入口 | 两QPA各5/0；最终子页3真实替换，六角色、原设备动作条件不变、草稿保留/放弃、busy时切页/登录/注销/关闭守卫、独立重开、带/不带参数及坏配置真实退出通过。1600×900外层滚动后Apply中心可达、1920×1080及两档截图留证，没有重排原业务框。 |
+| 原功能累计 | 新361源登录两QPA各5/0；五项核心各3/0、项目/样本7/0、文件回放5/0、本机回环5/0、仪器10/0、报告4/0，每调用独立OS退出0。绑定144个实际生产公共对象，driver新增QtTest宏/库不重编业务变体；原失败未抹除。 |
+| WSL构建 | 初次145主对象/31 helper全量构建退出0，随后为无关键保留修一个独立CPP、强制重编该对象并重链；其余144主对象/flags SHA相同。最终主`598ca581…`、helper`cc1c0d45…`，不把初轮旧CPP指纹冒充最终源。 |
+| Windows32 | 主145 fresh对象、helper31 fresh对象及PE32/i386通过，主`f172a67d…`、辅`5d6e7aa7…`。主编译后慢PS5解析获准中断，PS7只读接续、make-q真实0且244主产物字节未变，没有重复主编译；helper及后验真实0。原主fresh make单独退出文件缺失，仅严格原控制流证明；主外部头原prebuild哈希未恢复，不冒充全量预后相同。顶层环境失败1/取消-1/接续0均保留。 |
+| ARM64/恢复 | fresh147对象（78正式源、59 moc、8 qrc、2 helper）逐项DWARF/flags对应；构建、56 ELF离线闭包和打包真实0。主`9fae2c17…`、辅`e818a52f…`，旧sysroot只读复用；新应用33文件/31项SHA及361成员源包逐成员一致，已归档[07恢复目录](../07_backups/sn100_host/printer_settings_20261024/README.md)，两个gzip核LFS且无忽略。未执行目标ELF或连接RK。 |
+| 输入/生命周期合同 | ARM输入合同12/0。native-only生命周期原19项通过；新增打印capability用例首轮仅测试局部staging未定义，修后单项1/0，未重复原19。旧包不传新参数，新cap包会传；只用本机C夹具和mock，不是RK/网络验收。 |
+
+首轮独立INI失败定位到QSettings原子替换临时路径后旧描述符仍为空；首次修补误选open位置的失败也保留。进一步只读审查指出路径替换、同mtime缓存及无关键丢失，最终以实际字节/协作锁/原子提交和保留原键值修复。独立run06的一次重试未更新同样留档：确定存在worker QSignalSpy DirectConnection早于GUI恢复的观察缺口，测试改等GUI `operationFinished`并核两次`requestSave`，没有放宽生产busy语义；失败轮缺时序，单独-vs复测通过不作为唯一事故根因证明。
+
+统一首轮90秒超时由受控阶段/信号确认是测试夹具在已有账户库再次给bootstrap，触发原账户防重播种弹窗；修为仅新库给临时随机值并等待身份后的GUI重载。后续CLI新库用例遗漏一次性bootstrap也按原规则退出3，补齐夹具后通过。一次诊断与driver重编重叠且GDB附加不可用，已明确排除验收，未提权或改系统。全部原文/真实退出与限制在[失败记录](../04_references/sn100_host/printer_settings_20261024/failures/verification.json)，认证运行库/秘密及其摘要不归档。
+
+### O10-1响应、资源与全局接续
+
+在本轮所有构建、GUI及大文件处理结束后，单独一次40次匿名交替保存：XCB实际生产对象驱动、固定两名枚举无人工延迟，QtTest3/0、退出0。从GUI排队click到busy信号p95/max为**0.028662/0.046227ms**；到GUI已保存数据状态p95/p99/max为**123.364365/133.080784/133.080784ms**。546个5ms timer间隔p95/p99/max为10.597076/10.771369/12.927292ms，仅是QtTest事件循环代理；不包含OS输入、实际paint或CUPS枚举耗时，也不把候选100ms可见反馈门槛套给保存完成。[原始响应](../04_references/sn100_host/printer_settings_20261024/response/verification.json)
+
+随后一次实际整程序Release/XCB1600×900、Guest、第7页、七SQLstore加设置worker、1Hz自建Qj及空闲登录入口，显式新匿名catalog夹具，**30.157927925秒/297个100ms样本**，普通SIGTERM/真实退出0。七store和设置各闭一次、线程/回环停、临时bootstrap删除；实际29TX+29RX共58事件/1508B，序号及金字节已独立核验。10–30秒尾197点跨度19.88607秒，CPU **2.313177%单逻辑核**，RSS286628KiB、PSS269307–269318KiB、44线程/FD62；全程CPU5.45808%包含冷启动，HWM293240KiB。只统计匿名表行数/文件大小，不读认证值或归档运行库。[原始资源](../04_references/sn100_host/printer_settings_20261024/resource/verification.json) · [独立复算](../04_references/sn100_host/printer_settings_20261024/resource/final_metrics_audit.json)。不与旧353不同输入直接相减推断纯打印开销，不算预算、RT或长稳通过。
+
+本批再次做F01–F18[全局差异复核](../04_references/sn100_host/printer_settings_20261024/global_delta/verification.json)：353→361新增8文件、改11、删0，既有所有UI字节及各原业务目录输入未变；打印子页3已接，语言2、LIS4及校准/质控顶层3/4仍为最终占位，原业务具体缺口继续留在同一计划。修复前printer wiring审查只作历史依据，其中无关键问题已修，不能机械当作新TODO。
+
+下一已核源、依赖满足的切片为O10-2 LIS本地设置：原9个可编辑键、12隐藏键必须保留；原Save→signalConnectLis→openComm会打开TCP/串口，离线迁移须完全隔离，自动模式只保存意图，串口缺失/切模式草稿不得自动猜选。33份源码事实已归入[同一下一卡](../01_docs/plans/sn100_host_migration_plan.md#o10-lis-settings-card)，未声称LIS页面/HL7已开发。不自动提交/推送；原Windows活动主题/完整行为、生产安全、RK实屏/输入/实际打印插件及服务、真实打印/仪器、磁盘满/断电、资源预算/同板实时性与长稳继续待验，CUPS挂起枚举的有界退出仍待验。旧报告偶发与O05旧恢复根因保留未知，未重启长测。
+
+<a id="instrument-offline-20261024"></a>
+## 2026-10-24：原版仪器操作页面与人工维护离线接入
+
+用户在本聊天要求将仪器操作界面先按原版接入，能离线做的先做，颜色和布局保持原样，真正控制仪器的部分等有设备再验证。本轮按根/局部AGENTS及模块/文件Skill，核对当前计划/相关记录并保留全部已有未提交成果。只读参考`frmdriverset`及必要资源/三维护表，未运行/构建参考原件、未读旧连接配置/生产库，未连接RK或仪器。
+
+范围：逐字节提取原1751×968的`frmdriverset.ui`及7张必要原图；原8个子页与角色入口不重排，沿用既有壳的原动态主题/灰色侧栏及按钮样式，原Windows实际活动主题与同状态截图待验。未知仪器字段清成未知，软件版本明确为离线移植版；只呈现已核实的状态回放字段/来源，温度/液位/机型子系统映射不猜测。所有真实连接、洗针、泵阀/针/抓手/扫码器、通道开关、标定、自测/任务与设备打印动作保持禁用。
+
+人工维护入口→确认人工已完成→worker内身份/动作/当天日期白名单校验→事务提交→按月重新读取→显示勾选；6项分别为日维护waste_cup/waste_water/waste_cup_box、周维护clean_pool/clean_dirver、月维护clean_needle，保留原拼写/表结构。long_clean和shut_down仅留设备流程待验，离线不能登记完成。独立显式数据根下`instrument/maintenance.db`，QtSQL连接归维护worker，读写/关闭不跨线程；未知动作/Guest/坏库/锁库返回真实错误，业务区不新增实验横幅。
+
+新增范围为正式`instrument/`源码/UI/资源、`shell/instrument_shell.cpp`与专项测试；主壳`--instrument`及集成启动脚本接第7页、维护store首读就绪/退出、会话/忙态守卫与回放值转发，ARM显式输入/快照清单同步。未删除已有业务代码/原件、未更改系统环境或迁移既有配置数据，因此无额外环境备份；不自动提交/推送。构建、两QPA运行、视觉/资源和待验结果在本节继续追加。
+
+<a id="instrument-offline-result-20261024"></a>
+## 2026-10-24：仪器操作离线检查点交付与验收收口
+
+**结论：原仪器操作已接统一程序，本轮离线切片通过；完整实物模块未关闭。**保留原8个子页/控件坐标、颜色/主题和必要原图，六项人工维护可确认登记、按月查询、保存重开；真实连接、开始/暂停、洗针、泵阀/针/抓手/探测、通道开关及工程动作仍禁用。原维护打印未见完整业务槽，保留待原发行版对照；不发明打印或SN100传感器映射。
+
+### 版本和入口
+
+本轮与O09-2聊天协调单写共享源码和GUI时段，在其只读状态统一验证通过后冻结独立检查点：468项完整源码/测试/UI/资源，348项实际包输入逐项等于已验O09-2指纹；旧460项首版完整保留，23项增改按内容差异同步、445项未改mtime。之后正式目录继续开发密码登录等新源，本节三平台及资源只对应本检查点，不能冒充后续最新整机包。
+
+入口是`--instrument`、`shell/instrument_shell.cpp`和`instrument/instrument_page.cpp`；worker启动/首读/退出在冻结的`shell/main.cpp`，规则/事务在`instrument/maintenance_store.cpp::record()`和`loadMonth()`。原三表名/日期列及`clean_dirver`拼写保留，人工登记只接受当天和六个白名单动作，存储层再次检查有效角色；`long_clean/shut_down`不允许人工伪造完成。月份查询用同一事务读取三表；有效脱机tag留下的空库可在首次建表失败后安全重试，已有不符结构不转换。
+
+统一入口沿用默认Guest，显式匿名身份仅作脱机模拟；原页面从`frmdriverset.ui`逐字节提取，SHA-256仍为`4e0f24fa7e99e459a123bced7855d25399b2ce7f6e23cfb3f8cd2f36fb879f4e`。已补仪器UI/来源清单的Git字节保持属性。必要差异为QRC资源路径、Linux字体近似、未知仪器值和“离线移植版”版本文案；原Windows实际主题/字体及同状态截图尚缺，不据此宣称完整视觉等价。小屏保留原1751×968业务画布和1920×1080主壳，通过外部滚动访问，没有重画/重排。
+
+回放和自建本机模拟共用只读值接口，来源前缀分别为“回放/”“模拟/”，动态文字按PlainText显示；只映射已核实的型号、主状态、灯状态、错误类型，失效先清旧值。未核实的温度/液位/子系统全部未知，不改变账户actionReady或解禁设备动作；维护反馈合并原状态区提示，不增加业务横幅。
+
+### 功能、实际输入输出和原失败
+
+- 存储Release **11 passed/0 failed**：六项人工维护、重复幂等、重开/跨月、Guest/坏角色/未知和机器动作/非法日期拒绝、锁失败恢复、空库初始化恢复；100份整月快照与11次独立连接三表原子提交无混表。253ms锁等待期间主QCore事件循环24次心跳，不能替代GUI绘制/仪器响应。[存储证据](../04_references/sn100_host/instrument_20261024/store/verification.json)
+- 最终仪器界面 **offscreen 10/0、XCB 10/0**，连接136个最终生产对象且前后SHA不变：原UI/8子页、6角色、全部物理按钮禁用、6项确认/取消/持久化、月查询失败不留旧勾选、锁恢复、回放→模拟→失效来源替换、未知值及主壳忙态切页/注销/关闭守卫。[界面证据](../04_references/sn100_host/instrument_20261024/final_gui/verification.json)
+- 本检查点累计：两QPA分别独立进程写入→重开读回、初始化失败恢复各3/0，状态回放各5/0；XCB实际viewport与产品关闭各3/0。产品关闭用例就绪后空载12017ms，再正常WM_DELETE退出0，该子进程仅3store；回放子进程仅医院store，不混称七store。未重复原60秒measure/8小时通信。[累计证据](../04_references/sn100_host/instrument_20261024/cumulative/verification.json)
+- 原首版仪器offscreen为8/1：注销清身份后账户页仍异步刷新，诊断实际捕获account_busy=true及“账户数据正在处理，请稍后再退出”。只补测试等待各页真实idle，原忙态拒绝断言全部保留，产品守卫未修改；修后首版两QPA各9/0，最终新增通用来源场景后各10/0。原失败、诊断和driver差异保留在[首版证据](../04_references/sn100_host/instrument_20261024/initial_gui/verification.json)。
+- 累计runner曾将物理屏幕命中用例用于offscreen，原2/1显示screenAt=0×0、widgetAt=none和raise不支持。修正临时运行合同为该用例仅XCB，原失败保留、产品及断言不改；XCB按原断言3/0通过，不将offscreen此项记通过。
+
+### 三平台构建和离线发布
+
+| 平台 | 最终主程序SHA-256 | 最终helper SHA-256 |
+| --- | --- | --- |
+| WSL Qt5.15.13 / x86_64 Release | `c5da853069071eedc12a601cb5cab8be0529e726196b8ce4d79667b7c232aeb3` | `a73acc08b9747a4d36d3fae7ecf2034a1880e750936e53fdbecac793c5603c89` |
+| Windows Qt5.14.2 / MinGW32 PE i386 | `a5c2241ef62dd253d84ccbc07388a8ab6b9919f1dc91933ef41fb2f68e31c3a8` | `a0d8f5afd878c113c7f48ad4f340b175302762563cbfb335b58d7a1571feda05` |
+| ARM64 Qt5.15.13 / Release | `2278c5fc769fb5b9f60a6f7ca54c3d8dfa0ea4e4564bbe34bf2424610fc692e4` | `6558bf9c791f3b78e88440e183a4cedef5e7102841fd4f1c8665490c050877f1` |
+
+WSL/Windows先独立全量首版，再核相同flags、实际依赖和工具后增量17对象；两平台各151对象未重编，另有4个重编后SHA相同，155仅是同SHA数量，不能误写成实际复用数。WSL原Makefile比WSL时钟快0.19秒警告保留，传递依赖应重编集合与17条真实命令恰好一致、missing=[]。Windows295项实际正式输入、963项外部输入和工具均稳定，PE/imports核验通过。[native审计](../04_references/sn100_host/instrument_20261024/native/verification.json) · [Windows最终审计](../04_references/sn100_host/instrument_20261024/windows/final_update/windows_result.json)
+
+ARM是单次全量137主对象加2helper对象，build.sh真实退出0、1362秒；56项ELF离线闭包/check真实0、errors=[]，SQLite/SVG满足。原UI重复layoutWidget、QtRPT未用变量及GCC对大UI调试变量追踪自动降级提示保留。外层PowerShell stdin driver末行CR导致其退出1，但真实build已0并发布成对产物，后续源/架构/SHA/check/package均独立通过；不抹掉外层失败，不重编有效结果，不部署旧产物。[ARM全部证据](../04_references/sn100_host/instrument_20261024/arm64/verification.json)
+
+正式恢复输入已在[07备份](../07_backups/sn100_host/instrument_offline_20261024/README.md)：ARM包68,077,183字节，33普通文件/7目录/31内部SHA，release_id=`00414bde726a3dd1c2460caf413c7240f56b2b907bdee512962d989c201b7354`，包SHA=`22b7579395af3f95afcb2bc88ff931bb687fba611ea87762637cfb026e6b423b`；另有匹配468项源码压缩包1,189,664字节，SHA=`b0c9b7fe13fcea8f0ca82098caeb31ff06302e206b2b24d823bb83ac11690f30`，已读回全部成员/安全路径/字节。两压缩包使用现有Git LFS规则，清单/恢复范围随仓库保存；未部署或运行目标ELF，未覆盖系统/配置/旧运行数据。
+
+### 30秒七store主机基线及边界
+
+固定native Release、WSLg/XCB1600×900、Guest、新匿名数据根与显式demo项目、14步文件回放后停在仪器页空载。实际30.1339765秒、295个100ms样本，正常SIGTERM/exit0，七store各关闭一次、THREADS_STOPPED/回放停止true，EOF fresh=false；主辅SHA不变，临时bootstrap秘密文件已删除。原fixture记录时间为虚拟时间，不作为实际响应。
+
+整个观察段CPU为单逻辑核**4.662934%**；采样RSS峰279416KiB、内核HWM280624KiB、PSS峰262533KiB，线程峰42/FD峰59，PSS无缺失。运行目录从新建到最终11文件/262292字节；按SQLite签名只读计数补全5库（原glob*.db漏掉history.sqlite，原始记录不覆盖），不读取/归档字段值。相同样本10–30秒尾段195点约1.006620%单核，仅是同一次回放后空载分析，不作回放前后因果比较。
+
+界面导航只测7次同步click入口，最大offscreen1.408266ms/XCB2.980348ms，不含排队/绘制/物理输入/仪器延迟；真实完整交互响应预算仍待验。观测前Windows编译器进程0、WSL无项目编译/GUI，和另一聊天资源观测串行，也避开压缩/大文件哈希复制；其他系统服务存在，不声称整机后台绝对空闲。[原始样本/独立复算](../04_references/sn100_host/instrument_20261024/resource/verification.json)
+
+本轮未改系统环境、不删原代码或参考原件，不自动Git提交/推送；维护和其他匿名运行数据库留temp，不归档密码/私钥/认证材料。原Windows活动主题及完整行为、Windows GUI、RK实屏/输入/实际依赖、仪器真实协议/维护动作/互锁与失败恢复、认可资源预算、同板控制/温度/长稳继续待验；只关闭本轮离线检查点。
+
+### O10-1最终独立审计登记
+
+打印机本地设置切片的[最终独立审计](../04_references/sn100_host/printer_settings_20261024/audits/final_release_audit.json)通过，SHA-256为`7c198583791f34f1a7b6392577eb049aa37358d9ff48153ac978173ff58ffd9c`。原309项证据基础保持不变，加入此审计后外层[SHA256SUMS](../04_references/sn100_host/printer_settings_20261024/SHA256SUMS)共310项，全部读回匹配，清单SHA为`e935750d144c4e30879717cce3ba48032730c0ad77c3165a5b111c5b628676cc`；根结果索引仍为`6d1c814dab7fba5147d584177ddbf4fb9fd14df8f3e131b2fd27cf20199d9874`。最终361项源码、主辅产物、测试实际退出、发布包与资源证据的关联已核，保留Windows原主make独立收据及外部输入prehash缺口、ARM并行命令行交错等原有限制。
+
+最终XCB的1600顶部/滚动后及1920页面截图已同步至`03_photos/20261024_sn100_printer_settings_*.png`，[来源与SHA](../03_photos/20261024_sn100_printer_settings_sources.json)对应正式测试原图，不能作为原Windows或RK实屏证据。下一切片按[既有LIS本地设置卡](../01_docs/plans/sn100_host_migration_plan.md#o10-lis-settings-card)执行，尚未实现；每批完成后继续按F01–F18复查新增全局差异，不重复旧测试或长测。
+
+<a id="o10-lis-settings-20261024"></a>
+## 2026-10-24 O10-2 原LIS本地设置与统一接入
+
+### 入口、规则与本地数据边界
+
+确认前两聊天交接及本仓库无其他活动写入后，本聊天单写完成本切片；隔离构建及只读审查并行，未重复旧页面或长测。原`frmuserset/frmlissetting.ui`按字节迁入，SHA-256为`158ff240e1586db7ec1bfbb408cc27d04ade2fb30c2756c0aa44a9684b46666e`，业务框`(400,40,611,781)`、Save`(420,690,161,61)`及原TCP/串口分组/Material控件保持。原主题键及必要Noto CJK替换沿用已查来源，完整Windows活动主题及RK视觉另验。
+
+显式`--lis-settings`启用，统一`integrated-run`已带参数；不带参数不创建LIS配置或worker。`shell/main.cpp`管理`O10LisSettings`线程、首读与正常关闭，`shell/lis_shell.cpp`→`frmUserSet::attachLisPage`替换最终用户子页4，busy、草稿、登录/注销/关闭守卫接入原壳。原版所查入口无角色门槛，本地六种角色保持可达，登录不改变设备动作条件。
+
+维护者从`ui/frmlissetting.cpp::on_btnSave_clicked()`追到`data/lis_settings_store.cpp::save()`。原9个可见键`lis/type,ip,port,commname,baudrate,samMode,autoget,autosend,link`存于显式数据根`settings/lis.ini`，增加`sn100/offline_lis_schema=1`，只在真实原子提交后更新GUI快照。保留12个隐藏键、非活动模式值和无关键；`samMode`缺省0，布尔值保持原精确字符串`true`语义。端口保留原键入0..99999的本地范围，它不代表真实TCP端口可用；实际连接时仍需确认角色/地址及1..65535等合同。本片不推测TCP client/server、串口/波特率、8N1或任何生产参数。
+
+必要行为差异明确登记：模式切换不覆盖另一套草稿，一次Save有意提交两套草稿的9键（原版只更新活动模式端点）；空配置/缺失已存串口或波特率不会落首设备/1200，失效原名保留并有tooltip；未知样本模式及坏字段/控制字符/无效UTF-8明确拒绝且原字节不变；统一离页提供保留/放弃原版未设的草稿保护，不增加业务区或Cancel按钮。原`LisCommSetting::setConfig`不更新静态缓存，原版靠Save后连接流程重读，本地已用成功提交快照替代该副作用。
+
+原Save发`signalConnectLis`，主壳随后`openComm`会打开TCP或串口；本切片没有移入/实例化这些活动通信类，不发连接信号。自动获取/上传/应答只存意图；HL7/MLLP、ACK、任务/结果收发、去重/重连及真实设备均不随配置保存关闭。
+
+### 串口候选及文件失败恢复
+
+Qt5 Linux `QSerialPortInfo::availablePorts`的8250检查可能用`open(O_RDWR)`探测；native和实际ARM sysroot也没有QtSerialPort/libudev。Windows Qt5 QSettings显式注册表路径可能请求写权限或创建键。因此新增`data/serial_port_catalog.cpp`：Linux仅查`/sys/class/tty`与`/dev`的stat元数据，Windows仅`RegOpenKeyExW(KEY_QUERY_VALUE)`→`RegEnumValueW`→`RegCloseKey`查询固定SERIALCOMM，链接系统Advapi32，不引入QtSerialPort/DLL、不打开线路、不验证端口可用性。[平台依据](../04_references/sn100_host/lis_settings_20261024/review/platform_dependency_audit.json)
+
+INI处理在所属worker进行：64KiB实际字节上限、严格UTF-8、唯一临时INI避开Qt同size/mtime缓存、原字节复制后只改本模块键、QSaveFile禁直接覆盖回退、提交前复核实际字节及合作锁，失败保留草稿/已提交值。配置与锁目录及祖先符号链接拒绝，加载不使用旧生产配置。
+
+受控目录0500失败曾暴露真实恢复问题：临时INI创建被拒绝后，Qt5的QLockFile析构无法unlink，但仍清除对象所有权状态；恢复父目录权限后下一次保存仍报告占锁。原`run_02`16/1及单用例2/1失败保留，未删未知锁或加等待掩盖。改为预先建立的私有`.lis-locks/settings.lock`子目录，设置父目录暂时只读时仍可清理合作锁，所有init/save使用同一路径且不改已有目录权限；最终同一失败/恢复用例通过。原独立入口漏复选图标QRC也已补齐，最终日志无该缺图警告。[实现审查及Qt依据](../04_references/sn100_host/lis_settings_20261024/review/implementation_review.json)
+
+### 已核离线门槛及构建阶段
+
+最终独立两QPA各17/0，实际退出0，覆盖九字段保存重开、12隐藏/无关键保留、空配置/缺失串口、双模式草稿、非法输入、保留/放弃、busy、锁冲突、真实临时文件创建失败恢复、外部字节变化、坏格式/UTF-8/超限和配置/锁目录符号链接。统一专项两QPA各5/0，实际测试最终子页4、六角色、草稿/busy/登录/注销/退出、同根重开、1600×900外滚访问Save及1920原布局，并启动实际产品核全功能/旧无参数/坏配置三条退出路径。[独立](../04_references/sn100_host/lis_settings_20261024/independent/verification.json) · [统一及累计](../04_references/sn100_host/lis_settings_20261024/unified/verification.json)
+
+原打印机/登录两QPA、核心五项、catalog、回放、回环、仪器及报告累计：本批16次Qt调用共76项通过、个别Popen退出均0，Qt XML消息计数保留，不以`errors`属性等同断言失败。10个driver绑定最终150个共用正式对象，只有driver加QtTest宏/库，未重编/修改业务对象供测试。静态输入合同13/0；只运行新LIS capability部署模拟1/0，旧已通过19+打印1不重复跑；模拟不是RK部署。
+
+native新目录全量151主对象+31辅对象，实际构建0；最终371源快照SHA`e00508fe595f49c50413856422522fb00e8ddcd21b2080f15b50e636d8093fb5`前后一致，主SHA`d3d5fb4c50e387b0f0128a240d27a9e7617b4b4583bdb9d55ac4e008adc16ea2`、辅SHA`cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b`。初次exit2为编辑时CRLF使bash拒绝pipefail，原失败保留，修正三份改动脚本LF后才进行全量成功构建。
+
+Windows本批从PS7全量主151/辅31，12份子进程实际退出收据和顶层均0；371源、11工具链、Makefile实际外部依赖预后匹配，182 COFF/298构建产物核准。主PE32/i386 SHA`d47598a555d324507ac1275f16ce1f45138d6299148a58162773267b055cf9cb`，辅SHA`5f70bbff88e217aeb02794d133118785a1035f78aba254b8269de2826cdc8dac`，直接导入三项Advapi32查询API、未导入QtSerialPort。本批有真实独立收据，不能反向补齐旧361主构建的历史收据缺口。首次仅私有driver WSL参数转义失败、快照127/顶层1且未编译，原证据保留；修正ArgumentList后从新目录fresh执行。新增NOMINMAX重定义及原警告保留，未因非阻断警告重编。Windows GUI/注册表实际枚举及部署未执行。[Windows](../04_references/sn100_host/lis_settings_20261024/platforms/windows/verification.json)
+
+ARM64全量主辅、离线依赖/成对恢复冻结及最终响应/资源观测此处仍待终态核验，不凭后台进度记通过；最终结果后续追加同节，当前正式源码冻结不变。
+
+### 本批全局差异及后续切片
+
+对照唯一F01–F18/43操作事实，本批361→371新增10个LIS文件、改变11个壳接线/构建入口、无删除，350旧输入一致；原data/history/projects/reagents/samples/instrument/protocol旧业务输入未变。最终LIS子页4已实现本地配置，语言2、校准主3、质控主4仍为最终占位；真实LIS通信并未实现，不能把本地设置当F11全部通过。[全局差异](../04_references/sn100_host/lis_settings_20261024/review/global_delta_review.json)
+
+下一依赖满足的小片选择F08控制品/项目/批次本地CRUD：已只读核33份原输入、5表/5窗体，尚未实施。须保持全表唯一批号、项目规则按item_proj_id而非批次的原关联、历史字符串引用保护、稳定ID与事务默认批次轮换；显式改选默认批次可立即排队事务，渲染/打开不得隐式写库。原Cancel顶X解绑、过滤后row错配、ckxValid未持久化等问题逐项有依据处理；主Print原隐藏，不盲恢复。真实曲线/AL4A/失控规则与本地CRUD分开，缺材料不阻塞本地页。仍按现有计划其他全局缺口排序，无平行计划。
+
+
+### O10-2最终ARM接续、冻结与测量收口
+
+ARM初轮原日志明确记录obj126/127两条Hangup，128份原调用收据中126完成0、2未终结，原整体退出收据缺失。核无存活编译器及371源、原sysroot闭包指纹、工具版本和全部生成UI/moc/qrc内容后，受控接续用完整argv/cwd、对象SHA/生成源/头快照校验，只复用本批126对象，27个缺失编译和2个链接实际完成0；153个最终对象逐个ELF64 REL AArch64/DWARF源/flags/原始SHA及每次完整调用收据通过，未使用旧361对象。原中断原因仍未知，不能补造原终态退出；最终接续真实0与闭包/打包0分别有收据。
+
+ARM主SHA`6449642ecdce25f8a4bd5318ad639131b48b0a4423dc3d0d5ac9a88d7a1b518e`、辅SHA`1c7acee3205acd95acd6cef9fcb4ce416a5bbd52330bc26b9130fe50ae4598bd`；56项ELF离线闭包errors=[]，源码首尾/包均371一致，旧sysroot仅只读复用、未恢复/下载/安装。正式[成对恢复目录](../07_backups/sn100_host/lis_settings_20261024/README.md)中应用包70090942字节、SHA`78b2ee85c8592c977a3bd23ab7c1df5016ebca7d7d663dc76a19aab44022de57`，匹配371成员源码包928063字节、SHA`2c7943f4c0f6ff1ccbcbadc8c01150cd9423260956828cc85e7b8c27e65050c4`；应用33普通文件/7目录、31内部SHA、21个AArch64 ELF已逐成员回读。仅恢复本应用/匹配源码，不覆盖运行库、系统或认证材料。[ARM完整证据](../04_references/sn100_host/lis_settings_20261024/platforms/arm64/verification.json)
+
+最终构建/GUI/大文件哈希均停止后，仅做一次40保存响应与一次整程序30秒取证，不重复长测。固定两匿名端口provider、无人工延时，queued click→busy p95=0.286544ms、p99/max=0.327510/0.327510ms；queued click→GUI保存数据状态p95=125.634198ms、p99/max=134.108695/134.108695ms。5ms心跳592间隔p95/p99/max=11.287213/12.956783/14.180806ms，Qt3/0真实0；这是事件循环/GUI数据状态代理，不含OS物理输入、paint完成、实际枚举/通信或认可预算。[响应原样本](../04_references/sn100_host/lis_settings_20261024/response/metrics.json)
+
+实际整程序Release/XCB1600×900/Guest/原仪器页7、七SQLstore+打印/LIS两INI worker、空闲密码入口与1Hz自建Qj，独立匿名demo数据、30.152998050秒/296个100ms样本，SIGTERM正常退出0。固定10≤t<30段196样本、19.851647258秒，CPU=5.138113%单逻辑核；RSS峰286344KiB、HWM288436KiB、PSS258937–270500KiB、线程45/FD63，PSS缺样0。全wire 30TX/30RX/1560字节、连续sequence及逐帧金字节全部匹配，九存储关闭各一次、threads/loopback停止、临时bootstrap已删；只在退出后匿名库计数，不读/存认证值或运行库哈希。当前整程序单次基线不能与旧361/353不同数据相减推断纯LIS开销，亦非RK/预算/同板RT/长稳验收。[资源及原样本](../04_references/sn100_host/lis_settings_20261024/resource/verification.json) · [算术/wire复核](../04_references/sn100_host/lis_settings_20261024/resource/final_metrics_audit.json)
+
+[本批总索引](../04_references/sn100_host/lis_settings_20261024/verification.json)SHA`d93510e53a364464bf9a605b46d10fed20aa55c02e1c8ed58bfe87872b166ca9`；外层清单606项全部读回匹配。最终18次Qt调用共110通过含init/cleanup，另响应3/0，个别实际退出及XML断言均核；静态13/0和新部署mock1/0单列。Windows主/辅本批完整收据与原先361历史缺口分别保留。后续证据聚合由本聊天回读，未把代理未交付的最后审计冒充独立结论。
+
+三张最终XCB统一截图已归档03_photos，来源/SHA对应本批371测试；原Windows活动主题/完整行为、Windows实际注册表查询、RK实屏/输入/设备名/依赖、真实LIS/仪器/任务/打印、认可预算/实时性/长稳继续待验。旧O05 1150.178秒与报告偶发根因未关闭。下一按既有[O11-1卡](../01_docs/plans/sn100_host_migration_plan.md#o11-qc-local-card)推进质控控制品/项目/批次本地业务；本轮只完成原合同准备，尚未实施。
+
+### 用户安排：本轮结束后停止定时检查
+
+用户随后明确要求“这一轮工作做完之后，后面就不要去检查这个10分钟一次了。这个工作我后续再做”。已通过应用原生工具删除`sn100`每10分钟检查任务，工具返回`deleteStatus=deleted`；本轮LIS只完成剩余验收、归档和同一计划更新，不启动O11或其他开发/长测。未完成条目和QC原合同留在现有计划供用户后续安排，不另建提醒、自动任务或平行计划。
+
+本轮最终[交付回读审计](../04_references/sn100_host/lis_settings_20261024/audits/final_delivery_audit.json)通过，SHA`8ec9d7dd416857e4f64db59fe0d8ce0e667a51d7528ec5305f4a0046332bc188`；606项基础清单加入审计后为607项，[最终清单](../04_references/sn100_host/lis_settings_20261024/SHA256SUMS)SHA`4c953e6815247372f14965492793b4555db64547655e4fd65f35e693a04aa80e`，根索引仍为`d93510e53a364464bf9a605b46d10fed20aa55c02e1c8ed58bfe87872b166ca9`。371当前源、六个主辅产物、153个ARM对象/完整编译收据及两个中断收据、双恢复包、三图和七份文档均回读；所有本轮构建/GUI/测量已终止，无后台开发，自动任务配置文件亦已不存在。保留所有已有未提交修改/运行数据/原失败，未自动提交或推送Git。
+
+<a id="offline-four-windows-20261025"></a>
+## 2026-10-25：授权四窗口继续离线移植
+
+用户确认RK暂不可用，要求创建4个聊天分别推进质控页面、校准页面、项目剩余业务、报告剩余功能。本轮授权替代上一轮“等待后续安排”的开发暂停范围，但不恢复每10分钟自动检查，不扩大到RK/仪器连接、真实动作或未经认可的计算效力。
+
+先核对当前工作区与已有聊天：同项目原计划聊天为idle，其余旧开发聊天未加载；保留全部未提交成果和371项输入的LIS已验检查点。本窗口先更新既有计划/README和当前事项记录，随后派发4个本地同目录聊天；不自动创建工作树或提交/推送。
+
+分工与门槛见[现有计划四窗口卡](../01_docs/plans/sn100_host_migration_plan.md#offline-four-windows-20261025)。校准、项目、报告各自负责模块源码、独立构建/匿名数据/功能证据；质控窗口完成自身模块后，兼任统一整合负责人，回读其他窗口实际交付再串行改公共主壳、累计回归、三平台最终产物与离线闭包、资源和匹配恢复归档。各窗口只写自身证据中的交付清单，不另建移植主记录，总文档由整合窗口集中维护；当前仅登记授权/分工，任何新功能均未提前记为通过。
+
+4个聊天已通过应用原生`create_thread`创建在当前本地项目，未指定模型或新工作树；逐个派发了实际实施范围、模块文件边界、匿名测试/证据目录、原色布局要求和交付清单。随后一次`wait_threads`快照确认4个均为active/inProgress、各自已给出开工说明、turn error均为空；这只证明已开始，不是功能通过。
+
+| 聊天名称 | 本机聊天ID | 职责 |
+| --- | --- | --- |
+| SN100质控页面与统一整合 | `01a1732c-83b1-7bf2-8efb-ce6b8e252208` | 质控本地管理及最终统一整合，已提供其余3个真实聊天ID |
+| SN100校准页面离线移植 | `01a1732b-9c52-7180-9464-28a0dc526a76` | 本地记录/点表/曲线及关联 |
+| SN100项目剩余业务移植 | `01a1732b-3481-7d80-a7de-d861dbb28e19` | 高级参数、试剂批组关联及共用catalog结构兼容 |
+| SN100报告剩余功能移植 | `01a1732b-d6b9-7df1-b2ba-ec1133072d5b` | 原版已启用的报告剩余本地功能与文件导出 |
+
+所有聊天hostId为`local`，实际cwd均为本仓库。当前派发窗口到此完成创建/初始登记，不另建自动监控；用户后续可直接进入各聊天跟进，最终接入与总文档由质控/整合聊天负责。派发文档的差异空白检查通过，保留此前所有源码/证据/运行数据及已知失败。
+
+### 质控独立实现和当前门槛
+
+质控/整合窗口实际启动后，按模块与文件Skill回读工程/计划及原合同，33份只读原件SHA再次逐一相等，未运行参考工程或读取其生产库/连接配置。[原件复核](../04_references/sn100_host/qc_local_20261025/original_contract_recheck.json)。正式新增`quality_control/`，保留原`quality/`统计接口；原五份`.ui`逐字节保留，原Print隐藏，原入口无角色门槛。必要差异及原函数来源见[origins](../06_programs/sn100_host/quality_control/origins.json)。
+
+存储使用显式匿名`quality_control.db`，SQL连接在所属工作线程创建/使用/关闭。原五表旁增加数据集UUID和项目结果单位/倍率/精度快照；规则仍按`item_proj_id`关联，绝非按批次保存靶值。全表批号唯一；已有历史的控制品/批号改名及删除、项目解绑拒绝，当前/上一批次删除拒绝。默认批次仅在明确动作中整组事务轮换，同选无写入，加载不修复历史标志；ckxValid仅回显禁用，不冒称原有持久化已完成。
+
+项目关联先在已有catalog引用表保留带数据集UUID的预约，再提交质控库；失败仅回收本次新增预约，成功解除关联后才释放。释放失败保守保留并报告，跨库不是SQLite外键或一次原子事务。原版只认`Original/Calibration/Rate/INR`类型1至4，匿名seed中的`Time`不能猜成`Original`；未知类型不创建质控规则。尚需真实ProjectsStore接线联测。
+
+WSL Ubuntu-24.04/qyq、Qt5.15.13、GCC13.2 Release独立存储首轮14/0，增加初始化拒写、重开/只读SHA不变后复测16/0，9.735秒，qmake/make/test退出均0；真实锁、COMMIT失败、触发器中途失败及恢复、双数据集同ID引用隔离均有原始输入/回执。[结果与原始日志](../04_references/sn100_host/qc_local_20261025/store/verification.json)。这些测试用匿名最小catalog协议夹具，不能替代统一跨模块联测。页面已编译并1800ms正常启动退出0；早先一次类型编译错误和非空目录启动拒绝均保留，完整GUI CRUD、1600/1920视觉、统一累计及三目标仍待本轮后续证据。
+
+当前三个用户开发窗仍在独立收口，整合窗口只读核对其状态，未向其他聊天发消息。最终源码冻结、Windows/ARM整程序构建与资源测量尚未开始；RK/仪器不可用，不部署，不新增自动检查或长稳任务。
+
+### 其他三窗交付回读与整合开始
+
+随后通过`wait_threads`分别确认项目、报告、校准三窗均`completed/idle`且turn error为空；未发送跨聊天消息。项目63份完整模块源码、报告48份相关源码、校准55份输入逐一核SHA均相等，项目6个独立产物也逐项相等；校准12份原始调用日志SHA全部相等。[项目/报告回读](../04_references/sn100_host/qc_local_20261025/incoming_source_review.json) · [校准回读](../04_references/sn100_host/qc_local_20261025/calibration_incoming_review.json)。
+
+独立交付实际范围：项目高级方案11/0、项目基础9/0、试剂专项11/0和基础11/0，两个独立程序退出0；报告本地删除/显示12/0、独立进程重开3/0、HTML7/0及原CSV/PDF/患者草稿回归，保留原失败与XLSX未启用依据；校准存储50/0、offscreen/XCB页面各21/0，原始点/复制/软隐藏与两尺寸可达性有证据。各独立结果仍以原交付清单及对应源码为准，不能算统一程序或本轮最终三目标通过。
+
+公共接线现在集中进行：项目补ARM显式高级编辑器清单、试剂提交后的项目候选刷新；报告接实际会话、新显示合同QRC别名、HTML结果状态与报告helper依赖；质控/校准接原主4/3、独立worker、就绪门闩、退出顺序与全局草稿/busy守卫。构建清单只读检查15/0、真实退出0；这仅证明输入闭包清单，不代替编译或业务测试。
+
+校准独立版本尚无跨库保护，因此先补预约与含隐藏历史的启动对账，再验共享catalog写入。选用模块worker自有第二连接、仅写既有预约表的实现，项目/批组业务及schema仍由其owner维护；这是对独立审查中“仅经owner API”建议的明确实现调整，原因是原QC可Guest操作、校准role1–5可操作，而项目编辑API只允许工程师/管理员，不能伪造身份或新加管理员门槛。预约与本地提交保持分步，失败/崩溃残留保守保留并闭锁核查，不声称跨库一次事务。受影响的原校准两存储文件和三匿名夹具精准保留到`07_backups/sn100_host/offline_four_windows_20261025/pre_integration_sources/`，SHA与独立交付清单一致；不复制运行库/认证资料。保护后的实际联测与原回归仍待后续收据。
+
+### 用户晚间新授权：继续分工、每10分钟查看
+
+用户随后明确要求其他三个窗口继续分担，并要求今晚每10分钟汇总真实进度、核对下一步、向原窗口分发工作，本聊天持续推进进入真实RK前的离线程序验证。该新要求取代本轮开头沿用的停止定时检查安排。已向原三个真实聊天派发项目引用、校准guard/历史语义、报告主壳/HTML/权限的独立复核，只允许各自新增审查JSON、不改公共或业务源码、不跑额外构建/GUI/资源；`wait_threads`确认三窗重新active/inProgress。实际修复与统一回归仍由本聊天集中执行。
+
+通过应用原生工具创建heartbeat自动计划`sn100-10`，状态ACTIVE，目标为本聊天`01a1732c-83b1-7bf2-8efb-ce6b8e252208`、每10分钟。工具view卡及本机automation.toml字段已核对；未创建重复聊天或cron工作。计划保存了用户授权分发的三个聊天ID、只读回读/源码SHA/退出证据门槛、共享dirty写入边界、最多-j2、最终构建/资源串行及不连接硬件/真实LIS、不猜生产参数、不安装依赖/启动长测的限制。按用户要求每轮简要汇总；可执行离线门槛和归档完成、或仅余硬件/材料前置时停止空转并保留清单。尚未发生的后续检查不记为执行通过。
+
+### 晚间独立核查结果与修复中的门槛
+
+原三窗只读审查现已交付并停写：[项目引用审查](../04_references/sn100_host/projects_remaining_20261025/integration_reference_review.json)、[校准保护审查](../04_references/sn100_host/calibration_local_20261025/integration_guard_review.json)、[报告接线审查](../04_references/sn100_host/report_remaining_20261025/integration_shell_review.json)。发现质控启动漏对账/并发回收、校准自动回滚后失锁回收、停用项目仍可隐藏、同UUID异文件副本及报告后台导出导航守卫等具体问题；这些为静态审查，未把提出的交错步骤冒充实际复现。已分给当前聊天的三个独立代理分别修复质控引用、校准保护及补报告统一测试，文件边界互斥；主代理负责公共壳及统一终态。用户授权的多窗口分担持续有效。
+
+主代理已将报告实际busy检查放到两导航入口，覆盖控制器从非报告页面发起导出的情况；native构建脚本默认/可选并行数限1或2。质控引用回收警告保留到后续列表读取后的状态，避免本地删除成功遮住残留保护登记。以上新改动仍须实际统一回归，不提前标通过。四份受影响源码精准保存于正式恢复目录的`review_navigation_preimage/`，有逐份SHA清单。
+
+此前质控边界实际复现数字末尾换行误接收（2通过/1失败、退出1），正则改为绝对结尾后完整存储16/0、退出0；原失败未覆盖。页面通过真实键鼠和SQLite回读发现原表单八个编辑框readOnly、批次新增重入，已在页面代码解锁同一控件并用信号屏蔽修复，不改原五份UI。原事件过滤器跳过readOnly，因此不能称解锁只是还原原版虚拟键盘。修正测试弹出列表/快捷键焦点后，gate05 offscreen6/0、gate06 XCB6/0，后者留存五窗真实截图和1600可达断言；这些产物先于随后引用修复，终态必须再跑。
+
+校准加入保护后原存储首轮47/3暴露新合同差异：合法预约会改变catalog整文件，历史原始单位/倍率应保留。改为核项目/试剂业务行不变及真实预约、明确两种历史单位保留断言后复测50/0、24.286秒、退出0；首轮失败保留。页面offscreen21/0、10.147秒、退出0。当前追加修复可能改变这些源码，最终需重新核验；ARM/Windows主辅统一构建、离线闭包和最终测量尚未通过，原Windows、RK及仪器均未执行。
+
+### 引用修复独立终态与426输入统一构建启动
+
+质控修复已正式交付：[清单](../04_references/sn100_host/qc_local_20261025/qc_reference_repair_handoff.json)，20/0、8.654秒、qmake/make/test真实0。真实ProjectsStore与双QcStore在明确屏障处复现解除/重加、ABORT和自动ROLLBACK的失败/成功交错，回收先重新取本地写锁核真实关联；只释放确定无引用的新键。启动补齐缺失匹配hold，校验含停用项的全部历史/快照，未知身份、孤立自身hold、同UUID异物理路径闭锁；历史单位/倍率/精度不覆盖。18份匿名SQL回读及两轮日志留证，第一轮仅测试缩进告警修后同20例再次通过；源码四份SHA由主代理回读相等。
+
+校准修复已正式交付：[清单](../04_references/sn100_host/calibration_local_20261025/calibration_guard_repair_handoff.json)，旧store加停用删除拒绝后51/0；引用22/0，真实退出均0。操作锁跨两库动作，自动回滚后重建本地事务核含隐藏记录，清理失败保留保护和诊断；同规范文件多worker可用，同UUID异路径副本拒绝。其私有引用构建消费的QC源未预先冻结，只留后验样本，明确不能冒称最终联测；主代理将用同批统一对象重跑。两模块在catalog_metadata各用独立路径键，同路径恢复，跨平台/移位需停写后显式核对迁移，不能直接清UUID或hold。
+
+两修复代理均已停写/停构建，驱动审计也停写后，主代理开始新目录native全量主/报告helper构建；426项输入的初始快照SHA为`e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19`。此处只记录启动，不凭进度记编译通过。最终驱动已补源码完整集合、实际主辅/Makefile/对象SHA绑定及原始退出收据；最多2并行，GUI和资源尚未开始。
+
+报告原窗对新统一测试再审，提出Guest初始role=0不能确认异步actionReady变化。主代理已将等待完整状态后再断言身份/来源；并补实际HTML工具按钮、文件框Cancel/重开/键盘保存、导出期间关闭预览、后台直接导出两路径，逐字段/精确行数与APTT `0.00 s`回读。新增测试仍待绑定执行，[原只读审查](../04_references/sn100_host/report_remaining_20261025/new_shell_test_review.json)仅对修前SHA有效，未覆盖或改写。
+
+### 426项原生构建终态与累计首轮失败
+
+native全量真实退出0，426项首尾相等，主168/辅32个对象均本次新建。主SHA`013eb363c6cd7a928f62f860c5cbd6755421a81808a4e6ad347cc6db0887f176`，辅SHA`2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb`；Makefile SHA`df6bbee134af56a57cac5da631502188c07ab7c62e934eb3b06c62423e7527d0`。随后21个QtTest驱动实际编译/链接退出0，业务链接使用同一167个主对象（排除main.o），主对象未加QtTest宏。
+
+累计` suite_final_01`前11次调用实际通过；catalog调用6/1、退出1，失败在旧测试直接setText后期待草稿。切入项目页现在会异步刷新已提交候选，ProjectPage实际已把编辑框设readOnly且busy；旧setText绕过键盘保护，旧等待只查isEnabled不能确认可编辑。测试改为等待busy结束/非只读，再真实鼠标和键盘输入，截图也等读取结束；产品源码未改。精确旧测试已备份`07_backups/.../review_test_preimage/`，SHA`acd04609e8c14482cb8ef044cf85332cbd488ea25e1c8db6ea60df3f7a46448c`。原21驱动/证明/原执行脚本整体保留为`cumulative_build_01/`，实际原路径及迁移依据在同层`cumulative_build_01_relocation.json`，原失败日志未覆盖。
+
+测试绑定工具新增显式可选复用：逐一核同一426冻结、同Makefile、全部167对象/其源SHA、测试源及二进制/moc/私有对象SHA相同后，20个未变测试产物可复制复用并单记reuse.json；其原三段编译退出收据原样保留，未伪造新调用。唯一改动的catalog测试新编译，整体绑定真实0。未复用旧371检查点程序。现执行新目录`suite_final_02`共34调用，终态尚待核对；Windows/ARM、独立新入口、资源和恢复归档仍待实际执行。
+
+### 累计测试输入与窗口焦点修正
+
+`suite_final_02`前16个旧调用全部实际通过，catalog已7/0，原报告两个方法4/0；本次通过不能关闭既有偶发查询根因。新QC page实际6/1：主代理新增警告测试把控制品名写成19字符，超过原1至16上限，输入被正确限制；精确失败测试源SHA`535c14030a2a98b9f2465b4bcf69e70d5601a4cc7eea1c6b8f2933f587fcd502`保留在正式`review_test_preimage/`。改为13字符`QC_REF_NOTICE`后，`suite_gate_03`QC page两QPA各7/0、QC shell各5/0；新增真实catalog删除触发器证明本地删除已提交、保守hold仍1、警告经过成功reload仍保留。旧60秒项目benchmark也补相同页面就绪等待，但本轮未执行该长用例，不记新性能通过。
+
+gate03校准统一测试初轮3/3，产品完整/旧路径/失败/依赖启动退出方法已过。独立任务只修QtTest活动窗口、下拉框及点表delegate的真实键鼠流程；中间attempt01仍3/3，证据显示modal关闭后headless宿主未重新激活，Insert没打开对话框、focusWidget为空，未延长超时或改变业务断言。attempt02 offscreen6/0（9.47秒）/xcb6/0（10.01秒），实际均0，准确中间源按真实prebuild SHA重建并标注，生产426不变。[正式交付](../04_references/sn100_host/calibration_local_20261025/calibration_shell_repair_handoff.json)。主代理再次绑定当前源后，`suite_gate_04`校准两QPA各6/0，均真实0。
+
+gate04报告统一测试实际4/1：六角色与actionReady=false、四入口草稿Cancel/Discard、显示保存/软删/重开均过；HTML在实际工具栏按钮尚不可见断言失败，未进入导出成功段。该原始日志保留，已分配单一GUI/构建槽核对预览异步布局、原工具栏溢出菜单和文件框焦点，禁止弱化字段/忙态断言或改生产冻结。当前gate是显式suffix预验，未执行的前缀逐项记录omitted，不能算完整34次通过。最终完整累计、三平台收口、资源与恢复包仍待后续实际收据。
+
+### 报告真实操作修复终态与项目事务终审新发现
+
+报告测试私有attempt01/02各4/1、真实退出1，分别保留布局可见区判定与扩展工具栏路径的失败。attempt03终于按真实Qt5布局操作：offscreen扩展后点击第二行原按钮、Cancel后重试direct，xcb两次direct；无action.trigger、改预览尺寸、加超时或弱化断言。两QPA各5/0、2963/2976ms、实际0，真实Save/fileSelected路径、前后台各1行APTT `0.00 s` HTML字段与busy守卫均过。[正式交付](../04_references/sn100_host/qc_local_20261025/report_shell_repair_handoff.json)。新cpp SHA`be49e9384af399d01d891e9ccdce63868e7649d69e8b9cb943d9aa11afe9b822`，主代理当前已换绑到同一167原生对象，20个未变测试产物带SHA复用。83份formal证据逐项核SHA，原失败与源像未覆盖；这仍不是最终完整累计。
+
+按用户持续分工授权，已再次给原项目/校准/报告三个聊天派只读修复终审，wait_threads确认三者active；各自只写post_repair_review.json。项目窗指出新的具体并发路径：`ProjectsStore::save`在事务外read得到旧名称，之后别的写者改名并新建QC引用，旧保存比较缓存旧名会跳过引用检查，再写回旧名。主代理已逐行回读确认代码结构，尚未以实测冒称复现；试剂saveBatch一开始begin(op)，同类检查已在事务中，无需扩大。
+
+已将实际修复交回项目源码owner，独占构建/GUILESS槽：窄备份projects_store.cpp，BEGIN IMMEDIATE先于当前记录/单位/身份读取和引用判定，所有早退rollback，保留权限/不可变类型及原名/全名合同；新增root/tests确定性原子引用回归并保留修前实际失败、修后成功。可用SQLite原生事务prepare回调屏障而不添加生产测试接口，API须有准确依据。此后e65/主013eb/辅2de只作为修前检查点，最终35调用、新native/Windows/ARM与资源/配对恢复须修后新冻结再做；当前没有生成最终发布包或进入RK。
+
+### 项目原子保护实测与修后重新冻结（2026-10-26凌晨）
+
+项目窗口实际完成窄修复，正式交付见`04_references/sn100_host/projects_remaining_20261025/project_reference_atomic_handoff.json`。原`projects_store.cpp`的SHA为`5342e5dbded0eda1f07cdd0bebb3971dac5d3222dd3fdeea61e793fb98219721`，修后为`b234dd9d2609fc1b424396a2d9244f4dc2a9b4929fb0f9dae46a12685141702f`；先BEGIN IMMEDIATE再读当前记录、单位及引用，全部早退回滚，不改接口、结构或权限。现有SQLite授权回调只用于测试屏障，未加生产测试钩子、安装依赖或改工具链。
+
+同一真实双ProjectsStore与QcStore交错，修前实际5通过/2失败、退出2，项目名和全名两条竞态均覆盖；新源独立构建两轮各7通过/0失败、qmake/make/test均真实0，含锁、COMMIT/写入/读取失败与后续重试。主代理回读实际原始日志、源码SHA与仅一份生产源码变化；修前源码精准备份，原审查/失败收据原样保留。此处独立成功仍不替代统一对象累计验证。
+
+修前native及测试对象迁存`native_pre_atomic_01`、`cumulative_build_pre_atomic_01`，关联原执行路径的relocation另存，不改写原命令/退出。修后重新从空目录全量WSL Release主/辅编译，2026-10-26 00:12本地时间完成：426输入首尾相等，快照SHA`57f3b03290cc3635a5772a7169d22c1713f164186ab3b368028a0f35f8b710ed`；主168与辅32对象均本次新建、实际退出0。主程序SHA`054bffa7847881cd084f4792f81c796313396f3e07e72195aa20b89e9417b347`，报告helper SHA`2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb`，Makefile SHA`df6bbee134af56a57cac5da631502188c07ab7c62e934eb3b06c62423e7527d0`。helper内容相等是重新鲜编后的实际结果，未复制旧产物。
+
+现开始22个QtTest驱动全部鲜编绑定，不复用修前e65对象；完整计划35次调用增加项目原子保护，未用suffix门槛代替全量。Windows/ARM主辅、独立入口、短响应/资源与匹配恢复包仍待后续真实结果，不连接RK、仪器或真实LIS。
+
+### 修后完整累计首次崩溃门槛
+
+22个驱动以57f3b032冻结的167个统一业务对象全部鲜编/链接，实际退出0、复用0。完整`suite_final_05`前24次调用均通过：原16次累计、QC page两QPA各7/0、QC shell各5/0、校准shell各6/0、报告剩余shell各5/0。随后`calibration_reference_offscreen`在`destroyedTypesOrHistoricalUnitCannotBeCopied(missing-calibration-type)`实际收到SIGSEGV11，Qt记录18通过/1失败并ABRT，父进程回收真实exit -6；累计驱动退出1，后续11项未执行，未产生完整通过结论。原日志、XML、实际命令/退出和匿名runtime均保留在原目录。
+
+已将独占调试槽交还校准测试负责人，先用现有gdb作为父进程抓实际线程栈，不因Qt自附加受YAMA限制去改系统参数；仅允许测试源窄修并保留精确前像，若属生产代码须先报告证据。此时根因未明，不能以私有先前22/0或重试成功关闭。主窗口继续整理操作说明；其他构建/GUI/资源暂停，之后按实际根因决定重新绑定或重新冻结。
+
+### 校准引用测试线程风险取证与重绑
+
+同一修前bound driver在gdb父进程中跑精确数据行及完整22序列均正常退出0，没有重现原SIGSEGV，不能以此关闭根因；ThreadSanitizer私有单body诊断实际exit66，unexpected memory mapping，未产出race结论，未改ASLR/sysctl或安装环境。随后有界gdb实际停在ProjectsStore worker发ready时的`QSignalSpy::qt_metacall`：Thread2/LWP372直接写主栈receiver，同时Thread1/LWP369在同一数据行waitFor/qWait读取信号记录。本机Qt5头文件亦确认DirectConnection、appendArgs无锁；这是测试跨线程风险的实际栈证据，仍不是原SIGSEGV调用栈。
+
+仅测试`calibration_reference_test.cpp`改用QObject上下文的QueuedSignalRecords，完整typed参数通过Qt::QueuedConnection交主测试线程后append/clear/read；Worker与临时读回/hold/bind观察器全部替换，实际worker no-op队列屏障等待原slot及自动load返回后再取新观察器。22条业务数据行/断言及5000ms等待未减弱，生产426/57f不变。修后首次真实22/0、13.64秒、exit0，285次主线程投递有自检。直接崩溃原因仍标未确证，不宣称旧崩溃或长稳已修好。
+
+主代理核对实现后，将原57f的22-driver完整绑定迁存`cumulative_build_pre_calibration_reference_01`，22份精确旧cpp均依原proof SHA留`*_executed.cpp`，另存执行脚本后验副本；原路径/argv/退出不改，relocation保存对应关系。当前新绑定只重编校准引用测试，其余21驱动须同57f/167对象/源/moc/二进制SHA相等才允许带原真实编译收据复用。之后完整35从首项新目录重跑，不把已有24次及私有22/0拼成最终通过。
+
+### 当前57f完整35次累计实际通过
+
+修正测试线程风险后，主代理新绑定真实exit0：1个校准引用测试重新moc/编译/链接，21个未变测试仅在同57f源/Makefile/167对象/测试源/moc/私有对象/二进制SHA逐一相等后带原始编译收据复用。`suite_final_06`从首项执行，35次actual exits全0、full_suite=true、omitted=[]、无失败或跳过；426输入未变，主054bffa7/辅2de67df7相等。原suite05崩溃及所有旧e65失败仍保留，不以本次通过关闭原SIGSEGV直接原因、旧legacy.query或8h恢复根因。
+
+实际当前结果：原16次累计通过；QC page两QPA各7/0、QC shell各5/0；校准shell各6/0、报告剩余shell各5/0；校准引用22/0、QC引用20/0；报告剩余核心两QPA各12/0、HTML各7/0；QC原存储16/0、校准原存储51/0、原页面两QPA各21/0；新增项目原子保护7/0、4.165秒。原始命令/实际退出/Qt txt+junitxml见`temp/sn100_host/qc_local_20261025/suite_final_06/`，正式总收集仍待所有后续门槛完成。
+
+随后启动新目录独立QC/校准qmake、make-j2、真实启动/1800ms正常关闭验证。另核到项目高级11/0、基础9/0、试剂批组11/0/基础11/0及项目/试剂两个独立程序原交付早于最新projects_store原子修复，因此分给原项目窗口只准备新目录补充驱动，不改源、不覆盖旧产物、当前不执行。主窗口在当前阶段后串行补这4组专项和2独立入口，才能把本轮功能与当前源码对应；原35次完整计划自身仍保持35，不把追加专项混记为已执行。
+
+### 独立QC/校准终态与项目专项补验进度
+
+`standalone_final`当前源426/57f全部7个实际阶段退出0：QC和校准各qmake/make-j2鲜编；QC实际已加载、1800ms正常退出0；校准先由同批真实主壳创建项目/试剂/样本catalog，观察SHELL_READY再经SIGTERM正常关闭全部5worker，临时初始化文件已删；校准独立实际加载后正常退出0并输出worker/database关闭标记。首尾source、主辅、native verification和两独立binary SHA相等。此为实际启动/关闭验证，不代替独立CRUD或RK/原Windows。
+
+原项目窗口补充驱动`run_projects_modules.py`已AST0并停写，主代理逐段回读（source合同、真实CLI、fresh目录/对象/退出/QtXML、环境隔离及只读匿名catalog检查）后串行执行，脚本SHA`c0b67f95fd7b9e70bfd59383e0b8e74e2008c590ae7dd7b3d424fd6150621d55`。当前项目高级11/0、项目基础9/0、试剂批组11/0实际均0，使用修后b234项目存储新对象；试剂基础及两个独立入口继续执行，未提前记6目标完成。总collector已增加该补验为必需门槛，35累计、4专项和2补充独立入口分开登记。
+
+从同批`suite_final_06`复制7份匿名截图到`03_photos/20261026_sn100_*.png`，全部SHA核对，清单与已实际审图范围在`04_references/sn100_host/qc_local_20261025/current_visual_review.json`。质控管理1600、校准统一1600和报告软删后空表已人工视图回读；完整原Windows同状态/活动主题、HTML浏览器渲染及RK实屏仍未验，不由截图存在推断视觉等价。
+
+### 项目/试剂补验终态与Windows首轮真实失败
+
+`projects_modules_final`六个目标全部实际qmake/make/run退出0，426/57f源码、8测试输入、主辅与全部200原生对象首尾相等；四组专项分别11/0、9/0、11/0、11/0，两个独立程序实际加载后1800ms正常退出0（1.94/2.00秒）。项目有唯一原成功日志；试剂没有伪造success标记，采用原main中readyChanged(true)后才生成的1751×968新PNG及匿名catalog完整性摘要核对。六个私有构建目录由空开始，全部实际对象/生成文件/Makefile/二进制SHA贯穿运行和末核相等；不把QT_TESTLIB定义参与的私有qmake产物冒称统一167个对象本体，主35计划仍精确绑定正式Release对象。本地业务源码也只读核到没有QT_TESTLIB/QTEST条件分支，原搜索空结果exit1表示未命中。
+
+随后普通PS7执行Windows全量fresh主/报告helper构建，Qt5.14.2/MinGW7.3，主qmake实际0、首轮make实际2，driver实际1、published=false；只生成27个主对象，未发布或部署任何旧产物。`history/report_remaining_store.cpp`报QVariant不完整与addBindValue无法转换，日志明确指向缺少显式QVariant头；Qt5.15的间接包含不能代表Qt5.14可编译。原make.log/exit.json及verification不覆盖。
+
+已将报告源码窄修交回原报告聊天，独占Windows诊断槽：按57f条目保存旧像，先补真实所需头文件；在原失败树继续make-j2仅作兼容诊断，另存实际命令/退出，发现别模块问题先回报，不改业务/接口/权限/布局，不安装或改全局环境。待平台缺口收齐并停写后统一新冻结及最终对应验证；57f已通过结果保留原版本范围，不冒充后续修后源码结果。
+
+资源驱动尚未运行，已补结束后解析真实STATUS_LOOPBACK_WIRE报文的只读核验：按正式frame_codec的帧头/长度/单片序号/XOR/帧尾核对Qj请求和SIMULATED应答、连续事件序号及至少20条实际请求/应答，区分正常关闭最多1条在途请求。仍只做一次30秒观测，未增加硬件/长测或预算结论；AST0不等于该未来观测通过。
+
+### 两处显式头文件修复收口与5123新冻结
+
+第一轮报告头补齐后，Windows continued make实际2，随后准确报校准存储QVariant不完整。主窗口按57f中的ccff38b3…精准备份`calibration_store.cpp`至正式`windows_include_preimage/`，只插入`#include <QVariant>`、保留其他原始字节/行尾，新SHA`3c398cde7c968153d7d33c7400cd33fe055a5ad14d7177935a5dd09f01a121c3`；报告窗口自身单行include的新SHA`13709d4d4054c5d03e5a3a361f4a0998063f22026bf89e18d119ecb38142ed6c`。这两处不改业务、API、权限、schema、布局，也未改全局Qt/编译器。
+
+原报告窗口第二轮continued shell make0，独立新目录renderer qmake/make0，驱动0、两份PE32架构核对通过；准确源码426首尾不变、对旧冻结只差两份上述cpp。正式交接`04_references/sn100_host/report_remaining_20261025/windows_include_continuation_02_handoff.json`，SHA`8c84126ad2fdbd17c48297015fdbbb8475cae7322c1754f30efeae684af7fc3d2`。本次仅诊断构建，未伪称fresh最终发布/WindowsGUI，原首轮/续编失败分别原样保留。wait_threads确认该窗口idle/completed且error=null，源码及构建进程已停。
+
+新完整快照仍426项，实际只差上述两项，SHA`5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29`。主窗口执行显式RootGo保留脚本：核原57f主辅/200对象/22测试binary与每份实际test source后，把native、cumulative_build、standalone_final、projects_modules_final及Windows失败树迁存对应pre_windows_include_01目录；22份准确cpp与执行脚本副本保留，原proof/argv/退出不改。5个绝对移动目标均先核在本任务temp根内，未删除文件。完整映射已精准复制`04_references/sn100_host/qc_local_20261025/pre_windows_include_relocation.json`。
+
+迁存目录中的匿名运行库仅保留历史，不改其canonical-path绑定；原路径记录不能指向后续新同名产物，也不直接重开迁存库或清UUID/hold。重新实验用全新匿名目录，必要原路径恢复须停写核对。历史正式collector按e65/57f各自归属保存，不计为新5123的通过。
+
+随后从全新native目录开始5123整套WSL Release构建，最多-j2；此处只记启动及前快照SHA，不提前记成功。项目补验driver仅在保留旧c0b67f…执行源像后，把EXPECTED_FREEZE改为5123，新driver SHA`b2710670991dcc53e87549488bced897f8f670294220b66edc5ed3ffb71a3bf2`；后续22驱动/35全量、独立入口、6项目补验、Windows/ARM、短响应资源和配对恢复仍需实际新收据。另分原校准窗口仅做测量脚本只读预核，不执行任何构建/GUI/benchmark，不改源码。
+
+### 5123整套原生全量编译实际终态
+
+2026-10-26 01:38本地时间，新5123/426项输入的WSL Release主/辅全量构建实际退出0，主168/辅32对象均在本轮开始后从空目录创建；源码首尾完整集合及SHA相等。主SHA`054bffa7847881cd084f4792f81c796313396f3e07e72195aa20b89e9417b347`、辅SHA`2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb`，Makefile SHA`df6bbee134af56a57cac5da631502188c07ab7c62e934eb3b06c62423e7527d0`。主辅字节与57f一致是本次鲜编的实际比对结果；新源码冻结仍是5123，未拿旧scope替代本轮。
+
+现从新cumulative_build目录鲜编22个驱动，无跨cohort复用；随后完整35次将使用新的独立attempt并从第一项执行。资源脚本两处预核缺口正在仅temp工具中收口；源/业务继续冻结，后续独立入口、6项目补验、最终Windows/ARM及正式短观测尚未写通过。
+
+### 5123累计登录1920断言失败与测试输入准备修正
+
+5123的22驱动全部鲜编0后，`suite_final_07`前5调用实际通过，第6个login_xcb实际4/1、exit1：原`legacyOptInAndGuestLogin`第329行available.contains(cardRect)为false；登录其他两业务方法仍过。该失败目录仅有login_1600.png而没有1920截图，可推断失败在1920循环；原精确矩形没有日志，不能凭后续通过确定直接原因。完整计划当轮停止，后续未执行，原raw/command/exit/XML保留。
+
+界面测试负责人独占GUI槽，先保存原5accedc3…测试cpp/pro到正式login_geometry前像，再用原bound新匿名单方法、私有几何/事件诊断及3次有界缓冲完整XCB观察，均通过但未抓到原false现场。实际记录到resize/ensureVisible前后宿主inactive，open/show后XCB才产生Move/Resize/Exposed/Active事件，原loginReady仅看动画和默认账户加载，没有准备原头像点击所需的native宿主状态。MousePress/Release警告在通过轮也存在，源Badge事件过滤器释放时发clicked后继续默认处理，不能单凭警告归因。
+
+仅测试cpp新增prepareHostForInput：resize/show/raise/activate、sync窗口系统，在原15秒内核请求尺寸/exposed/active、头像可见可用且完整落在viewport，连续事件轮次宿主/滚动几何稳定后才做原点击。没有把contains放进等待条件；原450×571、立即contains、登录业务和密钥扫描全部保留。首轮过宽地给全局loginReady加active条件导致offscreen4/1，原失败与1192684…执行源原样保留；第二轮恢复原loginReady，只限制合法宿主输入准备，完整offscreen5/0（8.10秒）、XCB5/0（8.17秒）、实际退出均0。128条原断言源码行逐条保留，新增1条宿主准备断言，生产5123源码完全未改。
+
+正式交接`04_references/sn100_host/password_login_20261024/login_geometry_repair_handoff.json`，SHA`d346e5f5c44cc153fe496d705654001fab1bcabb9abdb7dd5662fb4ff392524e`；新cpp SHA`8374aeea26e9a670a7fc27c88538db615ad31cf02c3bc19ecbc6d95ce5984afe`。原false直接原因仍未确证，不记生产布局缺陷已修。主代理回读新准备函数和未变contains/尺寸断言后，将原5123主22绑定迁存`cumulative_build_pre_login_geometry_01`并核22份准确旧cpp/binary SHA保存源像；原路径/退出不改，relocation对应关系另存。新绑定只鲜编这一测试，其他21必须同5123/167对象/源/moc/binary逐项相等才带真实原收据复用；之后从第一项重跑完整35，不把私有5/0拼成新整轮通过。
+
+### 5123最终完整35次与两个独立入口通过
+
+`cumulative_build`同5123绑定真实exit0：仅password_login_shell_test按8374aeea…新源鲜编，21未变测试在同167正式对象/源/Makefile及自身源/moc/object/binary SHA完全一致后带原编译收据复用；未借旧cohort产物冒充本轮。`suite_final_08`从首项完整执行35调用，实际全部0，无失败/跳过、full_suite=true、omitted=[]，426源未改，主054b/辅2de SHA相等。两显示模式登录均5/0，之前失败位置通过；QC page各7/0/shell各5/0，校准shell各6/0，报告剩余shell各5/0，cal引用22/0、QC引用20/0，报告核心各12/0、HTML各7/0，QC store16/0、cal store51/0/page各21/0，项目原子保护7/0（4.015秒）。原suite05 SIG和suite07几何失败直接原因仍未确证，保留原始失败，不以本轮通过关闭长期稳定性。
+
+随后当前5123的独立QC/校准在全新`standalone_final`目录完成7阶段实际0，源码/主辅/native verification/两独立binary首尾相等。两页实际loaded，1800ms正常关闭；校准catalog由同批真实主壳owner初始化并观察ready/正常5worker关闭，临时初始化输入已删，未手造catalog或复用旧运行库。
+
+现继续当前5123的6目标`projects_modules_final`鲜编与实际运行；新source freeze guard5123，父进程输出与原始阶段收据继续保留。Windows首轮兼容问题诊断已过，但最终对应新cohort的Windows/ARM、短观测与恢复包仍待实际完成。
+
+### 5123六个项目/试剂目标与Windows最终构建通过
+
+`projects_modules_final`六个目标均在全新目录实际qmake/make/运行，共18阶段退出0；项目高级11/0、项目基础9/0、试剂批组11/0、试剂基础11/0，未失败或跳过。项目与试剂两个独立程序均实际loaded后1800ms正常退出0，试剂已加载图由主代理实际查看；426输入及统一主辅/200对象首尾核对一致。此4组专项及2独立入口单列，不算进35次主回归。
+
+`platforms/windows`使用PowerShell7全新构建，主168对象、辅助32对象，两个qmake/make均实际0；主SHA`7ed55948503fb838ac511641275605f084d776941e0b4344d685dafa511f7841`，辅SHA`9c9f26f6cdba94e7220bed0267404a7b9dcbdb35d8a35144f87e45fce6831ca9`，均PE32/i386。426源码与5123冻结及构建前后工具/外部依赖一致，完整每个子进程收据在解析前落盘。本轮只编译/链接，未启动WindowsGUI或实际枚举注册表、打开设备，不等于原Windows行为/主题通过。
+
+当前ARM全量构建继续运行，现有sysroot只读核对，未安装、恢复或连接RK；响应/资源与配对归档仍待此构建及依赖/包检查完成。最终文档两个写入脚本经独立只读审查修正6点（顶端段落定位、恢复链接、校准原件依据、归档冻结绑定、受影响文档原字节/精确preimage及独占新文件、日常deploy与旧包恢复区分），未提前执行或勾选。质控/校准当前7张图已实际查看，1600保留外层滚动，不冒称全部控件同时适屏或完整原Windows视觉等价。
+
+<a id="offline-four-windows-final-20261026"></a>
+### 2026-10-26：四窗口本地切片最终收口
+
+质控、校准、项目高级方案/试剂批组与报告剩余本地业务已接统一程序；当前426项输入（冻结`5123bf14`）的完整35次离线调用、额外4组项目/试剂测试和4个独立界面启动/正常退出均通过。WSL实际运行、Windows32/ARM64主程序与报告辅助程序全量编译、ARM离线依赖及匹配应用/源码归档通过；单次40保存响应与30秒整程序资源基线已留证。
+
+原Windows完整行为/活动主题、RK实屏/输入、仪器/实际LIS/实体打印、真实结果链、临床校准/质控、认可资源预算/同板实时控制及长稳仍待验；语言设置仍占位，原版未启用的XLSX未开放。旧报告查询、8小时恢复，以及suite05校准引用崩溃和suite07登录1920几何失败的直接原因尚未确证，原失败保留。
+
+最终主辅源码为426/5123，完整回归使用suite_final_08，35次全部真实退出0、无跳过/遗漏；额外4组专项共42项（含各自初始化/清理），并与两个独立入口合计六次新构建分开计数。质控/校准独立入口另有7个实际阶段0。主/辅200对象全量新编，22驱动绑定167个当前主程序对象；登录测试准备修复后其中1驱动重编、21驱动在相同5123源码/对象/Makefile和逐件SHA核对下复用本轮先前构建，不能称22驱动最后一步全部重编。
+
+Windows32最终为全新目录全量主辅编译/链接（不启动Windows GUI、不做注册表行为验收）；ARM64全新主辅编译，逐调用收据/对象来源及DWARF、依赖、包内成员与426源码一致，现有sysroot只读复用，未安装或部署。当前依赖ELF数和产物/发布标识见总索引及07恢复清单。
+
+响应为单个原质控页40次名称/厂家实际保存，采集入队→忙态/操作完成/已提交页面，以及5ms合成Qt心跳；不等于物理输入→屏幕像素，也不等于九个worker全负载响应。资源为停止其他构建/GUI/重哈希后的单次30秒默认Guest整程序，9个SQL worker+2个INI worker、自有127.0.0.1名义1Hz只读Qj、原仪器页7、质控/校准初始化；实际TX/RX逐帧复核及正常关闭真实退出0。固定10≤t<30秒窗口未证明就绪时间对齐，VmHWM为生命周期高水位，采样可能遗漏瞬时峰值；初始空匿名目录到退出的总字节含初始化，不是存储增长斜率。预算、严格请求节拍、RT竞争和长稳不作通过结论。
+
+本轮没有控制系统/文件冷热缓存；新建匿名运行目录不等于冷启动环境，不作冷启动性能结论。
+
+实际响应复算：`{"queued_to_busy": {"count": 40, "p95_ms": 39.403933, "p99_ms": 46.995759, "max_ms": 46.995759}, "queued_to_finished": {"count": 40, "p95_ms": 75.185544, "p99_ms": 81.978892, "max_ms": 81.978892}, "queued_to_committed_page": {"count": 40, "p95_ms": 97.759141, "p99_ms": 104.7154, "max_ms": 104.7154}, "heartbeat_delay": {"count": 205, "p95_ms": 46.411784, "p99_ms": 53.827207, "max_ms": 62.377546}, "heartbeat_interval": {"count": 205, "p95_ms": 51.411784, "p99_ms": 58.827207, "max_ms": 67.377546}}`。
+
+实际资源窗口：`{"window": "10<=elapsed_seconds<30", "sample_count": 197, "sample_period_seconds": 0.1, "sample_period_target_seconds": 0.1, "memory_unit": "KiB", "window_semantics": "Fixed observer-clock window, not proven to start after readiness; clock starts before child Popen", "sample_period_semantics": "0.1s target sleep plus /proc reading overhead; actual intervals vary", "VmHWM_semantics": "Lifetime RSS high-water mark since process start, including possible startup peaks; not a window-only peak", "sampling_limit": "RSS/PSS/thread/fd fields are read separately; transient peaks between samples may be missed", "observed_span_seconds": 19.92423763600027, "cpu_percent_one_logical_core": 2.3589359281219204, "min_VmRSS": 288684, "max_VmRSS": 288688, "min_VmHWM": 289012, "max_VmHWM": 289012, "min_Pss": 271393, "max_Pss": 271407, "min_Threads": 47, "max_Threads": 47, "min_fd_count": 70, "max_fd_count": 70, "pss_unavailable_samples": 0}`。
+
+实际自有回环解码消息数：`{"TX": 29, "RX": 29}`；逐帧长度/校验和/分段及Qj请求和SIMULATED应答合同已核，严格请求节拍未验。匿名运行目录退出后共16个文件、397651字节，未归档运行内容。ARM本轮主168+辅助独有2对象全部新编（辅助其余对象共用同轮新对象），56项离线ELF依赖无错，发布标识`d269a753bd620fe5fd9676eefd3ee0269a918e985a1a585d4c91845f5e944e3d`。
+
+原suite05测试线程收集风险改为主线程排队收集/真实worker队列屏障，未取得原崩溃栈；原suite07只改测试宿主显示/激活/几何准备，原450×571及立即可见范围断言保留，未声称生产布局修复。历史失败、修复前源码、真实退出和不确定性都保留。
+
+[最终35次/平台/响应/资源证据](../04_references/sn100_host/qc_local_20261025/final/verification.json) · [本轮整合交付](../04_references/sn100_host/qc_local_20261025/handoff.json) · [匹配应用与源码恢复](../07_backups/sn100_host/offline_four_windows_20261025/README.md) · [截图核对](../04_references/sn100_host/qc_local_20261025/final_visual_review.json)。没有运行参考原件、连接RK/仪器/真实LIS、归档运行库或认证资料，也没有提交/推送Git。
+
+最终汇总首轮实际退出1：Windows快照提示日志含混合编码零字节，被普通文本安全门槛拒绝；业务/平台/响应资源结果未变。旧收集脚本和原失败JSON已精确保留在07的`collector_encoding_preimage/`，首次部分汇总目录原样留在temp。只对三份已核完整内容、相同170字节/SHA的指定日志增加无损base64 JSON字节封装，源日志、命令/退出收据均未改；普通文本禁零字节规则不放宽，也不声称恢复原WSL Unicode流。再次汇总实际退出0，3291文件最终清单两次回读及三份封装还原SHA均通过，验证文件SHA`57f2a3d2b11599e5e3154bac8289c9cfaa64de1bfe1fdf74571abc355383a51c`、总清单SHA`71bd4426ba28a53dcf208835f8554b11d600085c733298fb64be907970d8f0f3`。[狭义编码修复交接](../04_references/sn100_host/qc_local_20261025/collector_capture_encoding_handoff.json)。7份受影响说明文档的写前原始字节保留在07的`documents_pre_final/`，不覆盖用户原有修改。
+
+收口后再生成正式程序输入快照，核对仍为相同426/5123；文档链接、四部分计划、写前备份和定时计划最终状态统一见[收口核对](../04_references/sn100_host/qc_local_20261025/closing_verification.json)。旧371等检查点保留历史语境，本轮勾选仅关闭已证实的本地切片，实物与未启用业务继续待验。
+
+<a id="offline-followup-resumed-20261026"></a>
+### 2026-10-26：用户要求继续排查旧偶发及剩余离线事项
+
+用户明确“先别暂停”，继续查清、修好离线旧偶发，由现有窗口分担，每10分钟查看，真实RK等待设备。已通过原生automation_update恢复同一sn100-10为ACTIVE并更新任务范围，保留10分钟频率和当前聊天，不新建重复计划。此前03:39的暂停和426/5123收口保留为历史事实，不能推导剩余所有功能已迁完。
+
+已向原项目/校准/报告三个聊天实际派发新任务：项目核最新功能边界并准备样本本地复位/复测；校准补查原suite05崩溃及suite07几何直接原因；报告查旧legacy.query查询偶发；本聊天查旧8h恢复失败并统一排队/整合。三个窗口先读原始证据/准确旧源，执行槽前不并发GUI/编译。过去未复现的25分钟通信和5轮报告通过仍只记未复现，不记修复。先有界实验，不安装/改全局环境，不运行原件/生产配置，不连接RK/仪器/真实LIS，不自动提交推送。
+
+本次先更新实际推进安排和未完成范围；尚未新增任何“旧问题已修复”或“全部功能迁完”的结论。上一轮final/恢复包和closing_verification均不覆盖，新证据归offline_followup_20261026，当前四部分计划已加新卡。写前只对受影响7份说明文档作精确字节备份，范围不扩大到运行数据或环境。
+
+### 2026-10-26：通信日志观测盲区补点通过，样本与诊断继续排队
+
+旧8h实际wire最后Qk首次排队1149852ms、peer读取1149855、故意扣首答1149856、重试排队1149978、终态超时1150169；未观测到最后13字节重试的peer读取。原无足够write/事件逐点时标，聚合265.9ms心跳不能确证原因；25分钟通过且403ms峰的旧探针也不能反推旧事故。原直接原因继续未知，不加长120ms/一次重试，不将未复现称修复。
+
+本次确认并修正的是取证范围：`soak_main::log()`原write.begin之前还有序列化、文件大小查询/轮转，write.end之后还有stdout，故原write跨度不能代表整个日志调用。新增完整log与size/segment/close/stdout配对时标，失败进入同步finish/saveTiming前先闭合已进入scope；默认关闭、8192环容量、真实wire/失败/截止语义不变。关闭返回不代表持久落盘；旧末次已超过前12条stdout且分段远未满，不将这两个通用补点误认旧事故原因。写前两份源码原件精确保留于07的`offline_followup_20261026/protocol_log_scope_preimage/`。
+
+旧冻结native真实业务运行exit0，但新完整scope验证器因缺标记真实exit1，这是观测合同对照，不是旧功能失败。新native鲜编qmake/make0；五个短CLI实际目标退出依次0/0/0/3/3，与关闭、开启、环覆盖、日志预算失败、时序保存失败各自预期一致，验证器exit0；wire实际字节与配对/环覆盖核对通过。Windows32鲜编qmake/make0；ARM64使用既有只读sysroot鲜编8对象、链接/ELF核对均0，无部署或执行RK。14份组件输入首尾相同，公开归档134文件并回读SHA；未复制对象、二进制、运行DB/INI或认证。[组件交接](../04_references/sn100_host/offline_followup_20261026/protocol_log_scope/handoff.json)。此处不新增整套程序、资源预算或长期稳定通过结论。
+
+项目窗口首个样本状态小核心纯QtCore测试实际9项通过（含初始化/清理），qmake/make/test0，非GUI/SQL/设备验收；按钮、批量/权限/忙态、保存/取消/重开与v1兼容仍在接入。新增samples源已使旧全量426集合失效，因此报告/校准探针不再默认绑定旧native；各私有驱动已要求显式新snapshot/native-root/build/verification并保留严格全源/对象校验，待样本停写后统一新冻结运行，不覆盖历史426/5123。
+
+操作级范围核对已纠正旧计划将项目高级表、批组元数据、报告显示/软隐藏/HTML整项写成未移植的描述；只关闭已有局部运行证据。另只读核实：QC历史日结果点、统计、追溯没有迁入，`quality_data`目前仅用于历史引用保护；旧行没有逐点单位快照，关联项目快照也不能替它补证明。原结果类型/日覆盖、排序/追溯疑点和CV比例口径见[QC历史合同](../04_references/sn100_host/offline_followup_20261026/qc_history_contract/handoff.json)，金样例未执行，不写实测通过。该切片先在私有目录准备真实解析/统计核心和测试，不改正式源破坏当前样本冻结。
+
+### 2026-10-26：样本本地流程、新432项构建及质控私有核心实测
+
+样本本地错误复位/复测已接原按钮、当前及勾选孔位草稿和保存/重开；存在Testing或不合法状态时整批拒绝，不改设备任务或历史结果。新核心9项（含初始化/清理）通过；完整新流程两种界面后端各14项通过，原页面回归各13项通过，四次调用实际退出0、无跳过，分别约6.2/7.4/6.7/7.1秒。原两份界面及资源文件字节保留。证据见[样本交接](../04_references/sn100_host/offline_followup_20261026/samples_reset/handoff.json)；截图、统一累计和整套跨平台/资源仍待当前轮整合，不将本地状态修改称为仪器复测完成。
+
+样本新增源进入正式输入后，已在独立新目录完成432项/`9ff28e905fd4df82330fb58b529c208a489b32987692a4131e67e3d86db5fc00`冻结、201对象鲜编，真实父进程退出0且输入首尾相同。WSL主程序SHA`0db384d07a634c757c101bd5e289a1edf5fb3bf12cb9e3607ec222e1148a37ed`，报告辅助SHA`2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb`；[原始构建证明](../04_references/sn100_host/offline_followup_20261026/native_432/verification.json)。此处仅增加电脑WSL编译与后续特定用例绑定，不替代全量回归、整套Windows/ARM或RK运行；旧426证据不覆盖。
+
+报告窗口本轮旧冻结原程序一次XCB与新432追踪副本XCB/offscreen三次短调用，各4项通过、真实退出0，编译及GUI四个自有进程组均回收。两个新追踪调用实际查询/日历/保存点击均到达，请求回复编号一致，返回3行；仍未复现旧失败，不声称旧查询根因已知或生产代码已修。校准/登录继续以新432显式绑定独占执行槽补查旧偶发。
+
+质控历史私有QtCore核心于09:55实际qmake/make/test退出0，20案例/139检查/0失败，8项源及准备清单首尾相同，产物SHA`83d5068676bf4d21e94ba56f9b3be184547850fa62bb4ccae3386d18da43d9c2`。覆盖四结果类型、严格失败值、当前/上批隔离、旧顺序、10/12/14金例、CV比例、整数及小数单位倍率、未知单位不能补造、单点/零均值/35点等；没有SQL/GUI/设备行为。下一步在当前冻结诊断结束后接正式worker与原版图卡，页面和失控规则未完成；关联项目单位快照与逐点历史单位的区别已同步操作说明和维护指南。
+
+### 2026-10-26：受控旧问题诊断完成一轮，继续正式质控历史接入
+
+校准临时旧/当前测试副本各22项通过，实际qmake相关生成/编译/链接/测试0且进程回收；地址/未定义行为检查只作用于临时编译测试部分，不能称201业务对象已全量受检，原崩溃仍未复现。登录保留原450×571与可见范围断言：旧自然/旧排队移动/当前自然/当前排队移动实际退出0/1/0/0，完整绑定首尾相同；旧失败2通过/1失败，其他每次3通过。受控失败时宿主已从(64,414)移至(664,894)，对话框仍留原位置，当前测试的点击前宿主准备能通过同条件；支持测试准备不足这一失效机制，不认定历史suite07当时确为此因，不改业务布局。聊天曾被自动内容风险标记中断，已启动程序自行完成，另行只读核对真实父退出/进程组，没有把聊天异常算程序失败。
+
+报告追加一次既有追踪驱动XCB `-mousedelay 0`，原方法/断言/15秒上限不变，真实4项通过/退出0，单次3.45秒，无编译/重试，组回收且432绑定首尾相同。仍是未复现，不改生产代码猜原因。样本私有观察器实际四阶段及父0，7张1600×900 QWidget原始截图与状态JSON已回读；根独立查看复位前后、复测、放弃、重开5图，状态颜色转换符合。首次父控制器误加不支持参数而退出2，未开始编译/GUI，原记录保留；纠正父命令未改源码/驱动/断言。另确认放弃后数据恢复但lastStatus仍说等待保存，由项目窗口补最小提示修正与回归；不覆盖旧7图。
+
+通信新短实验沿真实client/transport做三臂各一次：正常重试回复、peer Qt缓冲暂不消费、peer消费后暂不回复；负臂保持120ms/一次重试原终态失败，迟到回复只产生观测，不能变success或多发终态/重试。真实qmake/make/QtTest0、5项（3数据行加初始化/清理）通过、1.473秒。父验证器错误假设Qt5 JUnit按数据行拆5项，实际合并为3个method组，故原父1/verificationfalse保留。只读重新核验沿执行时旧validate_case核56输入、原字节/时序/终态并真实退出0，未重跑Qt；未来脚本修组计数，旧脚本/准备清单备份07，旧8h原因仍未知。[完整失败与重验](../04_references/sn100_host/offline_followup_20261026/protocol_peer_gate/handoff.json)。
+
+上述432冻结探针完成后已明确解除源码冻结，转入新质控历史切片。正式只读SQL/API套件真实21项通过/0失败/0跳过，11.111秒，qmake/make/test0、自有组回收，17项独立测试输入首尾相同。验证控制品/项目/当前上批/数据集隔离、绑定和预约缺失不补写、锁与SQL错误恢复、文本NUL/UTF16/行数和总量预算、UnknownLegacy及关闭。数据库与运行配置只留temp；[正式SQL交付](../04_references/sn100_host/offline_followup_20261026/qc_history_store/handoff.json)不含DB/INI。原图卡和页面真实worker链尚在验证，不以SQL通过关闭页面。
+
+共享ARM手工构建补入样本状态复位源（此前新样本模块未在手工清单）、QC历史core/统计/图卡/presenter/表单和资源；冻结显式收既有quality/statistics两文件，不复制统计算法。三个受影响构建/合同文件精确备份07，现有只读输入合同15项真实通过，43秒内退出0、11输入首尾相同；没有生成sysroot、编译/GUI或设备访问。[构建输入证据](../04_references/sn100_host/offline_followup_20261026/arm_input_contract/handoff.json)。整套新WSL/Windows/ARM、累计/资源及匹配恢复包仍须在正式源稳定后独立验证，旧426/432结果不借作本阶段通过。sn100-10继续ACTIVE，不因本轮诊断通过而暂停。
+
+10:39正式QC历史core独立鲜编qmake/make/test真实0，20案例/139检查全过，8输入首尾相同，自有组回收；此为正式路径复用既有统计算法的核心通过，不代替页面。当前唯一GUI/编译槽继续归页面/真实worker测试；样本放弃提示最小修正已写入，专项回归待槽。新整合控制器已准确复制到独立`temp/sn100_host/qc_history_integration_20261026/`，尚未冻结或执行；须等全部写入和针对性回归结束，不能把旧432目录覆盖为新版本。
+
+本次10分钟巡检：新QC界面首轮qmake/make实际0（编译125.64秒、组回收），offscreen初始化实际1，通过1/失败1、7毫秒，未进入业务场景。执行时95输入首尾一致，环境JSON虽有测试目录，驱动却未传入真实子进程，故绝对路径断言失败；原new_ui收据和verificationfalse保留，不算生产界面失败或业务通过。页面窗口正在修驱动环境继承，并修静态查明的极大有限值轴刻度乘法/范围溢出，新增正大值与正负极值边界后另开_02鲜编/两后端测试。现有代码不在编译中混改，SQL21和正式core20结果仍各属已验输入。
+
+核实校准/报告窗口idle后，继续派发互不冲突只读准备：校准核原版实际启用拟合/逆算/审核应用、单位参数与可离线固定输入/材料缺口；报告核原语言页、翻译资源、配置保存读取与生效范围。只写各自temp草案，不编译/GUI/改正式公共接线，不把缺翻译的设置意图当已切语言。项目窗口继续样本提示专项驱动，等待页面释放槽。sn100-10原生prompt已同步当前阶段与准确队列，频率仍10分钟、同一聊天、ACTIVE；没有新建重复计划或暂停。
+
+本轮后续实际结果：QC `_02/new_ui` qmake/make0，两后端各10/0（2.682/3.364秒），95输入首尾一致；包含真实catalog/QC worker链、6匿名历史行、陈旧真实回复、在途销毁整页、非法日期说明及正/负极大有限值显示边界。`legacy_ui`独立鲜编与两后端各7/0（16.578/16.854秒），94输入相同，全部进程回收。根回看1600实际PNG及SQL来源/线程关闭JSON。Qt5 XML的非零errors诊断属性保留，不改写为零；原始case均pass、failures0，文本实际0失败。[418成员交接](../04_references/sn100_host/offline_followup_20261026/qc_history_page/handoff.json)，22份正式文件5修改/17新增、原6UI和2箭头字节对照、QWidget替代原绘图库及未知单位/统计留空差异均已明列；不是原Windows/RK/临床/预算验收。
+
+样本提示专项`discard_feedback_01`实际父及6阶段0，两后端各3/0，只跑原复测方法（含初始化/清理）；102依赖首尾相同，明确复用57对象、重编sample_page与原workflow测试2个对象。已断言放弃后lastStatus和statusChanged正确、dirty清除、内存恢复、已存状态/revise不变，全部6组回收。原7图和14/13全流程结果保留历史，本次不是主程序/资源/实物验收。
+
+全部源码作者含origins/pri/resources停写后，根于11:02启动独立新统一鲜编，冻结447项`1486686b182dc8d1da55c52b45c91ea72f1b8c41677676cedf16d72b3fc4f401`，目录`temp/sn100_host/qc_history_integration_20261026/native`，工具会话10429仍在执行；snapshot_before真实0，尚未取得整程序构建最终退出/verification，不提前记通过。编译/GUI槽现根独占，校准/报告仅在temp只读准备；待实际构建成功后再绑定22驱动、跑完整35累计并做整套平台/配对归档/响应资源。定时prompt已同步447当前阶段，保持10分钟ACTIVE。
+
+后续巡检统一鲜编仍在执行，没有新最终退出，不新增通过结论。校准窗口只读核20份源后，准备了原接口文档有据的恒等/常用对数/倒数/自然对数及其反变换、12正常/11拒绝输入；完整拟合仍依赖_450实现或认可输出，轴还原静态疑点保留。根安排仅在temp实现该纯数值研究叶子和独立期望测试，暂不编译/接06/数据库/审核应用，不算拟合迁移或DLL等价通过。内部存储代理同时只在temp准备新447 Windows32/ARM鲜编控制器，依据旧426真实通过入口和原始收据，强制新snapshot/native证明、实际对象和依赖数，不运行/复用旧对象。以上准备均不影响根唯一构建槽或447源码冻结。
+
+### 本轮统一447构建、完整累计及Windows控制器真实问题
+
+新447/1486686b统一WSL主/辅助鲜编已真实父0，210对象全部新编，源首尾相同；主97b8a8f57192bc260c0c84ff461a790bffd2b6a94a37d50ed84bd12f9ae78dd8、辅助2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb。24份原收据/日志/指纹回读归档，[构建交接](../04_references/sn100_host/qc_history_integration_20261026/native/handoff.json) SHA58d511c39e10a04f4feeb1a478df56d595be46bde023b87c38266dedcfb8da4e。随后22驱动对本轮对象鲜编绑定实际0；完整35次调用全0，无失败/跳过/遗漏，source447未变，父工具会话76452实际0。[累计交接](../04_references/sn100_host/qc_history_integration_20261026/cumulative/handoff.json) SHA2f7340fc3fe78b174a955daebb514885bae2e249be76b86420db95f3677a3c8a，289项SHA回读，metadata-only不含源码/运行数据/认证/binary/object；29份XML非零诊断原样保留，不改成errors0。归档器01因自己的私钥检测字面量自报而退出1，原失败和源保留；只窄修检测字面量形成方式，02归档实际0，未重跑业务。
+
+Windows工具链已实际执行并保留三个未完成轮：初次windows父1因3个wsl.exe候选，child未启动；windows_02 snapshot child127、“-d command not found”，尚未qmake；windows_03 qmake/make实际0，但后处理把g++ -dM -E生成moc_predefs与实际.exe链接都选入，父1，报告辅助尚未编译。它们均不算整套Windows通过，不改原verificationfalse/退出或复用其产物。分别在新鲜目录重试，源码447/ARM/全局环境未动。
+
+温和修复仅在temp控制器：显式System32wsl；反射证明原Quote首字符34，根最初leading-slash怀疑被证否，实际是普通token全加引号与WSL选项解析不兼容，改为仅必要时quoting；正常退出后最多500ms单调等待Job记账归零，严格NoForcedKill/停组guard不放宽。最终两短probe父/child均0，Windows七类argv相同、WSL实际qyq/uid1000/447快照一致，19/12ms自然归零。链接选择器正向匹配预期exe并排除编译/预处理/汇编等，原03与旧426main/helper及负例14项实际通过，178对象/规则一致，762份旧成员字节不变；只读单元不重建业务。前像及工具父退出均明确事后观察、未伪造OSPID。当前manifest 91e0d6a83a8cf092db09988be3991788a047d2b9377ec9047de6d9027d070dc2，根新windows_04会话46614在执行，尚未取得完整最终通过。
+
+校准窗口利用无编译冲突空档完成私有数学core_01原23/23、api_01补充6/6，两组编译/测试/父均0、输入前后一致、owned进程结束。只验证有原文依据的四种变换/反变换与非法方向/负零等边界；不接06、DLL、数据库、审核应用或仪器，不是完整拟合/临床通过。语言审查另确认原页仅中文一项且Apply为空，无配置/取消/重启/翻译加载链，23字节qt_en.qm不证明应用英文可用；资源8用例仅准备未执行，不以只存意图冒称切换完成。
+
+文档一次写入失败后已核C盘约319GiB可用，原内容完整且非只读；同一精确补丁重试成功，未删文件/改权限或环境。447程序源码继续冻结，根暂不在Windows构建中改程序内README；进度以本记录、根README及计划最新条目为准。10分钟检查持续ACTIVE，待Win完整结果后做ARM鲜编/闭包及配对恢复/响应资源，不因当前累计通过暂停。
+
+Windows04随后完整通过：根会话46614真实退出0，verification exit0/publishedtrue（仅本地final_release复制），main178/helper32对象均全新，qmake/make/import各0、PE32/i386成立，源447/工具/外部输入首尾相同。main SHA37b18d3bd138a4b356f2f1c9cb1bc2afae7dbe606c21b21ed7a7c7c474f46681，helper SHA48f6c34f056c9ae08d3cf27f67121f7a9b6dbf4851e31e1ab2979e60e3193169；原Windows界面/注册表实际枚举/设备访问没有执行。原Windows失败/前像/收据继续保留；对白名单10份WSL混合字节日志及唯一90B/SHA171cf8de7ea6e2a636b8f12da3dde95be39050a1f20f7c88f264e7fcdcb08224的匿名CP936 argv日志，按原字节无损封装，普通UTF8/NUL门槛不放宽，不声称恢复原Unicode。
+
+根12:33启动ARM64控制器，会话15298；447源、工具及现有只读sysroot前置核对后，12:36:25实际开始-j2交叉编译，尚未取得build/link/closure最终结果，不新增ARM通过。没有恢复/安装依赖、部署或连接RK/仪器。元数据归档不占编译槽，不改正在ARM读取的91e prep/controllers或447正式源；定时prompt与持久队列已同步ARM阶段，继续ACTIVE。
+
+12:51续查核ARM实际仍运行，未出现build最终退出或verification，已有对象只是进行中，不记通过。Windows04含前三轮失败、14解析器用例及宿主探针的377份文本/元数据已逐件回读归档，handoff SHA96fd884f65fdfb61d976c0078763510d945a9f536b208868789402b6a3fc46eb；无程序/对象/运行库复制，原失败未改。除既有10份WSL日志及唯一90B/SHA171cf8de匿名CP936 argv日志的逐路径/长度/哈希封装外，不放宽普通文本门槛。
+
+核各聊天实际idle/文件范围后继续分工：项目只在新post_platform_preparation准备当前447的独立启动、额外项目试剂、40保存响应及30秒资源控制器；校准交接私有23+6数学实际结果并核正式接入缺项；报告准备QtCore语言资源8用例控制器与原中文页面最小范围。内部审查分别仅在recovery_preparation准备匹配07归档、remaining_scope_readonly核F01–F18可离线缺口，均不运行/不写06。原计划中432和“页面正在验证”等当前已过时描述已更新为447/35/Windows真实结果，旧检查点不覆盖；sn100-10仍10分钟ACTIVE。
+
+本轮继续只读核通信源码：当前tcp_transport已有socket.bytesWritten、write.begin/returned、read.actual及soak对端readyRead/bytesWritten各层补点；连同已归档三臂闸门，现有证据可以区分入队、本地写入与对端读取，未发现需要重复添加的补点。不把本地write或bytesWritten当仪器ACK，也未由此推定旧8小时失败的直接原因。剩余范围只读审查初步发现报告五字段缺原医院字典右键选择器、顶栏历史告警日志查询仍禁用，正在核准确原源及最小离线合同；只是下一批候选，未改447冻结或记已实现。
+
+13:05巡检ARM仍实际运行，已有154对象；13:08后主辅进入后续链接阶段，最终退出/闭包尚未形成，对象或文件存在不代表通过。既有项目窗口post_platform_preparation已完成6控制器静态审查、447/210与冻结外9项测试依赖绑定，10个运行输出尚不存在，未执行；语言QtCore8输入控制器也已准备并停写，未编译/测试。
+
+剩余只读审查交接SHA31c5ed271e79513e2056f1a11c8f49afcc94e4b0951db07280b9419ad25ee69b，31份小源码/表单指纹及F01–F18/13导航核查保留。明确两项可离线缺口：报告五字典右键选择（患者保存当前不要求m_canWriteRemaining，不得因字典另加角色门槛），原告警abnormal_log日期只读查询（yyyy/MM/dd全天边界，原主动查询无上限，不可静默截断）。根核两聊天idle后分别派发私有草案/测试，只写各自temp，不混改447；没有启用设备动作或臆造校准坐标预览。另安排独立质控历史图卡测量准备，明确元数据40保存和空历史整程序30秒基线不覆盖新图卡本身；所有测量等待独占槽和其他负载停止。
+
+13:14:37 ARM最终验证完成，根会话15298真实退出0（工具chunk ca4cd8）；build/closure均真实0且组回收。447项源冻结1486686b首尾相同，180对象全新：98正式单元+71moc+9qrc=178主对象，另2辅助独有对象；实际56 ELF离线闭包无错误，既有sysroot/工具指纹未变。ARM main SHA2fb421e8d39ac2c9c911601090360fe4bbed215bc40f14529ff1ca614cc6b641，helper SHA9a1a9ed8006a7b377600cfcc10c8feb7e8f214645207f9fdf7122838238ce4fc。编译槽已释放供根串行匹配恢复归档；没有部署、RK/仪器或临床验收。原Windows及旧426检查点继续原样保留。
+
+恢复控制器准备16输入冻结da5151f4/3ffbe9db已审查后，根recovery_01会话7207实际退出1（ef1a89）；正式package子进程0、34.19秒、组回收，应用与447源码临时成员审计已生成，但WSL的git lfs version真实128，stderr明确无法执行LFS，故总verification false、07目标尚未创建，绝不把package0当整轮成功。原01控制器和收据保持原样。
+
+根核现有Windows Git（C:/Program Files/Git/cmd/git.exe，SHAc954fcc8e65a38450895ca65d308ecaee63f044d16494b5385faa5e036a3facb）及其LFS3.7.0：Windows和WSL显式调用都真实0。只在独立recovery_preparation_02最小改三项Git核验为该明确路径，并加工具SHA首尾及主机范围记录；未安装或改全局工具链/配置，原检查门槛未放宽。新准备a1d91a516f0f99d6833cd890a9138f34479f4e91822fc6b57aef4879d73a04cd、控制器231bcc9749aafa690a591a1b86f884bb87c00cfdb355f73d8eac5111d78fd89b。根13:22新recovery_02会话76583运行，目标新arm64_447_02，尚未取得整轮结果；不覆盖01、旧426或正式源。
+
+恢复02随后真实父0（会话76583/chunk361b92），正式package0、明确Windows Git LFS0、准备与控制器输入不变，应用/源码tar成员及复制07后的SHA逐项核验通过。release5fda5cc0f0e948f24d8881b946434c9f483e13ad5df1d083ea0b47327f61a008，应用77948896字节/SHA3c08bcaa89892ee3d2fb7988643fdcf3c20431616893ac442b4963563aee58c6，源码1087983字节/447成员/SHA76ec806c21a030c050e8da2425efdfb522b573c50b57b1468805df3f0b9495a8。应用33普通成员/31清单项、21 AArch64 ELF；无运行DB/INI/认证材料，匿名5行角色源码夹具明确保留。新07位置`qc_history_integration_20261026/arm64_447_02`，不是实际应用/数据恢复或UUID迁移，旧426和01失败不改。
+
+根紧接启动post_standalone_01会话45612，独占GUI/编译槽、最多-j2，当前还没有四程序启动/关闭的真实最终结果。ARM长期证据仅由内部代理在新04/arm64复制原metadata/text，不重hash大对象或运行任何业务；新增root_parent_observation明确事后工具父0观察而非补造OSPID。后续项目专项、语言QtCore8项和各短测继续串行；10分钟检查ACTIVE，06继续冻结直到本批核完。
+
+post_standalone_01随后真实父1（45612/6940c6）、stage1/无超时；QC和calibration两程序的四个qmake/make实际均0。共享verify_build误将“必须含修复的ProjectsStore”用于无需项目编辑代码的校准独立目标，故校验停止，尚无任何独立页面运行结果，不能按编译0记启动通过。根保留原脚本/所有收据并向项目窗口派发独立post_platform_preparation_02正向目标profile修正及只读正反例；不删除所有源要求、不改正式源、不放宽断言或补造原编译时间。精确范围：standalone阶段仅QC/Cal两启动及一个真实catalog初始化宿主，共7阶段；项目阶段另有Projects/Reagents两独立启动，合计4，不能单称standalone阶段已经4启动。
+
+语言QtCore私有验证会话65663实际父0（629d1f），qmake/make/test均0，8业务方法+初始化清理总10通过/0失败/0跳过，7自有组全部消失，8私有输入/工具链首尾相同。原23B/SHA307cef95的QM实际load=true，但两条业务样本0命中，catalog子进程真实exit3保留，非错误吞并为0；仅证明资源抽样/拒绝路径，不是语言页面或全程序英文切换。没有修改正式源、系统语言或运行GUI。
+
+ARM文本证据归档1007文件/1006条SHA逐份len/SHA回读完成，191原步骤全0、182编译器收据=180编译+2链接；main178/helper32（共用30+独有2）与56 ELF关系核对。handoff SHA8c0c5ad6641cfe2b010a07183489f7fbc9e5d588be75ba0c5a876533828c9ee6，SHA256SUMS0d96e6781e7e4f2527590cc7c757a8f1e0bcd1f052999c4b66d6b95fdb909dd9。collector01实际1仅因把58行closure清单误要求56（真实56ELF+2元数据），原失败保留；collector02与finalizer实际0，未重跑业务或hash对象。根13:33再启动post_projects_modules_01会话28231，独占-j2/GUI槽，项目试剂四组及其两独立启动尚未取得结果；QC新图卡40查询和READY后30秒单页资源仅13输入准备完成，未编译/测量。
+
+### 447本批全部离线核验完成，继续下一批正式功能
+
+项目专项会话28231真实父0/fa58f1，18组已消失/无强制清理，四Qt分别11/9/11/11通过且两Projects/Reagents独立程序加载/关闭正常。QC/Cal正向目标profile静态8正81反后新鲜编02，会话95479真实父0/9b6c16，7阶段全0/组回收、两页面已加载/关闭正常、原临时bootstrap已移除；未复用01产物，原01误判1和四compile0继续保留。
+
+三原生聊天及内部代理逐个确认无活动子进程/写入/搜索/hash后，根在独占静默期执行：保存响应40次会话32337父0/133e58；整程序观察30秒会话52932父0/a5d8fe；历史图卡专用moc/compile/link及40动作/30秒会话13442父0/c4b543。保存committed-page p95=107.065168ms/max117.091259ms，高于未认可100ms候选，不能称预算通过；整程序固定窗口含启动30.151s、296样本、5.825309%单核、maxRSS291352KiB、47线程/70FD，计划SIGTERM协调关闭exit0不同于强制cleanup。
+
+历史专用精确复用当前447主壳177对象，私有测试体新编；40动作之外每进程另1初始化查询，两个Qt分别3/0/0/0，原XML诊断errors=1保留。worker/页面/CPU绘制终点分开，CPU绘制处理返回p95=53.413608ms/max60.302958ms，不代表屏幕合成/物理输入。READY后30秒单页空闲观察窗口300样本（raw313）、0.669138%单核/maxRSS128408KiB、5线程/16FD，不能与整程序口径相减。SQL全行像在内存比对不变，正常leave/SQLclosed/workerjoin，源/对象/Makefile/工具首尾一致；无预算、RK/临床放行结论。
+
+post_platform正式归档404文件/403SHA、handoff a4305c6093ebdd7cf01064187596fc7acc95d0446055dd98e54439adaf14e416；history_measure归档74文件/73SHA、handoff b1f3fe10bb28ee9859c6ad1bff4181509976277d8e7bfd844d34db02bc07a2c8，均逐件len/SHA回读。collector的catalog-owner附加字段/metrics.errors数组假设错误原始1及源像保留，fresh02实际0，未改或重跑业务。唯一准备期AST.stderr153B/SHAe816706cd44ce0c6c65a7a7938be8103514f7c899694c8240d844f74319b7f98逐路径批准captured-file-byte无损base64封装，捕获内已含替换码点/NUL，不推断upstream原字节/Unicode，其他文本门槛不放宽。
+
+根核六处原handoff精确SHA及07匹配verification后创建固定checkpoint_index.json，SHA0e4caa04969050276f375cf2fb78b5d769885e42be605f17add92f8f957c01b7；六目录实际文件25/290/377/1007/404/74，未重hash对象或另造业务执行。14:25根解除447源码冻结进入下一批，旧447/07与此索引作为历史原件，绝不套用于新源。新作者范围：项目只新增中文单项语言页/UI/测试；校准只新增alarm_history只读Store/core/tests；根公共HospitalStore API/shell/main/共享构建归根，报告先做privateSQL验证后再授权history合入。内部告警页仍只temp，原中文Apply空→异步说明的差异需明列；新源码写完停止后另建新冻结/累计/平台与资源证据，不因447收口暂停10分钟计划。
+
+新功能准备事实：校准私有告警26业务/Qt28已实际全过、qmake/make/父0且7组回收，未直接算正式页面迁完；根仅temp/hospital_dictionary_store_private写三文件候选/补丁，原HospitalStore两文件逐字仍匹配447。DTO SHAa976861b76bff6857168fea628312835219dcb47822d65151dcb0796b93c6fb5，独立请求回执/33 UTF16仅筛选、参数绑定LIKE/idASC、失败不返部分行、游标销毁后最后通知，未编译/测试；不改患者名称长度或Guest保存权限。后续由报告准备精准private SQL控制器，不能用已解冻全局源码重贴447通过标记。
+
+后续根实际执行共享API私有SQL会话66210真实父0（6b6cea）；两目标8+6业务数据行，Qt实际10/0、8/0，11步骤全0，14输入和工具首尾相同，根读取原receipt核对后才把完全相同字节正式合入HospitalStore两文件与新DTO。formal_promotion.json记录精确两源前像及已核07/447源码tar成员位置；新h601b6d6ec8129ff78b9ce905ded51bad579d3233dd04437c69b35e5e0d994444、cpp4188b03875a517aceb0cef81990fe52b5cc1796e434d501dc2f2547527485504，DTOa976。该结果是实际private API两目标通过，未冒充整合或正式GUI通过。
+
+三原聊天及内部15文件作者分别完成新组件源：CN6文件原UI/Cn单项/Apply异步说明与隐藏关闭销毁回收提示；报告16文件（3现有精确补丁+7新history+6tests，DTO根所有不覆盖），handoff a68cb411b846d1c6f8a6415971f70811808752979719270ba8e81c5d0f38cc3a；告警页15新文件，handoff ddf0e4766981069fc356451b55085cfc188af6b7c6e95e053e23548cf369c926，11份与private字节同，8业务正文/期望/超时保持，原9几何及18静态核true但未编译GUI。页收到Store终态后仍在追加时取消GUI的竞态已在private明确修正，不再假等第二SQL终态；storageClosed是来源释放，可恢复重开，须viewClosed+关闭请求后才收worker线程。所有共享shell/main/build/package仍归根。
+
+正式告警Store/26测试仅namespace与必要测试目录保护适配：显式规范空匿名目录必须在repo/temp/sn100_host，不能因__FILE__在06就向源码树建库。根新授alarm_formal_26_20261026_01后真实鲜编qmake/make/test/父均0，Qt28/0/0，7子组消失/原源工具首尾相同，范围仍仅正式只读核心。其后唯一GUI/编译槽已授项目CN页language_formal_ui_20261026_01，原正式6源停写，offscreen/xcb实际结果待核；其他窗口不得并行构建或GUI。根将审查temp/shared_integration_preparation最小接线补丁，明示新增本地日志默认dataDir/alarm_history/abnormal_log.db且缺失只报不可用、不造历史；这不是原生产路径推断。新源尚未全局冻结/统一主程序/Windows/ARM核验，不套旧447结论，10分钟计划保持ACTIVE。
+
+公共接线仅temp准备13目标（11现有+2薄adapter），最终patch SHA33d577e36244228ae7a25194ea35a6c5a69d072b41f647bd7c665e7d294a6cd6/prepfc0d98b2588024624ba22241004bc3f55d69eed8645235e7e6d5708b7f03aeb9，git apply --check真实0，根已完整阅读但尚未应用。只读同页作者评审发现旧e7候选的确定退出续办缺口：缺库/错误警告未ACK时close只置pending却没开始viewclose，ACK仅busy=false且不产生viewClosed，单次退出不会自动继续。旧候选/静态收据完整保留；新候选busy(false)/viewClosed共用singleShot0去重，真实ACK后重走全部旧守卫，host无view先清历史pending以尊重其他页草稿Cancel。静态修复成立但实际整合须再测，不能称已运行修好，也不关联旧历史故障原因。
+
+项目原CN正式14项两界面后端已过为原聊天快照，根待核原始完整交接；额外小屏offscreen3/0、第一xcb2/1未命中Apply的原失败保留，不能直接归因页面或说小屏通过。当前唯一GUI槽仍属项目，正以原断言/超时、增加原有host激活前置另开受控尝试；根不并行启动主壳/其他GUI，也未应用公共接线更改其输入。待其真实释放后再核范围应用13目标、扩手工ARM/UI/资源输入合同并新冻结，当前447已固定的结果只作历史。
+
+后续原项目聊天明确所有自有组结束并释放槽；正常CN两后端仍各14/0，小屏_04 XCB即使exposed+active、visibleRegion完整仍widgetAt=null、真实1且在实际mouseClick前失败，不能再仅解释为未激活，也不能称点击本身失败。只读复核host client(38,59,900,600)/frame(0,0,976,697)、page(-177,-257)、button globalcenter(831,602)与滚动几何计算一致，内容抓图按钮完整不等于屏幕合成/原生命中。QScreen/DPR/topLevelAt/childAt缺记录，根只安排temp一组普通控件vsCN同几何<=30秒对照准备，原assert/点/timeout不放宽，等报告槽结束后再决定实际执行；原suite07等历史原因仍不因此确定。
+
+根核sharedpatch33d577及11原位置SHA均精确匹配447/07源码成员、2新adapter不存在后，真实git check0/apply0应用13目标。应用收据SHA bb113b658a2523577e3a84857626cbd6921e73d6bf8a998b0776c92530e7c494，位置shared_integration_applied_01；这是正式源码接线已落，不是编译/GUI通过。随后唯一GUI/编译槽转给报告formal3目标SQL/对话框/页面及两后端，当前在准备/执行新fresh结果，其他人不启动构建GUI。下一全局整合控制器仅新temp/local_features_integration_20261026准备，不调用旧447验证器给新源贴通过；新冻结、ARM输入合同、主壳退出/ACK/草稿Cancel实际整合仍待执行。10分钟持续ACTIVE。
+
+
+2026-10-26 16:38 根继续核新批次：报告formal三目标/五调用实际父0，SQL10/选择窗两后端9/报告页两后端6，36源/8工具不变、20对象鲜编，15PGID清场且正式释放槽；handoff记录真实HospitalStore至page全壳尚未运行。随后内部CN A/B01 qmake/make0、实际父1、Qt2pass2fail，rdp-0 available(0,308,2560,1600)而两宿主frame(0,0,976,697)，前置拒绝、两臂未hit/未click，不能确定旧命中原因或产品缺陷；32源/9工具不变、365/380/421全gone。告警正式页专项槽转校准聊天，CN只准备新的受控宿主摆放输入，不重写原失败。
+
+ARM输入合同审查后保留原15方法，新增3方法/60有界内存遗漏与helper泄漏反例。根首次恢复前检误以为447应用源码包包含测试脚本，成员查找0导致父1，未写正式源；该测试实际是未跟踪唯一旧输入、未在应用打包范围，故只将其19955字节精确前像存07/local_features_integration_20261026/preimages/arm_input_contract_01。之后git check/apply均0，但应用后字节SHA断言父1：Git保持CRLF为27730B/SHA ded1a05d5e8b060158024daef7ad230e94a9ffdcadaef1504d59e61529271f31，与候选LF 27282B/SHA647e700f...仅448个CR差异；正规化字节SHA相同、原15AST逐件不变，实际18方法尚未执行，不将应用成功当测试通过。两次失败均独立temp收据保留，不改原记录。
+
+根ARM输入合同实际执行：01外层60秒cap返回124，17个通过点且无完整总结，原失败/源SHA不变保留；只选最后原方法独立运行实际0/4.955秒。02因整套只读指纹核对耗时63.598秒，明确仅调整外部整套执行预算60→120秒并增加-v收齐命名结果，原18测试正文/业务断言/业务超时完全不改，最终18个逐名ok/父0、源SHA ded1a05d...首尾相同。它证明新构建输入/冻结范围和报告helper隔离合同，不证明GUI或任何历史缺陷修好。原WSL混合字节收据留temp；derived_utf8视图只是准确byte-offset后缀，未重建或宣称原前缀Unicode。
+
+2026-10-26 17:02 本次检查继续运行：ARM18输入证据已按严格文本/原字节归档04/local_features_integration_20261026/arm_input_contract，共18文件，handoff0070b4efd458eae1be3b2c02991b20ffd7e6aeb126f0422f887f6e352af03c98；132B opaque WSL前缀与raw.bytes仅temp，后缀offset/len/SHA证据保留。报告formal归档34个允许原文本，archive handoff62d65815e9edc250b0aaba43778db28e3a394cebc1dcafa43876ac224869cbbc，根核其源handoff与复制件完全同字节，无新增业务执行。
+
+告警页首次监督器01因Win/WSL glob列表顺序差异而构建前父1，独立02只读对比4glob/20成员规范路径/长度/SHA全同；02实际qmake0、5组全gone，但把MOC变量假设为必要而父1，make/GUI均未启动。校准聊天继续独占槽，仅03执行器正向按真实Makefile recipes校验工具，先只读演练parser，不删工具校验/不改正式源或原8断言/超时。03当前只有准备输入，不能报已运行页面。恢复来源后同Host重新查询补充亦仅准备。新generic控制器原legacy_invocations=16元数据错误仅在未执行candidate修为实际原35计划和新增组件的分类计数，旧candidate字节保留，新runSuite6e13a191.../preparation75e473ea...，调用/断言/超时未改。D1两真实关闭路径与报告actual-main字典全链均仍是temp准备，未冒充运行通过；主壳新冻结/编译/累计/平台仍待这些实际结果。三个原窗口和10分钟ACTIVE保持，真实RK/仪器仍待设备。
+
+2026-10-26 17:12 根读告警03真实launch父0/09:06:49，qmake/make/两GUI实际0，两个QPA各8业务+init/cleanup=Qt10/0/0，16条正常页close/storeclosed/workerjoin/SQL逻辑不变全部true，9阶段组gone，80源/工具/控制器/Python首尾同。01排序和02 MOC变量假设的执行器失败原件保留，正式业务源码/原8断言/超时未改。已按实际结束与清场将唯一编译GUI槽从校准转ROOT_NEW_NATIVE，校准仅归档/准备恢复补充。
+
+根以75e473ea...控制器清单8项逐件匹配后启动新cohort native_launch_01（真实WSL Ubuntu-24.04/qyq，最多-j2），unified exec会话31358。09:10:03 snapshot_before实际0/PGID428gone，新478输入SHA6c22e2017b1afc06afdd6bb8d2fd753e1d8b7b2f1c35c976cb38329a3c66faa8；09:10:08实际开始主辅全新编译，目前尚无编译完成/业务通过结论。447/07历史不改、不复用旧对象；所有正式可构建输入停写，根只同步被快照明确排除的README说明。新D1私有脚本补完整badge头并将alarmClosedBeforeCleanup纳原finished和runner，医院closed明确为入口清理后，最新cpp8a00a05f.../run4b58a0d5.../prep2d9331a4...仅静态评审，不冒充运行；实际production-main字典驱动与新平台脚本也仅准备，后续都须绑定本轮新478而非旧447。
+
+告警03回执口径补明：每种后端8条teardown标志均true，其中实际SQL行图比对为7个已播种夹具；另1缺失源例验证未创建库，不把缺失文件说成读过SQL。原父与9组全结束，窗口slot_release.json明确09:08:13，早于根09:09:59启动；编译/GUI槽无重叠。478主辅会话31358当前仍运行，尚未给编译或业务成功标记。
+
+2026-10-26 18:05 根回收478 native会话31358实际父0/edebfb，09:30:51结束；snapshot/build/after/types四阶段实际0、无timeout/cleanup、组gone，478源首尾相同，226对象全新(main194/helper32)。主SHA bcf67364fb33578e3517a84943eabc87bc9650e08fb463bb49f3bb941e322253，helper 2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb；helper输出虽与447相同，32对象仍本轮新编，不是复用。新native公开54文件/42producer文本，handoff30f1b901279a58a3d5d79c5556740919aabf4a2f9167476e838ef457107db1f9，未拷对象/运行数据/混合Windows字节。
+
+根会话7922编旧22+正式新6目标，实际父0/31cb9f，09:54:05结束；28个新测试驱动、84个moc/compile/link实际退出0，绑定本478主程序Makefile193个排main后的实际生产对象，0旧test复用，测试source/pro首尾同。根另绑定正式builder及7份源夹具，8输入首尾同，覆盖不在应用打包快照中的实际回放JSON。随后独占GUI槽会话7559启动完整suite_final_01（原35+新10、无start-at省略），当前进行中；组件/旧累计不替代新D1和actual-main字典链。D1仅准备；报告实际main探针已落，静态发现closed计数门闸和首次科室保存SQLmask证明口径，作者仅私有补断言并准备绑定，正式源不改。
+
+中文页272文件/7内容grab归档handoff ef714143f772a8b694084d2ec1a2d3f5058fd3f84cbb5054992fa27a47122515；AB01混合153B同字节但新路径严格排除，未沿用路径特例或重造Unicode。新478平台prep9f505fb4...和post8target准备cbfa94ac...已交未执行，校准恢复补充、CN AB02、actualmain alarm CLI正负5小case仍仅准备并排队；项目窗口在新temp核有依据的样本QC预设下一批，不动本478冻结。10分钟保持ACTIVE。
+
+<a id="function-and-porting-learning-review-20261026"></a>
+### 2026-10-26 工程学习用功能与移植差异说明
+
+用户要求形成便于后续学习的文件，说明上位机已实现功能、相对Windows的代码修改/删减/新增，以及后续建议。新增`01_docs/knowledge/sn100_host_function_and_porting_review.md`，核查截点为2026-10-26 18:27（Asia/Shanghai）：包含功能及实际操作矩阵、原Windows入口到正式实现的对应、未迁入/禁用/替换与实际小范围删改的区别、建议原因与验收条件，以及医院保存/样本复测草稿/报告导出三条阅读路线。根README、工程知识指南和原移植计划仅增阅读入口，不重排当前任务或更改原验收勾选。
+
+本次只读核对参考源码、正式源码和已有证据，不修改业务/构建源码，不启动GUI/编译/设备，不干预其他窗口运行。报告原始检测曲线仍待接；五类字典明确为科室/患者类型/检验/送检/审核；样本复位复测和质控历史本地部分已实现，不照旧段落误列整项未实现。保留现有未提交修改，不自动提交或推送。
+
+核查时直接回读`temp/sn100_host/local_features_integration_20261026/suite_final_01/verification.json`：18:06:50产生的收据为passed=true、45调用/full_suite=true、无省略、478输入未变，主辅SHA与04/native编译证据匹配；new_unified_shell_contracts_verified仍false。为使学习文件不依赖临时目录，仅将该既有摘要原字节复制到`04_references/sn100_host/function_and_porting_review_20261026/cumulative_receipt_at_review.json`，SHA-256为`bfb3e57079d7169f1a68b19c703ba737219c1b17ae3ee6b6a666cd58d35637eb`，来源范围写`provenance.json`；这是文档核查留存，不是新执行或本批整套收口。新增退出/草稿取消、actual-main医院字典派发与关闭、告警参数/错误恢复、新平台/恢复包及RK/仪器/临床/预算/长稳仍按控制窗口继续验收，旧447结果不套新478。
+
+文档静态核查：44个本地链接均存在，代码围栏成对，留存摘要SHA与来源说明相同；新增专题和两JSON未被忽略。三路只读复核了功能、代码差异和证据边界；没有新增业务测试通过结论。
+2026-10-26 18:33 用户现场明确“测试做了这么多，主要看当前功能有没有全部实现”。根已收住新增测试队列，三个原聊天转只读功能核对；原有候选/失败/证据保留，不停止10分钟ACTIVE，不新开聊天。结论不是全部：本地管理、配置、样本草稿、校准原始点、质控历史统计、报告文件处理和告警历史已实现；真实检测排程/投递/应答/暂停恢复、完整校准计算/临床质控、结果入库及项目到报告映射、LIS收发、实时告警/互锁和实体打印应用接线仍有实现/资料缺口，不能统称只缺设备。
+
+统一45调用已真实父0/e6dea1，478/绑定/控制器和额外8输入前后同；D1会话7036实际父1/9e732b、绑定0/Qt2pass2fail，两个子case95在frame前置拒绝，SIGTERM/ACK都false、viewClosed0，test组443gone无timeout/cleanup，非产品业务失败，不把关闭全链待验证写成未实现。D1_02只复制4输入并停工交接2b5e2f86...，未改host/未运行。当前无活动构建GUI；待实现优先级改为单孔QC样本预设及原SN100结果/LIS等合同核清，后做对应必要验证。
+
+现有移植计划新增当前功能账并保留四部分结构；修正过时的样本本地复位/复测和QC历史仍未实现的描述。报告软隐藏只有隐藏及取消/失败回滚，没有找回隐藏报告的入口；同步改学习专题的歧义措辞，不改其其他来源事实。已实现但待全链验证、未实现、缺资料、设备待验分别登记，README/指南/日常清单同步，未改业务源码/原测试断言/工具链。
+
+功能核对后已给三个原聊天下发实际功能方向：项目推进单孔QC预设完整私有候选和最小文件范围，校准核QC侧实际关系/UUID/引用持有释放公共合同并准备私有候选，报告核原SN100真实任务结果到报告的字段/单位/项目ID/重复语义和具体资料缺项。均不写冻结478，不猜临床或生产映射、不接设备、不扩无关测试；根审合同、备份受影响前像并明确新批次后再正式合入，必要针对验证不取消。
+
+2026-10-26T11:05:48.431927+00:00 根审核原QC选择入口、现有QcStore QC→catalog锁序和Sample候选后，批准单孔QC预设共同实施合同db4610b5...及明确CAS/终态ACK/零项目仍保护控制品批次的clarification943e2d14...。只保存即将受影响14份源码/构建/来源/测试输入脚本前像到07_backups/sn100_host/single_slot_qc_20261026/preimages_478_01，manifest2adc1139...，逐件匹配478或已核ded1a05d测试脚本并回读相同，不复制环境/运行库/INI/认证。
+
+根现在显式解除478可构建输入冻结，进入single_slot_qc_20261026正式功能实现批次；原478/45调用证据仍历史不覆盖。项目仅样本types/Store/Page/core/来源及新sample_qc*，校准仅QcStore/core/来源及新qc_sample*，根公共main/ARM输入/文档，互不抢文件。正式接入须保留普通样本规则/角色/原UI与两级草稿；先持久预约，再真实Source提交，未知结局不清保护；默认无项目的QC预设仍保护控制品与批次。当前编译GUI无活动且禁止并行启动，作者交最终SHA停写后再新冻结和必要针对验证；没有宣称新功能已完成或已通过。
+
+2026-10-26T11:35:14.232549+00:00 单孔质控样本正式实现继续：项目12源交接c3d45be0逐件长度/SHA根已回读一致，校准5源交接16dc25be停写。根将生产实际队列接线提取为shell/sample_qc_shell.h/cpp并由main调用，连接两个真实worker而非替代回执；新增ARM输入和精确qmake共享值文件核查。额外只备受影响shell.pri前像到07/preimages_478_02_shell_pri。
+
+只读整合发现QC仍赋值已不在共同DTO中的outcome字段，确定为编译接口阻断；先保留该新源前像07/preimages_qc_integration_01，根仅删两条未使用赋值，实际源终态SQL门闸/对账/目标提交后ACK不变。首次编辑器CRLF字节断言实际1在写前退出，后按源LF逐行精准修正；未把编辑失败改写成功。新guardSHA5babcaa4ac7fcb5f663edd8057b606076d677d5a357872b4b4e7054c2f05db96。
+
+当前无编译GUI；内部qc_pages仅准备真实产品桥的窄功能验证源码，integration_audit只读协议审查，报告原窗口继续核原结果重复/单位映射依据。源实现不等于整项已可用，旧478/447结果不套用；全体作者停写后才做新冻结及必要针对验证，10分钟检查继续ACTIVE。
+
+2026-10-26T11:43:31.058786+00:00 新QC样本整合只读审补充：证实正常save/remove/clear在同事务修订CAS，预约时无源写锁等待目标，源真实终态和目标事务ACK后才GC；零项目父持有、旧slot身份与QC终态证明独立保留。发现恢复currentRevision=9、预约before=10且aborted/finalNULL时原对账未拒绝倒退，根在三个实际入口补expected<=current拒绝门闸；同时对齐committed saveRack不得target0。现guardSHA0a5f28d5...，这是静态新代码整合缺口修正，未声称已运行复现或修好旧偶发。校准schema只读报告1cfc59e4...已收，未编SQL。待最后必要功能测试源码停写后新冻结，未启动旧478队列。
+
+2026-10-26T11:56:19.611883+00:00 单孔QC必要验证01：新488快照d843e6f0...，fresh qmake实际0、make2、父1，会话8258已完成且source不变。具体错误为Qt slots宏与QC局部QSet变量重名，GUI未开始；原命令/失败/源码快照保留。根只改名slotTokens及两处访问，再建立独立targeted02鲜编，无旧对象复用，不改业务断言/超时；冻结488/1b1ee9b6...，根会话58033当前唯一槽。只安排实际桌面xcb，offscreen默认虚拟屏不满足1600×900宿主前置故未安排，不称两后端已过。
+
+报告窗口补充合同d5f3ee09...已交并收：原普通路径同任务覆盖、明确复测新ID保留、错误复位保留ID；原历史显示读当前项目单位倍率精度，项目改名无旧结果迁移依据。根已授权仅temp私有HistoryStore预约/四原值提交实际候选，不触冻结源/设备/生产数据，跨库真实保护和单位映射不能用假key/默认值冒通过。此候选不计正式已实现。
+
+2026-10-26T12:00:56.932599+00:00 targeted02实际qmake0/make0，Qt8/父1，2生命周期pass/8业务行全在匿名项目准备h.start失败；ProjectsStore规则要求actionReady而测试混用Sample允许false的session，产品拒绝正确。源前后同，真实worker关闭/线程join和进程组gone，无timeout/cleanup，尚未进入UI业务。根只备唯一受影响test.cpp前像07/preimages_test_fixture_03，然后为ProjectsStore单独ready模拟工程师；Sample/Page仍actionReady=false，业务断言/超时/原点击不改。独立targeted03全鲜编，不复用02对象；原02失败保留。控制器03同时修Qt数据驱动每方法可能多Incident的解析：要求全部原7方法/8业务行、两个精确DataTag全pass，不以1incident错误拒绝。02未走到该解析，本修正不把02判成功。当前根会话61610唯一槽，03源码冻结6d9185c534645a823293e7a9bb446604bb6a8222e92d11a33a0e73251ce26d32。
+
+2026-10-26T12:09:23.816022+00:00 targeted03实际fresh qmake0/make0/父1/Qt8，仍是h.start准备：厂家22字符超过现有16限制，8业务行未进UI；原始XML/命令/源/对象及真实清场保留，所有root8258/58033/61610都完成勿轮询。内部只读核完整h.start后确定统一修3类输入：初始厂家anon-maker、更新厂家anon-updated、控制品改名负例QC_RENAMED（原负例17字符会先长度拒绝，不能证明引用保护）。保留合法批次负例字符串，所有业务断言/超时/角色/原点击均不改；再次只备受影响test.cpp前像07/preimages_test_fixture_04。root首次准备因未加引号token同时命中合法batch后缀，断言1在源写前停止；后改完整引号匹配，真实testSHA ed39a205568ed5e01bbd148bb9676b20dae9ba55a09a24053ec1eebbebcf7d5a。
+
+根现将必要targeted04唯一编译GUI槽明确交现有项目聊天，不新开窗口。其fresh04控制器仅独立输出目录变化，按新源/工具/原Qt业务case与严格DataTag核验，首次真实业务/宿主失败保留并停，不盲开05。所有正式作者停写、root不并行运行；来源source_before/raw/父退出/slot_release优先于摘要。报告聊天仅temp写实际结果预约/四原值存储候选，未合正式功能；仍不能说所有功能完成。
+
+2026-10-26T12:31:58.090693+00:00 根回收04真实交接92147ac5及明确slot_release后才动源。04 qmake/make0，Qt7pass3fail/exit3、父1、无skip/timeout/cleanup；488源首尾同，67对象全新，5工具同另2 Linux链接Windows回读缺口需WSL补核。互转两case实际在reopen后保存被Guest拒绝，确认为测试close清session后未恢复原身份；通过Page公开setter重传原actor而非改权限。
+
+回滚case mode=ro实读匿名runtime/workflow-EkIQar：旧QC孔、两任务和原hold观察仍在、修订仍2，新草稿未落业务孔；新增token的source/target pending及新父hold留下。完整before JSON只在Qt内存、错误输出截断，不能冒逐字节核完所有旧行。直接因果为RAISE(ROLLBACK)已结束事务，再rollback返回false走保守关库，未到真实取消对账。根备3源前像07/preimages_488_04_recovery_05后，新增仅当前QC业务写失败的有锁持久结局核实：新BEGIN成功且同own token/family/path/UUID/schema/操作/目标/修订正证、无新token业务孔，才能pending→aborted并提交；COMMITTED不改取消、未知仍关库留保护。其他阶段默认不走恢复，业务断言/超时不动；内部只读审完无阻断，尚未声称运行通过。
+
+新05唯一编译GUI槽交原项目窗口，fresh只重跑04三项失败，不复跑五已过业务行、不套新源全部通过。root源已停，真实before/after/退出/slot_release优先；报告temp结果入库候选继续，校准temp核打印设置到任务应用的有据缺口，不编译/GUI/实体打印。本条CP写入首次读默认GBK失败1在写前退出，改显式UTF-8后正常；不改业务失败收据。
+
+2026-10-26T12:51:10.103710+00:00 05真实交接7dea4fe1、slot_release及父0已根回读。新488冻结484644bc...，fresh67对象，qmake/make/Qt/父全0，原3失败方法均通过且无skip/timeout/cleanup，353/389/641全部gone；7工具及控制器/源前后同，04两Linux链接工具已补真实WSL回读0且与原before同。只报当前3回归，不复跑/重标旧04五个业务通过项；当前统一产品/新WindowsARM/原Windows视觉/RK/仪器/预算/长稳仍未验。
+
+选择98份严格UTF-8无NUL/替换码点的原metadata/text/XML归档04_references/sn100_host/single_slot_qc_20261026，逐件SHA/字节回读同，handoff7feb9217...，不含DB/INI/auth、二进制/对象/完整源码副本或外层WSL混合原字节；所有原失败、匿名运行库及源执行副本仍temp原样。没有新增字节例外。根另独占只读输入合同会话23607已实际父0，18逐名ok/70.250s，冻结同484644bc、额外测试脚本及执行器未变；只证明ARM输入/冻结清单，不是交叉编译或RK。其9份证据独立arm_inputs_01归档，不改第一份98文件索引。
+
+当前所有正式源停，单孔QC本地实现账打勾并保留完整验收待项。结果私有候选9ec8515e已写，审到原ProjectsStore引用查询遍历后未核lastError的确定错误分支，已要求私有02精准补failclosed及6项必要SQL测试源码，正式API尚未覆盖。打印应用私有候选也已分配：只已提交配置/每任务目标快照/独立确认Native单任务/明确提交取消失败未知，无实际spool执行。项目窗口只读核下一校准/多瓶样本完整入口依据，三个窗口仍分担，不因本阶段通过暂停10分钟ACTIVE。
+
+
+<a id="local-results-backend-20261026"></a>
+### 2026-10-26 本地结果存储正式接入（2026-10-26T14:19:20.759562+00:00）
+
+用户当前重点为功能补齐。私有结果候选02先保留两次真实执行器失败：01在qmake前因Windows CRLF提取文件和LF正文逐字节比较拒绝；02qmake/make实际0，但__FILE__相对编译路径不满足私有目录门闸，业务未运行。源38件不改，有限qmake-only试验证明QMAKE_PROJECT_DEPTH=0可生成绝对源argv；03全新编译、6业务/Qt8、父和各阶段实际0，原失败均保留，不把工具路径失败冒业务修好。
+
+随后根明确解除488/05冻结，按10个受影响原有文件备前像到07_backups/sn100_host/local_results_20261026/preimages_488_05_01（manifest c406fe0c…），新8路径原先不存在。报告独占后端10文件，根公共8文件，实际交接8773a350…/root landing逐件SHA相同。正式新增空白标记结果库及显式任务预约/四原值提交：同任务覆盖、明确复测新ID留旧、错误复位保留ID清旧值；原串含空值/****保留，未知单位不猜，非检测调度或临床计算。真实ProjectsStore引用保护持有/核查/释放；查询遍历错误新加lastError门闸回滚不返部分成功，仅静态错误分支修正，不声称重现旧偶发。
+
+报告helper原先整编HistoryStore仅为两个静态显示格式函数。根将这两段原定义原字节移至history_value_text.cpp，调用名和语义不变；renderer和HTML测试只链接该格式源，不带可写Store或其MOC。公共projects_store_support.pri一次链接真实项目Store/高级页校验/复选框，无测试替代成功路径；ARM构建及输入清单随真实源更新，当前新ARM测试/交叉编译仍未执行。
+
+formal_core_01已真实parent0，fresh13对象，6业务/Qt8/0fail/0skip；494源码冻结2a66a140…、额外4测试输入、7工具及执行器首尾相同。实际原始各阶段退出及全部所属PGIDgone、slot_release已核；handoff b93e31d5…、release37bffedd…。36份允许严格UTF8原metadata/text/XML回读归04_references/sn100_host/local_results_20261026/formal_core_01，handoff e49b1086…；无DB/INI/认证/对象/完整源码副本或混合WSL原字节，新入口变更不套此核心通过。
+
+根之后再仅备5受影响源前像preimages_entry_02，显式解除核心冻结，补main --local-results（须history/catalog）、真实catalog schema准备后初始化新空白库，以及原页面查询/患者编辑/隐藏接线；未知单位禁预览/文件输出，legacy默认入口不切库。报告仅补CSV后端拒绝与一个新独立用例，原六业务正文不变；当前尚在源写入，未运行本批新入口或全程序。多瓶模式设置候选d70e84d2…、打印02候选888ade21…均只临时源码、已停写审核，无编译/实体动作结论。
+
+
+2026-10-26T14:32:32.626042+00:00 根补齐本轮可选择的main入口/Page能力后正式停写。--local-results必须history/catalog，catalog依原Project→Reagent→Sample提交建表后再开History worker；无samples改等Reagent，默认legacy路径不切库。报告新模式exportCsv在checkReady后明确拒绝，原六测试正文不改；只新增的一条未知单位导出负例已全新编译13对象、qmake/make/Qt/Windows父实际0，Qt3/0/0且原六未执行。formal_export_02源494冻结04d92ada…、额外4输入/7工具/执行器首尾同，388/393/400/401/457组gone、slotrelease后才转根，handoff8ad28636…。
+
+根随后启动ROOT_LOCAL_RESULTS_NATIVE_01（统一exec71900），新控制器只沿用先前主辅鲜编两文件并补本轮真实mandatory输入；prep9d83f59d…，native/snapshot_before实际0/14:26:53，494冻结04d92ada…与guard正式快照完整同字典，14:26:58实际开始-j2全新主辅，尚无成功结论。所有06继续停写，不并发GUI/其他编译。原阶段core01不套当前新源；当前主程序/新ARM18输入合同/三平台/实物仍各自未验。
+
+项目只读入口审5753e736…未见确定新阻断，确认空配置可ready且两个读取非两次初始化，Guest患者编辑保留旧权限；没有任务预约/提交UI，不称结果全链已通。内部组合模式候选审93334dd2…未见确定阻断，仅候选设置持久化/事务/取消/拒绝多瓶应用静态核对。校准只读发现私有打印renderer无条件offscreen在QApplication前覆盖Native GUI，确定会遮确认窗口；已授权独立03精准私有修，PDF/HTML仍保留原隔离，不改02/06、不执行实体动作。这是本轮候选问题，不冒旧产品缺陷根因。
+
+2026-10-26T14:33:40.939536+00:00 CSVguard新增业务的36份严格文本证据已独立归04/local_results_20261026/formal_export_02，handoff3bd31f9c…，根核交接原字节SHA一致；与core01六业务分开，不合称当前七项全过。root唯一native71900仍运行，尚无完成回执。项目仅准备3个真实主入口新空库/同目录重开/legacy启动退出，先审再待native成功授权；校准只修私有03确认UI路径，均不并发编译GUI或写正式源。
+
+2026-10-26T14:45:13.752529+00:00 10分钟复核：Root native71900仍真实运行，无完成/成功回执，继续唯一槽与06冻结。打印03七源及全部artifact已根逐件回读SHA同，handoff67a5c8b3…；只有两个QPA私有修正，不当实际确认/打印通过。校准仅准备494新base+7精确差异一致overlay及真实缺失设备负例前置，尚不编译/枚举/绘制。项目仅新主入口3流程准备；报告只读实际SN100 LIS消息/任务结果字段及缺项；内部qc_pages准备组合设置最小三方法验证，QC-pending不具真协议共享夹具时明确未覆盖，不造bool假成功。新业务源码均未改正式源，仍不要求用旧全量测试队列作为继续功能开发前置。
+
+2026-10-26T14:51:46.683545+00:00 回收Root native71900实际parent0：14:47:42结束，snapshot/build/after/types各真实0、所有所属组gone，无timeout或强制cleanup。494冻结04d92ada…源首尾同，231对象全新(main201/helper30)，主94cc1731…、helper d4c64af1…；构建结论不冒运行。24份允许严格文本/metadata独立归04/local_results_20261026/native，handoff afbd29e6651a0b71f97e19667335edba52427213b38cb6fca65df3396041f8fe。之后仅Root新ARM输入合同82064在跑，原18方法/120秒整套执行预算不改，新source/test/helper隔离合同已更新；它仍非交叉编译/RK。Project真实main三流程准备待根审，不抢槽。
+
+2026-10-26T14:55:47.689567+00:00 报告完成LIS主机侧只读合同核对，handoff 5a7eab2de4fa0a356bf86f5db36126ee18de3fbdd1cd414ce83adeca857527fd，3输出len/SHA根回读同；原版QRY/DSR/ORU/ACK主调用存在，但控制号HHMMSS*100+孔非全局唯一、ACK关联实际取MSH-10而非MSA-2、HK_HL7字段位置和自定义UTF16边界不能套通用HL7。原有TCP重连不等于业务持久重试/去重。现Sample四位本地编号不能容纳条码/患者下载身份，新结果uploaded无版本ACK接口。原九键本地设置不算真实通信完成。已把具体所需匿名往返/编码/控制号/项目码/次数和ACK语义写当前功能账；缺部分映射不阻挡多瓶设置/打印等无关代码。仅静态源审，无端点/参考程序/生产库执行。
+
+2026-10-26T15:14:20.109632+00:00 Project本批3真实production main已完成，根读actualWindows父0/postflight0、各3app退出0，单次SIGTERM→SHUTDOWN_ACCEPTED→Storeclosed/THREADS_STOPPED全真，无timeout/cleanup、431/473/513及driver337全gone、secret全删；494源及8额外输入/fixture/执行器前后同。新空库三表0、同目录重开UUID/metadata保持，legacy仍6/11/16匿名行，handoff f118e4bfbc150d60ff1ec7b6adad0aef40f29037c0d8f5dc044ec1ed76ecf179，slotrelease已核。不冒预约/提交UI或结果/设备全链通过。Native71900和input82064均已结束0不再轮询，当前无活动编译GUI，正式494继续冻结。11份新ARM输入证据归04/local_results_20261026/arm_inputs_01 handoff608d80ea…；全115公开文件git check-ignore均未忽略。
+
+打印准备01因“不得复制认证”保守排除既有accounts.json使base缺1成员，根只读正向核其只有匿名name/role/isdefault等公开字段、没有凭据字段；授权独立02在严格五匿名角色/原SHA核对后补唯一夹具，非认证复制例外，原01/03不改。新批仍不编译GUI/枚举/打印，等完整overlay回读再授唯一槽。报告另准仅私有LIS原帧→有界解码→原字段SQL收件箱/重开代码，不连端点、不ACK、不应用样本/项目或推断单位；本地requestIdentity与可碰撞的MSH10分开，幂等只约束本地收件事务，不冒网络去重。
+
+2026-10-26T15:29:11.118129+00:00 本轮续做：entry runtime35允许文本已独立归04/local_results_20261026/entry_runtime_01，handoff 3f0390d6f200d6f57ebad8d0cba98aaf722fdccb1ddfca7046434a90ffaf98f2，根回读actualhandoff匹配。根审组合源/真实worker/角色/事务/GUI前置后发现01命令JSON qmake路径拆成多argv、三case整个shell字符串挤成单argv。只在独立02修元数据，原CPP/pro/断言/目录/runtime/30秒外层不动；02handoff1f4399ab…根逐token核，再将唯一buildGUI槽授Project combination_targeted_execution_01，鲜编/逐方法串行首失败停，当前尚无实际结果。
+
+打印完整02准备09ec8512…，521artifact根逐件len/SHA匹配，494base/496overlay只有5替换2新增、全部26pri和新formatter保持；补的原accounts.json仅5公开匿名name/role/isdefault无凭据，未读取运行账户库/secret。校准只准备独立最小执行输入及真实Qt只读设备目录探针，以确认缺失UUID命名；尚不编译或枚举，等待Project真实清场释放。Root未改正式494冻结，报告仅私有LIS收件箱代码继续；没有将准备或缺失设备拒绝冒作实体打印成功。
+
+
+2026-10-26T15:53:16.431604+00:00 组合私有01真实结果已回收：qmake/make0、61对象全新，前两方法各Qt3pass/0fail，迁移默认ordinary/模式CRUD及末步真实ABORT保三表/FK引用保护通过。第三原弹窗方法Qt2pass/1fail、子exit1/Windows父1，失败在CPP484保存读回mode仍Ordinary；所有输入/工具/执行器首尾同，无skip/timeout/强制cleanup，427/463/26799/26806/26812和driver426全gone，postflight0、slot_release=true根已读。原JUnit error属性及诊断不改，业务结论以真实exit/PASS/FAIL/QtTotals核；不改旧失败、不扩成正式已过。
+
+根只读确认Save直接读cbk_multiCtrl.isChecked，原UI尺寸191x21/多瓶质控文字；原测试只核全局widgetAt，没有click后checked/toggled记录，直接原因尚未知，不能直接称存储缺陷或宿主问题。项目仅独立准备同widget原center状态/信号/QtstyleclickRect与indicator对照，旧center/断言/等待/源保留，不自动重跑已过两项。当前NTFS XDG777及QPainter警告不是已证因果。
+
+打印执行准备handoff b8acff1f…，新7控件/目录只读probe/driver及manifest Root回读同，prepSHA4dc0e50a…；在Project真实释放后才将唯一槽转CALIBRATION_PRINTER_PRIVATE_01。仅fresh helper、controller no-undefined不加载、真实Qt目录probe和真实helper缺设备一次，预期子21原收据保留，只有确切缺设备6字符串终态/无phase/无QPrinter绘制路径才算负例过，不称正向打印/RK通过；目前尚无本轮实际成功结论。
+
+报告LIS收件箱私有01 handoff2e22ad09…/12源RootSHA回读；内部只读review739e9d85…绑定同版，确定ExactSchema仅查table而漏未知index/trigger/view，可让额外UNIQUE(control_id)破坏允许不同localUUID同控制号的本地合同。未运行，不称事故根因。已授权独立02精准完整schema门闸+1真实SQL负例源码，保01和原六方法正文，未编/网络。读回是在事务内实际SELECT、COMMIT成功后再发快照，不能说提交后二次SELECT。
+
+2026-10-26T16:13:29.153181+00:00 2026-10-27正式打印应用源批次：Root回读Cal parenthandoff7db0596c…，actualparent0/post0/slot_release/stoppedwriting、14组全gone、源码/SDK指纹同，真实Qt目录为空、helper确切缺设备21，无提交/正向确认。仅按10受影响旧源备07_backups/sn100_host/printer_application_20261027/preimages_494_01，manifest d6865694…并逐字节回读；确认3新路径先前不存在后Root明确解除494。
+
+私有03七源原字节正式落入history controller/renderer、QtRPT callback及新PrinterReportShell桥，Root只另接main/pri/ARM输入/打包capability与来源。总13路径landing713e8077…，原UI/forms/QSS颜色位置未改；main仅在printer+historyReports有效时接已提交Store loaded/saved/closed，raw结果模式仍无预览/打印；启动不自动提交、不改变设置/系统默认。Meta单列配置来源、标准确认、软件Submitted与未验硬件/RK范围；原settings本身没有启动任务的事实保留。
+
+所有作者停写后记录新正式freeze 497/28d7c6745825e10cb49d1a408944278c16d0c9f15c17a11011fb5de75132f381，尚未新整程序编译/运行，旧494证据固定历史。接下来Root仅新ARM输入清单合同，再按实际私有LIS/checkbox准备顺序分配单槽；不把同字节私有代码负例当正式主壳或实体打印已通过。
+
+2026-10-26T16:26:03.960097+00:00 正式打印接线只读核查确认 nativePrintFinished 的Submitted/Cancelled原无主壳接收者；已保仅history_shell.cpp与origin前像至07/preimages_feedback_02后，Root补同一原普通状态入口。Failed/Unknown沿原failed通道，Submitted明示软件提交且未确认出纸，不增弹框/改布局。仅此2源变化后全体停写，新497冻结aafe488572863c11b67c7ac651e957105b7c7448776f9beb6ae42359bab26b19（formal_source_before_02.json）；旧497首版ARM18合同只对应旧28d7输入，不能冒新全程序已验。
+
+2026-10-26T16:30:31.425472+00:00 LIS私有02首次实际运行已收齐：fresh4对象，7业务及生命周期9函数全pass/无skip，qmake/make/Qt/Windows父/postflight全0；封存01/02与工具/控制器首尾同，5所属组gone。execution_handoff64fa8756871fb97a5702c96fecf420d6057e3503ee3fdcad5a90244b55bf9b40，slot_release76492a03cd09015972ebe7b8b8dc2a2e30da0a10cda56777e496d3fb05dab9dc。仅未映射原始报文私有核心，未正式LIS联网或任务应用。已授权报告仅temp准备实际导入查看辅助窗口，无编译网络。
+Root于16:26:41UTC接唯一槽ROOT_PRINTER_NATIVE_01，会话98591，fresh主辅 -j2；native_drivers_02准备f2a59095f01695816a949e05e301bc091b9d9b7c75a30d501391bf0d25b4487c，固定当前497/aafe488572863c11b67c7ac651e957105b7c7448776f9beb6ae42359bab26b19。snapshot_before实际0，编译尚未完成，不能以文件存在称成功；所有正式源停写。原driver01准备保留未执行，旧497首版18host合同0只对应28d7版，未混用。
+
+2026-10-26T16:36:08.547678+00:00 正式打印native01已实际失败：父1/build2，非超时，392组gone无cleanup；printer_report_shell.cpp:2 unqualified printer_settings_store.h在正式壳include集合不可见。原native/parent/driver02全部保留，不修改失败。Root只将include改为工程根已有data/printer_settings_store.h，另改origin准确记录不再称当前七源全同私有；先保仅2源前像07/preimages_compile_03，再新497冻结cde62734463a6efa65d2b8d8f600e497bcd02a13902763bf5e86e62a4c41d185。98591已结束勿轮询；准备独立fresh native02，不复用失败对象，不改业务/断言/等待。先前读取outer stderr.raw以严格UTF8失败只是取证工具1，原始字节留temp，未重写/放宽。
+
+2026-10-26T16:48:28.383611+00:00 本次10分钟核查：native02源497/cde627仍唯一编译槽，未新增GUI/并行构建。已回读打印私有负例归档116份metadata/text，严格UTF8/len/SHA均同，handoff48d95989ce901c9b1c869c699e692230cde7436a0f1b395fa440b724b7d5c29b；原helper21保留且版本范围注明。Root已完整读项目单次checkbox诊断run/launch/baseline/invocation，119实际依赖、7工具/8headers和原argv一致，不跑旧前两项；待native02真实完成释放后才授权执行。Cal只temp准备一个正式Store→桥→原Print→实际helper缺设备的必要新流程，不执行/不假完整打印通过；报告辅助导入查看代码仍作者静态核查，未正式接入。
+
+2026-10-26T16:57:08.506782+00:00 按当前源码纠正同一README/指南中过时操作描述：Apply仅保存配置，新增报告打印接线须同时启用历史/账户/打印设置；预览固定已提交设备及内容，下一预览才使用新保存设备，Print单次标准确认，取消/缺设备不提交、软件Submitted不称出纸。保留O03-4历史边界并说明HTML当前已接，无绑定独立宿主仍禁物理打印；未把文档核对冒本轮运行成功。正式497冻结源未改。
+
+2026-10-26T17:06:32.601819+00:00 正式打印native02已实际完成：Windows父0/build0/无timeout或cleanup，400组gone；497源与批准cde627字典及native before/after逐项同，9工具/控制器首尾同，233对象全新（主203/辅30），无旧对象复用。main a9991fb1af22cad3fddd832c2b07bedbe6516bb2d642df83f19c4876862dd147，helper cfe7085824d62168cfd2242631566f58de8056e49ac2b0a03f05f34436debcd1，verification c304ae7ef55130062c0251ff29f1014d33626e39715964b6c2d8b08e453ea209。45954已结束勿轮询；Root释放单槽并明确授项目原checkbox诊断01单次执行，自己无并行GUI/构建。本结果仅WSL编译，不冒主壳交互/真实打印/RK。
+报告新增辅助窗口已封存handoff dba679717e4486b066fbd4dc8a10ed8aab04daf6dbd0a1896e8ea6210fbc3a6e，原12源/元数据SHA已核；Root审Page及Host、qc_store只读审worker/身份/关闭，不运行。Linux安全读实现、Windows failclosed未实现如实单列，尚未正式用户入口。
+
+2026-10-26T17:21:24.076643+00:00 项目单次checkbox诊断真实首失败1已封存并释放，handoff84a9e1eb399a0a6c232199cbbded665cd47e0bd1c8ba08775b6662c439d7d307/release60e558f45c4a4e306013ac9b4d59ef5dc807e184d04235b66dde60983b52a5c6。原中心(95,10)在实际clickRect70x21外、clicked/toggled0；独立indicator(6,9)各1，真实SQL已multi_reagent_bottle，支持本次旧中心输入失效机制但不把原失败改成功。随后577“不能应用”提示断言失败，未到后续架草稿/最终整架保存，现场状态文本与按钮捕获mode未记录，直接原因不定。Root与项目源码核实：save成功dialog.accept先按旧snapshot创建按值捕获combo按钮，新snapshot到达dirty架只refreshRackList，不再重建combo按钮，属于源码可证旧值路径。已仅授权独立私有candidate02最小刷新修复与同字节原诊断CPP针对回归准备，保全所有旧源/失败/断言/等待，当前未再执行。
+LIS新增Page/Host/Worker12封存原件已核，Root完整审Page/Host，qc_store只读worker审查05fda6e299b5517893158941ce0edca53138dc9e38fbf243348acd3c3356c203无确定阻断，未编或运行。报告只准备最少新GUI/worker/真实SQL用例，Cal只准备本轮对象窄复用绑定，均无执行授权；当前所有buildGUI停止。
+
+
+<a id="functional-wave-combination-raw-inbox-20261027"></a>
+### 2026-10-26T18:38:55.419212+00:00 组合模式正式落源与原报文组件接入
+
+按用户“主要看功能是否实现”继续有据离线开发。打印公共Print动作真实链已经通过：当前497正式Store/bridge/controller→本轮正式helper缺设备正常21→原主壳失败反馈；关闭保护、三个Store.closed与线程join、父退出0和进程清场均收齐。handoff `temp/sn100_host/printer_application_20261027/formal_flow_handoff_01/handoff.json` SHA `01f6280c8ea5c809b3759f10935ba850c451b4df3f5b08bf50134fa23d1c2b49`。复用202份已核同轮正式对象、另新编1驱动，不称203全新；不代表product-main CLI、物理点击/视觉、标准确认或实际出纸。0777 XDG警告原样保留。
+
+组合private02同字节诊断流程实际通过，原577拒绝/草稿与数据库保留/整架保存回读通过，handoff `90688540569e77d0d819adc47c606025140e7918337de40905b784f3ccd9eae4`。旧中心点击无toggled、旧失败及候选01两条存储项分别保留，不合成新整套通过。原报文辅助窗口三条真实GUI/worker/SQL流程也通过，父/post均0、所有5组gone；Root逐件核54份metadata SHA，handoff `bd319c9c6859755cdb9853ca031f317b1b81178fe20e57ebd4e8e70bb5385af3`、release `4eff5782cd5fdf176fded3b6d5ebd3b42407a34d314457953e8502d2c9d4e220`。仅Linux私有收件箱，不是LIS下载任务或联网通过；Windows安全导入仍拒绝、权限警告未解决。
+
+原497所有输入实际与批准cde627逐件相同，所有旧编译GUI所有者已释放。Root显式解除497，旧证据不可套新源。仅备组合三份受影响源码到 `07_backups/sn100_host/combination_mode_20261027/preimages_497_01/`，manifest SHA `eb2c1d9690dcc6026fa44b680027cc158ea33273ab1424ac64b5e7d1fcf2e191`。正式落源三功能源与候选02字节同，另来源说明及两个专项共六路径；私有samples_core.pri不复制，业务断言/等待/中心/indicator不改，测试仅目录guard与moc名称窄适配。landing `temp/sn100_host/combination_mode_20261027/promotion_01/landing.json` SHA `4053a3a0cd83e2646180288a85080b5ce51a353ab00c1c4fc70b0b72fa08f864`。当前仅落源，未宣称正式编译或正式专项通过。多瓶只保存模式，真实按瓶展开检测仍拒绝。
+
+唯一编译GUI槽授原项目窗口PROJECT_COMBINATION_FORMAL_01，鲜编正式专项/真实xcb一次，旧两存储项不重跑。报告窗口仅新增正式lis_raw_inbox组件，新的本地目录合同为显式--lis-raw-inbox启用/dataDir/lis_raw_inbox，非原生产推断；Root后续接入口和关闭ACK，本时点尚无完整主程序入口。校准只归档本次打印允许metadata文本，不碰对象/运行库/源副本。内部qc_store在temp实际实现已提交项目配置→竖向结果显示的私有候选，保原四值、不得猜单位/倍率，不提前开放文件输出。未安装改工具链、连接设备或归档DB/INI/auth，不清UUID引用保护。
+
+
+### 2026-10-26T18:56:52.694970+00:00 正式组合通过，原报文统一接线已写并新编译
+
+正式组合唯一针对流程actual qmake/make/Qt/Windows parent/post全0；Qt单业务及init/cleanup3通过、61fresh、114正式输入/8headers/7tools/控制器前后一致，真实Store.closed/join与389/425/658+driver388全gone，无timeout/cleanup。handoff `f36871ec0ef2100b6ab23e0b08d36c859d4af0325c9ba90809597cbbe354517d` / release `e362f7e2cb07e88bfd83a38e286a513c3f129a9cc2fb9655b4b26e53bb18f9a2`，Root已读实际收据并接回槽。不是旧两Store方法或完整QC pending/按瓶排程通过。
+
+报告新增12份正式组件已核handoff `cebbdddb308e134f5476f3c97fdb3bb6c0325ced5f279db6349af3301a27c587`及10review SHA。Root备七共享源前像至07/lis_raw_inbox_20261027/preimages_shared_01（manifest3222b4fd894e38d7cc218810b7cad34fc5c22cb4f0b7e40e289d3df0380e6aa3），完成显式--lis-raw-inbox须accounts+lis-settings、所有启动ready后首次打开、原LIS页右键/Ctrl+Shift+I回原辅助窗。会话用真实AccountSession；关闭须其他原草稿守卫通过后requestClose，只有真实closed(true)+threadjoin才重走顶层close，其他草稿拒绝不盲自动退出，falseACK保持阻止。新默认dataDir/lis_raw_inbox为明确本地合同，非生产推断；无网络/ACK/检测任务。
+
+作者封存未含showPage，Root另备Host h/cpp+origin三前像preimages_show_page_02（manifest d23560b1ad324550251028bcb0648bb0d72ae5aa57d5f00c4f3c7a3229e0d5f5），仅新增GUI线程/closing门闸后的showNormal/raise/activate，不改草稿身份、worker或SQL。共享qmake/ARM显式6cpp+5h/快照/独立漏项与helper泄漏oracle已接。只读review `311aa5d7e4fe019ae2c33338c87a7faf4f902bb118bb1337e35cbfdb5c7b0a76` 未见确定正常链阻断；其发现发布元数据漏项后，Root已补能力/page/显式flag及Linux-only/raw-unmapped/no-task范围。原shared landing d2551274aae643b69d7a580b089790ae838adc1f450a90941a9d60851904f701保留，后续package改动独立shared_wiring_promotion_02.json，不覆盖旧收据。外部app.exit只报异常结果，未承诺紧急排空。
+
+正式全部停写后新冻结511项 SHA302e8e45c9b767367a1d470d91d2b4844d85409eb5cede854194dea3f13aa837（formal_source_before_01.json），额外3测试输入另锁bd3cd08fcdd57c24fd0d3d19424ff048713df28ea05f76ea6354548ef888ab32。新native_drivers_01准备SHA4b1c6b121af5682a57b5797763bce77a37c0b961e6581b626c3dbbb7cdb2e8de沿前轮实际成功鲜编控制器，只改新cohort路径、正向必需源和额外测试输入校验、真实外层Linux身份回执，预算/构建-j2不变。18:55:22UTC Root会话63281/Windows父86284实际启动fresh主辅，输出native_01、native_parent_01；当前未完成，不以文件存在称成功，不套旧497。报告只temp准备已过三方法正式绑定版本，不运行；Project只归档已过正式专项；Cal打印formal_flow_01归档64原文经Root严格UTF8/len/SHA回读同，handoff0a0ab4615b8f357f4f1c719395d544e9e22304fd1118d502b1d4e2a40005fb12，未重新打印/编译。
+
+
+### 2026-10-26T19:10:11.297585+00:00 编译期间只推进隔离候选，未改511正式输入
+
+Root63281/Windows86284仍在运行，19:09UTC尚无实际build完成收据，当前唯一build/GUI槽仍Root；不重复构建、不以文件存在称成功。组合专项归档handoff d4230502146182d879e8e47608c4c915dbba94e7d431d34fb4f29adadae46037，45份原文Root逐份严格UTF8/len/SHA与原temp回读同，未新执行业务。
+
+结果当前格式私有候选01 handoff8ec5f723c77d07ab30a7a4f28e6e9b9315b86900be12a4489099c1b2cb9d0699已封存，Root核26成员与15formal base同。实际实现的是Store显式CAS配置保存/读取、History current committed竖向值与QObject缓存，未接正式Project/History页面，不开放文件输出，不计算结果。显示审查4d0f1318d13587c8bf381830e19801ec02c9624b35a19e39d4e1da9757c4ccd7发现（1）known数值格式门同时承载选择门，导致明确used/display为0但单位未知时重新显示；（2）同Store初始化换坏源失败只error0，消费者忽略0而旧缓存仍valid。存储审查3e367e39602d03dee79897307116ecbf9860a7903aee3a675e11aef3b764ea82另发现（3）新replace回滚失败未封闭连接，后续普通remove可能在未证结束事务内报succeeded；仅静态控制流条件性缺口，未实际复现数据损坏。
+
+已授作者仅独立candidate02窄修：selectionKnown与数值known分开、有效工作线程内初始化release前全局失效、回滚未获确认时m_ready=false并关闭当前连接保留connectionName至明确重开，不remove仍被局部query持有的连接，不清引用或把未知说已取消。01原件不改，不编/SQL/GUI。项目窗口只读精确UI控件接线边界；Cal只在私有目录实际补Windows无follow/句柄一致的显式普通文件读取候选，先核官方Win32语义且不执行IO；未宣称Windows已可用。
+
+报告正式三方法准备handoff3e8c2292781e82e2f12d2bb57e4111db2e7de0e2be25ab155ff278a673f2b85d，Root已读CPP/pro精确diff，三个原业务正文/断言/180s保持，只有正式头/pri与明确temp fresh目录guard适配；当前仅获沿既有薄执行文本准备新绑定，不运行，待native真实完成释放后Root审再授槽。上述均不改511正式源，不连设备/真实LIS或读取生产库。
+
+
+### 2026-10-26T19:40:54.763454+00:00 511编译、正式原报文组件及真实主程序生命周期通过
+
+Root实际回收63281父0/build0，511批准302e8e45与native before/after/实际字典逐项同（native原序列化7f3e58ec保留，未重写SHA）；额外3测试/9工具/controllers同，243fresh(main213/helper30)，主7d948d977dbac50d9bc064ae32d61fd5649c463f3fd9daf71109273f6c74a857、辅cfe7085824d62168cfd2242631566f58de8056e49ac2b0a03f05f34436debcd1。verification475d8eae8fc08dd8e59f14f9cc73da2fe414d3712899a0fb25e3fbd37fba4454；Root核每个对象原收据路径/fresh标记，未重复大对象bytehash，两产物重新SHA，所有编译/外层组独立核gone，readback8ab974f34aabe8a0ae1be102d081ee696b4b937b614af83d2d0ac697199c11fc。
+
+报告获单槽后正式新marker/目录/13源9测试/7工具及controls均首尾同，qmake/make/GUI/Windows父/post0；原三业务及init/cleanup5pass无skip，10fresh，5组gone。Root已读全部执行脚本、新绑定和handoff metadata，handoff e3f9bb44e9da20940613cc1808d32225df51c8e901cc863a501b22a3b6618b1c/release8e60e2d134cb371b14003a3cb84c5a5b3a598f3638b74e68ce1bf053f3c04b8b；0777权限告警原样，不称隔离达标。
+
+随后Root读main_lifecycle_preparation_01整脚本与依赖，接受仅真正binary、不替换main.o的三流程；原准备metadata‘不枚举设备’表述过宽，Root独立scope_clarification dbfd3fbd6a461df5ab20f77198c7712880ced3c52cf4383bc2a18740474b3599说明现有LIS设置初始化会读sysfs/dev stat供名称清单，不打开端口/连接端点，不修改旧准备。实际19:32UTC单槽56651/Windows82528返回0，A缺开关真实2且不造data，B首次匿名账号随机12字符临时secret/finally删、新raw空库与Guest列表后单SIGTERM，C同目录无seed重开亦单SIGTERM；实际主程序2/0/0，正常两次真实Host.closed(true)→STOPPED→原三Store.closed→THREADS_STOPPED/EXIT0，初次SHUTDOWN_REJECTED仅异步等待ACK，并未补发信号。运行仅12.688s；原表4张中metadata3行、三业务表0，UUID/marker/path前后同，不是4表均0；不读/归档accountDB。三子组与driver全gone，Source/extra3/binary/tools/controllers两次bind相同、所有临时secret文件不存在。Root readback f39f2a261fd4c68a89317d0b6a8142cb0a5470faa7eed629dbbaac3b6fd3836f，marker_readback另取每case verification中的解析值，raw exit本来先于解析所以无marker_counts，不改原收据。56651/63281均已完成勿重轮询。仅组件完整离线流程及主程序Guest生命周期，不冒认证主程序导入/物理菜单视觉、LIS网络/任务或Win/ARM/RK/资源通过。
+
+结果显示02三处窄修已写封存handOff50f020836b33b4902a992c648884005bb4018bced4c629bd3f99a5e33d475952，Root核32成员并读完整delta；尚未编/SQL，不当已测修复。现仅准备最多5业务QtTest源，不造通用runner；UI控件核对已完成27436186…，确认普通Save同时含基础/高级草稿，不可直接换成只保存结果配置API；完整用户入口继续待设计/接入。Windows候选01保障未证而保持拒绝，Root只授独立02探索绑定父目录句柄的实现，不放宽为绝对路径普通打开。
+
+
+2026-10-26T19:52:00.276476+00:00 当前511的现有ARM输入合同也已实际完成：Root40030/Windows90072均0，按AST取得18方法逐名-v收齐/OK无skip，Source5395cbcd与511/额外3输入前后同；仅host输入/冻结/闭包隔离反例，不是ARM交叉编译或RK。源码未改，无sysroot恢复/安装或真实连接。Root所有63281/56651/40030当前均已完成，不再轮询。主程序原始EXIT回执早于解析故无marker_counts，Root另从case verification实际细节核全部marker各1，不改原件；正常SIGTERM仅1次，原报文真实ACK先于三Store关闭及THREADS_STOPPED。
+
+后续以功能实现继续：内部结果02的32成员和精确delta已核，五方法QtTest源码准备handoffd2923c5b92cd30da8a29a84e093e73e5f2279ae4253ef7367817235b49f995a5已封存未运行，Root下一轮先读全源/合法夹具再独占验证。项目窗口已获实际私有结果配置UI切片授权：保原普通Save，基础/高级草稿不干净时拒打开独立明确配置操作，同SQL事务给全项目记录与fingerprint后才编辑并queued replace，避免丢基础/高级草稿或拿旧ranges/LIS覆盖当前值；仍无正式用户入口通过结论。Cal仅独立Windows02验证基于父目录句柄的API依据并写候选，原01安全保证未证/public保持拒绝，不合正式。报告仅归档已过511证据，不重跑；现511正式源/tests/pri/origins全部继续冻结。
+
+
+### 结果显示配置私有后端的真实离线验证（2026-10-27）
+
+Root完整读五条QtTest源码、真实角色及字段/固定输入后，独占槽执行。core_execution_01实际qmake0/make2/父1：新projects_current_format.cpp缺QVariant完整定义，尚未进入业务；原02/源/失败不改。独立candidate03仅该文件及同样直接使用QVariant的history_current_format.cpp各加直接头文件，handoff b848b4ce52819d818c182b001d36bce84d07e7426d9d9f949dc3db7b5c84b89e。core_execution_02鲜编17对象、qmake/make0，第一业务scopeWrite权限失败，之后未执行；源码证明ProjectsStore.close清会话，而测试关闭重开未重传已模拟的编辑者。独立targeted_preparation03只补真实queued projectSession(writerActor())，业务权限/断言/5000ms等待/SQL输入不改。一次准备工具误按CRLF找LF源码而中止，其后误启动无脚本的Windows parent03实际2，未进入Qt，原外层收据保留；不是产品失败。
+
+core_execution_03和Windows parent04均实际0；17对象全新，不混正式/旧头和对象。五个方法各单独真实进程，保存重开/四原文及有据倍率、未知单位仍尊重明确隐藏、同对象坏源清缓存、真实RAISE(ROLLBACK)触发回滚未经确认并封闭后续写入到显式initialize、真实排队旧回执拒绝及已知配置也不开放CSV均通过。原串/真实跨库保护未清；源/五工具首尾同，Qt无失败/skip，7阶段原所属组在结束回执及另一次只读postflight02均gone，无timeout/cleanup/补发业务信号。第一独立postflight断言1原stderr留temp且直接原因未确定，02只读观测7组均gone，不改前一失败、不重跑业务。Rootreadback ee90e399da78c955189c02577de62697894f9b7f472fc83833c84567498c71b3；正式511逐路径当前SHA仍与批准302e8字典全同。仅私有后端，不冒用户UI、正式主程序、Windows/RK/仪器或资源通过；progress非终态false和最终verification true各原样保留。
+
+原报文511证据已归04/lis_raw_inbox_20261027：handoff f963ad0177bbf07e3d429d414a976bfecd490e82aa73e777ebd0f10654a134c0，内部独立严格UTF8/len/SHA核135归档成员/132原文均同；审核02 SHA942ea2fa8c717028080ec11a5ced013e16b0c39b5ff150dc4986fb47a6286af5。原XML.Name属性适配器误判的审核01 false另存，不改归档证据；主程序A实际2、0777权限警告及旧中途摘要原字节均保留，无DB/INI/认证/源副本/对象/outerraw。
+
+下一步仍按功能推进：项目窗口补独立用户配置操作与新鲜全项目+指纹同事务读取，普通Save及原布局不改；报告窗口核实际表格/明细/状态的接线缺口，未授权改正式源；校准准备Windows捕获02最少固定真实读取用例源码，私有reader仅静态审查无确定阻断（review79d45c6d…），尚未编译或实际读取，正式Windows仍拒绝导入。511继续冻结，私有成果不套旧检查点也不算完整功能完成。
+
+
+### 结果显示的用户页面与主入口接线继续落代码（2026-10-27）
+
+项目result_format_ui_candidate_01交付handoff224d11b73cf75cc06434fc55c6e8568ad422e201c00b6c6e9e8ad700f9fce525，Root实际39封存成员len/SHA核同。独立结果表右键入口+新dialog和同SQL事务loadCurrentProjectFormat全ProjectRecord/指纹API已写，未编/GUI/SQL。内部store审a8f460246c7b3a03a7e21167ea0e3a3edc8edb4d68110ea9ef9c97dabaa77e48未见确定阻断，旧读取/写入/CAS/权限函数与03同；UI审3bedb4ac03abc33312774fcf38a77a006ac1c8c5fdc8a93eea38173c92394205确认唯一静态接线缺口：普通及辅助写开始只setBusy，已有显示可留到成功/错误回执才失效。Root授权仅独立UI02在setBusy(true)广播真实失效，保守读也清一次；01不改，不称实际临床/数据事故。项目随后仅准备最少两条必要真实GUI/worker/CAS操作源，不扩旧回归队列或通用runner。
+
+报告只读范围handoff5159133cc26a43c2142d48a10a9d97a5de144ff21efa9024ca20775e93b316bb/ reviewbc388f67065bbc3a1bff9bf7d23878f4da88e635842ff3aa21cb0be88141c29f已完整读；Root只读核原mask_dlg_report_detail.cpp206-244主结果查main_result、518-548明细列表只used。已授权报告仅独立result_format_report_ui_candidate_01改HistoryPage两文件：主明细不取first，main与used/display分开，主竖表沿values联合选择，明细信息用storedValues的已知used，不把未知当启用；格式未知保原串/空单位及说明，统计须已知且同当前已验证来源。单真实state切换清两区数值保患者草稿，列回执暂存验后重绘，global0/错误收尾只针对query/detail，患者写仍等真实ACK，页面输出仍关。getter只给Root返回真实GUI owned state，不新建SQL或线程；Report仍在写未编/运行。
+
+本聊天实际写私有result_format_shell_candidate_01四路径main及history_core/projects_store_support/projects_core，handofffaa5db8e8b75c2c11ad20c180bdd1904d91c135272d2b50265e3d572ef105897。真实bind失败正常退出3；实际Store四写op成功/错误先清显示并挂待刷新，等待项目Page真实load完成后refresh，避开编辑器提交→关闭→reload二次失效的先后问题；closed/aboutToQuit只清GUI值，不发新SQL/等线程。当前仅代码，待报告最终API核对和同套源组装验证，未改正式511；Root安排只读审这些私有四源，不看作者半写代码。
+
+核心03允许metadata/text/XML归档完成，04/local_results_20261026/result_format_core_03/handoff.json SHA3dd6fd3b9aa03aa6b9469af93b358979c75544ba86cf5dc71c901f3b2645b4f9，130原文/134总文件严格UTF8、长度/SHA回读一致。原编译/漏会话/无脚本2/首postflight1及中间false与最终0均各原样，Windows父退出不冒Windows Qt构建；无DB/认证/源码/对象/outerraw。Root已核handoff SHA及独立审范围，不重跑核心。
+
+Windows安全捕获02三固定方法准备handoffb080caac05406de7ab052850f0d7b07f04084a7904a7d5d21241da25b9e96add，Root完整读reader24KB与方法13KB/pro/manifest：仅新匿名Unicode/1MiB边界、非法路径拒绝、两次调用间文件重写拒旧指纹，不冒中途竞态。现仅授权独立测试02补main实际Qt/DLL路径诊断、薄Windows执行文本和实际PE嵌入manifest校验准备，尚未qmake/运行/读取夹具；正式Windows仍拒绝导入。此轮没有活动Root构建或GUI，所有正式511代码/测试/资源继续冻结。
+
+
+### 结果配置界面实际离线流程通过，报告页仍待同批组装（2026-10-27）
+
+Root逐行读两方法835行CPP及pro/固定输入，并核UI02四行delta，内部夹具reviewbbf5eeadeaea6616079be316d456a76d0c1117691927cf5c37f5d084b9463460无确定阻断后单槽鲜编。UI execution01 qmake/make实际0、41对象全新；首方法最后原普通Save尝试改受历史结果引用的fullName，真实ProjectsStore.save762-770拒改名，Page原错误QMessageBox未由该场景处理，故外层60秒到时回收自身563组SIGTERM，Qt捕获后-6，Windows父1，第二方法未执行。原前60秒没有正常raw_exit（wait超时），不伪造；0777警告及GDB拒绝附加原文保留，未调整系统ptrace。
+
+已确证原名/全称保护与界面project_lis_code402/544接线，Root独立targeted_preparation02仅把普通保存输入改为实际允许的通道号UI001→UI002，同时断言原全称仍保持和通道号新值；其他测试/产品源、引用保护、权限、等待不改。test02 handoff885411e83d1867241d9d562ef7af64ade65d766afed3ce4ea0a3d53fff56a188，薄执行器02 SHA2ee442682e3f9881233f3c66dab48bfa5da0ae1ae622cca906e2f22f6e1db306。未复用01生产/测试对象，按同UI02配对源重新鲜编41对象。
+
+UI execution02在20:58:38UTC实际verification0，Windows parent02也0，Root18552已结束回收；49755前失败也已回收，不重轮询。两业务各独立真实xcb Qt进程，每个init+业务+cleanup三pass，无fail/skip/timeout/cleanup，qmake/make/源及八工具首尾同，原所属组均gone。实际基础/高级dirty拒开保草稿、显式Time选四槽/used-display-main独立、真实保存/关闭重开/范围LIS及其它参数保留、写开始同步清已有valid HistoryCurrentDisplayState；真实第二ProjectsStore连接提交LIS/范围后旧UI的CAS错误保草稿禁旧指纹重试、取消重读保草稿/确认才取新值、Guest控件只读与重新进入实际读取均通过。原四raw仍完全保留，普通Save未调用replace。Guest本项未直接试写API，不冒超范围；CAS是顺序先后提交冲突，不是同时锁竞态。Rootreadback5f346b09996e7fe6f49c7a8626d0d7e36743da2956335a6651c0675c9b8f1c5e，正式511逐路径SHA依旧同批准字典。三处0777警告未处理，权限隔离未验；仅私有ProjectPage，不冒ReportPage/product main、视觉/WindowsQt/ARM/RK/仪器/资源或临床。
+
+报告两Page源01handoffe01e02a5fe2faa0f2c81976f82c7e190c15bba348ab8e51ed63ad28b44247d79已落，内部只读reviewa1a60f0d7c319c3ec187bf08f420689c47aa1420cdbde4fe5c44bb007ee598eb确认终态closed/destroyed使readyfalse后confirmLeave821仍无条件拒离开。Root核原分支后仅授独立02：初始化未ready仍拒，已确证local terminalClosing且!busy才走既有dirty默认Cancel确认，在途写未知不假取消。其余来源/旧回执/主结果used-display/统计及延迟刷新仅静态通过，报告尚在准备两真实GUI方法，未运行。Root共享四源reviewbf2c61255954c7059efd02ae762a34cdba8154a2d3e939640a8461ea86091822也只静态通过，尚未全程序编译。后续收最终源/公开API后先同批组装验证，再按受影响源前像解除正式511，不能沿用本私有通过为正式程序通过。
+
+UI两轮允许metadata/text/XML归档82原文/86总文件已完成，handoff03c97d5393a8579825fc9d19030307ab8e7195f0def42daf1ff130891453c493，原复制strictUTF8/lenSHA同且Root核handoff。01无自然raw_exit/超时清场-6、02两真实GUI各3Qtpass、三次0777及中间progressfalse都原件，非WindowsQt构建。新test02 handoff继承directory01文字也原样保留；真正执行命令、Source字典、__FILE__以及封存test02指纹均明确绑定02，不把旧文字冒执行位置或改写原证据。无DB/INI/auth/source/objects/outerraw归档。
+
+
+### 2026-10-26T21:37:24.119286+00:00 结果配置到报告显示的私有页面流程通过
+
+Root已完整读取报告02两源及两真实GUI/Store方法，原准备01没有执行。发现原工作线程QSignalSpy容器存在跨线程读取风险后，独立targeted_preparation02仅改为GUI上下文排队采集及真实worker FIFO屏障，业务输入、断言和5000ms等待不改；原01原件保留，未把静态风险冒实际事故。Root组装52份精确配对输入（UI02、Report02及正式511原同字节资源/统计/字典），未复制旧对象/整个正式工程。
+
+21:15:49至21:16:44UTC的report_ui_execution01实际qmake/make/两个GUI进程/Windows父均0，26对象全新；输入/八工具前后同，所属组全部gone，无timeout或强制清场，Root88956已完成不再轮询。Rootreadback cc39d4684e9fe7e4dffbfef350e5e3f7d33315b37e1468afbd8597d61334571f。真实主结果独立used/display、明细used与竖表联合选择、Unknown保原文且不算统计、延迟旧回复不重画、患者草稿保持、实际Store.close后终态允许空闲离开且dirty默认Cancel/确认放弃均通过。文件出口继续禁用；0777 XDG告警原样，权限隔离未过。这是私有ReportPage范围，不是product main、物理菜单/视觉、WindowsQt/ARM/RK/仪器或临床通过。正式511当前仍逐项同302e8e45，未解除冻结。
+
+落源核查确认新增ProjectPage类型化可选缓存连接会引用History状态的静态元数据，独立项目目标不能只链接项目侧实现。仅授权UI03在同一公开函数改用真实QObject运行时slot连接并检查实际connection，保留非空/同GUI线程门闸；原UI02保持。现UI03及原通过测试的字面适配、真正项目侧闭包链接检查均已封存，尚未执行，不称旧功能已修或链接通过。公共main四源仍静态审查状态，需同批组装。
+
+Windows reader执行准备完整文本和实际依赖经Root读审，RC已显式LANGUAGE0,0，不按摘要疑点修改。清理预算文案另澄清为direct wait最多10秒后Job poll最多10秒，保留原封存，不改60/120/30阶段cap。唯一执行槽授既有校准聊天一次fresh本地匿名文件读取验证，当前等待实际原退出；正式Windows导入仍拒绝，未提前称已实现。报告窗口只归档本次允许metadata/text，项目只准备UI03薄执行文本，不与当前槽并行。
+
+
+2026-10-26T21:46:42.096569+00:00 Windows匿名文件捕获首轮按失败停止：实际pwsh父1、qmake3；还没有make/新对象/目标exe或reader读取。源及工具前后同，85496/93356已退出、Job活动数0，无timeout或强制清场。handoff6a584600781656106270ade880e3c63083922f129dae8f3bf1f3a96bf0279d3b、release52d6344edbc336ab1b3a395f17d9bc1252452209a527d8fe15042c2884f143b0。原155B混合编码stderr留temp，ASCII后缀Cannot run compiler g++可准确引用；不以替换解码文本归档。当前只读对照发现环境字符串差异，直接原因未确证、不擅开02或改工具链。
+
+Report两业务允许归档已完成43文件/40原文，handoff61693d5ed854618e4cc8a30baa0f26f6bc1ddbc3e984ea4656c4e6eeb4292c17；Root逐成员strictUTF8/len/SHA回读同，保留三处0777警告，不新执行业务。
+
+Root已完整读取UI03的两薄执行文本、精确来源/闭包及launchargv，handofff770a58dd9becda7fbf19e0f0532c3a5772a6c68c1c6ed750de66edcc077de2d。Cal释放后唯一槽授Project：A只一条真实bind/cache第一方法，实际父0/源工具同/进程全gone才B一次真正Project-only qmake/make链接；B不启动程序。当前未取得新原始结果，UI03仍待验，不把UI02旧通过套上去。B对象仅stat和实际compile/link对应证明fresh，不具有逐对象SHA复用资格。
+
+
+### 2026-10-26T22:04:27.747814+00:00 结果显示完整源链正式接入，新518正在构建
+
+UI03 A实际qmake/make/Windows父/一GUI业务0，41fresh，第一方法含真实缓存绑定和写开始清值，原CAS方法未重跑。B原qmake/make均0/32对象实际fresh编译，但执行器把.moc/moc_predefs.h的g++ -E -dM -o行也当最终link，原驱动/Windows父1保留。Root只读既有make/log/对象stat/精确32对象link/ELF64产物，独立审计实际0、Root40311已完成，无重编/应用运行；auditSHAa06e7411c9abf3defca29a7b104dae24b7b059d873b5854f7741275b5d2e98ef。binarye51a851a1f9ff4aa0317654469610415a87a868758bccc1072010537871cbf68，对象未逐个SHA，不构成复用资格。Project总handoffbaca4b067e764cf7dad947df2c9dbdd8db9cef6b135d21416b3cf79662f0a2df/release2c7be52c62a1b6ccd97d47ff21b90db9323d1f29e9bc766ce714d619846dc95c已回槽；全部旧进程已结束，不再轮询。
+
+Root核promotion准备abfa6e817024d46996518b8ec6616e0a997e22af18d6d2f2aabae050aae3ac5e的全部27payload/baseline；按实际影响备21现有源和7新增不存在登记于07/result_format_20261027/preimages_511_01，manifest8a741151fa626cd2f5e2285a0e70039b3ab99b777b5b87e87323d8fb94729be1。只读恢复输入，不含DB/INI/auth，不代表业务数据备份。显式解除511后应用UI03、Report02和Root四共享源，origin追加Root接受范围；再仅补ARM独立oracle4cpp3h/2moc，原18方法AST和断言均不改。因发布能力元数据亦受影响，另备单package_arm64.py原字节preimages_package_02后补能力/page/范围字段，未改启动默认模式或设备动作。总29正式路径写完停写，原12同字节资产和私有assembly不覆盖。promotion01 SHAfbf75ad28e2de2173572fb9bf330c852dce6053f3346ce9efd8e6f4ab70bc195，package后续独立收据保留。
+
+第一次Windows本机取派生snapshot时路径分隔符为反斜杠，正向键检查实际1、尚未写批准快照或启动构建；另存snapshot_preparation_failure_01。之后仅对派生快照键规范为Linux斜杠，源字节不改；新518批准SHA d4c1cf9fbc402f9e1a927a559735297915f2f981eb582aee2feff59b5890050d，extra3 SHAa9af649adad27e45767f59f574c98eeb905336c242f565dc4276525b41243c17，diff --check0/新7源不ignored。旧511/497及所有旧通过仅历史，不套新源。
+
+21:59:34UTC开始Root fresh WSL主辅，最多-j2，当前仅Root编译槽。Native common7b5ee38fa920203dc6898f289a93b4ad36e1b6ec04189e1a37af17eb86a76a03、driver6949d7c0ef1495fa4ff862e4db41e5873c446f815a7edb21025bbac9973584fc沿已实过控制器，只加新7必需源及批次路径。原Windows84988派发因setsid漏--wait而提前退出0，不能把该0当Linux控制器或构建退出；原父及代码不改、无重启重复构建。已准确记录实际driver395/PG395、build组400，snapshot_before子0，21:59:46实际开始build仍进行。native_launch_scope_clarification_01明确该监督缺口，下一步只按原始build.exit/verification/源对象工具和实际进程收齐，不能以文件存在称成功。新主程序交互/ARM/Windows/实物/资源仍待验。
+
+
+### 2026-10-26T22:23:06.892456+00:00 518构建期间：核真实进程、补齐功能说明及实际操作准备
+
+本轮原build.raw_exit/build.exit/verification/failure均未出现终态，不能登记构建通过；22:12:53只读/proc核driver395/PG395命令与本轮freeze_and_build相符、build400属于同驱动且命令为本轮wsl.sh，均仍在等待子进程。一次仅当前构建组的诊断观测列出真实make和两个cc1plus，后续这两个编译子PID已退出，未发信号或修改系统/源，不把诊断当资源验收。保持唯一Root槽和全部518源冻结，没有重启或补跑编译。
+
+Project UI03/B原结果归档71总文件/68原文handoff2e3a9efce76724cf6dbf0f4fa67ec8475693a5c443ea9d91be4a1942931d0f42，Root逐份原temp与归档strictUTF8/len/SHA回读相同。保B原父1与Root只读审计0、A一业务及0777告警、B对象stat非逐SHA/不能复用的范围，不重复执行。
+
+原学习专题sn100_host_function_and_porting_review.md已按已交付功能补正：单孔QC预设、组合模式、原值后端、原报文辅助、新结果配置入口，以及打印接线已写但正向待验；旧478/447改为明确历史说明，不再把旧最新文字套现源，不增平行主计划。
+
+报告窗口只读操作配方已封并停，handoff325056ca35eced4a3e45dbe537954d1b19bac253fde78315b87c28155e09fb24/recipe0b61860bf96ad2f8f90c12a025dd38ec054ea4cc2c885d99687f636cae409d96，Root完整读过。随后应在本批真实shipping binary成功后，走原显式模拟offlineEngineer、原菜单/结果表右键、四槽合法输入、实际保存/切报告不手动查询看来源说明变化、正常关闭与同目录无seed重开；只运行新匿名目录，首次12随机临时secret始终finally删除不记录内容/hash，不读accountDB，不复制候选库或造结果。此模式空结果，只能验证配置持久化和空查询主壳接线，不能把它冒数值/单位/主明细统计验证。电脑界面操作skill及其指导/API/确认规则已读、sky已初始化，当前SN100目标窗口清单为空；没有任何应用输入或GUI启动。
+
+
+### 2026-10-26T23:13:06.477165+00:00 正式结果配置保存与重开可达；正常关闭缺陷有实际调用栈，最小修后重新构建
+
+旧518/d4c1的原native01构建子阶段已实际0，249全新对象（主219/辅30），518源字典/9工具/控制器前后同。主SHA04f5bf42de6eb543da8f2f0978d6411567f9fdc4df69e0793ca09a2cc76d2c97，辅0a5446f23118f2418a04e9c09b03561b9567f31eeee21751d9e12dc8cfbbcf0e，verification c3f1c013825d4a13925f2d8ce13703763617fe4a5cc5c3f23f537ab6536ecffd，Rootreadback ee76b2cea3a6d99b9f5930432f89b09d62112bb869e1fdc190ff78ea534106cc。原Windows派发0仍非Linux驱动退出，精确驱动退出未收；WSL boot身份之后改变，未按重用PID杀进程或重整编补收据。该构建事实不能盖过后续真实程序关闭失败。
+
+Root使用Computer Use直接操作这份shipping binary，显式匿名offlineEngineer，不操作密码UI/生产认证。新匿名first阶段仅真实原菜单配置操作，900秒人工操作cap先到，执行器只回收自身组SIGTERM/SIGKILL后app-9/父1，非产品自然崩溃；临时12随机secret在finally删除、不记值/hash。原first与两launcher保留。独立controls02只给人工操作1200秒上限及新输出名称，业务断言/等待/正式代码未改，同匿名目录无seed/secret重开；此前只读SQL首次误用不存在id列的工具失败保留，未写数据。
+
+configure02实际从原分析项目DEMO_A结果表右键打开配置，明确Original/Calibration/Rate/INR，保留原两名DEMO_A/DEMO_A_C，新增ANON_R/ANON_I；小数2/2/1/2，单位s/a.u.x10/a.u.x10/a.u.，主结果仅Calibration，used=1/0/1/1、display=1/0/1/0，各匿名范围0/999/0/999、LIS空。点原保存后观察真实等待状态、窗口关闭及项目页四行读回；仅本新匿名catalog只读查询逐字段相同，无调用任务/结果API或SQL写入造数据。切报告未按查询，空表可见；来源tooltip没有观察到，不能据空表登记自动来源刷新或数值/单位/主明细/统计通过。
+
+正常标题栏关闭后五Store.closed/THREADS_STOPPED true/逻辑EXIT0虽齐，但原进程实际Popen.wait=-6，malloc_consolidate unaligned fastbin chunk，非timeout、无cleanup，PG394gone、Windows父1；configure02绑定首尾同。原逻辑EXIT打印在C++局部/Widget析构前，不是进程退出0。原失败完整保留，不作重复盲跑。
+
+随后一次有界原binary GDB诊断，仍同目录不seed，不改配置；实际UI重开四槽/单位/独立开关保持，取消只读配置后正常关闭。GDB捕获SIGSEGV调用栈Qt字符串/字体→frmMain::updateAccountStatus→HistoryPage::statusChanged/status→HistoryCurrentDisplayState::cleared/clear→HistoryPage析构→QObjectPrivate::deleteChildren。实际gdb1、无timeout/cleanup、PG391gone，首尾源和binary同。该实际栈证实析构时仍回调已释放主壳成员的路径；不同现场的malloc首坏写点没有内存探针证明，不扩大到旧8h/legacy.query/校准引用崩溃。
+
+只读审查f9f8e190d777eeea581a456d4062e7358c8fc37b312278a49f87be6d8af730f2及补丁审查f81f6ce99b793a0146c83aac85f14e1648222bf3bc8bc47beb8ff207d7ef3d36核了两条析构入口。Root明确解除旧518，在07/result_format_20261027/preimages_shutdown_02仅备两cpp与两origins（manifest5c94f737c4bb152a56b686d685d57233b8476f111e86c045bc836c0d8479bca6）。HistoryPage析构先断相关status/operation出站与State→Page入站，再本体内静默删除自有State，不再emit cleared；ProjectPage析构不发currentFormatInvalidated，先断相关出站，残留dialog断dialog→Page后本体删除。正常保存/草稿/角色/SQL/关闭守卫在析构外字节不变，未断全局destroyed清理。原UI/QRC不动。
+
+初次元数据被Root改成CRLF导致diffcheck1，尚未构建；formal_source_before02原件保留，独立metadata03仅校正两origins为LF，diffcheck0，新冻结仍518，SHA2d45ecd89658e3fc8c09881080b1ba7f69b6d44a3e4e313a0cf36c75fc064ee6，extra3仍a9af649adad27e45767f59f574c98eeb905336c242f565dc4276525b41243c17。所有正式源重新停写。
+
+新native02已真实启动，Root统一exec36890/Windows88464，唯一ROOT_RESULT_FORMAT_SHUTDOWN_NATIVE_02，fresh主辅最多-j2，无对象复用；独立drivers02只改输出路径/正向核批准字典与extra3，准备08bf397094a475b27326d6d3fb2191efe02cab5697b7838b9c1905b672ab6bc4。父包装这次实际setsid --wait，不改原派发错误。尚未有新构建或修后关闭通过结论，等真实退出/源工具/动态对象和清场再操作。
+
+
+2026-10-26T23:16:28.744027+00:00 构建监督更正：native02已实际snapshot0/Windows父1完成，继承temp common的verify_frozen仍指旧formal_source_before01，正向门闸在qmake/make前拒绝；原输出和36890结束收据保留。独立drivers03仅改该批准路径及fresh输出native03，产品源/断言/等待不变。Windows只读预查再次因派生snapshot反斜杠键与Linux键差异返回1，未写源或运行编译；没有把该结果冒0。Root随后实际WSL03正向字典/extra3核验通过、snapshot_before真实0，23:15:16UTC后正式开始build434，driver429/PG429，Windows94940和Root95604真实等待。准备8775f9e15f560bd021a9a84e56bec41560daee735a896a63cf3106f314ade639，commonf07aaf06546adf1749ea423ca4296f2d885c45a07114050404bc58289f0f52f8，builddc465aa896bdd22efe022b579f4fe8fc76f2066dfdca30ceaff2975dee7452ce。当前唯一槽ROOT_RESULT_FORMAT_SHUTDOWN_NATIVE_03；后续只收此真实完成，不重复旧native02或完成会话。
+
+
+2026-10-26T23:22:17.183527+00:00 10分钟检查：native03实际driver429/PG429与build434/PG434的/proc命令精确匹配本批，probe0，未发信号，尚无build.raw_exit/verification终态；Root95604仍真实等待。仅将既有薄启动/真实wait文本适配到controls03，两phase close_03/reopen_03，同原匿名目录不seed/secret，要求native03实际producer/父0及Root接受才可运行。preparation879f7e43f745cc5e053faad8e63a99b68896c75e7a92bcb5dc14391ae894e4a6，未执行、不新增CPP/pro或测试框架。Report核idle85后仅受权归档原关闭失败/实际GDB原因允许metadata与匿名观测到04/result_format_20261027/shutdown_before_fix_01；不写正式源/不执行业务/不读DB。当前功能结论未扩大，修后正常退出和报告来源提示仍待验。

@@ -1,0 +1,293 @@
+{
+  "schema": "sn100-report-query-run01-result-v1",
+  "finished_utc": "2026-10-26T09:52:04.510339+08:00",
+  "launcher_actual_exit": 0,
+  "launcher_evidence": "Execution tool session 11391 completed with actual exit_code 0",
+  "build_actual_exit": 0,
+  "build_seconds": 100.758089783,
+  "selected_methods": [
+    "committedHospitalAndReportLifecycle",
+    "persistedHospitalAndLegacyEntry"
+  ],
+  "totals": [
+    {
+      "scenario": "original_xcb",
+      "scope": "historical executable only",
+      "actual_exit": 0,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_ms": 3082
+    },
+    {
+      "scenario": "trace_xcb",
+      "scope": "current explicit 432-source native binding",
+      "actual_exit": 0,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_ms": 3163
+    },
+    {
+      "scenario": "trace_offscreen",
+      "scope": "current explicit 432-source native binding",
+      "actual_exit": 0,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_ms": 2801
+    }
+  ],
+  "source_inputs": 432,
+  "snapshot_sha256": "9ff28e905fd4df82330fb58b529c208a489b32987692a4131e67e3d86db5fc00",
+  "verification_sha256": "d484371131a804f95085cbba86adb4a81fc5b5cb46a0017f6fcfdbe9d0466024",
+  "native_makefile_sha256": "4ae53c201a0da33df6383362d34d9d886aae0e016e2bad8f4312506aa6054ef9",
+  "all_receipted_objects_verified": 201,
+  "shell_objects": 169,
+  "shell_objects_linked_excluding_main": 168,
+  "native_binding_before_after_equal": true,
+  "current_source_and_native_unchanged": true,
+  "diagnostic_driver_sha256": "2dd3ad8e37550578db7547aa26fc156c3fa5689d01ed26ec5b0240586250cfae",
+  "production_and_formal_tests_modified": false,
+  "test_assertions_or_15000ms_wait_changed": false,
+  "observed_legacy_chain": [
+    {
+      "scenario": "trace_xcb",
+      "query_button_and_calendars_and_save_before": [
+        {
+          "name": "btnQuery",
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "name": "btnCalendarStart",
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "name": "btnCalendarEnd",
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "name": "btnSave",
+          "visible": true,
+          "enabled": true
+        }
+      ],
+      "clicked_counts": [
+        {
+          "name": "btnQuery",
+          "count": 1,
+          "visible_after": true
+        },
+        {
+          "name": "btnCalendarStart",
+          "count": 1,
+          "visible_after": true
+        },
+        {
+          "name": "btnCalendarEnd",
+          "count": 1,
+          "visible_after": true
+        },
+        {
+          "name": "btnSave",
+          "count": 1,
+          "visible_after": false
+        }
+      ],
+      "calendar_clicked": [
+        {
+          "field": "ldtStartDate",
+          "date": "2026-10-23"
+        },
+        {
+          "field": "ldtEndDate",
+          "date": "2026-10-23"
+        }
+      ],
+      "date_waits": [
+        {
+          "field": "ldtStartDate",
+          "ok": true,
+          "actual_text": "2026/10/23"
+        },
+        {
+          "field": "ldtEndDate",
+          "ok": true,
+          "actual_text": "2026/10/23"
+        }
+      ]
+    },
+    {
+      "scenario": "trace_offscreen",
+      "query_button_and_calendars_and_save_before": [
+        {
+          "name": "btnQuery",
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "name": "btnCalendarStart",
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "name": "btnCalendarEnd",
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "name": "btnSave",
+          "visible": true,
+          "enabled": true
+        }
+      ],
+      "clicked_counts": [
+        {
+          "name": "btnQuery",
+          "count": 1,
+          "visible_after": true
+        },
+        {
+          "name": "btnCalendarStart",
+          "count": 1,
+          "visible_after": true
+        },
+        {
+          "name": "btnCalendarEnd",
+          "count": 1,
+          "visible_after": true
+        },
+        {
+          "name": "btnSave",
+          "count": 1,
+          "visible_after": false
+        }
+      ],
+      "calendar_clicked": [
+        {
+          "field": "ldtStartDate",
+          "date": "2026-10-23"
+        },
+        {
+          "field": "ldtEndDate",
+          "date": "2026-10-23"
+        }
+      ],
+      "date_waits": [
+        {
+          "field": "ldtStartDate",
+          "ok": true,
+          "actual_text": "2026/10/23"
+        },
+        {
+          "field": "ldtEndDate",
+          "ok": true,
+          "actual_text": "2026/10/23"
+        }
+      ]
+    }
+  ],
+  "legacy_query_observations": [
+    {
+      "scenario": "trace_xcb",
+      "request_id": 2,
+      "reply_id": 2,
+      "filter": {
+        "barcode": "",
+        "by_date": true,
+        "end": "2026-10-23T23:59:59.000",
+        "limit": 20,
+        "offset": 0,
+        "sample_number": "",
+        "sql_end": "20261023235959",
+        "sql_start": "20261023000000",
+        "start": "2026-10-23T00:00:00.000"
+      },
+      "returned_rows": 3,
+      "returned_total": 3,
+      "helper_total_ms": 122.2411,
+      "request_to_gui_reply_ms": 8.571927,
+      "failed_wait_stage": null,
+      "postrun_count": 3
+    },
+    {
+      "scenario": "trace_offscreen",
+      "request_id": 2,
+      "reply_id": 2,
+      "filter": {
+        "barcode": "",
+        "by_date": true,
+        "end": "2026-10-23T23:59:59.000",
+        "limit": 20,
+        "offset": 0,
+        "sample_number": "",
+        "sql_end": "20261023235959",
+        "sql_start": "20261023000000",
+        "start": "2026-10-23T00:00:00.000"
+      },
+      "returned_rows": 3,
+      "returned_total": 3,
+      "helper_total_ms": 100.627917,
+      "request_to_gui_reply_ms": 9.891731,
+      "failed_wait_stage": null,
+      "postrun_count": 3
+    }
+  ],
+  "sql_scope": {
+    "actual_live_sql_statement_hook": false,
+    "predicate_source": "history/history_store.cpp::whereClause",
+    "derived_from_actual_request": "SELECT COUNT(*) FROM report_data WHERE visible=1 AND data_time BETWEEN ? AND ?",
+    "actual_request_bindings": [
+      "20261023000000",
+      "20261023235959"
+    ],
+    "page_suffix": "ORDER BY id LIMIT ? OFFSET ?",
+    "page_bindings": [
+      20,
+      0
+    ],
+    "postrun_anonymous_read_only_count": 3,
+    "limits": "SQL文本依据实际filter及当前源码推导；postrun_count为独立只读SQL，不能标成捕获了原失败进程或本轮live SQLite语句"
+  },
+  "initial_query": "每个新Session先按当前2026-10-26自动查到0条；用户模拟随后明确选择10月23日，请求id=2返回3条，两者未混淆",
+  "save_visibility_note": "保存前按钮可见/启用且clicked=1；click_after visible=false是对话框已accept，不是点击了隐藏按钮",
+  "store_error_events_current": 0,
+  "root_cause_proven": false,
+  "production_defect_proven": false,
+  "test_defect_proven": false,
+  "conclusion": "旧冻结XCB与当前观测XCB/offscreen均未复现；本轮不能关闭旧根因，也没有依据修改生产或原测试断言",
+  "process_check": {
+    "checked_utc": "2026-10-26T09:52:37.276047+08:00",
+    "owned_groups": [
+      {
+        "receipt": "build_trace_driver.exit.json",
+        "process_group": 398,
+        "group_exists": false,
+        "actual_exit": 0
+      },
+      {
+        "receipt": "original_xcb/test.exit.json",
+        "process_group": 410,
+        "group_exists": false,
+        "actual_exit": 0
+      },
+      {
+        "receipt": "trace_xcb/test.exit.json",
+        "process_group": 437,
+        "group_exists": false,
+        "actual_exit": 0
+      },
+      {
+        "receipt": "trace_offscreen/test.exit.json",
+        "process_group": 459,
+        "group_exists": false,
+        "actual_exit": 0
+      }
+    ],
+    "slot_released": true
+  },
+  "slot_released": true
+}

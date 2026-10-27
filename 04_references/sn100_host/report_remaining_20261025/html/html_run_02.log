@@ -1,0 +1,35 @@
+********* Start testing of ReportRemainingHtmlTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : ReportRemainingHtmlTest::initTestCase()
+FAIL!  : ReportRemainingHtmlTest::htmlContent(three_rows) 'errors.isEmpty()' returned FALSE. (报告渲染失败（退出码4）：HISTORY_REPORT_FONT SimSun -> Noto Sans CJK SC
+HISTORY_REPORT_FONT 黑体 -> Noto Sans CJK SC
+QPainter::begin(): Returned false
+HISTORY_RENDER_ERROR 无法开始绘制报告，请检查输出路径和打印设备
+)
+   Loc: [../../../../06_programs/sn100_host/tests/report_remaining_html_test.cpp(103)]
+FAIL!  : ReportRemainingHtmlTest::htmlContent(sixty_four_rows) 'errors.isEmpty()' returned FALSE. (报告渲染失败（退出码4）：HISTORY_REPORT_FONT SimSun -> Noto Sans CJK SC
+HISTORY_REPORT_FONT 黑体 -> Noto Sans CJK SC
+QPainter::begin(): Returned false
+HISTORY_RENDER_ERROR 无法开始绘制报告，请检查输出路径和打印设备
+)
+   Loc: [../../../../06_programs/sn100_host/tests/report_remaining_html_test.cpp(103)]
+FAIL!  : ReportRemainingHtmlTest::invalidDuplicateAndRecovery() Compared values are not the same
+   Actual   (errors.size()): 3
+   Expected (4)            : 4
+   Loc: [../../../../06_programs/sn100_host/tests/report_remaining_html_test.cpp(141)]
+FAIL!  : ReportRemainingHtmlTest::writeFailureAndRecovery() Compared values are not the same
+   Actual   (errors.size()): 0
+   Expected (1)            : 1
+   Loc: [../../../../06_programs/sn100_host/tests/report_remaining_html_test.cpp(169)]
+QWARN  : ReportRemainingHtmlTest::previewCancelBusyAndPdfRegression() QSignalSpy: Unable to handle parameter 'preview' of type 'QPrintPreviewDialog*' of method 'previewReady', use qRegisterMetaType to register it.
+QINFO  : ReportRemainingHtmlTest::previewCancelBusyAndPdfRegression() HISTORY_REPORT_FONT SimSun -> Noto Sans CJK SC
+QINFO  : ReportRemainingHtmlTest::previewCancelBusyAndPdfRegression() HISTORY_REPORT_FONT 黑体 -> Noto Sans CJK SC
+QDEBUG : ReportRemainingHtmlTest::previewCancelBusyAndPdfRegression() ***********************************************************************
+QDEBUG : ReportRemainingHtmlTest::previewCancelBusyAndPdfRegression() starting evaluate
+QDEBUG : ReportRemainingHtmlTest::previewCancelBusyAndPdfRegression() ***********************************************************************
+QWARN  : ReportRemainingHtmlTest::previewCancelBusyAndPdfRegression() This plugin does not support propagateSizeHints()
+FAIL!  : ReportRemainingHtmlTest::previewCancelBusyAndPdfRegression() 'preview' returned FALSE. ()
+   Loc: [../../../../06_programs/sn100_host/tests/report_remaining_html_test.cpp(189)]
+PASS   : ReportRemainingHtmlTest::cleanupTestCase()
+Totals: 2 passed, 5 failed, 0 skipped, 0 blacklisted, 382ms
+********* Finished testing of ReportRemainingHtmlTest *********

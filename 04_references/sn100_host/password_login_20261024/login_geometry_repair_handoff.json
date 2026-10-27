@@ -1,0 +1,118 @@
+{
+  "schema": "sn100-login-geometry-test-preparation-handoff-v1",
+  "date": "2026-10-26",
+  "status": "Test host input preparation corrected; both QPAs actual5/0. Original suite07 geometry failure direct cause remains unconfirmed; no production layout defect claimed.",
+  "evidence_directory": "04_references/sn100_host/password_login_20261024/login_geometry_repair_20261026",
+  "original_failure": {
+    "directory": "temp/sn100_host/qc_local_20261025/suite_final_07/login_xcb",
+    "actual_exit_code": 1,
+    "actual_summary": "4 passed,1 failed,0 skipped",
+    "failure": "legacyOptInAndGuestLogin available.contains(cardRect) false at old line329",
+    "failed_viewport_inference": "login_1600.png exists and login_1920.png absent, so failure was in1920 iteration; original exact rectangle values were not logged",
+    "historical_driver": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/cumulative_build/password_login_shell_test",
+    "driver_sha256": "2851e687237e958de81181fe901ed9bb730348ee7b0b5686f4d7a355b0f60e10",
+    "source_sha256": "5accedc33d663270819339e05b1f0323c44cc7a0d1a1d032a9feea0420d28d8f",
+    "preserved_original_binary_private": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/login_geometry_repair/original_password_login_shell_test",
+    "original_logs_unchanged": true
+  },
+  "diagnosis": {
+    "original_false_direct_cause_confirmed": false,
+    "bounded_attempts": {
+      "original_fresh_xcb": {
+        "actual_exit_code": 0,
+        "totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3241ms"
+      },
+      "diagnostic_xcb_01": {
+        "actual_exit_code": 0,
+        "totals": "Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 3068ms"
+      },
+      "diagnostic_full_xcb_01": {
+        "actual_exit_code": 0,
+        "totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 7863ms"
+      },
+      "buffered_full_xcb_01": {
+        "actual_exit_code": 0,
+        "totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 7995ms"
+      },
+      "buffered_full_xcb_02": {
+        "actual_exit_code": 0,
+        "totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 7852ms"
+      },
+      "buffered_full_xcb_03": {
+        "actual_exit_code": 0,
+        "totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 7880ms"
+      }
+    },
+    "observations": [
+      "Old test resized to1920x1080 and immediately clicked while host.isActiveWindow() remained false before/after resize and ensureWidgetVisible; observed_geometry_stages.json retains actual values.",
+      "XCB dialog Move/Resize/exposure/activation events occurred after open/show. Actual initial geometry and subsequent WM geometry differed; full raw event histories retained.",
+      "Old loginReady tested animation/default-load/busy state but did not require native exposed/active state. These are separate conditions.",
+      "Avatar mouse warnings are consistent with existing CusBadgeButton eventFilter emitting clicked on release then returning QWidget default event processing; both pass and failure runs logged them. No production widget changes made."
+    ],
+    "limits": "All bounded diagnostic retries passed; they do not reproduce or explain the exact original false rectangle. The observed preparation risk supports only this test-harness correction, not a claim that a production geometry defect was fixed."
+  },
+  "repair": {
+    "changed_file": "06_programs/sn100_host/tests/password_login_shell_test.cpp",
+    "source_before_sha256": "5accedc33d663270819339e05b1f0323c44cc7a0d1a1d032a9feea0420d28d8f",
+    "source_after_sha256": "8374aeea26e9a670a7fc27c88538db615ad31cf02c3bc19ecbc6d95ce5984afe",
+    "pro_unchanged_sha256": "9a2afbb0d4eed709c7241202452c843afb1fa9d785887598edfeb9a258dea786",
+    "behavior": [
+      "Before each physical avatar click resize/show/raise/activate host, ensure target visible, sync actual window system, require requested client size/exposed/active/full target visibility and geometry/scroll unchanged across consecutive event-loop turns, within original15s helper budget.",
+      "Global loginReady and original mask animation readiness logic retained; no extra active-window requirement imposed on warning-close recovery.",
+      "Retain real mouse/keyboard operations, 450x571 size and immediate available.contains(cardRect) assertions unchanged. No timeout enlargement, blind sleep, retry-until-containment, skip, expectedFail or fake signals.",
+      "Log only geometry/readiness booleans and anonymous viewport information; original private-secret evidence scan unchanged."
+    ],
+    "rejected_first_attempt": {
+      "source_sha256": "1192684c9989fa9f610a7226ae3c65f9aa4823ff2781331914aafd035a57fff4",
+      "driver_sha256": "6d0ac443e5b9dd49d43df7ab660c6aec801e32cdb4d716170c6dcdf4492ff0ef",
+      "actual_outcomes": {
+        "offscreen": {
+          "exit_code": 1,
+          "totals": "Totals: 4 passed, 1 failed, 0 skipped, 0 blacklisted, 20381ms"
+        },
+        "xcb": {
+          "exit_code": 0,
+          "totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 10121ms"
+        }
+      },
+      "disposition": "First attempt also required active-window status in shared loginReady; offscreen warning-close readiness then failed. Removed that broader condition and restored original shared loginReady, keeping only explicit host preparation before physical avatar click. First failure and exact executed source/logs retained."
+    },
+    "preimage_manifest": "07_backups/sn100_host/offline_four_windows_20261025/review_test_preimage/login_geometry/source_inputs.json",
+    "assertion_proof": "assertions_preserved.json"
+  },
+  "regression": {
+    "runs": {
+      "offscreen": {
+        "actual_exit_code": 0,
+        "actual_summary": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 8100ms",
+        "commands": "repaired/offscreen/test.command.json",
+        "exit": "repaired/offscreen/test.exit.json"
+      },
+      "xcb": {
+        "actual_exit_code": 0,
+        "actual_summary": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 8170ms",
+        "commands": "repaired/xcb/test.command.json",
+        "exit": "repaired/xcb/test.exit.json"
+      }
+    },
+    "driver_sha256": "fb34fc14a1873dede3337b3bf95ee7179ad976fb7698b06ec1c9a8912bab402b",
+    "driver": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/login_geometry_repair/repaired_02/driver_build/password_login_shell_test",
+    "source_snapshot_sha256": "5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29",
+    "source_inputs": 426,
+    "native_objects_excluding_main": 167,
+    "native_artifacts": {
+      "sn100_shell": "054bffa7847881cd084f4792f81c796313396f3e07e72195aa20b89e9417b347",
+      "sn100_report_renderer": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+    },
+    "source_before_after_equal": true,
+    "binding_proof": "repaired/binding_proof.json",
+    "production_source_modified": false
+  },
+  "remaining": [
+    "Parent must rebind exact changed login test source then run cumulative35 on current5123/426 freeze.",
+    "Original suite07 geometric false has not been reproduced or causally established; preserve failure and continue observing rather than infer closure from passing retries.",
+    "No Windows visual/RK/instrument/resource-budget/long-stability claim from this bounded WSL test-only change."
+  ],
+  "evidence_policy": "Only anonymous screenshots, exact test sources, commands, exits, hashes and raw logs/proof archived; no runtime databases, INI, secret files, executable/object or production data.",
+  "write_stop": "Test source and all diagnostic/build/test processes stopped; GUI/build slot returned to parent before formal evidence collection."
+}

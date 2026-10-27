@@ -1,0 +1,129 @@
+{
+  "schema": "sn100-lis-raw-inbox-formal-component-origins-v1",
+  "status": "FORMAL_COMPONENT_SOURCE_PROMOTED_SHARED_ENTRY_AND_FORMAL_BUILD_PENDING",
+  "business_scope": "Explicit manual anonymous raw UTF8/DSR file -> strict bounded decode -> standalone local SQL inbox -> actual IDs/list/detail, raw/unmapped/not-applied. No network, ACK, clinical/project/unit mapping or detection task application.",
+  "source_packets": {
+    "lis_inbox_candidate_02": "f93fa3861e2a49d9fa1b0b98929ce13f19925b30b434c31eea83befe4e1314b5",
+    "lis_inbox_page_candidate_01": "dba679717e4486b066fbd4dc8a10ed8aab04daf6dbd0a1896e8ea6210fbc3a6e",
+    "lis_inbox_page_targeted_preparation_01": "0d4370ef1cd3263fa79f288a9940c497e68134206d6416edf10a1e838e6f1706"
+  },
+  "prior_private_verification": {
+    "core": "temp/sn100_host/local_features_integration_20261026/lis_inbox_verification_01/execution_handoff.json",
+    "core_sha256": "64fa8756871fb97a5702c96fecf420d6057e3503ee3fdcad5a90244b55bf9b40",
+    "GUI": "temp/sn100_host/local_features_integration_20261026/lis_inbox_page_execution_01/execution_handoff.json",
+    "GUI_sha256": "bd319c9c6859755cdb9853ca031f317b1b81178fe20e57ebd4e8e70bb5385af3",
+    "qualification": "Historical private core7/Qt9 and Linux xcb GUI3/Qt5 passes; not a build or pass of these formally adapted sources. Qt runtime0777/expected0700 warning retained, permission isolation not passed."
+  },
+  "formal_adaptations": [
+    "Same-directory includes and local lis_raw_inbox.pri",
+    "Use existing formal data/account_store.h; no copied AccountSession/AccountStore declaration or implementation",
+    "Explicit absolute clean non-root dedicated directory with existing canonical non-symlink parent; no temp/source/__FILE__/runtime fence",
+    "New formal marker/schema identity only; candidate databases not migrated or compatible",
+    "Non-Linux failclosed diagnostic wording only, no Windows safe import added"
+  ],
+  "formal_storage_contract": {
+    "schema": "sn100-lis-raw-inbox-v1",
+    "marker": ".sn100-lis-raw-inbox-v1",
+    "marker_bytes": "SN100 LIS RAW INBOX v1\n",
+    "database": "lis_inbox.sqlite",
+    "application_id": "0x534e4c49",
+    "user_version": 1,
+    "admission": "New empty directory or exact marked schema/storeUUID/canonical directory identity; nonempty unmarked, wrong marker/schema/path rejected. No UUID clearing/repair/migration.",
+    "path": "Caller supplies absolute canonical spelling (native Windows separators normalized); existing parent required, no dot/extra-slash aliases, NUL, root, symlink component, reference path or existing non-directory. Only leaf and own inputs directory may be created.",
+    "default_entry_contract": "Root plans explicit --lis-raw-inbox, default dataDir/lis_raw_inbox. New local engineering choice, not inferred production path or original network behavior."
+  },
+  "unchanged_semantics": [
+    "All SQL DDL/statements/schema-object checks, UUID idempotency/control collision behavior, permissions, transactions/readback/commit/rollback and limits",
+    "Strict Linux openat nofollow/regular bounded read, file stamp and cached-byte retries",
+    "Queued one-pending-operation GUI/worker routing, true commit/list/detail replies, actual closed plus nonblocking join",
+    "Original Page layout/colors/plain raw display and manual import only"
+  ],
+  "formal_AccountSession_header": {
+    "path": "../data/account_store.h",
+    "bytes": 3586,
+    "sha256": "212e05178f26a170fdb9138e9705eba72febf4022caed01f83327edce088d07d",
+    "same_bytes_as_verified_DTO_copy": true,
+    "not_copied_or_written": true
+  },
+  "module_file_sources": {
+    "lis_dsr_raw.h": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_candidate_02/lis_dsr_raw.h",
+      "source_sha256": "da2db5a85242bdf0626d24da9e048195a66bab75dfafcb90f5fa0d0bbd9dec93",
+      "formal_sha256": "da2db5a85242bdf0626d24da9e048195a66bab75dfafcb90f5fa0d0bbd9dec93",
+      "byte_exact": true
+    },
+    "lis_dsr_raw.cpp": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_candidate_02/lis_dsr_raw.cpp",
+      "source_sha256": "460ec4b52969cd08ed2ac8afb72edc931e03bb7df07b469c704a4974d3d6fcc3",
+      "formal_sha256": "460ec4b52969cd08ed2ac8afb72edc931e03bb7df07b469c704a4974d3d6fcc3",
+      "byte_exact": true
+    },
+    "lis_inbox_store.h": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_candidate_02/lis_inbox_store.h",
+      "source_sha256": "3305546cf268e9019b13f84382cca9951be095a0aa745c2b2cc4ca2b8f1dcaf0",
+      "formal_sha256": "f153856dc308989c299c045bf228762ceac05709036ffe7b2e484edcc73ef0df",
+      "byte_exact": false
+    },
+    "lis_inbox_store.cpp": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_candidate_02/lis_inbox_store.cpp",
+      "source_sha256": "3046a89e0605f15fb024b207c60e786b6df6e344197b1d5abcd1ce7da7f0e711",
+      "formal_sha256": "b3c55842b4c16247991e8a2c1c339fa66af38b705384323f33b2acad462db744",
+      "byte_exact": false
+    },
+    "lis_inbox_page.h": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_page_candidate_01/lis_inbox_page.h",
+      "source_sha256": "95bdbee1e7225bef2ec8b177de77547d00cf1ba4d504d37b4c16302ddcaf2804",
+      "formal_sha256": "ab644fc3cd9984399ed05e489ab84917cc3e01d111fe036e1b6afd654ecb5ce5",
+      "byte_exact": false
+    },
+    "lis_inbox_page.cpp": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_page_candidate_01/lis_inbox_page.cpp",
+      "source_sha256": "b999e47c25e65e0e266735bcce6893fd32806dc4801ceb0b2a7946ae95ada155",
+      "formal_sha256": "b999e47c25e65e0e266735bcce6893fd32806dc4801ceb0b2a7946ae95ada155",
+      "byte_exact": true
+    },
+    "lis_inbox_page_host.h": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_page_candidate_01/lis_inbox_page_host.h",
+      "source_sha256": "dde93d971162eca20ed9aeebff3abb10740321f75e78302dd1e08e8c843c3a12",
+      "formal_sha256": "f8c2c99ca4ec9abbb44b5ae459de910fb711470d0459d8f7fce5e91b877a4e9c",
+      "byte_exact": false
+    },
+    "lis_inbox_page_host.cpp": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_page_candidate_01/lis_inbox_page_host.cpp",
+      "source_sha256": "5dfcae0fc3e47a720972fce7c2dfe1f7a776397b7c066f348f4fc85f3f43084d",
+      "formal_sha256": "5dfcae0fc3e47a720972fce7c2dfe1f7a776397b7c066f348f4fc85f3f43084d",
+      "byte_exact": true
+    },
+    "lis_inbox_page_worker.h": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_page_candidate_01/lis_inbox_page_worker.h",
+      "source_sha256": "65a5c60ec36507f7d738255d67d18a2ea096589a187599931368196643b4a863",
+      "formal_sha256": "44e3ef746d72f89bda82bfb052fd8a3873c91469b2234b0ed59e37efb9aa1f3f",
+      "byte_exact": false
+    },
+    "lis_inbox_page_worker.cpp": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_page_candidate_01/lis_inbox_page_worker.cpp",
+      "source_sha256": "e168e73f7b36c9ce6df773d409e2dae40d43320e09c8cb12df23ae7dcd6690ff",
+      "formal_sha256": "1b27d19637b2a3089b761350b41c511ee184da08ecd841c3cefe9482d2e4c1d6",
+      "byte_exact": false
+    },
+    "lis_raw_inbox.pri": {
+      "origin": "temp/sn100_host/local_features_integration_20261026/lis_inbox_page_candidate_01/lis_inbox_page.pri",
+      "source_sha256": "0b3d775839031946fb353090db2a30be4de8580fa1bdeb6873c0e2e51abeef89",
+      "formal_sha256": "821b4ff121ae5e7ef5385350570f2dfe577624bc41d2aa44a300fb4a323c2773",
+      "byte_exact": false
+    }
+  },
+  "source_delta": "temp/sn100_host/local_features_integration_20261026/lis_raw_inbox_promotion_01/source_delta.json",
+  "root_integration_API": "temp/sn100_host/local_features_integration_20261026/lis_raw_inbox_promotion_01/integration_api.json",
+  "Windows_safe_import": "Unimplemented, fails closed; existing inbox can still be viewed subject to schema/path checks.",
+  "shared_main_shell_pri_forms_tests_build_package_and_canonical_docs_not_written_here": true,
+  "qmake_build_GUI_SQL_device_enumeration_network_or_object_hashing": false,
+  "root_followup": {
+    "scope": "Formal shared flag/entry/session/shutdown wiring and showPage returning to same non-modal window; no formal build/runtime validation yet",
+    "preimages_shared": "07_backups/sn100_host/lis_raw_inbox_20261027/preimages_shared_01/manifest.json",
+    "preimages_shared_SHA": "3222b4fd894e38d7cc218810b7cad34fc5c22cb4f0b7e40e289d3df0380e6aa3",
+    "preimages_showPage": "07_backups/sn100_host/lis_raw_inbox_20261027/preimages_show_page_02/manifest.json",
+    "preimages_showPage_SHA": "d23560b1ad324550251028bcb0648bb0d72ae5aa57d5f00c4f3c7a3229e0d5f5",
+    "formal_promotion_before_showPage_SHA": "cebbdddb308e134f5476f3c97fdb3bb6c0325ced5f279db6349af3301a27c587"
+  }
+}

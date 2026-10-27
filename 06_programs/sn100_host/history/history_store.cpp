@@ -1,4 +1,5 @@
 #include "history_store.h"
+#include "result_project_references.h"
 
 #include <QDir>
 #include <QFile>
@@ -265,6 +266,9 @@ HistoryStore::~HistoryStore()
 
 void HistoryStore::registerTypes()
 {
+    qRegisterMetaType<AccountSession>("AccountSession");
+    qRegisterMetaType<HistoryDisplayColumn>("HistoryDisplayColumn");
+    qRegisterMetaType<HistoryDisplayColumns>("HistoryDisplayColumns");
     qRegisterMetaType<HistoryFilter>("HistoryFilter");
     qRegisterMetaType<HistoryPatient>("HistoryPatient");
     qRegisterMetaType<HistoryResultValue>("HistoryResultValue");
@@ -275,28 +279,14 @@ void HistoryStore::registerTypes()
     qRegisterMetaType<HistoryReports>("HistoryReports");
     qRegisterMetaType<HistoryIds>("HistoryIds");
     qRegisterMetaType<HistoryIds>("QList<qint64>");
-}
-
-QString HistoryStore::sexText(int sex)
-{
-    if (sex == 0)
-        return QStringLiteral("男");
-    if (sex == 1)
-        return QStringLiteral("女");
-    return QString();
-}
-
-QString HistoryStore::displayValue(const HistoryResultValue &value)
-{
-    if (value.decimals < 0)
-        return value.rawValue; // Unknown project settings must not be guessed.
-    bool ok = false;
-    double number = value.rawValue.toDouble(&ok);
-    if (value.resultType == 2 || value.resultType == 3)
-        number *= value.factor;
-    if (!ok || !std::isfinite(number) || value.decimals > 12)
-        return QStringLiteral("****");
-    return QString::number(number, 'f', value.decimals);
+    qRegisterMetaType<HistoryTaskReservation>("HistoryTaskReservation");
+    qRegisterMetaType<HistoryTaskReservations>("HistoryTaskReservations");
+    qRegisterMetaType<HistoryReportReservation>("HistoryReportReservation");
+    qRegisterMetaType<HistoryReportReservations>("HistoryReportReservations");
+    qRegisterMetaType<HistoryReservationBatch>("HistoryReservationBatch");
+    qRegisterMetaType<HistoryComputedResult>("HistoryComputedResult");
+    qRegisterMetaType<HistoryCurrentFormatSource>("HistoryCurrentFormatSource");
+    ProjectsStore::registerTypes();
 }
 
 bool HistoryStore::checkThread(qint64 requestId, const QString &operation)
@@ -426,7 +416,7 @@ void HistoryStore::initialize(QString directory)
 {
     if (!checkThread(0, QStringLiteral("initialize")))
         return;
-    releaseDatabase();
+    releaseDatabase(QStringLiteral("正在重新初始化匿名历史来源；旧当前格式缓存失效。"));
     QString message;
     if (!prepareDirectory(directory, &message))
     {
@@ -458,7 +448,7 @@ void HistoryStore::initialize(QString directory)
         ok = existing ? validateDatabase(&message) : createAndSeed(&message);
     if (!ok)
     {
-        releaseDatabase();
+        releaseDatabase(QStringLiteral("匿名历史初始化失败，释放本次来源；旧当前格式缓存失效。"));
         if (!existing)
             QFile::remove(path); // Only remove the newly created failed offline DB.
         emit error(0, QStringLiteral("initialize"), message);
@@ -666,8 +656,15 @@ bool HistoryStore::validateDatabase(QString *message)
     return true;
 }
 
-bool HistoryStore::readResults(qint64 rowId, HistoryResults *results, QString *message)
+bool HistoryStore::readResults(qint64 rowId, HistoryResults *results, QString *message,
+                               const ProjectCurrentFormatSnapshot *format)
 {
+    if (m_resultIngest)
+    {
+        if (!format || !format->valid())
+        { *message = QStringLiteral("本次当前格式快照缺失；不回退匿名列。 "); return false; }
+        return readCurrentResults(rowId, *format, results, message);
+    }
     results->clear();
     QSqlQuery tasks(m_database);
     if (!runPrepared(tasks, QStringLiteral("SELECT task_id,project_name,date_time,abnormal_type "
@@ -724,7 +721,8 @@ bool HistoryStore::readResults(qint64 rowId, HistoryResults *results, QString *m
     return true;
 }
 
-bool HistoryStore::readReport(qint64 id, HistoryReport *report, QString *message)
+bool HistoryStore::readReport(qint64 id, HistoryReport *report, QString *message,
+                              const ProjectCurrentFormatSnapshot *format)
 {
     QSqlQuery query(m_database);
     if (!runPrepared(query, QStringLiteral("SELECT ") + kReportFields
@@ -732,11 +730,12 @@ bool HistoryStore::readReport(qint64 id, HistoryReport *report, QString *message
         return false;
     if (!query.next())
     {
-        *message = QStringLiteral("所选报告不存在或已隐藏；请重新查询。");
+        *message = query.lastError().isValid() ? query.lastError().text()
+            : QStringLiteral("所选报告不存在或已隐藏；请重新查询。");
         return false;
     }
     *report = reportFromQuery(query);
-    return readResults(report->rowId, &report->results, message);
+    return readResults(report->rowId, &report->results, message, format);
 }
 
 void HistoryStore::query(qint64 requestId, HistoryFilter filter)
@@ -744,6 +743,8 @@ void HistoryStore::query(qint64 requestId, HistoryFilter filter)
     const QString operation = QStringLiteral("query");
     if (!checkReady(requestId, operation))
         return;
+    if (m_resultIngest)
+        emit currentFormatInvalidated(requestId, ++m_formatRequestRevision, QStringLiteral("正在读取本次已提交配置；旧格式缓存失效。"));
     QString message;
     if (!validateFilter(filter, &message))
     {
@@ -757,6 +758,9 @@ void HistoryStore::query(qint64 requestId, HistoryFilter filter)
         return;
     }
     QVariantList bindings;
+    ProjectCurrentFormatSnapshot format;
+    if (m_resultIngest && !readCurrentFormat(&format, &message))
+    { emit error(requestId, operation, message); return; }
     const QString where = whereClause(filter, &bindings);
     QSqlQuery count(m_database);
     if (!runPrepared(count, QStringLiteral("SELECT COUNT(*) FROM report_data WHERE ") + where, bindings, &message)
@@ -781,7 +785,7 @@ void HistoryStore::query(qint64 requestId, HistoryFilter filter)
     while (page.next())
     {
         HistoryReport report = reportFromQuery(page);
-        if (!readResults(report.rowId, &report.results, &message))
+        if (!readResults(report.rowId, &report.results, &message, m_resultIngest ? &format : nullptr))
         {
             emit error(requestId, operation, message);
             return;
@@ -794,11 +798,19 @@ void HistoryStore::query(qint64 requestId, HistoryFilter filter)
         return;
     }
     page.finish();
+    HistoryDisplayColumns displayColumns, displayDefaults;
+    if (!readDisplay(&displayColumns, &displayDefaults, &message, m_resultIngest ? &format : nullptr))
+    {
+        emit error(requestId, operation, message);
+        return;
+    }
     if (!transaction.commit(&message))
     {
         emit error(requestId, operation, message);
         return;
     }
+    emit displayLoaded(requestId, displayColumns, displayDefaults);
+    if (m_resultIngest) emit currentFormatRead(requestId, currentFormatSource(format));
     emit queryReady(requestId, filter, reports, totalCount);
 }
 
@@ -807,15 +819,20 @@ void HistoryStore::detail(qint64 requestId, qint64 reportId)
     const QString operation = QStringLiteral("detail");
     if (!checkReady(requestId, operation))
         return;
+    if (m_resultIngest)
+        emit currentFormatInvalidated(requestId, ++m_formatRequestRevision, QStringLiteral("正在读取本次明细格式；旧格式缓存失效。"));
     QString message;
     HistoryReport report;
+    ProjectCurrentFormatSnapshot format;
     Transaction transaction(m_database);
-    if (!transaction.begin(&message) || !readReport(reportId, &report, &message)
+    if (!transaction.begin(&message) || (m_resultIngest && !readCurrentFormat(&format, &message))
+        || !readReport(reportId, &report, &message, m_resultIngest ? &format : nullptr)
         || !transaction.commit(&message))
     {
         emit error(requestId, operation, message);
         return;
     }
+    if (m_resultIngest) emit currentFormatRead(requestId, currentFormatSource(format));
     emit detailReady(requestId, report);
 }
 
@@ -869,6 +886,11 @@ void HistoryStore::exportCsv(qint64 requestId, HistoryFilter filter,
     const QString operation = QStringLiteral("exportCsv");
     if (!checkReady(requestId, operation))
         return;
+    if (m_resultIngest)
+    {
+        emit error(requestId, operation, QStringLiteral("本地结果的单位和精度尚未映射，暂不开放文件输出。"));
+        return;
+    }
     QString message;
     if (!validateFilter(filter, &message))
     {
@@ -1080,9 +1102,18 @@ void HistoryStore::exportCsv(qint64 requestId, HistoryFilter filter,
     emit csvExported(requestId, output.absoluteFilePath(), reportCount, rowCount);
 }
 
-void HistoryStore::releaseDatabase()
+void HistoryStore::releaseDatabase(QString reason)
 {
+    // Public initialization/close guards run before reaching this point. A
+    // wrong-thread rejected call must not pretend that the source has changed.
+    if (QThread::currentThread() == thread())
+        emit currentFormatInvalidated(0, ++m_formatRequestRevision, reason.isEmpty()
+            ? QStringLiteral("结果存储对象释放；旧当前格式来源失效。") : reason);
     m_ready = false;
+    m_resultProjects.reset(); // Close the owned real catalog connection in this worker.
+    m_resultIngest = false;
+    m_resultStoreId.clear();
+    m_resultCatalogDirectory.clear();
     if (m_database.isValid())
         m_database.close();
     m_database = QSqlDatabase();
@@ -1095,6 +1126,6 @@ void HistoryStore::close()
 {
     if (!checkThread(0, QStringLiteral("close")))
         return;
-    releaseDatabase();
+    releaseDatabase(QStringLiteral("结果存储关闭，当前格式缓存失效。"));
     emit closed();
 }

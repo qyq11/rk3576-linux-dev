@@ -1,0 +1,2521 @@
+[
+  {
+    "case": "restoreMissingHoldProtectsInactiveHistoryAndSnapshot()",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-OzUgGr/qc/quality_control.db",
+        "sha256": "cdc694ad5e546659f19dbefba3dc4ca8e8dafc8f9aa14acb823af65bdc5fa1f2",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "39823e03-3e12-49df-a120-895fdbf22b09"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 0,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "QC_GUARD_A",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-OzUgGr/catalog/catalog.db",
+        "sha256": "85aa9e9b0f19aae2f68c6424630f3d4198a8c35c76909fade7b2e8025c4174fc",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:39823e03-3e12-49df-a120-895fdbf22b09:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:39823e03-3e12-49df-a120-895fdbf22b09",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-OzUgGr/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.x10",
+              "decimal_point": 4
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "corruptedIdentityFailsClosedWithoutLocalWrites(project-renamed)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-xmxTmZ/qc/quality_control.db",
+        "sha256": "4bff1be0fe116411c65379f5cce5b59385f1b7ce8afe1f7efaab47a5a596a465",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "509ffa54-f756-485a-a487-b663a567a155"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "QC_GUARD_A",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-xmxTmZ/catalog/catalog.db",
+        "sha256": "0a42e5b96d2910e1ad4468b3d8df227a5327289ae80c32c5a51fbb484f191d2d",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:509ffa54-f756-485a-a487-b663a567a155",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-xmxTmZ/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "corruptedIdentityFailsClosedWithoutLocalWrites(project-removed)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-ahLZsJ/qc/quality_control.db",
+        "sha256": "70e5091394fba136613ed2713cf04df09023d84443ab47515b3020d32cf27403",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "aaf859b7-a7e0-46e6-b3a2-47112ba59631"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "QC_GUARD_A",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-ahLZsJ/catalog/catalog.db",
+        "sha256": "0544e4e2a4e0f5a0076284b4045c37d4b200b85affe3fe2a703311174c88a5c3",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:aaf859b7-a7e0-46e6-b3a2-47112ba59631",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-ahLZsJ/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "corruptedIdentityFailsClosedWithoutLocalWrites(missing-history-association)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-SVYLmY/qc/quality_control.db",
+        "sha256": "854d7273f372af8471b06931ef2c6afda3b10a3778f52e11bd876beb4f99f491",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "7d19e189-23da-434a-b562-73ab99a9b74d"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [],
+          "result_snapshots": [],
+          "rule_identities": [],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "QC_GUARD_A",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-SVYLmY/catalog/catalog.db",
+        "sha256": "6d5aeca3682c8f2028e5fd24f54ba24b028320f834bbc0f55c4c5df332b93632",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:7d19e189-23da-434a-b562-73ab99a9b74d:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:7d19e189-23da-434a-b562-73ab99a9b74d",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-SVYLmY/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "corruptedIdentityFailsClosedWithoutLocalWrites(missing-control)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-Rvoxzg/qc/quality_control.db",
+        "sha256": "7848f1eaa02bf273cf386849faa0af6b005aa4dbaa0887184cb432da8a11944a",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [
+          {
+            "table": "quality_control_batch",
+            "rowid": 1,
+            "parent": "quality_control_list",
+            "fkid": 0
+          },
+          {
+            "table": "quality_item_proj",
+            "rowid": 1,
+            "parent": "quality_control_list",
+            "fkid": 0
+          }
+        ],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "9195b2b1-ea44-494c-bda9-ca7d9cc5557c"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "QC_GUARD_A",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-Rvoxzg/catalog/catalog.db",
+        "sha256": "c78236727a97f030e31432e60eaf4dcf0c3891def8cc7d92005e2656ed279db4",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:9195b2b1-ea44-494c-bda9-ca7d9cc5557c:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:9195b2b1-ea44-494c-bda9-ca7d9cc5557c",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-Rvoxzg/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "corruptedIdentityFailsClosedWithoutLocalWrites(missing-snapshot)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-zyzyAX/qc/quality_control.db",
+        "sha256": "f74b66a2d8befd86892f147f6b2e9c47128cc649fe01bd4afab0c7ce2d03754d",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "cdfe2a5c-b65d-4ec2-aaad-6fba17f2626d"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "QC_GUARD_A",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-zyzyAX/catalog/catalog.db",
+        "sha256": "4b7f44d1777a8488b9afc3bbe9c1ca842f9b8c777c756d734651a11b523d42a8",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:cdfe2a5c-b65d-4ec2-aaad-6fba17f2626d:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:cdfe2a5c-b65d-4ec2-aaad-6fba17f2626d",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-zyzyAX/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "corruptedIdentityFailsClosedWithoutLocalWrites(invalid-snapshot)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-HXNwwU/qc/quality_control.db",
+        "sha256": "600fb2d7342a84338e655eab4448c95b2213ac630606c0d0f0669e7326e6498e",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "ba9bd85c-8a1d-48c0-a07f-b8f4b1684587"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": -1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "QC_GUARD_A",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-HXNwwU/catalog/catalog.db",
+        "sha256": "4fc355f7c4b6527314e4fc25345a5d2da4a10e3d26dd18ceea92d8f8b463b4d5",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:ba9bd85c-8a1d-48c0-a07f-b8f4b1684587:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:ba9bd85c-8a1d-48c0-a07f-b8f4b1684587",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-HXNwwU/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "corruptedIdentityFailsClosedWithoutLocalWrites(mismatched-stable-project-id)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-PyyLzZ/qc/quality_control.db",
+        "sha256": "b5e9b015785579c37e20f88da3a22a2364fc6664aa5105d271697f7fac44537c",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "08c56008-93f3-475f-8102-fcf45dce7490"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 3
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "QC_GUARD_A",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-PyyLzZ/catalog/catalog.db",
+        "sha256": "aa62ae5c59e6994547c211f3f6861dd9d3741b5eae00e21d96fc0a77fd369093",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:08c56008-93f3-475f-8102-fcf45dce7490:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:08c56008-93f3-475f-8102-fcf45dce7490",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-PyyLzZ/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "corruptedIdentityFailsClosedWithoutLocalWrites(unknown-history-name)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-hCuPev/qc/quality_control.db",
+        "sha256": "168016dddd8b6a9ac1a09777a67a7c9a8139b967c0c63966336af5d9ca31236a",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "0be2c80d-bca6-4b7e-8f4c-94161f777cb5"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [
+            {
+              "id": 1,
+              "fid": 1,
+              "batch_name": "QC_LOT",
+              "expiration_date": "2027/01/31",
+              "cur_batch": 1,
+              "prv_batch": 0
+            }
+          ],
+          "history": [
+            {
+              "id": 1,
+              "control_name": "QC_A",
+              "project_name": "UNKNOWN_HISTORY",
+              "control_batch": "QC_LOT",
+              "result_val": "12.3-13.4",
+              "date": "2026/10/25",
+              "time": "12:34:56"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-hCuPev/catalog/catalog.db",
+        "sha256": "c85519b571e06dd2ebad64f06d3183edf444a50e4300bd89d54a5e0a3453c195",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:0be2c80d-bca6-4b7e-8f4c-94161f777cb5:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:0be2c80d-bca6-4b7e-8f4c-94161f777cb5",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-hCuPev/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "orphanHoldIsRetainedAndOtherDatasetIsNotReleased()",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-VOKJki/qc/quality_control.db",
+        "sha256": "2e2e81cae69c9128d42f80f987b998d1cf8cdc11012b0020e91da55515c62853",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "b53f8b15-0b26-4188-8014-1ddcbf397ec0"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [],
+          "result_snapshots": [],
+          "rule_identities": [],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-VOKJki/qc_second/quality_control.db",
+        "sha256": "90a76c37993a373bd89f30d5ae3fe120c3541885e17c63d655c6d21e77f7df6e",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "5540c4a0-91b3-4307-9f4e-64f8801e7eaa"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_B",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_B",
+              "project_id": 3
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_B_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_B_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-VOKJki/catalog/catalog.db",
+        "sha256": "928c738c6e50a719a5d0f4942c6bf86eaca2daee053d5fea8757dbdb3b7a18d9",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:5540c4a0-91b3-4307-9f4e-64f8801e7eaa:control:1:project:3",
+              "project_id": 3
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:5540c4a0-91b3-4307-9f4e-64f8801e7eaa",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-VOKJki/qc_second/quality_control.db"
+            },
+            {
+              "key": "quality_control_dataset_path:b53f8b15-0b26-4188-8014-1ddcbf397ec0",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-VOKJki/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "startupLocksAndReservationCommitFailuresRecover()",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-eQsCzx/qc/quality_control.db",
+        "sha256": "fcccc32878ca76191a4ff773bbc05ecf424e25815bb32746467ba33fb5741c66",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "3cf72303-0a42-4067-b9a6-01c1ef6dc8fb"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-eQsCzx/catalog/catalog.db",
+        "sha256": "cf37d4454792b7ba1554eab7ebbe67d7b0534256e4755267628bcda122005c0e",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:3cf72303-0a42-4067-b9a6-01c1ef6dc8fb:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:3cf72303-0a42-4067-b9a6-01c1ef6dc8fb",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-eQsCzx/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "deterministicDetachAndReattachKeepsNewAssociationProtected()",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-EuCpfr/qc/quality_control.db",
+        "sha256": "8db3263279ab9f7d2d669fe6d893edcb84ad33216c1b47bab07f531ab3488352",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "d406586d-c08d-4bcc-b57d-dbfbbf1a3c93"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 2,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 2,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 2,
+              "item_proj_id": 2,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-EuCpfr/catalog/catalog.db",
+        "sha256": "9f04d4c687e815dfa5efbf18074c362b7f613aff2b57471c2680a9a923cbd96b",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:d406586d-c08d-4bcc-b57d-dbfbbf1a3c93:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:d406586d-c08d-4bcc-b57d-dbfbbf1a3c93",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-EuCpfr/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "deterministicFailedWriterCannotReleaseSuccessfulWriter(statement-abort)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-Eokjnp/qc/quality_control.db",
+        "sha256": "6189ee46ecef5d65691e7c58c4947ecaa550761b4209e1a398cbf2b973d2f2ac",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "c1024415-2b00-48f0-8237-ce75def83273"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-Eokjnp/catalog/catalog.db",
+        "sha256": "b978227067fcc89a71a2087f6c526e3d5fd1243a2846b00928320734b7150485",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:c1024415-2b00-48f0-8237-ce75def83273:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:c1024415-2b00-48f0-8237-ce75def83273",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-Eokjnp/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "deterministicFailedWriterCannotReleaseSuccessfulWriter(automatic-transaction-rollback)",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-wxWBmp/qc/quality_control.db",
+        "sha256": "4bf865aec52183e1f56443c4060ef5e0ccd8e90c8d83428879aad1619e1adab4",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "d5280a8c-16d3-4751-8443-a4f4584beedb"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-wxWBmp/catalog/catalog.db",
+        "sha256": "ba380cc1648a8bcdd4bb77df4d5486874471f570d4d20589823411a9420440c5",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:d5280a8c-16d3-4751-8443-a4f4584beedb:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:d5280a8c-16d3-4751-8443-a4f4584beedb",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-wxWBmp/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "deletingControlCannotReleaseAnotherControlsReference()",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-jhPVjt/qc/quality_control.db",
+        "sha256": "f3ef9e2b7ae17f6f61b5111cab677861c6c66c88b9d8c020b4976c5e9d3e2c22",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "27d536d2-53e4-406b-9abb-d400f478e681"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 2,
+              "item_name": "QC_READD",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 2,
+              "item_id": 2,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 2,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 2,
+              "item_proj_id": 2,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-jhPVjt/catalog/catalog.db",
+        "sha256": "3cfaa3862f933c948ca6b2eb4eddfb4d228dc7719648f8b591735353146fda3d",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:27d536d2-53e4-406b-9abb-d400f478e681:control:2:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:27d536d2-53e4-406b-9abb-d400f478e681",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-jhPVjt/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "failedCleanupKeepsHoldAndRequiresReconciliation()",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-IGMAaz/qc/quality_control.db",
+        "sha256": "6f5678f6ba1f96969dea1b3fb0faa5173b4e2db2b57150419c48e7ef84c9945a",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "ec837429-d47c-4194-bf50-950f9af6e01f"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [],
+          "result_snapshots": [],
+          "rule_identities": [],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-IGMAaz/catalog/catalog.db",
+        "sha256": "d1aecb64d25955c79a1e7604171ba063240e2ec47b131ec1dc31ea0dabfc6062",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:ec837429-d47c-4194-bf50-950f9af6e01f",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-IGMAaz/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "localLockAndCommitFailureDoNotLeakNewHolds()",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-LNrquD/qc/quality_control.db",
+        "sha256": "3ee2e5ee7d122e60744f78e960c4d1dd7a2f7d27b56c0fd0a4e5346ebfd20a38",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "cea1cbaa-011e-47af-8628-c5321d4f24da"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-LNrquD/catalog/catalog.db",
+        "sha256": "d1f95433643e2e6441c04dd6fc6ccc2c5e34265d4634846a2c29fa65c575c84a",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:cea1cbaa-011e-47af-8628-c5321d4f24da:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:cea1cbaa-011e-47af-8628-c5321d4f24da",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-LNrquD/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "physicalCloneCannotShareDatasetKeys()",
+    "control_id": 1,
+    "project_id": 2,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-QhkZHM/qc/quality_control.db",
+        "sha256": "d86c52728e5710486882068b72730c69872ac96583e705cd0a2d84fa6d88dc87",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "6ce3c9ae-0dab-4f37-b083-2de13cafd080"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-QhkZHM/qc_clone/quality_control.db",
+        "sha256": "d86c52728e5710486882068b72730c69872ac96583e705cd0a2d84fa6d88dc87",
+        "bytes": 61440,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "6ce3c9ae-0dab-4f37-b083-2de13cafd080"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-qc-offline-v1"
+            }
+          ],
+          "controls": [
+            {
+              "id": 1,
+              "item_name": "QC_A",
+              "is_used": 1,
+              "factor_name": "匿名厂家"
+            }
+          ],
+          "associations": [
+            {
+              "id": 1,
+              "item_id": 1,
+              "proj_name": "QC_GUARD_A",
+              "project_id": 2
+            }
+          ],
+          "result_snapshots": [
+            {
+              "association_id": 1,
+              "result_type": 2,
+              "result_name": "QC_GUARD_A_C",
+              "unit": "a.u.",
+              "ratio": 1.0,
+              "decimals": 2
+            }
+          ],
+          "rule_identities": [
+            {
+              "id": 1,
+              "item_proj_id": 1,
+              "type": 2,
+              "name": "QC_GUARD_A_C",
+              "used": 1,
+              "target": ""
+            }
+          ],
+          "batches": [],
+          "history": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-QhkZHM/catalog/catalog.db",
+        "sha256": "4c656fdcba146692b00f37c79bd19c7dd004653337120702887f19e02cd599d6",
+        "bytes": 65536,
+        "sqlite_integrity_check": "ok",
+        "foreign_key_check": [],
+        "tables": {
+          "holds": [
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:6ce3c9ae-0dab-4f37-b083-2de13cafd080:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "dataset_path_bindings": [
+            {
+              "key": "quality_control_dataset_path:6ce3c9ae-0dab-4f37-b083-2de13cafd080",
+              "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/runtime/case-QhkZHM/qc/quality_control.db"
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "result_name": "DEMO_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "result_name": "DEMO_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_A_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_A",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "result_name": "QC_GUARD_B_C",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "result_name": "QC_GUARD_B",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

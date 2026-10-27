@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="13" failures="3" tests="6" name="CalibrationShellTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="fail" name="menuRolesAndGuardedDraft">
+    <!-- message="ANONYMOUS_FIXTURE_INPUT official schema/copy ID 2 ANON_CAL Original=ANON_RAW/s Calibration=ANON_CONC/a.u.; no production type&#x002D;edit or Time alias claim" type="qinfo" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <failure message="&apos;fixture.newDraft(true, true)&apos; returned FALSE. ()" result="fail"/>
+    <!-- message="CALIBRATION_SHELL_FIXTURE_THREADS_STOPPED" type="qinfo" -->
+  </testcase>
+  <testcase result="fail" name="rawSaveCopyHideReferencesAndReopen">
+    <!-- message="ANONYMOUS_FIXTURE_INPUT official schema/copy ID 2 ANON_CAL Original=ANON_RAW/s Calibration=ANON_CONC/a.u.; no production type&#x002D;edit or Time alias claim" type="qinfo" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="This plugin does not support raise()" type="qwarn" -->
+    <!-- message="This plugin does not support grabbing the keyboard" type="qwarn" -->
+    <failure message="&apos;fixture.fillPoints()&apos; returned FALSE. ()" result="fail"/>
+    <!-- message="CALIBRATION_SHELL_FIXTURE_THREADS_STOPPED" type="qinfo" -->
+  </testcase>
+  <testcase result="fail" name="catalogAndLocalLockFailuresRetainDraft">
+    <!-- message="ANONYMOUS_FIXTURE_INPUT official schema/copy ID 2 ANON_CAL Original=ANON_RAW/s Calibration=ANON_CONC/a.u.; no production type&#x002D;edit or Time alias claim" type="qinfo" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="This plugin does not support raise()" type="qwarn" -->
+    <!-- message="This plugin does not support grabbing the keyboard" type="qwarn" -->
+    <failure message="&apos;fixture.fillPoints()&apos; returned FALSE. ()" result="fail"/>
+    <!-- message="CALIBRATION_SHELL_FIXTURE_THREADS_STOPPED" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="actualProductFullLegacyInvalidAndDependency"/>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[ANONYMOUS_FIXTURE_INPUT official schema/copy ID 2 ANON_CAL Original=ANON_RAW/s Calibration=ANON_CONC/a.u.; no production type-edit or Time alias claim]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[CALIBRATION_SHELL_FIXTURE_THREADS_STOPPED]]>
+<![CDATA[ANONYMOUS_FIXTURE_INPUT official schema/copy ID 2 ANON_CAL Original=ANON_RAW/s Calibration=ANON_CONC/a.u.; no production type-edit or Time alias claim]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[This plugin does not support raise()]]>
+<![CDATA[This plugin does not support grabbing the keyboard]]>
+<![CDATA[CALIBRATION_SHELL_FIXTURE_THREADS_STOPPED]]>
+<![CDATA[ANONYMOUS_FIXTURE_INPUT official schema/copy ID 2 ANON_CAL Original=ANON_RAW/s Calibration=ANON_CONC/a.u.; no production type-edit or Time alias claim]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[This plugin does not support raise()]]>
+<![CDATA[This plugin does not support grabbing the keyboard]]>
+<![CDATA[CALIBRATION_SHELL_FIXTURE_THREADS_STOPPED]]>
+  </system-err>
+</testsuite>

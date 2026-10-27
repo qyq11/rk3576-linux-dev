@@ -1,0 +1,182 @@
+{
+  "schema": "sn100-o05-timing-followup-v1",
+  "date": "2026-10-24",
+  "test_results_include_init_cleanup": {
+    "timing": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "client": {
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0
+    },
+    "transport": {
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0
+    },
+    "fault": {
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    "protocol": {
+      "passed": 63,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "build_artifacts": {
+    "soak_native/sn100_protocol_soak": {
+      "sha256": "5837009027c610e46ed6c8312fde24b6a0848ddb63154f2a13b79b230553b5eb",
+      "bytes": 289224,
+      "project_relative_path": "temp/sn100_host/protocol_timing_20261024/soak_native/sn100_protocol_soak",
+      "architecture": "ELF64 x86_64"
+    },
+    "soak_windows/release/sn100_protocol_soak.exe": {
+      "sha256": "af4cfbe1069e5cf05714c814f80024be401707138efd7eec3b4404525f8264a0",
+      "bytes": 190976,
+      "project_relative_path": "temp/sn100_host/protocol_timing_20261024/soak_windows/release/sn100_protocol_soak.exe",
+      "architecture": "Windows PE32 build"
+    },
+    "soak_arm64/sn100_protocol_soak": {
+      "sha256": "4d9efcd523fd0dfb57e76cf1f54ff71217e3ed30231aff20dd94050023e79ff6",
+      "bytes": 3967168,
+      "project_relative_path": "temp/sn100_host/protocol_timing_20261024/soak_arm64/sn100_protocol_soak",
+      "architecture": "ELF64 AArch64"
+    },
+    "windows_5142_x86_release/release/sn100_protocol_timing_test.exe": {
+      "sha256": "003918f49c8a7d8b472909731c97a8bbb3c57e9ba7d27585e407670e42134609",
+      "bytes": 157696,
+      "project_relative_path": "temp/sn100_host/protocol_timing_20261024/windows_5142_x86_release/release/sn100_protocol_timing_test.exe",
+      "architecture": "Windows PE32 build"
+    }
+  },
+  "controlled_contract": {
+    "timeout_ms": 120,
+    "max_retries": 1,
+    "postmortem_ms": 250,
+    "stalls_ms": [
+      0,
+      40,
+      240
+    ],
+    "default_timing_off_tested": true
+  },
+  "controlled_over240_selected_events": [
+    {
+      "application_pending": 13,
+      "collector_ns": 121367,
+      "extra": 13,
+      "generation": 2,
+      "revision": 0,
+      "socket_pending": 13,
+      "source_elapsed_ns": 114904,
+      "stage": "transport.write.returned",
+      "value": 13
+    },
+    {
+      "application_pending": 0,
+      "collector_ns": 128890,
+      "extra": 0,
+      "generation": 2,
+      "revision": 0,
+      "socket_pending": 0,
+      "source_elapsed_ns": 122492,
+      "stage": "transport.socket.bytesWritten",
+      "value": 13
+    },
+    {
+      "application_pending": -1,
+      "collector_ns": 140521,
+      "extra": 0,
+      "generation": 0,
+      "hex": "02 03 00 06 00 00 00 01 51 6b 3b 04 05",
+      "revision": 0,
+      "socket_pending": -1,
+      "source_elapsed_ns": -1,
+      "stage": "peer.read.actual",
+      "value": 0
+    },
+    {
+      "application_pending": 13,
+      "collector_ns": 361456060,
+      "extra": 13,
+      "generation": 2,
+      "revision": 0,
+      "socket_pending": 13,
+      "source_elapsed_ns": 361449710,
+      "stage": "transport.write.returned",
+      "value": 13
+    },
+    {
+      "application_pending": -1,
+      "collector_ns": 361460969,
+      "extra": 0,
+      "generation": 0,
+      "revision": 0,
+      "socket_pending": -1,
+      "source_elapsed_ns": -1,
+      "stage": "driver.terminal.failure",
+      "value": 0
+    },
+    {
+      "application_pending": 0,
+      "collector_ns": 361500687,
+      "extra": 0,
+      "generation": 2,
+      "revision": 0,
+      "socket_pending": 0,
+      "source_elapsed_ns": 361494208,
+      "stage": "transport.socket.bytesWritten",
+      "value": 13
+    },
+    {
+      "application_pending": -1,
+      "collector_ns": 361514423,
+      "extra": 0,
+      "generation": 0,
+      "hex": "02 03 00 06 00 00 00 01 51 6b 3b 04 05",
+      "revision": 0,
+      "socket_pending": -1,
+      "source_elapsed_ns": -1,
+      "stage": "peer.read.actual",
+      "value": 0
+    },
+    {
+      "application_pending": -1,
+      "collector_ns": 361558570,
+      "extra": 0,
+      "generation": 0,
+      "hex": "51 6b",
+      "revision": 0,
+      "socket_pending": -1,
+      "source_elapsed_ns": -1,
+      "stage": "client.observed",
+      "value": 0
+    }
+  ],
+  "conclusion": "Injected event-thread starvation can leave local write accepted before strict timeout and peer read/late observation after it. No inference of the old 1150.178s root cause.",
+  "soak_cli_results": {
+    "disabled_12s": "exit0 verified",
+    "enabled_12s": "exit0 verified",
+    "ring_overwrite_24s_rate50": "exit0 verified",
+    "log_budget": "expected exit3 verified",
+    "timing_save_failure": "expected exit3 verified"
+  },
+  "driver_failures_retained": [
+    "Initial 12s ring test produced 8134 events, below capacity8192; test assertion failed. Repeated only outstanding cases with 24s ring workload; product source unchanged.",
+    "Inline Windows-to-bash ARM command lost its output variable and mkdir /soak_arm64 was denied before build. Dedicated absolute script then built ARM successfully.",
+    "First shortened supervisor command rejected a missing archive parent before starting a target; created the parent and reran only the supervisor smoke."
+  ],
+  "boundaries": [
+    "No hardware connection or deployment",
+    "Windows/ARM build only",
+    "No new 8h stability pass",
+    "No change to timeout/retry/late-observation policy",
+    "Only-collect direct-slot timing interface contract; sink must not reenter control methods"
+  ],
+  "review": "Independent read-only code review found no new P1/P2; default timing disabled and bounded collection/failure paths checked"
+}

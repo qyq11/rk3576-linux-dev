@@ -1,0 +1,76 @@
+{
+  "schema": "sn100-sample-reset-contract-v1",
+  "date": "2026-10-26",
+  "original_reference_read_only": true,
+  "original_execution": false,
+  "source_sha256": {
+    "SeeRain450.pro": "bc2fe217a77a6260f1f8ae69d2fb30228f7082a8d5ac2ab3bdce99647f4d9cf2",
+    "frmsample/frmsample.pri": "ec9d96debb5d25b4deff0f3dc1ad8aeeebc7b75693660d489947316507d88382",
+    "frmsample/frmsamplematerial.cpp": "f9455d9f89b56cc69a86a268b5a0304468f064d7d8e36e84671cee4755fff244",
+    "frmsample/frmsamplematerial.ui": "8ae19cfa98fa57ce0753371e375fba236674bf369b27f3c4dc63a59fc976be27",
+    "frmsample/frmsamplesettingmaterial.cpp": "b2aaa723f157334de1e9ad6d1b772743edb2177f3b8b9c4fc0b75dba9cd7d289",
+    "customwidgets/cussampletaskview.cpp": "7719d5953d49a0255c3a7f2470523364f6a1c252ca4e54ddb0c9313f76e84f6a",
+    "customwidgets/cussampletaskview.h": "e9474094000e0017b97a8fb704a5de85406ec2b7679376c58f136f4ab8a8fa7c",
+    "customwidgets/cussamplehole.h": "7a193954089e08aea531bc2094bdc1008e79a42afd8b9a2d463e4866a5c666f8"
+  },
+  "original_enabled_basis": "SeeRain450.pro include(frmsample/frmsample.pri)，后者编译frmsamplematerial.cpp/ui；setupUi自动槽实际有on_btnResetErr_clicked/on_btnResetFin_clicked；搜索两按钮只有样式和处理器，无ifdef/机型条件或主动禁用。未核Windows发行版实际点击，不能称原Windows运行已验。",
+  "operations": [
+    {
+      "button": "btnResetErr",
+      "functions": [
+        "frmsample/frmsamplematerial.cpp:5619–5642",
+        "frmsample/frmsamplesettingmaterial.cpp:598–626",
+        "customwidgets/cussampletaskview.cpp:20–51"
+      ],
+      "guard": "当前孔holeState==S_Testing立即拒绝，不改revise/任务/changedView",
+      "changes": "当前孔revise=true；勾选行并当前行的普通samTestsBase中Error或Reset转Idle；Finished/Idle保持",
+      "ids": "错误复位的taskID/reportRowID清零代码为注释，不能顺手清除",
+      "saving": "changedView=true；slotBtnMenuSaveClick被注释，须用户另点保存"
+    },
+    {
+      "button": "btnResetFin",
+      "functions": [
+        "frmsample/frmsamplematerial.cpp:5644–5668",
+        "frmsample/frmsamplesettingmaterial.cpp:629–649",
+        "customwidgets/cussampletaskview.cpp:53–86"
+      ],
+      "guard": "同上，当前孔Testing先拒绝",
+      "changes": "revise=true；所有普通测试转Idle，包括Error/Reset/Finished/Idle；不是仅Finished",
+      "ids": "普通测试taskID与reportRowID置0。本地预设没有这些ID，本切片不导入/伪造/分配真实ID",
+      "saving": "同上，只修改草稿，不自动保存，不发命令"
+    }
+  ],
+  "task_enum": {
+    "Idle": 0,
+    "Reset": 1,
+    "Testing": 2,
+    "Finished": 3,
+    "Error": 4
+  },
+  "hole_state": "cussamplehole.h:500–534：空任务None；有Testing优先Testing；否则Idle优先Ready；否则Error优先Error；否则Finished；非空Reset-only为Ready",
+  "revise_semantics": "原cussamplehole.h:547注明是否能够修改孔位任务；原下发前检查revise，成功下发后置false。revise=true仅意味着可改/可再提交，不是仪器已复位、实际复测完成或新报告已生成。",
+  "calibration": "原reset/retest方法遇校准测试提示不能复位/复测。原代码对混合普通/校准仍可局部处理普通测试；首个窄切片只接受无校准的普通孔，混合输入整体明确拒绝，未宣称已复现混合校准业务。",
+  "important_unresolved": [
+    "原外层只检查当前孔Testing，但内层还处理勾选孔；勾选孔处于Testing时的部分更新风险须单列，不能静默假定原来全批拒绝。",
+    "原外层仅对当前孔写revise=true，内层对其他勾选孔只更新任务视图；批量revise合同须结合保存/下发继续核对。",
+    "当前SampleTask把重复聚合成repeats，无逐次状态/真实ID；SampleStore没有状态/revise持久化。现有UI不可能凭空出现真实Finished/Error，不能拿Idle空操作当功能完成。"
+  ],
+  "slice": "第一阶段只做普通单孔纯逻辑，已实际9/0；当前第二阶段源码已接按钮及本地存取，详见implemented_followup，运行验收仍待排队。",
+  "offline_next": [
+    "整合窗口按source_delta.json重新冻结完整native源码/主辅，不套旧426/5123",
+    "新槽执行workflow_preparation.json：新流程14项和原业务13项，两种显示模式各一遍；mixedLoad资源采样另排",
+    "根据原始失败定位和修复；全部相关源码停写后适用累计、Windows/ARM及资源；保持真实下发禁用"
+  ],
+  "verification": "原单孔核心9/0；432/9ff独立页面/存储两QPA各14/0，原业务两QPA各13/0，父子实际0。源码/主辅/201对象首尾不变。统一累计、动态视觉、资源、Windows/RK/实物仍另验",
+  "implemented_followup": {
+    "source_delta": "04_references/sn100_host/offline_followup_20261026/samples_reset/source_delta.json",
+    "source_stopped": true,
+    "current_single_hole_rule": "原ResetErr只改Error/Reset；Retest将全部普通测试转Idle；每一次重复独立；未保存之前snapshot/catalog不变",
+    "batch_difference": "保留勾选行并当前行目标集合，但先校验所有目标；任一Testing整批拒绝，不出现部分草稿。所有目标设置revise=true，而非只标记当前孔。此安全补全与原语义不一致点已明确，原Windows实际行为仍待对照",
+    "schema": "sample_task_state_schema=sn100-sample-task-state-v1；hole_state以rack/hole键保存revise；task_state以rack/hole/project键保存最多99个状态的JSON数组。旧v1无扩展按Idle/revise=true读，既有表/列不改",
+    "failure_policy": "写锁内检查已提交Testing、版本与状态；错误/未知/缺损版本与JSON数量不符明确失败，事务回滚保留数据和UI草稿。其他孔可编辑，Testing孔禁止被旧草稿覆盖",
+    "existing_editing": "不可修改/Testing孔限制样本号、容器、详情/项目/批量编辑；新复制或改任务次数/倍率/延长形成Idle新预设，不继承其他孔完成观测",
+    "scope": "只本地预设；没有实际任务/报告ID、设备状态输入或投递；不改公共shell/启动器/总记录",
+    "actual_tests": "workflow_handoff.json：新流程两QPA14/0、原业务两QPA13/0，核心9/0；原mixedLoad测量另排"
+  }
+}

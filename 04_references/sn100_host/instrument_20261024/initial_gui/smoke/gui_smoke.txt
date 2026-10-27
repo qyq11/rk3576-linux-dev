@@ -1,0 +1,50 @@
+STATUS_REPLAY_LOADED 14 events; recorded virtual time; no network or instrument
+START mode=offline module= O08 Qt= 5.15.13 platform= xcb logical_canvas=1920x1080 viewport= QSize(1600, 900) data_dir= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/smoke_runtime
+INSTRUMENT_INITIAL_MONTH_READY
+HISTORY_INITIAL_QUERY_READY
+SHELL_READY
+STATUS_REPLAY_NOTICE 0 session.connected: 模拟连接已建立，仪器状态未知
+STATUS_REPLAY_STEP 1 "connect" "connected-status-unknown" fresh= false finished= false
+STATUS_REPLAY_PLANNED_TX 1 02 03 00 06 00 00 00 01 51 6A 3A 04 05
+STATUS_REPLAY_STEP 2 "query-status" "awaiting-status" fresh= false finished= false
+STATUS_REPLAY_FILE_RX 20 06 07 00 20 00 00 00
+STATUS_REPLAY_STEP 3 "rx" "awaiting-status" fresh= false finished= false
+STATUS_REPLAY_FILE_RX 30 01 51 6A 5B 34 5D 5B 53 49 4D 55 4C 41 54 45 44 5D 5B 32 5D 5B 31 5D 5B 30 5D 5B 30 5D 57 08 09
+STATUS_REPLAY_STEP 4 "rx" "has-simulated-status" fresh= true finished= false
+STATUS_REPLAY_PLANNED_TX 40 02 03 00 06 00 00 00 01 51 6A 3A 04 05
+STATUS_REPLAY_STEP 5 "query-status" "awaiting-status" fresh= true finished= false
+STATUS_REPLAY_PLANNED_TX 160 02 03 00 06 00 00 00 01 51 6A 3A 04 05
+STATUS_REPLAY_NOTICE 160 session.retry: 仅模拟重试只读Qj，第1次
+STATUS_REPLAY_STEP 6 "advance" "awaiting-status" fresh= true finished= false
+STATUS_REPLAY_NOTICE 280 session.timeout: Qj模拟重试已耗尽，状态失效
+STATUS_REPLAY_STEP 7 "advance" "status-timeout" fresh= false finished= false
+STATUS_REPLAY_FILE_RX 290 06 07 00 20 00 00 00 01 51 6A 5B 34 5D 5B 53 49 4D 55 4C 41 54 45 44 5D 5B 35 5D 5B 34 5D 5B 30 5D 5B 30 5D 55 08 09
+STATUS_REPLAY_NOTICE 290 status.uncorrelated: 作为最新观测值接收，不能证明属于哪次Qj请求
+STATUS_REPLAY_STEP 8 "rx" "has-simulated-status" fresh= true finished= false
+STATUS_REPLAY_NOTICE 300 session.disconnected: 已清空半帧、组包、在途请求与旧状态
+STATUS_REPLAY_STEP 9 "disconnect" "disconnected" fresh= false finished= false
+STATUS_REPLAY_NOTICE 310 session.connected: 模拟连接已建立，仪器状态未知
+STATUS_REPLAY_STEP 10 "connect" "connected-status-unknown" fresh= false finished= false
+STATUS_REPLAY_FILE_RX 320 06 07 00 20 00 00 00
+STATUS_REPLAY_STEP 11 "rx" "connected-status-unknown" fresh= false finished= false
+STATUS_REPLAY_NOTICE 10400 frame.timeout: 半帧 10000 ms 无新字节；已清空缓存和组包
+STATUS_REPLAY_STEP 12 "advance" "connected-status-unknown" fresh= false finished= false
+STATUS_REPLAY_FILE_RX 10410 06 07 00 20 00 00 00 01 51 6A 5B 34 5D 5B 53 49 4D 55 4C 41 54 45 44 5D 5B 36 5D 5B 35 5D 5B 30 5D 5B 30 5D 57 08 09
+STATUS_REPLAY_NOTICE 10410 status.uncorrelated: 作为最新观测值接收，不能证明属于哪次Qj请求
+STATUS_REPLAY_STEP 13 "rx" "has-simulated-status" fresh= true finished= false
+STATUS_REPLAY_NOTICE 10420 session.disconnected: 已清空半帧、组包、在途请求与旧状态
+STATUS_REPLAY_NOTICE 10420 session.disconnected: 已清空半帧、组包、在途请求与旧状态
+STATUS_REPLAY_NOTICE 10420 replay.finished: 文件回放结束，旧展示失效，未连接仪器
+STATUS_REPLAY_STEP 14 "disconnect" "disconnected" fresh= false finished= true
+SHUTDOWN_REQUEST signal= SIGTERM
+SHUTDOWN_ACCEPTED
+STATUS_REPLAY_STOPPED true
+MAINTENANCE_STORE_CLOSED
+SAMPLE_STORE_CLOSED
+REAGENT_STORE_CLOSED
+PROJECT_STORE_CLOSED
+HOSPITAL_STORE_CLOSED
+ACCOUNT_STORE_CLOSED
+HISTORY_STORE_CLOSED
+THREADS_STOPPED true
+EXIT code= 0

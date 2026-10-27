@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-24",
+  "environment": "Ubuntu-24.04 / qyq / Qt5.15.13 x86_64 / GCC13.2.0 / Release / Widgets qmake C++14",
+  "source_manifest": "frozen_source_sha256.json",
+  "source_manifest_sha256": "81b7e2b96e88ef48c0c18b09c9d5d3e13f30044d7c703ffd5e21f947019ce39a",
+  "binaries": "binary_sha256.json",
+  "build": {
+    "native": "passed; complete make -B followed by recompilation of the final changed page; native executable SHA in binary_sha256.json",
+    "arm64": "passed; complete 40-source build.sh after fixing both sysroot library search paths, then final two-line page permission fix recompiled into obj_2.o and all 40 objects relinked; ELF AArch64 confirmed",
+    "arm64_initial_failure": "Initial compile succeeded but link omitted sysroot/lib/aarch64-linux-gnu and failed to resolve Qt transitive dependencies. No stale output was deployed.",
+    "clock_warning": "Initial and forced native builds reported clock skew. Complete source recompilation and link were performed; final changed source/object timestamps and final binary fingerprints were inspected.",
+    "windows_build": "not run by this subtask",
+    "deployment": "not performed"
+  },
+  "tests": {
+    "frozen_offscreen": { "passed": 11, "failed": 0, "skipped": 0, "qt_test_ms": 5395, "exit": 0, "log": "test_frozen_offscreen.log" },
+    "xcb_before_final_dictionary_caption_and_cancel_name_fix": { "passed": 10, "failed": 0, "qt_test_ms": 7310, "exit": 0, "log": "test_xcb_before_dictionary_caption.log" },
+    "coverage": [
+      "Reagent create/update, stable key, bottle/batch/barcode/hole field persistence and close/reopen",
+      "Empty/duplicate reagent name, invalid warning/out quantities, stale update key, invalid project and invalid hole amount",
+      "Reagent/bottle/batch reference deletion protection with foreign_keys enabled before transactions",
+      "Unknown/Guest/logout write rejection at worker and page",
+      "Real Qt input/buttons for reagent create/save/cancel, draft retention across refresh and selection, Escape cancel and logout close",
+      "Real local bottle dialog create/update/delete/cancel, referenced bottle update rejection and draft retention, logout retains Cancel and denies Save",
+      "External SQLite exclusive lock yields real database-locked failure and successful retry after rollback",
+      "Unmarked/reference directory rejection without modifying existing content; failed initialization rejects writes; valid catalog can reopen",
+      "Clear hole, then delete barcode/batch/reagent/bottle in reference order"
+    ]
+  },
+  "response_and_resource": {
+    "lock_test": "800 ms SQLite busy timeout on worker; GUI QTimer interval 5 ms; final frozen run 156 samples, maximum event interval 6 ms",
+    "test_harness_wall_s": 5.43,
+    "test_harness_user_cpu_s": 1.95,
+    "test_harness_system_cpu_s": 0.90,
+    "test_harness_cpu_percent": 52,
+    "test_harness_max_rss_kib": 228976,
+    "test_harness_swaps": 0,
+    "scope": "These are the short QtTest harness measurements, including repeated page/dialog construction, not steady unified-program RSS/PSS, a board resource budget, or a long-run acceptance result. Unified process CPU/PSS/FD/thread/growth measurement is owned by the root integration task."
+  },
+  "visual": {
+    "source_comparison": "ui_source_comparison.json: all 7 forms retain every widget class, order and direct property including geometry/text/QSS/font; 6 forms are byte-identical, list form removes only the redundant nested mask layout wrapper",
+    "assets": "origins.json: all 10 extracted PNGs are byte-identical to reference; original shared close/checkbox widgets are reused",
+    "page_logical_size": "1751x968; original SN100 20-hole panel at 70,39 and 984x843",
+    "dialog_fit": "Original information card 961x995 fits a 1751x968 host with uniform scale min(1,(1751-40)/961,(968-40)/995)=0.9326633166; group/order is preserved",
+    "local_dictionary_difference": "Reference supplies bottle metadata through its database but has no corresponding bottle CRUD page. A separate local dictionary dialog is opened by double-clicking the original container value, with Chinese area captions and 13 pt Noto font. Double-clicking the original amount value edits explicit local load/remaining values; neither operation measures or synchronizes an instrument.",
+    "archived_capture_run": "Latest archived PNGs are widget-rendered captures from test_visual_offscreen.log after the Chinese local bottle-dialog caption/size fix. Earlier XCB runs also captured the original page and dialogs. WSLg screen-grab can return black pixels; the test helper falls back to QWidget::grab after a content check.",
+    "capture_warning": "Widget snapshot capture can emit QPainter::begin / painter-not-active warnings from graphics effects. Valid PNG content was opened and inspected. The warnings are retained in raw visual-run evidence and were not hidden by changing business drawing.",
+    "windows_and_rk_comparison": "pending; source-style evidence does not substitute for the exact shipped Windows theme/font or RK display acceptance"
+  },
+  "intentional_local_differences": [
+    "New marked catalog.db with stable IDs and transactional foreign keys; no legacy/production database import or instrument configuration is loaded",
+    "Original reagent type strings r_reagent/s_ibs/cleaner/etc. are represented by their Chinese UI names in this isolated schema; a future legacy import must map types explicitly",
+    "UI uses asynchronous worker requests; SQL connection is created/used/closed in its owning thread",
+    "Referenced records and incompatible reagent type/disable changes are rejected with a real error; stale IDs cannot report successful zero-row updates",
+    "Expiry indication uses a valid date before the current date; the original paintEvent daysTo test appears reversed and remains a Windows behavior comparison item",
+    "Original hole-setting Save initializes theoretical local load and remaining quantities to bottle maximum; the separate local amount editor can then enter a known quantity without device TX"
+  ],
+  "not_yet_accepted": [
+    "Original Windows behavior/visual comparison, RK run/display/input, physical instrument",
+    "Project-specific reagent consumption mapping and available-test-count calculation; displays '-' / '- tests', never fake availability",
+    "Consumable-license workflow, ISI/normal-value/calibration logic; unsupported controls remain explicitly disabled or report unavailable",
+    "Scan/probe/change-position/clear-panel/synchronization; report device not connected and send no TX",
+    "Long stability, board temperature/throttling and PREEMPT_RT same-board-control interference"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "sn100-printer-application-origins-v1",
+  "utc": "2026-10-26T16:11:13.241428+00:00",
+  "original_behavior": "Original saved printer name was not applied to report tasks; original UI and vendor attribution retained.",
+  "formal_entry": "shell/main.cpp committed PrinterSettingsStore signals -> PrinterReportShell -> HistoryReportController per-preview name/document snapshot -> original Print callback -> isolated helper explicit standard confirmation",
+  "candidate03_handoffSHA": "67a5c8b39d53cfebbd644d1823a676518b4119f512ebed54e64147c961d4dc18",
+  "actual_private_execution_handoffSHA": "7db0596cbb003ed52c4ff402e702aa32667ec20baa94eea7d2feb79eab6a63b8",
+  "byte_identical_promoted_candidate_sources": {
+    "history/report_controller.cpp": {
+      "bytes": 28085,
+      "sha256": "b95eb03b844cfe51628bb13e98e7dbf26f744f50db3e70fc08c21b68f5767344"
+    },
+    "history/report_controller.h": {
+      "bytes": 4164,
+      "sha256": "5059fdb356ffdd8503c4d101fc3a5de28eb5cad4a38d65fc4636e0859a2be55c"
+    },
+    "history/report_renderer.cpp": {
+      "bytes": 20227,
+      "sha256": "7367dadd86aaf2dae6f104dc6ecd643d4353f7c899dac6886ff01129ccce0915"
+    },
+    "shell/printer_report_shell.cpp": {
+      "bytes": 2288,
+      "sha256": "b7e4007326963c33076fe37068f6688ed5dbe8a518024891057ae4a4e4b4a5d2"
+    },
+    "shell/printer_report_shell.h": {
+      "bytes": 770,
+      "sha256": "b0398b40b832ad78d294c4b146e5d1e51f03fd200ca856cb3c658e239d5198e9"
+    },
+    "thirdparty/qtrpt/QtRPT/qtrpt.cpp": {
+      "bytes": 110339,
+      "sha256": "9b1d6121ea500a7791f601a7e2d8ee13e03bd2851aca8655189a4685def00768"
+    },
+    "thirdparty/qtrpt/QtRPT/qtrpt.h": {
+      "bytes": 9968,
+      "sha256": "6a6ee8298834139c183f813304f90fad62fcd467a2dc6a17159cfd59ee669959"
+    }
+  },
+  "rules": [
+    "Only committed settings; draft does not change device",
+    "Exact named device or single explicit dialog choice; no default fallback/settings rewrite",
+    "Explicit Cancelled/Failed/Submitted software handoff/Unknown; unknown submission never auto retries",
+    "Developer watchdog30s starts only after submit_started; no accepted printer/RK budget inferred",
+    "New raw-local-results mode remains without report preview/file output"
+  ],
+  "validation_scope": "Private fresh helper/controller compile+real Qt empty-directory/missing-device negative only. New formal main binding/native/Windows/ARM and actual confirmation/printing notyetverified.",
+  "visual_scope": "No original forms/QSS/colors/control layout changed. QtRPT local callback patch retains original attribution.",
+  "hardware_not_run": true
+}

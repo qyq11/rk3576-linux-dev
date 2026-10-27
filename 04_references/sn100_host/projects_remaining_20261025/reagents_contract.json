@@ -1,0 +1,93 @@
+{
+  "version": "reagent-batch-local-v1",
+  "date": "2026-10-25",
+  "owner": "projects_remaining_20261025",
+  "status": "source frozen; WSL specialized11/0 and basis11/0 process0; standalone startup/normal exit0; unified integration pending",
+  "database": "catalog.db explicitly isolated by .sn100-catalog-offline-v1 marker",
+  "existing_schema": "sn100-catalog-offline-v1 marker and original tables/columns remain compatible",
+  "tables": [
+    "reagent_batch_metadata(batch_id PRIMARY KEY REFERENCES reagent_batch_group(id) ON DELETE CASCADE, isi_value TEXT NOT NULL, normal_value TEXT NOT NULL)",
+    "catalog_batch_reference(owner_module TEXT, reference_key TEXT, batch_id REFERENCES reagent_batch_group(id) ON DELETE RESTRICT, PRIMARY KEY(owner_module,reference_key))",
+    "project_action_reagent_reference(project_id REFERENCES project_base(id) ON DELETE CASCADE, reagent_id REFERENCES reagent_list(id) ON DELETE RESTRICT, PRIMARY KEY(project_id,reagent_id))"
+  ],
+  "fields": {
+    "id": "stable reagent_batch_group.id; not row number, display code or instrument ID",
+    "projectId": "stable project_base.id; unchanged",
+    "code": "existing local batch_code, 1..32 chars without outer whitespace",
+    "batchGroup": "existing | separated reagent batch numbers, nonempty members <=32 chars, no duplicate members, no membership overlap within a project",
+    "isiValue": "original isi_value.isiValue decimal text, dimensionless ISI; 0..9999 max4 decimal places, not a calculation/approval",
+    "normalValue": "original isi_value.normalValue decimal text; source PT measured-result unit must be supplied with approved production configuration; no conversion or inferred clinical value",
+    "hasMetadata": "read snapshot indicates stored metadata exists",
+    "metadataEdited": "explicit write intent false by default, old four-field saveBatch callers preserve metadata"
+  },
+  "reading": "ReagentStore::load -> loaded(ReagentSnapshot): committed transaction snapshot containing batches and metadata; no QWidget SQL; Consumers must persist values/units used in their own result record; changing current metadata must never recalculate or rewrite saved historical result values.",
+  "reference_api": [
+    "holdBatchReference(requestId,ownerModule,referenceKey,batchId) -> batchReferenceSucceeded/Error",
+    "releaseBatchReference(requestId,ownerModule,referenceKey) -> batchReferenceSucceeded/Error",
+    "checkBatchReferences(requestId,batchId) -> batchReferencesReady(requestId,batchId,exists,ReagentBatchReferences)"
+  ],
+  "reservation_protocol": [
+    "Reserve stable project and batch IDs in catalog before external record write; owner module lowercase [a-z][a-z0-9_]{0,31}, key 1..128 chars without outer whitespace.",
+    "Same module/key/batch reserve is idempotent; binding an existing key to a different batch fails.",
+    "Save external record in its own database; after failure explicitly reconcile/release only if no external record depends on it. No cross-file foreign key or atomic transaction claimed.",
+    "External deletion commits first, then release reservation. Crashes may leak safe blocking holds; startup never clears them automatically.",
+    "While held, batch code/group/project changes fail and deletion is FK restricted; metadata edits remain local editable information.",
+    "Reserve project separately whenever external records depend on project name; holdBatchReference alone does not protect project display name.",
+    "Project-action reagent references are maintained by ProjectsStore; ReagentStore rejects name/type changes and deletion until those references are removed."
+  ],
+  "original_sources": [
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmreagent/maskdlggroupsetting.cpp",
+      "sha256": "a7ff7eec724b60525124fdc0ba7725c04d5b4af54543bb5daf50a4545b85cf44"
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmreagent/maskdlggroupsetting.ui",
+      "sha256": "5f90074f739fdd39e70ea146e020a112a48969910230c76f769eef17c9e3a781"
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/isi/isivalue.cpp",
+      "sha256": "2f5412b2802e6b57477a6ea755d1b8e5bba4dc2e28f4dbe7afea13a4e3868666"
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/isi/isivalue.h",
+      "sha256": "ccabe65a804b0251fa2d18f8e765a722863ca6dd567785e96b585a0d585eedda"
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/reagent/reagent_batch_group_table.cpp",
+      "sha256": "7c7a32af1b0692575a7af1f06edde362f4c40abeb92690a3fdce4361fc071956"
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/calibration/calibration_batch_table.cpp",
+      "sha256": "7703802a1683424caa64c5f59f71526820399461208d829f299a1c152991765b"
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibrationmaterial.cpp",
+      "sha256": "ccd7ad768e3679a1d6a316167b20a5b98b51f1f293439f9e2478d46b6183142f"
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.cpp",
+      "sha256": "3d2a1411b9d79821326b5d25e975edfb049aaf7daebac4dca4c9c62a5555d1b3"
+    }
+  ],
+  "original_functions": [
+    "MaskDlgGroupSetting::slotProjectSelectChanged",
+    "MaskDlgGroupSetting::slotTblGroupSelectChanged",
+    "MaskDlgGroupSetting::on_btnSave_clicked",
+    "MaskDlgGroupSetting::on_btnAddRBatch_clicked",
+    "IsiValue::saveIsiData/getDataByBatchGroup",
+    "frmCalibrationMaterial::batch_set_curve",
+    "SystemCommon::lineEditValidator/getExpStr"
+  ],
+  "deliberate_differences": [
+    "Store original ISI/normalValue by stable batch ID rather than unqualified batch_group string, avoiding cross-project string collisions.",
+    "Both declared numeric bounds and max4 decimal precision enforced at storage boundary; original getExpStr uses digit count and can accept >9999 fractional text.",
+    "Batch reference reservation is conservative additive local protection; no external schema guessed or opened.",
+    "Original .ui retained unchanged; original PT-prefix field visibility retained. Calculation/edit icon actions and enabling runtime batch management remain disabled pending required implementation/production protocol.",
+    "Local batch save also commits edited metadata in one catalog transaction; old saveBatch callers leave metadata untouched."
+  ],
+  "not_claimed": [
+    "Clinical calculation, calibration audit/apply effectiveness, real test actions, instrument/LIS/RK connections",
+    "Original active Windows visual/behavior parity, ARM64/Windows whole-program build",
+    "Long-run/resource budget/control coexecution approval"
+  ]
+}

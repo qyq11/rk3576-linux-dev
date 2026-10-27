@@ -1,0 +1,64 @@
+{
+  "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/source/06_programs/sn100_host",
+  "input_policy": "Use this frozen source only; never substitute live formal source.",
+  "product": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/native/wsl_release/sn100_shell",
+  "product_helper": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/native/wsl_release/sn100_report_renderer",
+  "product_helper_requirement": "Keep the final main/helper pair together in native/wsl_release. These drivers do not export PDF; child product --history uses the ordinary report-capable shell.",
+  "expected_product_sha256": "c5da853069071eedc12a601cb5cab8be0529e726196b8ce4d79667b7c232aeb3",
+  "runtime_root": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/cumulative/runtime",
+  "logs_root": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/cumulative/logs",
+  "common": {
+    "user": "qyq",
+    "qmake": "/usr/lib/qt5/bin/qmake",
+    "qpa": [
+      "offscreen",
+      "xcb"
+    ],
+    "style": "Fusion",
+    "font": "Noto Sans CJK SC 11",
+    "gui_execution": "One coordinated serial GUI slot; build script never launches GUI.",
+    "runtime_libraries": "Use target_wrapper.sh for system x86_64 Qt libraries/plugins."
+  },
+  "integrated_shell_test": {
+    "binary": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/cumulative/integrated_shell_test/integrated_shell_test",
+    "environment": {
+      "SN100_INTEGRATION_EVIDENCE_DIR": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/cumulative/runtime/<qpa>/integrated",
+      "SN100_SHELL_APP": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/native/wsl_release/sn100_shell"
+    },
+    "sequence": [
+      "writeExperiment",
+      "readExperiment"
+    ],
+    "process_rule": "Each method must run in a separate OS process. write/read share the same new evidence root. Do not invoke the entire suite without method arguments.",
+    "additional_functional_cases": [
+      "initializationFailureExperiment"
+    ],
+    "xcb_dependencies": [
+      "xdotool in PATH",
+      "libX11.so.6",
+      "DISPLAY with the coordinated WSLg session"
+    ],
+    "xcb_exit_scope": "12-second idle then PID-verified WM_DELETE_WINDOW, functional exit only; no performance claim.",
+    "skipped_this_round": "measureExperiment (60 seconds); separate 30-second seven-store instrument baseline is planned.",
+    "fixtures": "Anonymous account secret generated only at runtime; history fixture embedded in the production QRC. No external fixture argument.",
+    "sensitive_runtime": "Keep all runtime databases, tags and transient secret files under temp. Do not archive account database fields.",
+    "xcb_only_cases": [
+      "viewportExperiment",
+      "applicationExitExperiment"
+    ],
+    "viewport_scope": "Requires real screen geometry, mapped/active native windows and QApplication.widgetAt hit testing. Offscreen is not applicable; preserve its failed invocation as an environment-boundary observation."
+  },
+  "status_replay_shell_test": {
+    "binary": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/cumulative/status_replay_shell_test/status_replay_shell_test",
+    "environment": {
+      "SN100_STATUS_REPLAY_EVIDENCE_DIR": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/cumulative/runtime/<qpa>/status_replay",
+      "SN100_STATUS_REPLAY_FIXTURE": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/fixtures/status_replay.json",
+      "SN100_STATUS_REPLAY_APP": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/native/wsl_release/sn100_shell"
+    },
+    "process_rule": "One full-suite process for each QPA. Each evidence root must be absolute and must not exist before initTestCase.",
+    "child_product": "--offline --data-dir <new product_runtime> --status-replay <checkpoint fixture>",
+    "input_failure_child": "Relative replay path must exit 2 without creating its requested data root."
+  },
+  "qt_test_output": "Add -o <absolute log>.txt,txt -o <absolute log>.xml,xml to every invocation.",
+  "command_pattern": "env QT_QPA_PLATFORM=<qpa> <suite env...> ./target_wrapper.sh <binary> [method] -o <txt>,txt -o <xml>,xml"
+}

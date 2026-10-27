@@ -1,0 +1,162 @@
+{
+  "slot": "LIS_RAW_INBOX_FORMAL_PAGE_TARGETED_01",
+  "passed": true,
+  "actual_driver_exit": 0,
+  "started_utc": "2026-10-26T19:25:12.169951+00:00",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "network_device_or_shared_shell_code_executed": false,
+  "sealed_source_writes": false,
+  "formal_component_test_requested": true,
+  "gui_test_command_invoked": true,
+  "requested_QPA": "xcb",
+  "non_native_dialog_control": "Owned only by unchanged test C++ AA_DontUseNativeDialogs",
+  "reused_common_path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/single_slot_qc_20261026/verification_driver_05/common.py",
+  "reused_common_sha256": "705443ee31470a7e24edaabebc6572b76b2892001571daef931c58f306d3c0da",
+  "SQL_readback_semantics": "Original Store SELECT checks are inside transaction, then COMMIT/emit. UI refresh and test inspection are separate reads, not a second transactional commit-verification claim.",
+  "qmake": {
+    "name": "qmake",
+    "command": [
+      "/usr/lib/qt5/bin/qmake",
+      "-o",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/lis_raw_inbox_20261027/formal_page_execution_01/build/Makefile",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/lis_raw_inbox_20261027/formal_page_targeted_preparation_01/lis_inbox_page_targeted_test.pro",
+      "-spec",
+      "linux-g++",
+      "CONFIG+=release",
+      "CONFIG-=debug",
+      "QMAKE_PROJECT_DEPTH=0"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-26T19:25:13.265385+00:00",
+    "stdout_stderr": "qmake.log",
+    "timeout_seconds": 120,
+    "exit_code": 0,
+    "timed_out": false,
+    "state": "finished",
+    "pid": 635,
+    "cleanup": null,
+    "owned_process_group_stopped": true,
+    "group_after": {
+      "owned_process_group": 635,
+      "gone": true
+    },
+    "cleanup_errors": [],
+    "seconds": 0.9027080779999999,
+    "finished_utc": "2026-10-26T19:25:14.181711+00:00"
+  },
+  "make_dry": {
+    "name": "make_dry",
+    "command": [
+      "/usr/bin/make",
+      "-n",
+      "-C",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/lis_raw_inbox_20261027/formal_page_execution_01/build"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-26T19:25:14.358774+00:00",
+    "stdout_stderr": "make_dry.log",
+    "timeout_seconds": 60,
+    "exit_code": 0,
+    "timed_out": false,
+    "state": "finished",
+    "pid": 642,
+    "cleanup": null,
+    "owned_process_group_stopped": true,
+    "group_after": {
+      "owned_process_group": 642,
+      "gone": true
+    },
+    "cleanup_errors": [],
+    "seconds": 0.14098519899999928,
+    "finished_utc": "2026-10-26T19:25:14.514222+00:00"
+  },
+  "make": {
+    "name": "make",
+    "command": [
+      "/usr/bin/make",
+      "-C",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/lis_raw_inbox_20261027/formal_page_execution_01/build",
+      "-j2"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-26T19:25:14.571119+00:00",
+    "stdout_stderr": "make.log",
+    "timeout_seconds": 900,
+    "exit_code": 0,
+    "timed_out": false,
+    "state": "finished",
+    "pid": 643,
+    "cleanup": null,
+    "owned_process_group_stopped": true,
+    "group_after": {
+      "owned_process_group": 643,
+      "gone": true
+    },
+    "cleanup_errors": [],
+    "seconds": 15.887732205,
+    "finished_utc": "2026-10-26T19:25:30.472722+00:00"
+  },
+  "fresh_object_count": 10,
+  "executable_sha256": "3ef910ca772fc94b55085af29600f2d2a4bbfa9b79c7105fb794b49506456615",
+  "runtime_root": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/lis_raw_inbox_20261027/formal_page_tests/runtime/formal_page_01_633_1793042730709640828",
+  "gui": {
+    "name": "gui",
+    "command": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/lis_raw_inbox_20261027/formal_page_execution_01/build/lis_inbox_page_formal_targeted_test",
+      "selectionCancelCommitPlainDetailAndReopen",
+      "guestReadOnlyAndRealWorkerAdmissionAndUnsafeFiles",
+      "realSqlAbortRetainsIdentityAndCapturedBytesUntilRetry",
+      "-v1",
+      "-o",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/lis_raw_inbox_20261027/formal_page_execution_01/gui/result.xml,xml",
+      "-o",
+      "-,txt"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-26T19:25:30.744506+00:00",
+    "stdout_stderr": "gui.log",
+    "timeout_seconds": 180,
+    "exit_code": 0,
+    "timed_out": false,
+    "state": "finished",
+    "pid": 688,
+    "cleanup": null,
+    "owned_process_group_stopped": true,
+    "group_after": {
+      "owned_process_group": 688,
+      "gone": true
+    },
+    "cleanup_errors": [],
+    "seconds": 3.749257215,
+    "finished_utc": "2026-10-26T19:25:34.505938+00:00"
+  },
+  "actual_qt_cases": {
+    "initTestCase": [
+      "pass"
+    ],
+    "selectionCancelCommitPlainDetailAndReopen": [
+      "pass"
+    ],
+    "guestReadOnlyAndRealWorkerAdmissionAndUnsafeFiles": [
+      "pass"
+    ],
+    "realSqlAbortRetainsIdentityAndCapturedBytesUntilRetry": [
+      "pass"
+    ],
+    "cleanupTestCase": [
+      "pass"
+    ]
+  },
+  "qt_environment": {
+    "QtVersion": "5.15.13",
+    "QtBuild": "Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0)",
+    "QTestVersion": "5.15.13"
+  },
+  "skip_events": [],
+  "all_three_plus_lifecycle_passed_without_skip": true,
+  "formal_component_and_test_members_unchanged": true,
+  "tools_seven_unchanged": true,
+  "execution_controls_unchanged": true,
+  "finished_utc": "2026-10-26T19:25:34.990208+00:00"
+}

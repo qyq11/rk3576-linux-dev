@@ -1,0 +1,377 @@
+{
+  "schema": "sn100-report-post-repair-independent-status-addendum-v1",
+  "date_AsiaShanghai": "2026-10-25",
+  "purpose": "保留原终审文件的字节/SHA/当时4-1结论；仅补充随后收到的独立报告测试结果，不覆盖旧失败或整体新冻结边界。",
+  "prior_review": {
+    "path": "04_references/sn100_host/report_remaining_20261025/post_repair_review.json",
+    "sha256": "3a5cb51df3383ac7d859d13a9008d0cd803f87ca1df7fbf78d60056019ebfe1e",
+    "expected_preserved_sha256": "3a5cb51df3383ac7d859d13a9008d0cd803f87ca1df7fbf78d60056019ebfe1e",
+    "byte_hash_preserved": true,
+    "original_conclusions_remain_in_place": true
+  },
+  "repair_handoff": {
+    "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_handoff.json",
+    "sha256": "810b9e3d40c56f18458ace56e4d78c9aae8698e9a778ae127cc5c33f7c247ee5",
+    "finished_utc": "2026-10-25T23:31:11.556121+08:00",
+    "finished_AsiaShanghai": "2026-10-25T23:31:11.0000000+08:00",
+    "test_source_sha_from_handoff": "be49e9384af399d01d891e9ccdce63868e7649d69e8b9cb943d9aa11afe9b822",
+    "scope": "Test harness only; no production changes and no Windows/RK/instrument validation",
+    "repairs": [
+      "Wait for the original toolbar layout and use real mouse clicks on its original action button; click the original extension when overflowed and then its expanded original button or actual QMenu actionGeometry. No QAction::trigger or production geometry changes.",
+      "After Cancel and deferred deletion restore the actual visible preview activation. Before typing activate the real QFileDialog and editor, use Ctrl+A/type and its real Save button, and compare the actual fileSelected path before closing the preview.",
+      "Keep all session/Guest/six-role, display draft Cancel/Discard, SQL hide/reopen, expected-document exact one-row APTT0.00 s HTML, foreground/background export and busy navigation/login/logout/close assertions and original timeout values."
+    ],
+    "earlier_failures_retained": [
+      {
+        "attempt": "root suite_gate_04",
+        "exit_code": 1,
+        "raw_totals": "Totals: 4 passed, 1 failed, 0 skipped, 0 blacklisted, 2026ms"
+      },
+      {
+        "attempt": "attempt_01",
+        "run": "run_01_offscreen",
+        "exit_code": 1,
+        "raw_totals": "Totals: 4 passed, 1 failed, 0 skipped, 0 blacklisted, 7293ms"
+      },
+      {
+        "attempt": "attempt_02",
+        "run": "run_01_offscreen",
+        "exit_code": 1,
+        "raw_totals": "Totals: 4 passed, 1 failed, 0 skipped, 0 blacklisted, 7110ms"
+      },
+      {
+        "attempt": "attempt_03",
+        "run": "run_01_offscreen",
+        "exit_code": 0,
+        "raw_totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 2963ms"
+      },
+      {
+        "attempt": "attempt_03",
+        "run": "run_01_xcb",
+        "exit_code": 0,
+        "raw_totals": "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 2976ms"
+      }
+    ]
+  },
+  "readonly_receipt_verification": {
+    "binding_proof_path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/build/binding_proof.json",
+    "binding_proof_sha256": "a2bad6d4615785aa05b23c3448e0f02ffdfd04439b4ad3be744e390617a6b613",
+    "proof_digest_matches_handoff": true,
+    "binding_source_snapshot": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+    "binding_production_input_count": 426,
+    "binding_native_objects_excluding_main": 167,
+    "driver_sha_from_handoff": "6f693175e87dac3e1485a264d3547add089464ad5afa2a16d3de176ebec34ea9",
+    "main_artifacts_at_that_checkpoint": {
+      "sn100_shell": "013eb363c6cd7a928f62f860c5cbd6755421a81808a4e6ad347cc6db0887f176",
+      "sn100_report_renderer": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+    },
+    "runs": [
+      {
+        "qpa": "offscreen",
+        "actual_exit_code": 0,
+        "timed_out": false,
+        "qt_totals": [
+          5,
+          0,
+          0
+        ],
+        "source_sha_from_receipt": "be49e9384af399d01d891e9ccdce63868e7649d69e8b9cb943d9aa11afe9b822",
+        "driver_sha_from_receipt": "6f693175e87dac3e1485a264d3547add089464ad5afa2a16d3de176ebec34ea9",
+        "passed_methods": [
+          "PASS   : ReportRemainingShellTest::initTestCase()",
+          "PASS   : ReportRemainingShellTest::sessionPermissionsAndDisplayDraft()",
+          "PASS   : ReportRemainingShellTest::committedDisplayHideAndReopen()",
+          "PASS   : ReportRemainingShellTest::htmlBusyFromReportAndBackgroundPage()",
+          "PASS   : ReportRemainingShellTest::cleanupTestCase()"
+        ],
+        "successful_HTML_lines": [
+          "QINFO  : ReportRemainingShellTest::htmlBusyFromReportAndBackgroundPage() REPORT_SHELL_HTML_VERIFIED foreground 1 /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/report_shell_repair/attempt_03/run_01_offscreen/runtime/html_NtxcUA/history/exports/foreground.html",
+          "QINFO  : ReportRemainingShellTest::htmlBusyFromReportAndBackgroundPage() REPORT_SHELL_HTML_VERIFIED background 1 /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/report_shell_repair/attempt_03/run_01_offscreen/runtime/html_NtxcUA/history/exports/background.html"
+        ],
+        "totals_line": [
+          "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 2963ms"
+        ],
+        "started_utc": "2026-10-25T23:29:25.687866+08:00",
+        "finished_utc": "2026-10-25T23:29:29.027008+08:00",
+        "raw": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_offscreen"
+      },
+      {
+        "qpa": "xcb",
+        "actual_exit_code": 0,
+        "timed_out": false,
+        "qt_totals": [
+          5,
+          0,
+          0
+        ],
+        "source_sha_from_receipt": "be49e9384af399d01d891e9ccdce63868e7649d69e8b9cb943d9aa11afe9b822",
+        "driver_sha_from_receipt": "6f693175e87dac3e1485a264d3547add089464ad5afa2a16d3de176ebec34ea9",
+        "passed_methods": [
+          "PASS   : ReportRemainingShellTest::initTestCase()",
+          "PASS   : ReportRemainingShellTest::sessionPermissionsAndDisplayDraft()",
+          "PASS   : ReportRemainingShellTest::committedDisplayHideAndReopen()",
+          "PASS   : ReportRemainingShellTest::htmlBusyFromReportAndBackgroundPage()",
+          "PASS   : ReportRemainingShellTest::cleanupTestCase()"
+        ],
+        "successful_HTML_lines": [
+          "QINFO  : ReportRemainingShellTest::htmlBusyFromReportAndBackgroundPage() REPORT_SHELL_HTML_VERIFIED foreground 1 /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/report_shell_repair/attempt_03/run_01_xcb/runtime/html_mRNKab/history/exports/foreground.html",
+          "QINFO  : ReportRemainingShellTest::htmlBusyFromReportAndBackgroundPage() REPORT_SHELL_HTML_VERIFIED background 1 /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/report_shell_repair/attempt_03/run_01_xcb/runtime/html_mRNKab/history/exports/background.html"
+        ],
+        "totals_line": [
+          "Totals: 5 passed, 0 failed, 0 skipped, 0 blacklisted, 2976ms"
+        ],
+        "started_utc": "2026-10-25T23:29:42.988966+08:00",
+        "finished_utc": "2026-10-25T23:29:46.204854+08:00",
+        "raw": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_xcb"
+      }
+    ],
+    "receipt_fingerprints": [
+      {
+        "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_offscreen/verification.json",
+        "sha256": "2b1213df73c2c73f57560e603bedafe99ea4519536ae77adcc052acb62ceee79"
+      },
+      {
+        "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_offscreen/test.exit.json",
+        "sha256": "0534ea04b0d9c57a7ee54c5ca9ad69a59a3675dec37ae9a1db063de1e6ca89c9"
+      },
+      {
+        "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_offscreen/qt.txt",
+        "sha256": "9ee3cbabdbec4aecf5cae712c67db3573468ffc1515b6f54be0a54450c955fcc"
+      },
+      {
+        "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_offscreen/qt.xml",
+        "sha256": "b400fc27dbaba7f64c96477b054c098a95330b1fe25a9898d2264cdfda403635"
+      },
+      {
+        "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_xcb/verification.json",
+        "sha256": "a7fcba3d7ea2a474e62e5790dacfbb551c9a79b16abdb0c42aa2b6ad5557b539"
+      },
+      {
+        "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_xcb/test.exit.json",
+        "sha256": "6725feb34d5b869c85796c3ef961620daf6e502817d991a7aa587ccaa284ce20"
+      },
+      {
+        "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_xcb/qt.txt",
+        "sha256": "1edacb97216f3183f7457f1eac8320c83320b934cdae02e33ec94d4481f7ea8c"
+      },
+      {
+        "path": "04_references/sn100_host/qc_local_20261025/report_shell_repair_20261025/attempt_03/run_01_xcb/qt.xml",
+        "sha256": "180d4f3ab05723a814d9a2a2427d785faab019eabe2fdeb986f93b0cf94d15ec"
+      }
+    ],
+    "counts_note": "每个5项包含init/cleanup，共3个业务方法；本窗口仅只读回收日志/退出收据与绑定证明SHA，没有重新执行QtTest，也没有读取/哈希/修改新test源码。"
+  },
+  "current_report_production_review": {
+    "original_related_input_count": 48,
+    "original_48_all_match": true,
+    "original_input_mismatches": [],
+    "current_audited_production_count": 34,
+    "current_audited_production_deltas": [],
+    "current_audited_production_sha": [
+      {
+        "path": "06_programs/sn100_host/shell/main.cpp",
+        "previous_sha256": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156",
+        "current_sha256": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/frmmain.cpp",
+        "previous_sha256": "56f28e27c2bc767ebce0afa986aad2f3e703246e65d95822dcfc25ef3cc2337b",
+        "current_sha256": "56f28e27c2bc767ebce0afa986aad2f3e703246e65d95822dcfc25ef3cc2337b"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/frmmain.h",
+        "previous_sha256": "3d8837050345f92535e9975a53ce78e9880b7dde8d59015ee41743a6da28c58a",
+        "current_sha256": "3d8837050345f92535e9975a53ce78e9880b7dde8d59015ee41743a6da28c58a"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/history_shell.cpp",
+        "previous_sha256": "3d1ac484b3525edde5dbcf8e8f646ffa8029cf53a4e2953d0955ce43482834c7",
+        "current_sha256": "3d1ac484b3525edde5dbcf8e8f646ffa8029cf53a4e2953d0955ce43482834c7"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/login_shell.cpp",
+        "previous_sha256": "8cf88cc30aee352836c285b258c0c375fedff279bd193f50e87401e4525e5b11",
+        "current_sha256": "8cf88cc30aee352836c285b258c0c375fedff279bd193f50e87401e4525e5b11"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/resources.qrc",
+        "previous_sha256": "d88579511745d0ce025f76970223efc5ab32ff9b8d687fc49b2360e8a7406164",
+        "current_sha256": "d88579511745d0ce025f76970223efc5ab32ff9b8d687fc49b2360e8a7406164"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/shell.pri",
+        "previous_sha256": "59a410c5dced837a7e7622428685e4e1ec08119aa53a8bd4d1581f747dc8e64b",
+        "current_sha256": "59a410c5dced837a7e7622428685e4e1ec08119aa53a8bd4d1581f747dc8e64b"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/build.sh",
+        "previous_sha256": "9d82588ece30564e2935c2238262a3d650e8d1fdfab461937d10f262079bfae5",
+        "current_sha256": "9d82588ece30564e2935c2238262a3d650e8d1fdfab461937d10f262079bfae5"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/wsl.sh",
+        "previous_sha256": "40fd4b8f634d7c547c089b7cbc2e1aa767c96a5472675dd110488b629d0903c1",
+        "current_sha256": "40fd4b8f634d7c547c089b7cbc2e1aa767c96a5472675dd110488b629d0903c1"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/package_arm64.py",
+        "previous_sha256": "d7335c16441b4cc4deeb6d0809dbb61ca67c657d0cebdcf673b4b6451754809e",
+        "current_sha256": "d7335c16441b4cc4deeb6d0809dbb61ca67c657d0cebdcf673b4b6451754809e"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/arm64_object_reuse.py",
+        "previous_sha256": "dee3973de339f98086676331259d7a64459fe74659810daa6fb8c6cc967c890d",
+        "current_sha256": "dee3973de339f98086676331259d7a64459fe74659810daa6fb8c6cc967c890d"
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_page.cpp",
+        "previous_sha256": "bf238e626bcb58ce45de1512cdfe2ef46e5ca6e9578a0e261810d1b863594cce",
+        "current_sha256": "bf238e626bcb58ce45de1512cdfe2ef46e5ca6e9578a0e261810d1b863594cce"
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_page.h",
+        "previous_sha256": "a94ed3e36247811eaa0652b214b8a18ab5de2ceb1af69a865bd4b3c46d658244",
+        "current_sha256": "a94ed3e36247811eaa0652b214b8a18ab5de2ceb1af69a865bd4b3c46d658244"
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_store.cpp",
+        "previous_sha256": "c6737173a876d7a92e1941c0e3dcbf6e2470d7bf72041fc258e45088b612d5df",
+        "current_sha256": "c6737173a876d7a92e1941c0e3dcbf6e2470d7bf72041fc258e45088b612d5df"
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_store.h",
+        "previous_sha256": "8c682ccf824742654c4d5a3581e34c73a80f7e02ca0b1f5fb85de409d63acd6b",
+        "current_sha256": "8c682ccf824742654c4d5a3581e34c73a80f7e02ca0b1f5fb85de409d63acd6b"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_store.cpp",
+        "previous_sha256": "2d325e1b82ac703b2ceba147a92b89b43a8c79a4f4045be7138277463aa72618",
+        "current_sha256": "2d325e1b82ac703b2ceba147a92b89b43a8c79a4f4045be7138277463aa72618"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_display_dialog.cpp",
+        "previous_sha256": "1400458a5d0d1c51e371e7227d5193bf829ba687c837a45534f234f8494cafa0",
+        "current_sha256": "1400458a5d0d1c51e371e7227d5193bf829ba687c837a45534f234f8494cafa0"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_display_dialog.h",
+        "previous_sha256": "0afcfec5f22d5209c622dd118b9c85f32c1d8cfd59aea9b2d8ec50f7871a4f9c",
+        "current_sha256": "0afcfec5f22d5209c622dd118b9c85f32c1d8cfd59aea9b2d8ec50f7871a4f9c"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_view.h",
+        "previous_sha256": "abcb636b46a732c762859471491f6a17291e6d67710d4468afba9780b9d89fb8",
+        "current_sha256": "abcb636b46a732c762859471491f6a17291e6d67710d4468afba9780b9d89fb8"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_remaining_html.h",
+        "previous_sha256": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a",
+        "current_sha256": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_controller.cpp",
+        "previous_sha256": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba",
+        "current_sha256": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_controller.h",
+        "previous_sha256": "1a085d958309c4f9347eced72858601675d835022ed31026ce3cf52852f6756b",
+        "current_sha256": "1a085d958309c4f9347eced72858601675d835022ed31026ce3cf52852f6756b"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_renderer.cpp",
+        "previous_sha256": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581",
+        "current_sha256": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_document.cpp",
+        "previous_sha256": "ebe25d4f18b8e896f3865f0a18a97ee0c3d3301a96a72b6a982a06715dbe78f8",
+        "current_sha256": "ebe25d4f18b8e896f3865f0a18a97ee0c3d3301a96a72b6a982a06715dbe78f8"
+      },
+      {
+        "path": "06_programs/sn100_host/history/renderer.pro",
+        "previous_sha256": "e43441cd58a254910979615222a1b9f4922e76b5e86d00a44fe2007fbcd75a7f",
+        "current_sha256": "e43441cd58a254910979615222a1b9f4922e76b5e86d00a44fe2007fbcd75a7f"
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_core.pri",
+        "previous_sha256": "2a2c6d2d0f91903c791cf3ba69922e2f0a35d61d5cd82c1388142e8da04a6843",
+        "current_sha256": "2a2c6d2d0f91903c791cf3ba69922e2f0a35d61d5cd82c1388142e8da04a6843"
+      },
+      {
+        "path": "06_programs/sn100_host/history/history_report.pri",
+        "previous_sha256": "74f7f86afb162760a8e0b95ae53e40d2cc879baa60caa98c2ab4bfe96d193acc",
+        "current_sha256": "74f7f86afb162760a8e0b95ae53e40d2cc879baa60caa98c2ab4bfe96d193acc"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_engine.pri",
+        "previous_sha256": "6443f4db2ca9c2f5fef6b911ef8a766fe3b314410518f4e096c2e64aa91b990f",
+        "current_sha256": "6443f4db2ca9c2f5fef6b911ef8a766fe3b314410518f4e096c2e64aa91b990f"
+      },
+      {
+        "path": "06_programs/sn100_host/history/report_resources.qrc",
+        "previous_sha256": "90e45d3956f33bdc91375cf67fa7bf461be3b5c554e31324bd9d00c8ea783389",
+        "current_sha256": "90e45d3956f33bdc91375cf67fa7bf461be3b5c554e31324bd9d00c8ea783389"
+      },
+      {
+        "path": "06_programs/sn100_host/history/templates/report.xml",
+        "previous_sha256": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2",
+        "current_sha256": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2"
+      },
+      {
+        "path": "06_programs/sn100_host/tests/fixtures/history_report_options.json",
+        "previous_sha256": "24c79877ece4fb987ae4711d09f9dde297cd7967224bb04c93aa8fe164d6096c",
+        "current_sha256": "24c79877ece4fb987ae4711d09f9dde297cd7967224bb04c93aa8fe164d6096c"
+      },
+      {
+        "path": "06_programs/sn100_host/data/account_store.h",
+        "previous_sha256": "212e05178f26a170fdb9138e9705eba72febf4022caed01f83327edce088d07d",
+        "current_sha256": "212e05178f26a170fdb9138e9705eba72febf4022caed01f83327edce088d07d"
+      },
+      {
+        "path": "06_programs/sn100_host/thirdparty/qtrpt/qtrpt.pri",
+        "previous_sha256": "64e413f646e3b0d05d1c7874f1bd13e709a14ee670da307180fd1bd9db1d2a76",
+        "current_sha256": "64e413f646e3b0d05d1c7874f1bd13e709a14ee670da307180fd1bd9db1d2a76"
+      },
+      {
+        "path": "06_programs/sn100_host/thirdparty/qtrpt/QtRPT/config.pri",
+        "previous_sha256": "ba738eddabe2255f420166815cc1f6986d78717ed8f4d1ebe7771222e135def9",
+        "current_sha256": "ba738eddabe2255f420166815cc1f6986d78717ed8f4d1ebe7771222e135def9"
+      }
+    ],
+    "new_confirmed_report_production_findings": [],
+    "R1": "生产双导航全局busy守卫结论保留；此次独立日志已记录前台/后台HTML成功，证据绑定该历史检查点，最终新源累计仍另验。"
+  },
+  "checkpoint_transition": {
+    "historical_snapshot": "e65d77308b35b89dd6394ed6844e9a2482b32be9da2763f2b0fd5e268098de19",
+    "historical_checkpoint_label": "e65历史检查点",
+    "reason": "整合方随后发现ProjectsStore.save在事务外读取所致多写者改名缺口，已授权项目窗口修唯一CPP与专属原子回归；此项目修复不在本窗口审查或写入范围。",
+    "do_not_infer": "旧e65独立两QPA5/0及旧native主辅产物不能代表项目修复后的新整程序；不将旧gate02/旧三平台包自动平移为新版本通过。",
+    "pending": [
+      "项目原子修复完成后的新全局源冻结",
+      "匹配新源的native主程序及helper成对构建/指纹",
+      "绑定be49修复测试驱动的最终累计回归",
+      "Windows最终主辅构建",
+      "ARM最终主辅构建及依赖/恢复包",
+      "最终GUI/响应/资源与预算验收",
+      "原Windows完整行为/视觉、RK/仪器、同板实时性和长稳"
+    ]
+  },
+  "unchanged_boundaries": [
+    "历史结果/单位/倍率/精度与CSV合同不因本状态补充改变。",
+    "HTML含任意源&仍明确拒绝，XLSX未启用，真实重算/上传/实体打印未开启。",
+    "legacy.query旧偶发根因未定位，修后通过不关闭该缺陷。",
+    "原终审、原handoff、原失败/复测和测试源码全部保留，不改总文档或其他聊天。"
+  ],
+  "actions_performed": {
+    "receipt_and_SHA_reads_only": true,
+    "build": false,
+    "test_execution": false,
+    "GUI": false,
+    "resource": false,
+    "Windows_ARM_RK_instrument": false,
+    "source_or_test_write": false,
+    "thread_message": false
+  },
+  "stop_state": "此补充落盘后停止写入；等待整合窗口处理新的整体检查点。"
+}

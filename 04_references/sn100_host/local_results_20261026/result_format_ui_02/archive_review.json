@@ -1,0 +1,284 @@
+{
+  "schema": "sn100-private-result-format-ui02-archive-review-v1",
+  "createdUTC": "2026-10-26T21:03:46.8732099Z",
+  "runs": [
+    {
+      "run": "01",
+      "passed": false,
+      "controllerActualExit": 1,
+      "freshObjectsFromOriginalMetadata": 41,
+      "sourceDictionaryExactBeforeAfter": true,
+      "sourceDictionarySHA256": "10fbc176596b6f3593edc9aa73c71b316f3935041dfd395ad10b6a921e89e0c2",
+      "toolDictionaryExactBeforeAfter": true,
+      "toolDictionarySHA256": "2180f4170217adcdeeb07c101c85e2c40fc563235b94382e0182bfbe099e92f0",
+      "originalAllOwnedGroupsGone": true,
+      "originalNoTimeoutOrCleanup": false,
+      "sourceObjectsToolsWereNotRehashed": true
+    },
+    {
+      "run": "02",
+      "passed": true,
+      "controllerActualExit": 0,
+      "freshObjectsFromOriginalMetadata": 41,
+      "sourceDictionaryExactBeforeAfter": true,
+      "sourceDictionarySHA256": "a667806a60e3233b2b5014d4ffaec1bb7f4c11a14263d4174dc07830050a4f22",
+      "toolDictionaryExactBeforeAfter": true,
+      "toolDictionarySHA256": "2180f4170217adcdeeb07c101c85e2c40fc563235b94382e0182bfbe099e92f0",
+      "originalAllOwnedGroupsGone": true,
+      "originalNoTimeoutOrCleanup": true,
+      "sourceObjectsToolsWereNotRehashed": true
+    }
+  ],
+  "innerReceipts": [
+    {
+      "run": "01",
+      "receipt": "execution_01/make.exit.json",
+      "actualFinalExit": 0,
+      "simpleExitMatched": true,
+      "rawExitReceiptPresent": true,
+      "rawActualExit": 0,
+      "semantics": "Actual normal Popen.wait return, before cleanup, matched final/simple exit",
+      "timedOut": false,
+      "originalCleanup": null,
+      "ownedPGID": 411,
+      "ownedGroupGone": true,
+      "scope": "Original receipts only, no new process probe"
+    },
+    {
+      "run": "01",
+      "receipt": "execution_01/qmake.exit.json",
+      "actualFinalExit": 0,
+      "simpleExitMatched": true,
+      "rawExitReceiptPresent": true,
+      "rawActualExit": 0,
+      "semantics": "Actual normal Popen.wait return, before cleanup, matched final/simple exit",
+      "timedOut": false,
+      "originalCleanup": null,
+      "ownedPGID": 395,
+      "ownedGroupGone": true,
+      "scope": "Original receipts only, no new process probe"
+    },
+    {
+      "run": "01",
+      "receipt": "execution_01/case_01/test.exit.json",
+      "actualFinalExit": -6,
+      "simpleExitMatched": true,
+      "rawExitReceiptPresent": false,
+      "rawActualExit": null,
+      "semantics": "No pre-cleanup raw exit receipt: Popen.wait timed out. -6 is original postcleanup actual exit after owned-group SIGTERM and Qt fatal handling; not a natural pre-cleanup return.",
+      "timedOut": true,
+      "originalCleanup": {
+        "owned_process_group": 563,
+        "signals": [
+          "SIGTERM"
+        ],
+        "errors": [],
+        "group_after": {
+          "owned_process_group": 563,
+          "gone": true
+        },
+        "actual_exit": -6
+      },
+      "ownedPGID": 563,
+      "ownedGroupGone": true,
+      "scope": "Original receipts only, no new process probe"
+    },
+    {
+      "run": "02",
+      "receipt": "execution_02/make.exit.json",
+      "actualFinalExit": 0,
+      "simpleExitMatched": true,
+      "rawExitReceiptPresent": true,
+      "rawActualExit": 0,
+      "semantics": "Actual normal Popen.wait return, before cleanup, matched final/simple exit",
+      "timedOut": false,
+      "originalCleanup": null,
+      "ownedPGID": 413,
+      "ownedGroupGone": true,
+      "scope": "Original receipts only, no new process probe"
+    },
+    {
+      "run": "02",
+      "receipt": "execution_02/qmake.exit.json",
+      "actualFinalExit": 0,
+      "simpleExitMatched": true,
+      "rawExitReceiptPresent": true,
+      "rawActualExit": 0,
+      "semantics": "Actual normal Popen.wait return, before cleanup, matched final/simple exit",
+      "timedOut": false,
+      "originalCleanup": null,
+      "ownedPGID": 397,
+      "ownedGroupGone": true,
+      "scope": "Original receipts only, no new process probe"
+    },
+    {
+      "run": "02",
+      "receipt": "execution_02/case_01/test.exit.json",
+      "actualFinalExit": 0,
+      "simpleExitMatched": true,
+      "rawExitReceiptPresent": true,
+      "rawActualExit": 0,
+      "semantics": "Actual normal Popen.wait return, before cleanup, matched final/simple exit",
+      "timedOut": false,
+      "originalCleanup": null,
+      "ownedPGID": 565,
+      "ownedGroupGone": true,
+      "scope": "Original receipts only, no new process probe"
+    },
+    {
+      "run": "02",
+      "receipt": "execution_02/case_02/test.exit.json",
+      "actualFinalExit": 0,
+      "simpleExitMatched": true,
+      "rawExitReceiptPresent": true,
+      "rawActualExit": 0,
+      "semantics": "Actual normal Popen.wait return, before cleanup, matched final/simple exit",
+      "timedOut": false,
+      "originalCleanup": null,
+      "ownedPGID": 571,
+      "ownedGroupGone": true,
+      "scope": "Original receipts only, no new process probe"
+    }
+  ],
+  "XML": [
+    {
+      "run": "01",
+      "path": "execution_01/case_01/result.xml",
+      "method": "originalEntryDraftGuardsActualSaveReopenAndWriteStartInvalidation",
+      "functions": [
+        "initTestCase",
+        "originalEntryDraftGuardsActualSaveReopenAndWriteStartInvalidation"
+      ],
+      "passIncidents": 1,
+      "failIncidents": 1,
+      "skipIncidents": 0,
+      "businessMethods": 1,
+      "QtVersion": "5.15.13",
+      "bytes": 1134,
+      "sha256": "ebb198b775d2517ccec129f9dc42d184922c502780b96751765c3703e3b5e5fb"
+    },
+    {
+      "run": "02",
+      "path": "execution_02/case_01/result.xml",
+      "method": "originalEntryDraftGuardsActualSaveReopenAndWriteStartInvalidation",
+      "functions": [
+        "initTestCase",
+        "originalEntryDraftGuardsActualSaveReopenAndWriteStartInvalidation",
+        "cleanupTestCase"
+      ],
+      "passIncidents": 3,
+      "failIncidents": 0,
+      "skipIncidents": 0,
+      "businessMethods": 1,
+      "QtVersion": "5.15.13",
+      "bytes": 782,
+      "sha256": "72c51ff9136867b441a842f7e177d4fa59baa221567b8a67cf3ec0cc48ce212b"
+    },
+    {
+      "run": "02",
+      "path": "execution_02/case_02/result.xml",
+      "method": "actualConcurrentCasKeepsDraftExplicitReloadAndGuestReadOnly",
+      "functions": [
+        "initTestCase",
+        "actualConcurrentCasKeepsDraftExplicitReloadAndGuestReadOnly",
+        "cleanupTestCase"
+      ],
+      "passIncidents": 3,
+      "failIncidents": 0,
+      "skipIncidents": 0,
+      "businessMethods": 1,
+      "QtVersion": "5.15.13",
+      "bytes": 993,
+      "sha256": "cf29e3b000c80bb8d6ab873af025af09ed9a8284f43e82256bbc1aff129a3fa8"
+    }
+  ],
+  "WindowsHostParents": [
+    {
+      "parent": "01",
+      "actualWindowsParentExit": 1,
+      "WindowsParentPID": 89132,
+      "WSLChildPID": 85288,
+      "receipt": "parent_01/command.json + exit.json",
+      "processSnapshot": "process.json state=running is startup snapshot, not final status",
+      "scope": "Windows host launches WSL Ubuntu Python runner; no Windows Qt build/runtime proof"
+    },
+    {
+      "parent": "02",
+      "actualWindowsParentExit": 0,
+      "WindowsParentPID": 91072,
+      "WSLChildPID": 44888,
+      "receipt": "parent_02/command.json + exit.json",
+      "processSnapshot": "process.json state=running is startup snapshot, not final status",
+      "scope": "Windows host launches WSL Ubuntu Python runner; no Windows Qt build/runtime proof"
+    }
+  ],
+  "firstFailure": {
+    "qmake": 0,
+    "make": 0,
+    "freshObjects": 41,
+    "method": "originalEntryDraftGuardsActualSaveReopenAndWriteStartInvalidation",
+    "caseTwoStarted": false,
+    "rawExitBeforeCleanup": "Absent, intentionally not fabricated",
+    "finalQtExit": -6,
+    "timeoutSeconds": 60,
+    "cleanupSignal": "SIGTERM",
+    "WindowsHostParent": 1,
+    "causalScope": "Root actual readback: ordinary Save attempted a fullname change protected by actual History hold; real error appears in log/XML; modal was not answered, then outer timeout SIGTERM and Qt fatal handling. Not a product spontaneous crash claim. Original failed sources/receipts unchanged."
+  },
+  "inputRepair": "Only new targeted_preparation02 switches ordinary Save to legal existing project_lis_code UI001→UI002 and asserts fullName unchanged. Product UI02 unchanged; no reference protection/permission/wait/other business-assertion relaxation. Original targeted01 and first failure retained.",
+  "successfulScope": "Second execution: actual qmake/make0, 41 fresh objects from original metadata, two business methods each once in separate WSL x86_64 Qt5.15.13 GUI process; each init+one business+cleanup has3pass/0fail/0skip. Two business methods, not six. Both tests and Windows-host parent0, original no timeout/cleanup and groups gone.",
+  "progressScope": "execution02/progress.json false/actual_exit1 is pre-final checkpoint, not a separate failed run. Terminal verification.json true/0 retained separately; no original rewritten.",
+  "permissions": {
+    "warnings": [
+      {
+        "run": "01",
+        "log": "execution_01/case_01/test.log",
+        "capturedLine": "QStandardPaths: wrong permissions on runtime directory /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_ui_execution_01/host_environment/xdg, 0777 instead of 0700",
+        "scope": "Original pre-QtTest-start stderr notice retained in strictUTF8 inner combined log; does not become XML qwarn incident"
+      },
+      {
+        "run": "02",
+        "log": "execution_02/case_01/test.log",
+        "capturedLine": "QStandardPaths: wrong permissions on runtime directory /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_ui_execution_02/host_environment/xdg, 0777 instead of 0700",
+        "scope": "Original pre-QtTest-start stderr notice retained in strictUTF8 inner combined log; does not become XML qwarn incident"
+      },
+      {
+        "run": "02",
+        "log": "execution_02/case_02/test.log",
+        "capturedLine": "QStandardPaths: wrong permissions on runtime directory /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_ui_execution_02/host_environment/xdg, 0777 instead of 0700",
+        "scope": "Original pre-QtTest-start stderr notice retained in strictUTF8 inner combined log; does not become XML qwarn incident"
+      },
+      {
+        "run": "02",
+        "log": "execution_02/case_02/test.log",
+        "capturedLine": "QStandardPaths: wrong permissions on runtime directory /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_ui_execution_02/host_environment/tmp/runtime-qyq, 0777 instead of 0700",
+        "scope": "Original pre-QtTest-start stderr notice retained in strictUTF8 inner combined log; does not become XML qwarn incident"
+      }
+    ],
+    "totalBothRuns": 4,
+    "successfulExecution02Occurrences": 3,
+    "RootPermissionIsolationPassed": false,
+    "scope": "Second run has three captured 0777-versus0700 warnings across its two inner test logs, including fallback tmp/runtime-qyq. Original01 adds one. Anonymous path fencing is distinct from Unix mode isolation: permissions were not accepted/passed. XML warning count does not erase pre-test stderr warnings."
+  },
+  "provenanceScope": "Copied provenance handoff/preparation fields describe original preparation time, including unexecuted flags; no post-hoc rewrite. targeted_preparation02 handoff retains inherited directory text naming01; actual command/source dictionaries and target02 source SHA bind the executed02 input. Paths in archive aliases identify exact original metadata source.",
+  "rootReadbackSHA256": "5f346b09996e7fe6f49c7a8626d0d7e36743da2956335a6651c0675c9b8f1c5e",
+  "evidenceLimits": [
+    "Only exact metadata/text/XML. No outerraw/stdout.raw/stderr.raw read, decoded or copied.",
+    "No database/INI/authentication/source/py/cpp/pro/diff/object/binary copied; tool/object/source SHA lists reused as original metadata, not independently recomputed.",
+    "Readback does not prove ReportPage/productMain/whole-shell composition, original visual fidelity, Windows Qt, ARM/RK/instrument/clinical/resource behavior.",
+    "Guest UI controls/read behavior only; no direct Guest write API attempt in these two methods. CAS second actual connection commits sequentially, not simultaneous lock stress.",
+    "First failed method did not finish cleanupTestCase; owned process group cleanup is proven by original external receipt, not normal fixture shutdown. Successful second XML cleanupTestCase and owner cleanup receipts remain distinct."
+  ],
+  "independentReadOnlyCrosscheck": "qc_pages independently reviewed the original metadata/XML/logs and agreed on timeout/postcleanup exit, two-not-six business count, progress/final distinction, pre-QtTest permissions warnings and platform/scope limits; no execution or writes.",
+  "archiveTaskActions": {
+    "builds": 0,
+    "QtTests": 0,
+    "SQL": 0,
+    "GUI": 0,
+    "network": 0,
+    "formalWrites": 0,
+    "candidateWrites": 0,
+    "objectToolSourceHashRecompute": 0,
+    "outerRawReadOrCopy": 0
+  }
+}

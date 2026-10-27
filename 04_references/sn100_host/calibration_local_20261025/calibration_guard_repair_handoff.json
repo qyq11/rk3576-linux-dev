@@ -1,0 +1,164 @@
+{
+  "schema": "sn100-calibration-guard-repair-handoff-v1",
+  "date": "2026-10-25",
+  "status": "Own source stopped; private non-GUI tests executed. Final shared-source freeze, page regression and platform checks pending root.",
+  "issues": [
+    "IRR-03",
+    "CAL-GUARD-01",
+    "CAL-GUARD-02"
+  ],
+  "source_inputs": [
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_store.h",
+      "sha256": "760750646b8db248ce1b7e3e53ce2e72bce9eea59ec2d610086aaa66df4e2f18",
+      "bytes": 3310
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_store.cpp",
+      "sha256": "ccff38b39681e0cf199616f018622db7ae60d6ea5efdbc46b60f04a6ba8127b2",
+      "bytes": 53721
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/calibration_page.cpp",
+      "sha256": "ab18106a9cacb3dfa96c5cdbe9104fa7c40e1747e504ef5a83605fb82392d49d",
+      "bytes": 32653
+    },
+    {
+      "path": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+      "sha256": "5b8cfa9653218b193f5b1f916f651a863ed23ab056fa2328ada128094f48e155",
+      "bytes": 40339
+    },
+    {
+      "path": "06_programs/sn100_host/tests/calibration_reference_test.pro",
+      "sha256": "9c8ca0e5d62a90de707893816b5b2c5ca0d855e6a0d83bff84495a88e40193c9",
+      "bytes": 710
+    },
+    {
+      "path": "06_programs/sn100_host/calibration/tests/calibration_store_test.cpp",
+      "sha256": "85d4cb336c1f1736fd320945d13b648f86f79a59dbbd6431297bb903c13ce6f2",
+      "bytes": 34835
+    }
+  ],
+  "preimage_backup": "07_backups/sn100_host/offline_four_windows_20261025/pre_integration_sources/calibration_guard_repair_20261025/source_inputs.json",
+  "changed_files": [
+    "06_programs/sn100_host/calibration/calibration_store.h",
+    "06_programs/sn100_host/calibration/calibration_store.cpp",
+    "06_programs/sn100_host/calibration/calibration_page.cpp",
+    "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+    "06_programs/sn100_host/calibration/tests/calibration_store_test.cpp"
+  ],
+  "unchanged_owned_file": "06_programs/sn100_host/tests/calibration_reference_test.pro",
+  "business_entry": "CalibrationPage original save/copy/delete -> queued CalibrationStore worker -> canonical dataset operation lock -> local/catalog transaction -> values and actual error result",
+  "repairs": [
+    {
+      "issue": "IRR-03",
+      "functions": [
+        "CalibrationStore::lockDatasetOperation",
+        "cleanupFailedReferences",
+        "save",
+        "copy",
+        "initializeReferenceProtection",
+        "remove"
+      ],
+      "behavior": "QLockFile at canonical calibration_local.db.operation.lock covers both database commits and failed cleanup with 250ms bounded worker wait. Cleanup first rolls back old transaction state, reacquires BEGIN IMMEDIATE, reads all committed including hidden project/batch pairs, and releases only newly added keys with no persisted identity. Lock/read/cleanup failure keeps conservative holds and explicit reconciliation error.",
+      "verification": [
+        "automaticRollbackKeepsOperationSerializationAcrossTwoWorkers: real RAISE(ROLLBACK), bounded SQLite rollback_hook barrier, second actual worker rejected by operation lock, explicit retry succeeds with both holds",
+        "automaticRollbackCleanupFailureRetainsExplicitProtection: actual rollback and catalog DELETE ABORT, original failure plus retained-hold diagnostic, startup fails closed with holds intact",
+        "Existing ABORT/commit/locks/history/owner isolation regressions retained"
+      ]
+    },
+    {
+      "issue": "CAL-GUARD-01",
+      "functions": [
+        "CalibrationPage::updateActions",
+        "CalibrationPage::deleteCurrent",
+        "CalibrationStore::remove"
+      ],
+      "behavior": "Disabled or missing project permits historical load/startup reconciliation only. UI delete requires enabled committed candidate, and worker rechecks project enabled before revision-checked soft hide. Role/source/actionReady requirements unchanged.",
+      "verification": "Store51/0 includes disabled remove rejection with visible/revision/point JSON and project/batch holds unchanged; reference test independently extends disabled project case. Updated page source is static-only here; GUI regression remains root-owned."
+    },
+    {
+      "issue": "CAL-GUARD-02",
+      "functions": [
+        "CalibrationStore::checkDatasetPathBinding",
+        "reserveReferences",
+        "initializeReferenceProtection"
+      ],
+      "behavior": "Within catalog reservation transaction, catalog_metadata key calibration_dataset_path:<dataset_uuid> binds to normalized canonical local DB file. Same canonical file multiple workers is permitted; different physical path with same UUID fails closed, even if original connection is closed. No UUID rotation or hold deletion.",
+      "verification": [
+        "sameCanonicalFileAllowsTwoWorkersAndSameBinding: original and ../calibration canonical aliases both commit, one shared pair hold",
+        "sameUuidPhysicalCopyFailsClosedWithoutChangingIdentity: actual QFile copy, copied UUID unchanged, second path initialize/save rejected, original path reopen/save succeeds"
+      ]
+    }
+  ],
+  "data_contract": {
+    "local_schema": "sn100-calibration-local-v3 unchanged",
+    "reference_protocol": "catalog-reservations-v1 unchanged; adds conservative canonical dataset path binding in existing catalog_metadata",
+    "ids": "Existing dataset UUID, stable project_base.id and reagent_batch_group.id preserved; batchId0 has no batch hold",
+    "history": "No raw point, concentration/result unit, ratio, copied provenance, checked/applied, hidden-history or role semantic changes",
+    "transaction_boundary": "Local and catalog remain separate SQLite files. No cross-file FK or one atomic transaction is claimed.",
+    "startup": "Enabled gate exception is only historical read/protection reconciliation; save/copy/remove reject disabled project",
+    "concurrency": "All cooperating new-version CalibrationStore writers use bounded canonical operation lock. Explicit external file replacement/raw SQLite writers bypassing the application are outside this product operation protocol."
+  },
+  "restore_contract": {
+    "supported": "Stop every store/process before restore; restore matching calibration/catalog data at the same canonical dataset file path, then run startup identity/hold reconciliation. Multiple connections to that same canonical file remain allowed.",
+    "different_path": "Moving a dataset, a Windows/WSL/RK path change or cloning requires an explicit authorized migration after checking physical copies, dataset records and durable references. No automatic relocation/fork is provided.",
+    "prohibited_shortcuts": "Do not directly delete holds, reset dataset UUID, silently replace path binding, or overwrite a live database to bypass protection.",
+    "rollback": "The narrow source preimage restores source only. It does not migrate path bindings or runtime data. Older binaries that ignore the guards must not write a protected dataset; use read-only investigation until reconciliation."
+  },
+  "tests": [
+    {
+      "name": "store",
+      "actual_exits": {
+        "qmake_exit": 0,
+        "make_exit": 0,
+        "test_exit": 0
+      },
+      "actual_summary": "Totals: 51 passed, 0 failed, 0 skipped, 0 blacklisted, 26590ms",
+      "artifact": "temp\\sn100_host\\qc_local_20261025\\calibration_guard_repair\\store_build/calibration_store_test",
+      "artifact_sha256": "b2eb1ddb01f780fcfc91129daa905847815676ede66e85fb82ad88fbe048a5ec",
+      "raw_evidence": "04_references\\sn100_host\\calibration_local_20261025\\guard_repair_20261025\\store",
+      "frozen_shared_integration": false,
+      "note": "Own calibration store/test sources stayed unchanged from build through run; does not exercise page GUI."
+    },
+    {
+      "name": "reference",
+      "actual_exits": {
+        "qmake_exit": 0,
+        "make_exit": 0,
+        "test_exit": 0
+      },
+      "actual_summary": "Totals: 22 passed, 0 failed, 0 skipped, 0 blacklisted, 14156ms",
+      "artifact": "temp\\sn100_host\\qc_local_20261025\\calibration_guard_repair\\reference_build/calibration_reference_test",
+      "artifact_sha256": "c75cfce294b12b1c0c05fdd78b700affc26b165b5674b3493c396adc2948e2e4",
+      "raw_evidence": "04_references\\sn100_host\\calibration_local_20261025\\guard_repair_20261025\\reference",
+      "frozen_shared_integration": false,
+      "note": "Executed 22/0 against private object build; concurrent QC edits were possible. Exact QC precompile image was not captured. Root must rerun after all writers stop."
+    }
+  ],
+  "test_method": {
+    "runtime": "Ubuntu-24.04/qyq WSL, native Qt5 Release; make-j2; fresh isolated runtime per stage",
+    "rollback_hook": "Only test code dynamically resolves existing libsqlite3.so.0 via QLibrary; the own SQL connection handle is obtained on its worker thread. First callback uses bounded 3000ms semaphore gate. No production library/toolchain/dependency changes.",
+    "test_creation_driver": "temp/sn100_host/qc_local_20261025/run_calibration_guard_repair.sh",
+    "qc_dependency_observation": "04_references\\sn100_host\\calibration_local_20261025\\guard_repair_20261025\\qc_post_build_observation/observed.json",
+    "qc_dependency_limit": "QC h/cpp copy is post-build observation only, not proof of exact compiled input. Reference22 is not a frozen cumulative integration result."
+  },
+  "expected_failures": [
+    "Automatic rollback injected by SQLite trigger",
+    "Second writer bounded operation-lock refusal",
+    "Catalog cleanup DELETE ABORT retains holds and explicit diagnostic",
+    "Same UUID alternate physical file refuses initialize/save",
+    "Disabled project remove refuses mutation"
+  ],
+  "unexpected_build_or_test_failures_this_attempt": [],
+  "pending": [
+    "Root after all developers stop: fresh shared native object build and calibration_reference22 cumulative rerun",
+    "Calibration page old21 offscreen/xcb regression plus disabled Delete UI reachability; no GUI run in this task",
+    "Windows32/ARM64 full main/helper builds and dependency/package provenance",
+    "Original Windows behavior/theme, RK/instrument and real data, clinical fit/approval/apply validation",
+    "Response/resource budgets, same-board real-time control and long stability"
+  ],
+  "no_runtime_db_credentials_or_config_archived": true,
+  "no_device_gui_resource_actions": true,
+  "write_stop": "All owned production/test sources stopped before this handoff; only evidence copied and handoff written afterward."
+}

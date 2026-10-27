@@ -15,6 +15,7 @@
 #include <QTcpSocket>
 #include <QTextStream>
 #include <QTimer>
+#include <QVector>
 #include <array>
 #include <cmath>
 
@@ -67,12 +68,35 @@ class Soak : public QObject
 {
 public:
     Soak(QString directory, int seconds, int rate, int reconnectSeconds, int retryEvery,
-         int segmentBytes, int logBudgetBytes)
+         int segmentBytes, int logBudgetBytes, bool timingEnabled)
         : m_directory(directory), m_durationMs(qint64(seconds) * 1000),
           m_reconnectMs(qint64(reconnectSeconds) * 1000), m_segmentBytes(segmentBytes), m_logBudgetBytes(logBudgetBytes),
           m_rate(rate), m_retryEvery(retryEvery),
           m_client(nullptr, 120, 1), m_peerDecoder(Direction::HostToDevice)
     {
+        m_timingEnabled = timingEnabled;
+        if (timingEnabled)
+        {
+            m_timingRows.reserve(kTimingCapacity);
+            m_client.setTimingEnabled(true);
+            connect(&m_client, &ReadOnlyClient::timingEvent, this,
+                [this](QString stage, qint64 sourceNs, quint64 generation, quint64 revision, int attempt, qint64 deadlineMs)
+            {
+                timing("client", stage, sourceNs, {{"generation", double(generation)},
+                    {"request_revision", double(revision)}, {"attempt", attempt}, {"deadline_ms", double(deadlineMs)}});
+            });
+            auto *transport = m_client.findChild<ReadOnlyTcpTransport *>();
+            Q_ASSERT(transport);
+            transport->setTimingEnabled(true);
+            connect(transport, &ReadOnlyTcpTransport::timingEvent, this,
+                [this](QString stage, qint64 sourceNs, quint64 generation, qint64 value, qint64 extra,
+                       qint64 applicationPending, qint64 socketPending)
+            {
+                timing("transport", stage, sourceNs, {{"generation", double(generation)},
+                    {"value", double(value)}, {"extra", double(extra)},
+                    {"application_pending", double(applicationPending)}, {"socket_pending", double(socketPending)}});
+            });
+        }
         m_server.setProxy(QNetworkProxy::NoProxy);
         m_sendTimer.setInterval(1000 / rate);
         m_sendTimer.setTimerType(Qt::PreciseTimer);
@@ -85,7 +109,12 @@ public:
         connect(&m_queryTimer, &QTimer::timeout, this, [this]() { issueQuery(); });
         connect(&m_progress, &QTimer::timeout, this, [this]()
         {
-            if (!m_log.flush() || !saveJson(m_directory + "/progress.json", snapshot("running")))
+            localTiming("progress.begin");
+            const bool flushed = flushLog();
+            localTiming("progress.commit.begin");
+            const bool saved = flushed && saveJson(m_directory + "/progress.json", snapshot("running"));
+            localTiming("progress.commit.end", saved ? 1 : 0);
+            if (!saved)
                 finish(false, "progress/log save failed", true);
         });
         connect(&m_heartbeat, &QTimer::timeout, this, [this]()
@@ -188,35 +217,113 @@ public:
     }
 
 private:
+    // 只保留最近8192个事件；覆盖计数公开，容量不随小时数增长。
+    // collector_ns统一来自soak时钟，source_ns属于各源自己的时钟，不能跨源相减。
+    static constexpr int kTimingCapacity = 8192;
+    void timing(const QString &source, const QString &stage, qint64 sourceNs, QJsonObject detail = {})
+    {
+        if (!m_timingEnabled) return;
+        detail.insert("sequence", double(++m_timingEvents));
+        detail.insert("collector_ns", double(m_clock.nsecsElapsed()));
+        detail.insert("source", source);
+        detail.insert("stage", stage);
+        detail.insert("source_ns", double(sourceNs));
+        detail.insert("logical_query", double(m_logicalQueries));
+        if (m_timingRows.size() < kTimingCapacity) m_timingRows.append(detail);
+        else
+        {
+            m_timingRows[m_timingNext] = detail;
+            m_timingNext = (m_timingNext + 1) % kTimingCapacity;
+        }
+    }
+
+    void localTiming(const char *stage, qint64 value = 0)
+    {
+        if (m_timingEnabled)
+            timing("soak", QString::fromLatin1(stage), m_clock.nsecsElapsed(), {{"value", double(value)}});
+    }
+
+    bool flushLog()
+    {
+        localTiming("log.flush.begin");
+        const bool ok = m_log.flush();
+        localTiming("log.flush.end", ok ? 1 : 0);
+        return ok;
+    }
+
+    bool saveTiming()
+    {
+        if (!m_timingEnabled) return true;
+        localTiming("experiment.timing.freeze");
+        QJsonArray ordered;
+        for (int i = 0; i < m_timingRows.size(); ++i)
+            ordered.append(m_timingRows.at((m_timingNext + i) % m_timingRows.size()));
+        return saveJson(m_directory + "/timing.json", {{"schema", "sn100-soak-timing-v1"},
+            {"capacity", kTimingCapacity}, {"events_seen", double(m_timingEvents)},
+            {"overwritten", double(m_timingEvents - quint64(m_timingRows.size()))},
+            {"clock_contract", "collector_ns orders all events; source_ns/deadline_ms are local to their source; ns below 2^53 for max 24h"},
+            {"scope", "Diagnostic recent-event ring; write/bytesWritten is not peer ACK; timing collection can change load"},
+            {"events", ordered}});
+    }
+
     bool openSegment()
     {
+        localTiming("log.segment.begin", m_segment + 1);
         if (m_log.isOpen())
         {
-            if (!m_log.flush()) return false;
+            if (!flushLog())
+            {
+                localTiming("log.segment.end", 0);
+                return false;
+            }
+            localTiming("log.close.begin");
             m_log.close();
+            localTiming("log.close.end");
         }
         m_log.setFileName(m_directory + QString("/wire_%1.jsonl").arg(++m_segment, 4, 10, QLatin1Char('0')));
-        return m_log.open(QIODevice::WriteOnly | QIODevice::NewOnly);
+        const bool opened = m_log.open(QIODevice::WriteOnly | QIODevice::NewOnly);
+        localTiming("log.segment.end", opened ? 1 : 0);
+        return opened;
     }
 
     bool log(const QString &kind, const QByteArray &bytes = {}, QJsonObject detail = {})
     {
         if (m_logFailed || m_finished) return false;
+        // 完整记录序列化、文件大小查询/轮转、write和stdout；仅write跨度
+        // 无法定位这些同线程同步步骤造成的事件循环停顿。默认仍关闭取证。
+        localTiming("log.begin", m_events + 1);
         detail.insert("sequence", double(++m_events));
         detail.insert("elapsed_ms", double(m_clock.elapsed()));
         detail.insert("kind", kind);
         if (!bytes.isEmpty()) detail.insert("hex", QString::fromLatin1(bytes.toHex(' ').toUpper()));
         const QByteArray line = QJsonDocument(detail).toJson(QJsonDocument::Compact) + '\n';
-        if (m_logBytes + line.size() > m_logBudgetBytes ||
-            (m_log.size() + line.size() > m_segmentBytes && !openSegment()) ||
-            m_log.write(line) != line.size())
+        const bool withinBudget = m_logBytes + line.size() <= m_logBudgetBytes;
+        bool segmentReady = false;
+        if (withinBudget)
         {
+            localTiming("log.size.begin");
+            const qint64 size = m_log.size();
+            localTiming("log.size.end", size);
+            segmentReady = size + line.size() <= m_segmentBytes || openSegment();
+        }
+        localTiming("log.write.begin", line.size());
+        const qint64 written = segmentReady ? m_log.write(line) : -1;
+        localTiming("log.write.end", written);
+        if (written != line.size())
+        {
+            localTiming("log.end", m_events);
             m_logFailed = true;
             finish(false, "log budget exceeded or write failed", true);
             return false;
         }
         m_logBytes += line.size();
-        if (m_events <= 12) QTextStream(stdout) << line;
+        if (m_events <= 12)
+        {
+            localTiming("log.stdout.begin");
+            QTextStream(stdout) << line;
+            localTiming("log.stdout.end");
+        }
+        localTiming("log.end", m_events);
         return true;
     }
 
@@ -243,7 +350,9 @@ private:
         connect(socket, &QTcpSocket::readyRead, this, [this, peer]()
         {
             if (!peer || m_peer != peer || m_finishing) return;
+            localTiming("peer.readyRead", peer->bytesAvailable());
             const QByteArray bytes = peer->read(4096);
+            localTiming("peer.read.actual", bytes.size());
             if (!log("peer.RX.actual", bytes)) return;
             // 不用同一编码器生成期望TX，逐字节核对独立literal查询金样本。
             if (bytes.size() > m_expectedQueryBytes.size() || !m_expectedQueryBytes.startsWith(bytes))
@@ -263,6 +372,10 @@ private:
                 else { finish(false, "unexpected non-readonly query"); return; }
             }
         });
+        connect(socket, &QTcpSocket::bytesWritten, this, [this, peer](qint64 count)
+        {
+            if (peer && m_peer == peer) localTiming("peer.bytesWritten", count);
+        });
     }
 
     void reply(const QByteArray &message)
@@ -274,7 +387,10 @@ private:
             { finish(false, "synthetic peer write budget exceeded"); return; }
             if (!log("peer.TX.queued.not_client_ack", frame)) return;
             const QPointer<QTcpSocket> peer = m_peer;
-            if (!peer || peer->write(frame) != frame.size()) { finish(false, "synthetic peer write rejected"); return; }
+            localTiming("peer.write.begin", frame.size());
+            const qint64 written = peer ? peer->write(frame) : -1;
+            localTiming("peer.write.end", written);
+            if (written != frame.size()) { finish(false, "synthetic peer write rejected"); return; }
             if (m_finishing || !peer) return;
             m_serverQueueMax = qMax(m_serverQueueMax, peer->bytesToWrite());
         }
@@ -396,9 +512,11 @@ private:
                 && m_peerDecoder.bufferedBytes() == 0 && m_peerDecoder.assemblyBytes() == 0 && !m_logFailed;
         if (!passed && error.isEmpty()) error = "final experiment invariant mismatch";
         log("experiment.result", {}, {{"passed", passed}, {"error", error}});
-        const bool traceSaved = !m_logFailed && m_log.flush();
+        const bool traceSaved = !m_logFailed && flushLog();
         if (!traceSaved) { passed = false; outputError = true; error = "trace save failed"; }
+        localTiming("log.close.begin");
         m_log.close();
+        localTiming("log.close.end");
         QJsonObject summary = snapshot(passed ? "passed" : "failed");
         m_finished = true;
         m_client.close();
@@ -410,6 +528,15 @@ private:
         summary.insert("passed", passed);
         summary.insert("error", error);
         summary.insert("outputs_saved", traceSaved && !outputError);
+        const bool timingSaved = saveTiming();
+        summary.insert("timing_enabled", m_timingEnabled);
+        summary.insert("timing_saved", m_timingEnabled && timingSaved);
+        summary.insert("timing_events", double(m_timingEvents));
+        if (!timingSaved)
+        {
+            summary.insert("state", "failed"); summary.insert("passed", false); summary.insert("outputs_saved", false);
+            summary.insert("error", "timing trace save failed"); outputError = true;
+        }
         const bool progressSaved = saveJson(m_directory + "/progress.json", summary);
         if (!progressSaved)
         {
@@ -445,6 +572,10 @@ private:
     quint64 m_sent = 0, m_received = 0, m_events = 0, m_logicalQueries = 0, m_attempts = 0;
     quint64 m_completed = 0, m_cancelled = 0, m_withheld = 0, m_connections = 0, m_recoveries = 0, m_peerRxBytes = 0;
     quint64 m_cancelledWireBytes = 0;
+    QVector<QJsonObject> m_timingRows;
+    quint64 m_timingEvents = 0;
+    int m_timingNext = 0;
+    bool m_timingEnabled = false;
     bool m_recovering = false, m_draining = false, m_finishing = false, m_finished = false, m_logFailed = false;
 };
 }
@@ -462,6 +593,7 @@ int main(int argc, char **argv)
     parser.addOption({"retry-every", "Withhold the first reply every N logical queries, 0 disables", "count", "10"});
     parser.addOption({"segment-bytes", "Log segment budget1024..4194304, default4MiB", "bytes", "4194304"});
     parser.addOption({"log-budget-bytes", "Total log budget8192..536870912, default512MiB", "bytes", "536870912"});
+    parser.addOption({"timing-trace", "Save bounded recent monotonic timing events at termination; disabled by default"});
     parser.process(app);
     auto number = [&parser](const QString &name, int low, int high)
     {
@@ -480,7 +612,8 @@ int main(int argc, char **argv)
         !QDir::isAbsolutePath(directory) || destination.exists() || !QDir(destination.absolutePath()).exists() ||
         !QDir(destination.absolutePath()).mkdir(destination.fileName()))
     { QTextStream(stderr) << "Invalid arguments or output directory (must be new and absolute)" << Qt::endl; return 2; }
-    Soak experiment(directory, seconds, rate, reconnectSeconds, retryEvery, segmentBytes, logBudgetBytes);
+    Soak experiment(directory, seconds, rate, reconnectSeconds, retryEvery, segmentBytes, logBudgetBytes,
+                    parser.isSet("timing-trace"));
     QTimer::singleShot(0, &experiment, [&experiment]() { experiment.start(); });
     return app.exec();
 }

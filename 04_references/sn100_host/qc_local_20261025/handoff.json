@@ -1,0 +1,198 @@
+{
+  "schema": "sn100-four-windows-root-integration-handoff-v1",
+  "status": "passed_local_slice_only",
+  "source_inputs": 426,
+  "source_snapshot_sha256": "5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29",
+  "current_final": {
+    "path": "04_references/sn100_host/qc_local_20261025/final/verification.json",
+    "sha256": "57f2a3d2b11599e5e3154bac8289c9cfaa64de1bfe1fdf74571abc355383a51c",
+    "manifest_sha256": "71bd4426ba28a53dcf208835f8554b11d600085c733298fb64be907970d8f0f3"
+  },
+  "source_snapshot": {
+    "path": "07_backups/sn100_host/offline_four_windows_20261025/source_snapshot.json",
+    "sha256": "5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29"
+  },
+  "operation_guide": "06_programs/sn100_host/README.md#offline-four-window-usage",
+  "entry_and_rule_locations": [
+    "quality_control/quality_control_page.cpp",
+    "quality_control/qc_store.cpp",
+    "calibration/calibration_page.cpp",
+    "calibration/calibration_store.cpp",
+    "projects/projects_store.cpp",
+    "reagents/reagent_store.cpp",
+    "history/report_remaining_store.cpp",
+    "history/report_controller.cpp",
+    "shell/main.cpp",
+    "shell/quality_shell.cpp",
+    "shell/calibration_shell.cpp"
+  ],
+  "original_basis": [
+    "06_programs/sn100_host/quality_control/origins.json",
+    "04_references/sn100_host/calibration_local_20261025/original_audit.json",
+    "06_programs/sn100_host/projects/origins.json",
+    "06_programs/sn100_host/reagents/origins.json"
+  ],
+  "verified": {
+    "complete_suite_actual_invocations": 35,
+    "additional_project_reagent_tests": 4,
+    "standalone_qc_calibration_project_reagent": 4,
+    "platforms": "WSL actual run; Windows32 and ARM64 fresh compile/link only",
+    "response_samples": 40,
+    "resource_seconds": 30
+  },
+  "artifacts": {
+    "native_artifacts": {
+      "sn100_shell": "054bffa7847881cd084f4792f81c796313396f3e07e72195aa20b89e9417b347",
+      "sn100_report_renderer": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+    },
+    "windows_artifacts": {
+      "sn100_shell.exe": "7ed55948503fb838ac511641275605f084d776941e0b4344d685dafa511f7841",
+      "sn100_report_renderer.exe": "9c9f26f6cdba94e7220bed0267404a7b9dcbdb35d8a35144f87e45fce6831ca9"
+    },
+    "arm64_artifacts": {
+      "sn100_shell": "f6a3d4c2d007b8f44ccf467efe48cd59fddef2d3c11a7f1648ee987a99f928dd",
+      "sn100_report_renderer": "ae974e0433bbdb718297befb3091144537e5c8488df587101e25f487d0b04d34"
+    },
+    "standalone_artifacts": {
+      "quality_control": "97c7ad49d2c30bd371ccca47ec027ec2984ff3fe650ce34b6c035e981ae09165",
+      "calibration": "08d3c2f841c8bfb339ef5f6f5911189a005cfdb92120db933ce6cb9ebe3fce91"
+    },
+    "release_id": "d269a753bd620fe5fd9676eefd3ee0269a918e985a1a585d4c91845f5e944e3d"
+  },
+  "recovery": {
+    "path": "07_backups/sn100_host/offline_four_windows_20261025/verification.json",
+    "sha256": "5ed8c7d22bd2a98d03314db17661ad23808ab91d2534f4b2ae5fd28fc6877f77",
+    "readme_sha256": "83cd9f35bfb6ade17f398053c3c73835055ed0b3d55a14a0edea7c4619fe4f7a",
+    "concrete_git_attributes": "04_references/sn100_host/qc_local_20261025/recovery_git_attributes.json",
+    "git_attributes_sha256": "f4d40221ad1df9a1eae70340e16882363d3a2a858e5ef4b2a90a2ea1c8e885b5"
+  },
+  "response_and_resource": {
+    "response_arithmetic": {
+      "queued_to_busy": {
+        "count": 40,
+        "p95_ms": 39.403933,
+        "p99_ms": 46.995759,
+        "max_ms": 46.995759
+      },
+      "queued_to_finished": {
+        "count": 40,
+        "p95_ms": 75.185544,
+        "p99_ms": 81.978892,
+        "max_ms": 81.978892
+      },
+      "queued_to_committed_page": {
+        "count": 40,
+        "p95_ms": 97.759141,
+        "p99_ms": 104.7154,
+        "max_ms": 104.7154
+      },
+      "heartbeat_delay": {
+        "count": 205,
+        "p95_ms": 46.411784,
+        "p99_ms": 53.827207,
+        "max_ms": 62.377546
+      },
+      "heartbeat_interval": {
+        "count": 205,
+        "p95_ms": 51.411784,
+        "p99_ms": 58.827207,
+        "max_ms": 67.377546
+      }
+    },
+    "resource_fixed_window": {
+      "window": "10<=elapsed_seconds<30",
+      "sample_count": 197,
+      "sample_period_seconds": 0.1,
+      "sample_period_target_seconds": 0.1,
+      "memory_unit": "KiB",
+      "window_semantics": "Fixed observer-clock window, not proven to start after readiness; clock starts before child Popen",
+      "sample_period_semantics": "0.1s target sleep plus /proc reading overhead; actual intervals vary",
+      "VmHWM_semantics": "Lifetime RSS high-water mark since process start, including possible startup peaks; not a window-only peak",
+      "sampling_limit": "RSS/PSS/thread/fd fields are read separately; transient peaks between samples may be missed",
+      "observed_span_seconds": 19.92423763600027,
+      "cpu_percent_one_logical_core": 2.3589359281219204,
+      "min_VmRSS": 288684,
+      "max_VmRSS": 288688,
+      "min_VmHWM": 289012,
+      "max_VmHWM": 289012,
+      "min_Pss": 271393,
+      "max_Pss": 271407,
+      "min_Threads": 47,
+      "max_Threads": 47,
+      "min_fd_count": 70,
+      "max_fd_count": 70,
+      "pss_unavailable_samples": 0
+    },
+    "resource_limits": "Single 30 s environment-specific whole-product baseline after every build/GUI/hash workload stopped. 10<=t<30 fixed observer-clock window; readiness before10s was not timed or established. VmHWM is lifetime RSS high-water mark, not a window-only peak; 0.1s is a sleep target plus reading overhead. No comparison against the different371-input product as a feature increment. CPU/memory/response budgets, same-board RT, RK/instrument and long stability remain unknown/unverified. No print job, LIS endpoint, serial/device open or physical action is authorized by this observation.",
+    "cache_conditions": "OS/file hot/cold cache not controlled; fresh anonymous runtime is not a cold-start performance claim"
+  },
+  "source_changes_after_owner_handoffs": "See independent repair handoffs; original owner deliveries remain historical and do not substitute for current full suite/platform evidence",
+  "transaction_and_restore_limits": "Independent databases are not cross-database foreign keys/one transaction; reservations, fail-closed reconcile and UUID/canonical physical path binding require stopped coordinated migration/restore. No clearing UUID/path/holds to bypass mismatches",
+  "pending": [
+    "Original Windows complete behavior/active-theme and real Windows GUI",
+    "Original suite_final_05 calibration-reference SIGSEGV direct cause remains unconfirmed; current final pass cannot establish long stability",
+    "Original suite_final_07 login1920 containment failure direct cause remains unconfirmed; test-host preparation corrected, no production layout repair claimed",
+    "RK screen/input/actual dependencies and instrument/LIS/printing",
+    "Clinical calibration/QC algorithm effects and real-result identity chain",
+    "Approved resource/same-board RT budgets and long stability",
+    "Existing intermittent legacy report query and old 8 h recovery root causes remain separate"
+  ],
+  "additional_unimplemented": [
+    "Language settings/translation application",
+    "Real result/calibration/ISI/QC clinical chain",
+    "Original-disabled XLSX; actual LIS and printing prerequisites"
+  ],
+  "production_data_or_credentials_archived": false,
+  "board_or_instrument_connected": false,
+  "git_committed_or_pushed": false,
+  "independently_preserved_handoffs": [
+    {
+      "path": "04_references/sn100_host/projects_remaining_20261025/handoff.json",
+      "sha256": "61921ca115e7f72071692739c832c4de0d653ee7d42ef435d9352402f92640a9"
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/handoff.json",
+      "sha256": "5a62156bfd55a9cbff1bf31ee2f153c35652d7d683fa226f69e0db44a69bfb80"
+    },
+    {
+      "path": "04_references/sn100_host/report_remaining_20261025/handoff.json",
+      "sha256": "75b7b137833e637ea73287596c08418514ff4c97ef532a5d5e92432e9c65d409"
+    },
+    {
+      "path": "04_references/sn100_host/projects_remaining_20261025/project_reference_atomic_handoff.json",
+      "sha256": "86ff60d2cab8c2b5dcffabe566797d6d73bcfe6a8814ad05525ff1ba71364e50"
+    },
+    {
+      "path": "04_references/sn100_host/qc_local_20261025/qc_reference_repair_handoff.json",
+      "sha256": "106c4d4ec567997bad05bdbd7204dc09deee39f5dc389554d6fede32f6c99c13"
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/calibration_guard_repair_handoff.json",
+      "sha256": "1ac72b6c482351eb3ea5512a8a8ef887c96f787608a9e602dc342c9d029701c3"
+    },
+    {
+      "path": "04_references/sn100_host/calibration_local_20261025/calibration_reference_lifecycle_handoff.json",
+      "sha256": "95ea3b65631d067cf523296c090738bd671dfc04ff3278d9eb3c33b6a0adfcc7"
+    },
+    {
+      "path": "04_references/sn100_host/password_login_20261024/login_geometry_repair_handoff.json",
+      "sha256": "d346e5f5c44cc153fe496d705654001fab1bcabb9abdb7dd5662fb4ff392524e"
+    },
+    {
+      "path": "04_references/sn100_host/report_remaining_20261025/windows_include_continuation_02_handoff.json",
+      "sha256": "8c84126ad2fdbd17c48297015fdbb8475cae7322c1754f30efeae684af7fc3d2"
+    }
+  ],
+  "document_preimages": {
+    "directory": "07_backups/sn100_host/offline_four_windows_20261025/documents_pre_final",
+    "files": {
+      "README.md": "36b62976e60cc41723dadfaa47777efb1ddb34e0a8c0742c1b5f347de2a4b96a",
+      "06_programs/sn100_host/README.md": "8388d8eb0e6caca7a1d8950bc736d6d60d56268171a9e2b1c4fa8b14dce694f2",
+      "01_docs/knowledge/sn100_host_project_guide.md": "fbbc1b183a35b2b51235fb3be0bebd9f2a3aff8825c7ce6650b9c168937005f3",
+      "01_docs/plans/next_steps.md": "02daeed81148113892bc962adacb8ddf2a70f02568532aef9c808206bebffdb1",
+      "01_docs/plans/development_plan.md": "e91fb60e5e9ebc9e88f7dbe96996152d385d3e9846482a4b0c9cd9c3590ae2ea",
+      "01_docs/plans/sn100_host_migration_plan.md": "6f2bbee622cb28eacc5eba32ab9e0bbf7f5e5353672d17ee7c994d38de92d8ac",
+      "02_records/20261022_sn100_host_migration.md": "38e89f6ec4c16a8392a7823bc91bb8af5a0791db0da7c8fef284565b77f8905d"
+    }
+  }
+}

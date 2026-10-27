@@ -1,0 +1,29 @@
+{
+  "schema": "sn100-gui-idle-cpu-failures-v1",
+  "original_notify_interpose": {
+    "source": "This agent tool output and retained diagnostic_before/without_replay/{process.log,run.json}; original wrapper source was overwritten during the temporary shim correction and not separately saved",
+    "observation": "Direct QApplication::notify symbol interposition received no notifications; product exited0 with all workers stopped but no statistics/screenshot was produced, so driver failed its assertion",
+    "correction": "Interpose external QApplication C1/C2 constructors, call RTLD_NEXT original, install public global QObject eventFilter. No vtable change was used"
+  },
+  "smoke_navigation": {
+    "source": "This agent tool output plus retained diagnostic_before/smoke_event_filter data",
+    "observation": "Public filter collected808 events in0.1-1 seconds, but driver incorrectly selected the hidden designer button sharing btnDivStatusAdptive name; click was recorded while actual page stayed6 and extra page7 assertion failed",
+    "correction": "Find visible and enabled same-name original dynamic navigation button; complete before/after runs confirm page7"
+  },
+  "initial_integrated_build": {
+    "source": "Raw logs/cpu_native_build.log",
+    "observation": "Concurrent instrument integration inputs were not yet present: instrument_widgets.pri could not be read and instrument/instrument_page.h was missing. This build was not used for A/B",
+    "correction": "Use existing frozen124 objects and rebuild only qtmaterialflatbutton_internal.o; preserve exact compile/link command and object hashes"
+  },
+  "unmodified_material_red_test": {
+    "source": "Raw logs/material_before.txt",
+    "observation": "Expected defect reproduction:2 passed1 failed because idle600ms produced37 Paint events with invisible halo"
+  },
+  "cpu_log_parser_eof": {
+    "source": "Root agent unified-exec tool output transcript/process explanation supplied to this archive agent; no separate original stderr file exists",
+    "reported_text": "Traceback ... run_cpu_probe.py line42 assert marker in log, marker -> AssertionError: \"eof\"",
+    "actual_product_result": "Existing raw process/summary exit0; final step14 action disconnect; replay.finished and fresh=false finished=true present",
+    "correction": "Only parser assertion changed to replay.finished and --existing added; recomputed same saved raw samples without rerunning before observation",
+    "is_original_stderr_file": false
+  }
+}

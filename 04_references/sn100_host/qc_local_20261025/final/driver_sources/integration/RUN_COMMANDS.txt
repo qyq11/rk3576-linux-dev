@@ -1,0 +1,58 @@
+Execution guide for the root integrator; commands below are instructions, not pass receipts.
+All stages must run separately. Max build parallelism is2; never overlap native/Windows/ARM builds, GUI tests or resource observations. Preserve every failed attempt.
+
+WSL Ubuntu-24.04 / qyq from repository root:
+R=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux
+D=$R/temp/sn100_host/qc_local_20261025/integration_drivers
+cd "$R"
+
+1. New full native main/helper and426 source snapshot, native/ must be fresh:
+python3 -B "$D/freeze_and_build.py" --root-go
+
+2. Fresh22 QtTest drivers bound to exact167 production objects, cumulative_build/ must be fresh:
+python3 -B "$D/build_test_drivers.py" --root-go --extra-driver calibration_shell_test --extra-driver report_remaining_shell_test --extra-driver calibration_reference_test --extra-driver qc_reference_test --extra-driver report_remaining_test --extra-driver report_remaining_html_test --extra-driver qc_local_store_test --extra-driver calibration_store_test --extra-driver calibration_page_test --extra-driver qc_local_response_test --extra-driver project_reference_atomic_test
+Optional --reuse-dir is allowed only within the exact same frozen native object/source/Makefile SHA set and individually unchanged test binary/moc/object/source SHA. It must retain original actual compile receipts and record explicit reuse, never call copied artifacts newly compiled.
+
+3. Run full35 serial calls: base20 + exact extra descriptor15. Replace UNUSED_FINAL_ATTEMPT with a genuinely unused suffix. Never use --start-at for final acceptance:
+python3 -B "$D/run_suite.py" UNUSED_FINAL_ATTEMPT --root-go --extra-suite-json "$D/extra_suite.json"
+Historical final_01/02 and gate_03/04 are e65 evidence. final_05 uses57f and stopped at calibration_reference after24 passes with actual signal/exit-6. No historical attempt can substitute for a completed full35 result. Calibration test repair evidence must distinguish observed cross-thread test risk from the unconfirmed original SIGSEGV cause.
+
+4. Fresh standalone QC/calibration native builds and actual startup/normal-close, standalone_final/ must be new:
+python3 -B "$D/run_standalone.py" --root-go
+
+4b. Required final-current project/reagent coverage, projects_modules_final/ must be new:
+python3 -B "$D/run_projects_modules.py" --root-go
+Fresh6 qmake builds: project advanced11, project basis9, reagent batches11, reagent basis11; then both independent apps actual loaded and ordinary1800ms close. Actual results must pass before final collection; old pre-atomic module artifacts cannot fill this gate.
+5. Windows PowerShell7 after native/test stages, platforms/windows/ must be new:
+pwsh -NoProfile -File C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/integration_drivers/windows/build_windows.ps1 -RootGo
+No original Windows program or GUI/registry acceptance is implied by this compile-only stage.
+
+6. ARM full main/helper build, actual compiler receipts, object/DWARF/source checks, dependency closure and application/source packages, platforms/arm64/ must be new:
+python3 -B "$D/arm64/run_arm64.py" --root-go
+Uses existing read-only o02_login/platforms/arm64/sysroot; no install, restore, SSH or deployment.
+
+7. Only after every build/GUI/source writer/heavy hash task has stopped, one40-save QC response observation:
+python3 -B "$D/run_response.py" --root-go --name response_01
+Then one full-product30s resource observation:
+python3 -B "$D/run_resource.py" --root-go --name resource_01
+Use new names if any prior attempt exists. No budget, hardware, RT or long-stability claim follows from a short baseline.
+
+8. Verify and copy matching ARM application/source pair into07_backups:
+python3 -B "$D/archive_arm64.py" --root-go
+Root must verify concrete Git LFS attributes and write recovery README. Never copy runtime DB/INI, credentials or sysroot into evidence.
+
+9. After all required stages actually pass, substitute the exact successful suite attempt:
+python3 -B "$D/collect_final.py" --root-go --suite-dir "$R/temp/sn100_host/qc_local_20261025/suite_UNUSED_FINAL_ATTEMPT" --response-dir "$R/temp/sn100_host/qc_local_20261025/response_01" --resource-dir "$R/temp/sn100_host/qc_local_20261025/resource_01" --expected-inputs 426 --expected-invocations 35
+Collector requires full_suite true and no omissions, exact22 drivers/167 native-object identities and actual exit/raw totals; missing future evidence fails before a final document is created. It preserves e65 and failed57f history with original argv/exits plus relocation maps, never mixes it into current passes.
+
+10. Root verifies final images/manifest, updates only the existing README/guide/plans/record, and creates the QC/integration handoff with explicit remaining original-Windows, RK/instrument/clinical/budget/long-stability boundaries. No commit/push. Stop this round's10min heartbeat only after executable offline work and archival/documents are complete or only external prerequisites remain.
+
+Current actual successful run (2026-10-26, after the older historical attempts above):
+426-source freeze5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29;
+native fresh200 objects actual0; full suite_final_08 all35 exits0/no skips or omissions;
+current standalone_final7 phases0; projects_modules_final fresh6 targets/18 phases0 (11/9/11/11 cases, two apps loaded/ordinary0);
+Windows final fresh200 objects, both qmake/make0; ARM fresh170 objects/main+helper0,56-ELF offline closure0/package0;
+response_01 single40-save actual0/raw arithmetic verified; resource_01 single30s observer and child actual0/all checks true;
+archive_arm64.py actual0, matching application/source426 copied into07_backups and all members verified;
+write_recovery_readme.py actual0; actual archive paths LFS and listed source/evidence paths not ignored, receipt recovery_git_attributes.json.
+Final collection must use suite_final_08, response_01 and resource_01 with426 inputs/35 invocations. It has not yet been substituted by this command guide; require its actual successful output and final manifest.

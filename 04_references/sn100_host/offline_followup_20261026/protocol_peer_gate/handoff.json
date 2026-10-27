@@ -1,0 +1,615 @@
+{
+  "schema": "sn100-protocol-peer-gate-followup-v1",
+  "status": "original_target_passed_parent_verifier_failed_readonly_revalidation_passed",
+  "original_actual_qmake_make_test_exits": [
+    0,
+    0,
+    0
+  ],
+  "original_qttest_totals": [
+    5,
+    0,
+    0,
+    0
+  ],
+  "original_qttest_elapsed_ms": 1473,
+  "original_parent_exit": 1,
+  "original_parent_exit_evidence": "run_01/root_parent_observation.json: retrospective root tool observation, not a process-emitted receipt",
+  "original_run_verification_passed": false,
+  "original_failure_preserved": true,
+  "revalidation_actual_exit": 0,
+  "revalidation_passed": true,
+  "revalidation_bound_inputs": 56,
+  "revalidation_inputs_before_after_equal": true,
+  "revalidation_reused_executed_driver_sha256": "2d2b92f533706ba82fc5877ed76fd3b8115f2a72320e9e3c4dfc030d0656b264",
+  "qt5_junit_contract": "Exactly three passing method groups; Qt text independently proves three data rows once each plus init/cleanup,5/0/0/0",
+  "case_results": [
+    {
+      "case": "baseline",
+      "expected_failure": false,
+      "actual_request_success": true,
+      "actual_request_finished": 1,
+      "events": 114,
+      "raw_sha256": "e7c7e8472a0caeb42095b7e56a1fa593c812011bb6311e3b58fa97161bda8c20",
+      "independent_raw_order_and_byte_checks": true
+    },
+    {
+      "case": "peer_read_gate",
+      "expected_failure": true,
+      "actual_request_success": false,
+      "actual_request_finished": 1,
+      "events": 135,
+      "raw_sha256": "52557766faca29e457db1d7386f42ba2cbccec1724f8ff9d2604fb6fa465a219",
+      "independent_raw_order_and_byte_checks": true
+    },
+    {
+      "case": "peer_reply_gate",
+      "expected_failure": true,
+      "actual_request_success": false,
+      "actual_request_finished": 1,
+      "events": 135,
+      "raw_sha256": "7d60cac40d1e6ad45526e2dc23796511253e0931b9daa775a1cfcee158c9bb17",
+      "independent_raw_order_and_byte_checks": true
+    }
+  ],
+  "build_or_target_rerun_for_verifier_repair": false,
+  "formal_source_modified": false,
+  "production_hook_added": false,
+  "old8h_direct_cause_confirmed": false,
+  "old8h_fixed_claimed": false,
+  "future_driver_executed_after_correction": false,
+  "future_driver_sha256": "cf863e1b8742eea2a191e718052f6bbeae3a042f22f6efb14f9e648c732583e6",
+  "future_preparation_sha256": "b55e96fd7ab8e4da47f9facbeef4408e0367bdb18b5c1cee9bf044a5ba718929",
+  "post_revalidation_temp_changes": [
+    "run_peer_gate.py",
+    "preparation.json"
+  ],
+  "source_binding_note": "The revalidation current/ hashes record the moment before the later two-file verifier correction. Historical run evidence and C++ remain unchanged; precise old temp inputs are retained in07. No new whole-app freeze or QC result is inferred.",
+  "preimage_manifest": "07_backups/sn100_host/offline_followup_20261026/protocol_peer_gate_preimage/manifest.json",
+  "mechanism_observed": [
+    "baseline returns one true terminal",
+    "read gate:13bytes in peer Qt receive buffer at original false terminal; consumed/replied only after release",
+    "reply gate:two requests already decoded but reply held until original false terminal",
+    "negative arms:one late valid observation, still one false terminal and two attempts throughout250ms"
+  ],
+  "limits": [
+    "Synthetic anonymous localhost Qt mechanism; bytesWritten is not peer/TCP ACK",
+    "Observer case/attempt labels are not online transaction IDs",
+    "No new GUI/RK/instrument/long-run/resource qualification; old1150second direct cause remains unknown"
+  ],
+  "database_ini_secret_object_binary_copied": false,
+  "copied_file_count": 59,
+  "copied_inputs": {
+    "future_source/archive_peer_gate.py": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\archive_peer_gate.py",
+      "source_sha256": "6826f72f29cc04a97cd52ce7637a2d4a0a6790db20ec6eb32875c4db41e2a726",
+      "source_bytes": 12739,
+      "archive_path": "future_source/archive_peer_gate.py",
+      "archive_sha256": "6826f72f29cc04a97cd52ce7637a2d4a0a6790db20ec6eb32875c4db41e2a726",
+      "archive_bytes": 12739,
+      "transformation": null
+    },
+    "future_source/experiment_plan.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\experiment_plan.json",
+      "source_sha256": "1f8199842cc1f20d83189975a203c2646c998c058d0e690d1701f76d26f980da",
+      "source_bytes": 9747,
+      "archive_path": "future_source/experiment_plan.json",
+      "archive_sha256": "1f8199842cc1f20d83189975a203c2646c998c058d0e690d1701f76d26f980da",
+      "archive_bytes": 9747,
+      "transformation": null
+    },
+    "future_source/preparation.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\preparation.json",
+      "source_sha256": "b55e96fd7ab8e4da47f9facbeef4408e0367bdb18b5c1cee9bf044a5ba718929",
+      "source_bytes": 5433,
+      "archive_path": "future_source/preparation.json",
+      "archive_sha256": "b55e96fd7ab8e4da47f9facbeef4408e0367bdb18b5c1cee9bf044a5ba718929",
+      "archive_bytes": 5433,
+      "transformation": null
+    },
+    "future_source/protocol_peer_gate_test.cpp": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\protocol_peer_gate_test.cpp",
+      "source_sha256": "a0e5014aba5bdb284ebd4060a91de135cc78106bc3b38e56950a7c6f8b978bc0",
+      "source_bytes": 22829,
+      "archive_path": "future_source/protocol_peer_gate_test.cpp",
+      "archive_sha256": "a0e5014aba5bdb284ebd4060a91de135cc78106bc3b38e56950a7c6f8b978bc0",
+      "archive_bytes": 22829,
+      "transformation": null
+    },
+    "future_source/protocol_peer_gate_test.pro": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\protocol_peer_gate_test.pro",
+      "source_sha256": "250ae9ce42b2373415bfeffbfd2d428eae88f259e6e628954385425c40b4edff",
+      "source_bytes": 913,
+      "archive_path": "future_source/protocol_peer_gate_test.pro",
+      "archive_sha256": "250ae9ce42b2373415bfeffbfd2d428eae88f259e6e628954385425c40b4edff",
+      "archive_bytes": 913,
+      "transformation": null
+    },
+    "future_source/revalidate_peer_gate.py": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidate_peer_gate.py",
+      "source_sha256": "f4f67de604875d5e8b7ccc3585b9800cd27da59fa09603d707a75961f95d71f2",
+      "source_bytes": 13948,
+      "archive_path": "future_source/revalidate_peer_gate.py",
+      "archive_sha256": "f4f67de604875d5e8b7ccc3585b9800cd27da59fa09603d707a75961f95d71f2",
+      "archive_bytes": 13948,
+      "transformation": null
+    },
+    "future_source/run_peer_gate.py": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_peer_gate.py",
+      "source_sha256": "cf863e1b8742eea2a191e718052f6bbeae3a042f22f6efb14f9e648c732583e6",
+      "source_bytes": 19618,
+      "archive_path": "future_source/run_peer_gate.py",
+      "archive_sha256": "cf863e1b8742eea2a191e718052f6bbeae3a042f22f6efb14f9e648c732583e6",
+      "archive_bytes": 19618,
+      "transformation": null
+    },
+    "revalidation_01/case_validation.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\case_validation.json",
+      "source_sha256": "08ff5cc20598fd9d0bb002c848e50fe751c19410542b9af5aa13dae73c159c7b",
+      "source_bytes": 883,
+      "archive_path": "revalidation_01/case_validation.json",
+      "archive_sha256": "08ff5cc20598fd9d0bb002c848e50fe751c19410542b9af5aa13dae73c159c7b",
+      "archive_bytes": 883,
+      "transformation": null
+    },
+    "revalidation_01/inputs_after.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\inputs_after.json",
+      "source_sha256": "4d194aee133ad82458854ad666c3280ff8d90c619414df262b278ef4c946bd3c",
+      "source_bytes": 6901,
+      "archive_path": "revalidation_01/inputs_after.json",
+      "archive_sha256": "4d194aee133ad82458854ad666c3280ff8d90c619414df262b278ef4c946bd3c",
+      "archive_bytes": 6901,
+      "transformation": null
+    },
+    "revalidation_01/inputs_before.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\inputs_before.json",
+      "source_sha256": "4d194aee133ad82458854ad666c3280ff8d90c619414df262b278ef4c946bd3c",
+      "source_bytes": 6901,
+      "archive_path": "revalidation_01/inputs_before.json",
+      "archive_sha256": "4d194aee133ad82458854ad666c3280ff8d90c619414df262b278ef4c946bd3c",
+      "archive_bytes": 6901,
+      "transformation": null
+    },
+    "revalidation_01/launch.command.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\launch.command.json",
+      "source_sha256": "b8eecab8b0ab30cacc86e913a026914ed80ddc95a38ffd06bf3c52826d4a8410",
+      "source_bytes": 940,
+      "archive_path": "revalidation_01/launch.command.json",
+      "archive_sha256": "b8eecab8b0ab30cacc86e913a026914ed80ddc95a38ffd06bf3c52826d4a8410",
+      "archive_bytes": 940,
+      "transformation": null
+    },
+    "revalidation_01/launch.exit.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\launch.exit.json",
+      "source_sha256": "66faad9cf00d504192141fd7cc0b65ebc044ea7c6ab4e8ba48eaffdb050c8d19",
+      "source_bytes": 938,
+      "archive_path": "revalidation_01/launch.exit.json",
+      "archive_sha256": "66faad9cf00d504192141fd7cc0b65ebc044ea7c6ab4e8ba48eaffdb050c8d19",
+      "archive_bytes": 938,
+      "transformation": null
+    },
+    "revalidation_01/launch.stderr.log": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\launch.stderr.log",
+      "source_sha256": "e816706cd44ce0c6c65a7a7938be8103514f7c899694c8240d844f74319b7f98",
+      "source_bytes": 153,
+      "archive_path": "revalidation_01/launch.stderr.log.bytes.json",
+      "archive_sha256": "07f047781dd132258a5ff85c72536279a65eaa1d4d7633d5d5fb851663d6c071",
+      "archive_bytes": 949,
+      "transformation": "lossless_base64_byte_envelope_for_one_explicit_SHA_and_length"
+    },
+    "revalidation_01/launch.stdout.log": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\launch.stdout.log",
+      "source_sha256": "425e898376b619ba8096c08e275739c01e93dbc1f34264ada3b513c3acf0b469",
+      "source_bytes": 204,
+      "archive_path": "revalidation_01/launch.stdout.log",
+      "archive_sha256": "425e898376b619ba8096c08e275739c01e93dbc1f34264ada3b513c3acf0b469",
+      "archive_bytes": 204,
+      "transformation": null
+    },
+    "revalidation_01/observed_timelines.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\observed_timelines.json",
+      "source_sha256": "a7e3e70d6407fd6db391a1bf28085891cc3f032844fbe93ec57b93adf004509c",
+      "source_bytes": 24587,
+      "archive_path": "revalidation_01/observed_timelines.json",
+      "archive_sha256": "a7e3e70d6407fd6db391a1bf28085891cc3f032844fbe93ec57b93adf004509c",
+      "archive_bytes": 24587,
+      "transformation": null
+    },
+    "revalidation_01/verification.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\revalidation_01\\verification.json",
+      "source_sha256": "bed13f8c1dbc31ba6fae4d09f3fc550c40f0f82da74447f45f9c8ff957dc2053",
+      "source_bytes": 2837,
+      "archive_path": "revalidation_01/verification.json",
+      "archive_sha256": "bed13f8c1dbc31ba6fae4d09f3fc550c40f0f82da74447f45f9c8ff957dc2053",
+      "archive_bytes": 2837,
+      "transformation": null
+    },
+    "run_01/artifact.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\artifact.json",
+      "source_sha256": "f44d5200f400d672574322ae739f5a533e423d9ca02ddb2f5fcfb03421366861",
+      "source_bytes": 287,
+      "archive_path": "run_01/artifact.json",
+      "archive_sha256": "f44d5200f400d672574322ae739f5a533e423d9ca02ddb2f5fcfb03421366861",
+      "archive_bytes": 287,
+      "transformation": null
+    },
+    "run_01/evidence/baseline.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\evidence\\baseline.json",
+      "source_sha256": "e7c7e8472a0caeb42095b7e56a1fa593c812011bb6311e3b58fa97161bda8c20",
+      "source_bytes": 43040,
+      "archive_path": "run_01/evidence/baseline.json",
+      "archive_sha256": "e7c7e8472a0caeb42095b7e56a1fa593c812011bb6311e3b58fa97161bda8c20",
+      "archive_bytes": 43040,
+      "transformation": null
+    },
+    "run_01/evidence/peer_read_gate.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\evidence\\peer_read_gate.json",
+      "source_sha256": "52557766faca29e457db1d7386f42ba2cbccec1724f8ff9d2604fb6fa465a219",
+      "source_bytes": 50792,
+      "archive_path": "run_01/evidence/peer_read_gate.json",
+      "archive_sha256": "52557766faca29e457db1d7386f42ba2cbccec1724f8ff9d2604fb6fa465a219",
+      "archive_bytes": 50792,
+      "transformation": null
+    },
+    "run_01/evidence/peer_reply_gate.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\evidence\\peer_reply_gate.json",
+      "source_sha256": "7d60cac40d1e6ad45526e2dc23796511253e0931b9daa775a1cfcee158c9bb17",
+      "source_bytes": 50795,
+      "archive_path": "run_01/evidence/peer_reply_gate.json",
+      "archive_sha256": "7d60cac40d1e6ad45526e2dc23796511253e0931b9daa775a1cfcee158c9bb17",
+      "archive_bytes": 50795,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/frame_codec.cpp": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\frame_codec.cpp",
+      "source_sha256": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+      "source_bytes": 9651,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/frame_codec.cpp",
+      "archive_sha256": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+      "archive_bytes": 9651,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/frame_codec.h": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\frame_codec.h",
+      "source_sha256": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+      "source_bytes": 2074,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/frame_codec.h",
+      "archive_sha256": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+      "archive_bytes": 2074,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/read_only_client.cpp": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\read_only_client.cpp",
+      "source_sha256": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+      "source_bytes": 11742,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/read_only_client.cpp",
+      "archive_sha256": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+      "archive_bytes": 11742,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/read_only_client.h": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\read_only_client.h",
+      "source_sha256": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+      "source_bytes": 2970,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/read_only_client.h",
+      "archive_sha256": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+      "archive_bytes": 2970,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/read_only_messages.cpp": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\read_only_messages.cpp",
+      "source_sha256": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+      "source_bytes": 9274,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/read_only_messages.cpp",
+      "archive_sha256": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+      "archive_bytes": 9274,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/read_only_messages.h": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\read_only_messages.h",
+      "source_sha256": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+      "source_bytes": 1136,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/read_only_messages.h",
+      "archive_sha256": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+      "archive_bytes": 1136,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/status_session.cpp": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\status_session.cpp",
+      "source_sha256": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+      "source_bytes": 11691,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/status_session.cpp",
+      "archive_sha256": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+      "archive_bytes": 11691,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/status_session.h": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\status_session.h",
+      "source_sha256": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+      "source_bytes": 2113,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/status_session.h",
+      "archive_sha256": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+      "archive_bytes": 2113,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/tcp_transport.cpp": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\tcp_transport.cpp",
+      "source_sha256": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+      "source_bytes": 19122,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/tcp_transport.cpp",
+      "archive_sha256": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+      "archive_bytes": 19122,
+      "transformation": null
+    },
+    "run_01/executed_sources/06_programs/sn100_host/protocol/tcp_transport.h": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\06_programs\\sn100_host\\protocol\\tcp_transport.h",
+      "source_sha256": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+      "source_bytes": 4282,
+      "archive_path": "run_01/executed_sources/06_programs/sn100_host/protocol/tcp_transport.h",
+      "archive_sha256": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+      "archive_bytes": 4282,
+      "transformation": null
+    },
+    "run_01/executed_sources/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/experiment_plan.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\experiment_plan.json",
+      "source_sha256": "1f8199842cc1f20d83189975a203c2646c998c058d0e690d1701f76d26f980da",
+      "source_bytes": 9747,
+      "archive_path": "run_01/executed_sources/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/experiment_plan.json",
+      "archive_sha256": "1f8199842cc1f20d83189975a203c2646c998c058d0e690d1701f76d26f980da",
+      "archive_bytes": 9747,
+      "transformation": null
+    },
+    "run_01/executed_sources/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/protocol_peer_gate_test.cpp": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\protocol_peer_gate_test.cpp",
+      "source_sha256": "a0e5014aba5bdb284ebd4060a91de135cc78106bc3b38e56950a7c6f8b978bc0",
+      "source_bytes": 22829,
+      "archive_path": "run_01/executed_sources/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/protocol_peer_gate_test.cpp",
+      "archive_sha256": "a0e5014aba5bdb284ebd4060a91de135cc78106bc3b38e56950a7c6f8b978bc0",
+      "archive_bytes": 22829,
+      "transformation": null
+    },
+    "run_01/executed_sources/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/protocol_peer_gate_test.pro": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\protocol_peer_gate_test.pro",
+      "source_sha256": "250ae9ce42b2373415bfeffbfd2d428eae88f259e6e628954385425c40b4edff",
+      "source_bytes": 913,
+      "archive_path": "run_01/executed_sources/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/protocol_peer_gate_test.pro",
+      "archive_sha256": "250ae9ce42b2373415bfeffbfd2d428eae88f259e6e628954385425c40b4edff",
+      "archive_bytes": 913,
+      "transformation": null
+    },
+    "run_01/executed_sources/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/run_peer_gate.py": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\executed_sources\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_peer_gate.py",
+      "source_sha256": "2d2b92f533706ba82fc5877ed76fd3b8115f2a72320e9e3c4dfc030d0656b264",
+      "source_bytes": 18991,
+      "archive_path": "run_01/executed_sources/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/run_peer_gate.py",
+      "archive_sha256": "2d2b92f533706ba82fc5877ed76fd3b8115f2a72320e9e3c4dfc030d0656b264",
+      "archive_bytes": 18991,
+      "transformation": null
+    },
+    "run_01/inputs_after.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\inputs_after.json",
+      "source_sha256": "123d9ae83a967f8e48f4e35a025135be8159997e087ab02c834120f3187cf721",
+      "source_bytes": 1867,
+      "archive_path": "run_01/inputs_after.json",
+      "archive_sha256": "123d9ae83a967f8e48f4e35a025135be8159997e087ab02c834120f3187cf721",
+      "archive_bytes": 1867,
+      "transformation": null
+    },
+    "run_01/inputs_before.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\inputs_before.json",
+      "source_sha256": "123d9ae83a967f8e48f4e35a025135be8159997e087ab02c834120f3187cf721",
+      "source_bytes": 1867,
+      "archive_path": "run_01/inputs_before.json",
+      "archive_sha256": "123d9ae83a967f8e48f4e35a025135be8159997e087ab02c834120f3187cf721",
+      "archive_bytes": 1867,
+      "transformation": null
+    },
+    "run_01/make.command.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\make.command.json",
+      "source_sha256": "efd65d230fab3411b4f149b9f814b713b5f3a721cf4f28a77fe3368684c7904b",
+      "source_bytes": 305,
+      "archive_path": "run_01/make.command.json",
+      "archive_sha256": "efd65d230fab3411b4f149b9f814b713b5f3a721cf4f28a77fe3368684c7904b",
+      "archive_bytes": 305,
+      "transformation": null
+    },
+    "run_01/make.exit": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\make.exit",
+      "source_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "source_bytes": 2,
+      "archive_path": "run_01/make.exit",
+      "archive_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "archive_bytes": 2,
+      "transformation": null
+    },
+    "run_01/make.exit.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\make.exit.json",
+      "source_sha256": "dda0ac9fe43acb990fab58593f4e17cc326ced105d740cb2e717508c58ba29f5",
+      "source_bytes": 571,
+      "archive_path": "run_01/make.exit.json",
+      "archive_sha256": "dda0ac9fe43acb990fab58593f4e17cc326ced105d740cb2e717508c58ba29f5",
+      "archive_bytes": 571,
+      "transformation": null
+    },
+    "run_01/make.log": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\make.log",
+      "source_sha256": "ebeb21b05b7c4bad3595012ab40e0650f4b1fe2ffce78e14dfb5e9e9ad5078c2",
+      "source_bytes": 10270,
+      "archive_path": "run_01/make.log",
+      "archive_sha256": "ebeb21b05b7c4bad3595012ab40e0650f4b1fe2ffce78e14dfb5e9e9ad5078c2",
+      "archive_bytes": 10270,
+      "transformation": null
+    },
+    "run_01/make.process.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\make.process.json",
+      "source_sha256": "de29d22597ebbf7560344c1b3e06c3954d29b752b180b8dafda6e0ca43351bfd",
+      "source_bytes": 67,
+      "archive_path": "run_01/make.process.json",
+      "archive_sha256": "de29d22597ebbf7560344c1b3e06c3954d29b752b180b8dafda6e0ca43351bfd",
+      "archive_bytes": 67,
+      "transformation": null
+    },
+    "run_01/preparation_executed.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\preparation_executed.json",
+      "source_sha256": "0f2ec9c7b954c182684f67da00c29c1efda515b265c5e208829c99249d532340",
+      "source_bytes": 4594,
+      "archive_path": "run_01/preparation_executed.json",
+      "archive_sha256": "0f2ec9c7b954c182684f67da00c29c1efda515b265c5e208829c99249d532340",
+      "archive_bytes": 4594,
+      "transformation": null
+    },
+    "run_01/qmake.command.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\qmake.command.json",
+      "source_sha256": "8324ad0c9622e4cf2277fb9864357084c3c6a756ad6ea0a0b90e7a6706f8c058",
+      "source_bytes": 519,
+      "archive_path": "run_01/qmake.command.json",
+      "archive_sha256": "8324ad0c9622e4cf2277fb9864357084c3c6a756ad6ea0a0b90e7a6706f8c058",
+      "archive_bytes": 519,
+      "transformation": null
+    },
+    "run_01/qmake.exit": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\qmake.exit",
+      "source_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "source_bytes": 2,
+      "archive_path": "run_01/qmake.exit",
+      "archive_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "archive_bytes": 2,
+      "transformation": null
+    },
+    "run_01/qmake.exit.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\qmake.exit.json",
+      "source_sha256": "90f06f1fac35d499b7564c4fbf94b757cf859190959e4da129e62bda5151e8cd",
+      "source_bytes": 785,
+      "archive_path": "run_01/qmake.exit.json",
+      "archive_sha256": "90f06f1fac35d499b7564c4fbf94b757cf859190959e4da129e62bda5151e8cd",
+      "archive_bytes": 785,
+      "transformation": null
+    },
+    "run_01/qmake.log": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\qmake.log",
+      "source_sha256": "43137057ada005f784696865037ff7b023f190a718a7129937f3db7c977a8f5f",
+      "source_bytes": 181,
+      "archive_path": "run_01/qmake.log",
+      "archive_sha256": "43137057ada005f784696865037ff7b023f190a718a7129937f3db7c977a8f5f",
+      "archive_bytes": 181,
+      "transformation": null
+    },
+    "run_01/qmake.process.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\qmake.process.json",
+      "source_sha256": "85316f3251a29656ad4213e2e109610be4480eabc6637484f05ffa921152c249",
+      "source_bytes": 67,
+      "archive_path": "run_01/qmake.process.json",
+      "archive_sha256": "85316f3251a29656ad4213e2e109610be4480eabc6637484f05ffa921152c249",
+      "archive_bytes": 67,
+      "transformation": null
+    },
+    "run_01/qt.txt": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\qt.txt",
+      "source_sha256": "d2982cbd40710e45981fa88c24b0b2b5e9de65a580c232e27485cc82c44aea2b",
+      "source_bytes": 578,
+      "archive_path": "run_01/qt.txt",
+      "archive_sha256": "d2982cbd40710e45981fa88c24b0b2b5e9de65a580c232e27485cc82c44aea2b",
+      "archive_bytes": 578,
+      "transformation": null
+    },
+    "run_01/qt.xml": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\qt.xml",
+      "source_sha256": "bf6d81f5e308d2af425c4132d29a69008fc4d90a88b723a6fcc379b72e62362e",
+      "source_bytes": 557,
+      "archive_path": "run_01/qt.xml",
+      "archive_sha256": "bf6d81f5e308d2af425c4132d29a69008fc4d90a88b723a6fcc379b72e62362e",
+      "archive_bytes": 557,
+      "transformation": null
+    },
+    "run_01/root_parent_observation.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\root_parent_observation.json",
+      "source_sha256": "9f9f9286754fff3af3abaec490ae05fe1cb0f3cc94bda61adde1abbcf577f686",
+      "source_bytes": 1284,
+      "archive_path": "run_01/root_parent_observation.json",
+      "archive_sha256": "9f9f9286754fff3af3abaec490ae05fe1cb0f3cc94bda61adde1abbcf577f686",
+      "archive_bytes": 1284,
+      "transformation": null
+    },
+    "run_01/test.command.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\test.command.json",
+      "source_sha256": "7209c40eb395d8293553472791dd33dead920c8b3f9f2ecc6efa99c373a98ec1",
+      "source_bytes": 982,
+      "archive_path": "run_01/test.command.json",
+      "archive_sha256": "7209c40eb395d8293553472791dd33dead920c8b3f9f2ecc6efa99c373a98ec1",
+      "archive_bytes": 982,
+      "transformation": null
+    },
+    "run_01/test.exit": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\test.exit",
+      "source_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "source_bytes": 2,
+      "archive_path": "run_01/test.exit",
+      "archive_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "archive_bytes": 2,
+      "transformation": null
+    },
+    "run_01/test.exit.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\test.exit.json",
+      "source_sha256": "8706f59ef63acfb6d423396487dab0a79ddf0adfc2d805b1106b40d776944c08",
+      "source_bytes": 1248,
+      "archive_path": "run_01/test.exit.json",
+      "archive_sha256": "8706f59ef63acfb6d423396487dab0a79ddf0adfc2d805b1106b40d776944c08",
+      "archive_bytes": 1248,
+      "transformation": null
+    },
+    "run_01/test.log": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\test.log",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_bytes": 0,
+      "archive_path": "run_01/test.log",
+      "archive_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_bytes": 0,
+      "transformation": null
+    },
+    "run_01/test.process.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\test.process.json",
+      "source_sha256": "56dee4a7bf69b4a685dd38dad27df2a8b6a459757907bdc7ae50cafc8360407e",
+      "source_bytes": 67,
+      "archive_path": "run_01/test.process.json",
+      "archive_sha256": "56dee4a7bf69b4a685dd38dad27df2a8b6a459757907bdc7ae50cafc8360407e",
+      "archive_bytes": 67,
+      "transformation": null
+    },
+    "run_01/verification.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\offline_followup_20261026\\protocol_peer_gate\\run_01\\verification.json",
+      "source_sha256": "3de0d093332e5239e0991db45ac682b5175e9758df058461f88ca20906a3b2d4",
+      "source_bytes": 980,
+      "archive_path": "run_01/verification.json",
+      "archive_sha256": "3de0d093332e5239e0991db45ac682b5175e9758df058461f88ca20906a3b2d4",
+      "archive_bytes": 980,
+      "transformation": null
+    },
+    "verifier_preimage/manifest.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\07_backups\\sn100_host\\offline_followup_20261026\\protocol_peer_gate_preimage\\manifest.json",
+      "source_sha256": "dcf586883f7c56272159be3d4f638cfb1a3d022f4455f80a3e9719b7cc2c7ead",
+      "source_bytes": 712,
+      "archive_path": "verifier_preimage/manifest.json",
+      "archive_sha256": "dcf586883f7c56272159be3d4f638cfb1a3d022f4455f80a3e9719b7cc2c7ead",
+      "archive_bytes": 712,
+      "transformation": null
+    },
+    "verifier_preimage/preparation.json": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\07_backups\\sn100_host\\offline_followup_20261026\\protocol_peer_gate_preimage\\preparation.json",
+      "source_sha256": "0f2ec9c7b954c182684f67da00c29c1efda515b265c5e208829c99249d532340",
+      "source_bytes": 4594,
+      "archive_path": "verifier_preimage/preparation.json",
+      "archive_sha256": "0f2ec9c7b954c182684f67da00c29c1efda515b265c5e208829c99249d532340",
+      "archive_bytes": 4594,
+      "transformation": null
+    },
+    "verifier_preimage/run_peer_gate.py": {
+      "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\07_backups\\sn100_host\\offline_followup_20261026\\protocol_peer_gate_preimage\\run_peer_gate.py",
+      "source_sha256": "2d2b92f533706ba82fc5877ed76fd3b8115f2a72320e9e3c4dfc030d0656b264",
+      "source_bytes": 18991,
+      "archive_path": "verifier_preimage/run_peer_gate.py",
+      "archive_sha256": "2d2b92f533706ba82fc5877ed76fd3b8115f2a72320e9e3c4dfc030d0656b264",
+      "archive_bytes": 18991,
+      "transformation": null
+    }
+  }
+}

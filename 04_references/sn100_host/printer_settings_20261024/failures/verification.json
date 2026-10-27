@@ -1,0 +1,17 @@
+{
+  "scope": "Preserved original failures, not successful acceptance",
+  "notes": [
+    "run01 temporary INI atomic replacement left old descriptor; run02 attempted fix selected wrong open location and hit120s timeout; raw result has no independent OS terminal receipt for that old timed-out child",
+    "run06 worker QSignalSpy direct callback was not a GUI completion barrier; changed tests to observe page operationFinished and actual requestSave count, production busy rule retained; original single failure timing was not traced",
+    "suite01 timeout traced to fixture supplying bootstrap again on existing account DB; guard_trace03 confirms original anti-reseed modal, fixture corrected",
+    "suite02 fresh CLI fixture lacked required one-time bootstrap, correctly exit3; supplied transient file for new anonymous roots only",
+    "guard_trace01 overlapped driver compilation and GDB attach was unavailable; excluded from acceptance; raw verbose diagnostic stays in private temp, no privilege changes"
+  ],
+  "private_diagnostics": [
+    "guard_trace_01",
+    "guard_trace_02",
+    "guard_trace_03",
+    "independent/retry_trace_01"
+  ],
+  "runtime_databases_secrets_or_derived_auth_hashes_archived": false
+}

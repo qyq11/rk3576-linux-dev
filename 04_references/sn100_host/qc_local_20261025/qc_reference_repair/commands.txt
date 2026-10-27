@@ -1,0 +1,8 @@
+attempt=1
+/usr/lib/qt5/bin/qmake <root>/06_programs/sn100_host/tests/qc_reference_test.pro CONFIG+=release CONFIG-=debug
+make -j2
+SN100_QC_REFERENCE_ROOT=<base>/runtime ./qc_reference_test -v1
+attempt=2
+/usr/lib/qt5/bin/qmake <root>/06_programs/sn100_host/tests/qc_reference_test.pro CONFIG+=release CONFIG-=debug
+make -j2
+SN100_QC_REFERENCE_ROOT=<base>/runtime ./qc_reference_test -v1

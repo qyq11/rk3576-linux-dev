@@ -19,6 +19,13 @@ struct AccountRow
 
 using AccountRows = QList<AccountRow>;
 
+enum class AccountSessionSource
+{
+    Guest,
+    Simulated,
+    Password
+};
+
 struct AccountSession
 {
     QString name;
@@ -27,11 +34,13 @@ struct AccountSession
     // Means an existing anonymous identity is selected for this offline test;
     // setSession is a simulation control, not a production login mechanism.
     bool authenticated = false;
+    AccountSessionSource source = AccountSessionSource::Guest;
 };
 
 Q_DECLARE_METATYPE(AccountRow)
 Q_DECLARE_METATYPE(AccountRows)
 Q_DECLARE_METATYPE(AccountSession)
+Q_DECLARE_METATYPE(AccountSessionSource)
 
 class AccountStore : public QObject
 {
@@ -50,6 +59,9 @@ public slots:
     // Passwords are transient inputs and are never included in signals/logs.
     void initialize(QString absoluteDataDir, QString bootstrapPassword = QString());
     void setSession(QString name, bool actionReady);
+    // 密码认证与模拟身份选择分开，任何结果都不携带输入密码。
+    void loadLoginDefault(quint64 requestId);
+    void authenticate(quint64 requestId, QString name, QString password, bool remember);
     // Returns all public rows; the page applies its original role/list filter.
     // No session or bootstrap secret is required for this sanitized read.
     void load();
@@ -62,6 +74,9 @@ public slots:
 signals:
     void ready();
     void sessionChanged(AccountSession session);
+    void defaultLoginLoaded(quint64 requestId, QString name, QString warning);
+    void loginFinished(quint64 requestId, bool accepted, bool defaultSaved,
+                       QString error, QString warning);
     void loaded(AccountRows rows);
     void succeeded(QString operation, bool loggedOut);
     void error(QString operation, QString message);
@@ -76,6 +91,8 @@ private:
 
     bool checkThread(const QString &operation);
     bool checkReady(const QString &operation);
+    bool loginAvailable(QString *message) const;
+    bool saveDefaultLoginName(const QString &name, QString *message);
     bool beginWrite(QString *message);
     bool readAccount(const QString &name, AccountRecord *record, bool *found,
                      QString *message);

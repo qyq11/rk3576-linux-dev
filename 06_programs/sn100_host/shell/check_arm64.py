@@ -246,6 +246,12 @@ class Checker:
         offscreen = self.inspect_plugin_group("report_offscreen", ["platforms/libqoffscreen.so"])
         if self.additional_binaries and not offscreen:
             self.error("missing_report_offscreen_plugin", target_path="/" + PLUGIN_ROOT + "/platforms/libqoffscreen.so")
+        # The sample UI keeps the original SVG arrows in QSS. Linking QtSvg for
+        # the custom painter alone does not supply Qt's image-format discovery.
+        svg_required = any("libQt5Svg.so.5" in item["needed"] for item in self.files.values())
+        svg = self.inspect_plugin_group("sample_svg", ["imageformats/libqsvg.so"])
+        if svg_required and not svg:
+            self.error("missing_svg_image_plugin", target_path="/" + PLUGIN_ROOT + "/imageformats/libqsvg.so")
         for category, patterns in (
             ("eglfs_platform", ["platforms/libqeglfs.so"]),
             ("egl_device_integration", ["egldeviceintegrations/*.so"]),
@@ -279,7 +285,7 @@ class Checker:
             "additional_binaries": [str(path) for path in self.additional_binaries],
             "status": "offline_dependency_check_failed" if self.errors else "offline_closure_passed_board_runtime_pending",
             "offline_link_and_sql_closure_passed": not self.errors, "board_runtime_verified": False,
-            "sqlite_required": sqlite_required, "errors": self.errors, "warnings": self.warnings,
+            "sqlite_required": sqlite_required, "svg_required": svg_required, "errors": self.errors, "warnings": self.warnings,
             "files": sorted(self.files.values(), key=lambda item: item["path"]),
             "dependency_edges": self.edges, "symbol_version_checks": self.version_checks,
             "runtime_components": self.runtime,

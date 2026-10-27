@@ -1,0 +1,90 @@
+{
+  "schema": "sn100-private-coordinate-api-boundaries-v1",
+  "status": "fixed_manual_expectations_not_executed",
+  "scope": "Six direct API boundary checks, counted separately from the unchanged 23 approved cases",
+  "basis": "Existing published private coordinate contract; no change to mathematical or error semantics",
+  "case_count": 6,
+  "valid_count": 2,
+  "rejected_count": 4,
+  "comparison": "Exact value comparison; explicitly check the sign of negative zero",
+  "cases": [
+    {
+      "id": "direction_minus_one",
+      "mode": 0,
+      "direction_integer": -1,
+      "input": 12.5,
+      "input_token": "12.5",
+      "expected_input_signbit": 0,
+      "expected_valid": false,
+      "expected_error": "UnsupportedDirection",
+      "expected_value": null,
+      "expected_output_signbit": null
+    },
+    {
+      "id": "direction_two",
+      "mode": 0,
+      "direction_integer": 2,
+      "input": 12.5,
+      "input_token": "12.5",
+      "expected_input_signbit": 0,
+      "expected_valid": false,
+      "expected_error": "UnsupportedDirection",
+      "expected_value": null,
+      "expected_output_signbit": null
+    },
+    {
+      "id": "reciprocal_negative_zero",
+      "mode": 2,
+      "direction_integer": 0,
+      "input_special": "negative_zero",
+      "input_token": "negative_zero",
+      "expected_input_signbit": 1,
+      "expected_valid": false,
+      "expected_error": "Domain",
+      "expected_value": null,
+      "expected_output_signbit": null
+    },
+    {
+      "id": "reciprocal_negative_four",
+      "mode": 2,
+      "direction_integer": 0,
+      "input": -4.0,
+      "input_token": "-4",
+      "expected_input_signbit": 1,
+      "expected_valid": true,
+      "expected_error": "None",
+      "expected_value": -0.25,
+      "expected_output_signbit": 1
+    },
+    {
+      "id": "reciprocal_denorm_min_overflow",
+      "mode": 2,
+      "direction_integer": 0,
+      "input_special": "denorm_min",
+      "input_token": "denorm_min",
+      "expected_input_hex": "0x0.0000000000001p-1022",
+      "expected_input_signbit": 0,
+      "expected_valid": false,
+      "expected_error": "Unrepresentable",
+      "expected_value": null,
+      "expected_output_signbit": null
+    },
+    {
+      "id": "identity_negative_zero_sign",
+      "mode": 0,
+      "direction_integer": 0,
+      "input_special": "negative_zero",
+      "input_token": "negative_zero",
+      "expected_input_signbit": 1,
+      "expected_valid": true,
+      "expected_error": "None",
+      "expected_value": -0.0,
+      "expected_output_signbit": 1
+    }
+  ],
+  "not_covered": [
+    "Vendor DLL equivalence",
+    "Calibration fitting or inverse curve evaluation",
+    "GUI, database, review, apply, RK board or instruments"
+  ]
+}

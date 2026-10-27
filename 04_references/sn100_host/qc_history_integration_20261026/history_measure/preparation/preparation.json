@@ -1,0 +1,38 @@
+{
+  "schema": "sn100-qc-history-measure-preparation-v1",
+  "date": "2026-10-26",
+  "status": "prepared_only_not_built_not_executed",
+  "private_inputs": {
+    "qc_history_measure_test.cpp": "e0d9312a591f030ab966853fce81b006148cf9ad5f435af277eab9263cbb12d8",
+    "run_measure.py": "5c2084cbc5658e92e0a1789ae6424e1326f6697d15f136ab43e3a45257568cb9",
+    "observe_loaded_history.py": "1f8f299fe8c19265dab1957b27e461c8bf024cac7e2108781c47b7b537c29eb2",
+    "native_inputs_declared.json": "f08485b9039d1223d14a42690da7013a34ab76bd997f9eccf5d4ec6c51030bc2",
+    "protocol.json": "b881458a0c6f3fc1837e7739dae3c0791b7e935f089045a8bcd44ceee4e91096"
+  },
+  "external_source_inputs": {
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/qc_history_gui_fixture.h": "be42debe7f600bcd7b99e310ea79821989d8fae582228d868bee66e2a242d5ed",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/observe_linux_process.py": "d32f759feb1f6736426fe9b59086818760f03976ced9cfc49637b19c95769f70",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_slice/run_slice.py": "7f05c4330c78fe0fac2ff8998679e9ab4d7dd4e529a6819a9fb5990ca01643ae",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py": "6d9eeae6ecec97ce132ba0ed5bf461020ec258e85e638f6ed1b519def993f7ac",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/build_shell_drivers.py": "ab774a34eb694f404d30bf8b5de3187f39293564e2511747753043fe37b56726"
+  },
+  "source_inputs": 447,
+  "production_link_objects": 177,
+  "native_total_fresh_objects": 210,
+  "measured_actions": 40,
+  "setup_queries_excluded_per_process": 1,
+  "loaded_resource_seconds": 30,
+  "protocol": "protocol.json",
+  "native_declaration": "native_inputs_declared.json",
+  "compile_exit": null,
+  "response_exit": null,
+  "resource_exit": null,
+  "measurements_passed": null,
+  "approved_budget": null,
+  "notes": [
+    "Only metadata/source reads and private preparation writes; no native objects/binaries rehashed at preparation",
+    "Worker reply/page acceptance/CPU Paint dispatch return are distinct; no compositor/physical input claim",
+    "Only private QtTest page resources, not unified whole-program resources; prior metadata-save response and empty-history whole-program run do not cover this slice",
+    "Run only after root grants serial slot and all other loads stop; no automatic invocation"
+  ]
+}

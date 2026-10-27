@@ -1,0 +1,2353 @@
+[
+  {
+    "case": "realGoldenQueryImmutableUnknownUnitsAndNoWrites()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-SAXmKF",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-SAXmKF/qc/quality_control.db",
+        "sha256": "a65fa68efd55441c8c55d5709d6b7ad1849b96501f3296837c3d871a53e632a2",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "00da51ec-dc87-48fa-b0d1-bf9deca9f668"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 3,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 183
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-SAXmKF/catalog/catalog.db",
+        "sha256": "2ae92372c982b516aab8c48b09c2a2588179eb1c92d98cc489e7f9ba8dc074cf",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:00da51ec-dc87-48fa-b0d1-bf9deca9f668:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:00da51ec-dc87-48fa-b0d1-bf9deca9f668",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-SAXmKF/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "sameDayDuplicatesRetainedInDeterministicOrder()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VmiQOp",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VmiQOp/qc/quality_control.db",
+        "sha256": "4aea5ffd545e39be0822e9686f5dbbfcbb67b74869ffe406eb766cad33ab53d4",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "07639cac-9c33-4f51-93f8-1a9904aba913"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 5,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 305
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          },
+          {
+            "id": 4,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-15:1/1-101|Calibration-150:1/1-101]",
+            "date": "2026/10/25",
+            "time": "12:00:00"
+          },
+          {
+            "id": 5,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-16:1/1-101|Calibration-160:1/1-101]",
+            "date": "2026/10/25",
+            "time": "12:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VmiQOp/catalog/catalog.db",
+        "sha256": "3e0a452a6644b14ffdb4e7954c531c6c58551c4947829d7b6693f2377163c1a8",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:07639cac-9c33-4f51-93f8-1a9904aba913:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:07639cac-9c33-4f51-93f8-1a9904aba913",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VmiQOp/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "stableControlProjectAndBatchScopeIsolated()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-EFtezO",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-EFtezO/qc/quality_control.db",
+        "sha256": "c402a362e37b58362c64c8d46cc8f92c24c40a57ce67c9cb175017722bdeac7a",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "0df6da6d-ae4d-4c2f-ad62-3558c4082c24"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          },
+          {
+            "id": 2,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_ALT",
+            "project_id": 3
+          },
+          {
+            "id": 3,
+            "item_id": 2,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          },
+          {
+            "association_id": 2,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 2,
+            "result_type": 2,
+            "result_name": "PROJ_QC_ALT_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          },
+          {
+            "association_id": 3,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 3,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          },
+          {
+            "id": 3,
+            "fid": 2,
+            "batch_name": "LOT_OTHER",
+            "cur_batch": 1,
+            "prv_batch": 0
+          },
+          {
+            "id": 4,
+            "fid": 1,
+            "batch_name": "LOT_OLD",
+            "cur_batch": 0,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 6,
+          "max_text_characters": 63,
+          "max_raw_bytes": 63,
+          "total_raw_bytes": 344
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          },
+          {
+            "id": 4,
+            "control_name": "QC_OTHER",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_OTHER",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-999:1/1-101|Calibration-9990:1/1-101]",
+            "date": "2026/10/26",
+            "time": "10:00:00"
+          },
+          {
+            "id": 5,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_ALT",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_ALT|0|=Original-888:1/1-8]",
+            "date": "2026/10/26",
+            "time": "10:00:00"
+          },
+          {
+            "id": 6,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_OLD",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-777:1/1-101|Calibration-7770:1/1-101]",
+            "date": "2026/10/26",
+            "time": "10:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-EFtezO/catalog/catalog.db",
+        "sha256": "733902faf6527e8f826c0afaba2091c8ca0318ed1299c48099723be9ed0d3b9f",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:0df6da6d-ae4d-4c2f-ad62-3558c4082c24:control:1:project:2",
+            "project_id": 2
+          },
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:0df6da6d-ae4d-4c2f-ad62-3558c4082c24:control:1:project:3",
+            "project_id": 3
+          },
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:0df6da6d-ae4d-4c2f-ad62-3558c4082c24:control:2:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:0df6da6d-ae4d-4c2f-ad62-3558c4082c24",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-EFtezO/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "identicalNamesAndIdsInOtherDatasetDoNotCrossRead()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ZmhkIQ",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ZmhkIQ/qc/quality_control.db",
+        "sha256": "eb55555be5b3771aaba835c03fb066e96281f36385025f375c5036b9ab364d27",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "afd05a6e-dc24-4329-baf6-c69dc40a102d"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 1,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 61
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/25",
+            "time": "10:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ZmhkIQ/catalog/catalog.db",
+        "sha256": "cbb3bbcfcdaf88409c998ea1e364f26d40f18e97d2913688db65044d8c726bb0",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:afd05a6e-dc24-4329-baf6-c69dc40a102d:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:afd05a6e-dc24-4329-baf6-c69dc40a102d",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ZmhkIQ/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "identicalNamesAndIdsInOtherDatasetDoNotCrossRead()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-dtrLae",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-dtrLae/qc/quality_control.db",
+        "sha256": "3b65e795bca8d5705f9f276dae179eda54a613267434e074085a7b4d16bbe266",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "dfacdf7b-ff49-47ee-b6e0-00f5e6f75af2"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 1,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 61
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-99:1/1-101|Calibration-990:1/1-101]",
+            "date": "2026/10/25",
+            "time": "10:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-dtrLae/catalog/catalog.db",
+        "sha256": "a6062c04544c17a17a75722e1c4a1ce43a0250aabc20bb5e6b69970fa7e63ae2",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:dfacdf7b-ff49-47ee-b6e0-00f5e6f75af2:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:dfacdf7b-ff49-47ee-b6e0-00f5e6f75af2",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-dtrLae/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "missingMalformedAndInvalidDateAreExplicitNotZero()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gHPcGE",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gHPcGE/qc/quality_control.db",
+        "sha256": "daddbb10cfc5a916390151dba892b2d976ab8472d0c9404d00377c4803828e57",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "9acdb2d0-cb1b-428d-8b04-95cfb95de46d"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 3,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 106
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Calibration-100:1/1-1]",
+            "date": "2026/10/25",
+            "time": "10:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "broken",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-99:1/1-101|Calibration-990:1/1-101]",
+            "date": "2026/02/30",
+            "time": "10:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gHPcGE/catalog/catalog.db",
+        "sha256": "44a6391bbf150cc37dfb2a05fdd09e724df425c0de8e337414a07bdda6c73e42",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:9acdb2d0-cb1b-428d-8b04-95cfb95de46d:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:9acdb2d0-cb1b-428d-8b04-95cfb95de46d",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gHPcGE/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "readRequiresLiveBindingAndDoesNotRepairHold()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FOlWuV",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FOlWuV/qc/quality_control.db",
+        "sha256": "70e5df82d27095a95acda71c6da0099f5f0530826aa1623b5c5b25a9b170d33c",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "e32f9b16-8e68-4d3e-b891-e83ffee60e6f"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 3,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 183
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FOlWuV/catalog/catalog.db",
+        "sha256": "2eacee71035c20d092a84c322b755b1c519fb9c5a483166fbc44e4b997ac7369",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:e32f9b16-8e68-4d3e-b891-e83ffee60e6f",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FOlWuV/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "schemaAndPathMismatchFailClosed()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VZuubP",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VZuubP/qc/quality_control.db",
+        "sha256": "f496e472aace734d4d489c0efc216cd27eea3bfac43196d64a86c61eb7e5b44b",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "51e5cf43-8ebb-4e08-8e8e-895c22bc3a46"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 3,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 183
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VZuubP/catalog/catalog.db",
+        "sha256": "fe94323765210432eb38254e34f8577784a77f7b2572b73d2d1fa6987253ac67",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:51e5cf43-8ebb-4e08-8e8e-895c22bc3a46:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:51e5cf43-8ebb-4e08-8e8e-895c22bc3a46",
+            "value": "wrong-path"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "unmarkedCatalogAndWrongThreadDoNotQuerySql()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gEibxV",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gEibxV/qc/quality_control.db",
+        "sha256": "da37b3ed56542f6adf276a0c7b12d807cf16294b0bcd75f987e238c2d8d41074",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "192e3680-881d-4654-aeea-b628ea3d16f2"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 3,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 183
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gEibxV/catalog/catalog.db",
+        "sha256": "3aaf055fb12aed149f64a26ba3d81283731fbd67201a50390c1202afac0fd3df",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:192e3680-881d-4654-aeea-b628ea3d16f2:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:192e3680-881d-4654-aeea-b628ea3d16f2",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gEibxV/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "actualSqlLocksHaveErrorAndRetryWithoutWrites()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hJdorI",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hJdorI/qc/quality_control.db",
+        "sha256": "93a23ac2c0422fc5c5ef9e0892e301bd9471aa26ad63485bb57a6433d9249f35",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "6cd414c5-9ba4-4e4d-8130-7d8c0bcf313d"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 3,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 183
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hJdorI/catalog/catalog.db",
+        "sha256": "8b5ee958f1f0319ddf298f0d6e74791c2b3a123ced2c2f70df8a15baf1cac9ab",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:6cd414c5-9ba4-4e4d-8130-7d8c0bcf313d:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:6cd414c5-9ba4-4e4d-8130-7d8c0bcf313d",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hJdorI/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "budgetsFailWithNoPartialReply(single-large)",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-OdxkhT",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-OdxkhT/qc/quality_control.db",
+        "sha256": "23b7acb6bc62031b90f15629c92f690d0265f3ce510a4954b3756d7d5fb45e4d",
+        "bytes": 126976,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "a0f9bf36-3981-4f3f-a545-da76d910bb6d"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 1,
+          "max_text_characters": 65537,
+          "max_raw_bytes": 65537,
+          "total_raw_bytes": 65537
+        },
+        "history_rows_not_copied": "Budget/damage fixture summarized with actual SQLite counts/lengths; raw data remains only in temp."
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-OdxkhT/catalog/catalog.db",
+        "sha256": "4941ed5fdd764ea89ddb3a5e6e3c153a36bdfdf530eab6c26f1daf2fb783b6d8",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:a0f9bf36-3981-4f3f-a545-da76d910bb6d:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:a0f9bf36-3981-4f3f-a545-da76d910bb6d",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-OdxkhT/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "budgetsFailWithNoPartialReply(total-large)",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-NGHODX",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-NGHODX/qc/quality_control.db",
+        "sha256": "eb93b94bf47e3a8c699718707b64bf17abe7144f298960573ba91cd019b24ba0",
+        "bytes": 2244608,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "346d6be2-0f7e-48ce-adcf-4348960c43ac"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 33,
+          "max_text_characters": 65536,
+          "max_raw_bytes": 65536,
+          "total_raw_bytes": 2162688
+        },
+        "history_rows_not_copied": "Budget/damage fixture summarized with actual SQLite counts/lengths; raw data remains only in temp."
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-NGHODX/catalog/catalog.db",
+        "sha256": "273dade92cc63a6542bde2aaf1a081ee9837f7e7719d7ca5fef90108e981ce75",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:346d6be2-0f7e-48ce-adcf-4348960c43ac:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:346d6be2-0f7e-48ce-adcf-4348960c43ac",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-NGHODX/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "budgetsFailWithNoPartialReply(row-limit)",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pTdOXp",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pTdOXp/qc/quality_control.db",
+        "sha256": "ec16446e1c1113f14f7c3ce19b312023f180f1eb898f9e299151b1ef8073b5c1",
+        "bytes": 1269760,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "d3f2fc67-3402-4b2a-a69d-22242e752d07"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 10001,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 610061
+        },
+        "history_rows_not_copied": "Budget/damage fixture summarized with actual SQLite counts/lengths; raw data remains only in temp."
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pTdOXp/catalog/catalog.db",
+        "sha256": "8546bfad2f08e6680672b5e009525625c345b81a23265d776535da5fe622a3a1",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:d3f2fc67-3402-4b2a-a69d-22242e752d07:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:d3f2fc67-3402-4b2a-a69d-22242e752d07",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pTdOXp/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "budgetsFailWithNoPartialReply(date-budget)",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-rwpoiS",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-rwpoiS/qc/quality_control.db",
+        "sha256": "d5263afafa227fc0673985c1b7f3e36c67bcfb3c9eb0debb39821e008ea1088c",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "17200902-e2f3-489f-9eaa-125770de6724"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 1,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 61
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "time": "10:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-rwpoiS/catalog/catalog.db",
+        "sha256": "94fa956d0d50f694b21e9f158d278836291d57e5379112a6c5d86b803be85f48",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:17200902-e2f3-489f-9eaa-125770de6724:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:17200902-e2f3-489f-9eaa-125770de6724",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-rwpoiS/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "budgetsFailWithNoPartialReply(blob-storage)",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-sjdDkB",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-sjdDkB/qc/quality_control.db",
+        "sha256": "8c76d790cadc76e70999c8c94de4f9a93f3c02777005c25a425acebc4eade2c9",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "34a55ba8-9b8c-442a-acf4-2699656b71e3"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 1,
+          "max_text_characters": 1,
+          "max_raw_bytes": 1,
+          "total_raw_bytes": 1
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": {
+              "sqlite_storage_type": "blob",
+              "hex": "00",
+              "bytes": 1
+            },
+            "date": "2026/10/25",
+            "time": "10:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-sjdDkB/catalog/catalog.db",
+        "sha256": "9a270e13c650dd75932c081c01b4f5d501ea32970144e9282ee3f446195b3e23",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:34a55ba8-9b8c-442a-acf4-2699656b71e3:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:34a55ba8-9b8c-442a-acf4-2699656b71e3",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-sjdDkB/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "budgetsFailWithNoPartialReply(embedded-nul-byte-limit)",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FrLLOE",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FrLLOE/qc/quality_control.db",
+        "sha256": "c9edb216e1381d0e05452b39e850095ac26cd5715792f094b9aa566c26cb5906",
+        "bytes": 323584,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "739fb8b0-184d-4367-bac4-40a9890b1113"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 1,
+          "max_text_characters": 0,
+          "max_raw_bytes": 262145,
+          "total_raw_bytes": 262145
+        },
+        "history_rows_not_copied": "Budget/damage fixture summarized with actual SQLite counts/lengths; raw data remains only in temp."
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FrLLOE/catalog/catalog.db",
+        "sha256": "59c532ffe30621dbe165bb2bf75d62cace746c4d65725d57e7180edf15491fca",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:739fb8b0-184d-4367-bac4-40a9890b1113:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:739fb8b0-184d-4367-bac4-40a9890b1113",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FrLLOE/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "budgetsFailWithNoPartialReply(utf16-metadata-limit)",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pMqNdU",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pMqNdU/qc/quality_control.db",
+        "sha256": "f60ec91ca92e1b8b801920c03a38d93cf8ccc8aa1c68e14bf664ec8a1f832601",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "1fa01c6d-d8e8-4661-ab43-e6123884c48f"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 1,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 61
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+            "time": "10:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pMqNdU/catalog/catalog.db",
+        "sha256": "84443dc95cbf9e400c4378b7875d6af15bd554ef4a2088fc9ba2c898be2582f1",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:1fa01c6d-d8e8-4661-ab43-e6123884c48f:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:1fa01c6d-d8e8-4661-ab43-e6123884c48f",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pMqNdU/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "emptyAndPreviousOnlyKeepOriginalCardVisibility()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-aIQrDY",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-aIQrDY/qc/quality_control.db",
+        "sha256": "889f8a5ddadeae42caba6c2e51d36e134574411e799deab044d17e2154c6ae63",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "b829dfdb-9e7b-401e-8b5a-805b75dcb654"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 0,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 1,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 61
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-aIQrDY/catalog/catalog.db",
+        "sha256": "e5cc1a162ae296f1268c3cf0255dfcc3fa5f33dbf03ec30dfef16011230ef2c7",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:b829dfdb-9e7b-401e-8b5a-805b75dcb654:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:b829dfdb-9e7b-401e-8b5a-805b75dcb654",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-aIQrDY/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "noEnabledResultsIsDistinctFromNoHistory()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ehBUnP",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ehBUnP/qc/quality_control.db",
+        "sha256": "6256a88dfa1eda9dbfffa1e813c8f875a0fbe06972e03e7a6520434e15ca7b13",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "82f16446-32d0-49ab-9bcc-1ef9d227c487"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 3,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 183
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ehBUnP/catalog/catalog.db",
+        "sha256": "ac8bc43d661f033e4c80fe9296818cc54437190f86849ebdc9d0143f8b0e062c",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:82f16446-32d0-49ab-9bcc-1ef9d227c487:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:82f16446-32d0-49ab-9bcc-1ef9d227c487",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ehBUnP/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case": "historyProtectionAndCloseKeepIdentityTruthful()",
+    "runtime_directory": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hRcGFr",
+    "association_id": 1,
+    "files": [
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hRcGFr/qc/quality_control.db",
+        "sha256": "eda30c2384bea57354e87f289813981590983bfc92201144b02b9d6f3d9626a9",
+        "bytes": 61440,
+        "sqlite_integrity": "ok",
+        "metadata": [
+          {
+            "key": "dataset_uuid",
+            "value": "17729157-f30d-4f28-aa99-654238003cc4"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-qc-offline-v1"
+          }
+        ],
+        "associations": [
+          {
+            "id": 1,
+            "item_id": 1,
+            "proj_name": "PROJ_QC_DEMO",
+            "project_id": 2
+          }
+        ],
+        "unit_snapshots": [
+          {
+            "association_id": 1,
+            "result_type": 1,
+            "result_name": "ANON_RESULT",
+            "unit": "s",
+            "ratio": 1.0,
+            "decimals": 1
+          },
+          {
+            "association_id": 1,
+            "result_type": 2,
+            "result_name": "PROJ_QC_DEMO_C",
+            "unit": "a.u.",
+            "ratio": 1.0,
+            "decimals": 2
+          }
+        ],
+        "batches": [
+          {
+            "id": 1,
+            "fid": 1,
+            "batch_name": "LOT_PREV",
+            "cur_batch": 0,
+            "prv_batch": 1
+          },
+          {
+            "id": 2,
+            "fid": 1,
+            "batch_name": "LOT_CUR",
+            "cur_batch": 1,
+            "prv_batch": 0
+          }
+        ],
+        "history_summary": {
+          "row_count": 3,
+          "max_text_characters": 61,
+          "max_raw_bytes": 61,
+          "total_raw_bytes": 183
+        },
+        "history_rows": [
+          {
+            "id": 1,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_PREV",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-10:1/1-101|Calibration-100:1/1-101]",
+            "date": "2026/10/23",
+            "time": "09:00:00"
+          },
+          {
+            "id": 2,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-12:1/1-101|Calibration-120:1/1-101]",
+            "date": "2026/10/24",
+            "time": "10:00:00"
+          },
+          {
+            "id": 3,
+            "control_name": "QC_DEMO",
+            "project_name": "PROJ_QC_DEMO",
+            "control_batch": "LOT_CUR",
+            "result_val": "[PROJ_QC_DEMO|0|=Original-14:1/1-101|Calibration-140:1/1-101]",
+            "date": "2026/10/25",
+            "time": "11:00:00"
+          }
+        ]
+      },
+      {
+        "path": "temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hRcGFr/catalog/catalog.db",
+        "sha256": "0686a3607a4083d84b7e62465f0011c23258fa189f79ce6c6b31b3f00127329c",
+        "bytes": 65536,
+        "sqlite_integrity": "ok",
+        "reference_rows": [
+          {
+            "owner_module": "quality_control",
+            "reference_key": "dataset:17729157-f30d-4f28-aa99-654238003cc4:control:1:project:2",
+            "project_id": 2
+          }
+        ],
+        "binding_rows": [
+          {
+            "key": "quality_control_dataset_path:17729157-f30d-4f28-aa99-654238003cc4",
+            "value": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hRcGFr/qc/quality_control.db"
+          },
+          {
+            "key": "schema",
+            "value": "sn100-catalog-offline-v1"
+          }
+        ]
+      }
+    ]
+  }
+]

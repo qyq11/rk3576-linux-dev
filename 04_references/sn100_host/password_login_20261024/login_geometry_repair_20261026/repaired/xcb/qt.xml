@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="8" failures="0" tests="5" name="PasswordLoginShellTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="legacyOptInAndGuestLogin">
+    <!-- message="LOGIN_HOST_INPUT_PREPARED true requested QSize(1600, 900) host QRect(305,558 1600x900) viewport QRect(1,1 1584x884) target QRect(1237,33 52x52) active true scroll QPoint(0,0) stable_event_turns 3" type="qinfo" -->
+    <!-- message="Mouse event &quot;MousePress&quot; not accepted by receiving widget" type="warn" -->
+    <!-- message="Mouse event &quot;MouseRelease&quot; not accepted by receiving widget" type="warn" -->
+    <!-- message="LOGIN_CARD_GEOMETRY host QRect(305,558 1600x900) card QRect(880,722 450x571) dialog QRect(305,558 1600x900) active true" type="qinfo" -->
+    <!-- message="LOGIN_HOST_INPUT_PREPARED true requested QSize(1920, 1080) host QRect(305,558 1920x1080) viewport QRect(1,1 1904x1064) target QRect(1237,33 52x52) active true scroll QPoint(0,0) stable_event_turns 3" type="qinfo" -->
+    <!-- message="Mouse event &quot;MousePress&quot; not accepted by receiving widget" type="warn" -->
+    <!-- message="Mouse event &quot;MouseRelease&quot; not accepted by receiving widget" type="warn" -->
+    <!-- message="LOGIN_CARD_GEOMETRY host QRect(305,558 1920x1080) card QRect(1040,812 450x571) dialog QRect(305,558 1920x1080) active true" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="passwordSessionAndGuards"/>
+  <testcase result="pass" name="fullProductAndInvalidMode"/>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[LOGIN_HOST_INPUT_PREPARED true requested QSize(1600, 900) host QRect(305,558 1600x900) viewport QRect(1,1 1584x884) target QRect(1237,33 52x52) active true scroll QPoint(0,0) stable_event_turns 3]]>
+<![CDATA[Mouse event "MousePress" not accepted by receiving widget]]>
+<![CDATA[Mouse event "MouseRelease" not accepted by receiving widget]]>
+<![CDATA[LOGIN_CARD_GEOMETRY host QRect(305,558 1600x900) card QRect(880,722 450x571) dialog QRect(305,558 1600x900) active true]]>
+<![CDATA[LOGIN_HOST_INPUT_PREPARED true requested QSize(1920, 1080) host QRect(305,558 1920x1080) viewport QRect(1,1 1904x1064) target QRect(1237,33 52x52) active true scroll QPoint(0,0) stable_event_turns 3]]>
+<![CDATA[Mouse event "MousePress" not accepted by receiving widget]]>
+<![CDATA[Mouse event "MouseRelease" not accepted by receiving widget]]>
+<![CDATA[LOGIN_CARD_GEOMETRY host QRect(305,558 1920x1080) card QRect(1040,812 450x571) dialog QRect(305,558 1920x1080) active true]]>
+  </system-err>
+</testsuite>

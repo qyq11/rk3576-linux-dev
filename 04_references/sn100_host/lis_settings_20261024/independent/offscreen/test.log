@@ -1,0 +1,47 @@
+********* Start testing of LisSettingsTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+PASS   : LisSettingsTest::initTestCase()
+PASS   : LisSettingsTest::freshUnconfiguredAndEmptyPorts()
+PASS   : LisSettingsTest::nineFieldsPersistAndReopen()
+PASS   : LisSettingsTest::hiddenAndUnrelatedKeysSurvive()
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR LIS通讯方式无效。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR 主计算机地址需以字母或数字开头、不含空白且不超过16字符。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR 主计算机地址需以字母或数字开头、不含空白且不超过16字符。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR 主计算机端口只能为空或0至99999的整数；未验证真实连接。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR 主计算机端口只能为空或0至99999的整数；未验证真实连接。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR 样本上传模式无效。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR 新串口或波特率不在本地可选列表，未改动原配置。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR 新串口或波特率不在本地可选列表，未改动原配置。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR LIS可见字段不能包含控制字符。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR LIS可见字段不能包含控制字符。
+QINFO  : LisSettingsTest::invalidFieldsNeverCommit() LIS_EXPECTED_ERROR 主计算机地址需以字母或数字开头、不含空白且不超过16字符。
+PASS   : LisSettingsTest::invalidFieldsNeverCommit()
+PASS   : LisSettingsTest::unavailableSavedPortAndBaudDoNotBecomeFirst()
+PASS   : LisSettingsTest::twoModeDraftsAndSingleSave()
+QWARN  : LisSettingsTest::draftKeepDiscardAndClose() This plugin does not support propagateSizeHints()
+QWARN  : LisSettingsTest::draftKeepDiscardAndClose() This plugin does not support propagateSizeHints()
+PASS   : LisSettingsTest::draftKeepDiscardAndClose()
+QINFO  : LisSettingsTest::failedSavePreservesDraftAndRetry() LIS_EXPECTED_ERROR LIS设置正在处理，请等待完成后再leave。
+QINFO  : LisSettingsTest::failedSavePreservesDraftAndRetry() LIS_EXPECTED_ERROR LIS设置正由其他进程处理。
+PASS   : LisSettingsTest::failedSavePreservesDraftAndRetry()
+QINFO  : LisSettingsTest::externalByteChangeRequiresReload() LIS_EXPECTED_ERROR LIS设置已被其他写入方改变，请重开读取后再修改。
+PASS   : LisSettingsTest::externalByteChangeRequiresReload()
+QINFO  : LisSettingsTest::actualFilesystemWriteFailureAndRecovery() LIS_EXPECTED_ERROR 无法创建LIS设置临时文件：Permission denied
+PASS   : LisSettingsTest::actualFilesystemWriteFailureAndRecovery()
+QINFO  : LisSettingsTest::invalidUtf8NeverCanonicalized() LIS_EXPECTED_ERROR LIS设置含无效或不完整UTF-8，原字节保留。
+PASS   : LisSettingsTest::invalidUtf8NeverCanonicalized()
+QINFO  : LisSettingsTest::invalidFormatAndUnknownSampleModePreserved() LIS_EXPECTED_ERROR LIS设置格式/脱机标记无效；未导入旧配置。
+QINFO  : LisSettingsTest::invalidFormatAndUnknownSampleModePreserved() LIS_EXPECTED_ERROR 已保存的样本上传模式无效。
+PASS   : LisSettingsTest::invalidFormatAndUnknownSampleModePreserved()
+QINFO  : LisSettingsTest::oversizedAndInvalidEnumerationRejected() LIS_EXPECTED_ERROR LIS设置文件不是普通文件或超过64KiB。
+QINFO  : LisSettingsTest::oversizedAndInvalidEnumerationRejected() LIS_EXPECTED_ERROR 本机返回了无效的串口名称。
+PASS   : LisSettingsTest::oversizedAndInvalidEnumerationRejected()
+QINFO  : LisSettingsTest::symlinkNeverReadOrWritten() LIS_EXPECTED_ERROR LIS设置路径包含符号链接，未读取或修改。
+QINFO  : LisSettingsTest::symlinkNeverReadOrWritten() LIS_EXPECTED_ERROR LIS私有锁目录无效或不可写，未读取或修改配置。
+PASS   : LisSettingsTest::symlinkNeverReadOrWritten()
+QINFO  : LisSettingsTest::platformMetadataEnumerationAndOriginalGeometry() READ_ONLY_PORT_CANDIDATES 8
+QWARN  : LisSettingsTest::platformMetadataEnumerationAndOriginalGeometry() This plugin does not support propagateSizeHints()
+PASS   : LisSettingsTest::platformMetadataEnumerationAndOriginalGeometry()
+PASS   : LisSettingsTest::cleanupTestCase()
+Totals: 17 passed, 0 failed, 0 skipped, 0 blacklisted, 2512ms
+********* Finished testing of LisSettingsTest *********

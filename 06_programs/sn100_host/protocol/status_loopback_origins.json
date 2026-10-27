@@ -1,0 +1,25 @@
+{
+  "schema": "sn100-status-loopback-origins-v1",
+  "module": "O09-2",
+  "scope": "Explicit owned IPv4 localhost simulation and background read-only Qj status; no instrument endpoint, account permission, task, configuration or mechanical command",
+  "references": [
+    {"path": "protocol/read_only_client.cpp", "rules": "One request in flight; monotonic deadline; one retry; late valid observation cannot reverse a failed request; generation cancellation"},
+    {"path": "protocol/tcp_transport.cpp", "rules": "LocalHost/NoProxy only; bounded decode/write queues; actual wireReceived; socket callbacks reject stale generations"},
+    {"path": "protocol/soak_main.cpp:75,103", "rules": "Existing local experiment uses 120ms/one retry and 1000ms query interval"},
+    {"path": "protocol/status_session.cpp", "rules": "Existing parseStatus and StatusSnapshot field validation reused without device side effects"},
+    {"path": "tests/read_only_client_test.cpp:20-25", "rules": "Independent synthetic Qj query/status golden bytes; not an instrument capture"},
+    {"path": "../sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commandsender.cpp:271", "rules": "Original Qj query sender"},
+    {"path": "../sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commandreceiver.cpp:534", "rules": "Original Qj model/main/LED/error fields; automatic calibration/configuration/login/time-setting chains are excluded"}
+  ],
+  "local_contract": {
+    "endpoint": "Worker creates QTcpServer on QHostAddress::LocalHost port 0, then connects only its serverPort; controller exposes no host/port argument",
+    "normal_reply": "Qj[4][SIMULATED][2][1][0][0]",
+    "query": "Qj only; 120ms timeout, one retry, 1000ms poll, no concurrent requests",
+    "threading": "Client/transport/socket/server/timers are created and used in worker; controller only forwards queued values",
+    "wire": "TX is bytes actually read by owned peer; RX is bytes actually read by client. Each <=4096-byte event is logged before GUI forwarding; neither proves instrument ACK",
+    "bounded_delivery": "Latest state plus one queued state; wire ring <=128 events/65536 bytes plus one <=16-event/16384-byte outstanding batch. Overflow logs the actual bytes then explicitly stops with error",
+    "shutdown": "Stops polling and client, closes peer/server without GUI ack; direct thread-safe quit and locked final value allow shutdown after app.exec; run invalidation rejects stale queued state",
+    "fault_injection": "Only protected worker replyStatus override in independent tests; no product CLI/UI fault mode"
+  },
+  "unverified": ["Real SN100 protocol and endpoint", "instrument state and actions", "Windows/RK runtime", "resource budget and same-board real-time interference", "long-term stability"]
+}

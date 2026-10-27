@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-24",
+  "environment": "Ubuntu-24.04/qyq, Qt5.15.13 x86_64 Release/XCB",
+  "scope": "Cumulative legacy flows on current product objects after opt-in local password login integration",
+  "tests": {
+    "core_writeExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "core_readExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "core_viewportExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "core_initializationFailureExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "core_applicationExitExperiment": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "catalog": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "replay": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "loopback": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "instrument": {
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    "report": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "native_objects_excluding_main": 139,
+  "product_sha256": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9",
+  "renderer_sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b",
+  "driver_sha256": {
+    "integrated_shell_test": "df5b8fd06d782b6b8d210292740eee97e5030ad3cb273073d513c6b9eea4c088",
+    "catalog_shell_test": "75f8716ea5e74341b7c0a4ae0785c46bc73e829f2aed536aee9184d04c08397f",
+    "status_replay_shell_test": "7989deddc374d0c53cfecd76f2e44c654451f3ffe264a29958338d0e540ac0ed",
+    "status_loopback_shell_test": "18695045e768255a1e2c7c8cf185e5560ee54133b18ed8077e3606527272232c",
+    "instrument_page_test": "9d4ba2b24a35b36817ed2fe10b00d4e602ea42ead1d98b9276d6f176fb53cafd",
+    "integrated_report_test": "c579ed46d0d823992294780c6a92074beaf08f2146d546d342cc3e16b5611e59"
+  },
+  "source_snapshot_unchanged": true,
+  "limits": [
+    "Each test invocation bounded to 60 s; no measureExperiment, 60 PDF exports, 25 minute/8 hour or other long run repeated",
+    "Core write/read are separate processes using the same new anonymous root",
+    "Viewport uses XCB because offscreen does not prove physical-screen hit geometry",
+    "Loopback tests create their own LocalHost peers; no external instrument or LIS is contacted",
+    "This validates current cumulative local behavior, not original Windows theme, RK, instrument or production credential security"
+  ],
+  "authentication_database_or_credentials_archived": false
+}

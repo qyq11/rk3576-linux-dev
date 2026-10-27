@@ -1,0 +1,103 @@
+[
+  {
+    "name": "calibration_shell",
+    "driver": "calibration_shell_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {
+      "SN100_CALIBRATION_TEST_ROOT": "{stage}/runtime",
+      "SN100_CALIBRATION_EVIDENCE": "{stage}/evidence",
+      "SN100_CALIBRATION_APP": "{app}"
+    }
+  },
+  {
+    "name": "report_remaining_shell",
+    "driver": "report_remaining_shell_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {
+      "SN100_REPORT_REMAINING_TEST_ROOT": "{stage}/runtime",
+      "SN100_REPORT_REMAINING_EVIDENCE": "{stage}/evidence",
+      "SN100_REPORT_REMAINING_APP": "{app}"
+    }
+  },
+  {
+    "name": "calibration_reference",
+    "driver": "calibration_reference_test",
+    "qpas": [
+      "offscreen"
+    ],
+    "env": {
+      "SN100_REFERENCE_TEST_ROOT": "{stage}/runtime"
+    }
+  },
+  {
+    "name": "qc_reference",
+    "driver": "qc_reference_test",
+    "qpas": [
+      "offscreen"
+    ],
+    "env": {
+      "SN100_QC_REFERENCE_ROOT": "{stage}/runtime"
+    }
+  },
+  {
+    "name": "report_remaining_core",
+    "driver": "report_remaining_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {
+      "SN100_REPORT_REMAINING_DIR": "{stage}/runtime"
+    }
+  },
+  {
+    "name": "report_remaining_html",
+    "driver": "report_remaining_html_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {
+      "SN100_REMAINING_HTML_DIR": "{stage}/runtime",
+      "SN100_REPORT_RENDERER": "{renderer}"
+    }
+  },
+  {
+    "name": "qc_original_store",
+    "driver": "qc_local_store_test",
+    "qpas": [
+      "offscreen"
+    ],
+    "env": {
+      "SN100_QC_TEST_ROOT": "{stage}/runtime"
+    }
+  },
+  {
+    "name": "calibration_original_store",
+    "driver": "calibration_store_test",
+    "qpas": [
+      "offscreen"
+    ],
+    "env": {
+      "CALIBRATION_TEST_ROOT": "{stage}/runtime"
+    }
+  },
+  {
+    "name": "calibration_original_page",
+    "driver": "calibration_page_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {
+      "CALIBRATION_TEST_ROOT": "{stage}/runtime",
+      "CALIBRATION_SCREENSHOT_DIR": "{stage}/evidence"
+    }
+  }
+]

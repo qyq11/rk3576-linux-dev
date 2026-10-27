@@ -1,0 +1,390 @@
+{
+  "schema": "sn100-report-integration-shell-static-review-v1",
+  "date_AsiaShanghai": "2026-10-25",
+  "scope": "独立只读静态审查；仅新增此JSON，不修改生产源码、测试、公共文档、原handoff或其SHA清单",
+  "executions": {
+    "build": false,
+    "business_test": false,
+    "gui": false,
+    "resource_measurement": false,
+    "RK_instrument_LIS": false,
+    "dependency_install": false,
+    "git_commit_push": false,
+    "thread_messages": false
+  },
+  "status": "本轮报告接线静态合同已核；发现1项条件性导航守卫缺口；新整合测试文件未落盘，尚未审查或运行",
+  "original_delivery": {
+    "related_inputs": 48,
+    "all_hashes_still_match": true,
+    "mismatches": [],
+    "original_handoff_sha256": "75b7b137833e637ea73287596c08418514ff4c97ef532a5d5e92432e9c65d409",
+    "original_handoff_matches_manifest": true,
+    "not_a_new_unified_source_freeze": true
+  },
+  "reviewed_file_fingerprints": [
+    {
+      "path": "06_programs/sn100_host/shell/history_shell.cpp",
+      "sha256": "3d1ac484b3525edde5dbcf8e8f646ffa8029cf53a4e2953d0955ce43482834c7",
+      "bytes": 7794
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.cpp",
+      "sha256": "9c54f9254774a5f83d9c2213f8f0bd6ae740abc1b664efa5b2461b1ef5e752cd",
+      "bytes": 21036
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.h",
+      "sha256": "3d8837050345f92535e9975a53ce78e9880b7dde8d59015ee41743a6da28c58a",
+      "bytes": 6680
+    },
+    {
+      "path": "06_programs/sn100_host/shell/login_shell.cpp",
+      "sha256": "8cf88cc30aee352836c285b258c0c375fedff279bd193f50e87401e4525e5b11",
+      "bytes": 3007
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmuserset.cpp",
+      "sha256": "96fe6489641bc4a072fe6fce51f245cd899a0721bfe7fdbd22fca1e6fe8396d0",
+      "bytes": 8131
+    },
+    {
+      "path": "06_programs/sn100_host/shell/main.cpp",
+      "sha256": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156",
+      "bytes": 40524
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shutdown_request.cpp",
+      "sha256": "cd907feb172e6a8ad41b24ca74ec8c1ff8229d3ba4fae31671fe2cf3081dcdba",
+      "bytes": 5569
+    },
+    {
+      "path": "06_programs/sn100_host/shell/resources.qrc",
+      "sha256": "b21685e4c6ad54cba321ee829352ac798b0f083688f1d39e6c421227b71bbd77",
+      "bytes": 3264
+    },
+    {
+      "path": "06_programs/sn100_host/shell/shell.pri",
+      "sha256": "59a410c5dced837a7e7622428685e4e1ec08119aa53a8bd4d1581f747dc8e64b",
+      "bytes": 3862
+    },
+    {
+      "path": "06_programs/sn100_host/shell/build.sh",
+      "sha256": "9d82588ece30564e2935c2238262a3d650e8d1fdfab461937d10f262079bfae5",
+      "bytes": 18302
+    },
+    {
+      "path": "06_programs/sn100_host/shell/arm64_object_reuse.py",
+      "sha256": "dee3973de339f98086676331259d7a64459fe74659810daa6fb8c6cc967c890d",
+      "bytes": 7783
+    },
+    {
+      "path": "06_programs/sn100_host/shell/check_arm64.py",
+      "sha256": "7565db6208d76778ed00fd43272e588cefdaf6522e24c7622ed0dd2277787f8e",
+      "bytes": 17793
+    },
+    {
+      "path": "06_programs/sn100_host/shell/package_arm64.py",
+      "sha256": "d7335c16441b4cc4deeb6d0809dbb61ca67c657d0cebdcf673b4b6451754809e",
+      "bytes": 11066
+    },
+    {
+      "path": "06_programs/sn100_host/shell/prepare_runtime.sh",
+      "sha256": "c1f8355d2331925483dcbdb36a218870386ada44f08a0f7a7666c55c6c89c0b8",
+      "bytes": 9412
+    },
+    {
+      "path": "06_programs/sn100_host/shell/wsl.sh",
+      "sha256": "ca492258f41bb5928b6b000f86c416ca34c9c26a2e274eb4cc1b7a8236d6cf9d",
+      "bytes": 5615
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.cpp",
+      "sha256": "bf238e626bcb58ce45de1512cdfe2ef46e5ca6e9578a0e261810d1b863594cce",
+      "bytes": 47230
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_store.h",
+      "sha256": "8c682ccf824742654c4d5a3581e34c73a80f7e02ca0b1f5fb85de409d63acd6b",
+      "bytes": 6099
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_store.cpp",
+      "sha256": "c6737173a876d7a92e1941c0e3dcbf6e2470d7bf72041fc258e45088b612d5df",
+      "bytes": 44456
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_store.cpp",
+      "sha256": "2d325e1b82ac703b2ceba147a92b89b43a8c79a4f4045be7138277463aa72618",
+      "bytes": 10900
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_display_dialog.cpp",
+      "sha256": "1400458a5d0d1c51e371e7227d5193bf829ba687c837a45534f234f8494cafa0",
+      "bytes": 11922
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_view.h",
+      "sha256": "abcb636b46a732c762859471491f6a17291e6d67710d4468afba9780b9d89fb8",
+      "bytes": 659
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_html.h",
+      "sha256": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a",
+      "bytes": 2736
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.cpp",
+      "sha256": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba",
+      "bytes": 13729
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.h",
+      "sha256": "1a085d958309c4f9347eced72858601675d835022ed31026ce3cf52852f6756b",
+      "bytes": 2510
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_renderer.cpp",
+      "sha256": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581",
+      "bytes": 13464
+    },
+    {
+      "path": "06_programs/sn100_host/history/renderer.pro",
+      "sha256": "e43441cd58a254910979615222a1b9f4922e76b5e86d00a44fe2007fbcd75a7f",
+      "bytes": 525
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_core.pri",
+      "sha256": "2a2c6d2d0f91903c791cf3ba69922e2f0a35d61d5cd82c1388142e8da04a6843",
+      "bytes": 757
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_report.pri",
+      "sha256": "74f7f86afb162760a8e0b95ae53e40d2cc879baa60caa98c2ab4bfe96d193acc",
+      "bytes": 184
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_engine.pri",
+      "sha256": "6443f4db2ca9c2f5fef6b911ef8a766fe3b314410518f4e096c2e64aa91b990f",
+      "bytes": 342
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_resources.qrc",
+      "sha256": "90e45d3956f33bdc91375cf67fa7bf461be3b5c554e31324bd9d00c8ea783389",
+      "bytes": 212
+    },
+    {
+      "path": "06_programs/sn100_host/data/account_store.h",
+      "sha256": "212e05178f26a170fdb9138e9705eba72febf4022caed01f83327edce088d07d",
+      "bytes": 3586
+    },
+    {
+      "path": "06_programs/sn100_host/tests/test_shell_arm64_inputs.py",
+      "sha256": "8b0906d20d498696877b44dca982a22abea8a54f3c4b2a8f38b11d0614f45f9e",
+      "bytes": 19714
+    },
+    {
+      "path": "06_programs/sn100_host/tests/integrated_report_test.cpp",
+      "sha256": "7b500eb86676ffb954ac5e3fd7ea39b6edf17c7700b093488ac82840e39c3a7e",
+      "bytes": 43200
+    },
+    {
+      "path": "06_programs/sn100_host/tests/password_login_shell_test.cpp",
+      "sha256": "5accedc33d663270819339e05b1f0323c44cc7a0d1a1d032a9feea0420d28d8f",
+      "bytes": 24341
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_test.cpp",
+      "sha256": "512bbbec714a9cc3145ce969917e8a203f9f49794cbdb23eff8289de5fb4d117",
+      "bytes": 22929
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_html_test.cpp",
+      "sha256": "ec912d54a06b4a71a539b2dfde41d8715d7282fc296a9f17e26b5311985eec57",
+      "bytes": 10622
+    },
+    {
+      "path": "06_programs/sn100_host/thirdparty/qtrpt/qtrpt.pri",
+      "sha256": "64e413f646e3b0d05d1c7874f1bd13e709a14ee670da307180fd1bd9db1d2a76",
+      "bytes": 280
+    },
+    {
+      "path": "06_programs/sn100_host/thirdparty/qtrpt/QtRPT/config.pri",
+      "sha256": "ba738eddabe2255f420166815cc1f6986d78717ed8f4d1ebe7771222e135def9",
+      "bytes": 441
+    },
+    {
+      "path": "06_programs/sn100_host/tests/fixtures/history_reports.json",
+      "sha256": "0869068a20f6d747907f2b249660f86da37e35dbd61bb7dfb9bfdda1842c9f95",
+      "bytes": 5594
+    },
+    {
+      "path": "06_programs/sn100_host/tests/fixtures/history_report_options.json",
+      "sha256": "24c79877ece4fb987ae4711d09f9dde297cd7967224bb04c93aa8fe164d6096c",
+      "bytes": 833
+    }
+  ],
+  "verified_contracts": [
+    {
+      "id": "C1",
+      "files": [
+        "shell/history_shell.cpp:39-40",
+        "history/history_page.cpp:313",
+        "history/report_remaining_store.cpp:39-62"
+      ],
+      "result": "attachHistoryPage立即同步session_并接sessionChanged。GUI按钮同步变更，requestSetSession再以queued连接传给HistoryStore；新写入由worker再次核authenticated、role1..5、source非Guest，不依赖actionReady。原患者保存权限未在此增量改变。"
+    },
+    {
+      "id": "C2",
+      "files": [
+        "history/history_page.cpp:395",
+        "shell/history_shell.cpp:162",
+        "shell/login_shell.cpp:48",
+        "shell/frmmain.cpp:346",
+        "shell/frmmain.cpp:498"
+      ],
+      "result": "显示草稿纳入hasUnsavedChanges；requestLeave的Cancel保留草稿、Discard关闭不写库；保存/查询/导出busy先拒绝。主壳登录、注销和关闭均调用全局报告守卫；当前位于报告页时切页也调用，条件性后台路径见R1。"
+    },
+    {
+      "id": "C3",
+      "files": [
+        "history/history_page.cpp:212",
+        "history/report_remaining_store.cpp:64"
+      ],
+      "result": "删除仍仅visible=0，基于report_data.id且整批事务；保留report_results/report_values/外部引用；仅commit后reportsHidden，返回第一页避免旧总数空末页；错误不重建列表，选择可保留重试。"
+    },
+    {
+      "id": "C4",
+      "files": [
+        "history/report_controller.cpp:121",
+        "history/report_controller.cpp:308",
+        "shell/history_shell.cpp:94",
+        "shell/history_shell.cpp:127"
+      ],
+      "result": "报告busy由engine/chooser/exporting联合决定，HTML仍在导出时关闭预览不会清busy。htmlExported已接reportHasOutcome_/reportStatus/REPORT_HTML；失败、成功后再关闭预览均保留最终状态。finishExport先更新busy再发结果，主壳最终结果在同一GUI回调内覆盖临时结束提示。"
+    },
+    {
+      "id": "C5",
+      "files": [
+        "shell/resources.qrc",
+        "shell/shell.pri",
+        "history/history_core.pri"
+      ],
+      "result": "主壳提供/fixtures/history_reports.json和/fixtures/history_display_contract.json，后者映射同一history_report_options.json；shell.pri排除history/resources.qrc避免重复注册，新store/dialog/view/UI通过history_core.pri进入native目标。"
+    },
+    {
+      "id": "C6",
+      "files": [
+        "shell/build.sh:82",
+        "shell/build.sh:122",
+        "shell/build.sh:134",
+        "shell/build.sh:145-154",
+        "shell/build.sh:242-264",
+        "history/renderer.pro"
+      ],
+      "result": "ARM main新store/dialog、display UI、view/dialog/HTML头均列入。helper新增report_remaining_store，保留history_store/moc_history_store、report_document/render、QtRPT源/moc、report_resources/imagesRpt QRC以及renderer/pdf_mapping；排除display_dialog/page及catalog。AccountSession为头内值类型，不需AccountStore对象或moc_account_store进入helper。"
+    },
+    {
+      "id": "C7",
+      "files": [
+        "history/report_renderer.cpp",
+        "history/report_remaining_html.h",
+        "history/report_resources.qrc",
+        "shell/build.sh:234"
+      ],
+      "result": "helper的--html只消费不可变JSON快照，复用原模板及私有临时PDF绘制设备，不调用HistoryStore.initialize/loadDisplay；故helper无需主壳fixtures显示别名。新增QTextDocument/QTextCodec/QPrinter已由既有Gui/Core/PrintSupport覆盖，静态未发现新增库缺口。此结论不代替ARM链接/ELF/插件/板端验收。"
+    },
+    {
+      "id": "C8",
+      "files": [
+        "shell/package_arm64.py:16-31",
+        "shell/arm64_object_reuse.py",
+        "tests/test_shell_arm64_inputs.py:188"
+      ],
+      "result": "snapshot递归纳入history/data等及明确fixture输入；对象复用要求源顺序、flags、编译器、构建脚本和编译输入SHA一致；helper-source静态断言已新增report_remaining_store。未运行清单检查或构建。"
+    }
+  ],
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P2",
+      "classification": "静态可追踪的条件性公开API守卫不一致，未运行复现；正常原toolbar路径通常始终在报告页，不宣称该常规路径已失效",
+      "file": "06_programs/sn100_host/shell/frmmain.cpp",
+      "functions": [
+        "selectMainPage(int):394",
+        "selectUserPage(int):474"
+      ],
+      "evidence": "selectMainPage仅在currentMainPage()==2时requestHistoryLeave；selectUserPage没有报告busy检查。相对地businessPagesIdle/requestLogin、requestLogout、closeEvent均检查报告。公开HistoryReportController::exportHtml/exportPdf可在当前其他主页面时启动，通过busyChanged令HistoryPage busy。",
+      "input": [
+        "所有其他模块就绪空闲，无草稿，主壳先处于试剂/医院等非报告主页面",
+        "通过已绑定的公开controller exportHtml(report,new_path)启动真实或受控延迟导出",
+        "在helper完成前selectMainPage(另一个页面)，或当前设置页内selectUserPage"
+      ],
+      "static_expected_actual": "page.isBusy()==true且登录/注销/退出拒绝，但selectMainPage可能返回true，因为跳过报告守卫。主壳接口的全局busy规则因此不一致。",
+      "suggestion": "若本轮要求报告busy全局阻导航，在两个导航入口先统一检查history_->isBusy，再处理各页草稿；或者明确限定公开导出只能从报告页发起并在入口验证。补当前主页面非2的导出忙态用例，避免只覆盖报告页状态。",
+      "runtime_status": "待整合窗口决定合同并实际测试，非已运行失败"
+    }
+  ],
+  "workflow_notes": [
+    {
+      "id": "W1",
+      "priority": "P3",
+      "file": "06_programs/sn100_host/shell/wsl.sh:28-29",
+      "input": "未设置SN100_JOBS时直接运行integrated-build/integrated-run",
+      "result": "native默认仍make -j4，而本轮四窗口约定最多-j2；ARM build.sh已校验1至2。",
+      "suggestion": "最终原始构建命令显式SN100_JOBS=2并保留收据，或统一默认值/校验。这里不修改脚本、不发起构建。"
+    }
+  ],
+  "new_shell_test": {
+    "path": "06_programs/sn100_host/tests/report_remaining_shell_test.cpp",
+    "present_at_final_read": false,
+    "read_attempts": "已在审查开始、中段及最终多次检查，均未落盘",
+    "reviewed": false,
+    "executed": false,
+    "conclusion": "不能将计划中的新测试计为已覆盖或通过；新增文件落盘后仍需root审查/运行。"
+  },
+  "existing_test_gaps": [
+    {
+      "id": "T1",
+      "input": "Guest、1至5各角色、Password与Simulated来源、actionReady=false，以及会话撤销",
+      "suggestion": "统一窗同时断言按钮与worker拒绝/成功回执；使用实际AccountStore会话事件，避免只直接调用page.setSession而漏主壳接线。"
+    },
+    {
+      "id": "T2",
+      "input": "显示设置草稿分别触发主壳切页、requestLogin、requestLogout、viewport/主壳close",
+      "suggestion": "Cancel后身份/页面/DB/SHA/草稿不变；Discard后只关闭草稿不落库；保存前后锁/写失败恢复，busy禁止离开与重复；原report_remaining_test只核独立page守卫，不代替主壳四入口。"
+    },
+    {
+      "id": "T3",
+      "input": "统一窗删除勾选优先、无勾选当前行、No取消、Guest拒绝、混合不存在ID、真实锁与21条末页唯一条删除",
+      "suggestion": "核report_data.id而非可见行号、visible变化、结果/数值/引用行数不变、失败保留选择、重开与回第一页。原独立12项已覆盖主要规则，新增整合验证应核实际会话与主壳生命周期。"
+    },
+    {
+      "id": "T4",
+      "input": "从原HTML action打开实际文件选择框，Cancel/重开/失败重试；受控helper保证导出busy足够长",
+      "suggestion": "分别在预览开着与已关闭而helper未结束时断言主壳切页、登录、注销、退出拒绝；完成/失败后状态保留，之后可导航。既有integrated_report_test仅PDF；独立HTML测试不含主壳。"
+    },
+    {
+      "id": "T5",
+      "input": "HTML中文、保存时单位/倍率/精度、&拒绝、目标竞态不覆盖，以及现有CSV/PDF/中文回归",
+      "suggestion": "文件再次解析并核字段/数量；不将本地HTML导出称LIS上传/实体打印；不以新catalog当前单位重解释旧历史。"
+    },
+    {
+      "id": "T6",
+      "input": "报告busy/患者或显示草稿时向外层ShellViewport发送关闭/SIGTERM请求，完成后再安全关闭",
+      "suggestion": "确认ShellViewport转发frmMain.close，ShutdownRequest无绕过守卫；退出后HistoryStore.close在worker执行且线程停止；仅window.close单对象断言不代表整个入口/操作系统退出链已验。"
+    },
+    {
+      "id": "T7",
+      "input": "原committedHospitalAndReportLifecycle与persistedHospitalAndLegacyEntry累计",
+      "suggestion": "保留首轮legacy.query偶发失败记录；后续通过不代表根因修复，不放宽断言或超时。"
+    }
+  ],
+  "explicit_limits": {
+    "xlsx": "QXLSX_LIBRARY在正式qtrpt.pri显式移除，config.pri仍注释；不启用、不冒充CSV后缀。",
+    "html_ampersand": "validateHistoryHtmlSource对任意源&（包括文本&amp;）明确拒绝；原HTML连续绝对定位，没有PDF页数合同；浏览器视觉另验。",
+    "history_units": "报告继续用已保存匿名历史格式合同，不读当前catalog重解释值；真实项目ID/结果链未接，不借本次接线关闭。",
+    "corrupt_preferences": "损坏偏好明确报错且无自动修复；若首次query失败，shell/main会退出3。沿既有fail-closed合同保留人工核查边界，不把这视为旧legacy.query根因。",
+    "runtime": "未编译、未运行GUI/业务/资源/ARM/RK/仪器，无新增动态验收通过结论。",
+    "shared_tree": "此文件仅对所列SHA快照有效；整合窗口后续修改必须重新核对。"
+  }
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="7" failures="5" tests="6" name="ReportRemainingHtmlTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="fail" name="htmlContent">
+    <failure tag="three_rows" message="&apos;errors.isEmpty()&apos; returned FALSE. (报告渲染失败（退出码4）：HISTORY_REPORT_FONT SimSun &#x002D;&gt; Noto Sans CJK SC
+HISTORY_REPORT_FONT 黑体 &#x002D;&gt; Noto Sans CJK SC
+QPainter::begin(): Returned false
+HISTORY_RENDER_ERROR 无法开始绘制报告，请检查输出路径和打印设备
+)" result="fail"/>
+    <failure tag="sixty_four_rows" message="&apos;errors.isEmpty()&apos; returned FALSE. (报告渲染失败（退出码4）：HISTORY_REPORT_FONT SimSun &#x002D;&gt; Noto Sans CJK SC
+HISTORY_REPORT_FONT 黑体 &#x002D;&gt; Noto Sans CJK SC
+QPainter::begin(): Returned false
+HISTORY_RENDER_ERROR 无法开始绘制报告，请检查输出路径和打印设备
+)" result="fail"/>
+  </testcase>
+  <testcase result="fail" name="invalidDuplicateAndRecovery">
+    <failure message="Compared values are not the same
+   Actual   (errors.size()): 3
+   Expected (4)            : 4" result="fail"/>
+  </testcase>
+  <testcase result="fail" name="writeFailureAndRecovery">
+    <failure message="Compared values are not the same
+   Actual   (errors.size()): 0
+   Expected (1)            : 1" result="fail"/>
+  </testcase>
+  <testcase result="fail" name="previewCancelBusyAndPdfRegression">
+    <!-- message="QSignalSpy: Unable to handle parameter &apos;preview&apos; of type &apos;QPrintPreviewDialog*&apos; of method &apos;previewReady&apos;, use qRegisterMetaType to register it." type="qwarn" -->
+    <!-- message="HISTORY_REPORT_FONT SimSun &#x002D;&gt; Noto Sans CJK SC" type="qinfo" -->
+    <!-- message="HISTORY_REPORT_FONT 黑体 &#x002D;&gt; Noto Sans CJK SC" type="qinfo" -->
+    <!-- message="***********************************************************************" type="qdebug" -->
+    <!-- message="starting evaluate" type="qdebug" -->
+    <!-- message="***********************************************************************" type="qdebug" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <failure message="&apos;preview&apos; returned FALSE. ()" result="fail"/>
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[QSignalSpy: Unable to handle parameter 'preview' of type 'QPrintPreviewDialog*' of method 'previewReady', use qRegisterMetaType to register it.]]>
+<![CDATA[HISTORY_REPORT_FONT SimSun -> Noto Sans CJK SC]]>
+<![CDATA[HISTORY_REPORT_FONT 黑体 -> Noto Sans CJK SC]]>
+<![CDATA[***********************************************************************]]>
+<![CDATA[starting evaluate]]>
+<![CDATA[***********************************************************************]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+  </system-err>
+</testsuite>

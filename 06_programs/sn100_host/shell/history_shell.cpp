@@ -36,6 +36,8 @@ void frmMain::attachHistoryPage(HistoryPage *page)
     delete placeholder;
     ui->stkCenterAdptive->insertWidget(2, historyViewport_);
     ui->stkCenterAdptive->setCurrentIndex(previousPage);
+    page->setSession(session_);
+    connect(this, &frmMain::sessionChanged, page, &HistoryPage::setSession);
 
     connect(page, &HistoryPage::statusChanged, this, [this](const QString &message)
     {
@@ -97,7 +99,7 @@ bool frmMain::enableHistoryReports(const QString &directory)
         if (busy)
         {
             reportHasOutcome_ = false;
-            reportStatus(tr("报告预览或PDF导出处理中。"));
+            reportStatus(tr("报告预览或HTML/PDF导出处理中。"));
         }
         else if (!reportHasOutcome_) reportStatus(tr("报告操作已结束。"));
         else
@@ -115,12 +117,32 @@ bool frmMain::enableHistoryReports(const QString &directory)
         reportStatus(operation + QStringLiteral(": ") + message, true);
         qWarning().noquote() << "REPORT_ERROR" << operation << message;
     });
+    connect(reports_, &HistoryReportController::nativePrintFinished, this,
+            [this](const QString &, const QString &outcome, const QString &printerName, const QString &)
+    {
+        // Failed/Unknown already use the existing failed signal and error status.
+        // Software submission is deliberately not presented as paper completion.
+        if (outcome != QStringLiteral("Submitted") && outcome != QStringLiteral("Cancelled")) return;
+        reportHasOutcome_ = true;
+        const QString message = outcome == QStringLiteral("Submitted")
+            ? tr("打印任务已提交给本机打印系统：%1；实际出纸尚未确认。").arg(printerName)
+            : tr("已取消打印，未提交打印任务。");
+        reportStatus(message);
+        qInfo().noquote() << "REPORT_NATIVE_PRINT" << outcome << printerName;
+    });
     connect(reports_, &HistoryReportController::pdfExported, this,
             [this](const QString &path, int rows)
     {
         reportHasOutcome_ = true;
         reportStatus(tr("PDF已导出：%1行，%2").arg(rows).arg(path));
         qInfo().noquote() << "REPORT_PDF" << rows << path;
+    });
+    connect(reports_, &HistoryReportController::htmlExported, this,
+            [this](const QString &path, int rows)
+    {
+        reportHasOutcome_ = true;
+        reportStatus(tr("HTML已导出：%1行，%2").arg(rows).arg(path));
+        qInfo().noquote() << "REPORT_HTML" << rows << path;
     });
     connect(reports_, &HistoryReportController::previewReady, this, []()
     {

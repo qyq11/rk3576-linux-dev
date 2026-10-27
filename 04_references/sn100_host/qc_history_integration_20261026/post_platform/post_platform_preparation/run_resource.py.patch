@@ -1,0 +1,45 @@
+--- old/run_resource.py
++++ new/run_resource.py
+@@ -18,7 +18,7 @@
+ import tempfile
+ import time
+ 
+-from common import load, now, require, save, sha, verify_frozen, verify_native
++from common import spawn_owned, clean_environment, load, now, require, save, sha, verify_frozen, verify_native
+ 
+ 
+ def owned_group_status(pgid):
+@@ -170,7 +170,7 @@
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--root-go', action='store_true', required=True,
+                         help='Root integrator explicitly confirms source/load freeze and serial execution')
+-    parser.add_argument('--name', default='resource_01', help='Fresh evidence attempt name; never reuse a prior result')
++    parser.add_argument('--name', default='post_resource_01', help='Fresh evidence attempt name; never reuse a prior result')
+     args = parser.parse_args()
+     require(args.root_go and os.geteuid() != 0, 'Explicit --root-go and ordinary WSL user required')
+     require(re.fullmatch(r'[a-zA-Z0-9_\-]+', args.name) is not None, 'Simple evidence attempt name required')
+@@ -230,10 +230,14 @@
+              'environment_overrides': selected_env, 'source_freeze': str(freeze),
+              'start_new_session': True, 'outer_timeout_seconds': 65,
+              'scope': 'One 30 s serial fresh anonymous workload; SIGTERM is handled by the application'})
++        host_environment = runtime / 'host-environment'
++        host_environment.mkdir()
++        observer_env, clean_receipt = clean_environment(host_environment, 'xcb')
++        save(driver / 'private_environment.json', clean_receipt)
+         start = time.monotonic()
+         with (driver / 'observer_driver.log').open('wb') as stream:
+             try:
+-                process = subprocess.Popen(command, cwd=root, env=dict(os.environ, **selected_env),
++                process = spawn_owned(command, cwd=root, env=observer_env,
+                                            start_new_session=True, stdout=stream, stderr=subprocess.STDOUT)
+                 receipt.update(observer_pid=process.pid, owned_process_group=process.pid,
+                     start_new_session=True, state='observer_running',
+@@ -356,7 +360,7 @@
+               'driver_unchanged': driver_before == sha(Path(__file__)),
+               'steady_window_samples': steady['sample_count'] > 100,
+               'runtime_counts_readable': not count_errors}
+-    info = {'schema': 'sn100-four-windows-resource-v1', 'checks': checks,
++    info = {'schema': 'sn100-post-platform-resource-v2', 'passed': all(checks.values()), 'checks': checks,
+             'actual_observer_exit_code': process.returncode,
+             'actual_child_exit_code': observed.get('exit_code'),
+             'source_input_count': len(frozen), 'binary_sha256_before': binary_before,

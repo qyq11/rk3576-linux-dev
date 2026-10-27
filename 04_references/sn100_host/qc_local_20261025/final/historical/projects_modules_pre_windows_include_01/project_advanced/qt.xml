@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="6" failures="0" tests="11" name="ProjectAdvancedTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="scalarSaveCopyReopenPreservesExistingContract">
+    <!-- message="ADVANCED_SAVE_REOPEN 1 QMap((&quot;first_light&quot;, &quot;405nm&quot;)(&quot;max_test_time&quot;, &quot;40&quot;)(&quot;min_test_time&quot;, &quot;5&quot;)(&quot;sample_change_clean&quot;, &quot;8&quot;)(&quot;second_light&quot;, &quot;570nm&quot;)(&quot;stopTime&quot;, &quot;20&quot;)) result_unit &quot;s&quot; sample_rate &quot;OFFLINE_RATE_A&quot;" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="emptyIllegalAndUnknownInputsAreRejected"/>
+  <testcase result="pass" name="actionRowsSaveInOrderValidateAndProtectReagentReferences">
+    <!-- message="ACTION_REOPEN 2 2 ordered steps; 15.5uL; GUI sample6uL/reagent16.5uL persisted/reopened; unknown reagent/empty/action&#x002D;volume mismatch refused; reagent FK delete blocked" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="durableReferencesProtectSeparateDatabaseRecords">
+    <!-- message="CROSS_DB_REFERENCE 2 hold persisted; rename/delete refused; external old&#x002D;unit/12.345 preserved; explicit release permits rename" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="referencePermissionMissingProjectAndClosedStoreFailClosed"/>
+  <testcase result="pass" name="lockFailureAndRetryKeepCommittedData">
+    <!-- message="ADVANCED_LOCK_RECOVERY_GUI_TICKS 98" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="oldCatalogUpgradeAndWriteFailureRollback">
+    <!-- message="OLD_CATALOG_UPGRADE baseline IDs/results preserved; injected write failure rolled back all fields; retry/reopen succeeded" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="guiCancelDraftBusyAndLocalSave">
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+  </testcase>
+  <testcase result="pass" name="corruptStoredPayloadFailsWithoutDroppingUnknownData"/>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[ADVANCED_SAVE_REOPEN 1 QMap(("first_light", "405nm")("max_test_time", "40")("min_test_time", "5")("sample_change_clean", "8")("second_light", "570nm")("stopTime", "20")) result_unit "s" sample_rate "OFFLINE_RATE_A"]]>
+<![CDATA[ACTION_REOPEN 2 2 ordered steps; 15.5uL; GUI sample6uL/reagent16.5uL persisted/reopened; unknown reagent/empty/action-volume mismatch refused; reagent FK delete blocked]]>
+<![CDATA[CROSS_DB_REFERENCE 2 hold persisted; rename/delete refused; external old-unit/12.345 preserved; explicit release permits rename]]>
+<![CDATA[ADVANCED_LOCK_RECOVERY_GUI_TICKS 98]]>
+<![CDATA[OLD_CATALOG_UPGRADE baseline IDs/results preserved; injected write failure rolled back all fields; retry/reopen succeeded]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+  </system-err>
+</testsuite>

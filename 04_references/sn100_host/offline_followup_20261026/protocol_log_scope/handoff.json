@@ -1,0 +1,728 @@
+{
+  "schema": "sn100-protocol-log-scope-followup-v1",
+  "status": "observation_gap_fixed_and_narrow_checks_passed",
+  "source_inputs": {
+    "protocol/soak_main.cpp": "27f939c7662074298a363af6865ee867aa3d03150d0c37b14aa0780f352be363",
+    "protocol/soak.pro": "412ebea152e27fbdd70f7efb68231c1e5fb8e306a95c4b2bb1cb2c24ef6a790c",
+    "protocol/read_only_client.cpp": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+    "protocol/read_only_client.h": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+    "protocol/tcp_transport.cpp": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+    "protocol/tcp_transport.h": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+    "protocol/frame_codec.cpp": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+    "protocol/frame_codec.h": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+    "protocol/read_only_messages.cpp": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+    "protocol/read_only_messages.h": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+    "protocol/status_session.cpp": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+    "protocol/status_session.h": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+    "tests/protocol_soak_timing_test.py": "03775a7a4257b9fef5b0a911354795eb79c3ab47b443c5ba8776094595df0a05",
+    "tests/run_protocol_soak.py": "2709b316036ffdef495c108e40e89f22188efec24ca4137e5b4c1a571adde729"
+  },
+  "changed_official_files": [
+    "protocol/soak_main.cpp",
+    "tests/protocol_soak_timing_test.py"
+  ],
+  "preimages": "07_backups/sn100_host/offline_followup_20261026/protocol_log_scope_preimage/manifest.json",
+  "native_checker_actual_exit": 0,
+  "native_target_exits": [
+    0,
+    0,
+    0,
+    3,
+    3
+  ],
+  "old_target_actual_exit": 0,
+  "new_scope_checker_on_old_binary_exit": 1,
+  "meaning_of_old_contrast": "Old functional run passed; the new complete-scope validator rejects only absent markers",
+  "builds": {
+    "native": "c6be7102bde8b1fc507afe9f617d31fdc9c48423feb76602cbca83efacb4add4",
+    "windows32": "7a02c6969c742269dfedf3b2c396beadd7d17a4e937a06c6d4a764e905186c07",
+    "arm64": "ce06dd7189abffceb3eec560ed22f2d5bc2a89dab79362c7293644c9a6321c82"
+  },
+  "windows_or_arm_product_executed": false,
+  "new_full_app_release_or_gui_claimed": false,
+  "old8h_direct_cause_confirmed": false,
+  "old8h_defect_fixed_claimed": false,
+  "observed_gap": "Previous log.write span omitted size/rotation and stdout; new optional complete scopes pair before synchronous failure saving",
+  "contracts_unchanged": [
+    "120ms timeout",
+    "one retry",
+    "8192 bounded ring",
+    "default timing off",
+    "failure remains failure",
+    "queued/write is not peer ACK"
+  ],
+  "limits": [
+    "No inference of the original19min10s cause from an aggregated heartbeat maximum",
+    "25min pass does not close8h or exclude a rare stall; its overwritten ring cannot reconstruct old1150s events",
+    "More events shorten retained time at a fixed8192 capacity; do not compare old/new retained duration as equal",
+    "No new CPU/RSS/input-response budget or long-stability/real instrument qualification"
+  ],
+  "runtime_databases_ini_credentials_objects_binaries_copied": false,
+  "copied_files": {
+    "make.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/make.command.json",
+      "sha256": "612ebbc483a4057a5684acc921198f6cbd4247889c3abe93ce4b99e4b6a4d5f3",
+      "bytes": 315
+    },
+    "make.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/make.exit.json",
+      "sha256": "a3b065828944491625025cbe936deec41734d20a09a73dfa57137dbd830bdbb3",
+      "bytes": 423
+    },
+    "make.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/make.log",
+      "sha256": "5ff026a9ce17f0e387c5e210705699b6575c3eb18a1db9d96d37354cba36e293",
+      "bytes": 6329
+    },
+    "new_cli.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli.command.json",
+      "sha256": "c5c73bc8d6b582523fa1b80e5a972c8b9ada85047d7100dfa8641fd654e8e6b1",
+      "bytes": 728
+    },
+    "new_cli.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli.exit.json",
+      "sha256": "a4b73612855715157e061bc040f6a8b51a90ff587fb1e13d0d3f6df84f09569e",
+      "bytes": 836
+    },
+    "new_cli.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli.log",
+      "sha256": "44c30ad44d5e06e31a35f9b071f700c53adb9152687ff4d3fbd232aaa0050203",
+      "bytes": 143
+    },
+    "old_binary.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_binary.json",
+      "sha256": "c9d3f34c5533e6dcd02b43cb3c2d8be7d0434e297cfa7b069a72d6d1f761d8e6",
+      "bytes": 381
+    },
+    "old_scope_contrast.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope_contrast.command.json",
+      "sha256": "1287ea7ba6501e129527ff8e3088569d0f73230d53e278986c332f65397086a5",
+      "bytes": 748
+    },
+    "old_scope_contrast.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope_contrast.exit.json",
+      "sha256": "306c3c5172588b49d23faee5beec3fe7a522e8301f41ada2b61ab9fbb4cc1207",
+      "bytes": 856
+    },
+    "old_scope_contrast.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope_contrast.log",
+      "sha256": "c98b163bbe152bf73d3d8cbbd5a671e32851999c44dba8483d1a4e8166178079",
+      "bytes": 861
+    },
+    "qmake.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/qmake.command.json",
+      "sha256": "4b6d5e6ce3668eb801b5962bbafdfe17449791b90c5a6e413ec9ef35a838878f",
+      "bytes": 482
+    },
+    "qmake.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/qmake.exit.json",
+      "sha256": "2e99e2fbda9afd0f5f381ca0e423e62c9a8d77622125408a4b69b93d927c3dcd",
+      "bytes": 590
+    },
+    "qmake.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/qmake.log",
+      "sha256": "aeef20f90e117b4ebd33f2233de2ce1e8775744de0724c89704eacab49f429a2",
+      "bytes": 181
+    },
+    "source_after.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/source_after.json",
+      "sha256": "ce9b8201bb87aff2d1cce00969c7c0d04484454acec6e4de0e106ea82c40e8b0",
+      "bytes": 1402
+    },
+    "source_before.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/source_before.json",
+      "sha256": "ce9b8201bb87aff2d1cce00969c7c0d04484454acec6e4de0e106ea82c40e8b0",
+      "bytes": 1402
+    },
+    "steps.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/steps.json",
+      "sha256": "b383b71f808f0029b2312ada12a9d963e5012f86ced9877804abf5831b1685be",
+      "bytes": 2860
+    },
+    "verification.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/verification.json",
+      "sha256": "7fa3d11b0aee3392555655f1aba62f1f24c9827ad8dcd67ff7d008a3a165f6bc",
+      "bytes": 4522
+    },
+    "windows/make.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/make.log",
+      "sha256": "150aeb9d9549e382f73ab778d2729b3c5d8a3f48ee99b6d1e7040236b4bd471b",
+      "bytes": 8220
+    },
+    "windows/make.log.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/make.log.command.json",
+      "sha256": "177c30f67b8261c939f1124b149b5623ccb962a869921df4a94f3a4d2ce0351a",
+      "bytes": 331
+    },
+    "windows/make.log.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/make.log.exit.json",
+      "sha256": "190f19a57ceadae1c0b6d2390591bcbbdcff2e7dfecda4b74e7919066f1aae69",
+      "bytes": 191
+    },
+    "windows/make.log.process.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/make.log.process.json",
+      "sha256": "d5d82e7547a05cb272431bafea71ef0f97620dffb957925b818b38c6fbf45c8d",
+      "bytes": 167
+    },
+    "windows/qmake.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/qmake.log",
+      "sha256": "b43b08309455d96d1f2594e1477d9e89b1cb3ce9290578d334ea8e87f3f9815c",
+      "bytes": 195
+    },
+    "windows/qmake.log.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/qmake.log.command.json",
+      "sha256": "a5974522a38ea05f23b77b71ad4d8fab5c616579674ab82ac7ec868eb9c8c97c",
+      "bytes": 515
+    },
+    "windows/qmake.log.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/qmake.log.exit.json",
+      "sha256": "a7b64fdf69b578a334035cdb89f2053f808a96c2833623fc51950fae9fa9d216",
+      "bytes": 191
+    },
+    "windows/qmake.log.process.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/qmake.log.process.json",
+      "sha256": "db8d1da2ae999677525ade3836d83ab0b118558bb82b4771a5a409bfb45824ad",
+      "bytes": 167
+    },
+    "windows/source_before.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/source_before.json",
+      "sha256": "45d4af538a378fd7daf838eded093dc4dee91babb143feed6d024153ed62cadc",
+      "bytes": 1418
+    },
+    "windows/verification.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/verification.json",
+      "sha256": "b2ca8a3ad42acb09eefa168c9ee171a9fc388949dd0f666aceacb38e8eb7b6a3",
+      "bytes": 2114
+    },
+    "arm64/compile_0.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_0.command.json",
+      "sha256": "5743a2e2b36d9e9bd585115a6ba7d8c5524b61b5af3653e828fceb36c71b481e",
+      "bytes": 1323
+    },
+    "arm64/compile_0.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_0.exit.json",
+      "sha256": "56e451344c06fa1fdb6e3a306bf200d351d2cab48d53168849d596ff8b510bef",
+      "bytes": 1341
+    },
+    "arm64/compile_0.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_0.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/compile_1.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_1.command.json",
+      "sha256": "45fc7fca60788c85057e96cc7e3bf145923ac5b27ab4bf3d6ae55db60699d576",
+      "bytes": 1330
+    },
+    "arm64/compile_1.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_1.exit.json",
+      "sha256": "eaf3122cce2939b97a392681f5676f6229994468a27c6b4362382f24b9e3f098",
+      "bytes": 1348
+    },
+    "arm64/compile_1.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/compile_2.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_2.command.json",
+      "sha256": "bd520127ac3f17eee99b0c18888258bcde5e9f44bcbc1c93278973697e5a5797",
+      "bytes": 1327
+    },
+    "arm64/compile_2.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_2.exit.json",
+      "sha256": "f539609115c48b46d5b655264c58a4b0248896dee5e1ab7888a7669ce2bf484c",
+      "bytes": 1345
+    },
+    "arm64/compile_2.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/compile_3.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_3.command.json",
+      "sha256": "5852332e9270d6830e61a46898861be107ccf94235d428858984f6ff19906c65",
+      "bytes": 1332
+    },
+    "arm64/compile_3.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_3.exit.json",
+      "sha256": "2e5a08a36d4e03c83e8a4daa94066c3d55a3b69a77e9a1c0856344fb6e9cba86",
+      "bytes": 1350
+    },
+    "arm64/compile_3.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_3.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/compile_4.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_4.command.json",
+      "sha256": "f137cb85667ee5f9e63a41900f8491277f2cd8bae8936d0accd423d6d588b6e2",
+      "bytes": 1325
+    },
+    "arm64/compile_4.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_4.exit.json",
+      "sha256": "2b1d746e88d10b8e96769f1687ae6e895b9a3f14a943d51b1cda942b9e0921c3",
+      "bytes": 1343
+    },
+    "arm64/compile_4.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_4.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/compile_5.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_5.command.json",
+      "sha256": "68b06c30f3424e9ab524222f7e9a0bb348d82c27d52df9df3e519e5146bb7b1e",
+      "bytes": 1328
+    },
+    "arm64/compile_5.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_5.exit.json",
+      "sha256": "4867d3379234cd2e6a60508077df1428417f27c70b967e071bca379a5396f541",
+      "bytes": 1346
+    },
+    "arm64/compile_5.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_5.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/compile_6.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_6.command.json",
+      "sha256": "5f402829fc9d22ceaeef82519ad13088477c38bd6da0b2cde51e3af5bb725349",
+      "bytes": 1369
+    },
+    "arm64/compile_6.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_6.exit.json",
+      "sha256": "a2d442cddfb351fec3d81887c8dc247ba76196dfcaf2e8b12548f4a615375c93",
+      "bytes": 1387
+    },
+    "arm64/compile_6.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_6.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/compile_7.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_7.command.json",
+      "sha256": "991fd934060111e93f5d885c45a42b554f59e1f097734e282a697c90bf4bd863",
+      "bytes": 1366
+    },
+    "arm64/compile_7.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_7.exit.json",
+      "sha256": "ef1ee446c9ed017a25189b21da8e9c59e1e2d1ba5b396853408f7591d04f1763",
+      "bytes": 1384
+    },
+    "arm64/compile_7.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compile_7.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/compiler_version.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compiler_version.command.json",
+      "sha256": "ce9f768ba71f72831ea96cc84ce71293baddb7bbe31c8062f02d96ee4533e3be",
+      "bytes": 311
+    },
+    "arm64/compiler_version.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compiler_version.exit.json",
+      "sha256": "695492803f50993795d5c8475dc5b71ef2d17dd1fe82cbe561770c1fe28b71dd",
+      "bytes": 329
+    },
+    "arm64/compiler_version.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/compiler_version.log",
+      "sha256": "bb6aade8c4ca40cae9cb1be8abe12377f651fccd82954af74ec61703b6608fc5",
+      "bytes": 7
+    },
+    "arm64/elf_header.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/elf_header.command.json",
+      "sha256": "ca10b9130ac7094ebef0bea497ae7fd19197f147151aeec7d6ca657c510b6982",
+      "bytes": 457
+    },
+    "arm64/elf_header.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/elf_header.exit.json",
+      "sha256": "999c2f25a3642a1051a58aa356604f5e339534806e8afaea38eca635ce67b611",
+      "bytes": 475
+    },
+    "arm64/elf_header.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/elf_header.log",
+      "sha256": "94f1c394721d59c9e8985607eea8c78dce34afd059273eba8f627ad1d5976463",
+      "bytes": 953
+    },
+    "arm64/elf_needed.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/elf_needed.command.json",
+      "sha256": "22aa99c58b24ea000a34614bbe4bf62bfb2f850f78dcf59d74cde7f3fbc2fbac",
+      "bytes": 457
+    },
+    "arm64/elf_needed.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/elf_needed.exit.json",
+      "sha256": "5c099ba8ea13b45c5d81f069513b1a4f3e90e4d0c176e21ceadb7045765fda01",
+      "bytes": 475
+    },
+    "arm64/elf_needed.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/elf_needed.log",
+      "sha256": "54ded1a0056cd5bfa4421107c37daf6edf9411a9c8fd2714a2dd086d03509165",
+      "bytes": 1835
+    },
+    "arm64/external_before.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/external_before.json",
+      "sha256": "39f50ee6c080c0c48190cf4a2882f37f244d1c25390becf38b9099bba7497b1a",
+      "bytes": 790
+    },
+    "arm64/link.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/link.command.json",
+      "sha256": "a87d3db13d81af2f47a5b833fcab0fb8610077c69db8507aff1efbb8004d82a6",
+      "bytes": 2363
+    },
+    "arm64/link.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/link.exit.json",
+      "sha256": "309d75956e8935cf389ccfad872a00ebdf8163a5bd8a81a2ac4be1fe4e7dceba",
+      "bytes": 2381
+    },
+    "arm64/link.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/link.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/moc_read_only_client.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/moc_read_only_client.command.json",
+      "sha256": "0cea7fb03bb23c0007654f292fdf896739a2fb63f41f82a14f885e403b4e425e",
+      "bytes": 584
+    },
+    "arm64/moc_read_only_client.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/moc_read_only_client.exit.json",
+      "sha256": "4e633f18d3bb2125b07dc5083843dcaecd2cf996b9332cd8b814446857f96941",
+      "bytes": 602
+    },
+    "arm64/moc_read_only_client.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/moc_read_only_client.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/moc_tcp_transport.command.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/moc_tcp_transport.command.json",
+      "sha256": "4da52ff99edba591006c7f41c4687c329fe89cff7ff0b5386101f5e188d459e2",
+      "bytes": 575
+    },
+    "arm64/moc_tcp_transport.exit.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/moc_tcp_transport.exit.json",
+      "sha256": "5e4dde5e7f0acb5a979194a996b85e989e6db0563e7f28c2d80586b066dba11e",
+      "bytes": 593
+    },
+    "arm64/moc_tcp_transport.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/moc_tcp_transport.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "arm64/source_before.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/source_before.json",
+      "sha256": "ce9b8201bb87aff2d1cce00969c7c0d04484454acec6e4de0e106ea82c40e8b0",
+      "bytes": 1402
+    },
+    "arm64/steps.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/steps.json",
+      "sha256": "6eeb3a77ef94ee467a34ef635f39070c25adfe11667e34e9c433148d32f549a2",
+      "bytes": 16312
+    },
+    "arm64/verification.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/arm64/verification.json",
+      "sha256": "2c9b84a09e500d36614a0be03d5bd7bacc9520dc2dd19a9a0cae7ce95d4764c7",
+      "bytes": 3530
+    },
+    "old_scope/enabled/progress.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope/enabled/progress.json",
+      "sha256": "796056796b6722059fa4f87eb8d337d3819ee9974375ecd988b5ddbb78d0ad7c",
+      "bytes": 1791
+    },
+    "old_scope/enabled/summary.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope/enabled/summary.json",
+      "sha256": "796056796b6722059fa4f87eb8d337d3819ee9974375ecd988b5ddbb78d0ad7c",
+      "bytes": 1791
+    },
+    "old_scope/enabled/timing.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope/enabled/timing.json",
+      "sha256": "9f11458146bc2ec4fe2cdde84f29fd3bea0dc7bb4530f35e80c80d4bd0e70ade",
+      "bytes": 1145626
+    },
+    "old_scope/enabled/wire_0001.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope/enabled/wire_0001.jsonl",
+      "sha256": "385da1895f0d62b25f72fc0627c8261229eaab33db6ada88f1363289a8101866",
+      "bytes": 64555
+    },
+    "old_scope/enabled.stdout.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope/enabled.stdout.log",
+      "sha256": "683b2a6538a8fa57aad9c3080430df4c60dda2cfbcc1e2fc047b3977c4918c52",
+      "bytes": 3656
+    },
+    "old_scope/result.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/old_scope/result.json",
+      "sha256": "4b19a86aa4547e37791de14ff0c684bd27619d00b8951ab60ad4f7f1ab71085e",
+      "bytes": 2035
+    },
+    "new_cli/disabled/progress.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/disabled/progress.json",
+      "sha256": "6cd95ad9c0d6c00538531de5fd1f798ac57510dd7691fadedcf0cdc709ac0ca4",
+      "bytes": 1790
+    },
+    "new_cli/disabled/summary.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/disabled/summary.json",
+      "sha256": "6cd95ad9c0d6c00538531de5fd1f798ac57510dd7691fadedcf0cdc709ac0ca4",
+      "bytes": 1790
+    },
+    "new_cli/disabled/wire_0001.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/disabled/wire_0001.jsonl",
+      "sha256": "00cdaba65065c6ad9c52e7fe1074d89fa9431e585e4144ddc6c8d7a43c48a2dc",
+      "bytes": 63620
+    },
+    "new_cli/disabled.stdout.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/disabled.stdout.log",
+      "sha256": "8879708f6b62e48b0c27e19a09b3b5a143c9ba1803f3355329db69f43d2c84b0",
+      "bytes": 3655
+    },
+    "new_cli/enabled/progress.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/enabled/progress.json",
+      "sha256": "28ba52eead1632bb83b82507f204f1dcdc11a843d518a3ba826c23f461daf12e",
+      "bytes": 1791
+    },
+    "new_cli/enabled/summary.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/enabled/summary.json",
+      "sha256": "28ba52eead1632bb83b82507f204f1dcdc11a843d518a3ba826c23f461daf12e",
+      "bytes": 1791
+    },
+    "new_cli/enabled/timing.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/enabled/timing.json",
+      "sha256": "27e561ee803b363386292c0bbf7626fcc6682204162a392623c002766341a235",
+      "bytes": 1525119
+    },
+    "new_cli/enabled/wire_0001.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/enabled/wire_0001.jsonl",
+      "sha256": "f56b502a517cb4966b3bc5df6352ccc99387c23e67ece0d638074540b17f3f02",
+      "bytes": 66660
+    },
+    "new_cli/enabled.stdout.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/enabled.stdout.log",
+      "sha256": "e7b0a5b6b7d87c877175cea07431212015011ed990c99b30b0025139c01bb40a",
+      "bytes": 3656
+    },
+    "new_cli/log_budget/progress.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/progress.json",
+      "sha256": "ca23a82b0f0889ccb9e9b1c96d6bb8c0505e4777532b785dc703beddbdf322bc",
+      "bytes": 1792
+    },
+    "new_cli/log_budget/summary.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/summary.json",
+      "sha256": "ca23a82b0f0889ccb9e9b1c96d6bb8c0505e4777532b785dc703beddbdf322bc",
+      "bytes": 1792
+    },
+    "new_cli/log_budget/timing.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/timing.json",
+      "sha256": "72c32af3c1e5757f87f2c53207c04899f04107e86d1d7804a1d39937715fa12e",
+      "bytes": 207391
+    },
+    "new_cli/log_budget/wire_0001.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0001.jsonl",
+      "sha256": "e9c6109b738504e29e5c98dbd1a894055a398ed9165e5e5ff4bd324243fc6779",
+      "bytes": 650
+    },
+    "new_cli/log_budget/wire_0002.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0002.jsonl",
+      "sha256": "d8ae0b979f67f68b61c5f6ef0b07c3875734a3ea8c6f55c70364f5154b61ae7a",
+      "bytes": 813
+    },
+    "new_cli/log_budget/wire_0003.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0003.jsonl",
+      "sha256": "0430680fe1340489b28ffbff7e22bb2c5d2fc4a1b44e4930738d1a670b204eb9",
+      "bytes": 795
+    },
+    "new_cli/log_budget/wire_0004.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0004.jsonl",
+      "sha256": "5f53c90a4f4862aa16a6be251eaedf6e714f07ffe515eff01a34914942faddcd",
+      "bytes": 796
+    },
+    "new_cli/log_budget/wire_0005.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0005.jsonl",
+      "sha256": "bf7abf046e604384c56163c547a69cbb66caf8dcde2b6736737e079401dcbc21",
+      "bytes": 796
+    },
+    "new_cli/log_budget/wire_0006.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0006.jsonl",
+      "sha256": "48e2967e9241fc4e24badec5f67af6a0a48832d16daffb07cfe67f6b4a385757",
+      "bytes": 796
+    },
+    "new_cli/log_budget/wire_0007.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0007.jsonl",
+      "sha256": "0c35df9aa709a4afb87ea3d78ae35da64af4893d05bd5030fa630223c21d4547",
+      "bytes": 995
+    },
+    "new_cli/log_budget/wire_0008.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0008.jsonl",
+      "sha256": "bde25851baf518a2d416b44e764b3150931307dc483521dc48a1d308cdec1958",
+      "bytes": 785
+    },
+    "new_cli/log_budget/wire_0009.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0009.jsonl",
+      "sha256": "ed470ddf408b3e94bcbc0dd5d0fbdb955fdab81f9d6abeb4de0a56abaf5de1ca",
+      "bytes": 906
+    },
+    "new_cli/log_budget/wire_0010.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget/wire_0010.jsonl",
+      "sha256": "a4c5a1a100a7343ca2df98603fa94785a2af524cdb3e2524bdd344fb1f6b77f0",
+      "bytes": 808
+    },
+    "new_cli/log_budget.stdout.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/log_budget.stdout.log",
+      "sha256": "69a50ddf008c33b903f342c840064c7d74141eff4e29e681ff41b7f4605da03b",
+      "bytes": 3657
+    },
+    "new_cli/result.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/result.json",
+      "sha256": "db0a9549b6ca6b24d338b51dcaf09b96acef82de07ede5a6e28730d450017ef5",
+      "bytes": 12971
+    },
+    "new_cli/ring_overwrite/progress.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/ring_overwrite/progress.json",
+      "sha256": "e2f5eeaba77a402d5972162856b78af7f97b3a068cfafb2a93af9556376fa3e5",
+      "bytes": 1804
+    },
+    "new_cli/ring_overwrite/summary.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/ring_overwrite/summary.json",
+      "sha256": "e2f5eeaba77a402d5972162856b78af7f97b3a068cfafb2a93af9556376fa3e5",
+      "bytes": 1804
+    },
+    "new_cli/ring_overwrite/timing.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/ring_overwrite/timing.json",
+      "sha256": "125112736422f4274afce140222cdca3bc790b2aa993b58891a316f6b467cc9e",
+      "bytes": 2355703
+    },
+    "new_cli/ring_overwrite/wire_0001.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/ring_overwrite/wire_0001.jsonl",
+      "sha256": "17aa3e524d2d2eab37333acfe67322df4f7dba72f0d43d3a2866f891a643acc1",
+      "bytes": 517184
+    },
+    "new_cli/ring_overwrite.stdout.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/ring_overwrite.stdout.log",
+      "sha256": "d70412fc43de295e767925e48070c7cf162addb1671c8d2b8e28a34ac320f6e5",
+      "bytes": 3664
+    },
+    "new_cli/timing_save_failure/progress.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/timing_save_failure/progress.json",
+      "sha256": "d8152bcd5b9a1be5d47ccdb9ba03550c8f45954c19f07330ca39d29b175ffab5",
+      "bytes": 1818
+    },
+    "new_cli/timing_save_failure/summary.json": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/timing_save_failure/summary.json",
+      "sha256": "d8152bcd5b9a1be5d47ccdb9ba03550c8f45954c19f07330ca39d29b175ffab5",
+      "bytes": 1818
+    },
+    "new_cli/timing_save_failure/wire_0001.jsonl": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/timing_save_failure/wire_0001.jsonl",
+      "sha256": "f0fadd04275579f6923f9b1adb728f98a0be352e67aa1895bdb5469ffebcc8cc",
+      "bytes": 66235
+    },
+    "new_cli/timing_save_failure.stdout.log": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/new_cli/timing_save_failure.stdout.log",
+      "sha256": "203598997269d1f70c55982fc7127820ec653907072ef094abbd9945627a4c15",
+      "bytes": 3683
+    },
+    "source/protocol/soak_main.cpp": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/soak_main.cpp",
+      "sha256": "27f939c7662074298a363af6865ee867aa3d03150d0c37b14aa0780f352be363",
+      "bytes": 30591
+    },
+    "source/protocol/soak.pro": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/soak.pro",
+      "sha256": "412ebea152e27fbdd70f7efb68231c1e5fb8e306a95c4b2bb1cb2c24ef6a790c",
+      "bytes": 380
+    },
+    "source/protocol/read_only_client.cpp": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/read_only_client.cpp",
+      "sha256": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+      "bytes": 11742
+    },
+    "source/protocol/read_only_client.h": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/read_only_client.h",
+      "sha256": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+      "bytes": 2970
+    },
+    "source/protocol/tcp_transport.cpp": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/tcp_transport.cpp",
+      "sha256": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+      "bytes": 19122
+    },
+    "source/protocol/tcp_transport.h": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/tcp_transport.h",
+      "sha256": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+      "bytes": 4282
+    },
+    "source/protocol/frame_codec.cpp": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/frame_codec.cpp",
+      "sha256": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+      "bytes": 9651
+    },
+    "source/protocol/frame_codec.h": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/frame_codec.h",
+      "sha256": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+      "bytes": 2074
+    },
+    "source/protocol/read_only_messages.cpp": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/read_only_messages.cpp",
+      "sha256": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+      "bytes": 9274
+    },
+    "source/protocol/read_only_messages.h": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/read_only_messages.h",
+      "sha256": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+      "bytes": 1136
+    },
+    "source/protocol/status_session.cpp": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/status_session.cpp",
+      "sha256": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+      "bytes": 11691
+    },
+    "source/protocol/status_session.h": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/protocol/status_session.h",
+      "sha256": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+      "bytes": 2113
+    },
+    "source/tests/protocol_soak_timing_test.py": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/protocol_soak_timing_test.py",
+      "sha256": "03775a7a4257b9fef5b0a911354795eb79c3ab47b443c5ba8776094595df0a05",
+      "bytes": 7083
+    },
+    "source/tests/run_protocol_soak.py": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/run_protocol_soak.py",
+      "sha256": "2709b316036ffdef495c108e40e89f22188efec24ca4137e5b4c1a571adde729",
+      "bytes": 16744
+    },
+    "executed_tools/run_protocol_log_scope.py": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/run_protocol_log_scope.py",
+      "sha256": "6bec52d0f29e5f3df662aa2a2c8b5c819c1d1b0035f6c9024a5165b840f5ebb0",
+      "bytes": 5189
+    },
+    "executed_tools/build_protocol_windows.ps1": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/build_protocol_windows.ps1",
+      "sha256": "7cec3713947e3e7abb8ea7964f5e5d2b1d2edfd6ae665de02e85e2c6a2cf6e92",
+      "bytes": 2735
+    },
+    "executed_tools/build_protocol_arm64.py": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/build_protocol_arm64.py",
+      "sha256": "f1d13c12a7c8832c02d7d1296b88c33edc98330e8613384abc0f5fd649a2fc39",
+      "bytes": 4840
+    },
+    "executed_tools/archive_protocol_log_scope.py": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/archive_protocol_log_scope.py",
+      "sha256": "bca333edc9aaeca1e759ec731f72a6278b32ae669c66b0c4a233128e269aa51a",
+      "bytes": 5311
+    },
+    "executed_tools/windows_file_helpers.ps1": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/integration_drivers/windows/file_helpers.ps1",
+      "sha256": "fdf70a4de2dc37a354e136a1a0ff6510a43f043089a82502f997f1932726025d",
+      "bytes": 5381
+    },
+    "native_build/Makefile.txt": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/native_build/Makefile",
+      "sha256": "bb419b85ee087374777f21bf6b63fe61a4f67608a148f440255068e608e84f20",
+      "bytes": 33324
+    },
+    "windows/Makefile.txt": {
+      "source": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_log_scope/windows/Makefile",
+      "sha256": "7da5d83760333849a0752e24dc25518b4d49f6f155906c2dd250936cb602e6dd",
+      "bytes": 107574
+    }
+  }
+}

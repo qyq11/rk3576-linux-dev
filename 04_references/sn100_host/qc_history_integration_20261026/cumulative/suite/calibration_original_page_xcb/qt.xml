@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="22" failures="0" tests="12" name="CalibrationPageTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="normalUiSaveReopenAndShutdown">
+    <!-- message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;IjrveK" type="qinfo" -->
+    <!-- message="INPUT concentration mg/dL=[100.125,50,25], original Sec=[12.25,12.75]; OUTPUT raw first=(100.125,12.5), 3 SQL points, checked/applied=0, reopened id= 1" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="emptyCatalogAndUnavailableClinicalActions">
+    <!-- message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;yzYUFw" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cancellationCopyAndSoftDelete">
+    <!-- message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;otwVqa" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="illegalInputClearsPlot">
+    <!-- tag="empty&#x002D;concentration" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;TrpFaE" type="qinfo" -->
+    <!-- tag="NaN" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;XpeHxd" type="qinfo" -->
+    <!-- tag="Inf" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;GyQarZ" type="qinfo" -->
+    <!-- tag="negative" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;RCrDep" type="qinfo" -->
+    <!-- tag="too&#x002D;large" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;JKfyuJ" type="qinfo" -->
+    <!-- tag="over&#x002D;precision" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;ozNNQz" type="qinfo" -->
+    <!-- tag="duplicate" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;zEOBTe" type="qinfo" -->
+    <!-- tag="empty&#x002D;repeat" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;uXhKGy" type="qinfo" -->
+    <!-- tag="empty&#x002D;dilution&#x002D;label" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;BrvEIY" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="lockFailureKeepsDraftBusyGuardAndRetry">
+    <!-- message="INPUT competing SQL BEGIN IMMEDIATE; OUTPUT one real save error, draft40 retained, original12.25 unchanged; ROLLBACK then explicit retry revision2" type="qinfo" -->
+    <!-- message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;kqtpqE" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="guestCannotEditAndRestoredSessionCan">
+    <!-- message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;MbvmnE" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="staleSnapshotCannotReplaceCurrentRecord">
+    <!-- message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;MlyhvT" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="externalCatalogChangePreservesDraft">
+    <!-- tag="rename&#x002D;project" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;sVvCYW" type="qinfo" -->
+    <!-- tag="delete&#x002D;project" message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;GZrYvV" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="catalogChangeDuringNewDialogRejectsStaleDraft">
+    <!-- message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;rRmEME" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="screenshotsAndScrollReachability">
+    <!-- message="SCREEN_REACHABILITY logical1751x968; hosts1920x1080/1600x900; right+bottom scrolling reaches entire Save/Cancel buttons; QPA= &quot;xcb&quot;" type="qinfo" -->
+    <!-- message="GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page&#x002D;muBbzN" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-IjrveK]]>
+<![CDATA[INPUT concentration mg/dL=[100.125,50,25], original Sec=[12.25,12.75]; OUTPUT raw first=(100.125,12.5), 3 SQL points, checked/applied=0, reopened id= 1]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-yzYUFw]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-otwVqa]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-TrpFaE]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-XpeHxd]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-GyQarZ]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-RCrDep]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-JKfyuJ]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-ozNNQz]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-zEOBTe]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-uXhKGy]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-BrvEIY]]>
+<![CDATA[INPUT competing SQL BEGIN IMMEDIATE; OUTPUT one real save error, draft40 retained, original12.25 unchanged; ROLLBACK then explicit retry revision2]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-kqtpqE]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-MbvmnE]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-MlyhvT]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-sVvCYW]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-GZrYvV]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-rRmEME]]>
+<![CDATA[SCREEN_REACHABILITY logical1751x968; hosts1920x1080/1600x900; right+bottom scrolling reaches entire Save/Cancel buttons; QPA= "xcb"]]>
+<![CDATA[GUI_FIXTURE normal database/worker shutdown; runtime= /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/suite_final_01/calibration_original_page_xcb/runtime/page-muBbzN]]>
+  </system-err>
+</testsuite>

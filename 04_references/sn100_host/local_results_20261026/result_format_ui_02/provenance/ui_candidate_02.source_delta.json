@@ -1,0 +1,32 @@
+{
+  "schema": "sn100-result-format-ui02-delta-v1",
+  "changed_sources": 1,
+  "unchanged_sources": 31,
+  "change": {
+    "path": "candidate/projects/project_page.cpp",
+    "before": {
+      "path": "candidate/projects/project_page.cpp",
+      "bytes": 31047,
+      "sha256": "aa5f1d9a3559624773ea5f42d2d23584fa484ae977a68b2705726b99cbc6268a"
+    },
+    "after": {
+      "path": "candidate/projects/project_page.cpp",
+      "bytes": 31177,
+      "sha256": "01e8b6408843a598ac20d4318872f78b3458f75519ab9fb3a65796757bbd5935"
+    },
+    "function": "ProjectPage::setBusy(bool busy)",
+    "added_behavior": "Every setBusy(true) synchronously emits currentFormatInvalidated before busyChanged or queued Store action; real bound HistoryCurrentDisplayState clears before in-flight operation/reply can reuse old current configuration. Reload/read also conservatively invalidates.",
+    "reason": "Root review found real bound display cache remained valid while ordinary or auxiliary write was pending; success/failure-only invalidation was too late."
+  },
+  "preserved": [
+    "Only four lines inserted at start of setBusy; all other candidate01 source bytes unchanged.",
+    "Original ordinary Save/copy/remove, new narrow read, backend CAS/write API, permissions, draft flow, UI/layout unchanged.",
+    "Parent01 all source/metadata sealed files unchanged."
+  ],
+  "delta": {
+    "path": "delta.diff",
+    "bytes": 404,
+    "sha256": "399e8e1d9b3a50f6cf2f293ba58480a6a6476b44bfb52c40458647af36cc2b14"
+  },
+  "execution": "NOT_RUN"
+}

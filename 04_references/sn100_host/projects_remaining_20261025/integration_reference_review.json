@@ -1,0 +1,401 @@
+{
+  "schema": "sn100-integration-reference-static-review-v1",
+  "review_date": "2026-10-25",
+  "reviewer_window": "SN100项目剩余业务移植",
+  "status": "static review delivered; no production/test source edits; stop writing after this review file",
+  "review_scope": "Current QcStore/CalibrationStore reference protocol, persistent dataset UUID, two-file commit and failure cleanup, saved/hidden history reconciliation, identity/unit/ratio/precision contracts, role provenance, and committed candidate refresh in shell/catalog_shell.cpp. Actual implementation and relevant tests/original source inspected, not only handoff prose.",
+  "authorization_boundary": {
+    "only_new_file": "04_references/sn100_host/projects_remaining_20261025/integration_reference_review.json",
+    "preserved": "Original handoff.json, original 63-source/6-artifact manifests and all previous evidence left unchanged.",
+    "not_performed": [
+      "production or test source modification",
+      "build",
+      "test execution",
+      "database mutation",
+      "GUI",
+      "resource measurement",
+      "RK/instrument/LIS/network connection",
+      "dependency installation",
+      "Git commit/push",
+      "automation",
+      "message to another chat"
+    ],
+    "test_evidence_note": "18/0 calibration reference guard and later 16/0 QC results are prior integration evidence supplied by the caller. They were not rerun or re-certified by this review. Proposed triggers/interleavings below have not been executed."
+  },
+  "findings": [
+    {
+      "id": "IRR-01",
+      "priority": "P1",
+      "title": "质控启动绑定不核对已有项目关联，缺失保护登记仍可报告就绪",
+      "file": "06_programs/sn100_host/quality_control/qc_store.cpp",
+      "functions": [
+        "QcStore::initialize",
+        "QcStore::bindCatalog",
+        "QcStore::load"
+      ],
+      "lines": [
+        247,
+        252,
+        260,
+        263,
+        284,
+        288,
+        298
+      ],
+      "confidence": "high: no startup traversal or reconciliation exists in inspected implementation",
+      "evidence": "initialize validates/generates the local dataset_uuid and emits ready. bindCatalog checks only catalog schema, reservation table presence and foreign_keys, then emits catalogBound. Neither scans quality_item_proj/qc_project_snapshot/quality_data nor checks expected holds or own-dataset orphan holds. load reads local data only. shell/main.cpp accepts catalogBound plus ordinary load as readiness. ProjectsStore rename/delete protection consults the catalog reservation rows, not QcStore::inspectProjectReference.",
+      "trigger_inputs": [
+        "A valid tagged quality_control.db with a persistent UUID and existing association control C -> project P; pair it with a restored catalog whose schema and P ID/name still match but whose quality_control reservation K is absent.",
+        "Reopen QcStore, bind that catalog, set its committed candidate list and load. All current startup checks succeed without re-establishing K.",
+        "Use real ProjectsStore to rename P; use a nonfixed project with no other catalog references to test deletion. Missing K provides no protection for the saved QC association/name history.",
+        "Conversely, a reservation left after successful local deletion and failed release is neither diagnosed as orphan nor given a recovery state during the next bind."
+      ],
+      "impact": "After restore, partial failure or explicit hold removal, saved QC rows/history can reference a project that the catalog is allowed to rename/delete. This breaks the advertised durable identity protection; normal successful CRUD tests do not establish recovery coverage.",
+      "suggested_fix": "Under the same dataset writer-serialization protocol as association writes, enumerate all saved associations, including controls with is_used=0, validate stable ID/name and historical snapshots, reserve missing expected keys and diagnose own-dataset orphan/conflicting keys before declaring reference readiness. quality_data has string identity: historical names that cannot be resolved through a valid saved association must fail closed for explicit reconciliation, not be guessed. Keep historical units/ratios/decimals; do not compare them blindly to current project presentation or auto-delete orphan holds.",
+      "suggested_verification": "Real ProjectsStore/ReagentStore fixture: missing hold after restore, matching stable UUID reopen, invalid/missing/renamed project, inactive control with history, orphan hold, catalog lock and reserve-commit failure. Check no ready/catalogBound success until protection is reconciled, and unchanged QC rows/history on failure.",
+      "runtime_status": "not run; deterministic recovery scenario derived from source"
+    },
+    {
+      "id": "IRR-02",
+      "priority": "P1",
+      "title": "同一质控数据集的并发保存/解除关联可释放另一写者正在使用的保护登记",
+      "file": "06_programs/sn100_host/quality_control/qc_store.cpp",
+      "functions": [
+        "QcStore::setProjects",
+        "QcStore::reserveProjects",
+        "QcStore::releaseReferences",
+        "QcStore::removeControl",
+        "QcStore::commit"
+      ],
+      "lines": [
+        411,
+        412,
+        415,
+        434,
+        455,
+        485,
+        486,
+        487,
+        489,
+        531,
+        533,
+        534,
+        537
+      ],
+      "confidence": "high: source explicitly commits catalog reservation before local BEGIN and releases keys outside a local writer lock",
+      "evidence": "setProjects reserves/commits catalog holds at486 and only then obtains local BEGIN IMMEDIATE at487. Failed begin/write/commit rolls back the local transaction before releaseReferences(newKeys). Successful association removal commits local deletion before releaseReferences(removedKeys). The key is dataset UUID + control ID + project ID, so two QcStore connections to the same local file intentionally share a key. Calibration's existing same-dataset ABORT test does not cover these QC paths.",
+      "trigger_interleaving_normal_success": [
+        "Begin with C associated with P and durable hold K.",
+        "Writer A setProjects(C,{}) commits local removal, pause immediately before line537 releases K.",
+        "Writer B setProjects(C,{P}) sees K already present, so newKeys is empty; B commits the newly added local association.",
+        "A resumes releaseReferences(K). Both calls report success, but B's committed association is now unprotected."
+      ],
+      "trigger_interleaving_failure": [
+        "A reserves a new K then pauses before obtaining the local writer lock, or encounters a write failure and rolls back before cleanup.",
+        "B reuses that existing K and commits the same association while A has no local writer lock.",
+        "A releases its remembered newKeys, deleting K now required by B."
+      ],
+      "impact": "A real saved association can lose rename/delete protection with no failed final operation. A mutex on one QObject or one GUI busy flag does not serialize another store/process using the same dataset.",
+      "suggested_fix": "Use one cross-connection/process dataset operation-serialization policy with a consistent local->catalog lock order. Acquire the local writer lock before new reservation, and retain serialization through failed-action cleanup. For post-commit detach cleanup, reacquire the local writer lock, recheck that the association is still absent and release the catalog key while that check is protected; or use an operation lock spanning both file commits. If safe absence cannot be established, keep the conservative hold and surface reconciliation. Preserve other datasets/owners and never release pre-existing keys as a shortcut.",
+      "suggested_verification": "Two real QcStore instances on the same quality_control.db with deterministic test barriers around reservation/local commit/cleanup. Cover both successful detach-versus-reattach and failed-add-versus-successful-add, and assert every persisted association retains the appropriate hold. No scheduling-only timing claim.",
+      "runtime_status": "not run; concrete legal interleaving derived from current statements"
+    },
+    {
+      "id": "IRR-03",
+      "priority": "P2",
+      "title": "校准失败回收依赖本地事务仍持锁，自动回滚故障没有对应保护",
+      "file": "06_programs/sn100_host/calibration/calibration_store.cpp",
+      "functions": [
+        "CalibrationStore::save",
+        "CalibrationStore::copy",
+        "CalibrationStore::cleanupFailedReferences"
+      ],
+      "lines": [
+        985,
+        988,
+        989,
+        990,
+        1042,
+        1045,
+        1046
+      ],
+      "confidence": "conditional: the existing ABORT failure path is protected; the proposed ROLLBACK path has not been run",
+      "evidence": "On writeRecord or COMMIT error, save/copy call cleanupFailedReferences assuming the local BEGIN IMMEDIATE is still active, then call rollback. There is no transaction-state/operation-lock check before destructive cleanup. tests/calibration_reference_test.cpp::sameDatasetConcurrentFailureCannotReleaseCommittedHold uses RAISE(ABORT), which keeps the enclosing transaction active and therefore verifies that narrower case.",
+      "trigger_inputs": [
+        "Use a controlled fixture trigger on calibration_points for blood_batch='FAIL': BEFORE INSERT ... BEGIN SELECT RAISE(ROLLBACK,'forced automatic rollback'); END.",
+        "Writer A first commits newly acquired project/batch holds, then its point insert executes the trigger; the local transaction and its lock end as part of the error.",
+        "Before A's cleanup transaction, writer B on the same local dataset begins, reuses the existing pair holds and commits a valid record.",
+        "A's remembered newProjects/newBatches cleanup can delete holds required by B. Relevant storage errors may also end a transaction; this review does not claim those error classes were reproduced."
+      ],
+      "impact": "The comment that the local write lock is still held is an assumption, rather than a protected invariant for every error path. The usual ABORT/BUSY recovery and already-tested normal concurrency remain sound under their stated lock assumption.",
+      "suggested_fix": "Before releasing new holds after a local error, establish that dataset serialization is still held. If a transaction may have auto-rolled back, reacquire the local writer lock and check actual persisted pair identities before releasing; otherwise keep the conservative holds for explicit startup reconciliation. An operation lock spanning both connections is another option. Do not unconditionally clear all owner/dataset holds.",
+      "suggested_verification": "Add a deterministic same-dataset two-writer RAISE(ROLLBACK) test separately from the existing RAISE(ABORT) test. Include one failed cleanup/lock case and assert an explicit retained-hold diagnostic. This is a proposed test, not an executed result.",
+      "runtime_status": "not run; targeted exception-path test proposal based on the current lock assumption"
+    },
+    {
+      "id": "IRR-04",
+      "priority": "P2",
+      "title": "质控保护登记释放失败的警告会被后续普通读取成功覆盖",
+      "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+      "functions": [
+        "QcStore::removeControl/setProjects",
+        "QualityControlPage warning/succeeded/snapshotReady handlers"
+      ],
+      "related_locations": [
+        "quality_control/qc_store.cpp:412-413",
+        "quality_control/qc_store.cpp:537-538",
+        "quality_control/quality_control_page.cpp:195-208",
+        "quality_control/quality_control_page.cpp:209-228",
+        "quality_control/quality_control_page.cpp:254",
+        "shell/main.cpp:486-487"
+      ],
+      "confidence": "high: same worker emits warning then succeeded; page reload subsequently replaces status with normal success",
+      "trigger_inputs": [
+        "Commit a QC control/association deletion, then make the catalog unavailable/locked during releaseReferences so release fails.",
+        "Store emits warning and then succeeded because local deletion is real. Page warning handler only reports status; succeeded queues reload. snapshotReady reports ordinary data-read success and operationFinished(true).",
+        "The remaining orphan hold blocks future project mutation, but the final business status no longer explains why reconciliation is still required. The process log retains a warning; no persistent page recovery state or retry entry is exposed."
+      ],
+      "impact": "Data is conservatively protected, but users can be left with an apparently complete operation and a later inexplicable project-lock error. This is recovery/observability, not a claim that the local deletion should be falsely rolled back or reported unsaved.",
+      "suggested_fix": "Persist a pending-reference-reconciliation condition and affected stable keys in storage-facing state, preserve a plain-language notice across routine reloads, and provide a safe retry/reconcile action that rechecks local absence. Keep local commit success distinct from reference-cleanup completion. Startup reconciliation from IRR-01 should expose the same condition.",
+      "runtime_status": "not run; signal-order and handler behavior inspected statically"
+    }
+  ],
+  "confirmed_contracts": [
+    {
+      "topic": "校准数据集身份与启动对账",
+      "sources": [
+        "calibration/calibration_store.cpp:342-420",
+        "calibration/calibration_store.cpp:467-500"
+      ],
+      "conclusion": "Known v3 local library appends dataset_uuid/reference_protocol only when both values are absent; partial/invalid identities fail closed. Startup scans DISTINCT identity tuples without visible=1 or the 2048-page limit, protects hidden history, and rejects own-dataset orphan holds without automatically deleting them. Local writer lock precedes catalog lock in the normal reconciliation path."
+    },
+    {
+      "topic": "校准两库提交的正常顺序",
+      "sources": [
+        "calibration/calibration_store.cpp:953-1050"
+      ],
+      "conclusion": "For normal active local transactions, reserve project and optional batch in catalog, commit catalog holds, then commit local record/points. Cleanup targets only keys newly inserted by that action; existing holds and other owners/datasets are untouched. A failed cleanup retains conservative protection and contextual error text. No cross-file foreign key or single atomic transaction is claimed. IRR-03 scopes the remaining exceptional assumption."
+    },
+    {
+      "topic": "校准隐藏删除",
+      "sources": [
+        "calibration/calibration_store.cpp:1053-1085"
+      ],
+      "conclusion": "Delete changes visible=0 with revision check and leaves record/point identity plus holds intact. It does not delete historic points or free a hold just because the row disappeared from the visible list."
+    },
+    {
+      "topic": "稳定ID和结果类型",
+      "sources": [
+        "quality_control/qc_store.cpp:99-102",
+        "quality_control/qc_store.cpp:425-446",
+        "shell/quality_shell.cpp:12-44",
+        "calibration/calibration_store.cpp:758-845"
+      ],
+      "conclusion": "Project keys are project_base.id; batch keys are reagent_batch_group.id. QC key includes dataset/control/project; calibration key includes dataset/project/batch. Owners quality_control and calibration are separate. Original/Calibration/Rate/INR are explicit text-to-enum mappings; unknown Time is not guessed as Original. batchId=0 creates no batch hold, rather than implying default/apply. QC control batches are not reagent batch IDs."
+    },
+    {
+      "topic": "保存时的单位/倍率/精度快照",
+      "sources": [
+        "quality_control/qc_store.h:45-51",
+        "quality_control/qc_store.cpp:319-324",
+        "quality_control/qc_store.cpp:520-528",
+        "calibration/calibration_types.h",
+        "calibration/calibration_store.cpp:777-819",
+        "calibration/calibration_store.cpp:870-879"
+      ],
+      "conclusion": "QC snapshot stores result name/type/unit/ratio/decimals at association creation and existing association retention does not replace it with current presentation. Calibration stores raw point values and concentration/result unit plus ratio as provenance; saved identity update/copy preserves them without applying conversion. New calibration records check current units/ratio and Original/Calibration existence; historical writes/copy still require dictionary units/type identity, while disabled projects are allowed for startup read/protection only. Calibration has no per-result decimal snapshot field; its raw input max4-decimal contract is separate and should not be advertised as current project display precision."
+    },
+    {
+      "topic": "角色来源和未启用动作",
+      "sources": [
+        "calibration/calibration_store.cpp:90-93",
+        "calibration/calibration_store.cpp:160-178",
+        "calibration/calibration_page.cpp:193-240",
+        "quality_control/qc_store.h",
+        "quality_control/quality_control_page.h",
+        "shell/quality_shell.cpp",
+        "tests/qc_local_shell_test.cpp:264-309",
+        "original frm_quality/*.cpp",
+        "original frmcalibration/frmcalibrationmaterial.cpp:998,1054,1299-1345"
+      ],
+      "conclusion": "Current CalibrationStore checks authenticated/actionReady roles1..5 on writes, and the shell propagates its account session through CalibrationPage; this preserves the previously accepted migrated baseline. QC has no AccountSession gate and current shell tests explicitly leave its local editor available for all six roles; inspected original QC manager/chooser/main navigation source shows no corresponding role guard. Do not invent an Engineer restriction during reference repair. Original calibration apply/default-apply Engineer/UserPower guards concern disabled clinical actions, not proof of exact local raw-edit role equivalence. Full original active-Windows role behavior remains a separate pending comparison."
+    },
+    {
+      "topic": "共用目录结构所有权与SQL线程",
+      "sources": [
+        "quality_control/qc_store.cpp:263-288",
+        "calibration/calibration_store.cpp:342-357",
+        "shell/main.cpp:510-543"
+      ],
+      "conclusion": "QC/calibration consume, rather than create, the catalog reservation schemas. SQL handles/connections are created and used in the owning store thread; no QWidget/GUI SQL connection is passed to them. Calibration initialization follows reagent/sample readiness, so required catalog reservation tables have already been committed."
+    },
+    {
+      "topic": "已提交候选刷新",
+      "sources": [
+        "shell/catalog_shell.cpp:44-58",
+        "shell/catalog_shell.cpp:67-74",
+        "shell/catalog_shell.cpp:148-153",
+        "projects/project_page.cpp:137-200",
+        "projects/project_page.cpp reload",
+        "projects/projects_store.cpp load/writeActionReferences"
+      ],
+      "conclusion": "Reagent success callback matches real save/remove operation names after catalog commit and triggers project reload only when ready, not busy and without unsaved changes. Re-entering project page refreshes again under the same guards. Only committed snapshots feed downstream choices; project drafts are not substituted for them. Requests are filtered and controls made busy during reload. No draft-clobber finding was established in this callback."
+    },
+    {
+      "topic": "输入绝对末尾检查",
+      "sources": [
+        "quality_control/qc_store.cpp:131-149"
+      ],
+      "conclusion": "QC numeric rule validation now uses \\z, with range/max4-decimal checks. The previously discussed trailing-newline acceptance is absent from this inspected validator; this review does not count it as an open bug."
+    }
+  ],
+  "explicit_assumptions_and_followups": [
+    "Each persistent dataset UUID is assumed to identify one actively shared local database file. Copying a library byte-for-byte to another independently active directory preserves UUID but loses the common local lock. Neither reviewed store enforces a one-active-file rule for cloned UUIDs. Document/reject concurrent divergent clones or add a shared dataset-level operation lock before claiming protection for that deployment; no such clone test was run here.",
+    "Busy/dirty-skipped candidate refresh is not queued as a pending invalidation; the next project-page entry refreshes it. An external catalog writer can therefore leave displayed candidates stale until refresh. Store-side reference checks still reject stale invalid save data. This is a freshness limit, not established silent data corruption in the inspected unified flow.",
+    "Original Windows behavior, real screen and protocol/clinical effectiveness are outside this static review. Old history must continue to use its saved values/units/precision, not current catalog formatting."
+  ],
+  "recommended_fix_order": [
+    "IRR-02 dataset serialization and safe cleanup",
+    "IRR-01 QC startup reconciliation using that same lock order",
+    "IRR-03 automatic-rollback failure safety",
+    "IRR-04 persistent recovery notice/retry"
+  ],
+  "reviewed_files": [
+    {
+      "file": "06_programs/sn100_host/quality_control/qc_store.h",
+      "sha256": "50832adb2916d1c4cb976bd1cb0f8dd4b02ee96ef3e65c7f590ef0ab0a5d81cf",
+      "bytes": 4963
+    },
+    {
+      "file": "06_programs/sn100_host/quality_control/qc_store.cpp",
+      "sha256": "e9861d55ceb35321f02a110bd709aaca656e494ef8b17ca296a0c6be6a53e016",
+      "bytes": 38579
+    },
+    {
+      "file": "06_programs/sn100_host/quality_control/quality_control_page.h",
+      "sha256": "c038a5df3ba76136ec6af07abf2a55b67c004f11873c4734e365359422ef940f",
+      "bytes": 2755
+    },
+    {
+      "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+      "sha256": "b50d4e18181d4683169b8b090b4c72830d56239dd053d9b91e365785f20c2c00",
+      "bytes": 39528
+    },
+    {
+      "file": "06_programs/sn100_host/quality_control/main.cpp",
+      "sha256": "6a581353ab941662460c1fe24e035e416baa7657e74f2aa8f29de86eabd1f278",
+      "bytes": 5424
+    },
+    {
+      "file": "06_programs/sn100_host/calibration/calibration_store.h",
+      "sha256": "9c36dd1e7cc9b6936f0ee6808c39f1baab1d0e72b49c2a262d03dd8e4a237edc",
+      "bytes": 3124
+    },
+    {
+      "file": "06_programs/sn100_host/calibration/calibration_store.cpp",
+      "sha256": "980a717c61c0613c5247b455be8078557057e1a3bc694fe02cf6cf5bc1486dbc",
+      "bytes": 48600
+    },
+    {
+      "file": "06_programs/sn100_host/calibration/calibration_types.h",
+      "sha256": "d7bab3140a86e1b198603c05cc15267414ee8f9f2d96267f15524cb25b45a35a",
+      "bytes": 1295
+    },
+    {
+      "file": "06_programs/sn100_host/calibration/calibration_page.cpp",
+      "sha256": "b446968bd583e3bc7e59715560fcbe9c314931fd4d22b624747550fd7d8b556d",
+      "bytes": 32492
+    },
+    {
+      "file": "06_programs/sn100_host/projects/project_page.cpp",
+      "sha256": "c8f525beedf239bfa6232ffa029f30a7f231656c899e7f7352583420ff06f090",
+      "bytes": 24693
+    },
+    {
+      "file": "06_programs/sn100_host/projects/projects_store.cpp",
+      "sha256": "5342e5dbded0eda1f07cdd0bebb3971dac5d3222dd3fdeea61e793fb98219721",
+      "bytes": 38591
+    },
+    {
+      "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+      "sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc",
+      "bytes": 45521
+    },
+    {
+      "file": "06_programs/sn100_host/shell/catalog_shell.cpp",
+      "sha256": "c61ed3dcb51f960dbe177e5efcd905161fea2644edca1857e0a1c37fc5f457bf",
+      "bytes": 9742
+    },
+    {
+      "file": "06_programs/sn100_host/shell/quality_shell.cpp",
+      "sha256": "a4732ad22877ffaab39e7c3667b0253d7d8c83811d52c1d88fa3b0547c714241",
+      "bytes": 5261
+    },
+    {
+      "file": "06_programs/sn100_host/shell/calibration_shell.cpp",
+      "sha256": "d859441cb017f8a75b0b5d748f6e4f85f24d492d605ccd4ae7cc81ab68c04c7e",
+      "bytes": 3900
+    },
+    {
+      "file": "06_programs/sn100_host/shell/main.cpp",
+      "sha256": "3aba64a14dd791db1f54737e5c41a8acb5c33d06cedb3c86214f46177630d156",
+      "bytes": 40524
+    },
+    {
+      "file": "06_programs/sn100_host/shell/frmmain.cpp",
+      "sha256": "9c54f9254774a5f83d9c2213f8f0bd6ae740abc1b664efa5b2461b1ef5e752cd",
+      "bytes": 21036
+    },
+    {
+      "file": "06_programs/sn100_host/tests/qc_local_store_test.cpp",
+      "sha256": "8688616933ec79b6f61c2a971df5a8876d5befb70ddb6a9856cf94d1fe3562a8",
+      "bytes": 27741
+    },
+    {
+      "file": "06_programs/sn100_host/tests/qc_local_shell_test.cpp",
+      "sha256": "1252e1be50dacfce8c76ae8703b302428ee191fdc07bc16c4d6d42d91e5a77b0",
+      "bytes": 19860
+    },
+    {
+      "file": "06_programs/sn100_host/tests/calibration_reference_test.cpp",
+      "sha256": "0aad1ea448ad6bb17ba19cf0c971fd0fe203e32f569be7de5bfe889c901ce81f",
+      "bytes": 31120
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/quality_control_item_add_project_wgt.cpp",
+      "sha256": "0a75dcad334f5e82db7f3edd7b3bfa18f2acd90f0383e9562be8e27827dfcac4",
+      "bytes": 3442
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/frm_quality.cpp",
+      "sha256": "94a60355d1bda7c6b424146ed857f6980415fd7f36d2d4d4daba40187e668df8",
+      "bytes": 13884
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+      "sha256": "90ed19d496a8c029e6379356c06b80950e44d2eb412cd8efc16ed4839a7425f7",
+      "bytes": 93498
+    },
+    {
+      "file": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibrationmaterial.cpp",
+      "sha256": "ccd7ad768e3679a1d6a316167b20a5b98b51f1f293439f9e2478d46b6183142f",
+      "bytes": 56218
+    },
+    {
+      "file": "04_references/sn100_host/qc_local_20261025/reference_guard_handoff.json",
+      "sha256": "5a63efb5f15b055ced0ce379a63fbfa2ba3c474ef8a9388d2446b19678da54a4",
+      "bytes": 12601
+    }
+  ],
+  "core_hash_stability": {
+    "06_programs/sn100_host/calibration/calibration_store.cpp": true,
+    "06_programs/sn100_host/quality_control/qc_store.cpp": true,
+    "06_programs/sn100_host/shell/catalog_shell.cpp": true
+  },
+  "limitations": [
+    "All issue triggers and barrier/trigger tests are static proposals; no executable reproduction was performed at user request.",
+    "This is a review of named current files, not a repository-wide audit or a new acceptance result.",
+    "Another window may continue editing after these SHA values were captured. Findings must be rechecked if current file hashes differ.",
+    "No modification to original handoff/manifests, shared shell, production/test sources, plans, README or main migration record was made."
+  ]
+}

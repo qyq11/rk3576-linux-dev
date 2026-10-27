@@ -1,0 +1,7 @@
+id	mode	direction_integer	input_token	expected_valid	expected_value	expected_error	expected_output_signbit	actual_input	input_signbit	actual_valid	actual_value	actual_error	readable	output_signbit	input_unchanged	invalid_read_guard	passed
+direction_minus_one	0	-1	12.5	0	-	UnsupportedDirection	-1	12.5	0	0	<unavailable>	UnsupportedDirection	0	-1	1	1	1
+direction_two	0	2	12.5	0	-	UnsupportedDirection	-1	12.5	0	0	<unavailable>	UnsupportedDirection	0	-1	1	1	1
+reciprocal_negative_zero	2	0	negative_zero	0	-	Domain	-1	-0	1	0	<unavailable>	Domain	0	-1	1	1	1
+reciprocal_negative_four	2	0	-4	1	-0.25	None	1	-4	1	1	-0.25	None	1	1	1	1	1
+reciprocal_denorm_min_overflow	2	0	denorm_min	0	-	Unrepresentable	-1	4.9406564584124654e-324	0	0	<unavailable>	Unrepresentable	0	-1	1	1	1
+identity_negative_zero_sign	0	0	negative_zero	1	-0	None	1	-0	1	1	-0	None	1	1	1	1	1

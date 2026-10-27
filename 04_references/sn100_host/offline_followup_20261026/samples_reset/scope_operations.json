@@ -1,0 +1,262 @@
+[
+  {
+    "id": "F06.advanced-scalars",
+    "buttons": "项目页原测试方案字段、保存/复制/取消",
+    "input": "最短/最长测试时间、stopTime、sample_change_clean、两个波长；空/非法/互相冲突值",
+    "data": "project_advanced.version=1及payload；保存/复制与项目同事务，旧未配置项目不补假参数",
+    "output": "本地重开恢复，失败保留草稿；当前已实现并在5123检查点专项11/0、基础9/0",
+    "source": [
+      "projects/project_advanced.cpp",
+      "projects/projects_store.cpp",
+      "projects/project_page.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json",
+      "04_references/sn100_host/qc_local_20261025/final/verification.json"
+    ],
+    "remaining": "算法系数、AlgParam、d_T、IBS选择、临床方法和设备执行不在已实现范围；旧计划‘高级方案未接’须拆开"
+  },
+  {
+    "id": "F06.sample-actions",
+    "buttons": "btnSampleAdd及原15列加样动作表、保存/复制",
+    "input": "既有稀释标签、样本/清洗/搅拌/针等原字段与体积/时长；引用必须有效",
+    "data": "有序动作保存在project_advanced，不调度、不发送体积参数给仪器",
+    "output": "本地校验、复制、重开已有专项证据；无设备任务生成",
+    "source": [
+      "projects/project_advanced.cpp",
+      "projects/projects_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/projects_remaining_20261025/handoff.json"
+    ],
+    "remaining": "生产参数导入、真实稀释/动作效果、同板调度待验；不能再把整张动作表列成未移植"
+  },
+  {
+    "id": "F06.reagent-actions",
+    "buttons": "btnReagentAdd及原10列有序试剂动作表、保存/删除",
+    "input": "现存试剂、加样/清洗等动作字段；空行、未知枚举、引用与顺序",
+    "data": "有序payload及project_action_reagent_reference；已引用试剂不能删除",
+    "output": "本地保存、引用保护、错误原子回滚与重开已验；不会扣量或判定足料",
+    "source": [
+      "projects/project_advanced.cpp",
+      "projects/projects_store.cpp",
+      "reagents/reagent_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json"
+    ],
+    "remaining": "消耗预算、多瓶选择、死量/失败回滚与足料算法仍缺；高级表完成不等于此下游已完成"
+  },
+  {
+    "id": "F03.batch-metadata",
+    "buttons": "原PT批组入口、ldtIsiVal/ldtNormalVal、保存/取消",
+    "input": "ISI及正常测定值文本，0–9999、最多4位小数；旧调用不修改元数据",
+    "data": "reagent_batch_metadata按稳定batch_id附加；catalog_batch_reference保护批组",
+    "output": "存取、保留小数文本、兼容旧调用、引用/权限/失败恢复已有批组11/0及基础11/0",
+    "source": [
+      "reagents/reagents_page.cpp",
+      "reagents/reagent_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/projects_remaining_20261025/reagents_handoff.json",
+      "04_references/sn100_host/qc_local_20261025/final/verification.json"
+    ],
+    "remaining": "btnIsiVal/btnNormal及实际校准选用/计算仍禁用；不能将文本保存等同临床效力"
+  },
+  {
+    "id": "F07.local-calibration",
+    "buttons": "原校准页，Insert/右键新增、保存、复制、软删除、原始散点",
+    "input": "稳定项目/可选试剂批组、校准品批号、点数/重复数、稀释标签/浓度/原始值",
+    "data": "本地校准库、保存时单位快照、持久catalog项目/批组保护、启动对账",
+    "output": "已接统一程序；5123存储51/0、页面两显示模式各21/0、shell各6/0、引用22/0",
+    "source": [
+      "calibration/calibration_page.cpp",
+      "calibration/calibration_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/calibration_local_20261025/handoff.json",
+      "04_references/sn100_host/qc_local_20261025/final/verification.json"
+    ],
+    "remaining": "拟合/变换、逆算、审核、应用有效曲线、真实task波形与临床误差仍缺；原suite05崩溃直接根因未明"
+  },
+  {
+    "id": "F08.local-qc",
+    "buttons": "原质控品管理、项目/批次、默认批、规则元数据；主页图表入口存在但可为空",
+    "input": "控制品/项目/批号、保存时单位快照、靶值/上下限及规则元数据；不接真实质控点",
+    "data": "独立本地质控元数据、稳定catalog引用与启动对账；对历史关联只做保护，不代表点数据加载/计算",
+    "output": "已接统一并验证控制品/项目/批次/默认批和规则元数据；5123存储16/0、页面各7/0、shell各5/0、引用20/0。没有质控真实点/曲线已接的结论",
+    "source": [
+      "quality_control/quality_control_page.cpp",
+      "quality_control/qc_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/qc_local_20261025/handoff.json",
+      "04_references/sn100_host/qc_local_20261025/final/verification.json"
+    ],
+    "remaining": "真实质控点流入、历史点查询、曲线、统计及追踪/追溯流程目前尚缺；临床失控规则与效力待依据。校准散点和统计CLI不算质控完整业务链"
+  },
+  {
+    "id": "F09.hide-reports",
+    "buttons": "btnDel及确认/取消",
+    "input": "1–100个唯一正报告id；非法/过期/已隐藏、Guest和忙态",
+    "data": "report_data.visible=0，同事务整批保护；保留结果、任务及项目关联",
+    "output": "软隐藏后回首页、重开仍隐藏；锁/提交失败保留原数据与草稿，已接统一",
+    "source": [
+      "history/history_page.cpp",
+      "history/report_remaining_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/report_remaining_20261025/interface_contract.json",
+      "04_references/sn100_host/qc_local_20261025/final/verification.json"
+    ],
+    "remaining": "不是物理删除结果；生产导入、断电/磁盘满及旧报告查询偶发根因另验"
+  },
+  {
+    "id": "F09.display-columns",
+    "buttons": "btnDisplay、原显示设置弹窗、恢复默认草稿/保存/取消",
+    "input": "保存列键、患者字段显隐、同项目内结果排序；必选/未知列校验",
+    "data": "report_view_preferences；只改展示，不用当前catalog重解释历史单位/倍率/精度",
+    "output": "已接统一，核心两显示模式各12/0，shell各5/0；取消不写、失败保留草稿",
+    "source": [
+      "history/report_remaining_display_dialog.cpp",
+      "history/report_remaining_store.cpp",
+      "history/history_page.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/report_remaining_20261025/interface_contract.json"
+    ],
+    "remaining": "fixture仅PT/APTT主结果明确，六结果列保守必选；不是全生产列规则或配置到真实结果贯通"
+  },
+  {
+    "id": "F10.html",
+    "buttons": "原预览工具栏HTML保存动作及文件选择/取消",
+    "input": "不可变HistoryPrintDocument、原模板、全新.html路径；中文/特殊字符、忙态",
+    "data": "辅助程序生成UTF-8原模板HTML；拒绝覆盖及不支持的输入，不打开浏览器",
+    "output": "已接真实工具栏和文件框，5123 HTML两显示模式各7/0、shell各5/0；内容按字段核对",
+    "source": [
+      "history/report_controller.cpp",
+      "history/report_renderer.cpp",
+      "history/report_remaining_html.h"
+    ],
+    "evidence": [
+      "04_references/sn100_host/report_remaining_20261025/interface_contract.json",
+      "04_references/sn100_host/qc_local_20261025/report_shell_repair_handoff.json"
+    ],
+    "remaining": "浏览器渲染/分页无当前验收；原连续绝对定位HTML不能套PDF页数；不是实体打印"
+  },
+  {
+    "id": "F10.xlsx-printer",
+    "buttons": "XLSX原启用范围；设置子页3原列表/Apply；报告打印",
+    "input": "当前机器可用打印机或已保存失联名称；取消/空列表/写失败",
+    "data": "printer/name已本地保存；报告仍原模板预览/PDF，未提交实体打印任务",
+    "output": "打印设置已实现并有5123累计两显示模式各5/0；XLSX原构建未启用，不擅自恢复",
+    "source": [
+      "data/printer_settings_store.cpp",
+      "ui/frmprintersetting.cpp",
+      "thirdparty/qtrpt/qtrpt.pri"
+    ],
+    "evidence": [
+      "04_references/sn100_host/printer_settings_20261024/verification.json",
+      "04_references/sn100_host/report_remaining_20261025/original_audit.json"
+    ],
+    "remaining": "选定打印机到实际纸张链未接/未验；XLSX是否属于当前发行版需求须先确认"
+  },
+  {
+    "id": "F04.reset-errors",
+    "buttons": "btnResetErr：复位错误状态",
+    "input": "当前孔位、勾选孔位和每一次普通样本重复的Idle/Reset/Testing/Finished/Error",
+    "data": "原当前孔Testing先拒绝；当前孔revise=true；对勾选行与当前行Error/Reset转Idle，changedView=true，不自动保存；本轮增加带版本的sample_local_hole_state.revise及sample_local_task_state.states，仍不含真实任务/报告ID；选中全部目标先校验再改草稿，所有目标revise=true",
+    "output": "当前432/9ff源码的独立原按钮/本地存取流程两QPA各14/0，原11业务函数两QPA各13/0；全部实际退出0。纯逻辑9/0另有原始收据。只本地功能通过，不代表设备重新执行",
+    "source": [
+      "samples/sample_page.cpp",
+      "samples/sample_store.cpp",
+      "samples/sample_task_reset.cpp"
+    ],
+    "evidence": [
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsample/frmsamplematerial.cpp:5619",
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/cussampletaskview.cpp:20"
+    ],
+    "remaining": "统一主程序累计、跨平台、资源另排；动态状态截图观察副本已准备但未运行，原Windows/RK视觉继续待验；真实投递/执行仍禁用"
+  },
+  {
+    "id": "F04.retest-sample",
+    "buttons": "btnResetFin：复测样本",
+    "input": "同上；名称含Fin但源码会重置普通样本全部测试，不仅Finished",
+    "data": "原当前孔Testing先拒绝；revise=true；全部普通测试转Idle，原taskID/reportRowID清零；校准不允许此路径；本轮增加带版本的sample_local_hole_state.revise及sample_local_task_state.states，仍不含真实任务/报告ID；选中全部目标先校验再改草稿，所有目标revise=true",
+    "output": "当前432/9ff源码的独立原按钮/本地存取流程两QPA各14/0，原11业务函数两QPA各13/0；全部实际退出0。纯逻辑9/0另有原始收据。只本地功能通过，不代表设备重新执行",
+    "source": [
+      "samples/sample_page.cpp",
+      "samples/sample_task_reset.cpp"
+    ],
+    "evidence": [
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsample/frmsamplematerial.cpp:5644",
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customwidgets/cussampletaskview.cpp:53"
+    ],
+    "remaining": "统一主程序累计、跨平台、资源另排；动态状态截图观察副本已准备但未运行，原Windows/RK视觉继续待验；真实投递/执行仍禁用"
+  },
+  {
+    "id": "F04.device-task-chain",
+    "buttons": "样本保存、任务下发/急诊联动、btnCalProj/btnUpdateLis、Start/Pause",
+    "input": "已保存普通/急诊预设、真实task/report身份及设备/对端应答",
+    "data": "当前仅sample_local_task项目/标签/重复/延长；没有真实任务身份、在途应答、扣量、结果分流",
+    "output": "本地预设已实现，实际投递/执行/结果仍缺；只读Qj不具备这些能力",
+    "source": [
+      "samples/sample_types.h",
+      "samples/sample_store.h",
+      "protocol/status_loopback.cpp",
+      "shell/frmmain.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/samples_20261024/validation_summary.json"
+    ],
+    "remaining": "可先按原合同做匿名状态/编解码/自建端闭环；当前分配只做ResetErr/ResetFin窄切片，不扩大到公共shell/网络"
+  },
+  {
+    "id": "F09.real-results-and-algorithm",
+    "buttons": "报告结果修改、重算、曲线、上传；校准审核/应用",
+    "input": "真实匿名采样曲线、方法/参数、稳定项目/任务/结果标识及认可误差",
+    "data": "当前匿名保存时单位/倍率/精度快照；没有配置→真实任务→算法→结果→报告整链",
+    "output": "患者元数据保存、历史查询、CSV/预览/PDF/HTML可用；不能替代结果重算或真实上传",
+    "source": [
+      "history/history_page.cpp",
+      "history/history_store.h",
+      "history/report_remaining_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/report_remaining_20261025/interface_contract.json"
+    ],
+    "remaining": "原明细上传/重算含调试/提前return，须核实际启用范围；不按按钮文字擅自恢复或发命令"
+  },
+  {
+    "id": "F11.local-settings-vs-lis",
+    "buttons": "设置子页4原Apply；样本查询/报告上传",
+    "input": "9个可见设置键、12个隐藏保留键、双草稿及设备名称",
+    "data": "独立本地LIS设置worker已接；只保存意图，不建立外部连接",
+    "output": "5123累计两显示模式各5/0；不代表HL7/MLLP、QRY/DSR、ORU/ACK或自动收发已接",
+    "source": [
+      "data/lis_settings_store.cpp",
+      "ui/frmlissetting.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/lis_settings_20261024/verification.json"
+    ],
+    "remaining": "通信合同、长报文/重复/重连/ACK/真实端点须独立开发验证；真实LIS当前禁止连接"
+  },
+  {
+    "id": "F14.language-and-common-foundation",
+    "buttons": "设置子页2语言；启动/单实例/备份恢复/告警/软键盘/日志",
+    "input": "原发行版启用范围、部署数据根、匿名异常与恢复场景",
+    "data": "语言仍占位，原Apply为空；已有医院/账户和WSL拼音不能代表全部设置/输入组件",
+    "output": "其他43项逐项对账见scope_review.json；菜单齐全、编译与离线检查点不等于所有功能迁完",
+    "source": [
+      "shell/frmuserset.cpp",
+      "shell/main.cpp",
+      "shell/shell.pri"
+    ],
+    "evidence": [
+      "04_references/sn100_host/global_coverage_20261024/review_summary.json",
+      "01_docs/knowledge/sn100_host_project_guide.md:269"
+    ],
+    "remaining": "原Windows/活动主题、RK/仪器、真实LIS/打印、告警互锁、生产导入/恢复、软键盘、诊断与长稳分别待做/待验；公共项由整合窗口处理"
+  }
+]

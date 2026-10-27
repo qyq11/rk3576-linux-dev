@@ -1,0 +1,66 @@
+[
+  {
+    "name": "local_cn_page",
+    "driver": "language_setting_page_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {
+      "SN100_LANGUAGE_PAGE_TEST_ROOT": "{stage}/runtime"
+    }
+  },
+  {
+    "name": "local_alarm_store",
+    "driver": "alarm_history_store_test",
+    "qpas": [
+      "offscreen"
+    ],
+    "env": {
+      "SN100_ALARM_TEST_ROOT": "{stage}/runtime"
+    },
+    "prepare_dirs": [
+      "runtime"
+    ]
+  },
+  {
+    "name": "local_alarm_page",
+    "driver": "alarm_history_page_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {
+      "SN100_ALARM_PAGE_TEST_ROOT": "{stage}/runtime"
+    },
+    "prepare_dirs": [
+      "runtime"
+    ]
+  },
+  {
+    "name": "local_report_dictionary_store",
+    "driver": "report_dictionary_store_contract_test",
+    "qpas": [
+      "offscreen"
+    ],
+    "env": {}
+  },
+  {
+    "name": "local_report_dictionary_dialog",
+    "driver": "report_dictionary_dialog_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {}
+  },
+  {
+    "name": "local_report_dictionary_page",
+    "driver": "report_dictionary_page_test",
+    "qpas": [
+      "offscreen",
+      "xcb"
+    ],
+    "env": {}
+  }
+]

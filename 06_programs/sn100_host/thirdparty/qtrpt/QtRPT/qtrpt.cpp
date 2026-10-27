@@ -231,6 +231,17 @@ void QtRPT::setOfflinePreview(bool offline)
     m_offlinePreview = offline;
 }
 
+void QtRPT::setControlledNativePrintEnabled(bool enabled)
+{
+    m_controlledNativePrintEnabled = enabled;
+    for (const auto &action : m_controlledPrintActions)
+        if (action) {
+            action->setEnabled(enabled);
+            action->setToolTip(enabled ? tr("按本份报告已捕获的设备打开独立打印确认")
+                                      : tr("打印绑定不可用或本次任务尚未结束"));
+        }
+}
+
 /*!
  \fn QtRPT::loadReport(QString fileName)
   Loads report from XML file with \a fileName.
@@ -1977,8 +1988,15 @@ void QtRPT::printExec(bool maximum, bool direct, QString printerName)
                     || text.compare(QLatin1String("Print..."), Qt::CaseInsensitive) == 0
                     || action->shortcuts().contains(QKeySequence(QKeySequence::Print));
                 if (isPrint) {
-                    action->setEnabled(false);
-                    action->setToolTip(pendingPrint);
+                    // 移除Qt预览内部默认设备处理。原图标/位置/快捷键不重画。
+                    QObject::disconnect(action, SIGNAL(triggered(bool)), nullptr, nullptr);
+                    m_controlledPrintActions.append(QPointer<QAction>(action));
+                    action->setEnabled(m_controlledNativePrintEnabled);
+                    action->setToolTip(m_controlledNativePrintEnabled
+                        ? tr("按本份报告已捕获的设备打开独立打印确认") : pendingPrint);
+                    connect(action, &QAction::triggered, this, [this]() {
+                        if (m_controlledNativePrintEnabled) emit controlledNativePrintRequested();
+                    });
                 }
             }
             actExpToHtml->setEnabled(false);
@@ -2002,6 +2020,7 @@ void QtRPT::printExec(bool maximum, bool direct, QString printerName)
             m_previewDialog = nullptr;
             pr = nullptr;
             lst.clear();
+            m_controlledPrintActions.clear();
             emit previewDestroyed();
         });
         if (m_offlinePreview) {
@@ -2352,6 +2371,8 @@ bool QtRPT::eventFilter(QObject *obj, QEvent *e)
         const auto key = static_cast<QKeyEvent *>(e);
         if (widget && (widget == m_previewDialog || m_previewDialog->isAncestorOf(widget))
             && key->matches(QKeySequence::Print)) {
+            if (m_controlledNativePrintEnabled && e->type() == QEvent::KeyPress && !key->isAutoRepeat())
+                emit controlledNativePrintRequested();
             e->accept();
             return true;
         }
@@ -2400,7 +2421,10 @@ bool QtRPT::allowNewPage(bool draw, int curPage_)
 void QtRPT::newPage(QPrinter* printer, int &y, bool draw, bool newReportPage)
 {
     if (allowNewPage(draw, currentPage+1)) {
-        printer->newPage();
+        const bool advanced = printer->newPage();
+        // SN100 local patch: Native翻页API失败也必须反馈，不能只靠end判成功。
+        if (!advanced && printer->outputFormat() == QPrinter::NativeFormat)
+            emit renderError(tr("Native打印翻页未被设备API确认"));
         drawBackground(draw);
     }
     currentPage += 1;

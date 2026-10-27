@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="2" failures="1" tests="3" name="LanguageSettingPageTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="fail" name="smallViewportScrollAndApply">
+    <!-- message="CN_VIEWPORT_HIT active true host_geometry QRect(38,59 900x600) frame QRect(0,0 976x697) page_pos QPoint(&#x002D;177,&#x002D;257) button_global_center QPoint(831,602) button_visible_region QRect(0,0 161x61) hit_class null hit_name &quot;null&quot;" type="qinfo" -->
+    <!-- message="CN_VIEWPORT_DIAGNOSTIC_PNG true" type="qinfo" -->
+    <failure message="&apos;nativeHit&apos; returned FALSE. ()" result="fail"/>
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[CN_VIEWPORT_HIT active true host_geometry QRect(38,59 900x600) frame QRect(0,0 976x697) page_pos QPoint(-177,-257) button_global_center QPoint(831,602) button_visible_region QRect(0,0 161x61) hit_class null hit_name "null"]]>
+<![CDATA[CN_VIEWPORT_DIAGNOSTIC_PNG true]]>
+  </system-err>
+</testsuite>

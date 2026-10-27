@@ -1,0 +1,58 @@
+{
+  "scope": "F01-F18 global delta review of final361 working source against completed353; does not imply platform/package/hardware acceptance",
+  "baseline": "04_references/sn100_host/global_coverage_20261024/review_summary.json",
+  "old_source_inputs": 353,
+  "new_source_inputs": 361,
+  "added": [
+    "data/printer_settings_store.cpp",
+    "data/printer_settings_store.h",
+    "shell/printer_shell.cpp",
+    "ui/frmprintersetting.cpp",
+    "ui/frmprintersetting.h",
+    "ui/frmprintersetting.ui",
+    "ui/printer_origins.json",
+    "ui/printer_settings.pri"
+  ],
+  "changed": [
+    "shell/build.sh",
+    "shell/frmmain.cpp",
+    "shell/frmmain.h",
+    "shell/frmuserset.cpp",
+    "shell/frmuserset.h",
+    "shell/login_shell.cpp",
+    "shell/main.cpp",
+    "shell/package_arm64.py",
+    "shell/rk_board.sh",
+    "shell/shell.pri",
+    "shell/wsl.sh"
+  ],
+  "removed": [],
+  "existing_ui_bytes_unchanged": true,
+  "new_form_equals_reference": true,
+  "existing_business_directory_inputs_unchanged": {
+    "data": true,
+    "history": true,
+    "projects": true,
+    "reagents": true,
+    "samples": true,
+    "instrument": true,
+    "protocol": true
+  },
+  "entry_facts": [
+    "O10-1 main6/user3: main.cpp --printer-settings -> new worker/page -> frmMain::attachPrinterPage -> frmUserSet::attachPrinterPage replaces final index3; wsl integrated-run and release startup capability include opt-in flag",
+    "Legacy direct CLI without flag intentionally keeps old behavior; full-profile actual product was separately tested with the flag",
+    "Main3 calibration and4 QC still final placeholders; no new attach/controller/worker for their local pages. CLI research prototype is not a migrated page",
+    "User2 language and4 LIS still final placeholders; only index3 printer was replaced. Original language Apply is empty and LIS Save has a real-connection side effect that must be isolated before migration",
+    "No changes to protocol core, task/reagent/project/report/instrument business inputs; previously recorded advanced project, local reset/retest, batch ISI/normalValue, result/report chain, alarms, HL7, runtime-data recovery and diagnostics gaps remain",
+    "Printer configuration persistence does not enable physical printing or change system default; original report did not pass that name and current report stays preview/PDF",
+    "Generic startup config/single-instance, production credential security, target input, actual printer backend dependencies and all hardware/budget/RT/long-stability acceptance remain distinct"
+  ],
+  "single_plan": "01_docs/plans/sn100_host_migration_plan.md#integration-next-steps",
+  "next_read_only_basis": "temp/sn100_host/global_coverage_20261024/lis_settings_contract.json",
+  "version_limit": "353 package is historical. This361 source is not called published until the new platform/package/resource final index exists.",
+  "historical_review_resolution": {
+    "printer_final_wiring_review.json": "Its reported unrelated-key loss was repaired in final printer_settings_store.cpp and verified by preserveUnrelatedKeys; historical review hashes are not final361 hashes",
+    "printer_contract.json": "Original behavior/read-only baseline, not a runtime acceptance claim",
+    "lis_settings_contract.json": "Next-candidate facts only; LIS remains a final placeholder and is not implemented in this packet"
+  }
+}

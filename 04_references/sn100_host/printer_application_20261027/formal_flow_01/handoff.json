@@ -1,0 +1,62 @@
+{
+  "status": "STRICT_UTF8_METADATA_TEXT_ARCHIVE_COMPLETE_STOPPED",
+  "created_utc": "2026-10-26T18:39:55.203786+00:00",
+  "directory": "04_references/sn100_host/printer_application_20261027/formal_flow_01",
+  "accepted_original_handoff_sha256": "01f6280c8ea5c809b3759f10935ba850c451b4df3f5b08bf50134fa23d1c2b49",
+  "exact_original_copy_files": 64,
+  "original_copy_bytes": 537507,
+  "copied_files_len_sha_equal": true,
+  "strict_UTF8_originals": 64,
+  "encoding_exclusions": 0,
+  "transcoding_or_raw_byte_exception": false,
+  "excluded_original_index_payloads": 15,
+  "all_pre_handoff_files_index_count": 70,
+  "archive_total_files_including_index_handoff": 72,
+  "copy_manifest": {
+    "file": "archive_manifest.json",
+    "bytes": 24077,
+    "sha256": "3dde4c844f3410a7436f3454a42db218cf5ae96539ce7135fba5cac8d967143f"
+  },
+  "all_pre_handoff_files_index": {
+    "file": "archive_all_files_sha256.json",
+    "bytes": 12668,
+    "sha256": "3a6730d3f2ab769d39ea13290989005fbbecc35ad10f37a3955bbf8da8a3dda1"
+  },
+  "historical_actual_receipts": {
+    "windows_parent_exit": 0,
+    "windows_postflight_exit": 0,
+    "helper_actual_normal_exit": 21,
+    "controller_failed_signals": 1,
+    "original_busy_close_rejected": true,
+    "normal_original_guarded_close": true,
+    "workers": {
+      "all_joined": true,
+      "history_closed": 1,
+      "hospital_closed": 1,
+      "printer_closed": 1
+    },
+    "owned_process_groups_gone": 8,
+    "actual_helper_pid_gone": 419
+  },
+  "historical_formal_inputs": 497,
+  "historical_formal_freeze_sha256": "cde62734463a6efa65d2b8d8f600e497bcd02a13902763bf5e86e62a4c41d185",
+  "historical_formal_helper_sha256": "cfe7085824d62168cfd2242631566f58de8056e49ac2b0a03f05f34436debcd1",
+  "scope_zh": "WSL 电脑环境中，用原版公开预览 Print 动作验证已保存设备当前不存在这一负例；实际正式子进程、控制器、历史页及主壳错误状态、关闭保护和三个数据工作线程收尾均通过。测试入口替代 main.o，复用当前正式对象，未重新构建整个正式主壳。",
+  "not_verified_zh": [
+    "原版界面视觉及鼠标点击",
+    "主列表选择到打印按钮的入口",
+    "不存在设备的设置保存操作",
+    "系统打印确认、提交和打印队列",
+    "Submitted/Cancelled 分支",
+    "真实出纸",
+    "本轮 ARM64 交叉编译及 RK 板端运行",
+    "真实仪器"
+  ],
+  "NTFS_0777_warning_preserved": true,
+  "new_feature_batch_rebinding": false,
+  "original_temp_preserved": true,
+  "no_current_execution_zh": "本次仅用 Windows 读取、校验和复制指定的已有 UTF8 元数据文本；未启动 WSL、编译器、GUI、helper 或功能测试，未重新读取/哈希源码、对象、工具全树，未触碰 Project 当前执行槽。",
+  "source_copy_exclusion": "Only command JSON records may contain their originally executed inline gate code. No .py/.cpp/.pro or other source-file copies were archived. Bound JSON records contain fingerprints and paths only.",
+  "writes_zh": "仅新增当前 04_references 归档目录；未改正式源码、旧 temp、既有归档、共享计划/记录或 07_backups。未 Git add/commit/push。",
+  "stopped_writing": true
+}

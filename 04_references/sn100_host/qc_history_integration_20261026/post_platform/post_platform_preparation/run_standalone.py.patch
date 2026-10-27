@@ -1,0 +1,106 @@
+--- old/run_standalone.py
++++ new/run_standalone.py
+@@ -8,6 +8,7 @@
+ """
+ import argparse
+ import os
++import re
+ from pathlib import Path
+ import secrets
+ import signal
+@@ -19,7 +20,10 @@
+                     save, sha, verify_frozen, verify_native, stop_owned_group)
+ 
+ 
+-STAGE = WORK / 'standalone_final'
++from common import spawn_owned, clean_environment
++from run_projects_modules import verify_build, build_inventory
++
++STAGE = WORK / 'post_standalone_01'
+ 
+ 
+ def run_phase(name, command, cwd, logs, env, timeout):
+@@ -34,7 +38,7 @@
+     cleanup = None
+     try:
+         with (logs / (name + '.log')).open('wb') as stream:
+-            process = subprocess.Popen(record['command'], cwd=cwd, env=env,
++            process = spawn_owned(record['command'], cwd=cwd, env=env,
+                                        start_new_session=True, stdout=stream, stderr=subprocess.STDOUT)
+             save(logs / (name + '.process.json'), {'pid': process.pid, 'state': 'running'})
+             process.wait(timeout=timeout)
+@@ -77,7 +81,7 @@
+     path = logs / (name + '.log')
+     try:
+         with path.open('wb') as stream:
+-            process = subprocess.Popen(record['command'], cwd=ROOT, env=env,
++            process = spawn_owned(record['command'], cwd=ROOT, env=env,
+                                        start_new_session=True, stdout=stream, stderr=subprocess.STDOUT)
+             save(logs / (name + '.process.json'), {'pid': process.pid, 'state': 'running'})
+             deadline = time.monotonic() + 20
+@@ -130,7 +134,11 @@
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--root-go', action='store_true', required=True)
++    parser.add_argument('--name', default='post_standalone_01')
+     args = parser.parse_args()
++    global STAGE
++    require(re.fullmatch(r'[A-Za-z0-9_-]+', args.name), 'Simple fresh attempt name required')
++    STAGE = WORK / args.name
+     require(args.root_go and os.geteuid() != 0, 'Explicit --root-go and ordinary WSL user required')
+     require(not STAGE.exists(), 'Fresh standalone_final directory required; do not overwrite prior attempts')
+     frozen = load(FREEZE)
+@@ -153,12 +161,12 @@
+     save(STAGE / 'environment.json', {'environment_overrides': selected_env,
+          'parallel_jobs_maximum': 2, 'build': 'Release', 'runtime_values_hashed_or_archived': False,
+          'display': os.environ.get('DISPLAY'), 'wayland_display': os.environ.get('WAYLAND_DISPLAY')})
+-    build_env = dict(os.environ)
+-    for key in ('QMAKESPEC', 'QMAKEPATH', 'QMAKEFEATURES', 'QT_PLUGIN_PATH', 'QML2_IMPORT_PATH'):
+-        build_env.pop(key, None)
+-    gui_env = dict(build_env, **selected_env)
++    build_env, clean_receipt = clean_environment(runtime, 'xcb')
++    gui_env = dict(build_env)
++    save(STAGE / 'private_environment.json', clean_receipt)
+     stages = {}
+     modules = {}
++    module_inventories = {}
+     secret = None
+     try:
+         for name, relative, target in (
+@@ -166,12 +174,17 @@
+                 ('calibration', 'calibration/calibration.pro', 'sn100_calibration')):
+             build_dir = STAGE / 'build' / name
+             build_dir.mkdir(parents=True)
++            build_started_ns = time.time_ns()
+             qmake_name, make_name = name + '_qmake', name + '_make'
+             stages[qmake_name] = run_phase(qmake_name, ['/usr/lib/qt5/bin/qmake', str(PROGRAM / relative),
+                 '-spec', 'linux-g++', 'CONFIG+=release', 'CONFIG-=debug'], build_dir, logs, build_env, 120)
+             stages[make_name] = run_phase(make_name, ['make', '-j2'], build_dir, logs, build_env, 900)
+             binary = build_dir / target
+             require(binary.is_file(), 'Successful make did not create ' + target)
++            inventory, proof = verify_build(build_dir, binary, frozen, build_started_ns)
++            module_inventories[name] = inventory
++            save(logs / (name + '_build_inventory.json'), inventory)
++            save(logs / (name + '_build_proof.json'), proof)
+             modules[name] = {'project': relative, 'target': target,
+                 'binary': binary.relative_to(STAGE).as_posix(), 'binary_sha256': sha(binary),
+                 'makefile_sha256': sha(build_dir / 'Makefile'),
+@@ -182,7 +195,7 @@
+                       '--seed-demo', '--exit-after-ms', '1800']
+         stages['quality_control_run'] = run_phase('quality_control_run', qc_command, ROOT, logs, gui_env, 30)
+         qc_text = (logs / 'quality_control_run.log').read_text(encoding='utf-8')
+-        qc_marker = '质控本地数据已读取；真实曲线和规则尚未启用。'
++        qc_marker = '质控元数据已读取；所选项目历史另行只读加载，临床规则未启用。'
+         modules['quality_control'].update(startup_marker=qc_marker,
+             startup_marker_observed=qc_marker in qc_text,
+             normal_shutdown_basis='Actual standalone process exit0 after --exit-after-ms1800; frozen main.cpp closes both worker stores with BlockingQueuedConnection and thread.quit/wait before returning. No independent shutdown log marker exists.')
+@@ -226,7 +239,8 @@
+             'native_verification_sha256': sha(NATIVE / 'verification.json'),
+             'main_artifacts': dict(native_after['artifacts'])}
+         save(STAGE / 'native_binding_after.json', binding_after)
+-        checks = {'source_unchanged': source_before == source_after == frozen,
++        checks = {'fresh_standalone_objects_unchanged': all(build_inventory(STAGE / row['binary'].rsplit('/',1)[0], STAGE / row['binary']) == module_inventories[name] for name, row in modules.items()),
++            'source_unchanged': source_before == source_after == frozen,
+             'main_artifacts_unchanged': main_artifacts == binding_after['main_artifacts'],
+             'native_verification_unchanged': native_verification_sha == binding_after['native_verification_sha256'],
+             'all_actual_phase_exits0': len(stages) == 7 and all(row['exit_code'] == 0 for row in stages.values()),

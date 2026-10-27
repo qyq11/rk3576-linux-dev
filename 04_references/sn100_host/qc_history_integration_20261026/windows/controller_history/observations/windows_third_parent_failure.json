@@ -1,0 +1,61 @@
+{
+  "kind": "post_hoc_parent_tool_observation_not_original_OS_process_receipt",
+  "source": "Parent root task message; tool chunk2ea3f4",
+  "observed_parent_exit_code": 1,
+  "parent_OSPID": null,
+  "parent_OSPID_not_exposed": true,
+  "tool_exposed": [
+    "exit1",
+    "traceback"
+  ],
+  "original_parent_verification": {
+    "path": "platforms/windows_03/verification.json",
+    "bytes": 1142,
+    "sha256": "484b52b8a2f8abf80188a7e770209439fb0dccf6155889f4c56250fa8499e3ca"
+  },
+  "original_qmake_child_receipt": {
+    "path": "platforms/windows_03/shell_qmake.log.exit.json",
+    "bytes": 684,
+    "sha256": "4699e8446429a6dbb1d64b5fb9dd35b5279c2bc1a7c8e6fdb15de664bcc46b70"
+  },
+  "original_qmake_exit": 0,
+  "original_make_child_receipt": {
+    "path": "platforms/windows_03/shell_make.log.exit.json",
+    "bytes": 682,
+    "sha256": "7580f8055f5cd45bec8f617af909725d5b9b039e34fb589e84f29ed6e2512cd2"
+  },
+  "original_make_exit": 0,
+  "original_make_OSPID": 59608,
+  "original_make_job_stopped": true,
+  "report_helper_build_started": false,
+  "whole_platform_pass_claimed": false,
+  "previous_selector_candidates": [
+    "g++ -fno-keep-inline-dllexport -O2 -std=gnu++1y -Wall -Wextra -Wextra -dM -E -o .moc\\moc_predefs.h C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\mkspecs\\features\\data\\dummy.cpp",
+    "g++ -Wl,-s -Wl,-subsystem,windows -mthreads -o sn100_shell.exe @object_script.sn100_shell  -ladvapi32 C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5PrintSupport.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Charts.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Svg.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Widgets.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Gui.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Sql.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Xml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Qml.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Network.a C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libQt5Core.a  -lmingw32 C:\\Qt5.14\\Qt5.14.2\\5.14.2\\mingw73_32\\lib\\libqtmain.a -LC:\\openssl\\lib -LC:\\Utils\\my_sql\\mysql-5.7.25-win32\\lib -LC:\\Utils\\postgresql\\pgsql\\lib -lshell32 "
+  ],
+  "old_selector_count": 2,
+  "error": "Old negative -c filter admitted the real -E moc_predefs preprocessor command alongside final link",
+  "correction": "Positive expected executable -o identity plus explicit non-link mode exclusion; exact object/source checks retained",
+  "exact_affected_preimages": [
+    {
+      "path": "integration_drivers/audit_originals/pre_windows_expected_link_target_01/makefile_audit.ps1",
+      "bytes": 5541,
+      "sha256": "ee52104803f438c32bfc1df822e4a0d74b0835fc94457d00ea53e7b17b638954"
+    },
+    {
+      "path": "integration_drivers/audit_originals/pre_windows_expected_link_target_01/build_windows.ps1",
+      "bytes": 19547,
+      "sha256": "8dbc10d61ae164c5d652aee1ea72ad20abd48d4ef67c0628c41d62854b4d7ed5"
+    },
+    {
+      "path": "integration_drivers/audit_originals/pre_windows_expected_link_target_01/platform_preparation.json",
+      "bytes": 14486,
+      "sha256": "976438fbd443adbd8c78d68f1b412393b918850d0a45c83eca59693443e1511c"
+    }
+  ],
+  "original_record_and_build_members_unchanged": {
+    "path": "integration_drivers/probes/link_parser_run_01/original_inputs_after.json",
+    "bytes": 221613,
+    "sha256": "5b856aff50f4d6a815c78c952c53873f8bbd969533477822a6f5413b0dc7bc34"
+  }
+}

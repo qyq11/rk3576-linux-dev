@@ -1,0 +1,1 @@
+The real shell/build.sh child exited 0 and published both checked ARM64 outputs. The outer PowerShell stdin driver exited 1 only on its final exit line because PowerShell appended a carriage return to exit "0". The post-build snapshot was already written. No build rerun or old artifact fallback occurred; architecture/SHA/source/closure/package checks were then run independently.

@@ -1,0 +1,2198 @@
+[
+  {
+    "case": "realCatalogGuardsAndSoftHiddenHistory()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-Bdajno/calibration/calibration_local.db",
+        "sha256": "b27a4ca8cc3d44cf2039ac345979a93eab5e00bd5b042da61f482a4547895233",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "36be9a93-2dd9-482c-9d2b-a346ea239aca"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 2,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 0
+            },
+            {
+              "id": 2,
+              "revision": 2,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 1,
+              "visible": 0
+            },
+            {
+              "id": 3,
+              "revision": 1,
+              "project_id": 3,
+              "project_name": "GUARD_B",
+              "batch_id": 0,
+              "batch_code": "",
+              "batch_group": "",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            },
+            {
+              "record_id": 2,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 2,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            },
+            {
+              "record_id": 3,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 3,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-Bdajno/catalog/catalog.db",
+        "sha256": "39627f81aad698a2523928eff186d110144f0e22a9343b546390492a737db447",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:36be9a93-2dd9-482c-9d2b-a346ea239aca:project:2:batch:1",
+              "project_id": 2
+            },
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:36be9a93-2dd9-482c-9d2b-a346ea239aca:project:3:batch:0",
+              "project_id": 3
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:36be9a93-2dd9-482c-9d2b-a346ea239aca:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "historicalUnitsAndQcSnapshotSurviveCurrentChanges()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-piumLS/calibration/calibration_local.db",
+        "sha256": "ffc4936d6c9833b165d19f3f0291e7494938826d6ed52d633d438f2f41cbd959",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "e70f25e9-b2d9-433f-9c38-c2ab7e7619fa"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 2,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            },
+            {
+              "id": 2,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 1,
+              "visible": 1
+            },
+            {
+              "id": 3,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.x10",
+              "result_unit": "s",
+              "unit_ratio": 10.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.5,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            },
+            {
+              "record_id": 2,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.5,12.75]"
+            },
+            {
+              "record_id": 2,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            },
+            {
+              "record_id": 3,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 3,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-piumLS/catalog/catalog.db",
+        "sha256": "907a7c55d6e7d7255c02066aa4d143f206d7f952c68036577aad2e25dbc33a8f",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:e70f25e9-b2d9-433f-9c38-c2ab7e7619fa:project:2:batch:1",
+              "project_id": 2
+            },
+            {
+              "owner_module": "quality_control",
+              "reference_key": "dataset:896aac13-b651-43b1-8945-e6e09c87d4f9:control:1:project:2",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:e70f25e9-b2d9-433f-9c38-c2ab7e7619fa:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.x10",
+              "decimal_point": 4
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "catalogAndLocalLocksRecover()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-UDbRsC/calibration/calibration_local.db",
+        "sha256": "10a5d12f44ee4a2892fca20a6f6abea87ec7cebddab99b09be9b0a7ae2f33d33",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "a6b91a46-e600-47dd-8534-e055fbde410c"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-UDbRsC/catalog/catalog.db",
+        "sha256": "966c3149c6f20a396ade13284042c611c7908c2beda377ef9c4fdb199cf4dcf0",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:a6b91a46-e600-47dd-8534-e055fbde410c:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:a6b91a46-e600-47dd-8534-e055fbde410c:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "partialWriteFailureReleasesOnlyNewHolds()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-HMIEOi/calibration/calibration_local.db",
+        "sha256": "80c5faca7dfa91fc19fbb5270a02df0713976a26616fb85754627994d6822e90",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "fbfb3be6-b77c-4577-8ab1-1b73f13f5dee"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-HMIEOi/catalog/catalog.db",
+        "sha256": "c1e7047396002a3ae08f08e96940e634434e93d9412121e141bf745fe08f4128",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:fbfb3be6-b77c-4577-8ab1-1b73f13f5dee:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:fbfb3be6-b77c-4577-8ab1-1b73f13f5dee:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "localCommitFailureRecoversReservations()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-kMvgVF/calibration/calibration_local.db",
+        "sha256": "3ae395addf39982551357e155b27ee2542e01bdc1a43020c1af0d8a7378a1a18",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "52e21b01-d943-42b5-b35d-ecf5afd6eb76"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-kMvgVF/catalog/catalog.db",
+        "sha256": "164d4c5d0aa7edde0b05a66fd3d34f880aed885791865eab6f06013da134a8c8",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:52e21b01-d943-42b5-b35d-ecf5afd6eb76:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:52e21b01-d943-42b5-b35d-ecf5afd6eb76:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "reservationCommitFailureCannotLeaveLocalRecord()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-nfwxiO/calibration/calibration_local.db",
+        "sha256": "6718f873c717063810a4ca7f3cc8c7db95b157ab243e9ab777f7011bd04cb842",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "e5f67358-7912-403d-b97f-56386ea795c9"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-nfwxiO/catalog/catalog.db",
+        "sha256": "99e65ced3b8bc67feab71f347e2b7bee2f2e0a956cc3bbb3dba805b0079fae22",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:e5f67358-7912-403d-b97f-56386ea795c9:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:e5f67358-7912-403d-b97f-56386ea795c9:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "taggedV3MigrationReconcilesHiddenHistory()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-ZXzWbc/calibration/calibration_local.db",
+        "sha256": "f543ab7cc2cd8f02a070b46db2ddb95f7e1427a2d49eb644069f9de06cd88354",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "c5829051-2843-4051-9a01-f779baa45424"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 2,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 0
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-ZXzWbc/catalog/catalog.db",
+        "sha256": "b981b54f9c47c77cf16d74a49047e6de0b23116b564fa4f6269ac9bc1010e5e1",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:c5829051-2843-4051-9a01-f779baa45424:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:c5829051-2843-4051-9a01-f779baa45424:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "unknownHistoricalIdentityFailsClosed()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-EWuNve/calibration/calibration_local.db",
+        "sha256": "b7b49a97d67503ef0faf3e63f501954cb8dc7ca8cee73d2ef4e4115dc6ccf553",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "5c27323c-013f-41b1-bee8-264e011b0fb9"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-EWuNve/catalog/catalog.db",
+        "sha256": "224ed225229caa976473e83d7a12cfbd9a0af0e252e01d60556baaa674a0a527",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:5c27323c-013f-41b1-bee8-264e011b0fb9:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:5c27323c-013f-41b1-bee8-264e011b0fb9:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "missingProtocolSchemaAndIncompleteIdentityFailClosed()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-NbEEUn/calibration/calibration_local.db",
+        "sha256": "c3485a1914bb8066437246263afe457bd8b13351fa8890a3f0f1e6819fc3452b",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [],
+          "points": []
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-NbEEUn/catalog/catalog.db",
+        "sha256": "676f05e2f721b67645c18d432d993b78322a63a99f8d6ac00f42977c33ef523e",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [],
+          "batch_references": {
+            "expected_fixture_damage_or_error": "no such table: catalog_batch_reference"
+          },
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "disabledProjectKeepsHistoryButRejectsNewRecord()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-NCLPOp/calibration/calibration_local.db",
+        "sha256": "db548a648d313d412fac83e659d2f552067552733f768eaed11ff0f3ba660e34",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "c2dc8b11-9fa5-41d9-a61b-2000f19423cf"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-NCLPOp/catalog/catalog.db",
+        "sha256": "fdadeb37d8eee99a4816ad3dfb39793b57f11b5fbc20bbb51a31b03ae0ac6f52",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:c2dc8b11-9fa5-41d9-a61b-2000f19423cf:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:c2dc8b11-9fa5-41d9-a61b-2000f19423cf:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "datasetsAndQcCannotReleaseEachOthersHolds()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-lUEfTe/calibration/calibration_local.db",
+        "sha256": "2fbf5bfd1d9fa2e189bb1bd1834297f71de9d0be1601c8872d9cb495da87e345",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "2e2bb333-5560-4ba9-af90-e68588e4b02b"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-lUEfTe/calibration_second/calibration_local.db",
+        "sha256": "b5f16ed1468eaa7bad3a1d1266322694cf0a9bb80c37b644fe4fddfa917dfe8d",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "a9dd2671-d5c6-4100-b45e-cea979091f36"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-lUEfTe/catalog/catalog.db",
+        "sha256": "c8e2aa89052c637d94a64d9d136bba5b545c2f56ca566cacda5d4543a534f9da",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:2e2bb333-5560-4ba9-af90-e68588e4b02b:project:2:batch:1",
+              "project_id": 2
+            },
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:a9dd2671-d5c6-4100-b45e-cea979091f36:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:2e2bb333-5560-4ba9-af90-e68588e4b02b:project:2:batch:1",
+              "batch_id": 1
+            },
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:a9dd2671-d5c6-4100-b45e-cea979091f36:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "sameDatasetConcurrentFailureCannotReleaseCommittedHold()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-RjslDk/calibration/calibration_local.db",
+        "sha256": "12d16aa3014ef88dc711f209fda4d4fc9328c783c2172d4bb1d15451f837e84b",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "081a433c-3be7-4278-8d22-7938a4d6b061"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-RjslDk/catalog/catalog.db",
+        "sha256": "d5a0a15650feb0ddf95316f00d85e0216510411abb687ae27290c5d0d63a389e",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:081a433c-3be7-4278-8d22-7938a4d6b061:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:081a433c-3be7-4278-8d22-7938a4d6b061:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "destroyedTypesOrHistoricalUnitCannotBeCopied(missing-original-type)",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-PDgkfs/calibration/calibration_local.db",
+        "sha256": "bd9463e56dc29a1c09c5149d28019cb0d1cbdd4e073b20698e0d01b19980a3aa",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "9b09b242-a6ec-4a04-bb28-a981a386e8e9"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-PDgkfs/catalog/catalog.db",
+        "sha256": "065fe7a9656724a0b7d39dc1358fa6204f536571f5f988f48cf60bc9d66151f7",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:9b09b242-a6ec-4a04-bb28-a981a386e8e9:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:9b09b242-a6ec-4a04-bb28-a981a386e8e9:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "destroyedTypesOrHistoricalUnitCannotBeCopied(missing-calibration-type)",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-vPVQVL/calibration/calibration_local.db",
+        "sha256": "ebc2a87ffc4fd1c49dfe8974c2a74d202ad3235c56da8bbbba25f8f7970f6315",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "9d0b1455-5992-4f7d-98ea-0d81203e4f63"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-vPVQVL/catalog/catalog.db",
+        "sha256": "ebb0170156514b533136618b1336647533258271af3ce562b2aba591cc465693",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:9d0b1455-5992-4f7d-98ea-0d81203e4f63:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:9d0b1455-5992-4f7d-98ea-0d81203e4f63:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "destroyedTypesOrHistoricalUnitCannotBeCopied(missing-historical-unit)",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-QNtVqP/calibration/calibration_local.db",
+        "sha256": "1abfa82da6d3a4fee648406fed0cd2561788aebde351b06abd55843bbcd4c28f",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "3804675c-fc09-48a2-9feb-9baac4206758"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-QNtVqP/catalog/catalog.db",
+        "sha256": "07865d6ebd8ed4413903096631969a7755fc33d16189c1d82f5c655f8cc140f5",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:3804675c-fc09-48a2-9feb-9baac4206758:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:3804675c-fc09-48a2-9feb-9baac4206758:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.x10",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "orphanReservationIsRetainedUntilExplicitReconciliation()",
+    "project_id": 2,
+    "batch_id": 1,
+    "databases": [
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-VpOzyc/calibration/calibration_local.db",
+        "sha256": "e02b86606fffcfb466571115e905bcc80441be9523b134fb2bf36ed5f8b5716f",
+        "bytes": 36864,
+        "integrity_check": "ok",
+        "tables": {
+          "metadata": [
+            {
+              "key": "dataset_uuid",
+              "value": "29961f9b-9888-4b09-9636-55e6c4b42fb5"
+            },
+            {
+              "key": "reference_protocol",
+              "value": "catalog-reservations-v1"
+            },
+            {
+              "key": "schema",
+              "value": "sn100-calibration-local-v3"
+            }
+          ],
+          "records": [
+            {
+              "id": 1,
+              "revision": 1,
+              "project_id": 2,
+              "project_name": "GUARD_A",
+              "batch_id": 1,
+              "batch_code": "GUARD_BATCH",
+              "batch_group": "ANON_R1|ANON_R2",
+              "concentration_unit": "a.u.",
+              "result_unit": "s",
+              "unit_ratio": 1.0,
+              "source_id": 0,
+              "visible": 1
+            }
+          ],
+          "points": [
+            {
+              "record_id": 1,
+              "point_index": 1,
+              "concentration": 100.125,
+              "measurements": "[12.25,12.75]"
+            },
+            {
+              "record_id": 1,
+              "point_index": 2,
+              "concentration": 50.0,
+              "measurements": "[18,20]"
+            }
+          ]
+        }
+      },
+      {
+        "path": "temp/sn100_host/qc_local_20261025/reference_guard/runtime/case-VpOzyc/catalog/catalog.db",
+        "sha256": "f059de4a1729507fe90aaeaff112f476d1490d4bbec50fc371f90dcf1e2a908a",
+        "bytes": 139264,
+        "integrity_check": "ok",
+        "tables": {
+          "project_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:29961f9b-9888-4b09-9636-55e6c4b42fb5:project:2:batch:1",
+              "project_id": 2
+            }
+          ],
+          "batch_references": [
+            {
+              "owner_module": "calibration",
+              "reference_key": "dataset:29961f9b-9888-4b09-9636-55e6c4b42fb5:project:2:batch:1",
+              "batch_id": 1
+            }
+          ],
+          "project_units": [
+            {
+              "project_id": 1,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 1,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 2,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Calibration",
+              "unit_name": "a.u.",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Original",
+              "unit_name": "s",
+              "decimal_point": 2
+            },
+            {
+              "project_id": 3,
+              "result_type": "Time",
+              "unit_name": "s",
+              "decimal_point": 2
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

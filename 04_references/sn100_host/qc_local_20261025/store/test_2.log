@@ -1,0 +1,118 @@
+********* Start testing of QcLocalStoreTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+INFO   : QcLocalStoreTest::initTestCase() entering
+PASS   : QcLocalStoreTest::initTestCase()
+INFO   : QcLocalStoreTest::validation() entering
+PASS   : QcLocalStoreTest::validation()
+INFO   : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed() entering
+QINFO  : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed() REJECTED (QVariant(qlonglong, 3), QVariant(QString, "saveControl"), QVariant(QString, "UNIQUE constraint failed: quality_control_list.item_name Unable to fetch row"))
+QINFO  : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed() COMMITTED (QVariant(qlonglong, 4), QVariant(QString, "saveControl"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed() COMMITTED (QVariant(qlonglong, 5), QVariant(QString, "saveControl"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed() REJECTED (QVariant(qlonglong, 6), QVariant(QString, "saveControl"), QVariant(QString, "质控品名称和厂家须以文字或数字开头，为1至16个字符，不能有首尾空白、路径或控制字符。"))
+QINFO  : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed() COMMITTED (QVariant(qlonglong, 7), QVariant(QString, "removeControl"), QVariant(qlonglong, 2))
+PASS   : QcLocalStoreTest::controlSaveReopenStableIdsAndUsed()
+INFO   : QcLocalStoreTest::associationRulesAndDurableReferences() entering
+QINFO  : QcLocalStoreTest::associationRulesAndDurableReferences() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::associationRulesAndDurableReferences() COMMITTED (QVariant(qlonglong, 4), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::associationRulesAndDurableReferences() COMMITTED (QVariant(qlonglong, 5), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::associationRulesAndDurableReferences() REJECTED (QVariant(qlonglong, 6), QVariant(QString, "setProjects"), QVariant(QString, "项目ID/名称为空、重复或无效。"))
+QINFO  : QcLocalStoreTest::associationRulesAndDurableReferences() REJECTED (QVariant(qlonglong, 7), QVariant(QString, "setProjects"), QVariant(QString, "项目结果类型仅支持原枚举1至4；名称/单位/倍率/精度须来自已提交项目。"))
+QINFO  : QcLocalStoreTest::associationRulesAndDurableReferences() REJECTED (QVariant(qlonglong, 8), QVariant(QString, "setProjects"), QVariant(QString, "项目结果/单位/倍率/精度已变化或不支持，请重新加载。"))
+QINFO  : QcLocalStoreTest::associationRulesAndDurableReferences() COMMITTED (QVariant(qlonglong, 9), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+PASS   : QcLocalStoreTest::associationRulesAndDurableReferences()
+INFO   : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation() entering
+QINFO  : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation() COMMITTED (QVariant(qlonglong, 4), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation() COMMITTED (QVariant(qlonglong, 4), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation() Stored unit snapshot "a.u.x10" 10 3
+QINFO  : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation() COMMITTED (QVariant(qlonglong, 5), QVariant(QString, "removeControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation() COMMITTED (QVariant(qlonglong, 6), QVariant(QString, "removeControl"), QVariant(qlonglong, 1))
+PASS   : QcLocalStoreTest::unitSnapshotAndDatasetReservationIsolation()
+INFO   : QcLocalStoreTest::readAndOpeningNeverRepairOrWrite() entering
+QINFO  : QcLocalStoreTest::readAndOpeningNeverRepairOrWrite() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::readAndOpeningNeverRepairOrWrite() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::readAndOpeningNeverRepairOrWrite() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::readAndOpeningNeverRepairOrWrite() Open/read SHA256 unchanged "19973bbf6514b3a4dde32b92be65fba041de91d43786416e3f0eefcd4345dd52"
+PASS   : QcLocalStoreTest::readAndOpeningNeverRepairOrWrite()
+INFO   : QcLocalStoreTest::failedCatalogRebindCannotUsePreviousConnection() entering
+QINFO  : QcLocalStoreTest::failedCatalogRebindCannotUsePreviousConnection() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::failedCatalogRebindCannotUsePreviousConnection() REJECTED (QVariant(qlonglong, 5), QVariant(QString, "setProjects"), QVariant(QString, "项目引用保护尚未绑定；禁止保存关联。"))
+QINFO  : QcLocalStoreTest::failedCatalogRebindCannotUsePreviousConnection() COMMITTED (QVariant(qlonglong, 6), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+PASS   : QcLocalStoreTest::failedCatalogRebindCannotUsePreviousConnection()
+INFO   : QcLocalStoreTest::nameAndRulesSaveOneTransaction() entering
+QINFO  : QcLocalStoreTest::nameAndRulesSaveOneTransaction() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::nameAndRulesSaveOneTransaction() COMMITTED (QVariant(qlonglong, 4), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::nameAndRulesSaveOneTransaction() REJECTED (QVariant(qlonglong, 5), QVariant(QString, "saveControl"), QVariant(QString, "test rule write failure Unable to fetch row"))
+QINFO  : QcLocalStoreTest::nameAndRulesSaveOneTransaction() COMMITTED (QVariant(qlonglong, 6), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::nameAndRulesSaveOneTransaction() REJECTED (QVariant(qlonglong, 7), QVariant(QString, "saveControl"), QVariant(QString, "靶值、界限和SD仅保存空值或0至9999、最多4位小数；未启用临床规则。"))
+QINFO  : QcLocalStoreTest::nameAndRulesSaveOneTransaction() REJECTED (QVariant(qlonglong, 8), QVariant(QString, "saveControl"), QVariant(QString, "靶值、界限和SD仅保存空值或0至9999、最多4位小数；未启用临床规则。"))
+QINFO  : QcLocalStoreTest::nameAndRulesSaveOneTransaction() REJECTED (QVariant(qlonglong, 9), QVariant(QString, "saveControl"), QVariant(QString, "数据已变化或记录不存在；本次修改已取消。"))
+PASS   : QcLocalStoreTest::nameAndRulesSaveOneTransaction()
+INFO   : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() entering
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() REJECTED (QVariant(qlonglong, 4), QVariant(QString, "saveBatch"), QVariant(QString, "UNIQUE constraint failed: quality_control_batch.batch_name Unable to fetch row"))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() REJECTED (QVariant(qlonglong, 5), QVariant(QString, "saveBatch"), QVariant(QString, "批号须为1至32个字符；有效期须为真实日期yyyy/MM/dd。"))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() COMMITTED (QVariant(qlonglong, 6), QVariant(QString, "saveBatch"), QVariant(qlonglong, 3))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() COMMITTED (QVariant(qlonglong, 7), QVariant(QString, "saveBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() COMMITTED (QVariant(qlonglong, 8), QVariant(QString, "removeBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence() REJECTED (QVariant(qlonglong, 9), QVariant(QString, "removeBatch"), QVariant(QString, "当前/前一批次不能删除；请先明确切换批次。"))
+PASS   : QcLocalStoreTest::batchDatesGlobalUniquenessAndPersistence()
+INFO   : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() entering
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 3))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() COMMITTED (QVariant(qlonglong, 4), QVariant(QString, "switchBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() COMMITTED (QVariant(qlonglong, 5), QVariant(QString, "switchBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() REJECTED (QVariant(qlonglong, 6), QVariant(QString, "switchBatch"), QVariant(QString, "批次不存在、归属错误或默认标志多重冲突；未作隐式修复。"))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() REJECTED (QVariant(qlonglong, 7), QVariant(QString, "switchBatch"), QVariant(QString, "批次不存在、归属错误或默认标志多重冲突；未作隐式修复。"))
+QINFO  : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId() COMMITTED (QVariant(qlonglong, 8), QVariant(QString, "switchBatch"), QVariant(qlonglong, 1))
+PASS   : QcLocalStoreTest::currentPreviousSwitchNoOpAndForeignId()
+INFO   : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair() entering
+QINFO  : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair() REJECTED (QVariant(qlonglong, 4), QVariant(QString, "switchBatch"), QVariant(QString, "test middle failure Unable to fetch row"))
+QINFO  : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair() COMMITTED (QVariant(qlonglong, 5), QVariant(QString, "switchBatch"), QVariant(qlonglong, 2))
+QINFO  : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair() COMMITTED (QVariant(qlonglong, 6), QVariant(QString, "switchBatch"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair() REJECTED (QVariant(qlonglong, 7), QVariant(QString, "switchBatch"), QVariant(QString, "批次不存在、归属错误或默认标志多重冲突；未作隐式修复。"))
+PASS   : QcLocalStoreTest::currentSwitchRollbackAndNoLoadRepair()
+INFO   : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() entering
+QINFO  : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() COMMITTED (QVariant(qlonglong, 4), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() COMMITTED (QVariant(qlonglong, 3), QVariant(QString, "saveBatch"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() REJECTED (QVariant(qlonglong, 5), QVariant(QString, "saveControl"), QVariant(QString, "该质控品已有历史结果，不能改名；历史名称保持原值。"))
+QINFO  : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() REJECTED (QVariant(qlonglong, 6), QVariant(QString, "removeControl"), QVariant(QString, "质控品已有历史结果，不能删除。"))
+QINFO  : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() REJECTED (QVariant(qlonglong, 7), QVariant(QString, "setProjects"), QVariant(QString, "项目已有质控历史，不能解除关联。"))
+QINFO  : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() REJECTED (QVariant(qlonglong, 8), QVariant(QString, "saveBatch"), QVariant(QString, "批次已有历史结果，不能改名。"))
+QINFO  : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion() REJECTED (QVariant(qlonglong, 9), QVariant(QString, "removeBatch"), QVariant(QString, "批次已有历史结果，不能删除。"))
+PASS   : QcLocalStoreTest::historyReferencesProtectNamesAndDeletion()
+INFO   : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() entering
+QINFO  : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() REJECTED (QVariant(qlonglong, 4), QVariant(QString, "saveControl"), QVariant(QString, "database is locked Unable to fetch row"))
+QINFO  : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() REJECTED (QVariant(qlonglong, 5), QVariant(QString, "setProjects"), QVariant(QString, "database is locked Unable to fetch row"))
+QINFO  : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() COMMITTED (QVariant(qlonglong, 6), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() REJECTED (QVariant(qlonglong, 7), QVariant(QString, "setProjects"), QVariant(QString, "database is locked Unable to fetch row"))
+QINFO  : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() COMMITTED (QVariant(qlonglong, 8), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() REJECTED (QVariant(qlonglong, 9), QVariant(QString, "setProjects"), QVariant(QString, "test association failure Unable to fetch row"))
+QINFO  : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover() COMMITTED (QVariant(qlonglong, 10), QVariant(QString, "setProjects"), QVariant(qlonglong, 1))
+PASS   : QcLocalStoreTest::sqliteLocksAndFailedAssociationRecover()
+INFO   : QcLocalStoreTest::commitFailureRollsBackAndRetry() entering
+QINFO  : QcLocalStoreTest::commitFailureRollsBackAndRetry() COMMITTED (QVariant(qlonglong, 2), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+QINFO  : QcLocalStoreTest::commitFailureRollsBackAndRetry() REJECTED (QVariant(qlonglong, 4), QVariant(QString, "saveControl"), QVariant(QString, "database is locked Unable to commit transaction"))
+QINFO  : QcLocalStoreTest::commitFailureRollsBackAndRetry() COMMITTED (QVariant(qlonglong, 5), QVariant(QString, "saveControl"), QVariant(qlonglong, 1))
+PASS   : QcLocalStoreTest::commitFailureRollsBackAndRetry()
+INFO   : QcLocalStoreTest::wrongThreadAndExplicitClose() entering
+QINFO  : QcLocalStoreTest::wrongThreadAndExplicitClose() REJECTED (QVariant(qlonglong, 4), QVariant(QString, "saveControl"), QVariant(QString, "质控数据库尚未就绪。"))
+PASS   : QcLocalStoreTest::wrongThreadAndExplicitClose()
+INFO   : QcLocalStoreTest::cleanupTestCase() entering
+PASS   : QcLocalStoreTest::cleanupTestCase()
+Totals: 16 passed, 0 failed, 0 skipped, 0 blacklisted, 9735ms
+********* Finished testing of QcLocalStoreTest *********

@@ -1,0 +1,35 @@
+{
+  "scope": "O10-2 original LIS local intent only; no communication or device open",
+  "reference": "frmuserset/frmlissetting.cpp,h,ui; commlis/liscommsetting loadConfig/setConfig/getters and Save-openComm chain",
+  "form_sha256": "158ff240e1586db7ec1bfbb408cc27d04ade2fb30c2756c0aa44a9684b46666e",
+  "entry": "main page6 / user settings page4",
+  "visible_keys": [
+    "type",
+    "ip",
+    "port",
+    "commname",
+    "baudrate",
+    "samMode",
+    "autoget",
+    "autosend",
+    "link"
+  ],
+  "differences": [
+    "Explicit isolated settings/lis.ini with offline schema1; no old config import",
+    "Save commits both mode drafts and nine visible keys after successful atomic commit; original updated only active mode endpoints",
+    "Preserve 12 hidden and unrelated keys; empty/unavailable serial names and missing baud do not select first device",
+    "Qt5 Latin input boundary and stricter final bounded validation; original validator implementation/active Windows behavior unverified",
+    "Worker INI; actual bytes plus strict UTF8; private cooperating lock directory with zero wait; no arbitrary removal of other locks",
+    "No original signalConnectLis or active communication object; flags intent only",
+    "Linux sysfs/dev metadata and Windows RegOpenKeyExW(KEY_QUERY_VALUE) fixed SERIALCOMM metadata, no Qt SerialPort module or device open",
+    "Unified draft/busy/leave/login/logout/close guards; original had no Cancel or guard",
+    "Original theme keys and geometry retained, necessary Noto CJK font substitution"
+  ],
+  "pending": [
+    "Original active Windows behavior/theme",
+    "Real LIS endpoint/role/serial parameters",
+    "HL7/MLLP/ACK/duplicates/reconnect/business chain",
+    "RK screen/input/actual deps and metadata candidates",
+    "Approved budget/same-board RT/long stability"
+  ]
+}

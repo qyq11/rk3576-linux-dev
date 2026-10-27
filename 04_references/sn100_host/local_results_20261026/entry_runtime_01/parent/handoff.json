@@ -1,0 +1,151 @@
+{
+  "schema": "local-results-entry-runtime/1",
+  "status": "three_production_main_starts_passed_slot_released",
+  "scope": "仅当前494源/本批production main在WSL x86_64 Qt5.15.13 xcb/compose的三次串行启动、首查询、单SIGTERM正常退出及只读数据库聚合核对；无点击、几何验收或资源测量。",
+  "cases": [
+    {
+      "name": "01_local_samples",
+      "pid": 431,
+      "pgid": 431,
+      "actual_exit": 0,
+      "raw_before_cleanup_actual_exit": 0,
+      "normal_SIGTERM_once": true,
+      "shutdown_ack_count": 1,
+      "store_closed_counts": {
+        "HOSPITAL_STORE_CLOSED": 1,
+        "ACCOUNT_STORE_CLOSED": 1,
+        "HISTORY_STORE_CLOSED": 1,
+        "PROJECT_STORE_CLOSED": 1,
+        "REAGENT_STORE_CLOSED": 1,
+        "SAMPLE_STORE_CLOSED": 1
+      },
+      "threads_stopped_count": 1,
+      "group_gone": true,
+      "cleanup": null,
+      "startup_timeout": false,
+      "close_timeout": false,
+      "temporary_secret_deleted": true,
+      "QPA": "xcb",
+      "input_method": "compose"
+    },
+    {
+      "name": "02_local_reopen",
+      "pid": 473,
+      "pgid": 473,
+      "actual_exit": 0,
+      "raw_before_cleanup_actual_exit": 0,
+      "normal_SIGTERM_once": true,
+      "shutdown_ack_count": 1,
+      "store_closed_counts": {
+        "HOSPITAL_STORE_CLOSED": 1,
+        "ACCOUNT_STORE_CLOSED": 1,
+        "HISTORY_STORE_CLOSED": 1,
+        "PROJECT_STORE_CLOSED": 1,
+        "REAGENT_STORE_CLOSED": 1
+      },
+      "threads_stopped_count": 1,
+      "group_gone": true,
+      "cleanup": null,
+      "startup_timeout": false,
+      "close_timeout": false,
+      "temporary_secret_deleted": true,
+      "QPA": "xcb",
+      "input_method": "compose"
+    },
+    {
+      "name": "03_legacy",
+      "pid": 513,
+      "pgid": 513,
+      "actual_exit": 0,
+      "raw_before_cleanup_actual_exit": 0,
+      "normal_SIGTERM_once": true,
+      "shutdown_ack_count": 1,
+      "store_closed_counts": {
+        "HOSPITAL_STORE_CLOSED": 1,
+        "ACCOUNT_STORE_CLOSED": 1,
+        "HISTORY_STORE_CLOSED": 1,
+        "PROJECT_STORE_CLOSED": 1,
+        "REAGENT_STORE_CLOSED": 1,
+        "SAMPLE_STORE_CLOSED": 1
+      },
+      "threads_stopped_count": 1,
+      "group_gone": true,
+      "cleanup": null,
+      "startup_timeout": false,
+      "close_timeout": false,
+      "temporary_secret_deleted": true,
+      "QPA": "xcb",
+      "input_method": "compose"
+    }
+  ],
+  "database_proof": {
+    "local_first_counts": {
+      "report_data": 0,
+      "report_results": 0,
+      "report_values": 0
+    },
+    "local_reopen_counts": {
+      "report_data": 0,
+      "report_results": 0,
+      "report_values": 0
+    },
+    "same_store_uuid": "f1a8c4e8-c277-4ac4-b168-435d9e96d049",
+    "same_metadata": true,
+    "same_marker_sha256": "5df4db714db12bbc38a06028eb29071b43bcddb5007aa1b757dc448d8652d73e",
+    "legacy_counts": {
+      "report_data": 6,
+      "report_results": 11,
+      "report_values": 16
+    },
+    "legacy_metadata": [
+      "sn100-o04-anonymous-v1"
+    ]
+  },
+  "native_binding": {
+    "native_receipt_sha256": "219d36a45fa937f98c47e8a4b239c6910b4174ff04a903a818980b0b73d0f7d4",
+    "actual_parent_exit": 0,
+    "source_freeze_sha256": "04d92ada0e5201db7834069c965b6a2578f687c7b5ebfa8105a99fdab54b445f",
+    "source_inputs": 494,
+    "artifacts": {
+      "sn100_shell": "94cc17317a54ed37b5f1162ca74ba2fa20726f652f44731b243a64fb4953bc9b",
+      "sn100_report_renderer": "d4c64af19ada7e43704a94ac686722a5b959afa877c2d201122e4595dd7e4cb6"
+    },
+    "native_fresh_objects_verified_once": 231
+  },
+  "integrity": {
+    "formal_source_files": 494,
+    "formal_source_before_after_equal": true,
+    "execution_and_fixture_inputs_before_after_equal": true,
+    "execution_input_count": 8,
+    "run_entry_sha256": "35a7294489cc3c52790a61a6a51bf69e182fe013aa01393f917174e5f48dd7b7",
+    "extra_fixture_sha256": "0869068a20f6d747907f2b249660f86da37e35dbd61bb7dfb9bfdda1842c9f95",
+    "main_helper_after": {
+      "sn100_shell": "94cc17317a54ed37b5f1162ca74ba2fa20726f652f44731b243a64fb4953bc9b",
+      "sn100_report_renderer": "d4c64af19ada7e43704a94ac686722a5b959afa877c2d201122e4595dd7e4cb6"
+    },
+    "fresh_objects_verified_once_not_rehashed": 231
+  },
+  "outer_execution": {
+    "windows_pid": 72700,
+    "actual_wsl_parent_exit": 0,
+    "read_only_postflight_parent_exit": 0,
+    "tool_session_id": 9288,
+    "actual_completion_tool_chunk": "305f65",
+    "postflight_tool_chunk": "37ea51",
+    "raw_streams_index": "raw_streams.json"
+  },
+  "slot_release": {
+    "path": "slot_release.json",
+    "sha256": "f08567ed5477d2c3730461937d7c0280241efd4be44a843ca08221e249ba4f6b"
+  },
+  "credentials_boundary": "验证器只读本次history聚合/元数据；不读取、哈希、复制或归档账户库，不保留秘密值。生成的匿名账户运行库原地保留，凭据相关目录不入本交付SHA清单。两个临时秘密文件finally删除，实际后查无残留。",
+  "excluded_from_manifest": [
+    "entry_runtime_01/local_data/account/",
+    "entry_runtime_01/legacy_data/account/",
+    "运行INI/个人host配置/cache；仅白名单日志/收据及匿名history库入清单"
+  ],
+  "limits": "不表示预约/提交UI已实现，也不表示检测调度、单位映射/文件输出、Windows原版视觉、RK/仪器、资源或长稳通过。",
+  "no_source_assertion_or_budget_changes": true,
+  "no_rerun": true,
+  "stop_writing_after_manifest": true
+}

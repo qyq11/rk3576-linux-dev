@@ -1,0 +1,87 @@
+﻿{
+    "schema":  "sn100-windows-final-color-v1",
+    "started_utc":  "2026-10-24T06:02:00.7414968Z",
+    "readiness":  "FINAL_COLOR_READY",
+    "scope":  "Only offline Windows32 incremental compile/link after pause LED color correction; no GUI, network/device connection or installation.",
+    "published":  true,
+    "stages":  [
+                   {
+                       "target":  "renderer",
+                       "directory":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\renderer_build",
+                       "make_arguments":  [
+                                              "-j2"
+                                          ],
+                       "make_log":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\final_color\\renderer_make.log",
+                       "started_utc":  "2026-10-24T06:02:02.0218141Z",
+                       "make_exit":  0,
+                       "finished_utc":  "2026-10-24T06:02:05.1019531Z"
+                   },
+                   {
+                       "target":  "shell",
+                       "directory":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\shell_build",
+                       "make_arguments":  [
+                                              "-j2"
+                                          ],
+                       "make_log":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\final_color\\shell_make.log",
+                       "started_utc":  "2026-10-24T06:02:05.1064613Z",
+                       "make_exit":  0,
+                       "finished_utc":  "2026-10-24T06:02:12.7865917Z"
+                   }
+               ],
+    "qmake_executed":  false,
+    "previous_qmake_exit":  {
+                                "shell":  0,
+                                "renderer":  0
+                            },
+    "source_diff":  [
+                        {
+                            "path":  "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/device_status_shell.cpp",
+                            "before_sha256":  "ba45db749322ef067652a0186fedbd5832729cccd39cf19a01f2b7fab7af8644",
+                            "after_sha256":  "393f8be633454109bcbba1f13f4b6f19c4849ea4a2727b5d3357dd6fee5a67c8",
+                            "exact_change":  "QStringLiteral(\"#E83323\") -\u003e QStringLiteral(\"rgb(42,118,242)\")"
+                        }
+                    ],
+    "actual_input_count":  271,
+    "preflight_passed":  true,
+    "actual_inputs_unchanged_during_build":  true,
+    "mutated_build_files":  [
+                                {
+                                    "path":  "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/windows/shell_build/.obj/device_status_shell.o",
+                                    "size":  12689,
+                                    "sha256":  "b2bf9ebb88f1f99a4bfdda2ffcdf1df63aaa421599224396286e778c412b0331"
+                                },
+                                {
+                                    "path":  "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/windows/shell_build/sn100_shell.exe",
+                                    "size":  2605568,
+                                    "sha256":  "3b02911a39613d3069c750063853c45f5d9b2a6c34f3e3824009d7c6deccd9d6"
+                                }
+                            ],
+    "main_compiled_sources":  [
+                                  "shell/device_status_shell.cpp"
+                              ],
+    "helper_nothing_to_do":  true,
+    "previous_pair_preserved":  true,
+    "toolchain_unchanged":  true,
+    "outputs":  [
+                    {
+                        "path":  "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/windows/final_color/release/sn100_shell.exe",
+                        "size":  2605568,
+                        "sha256":  "3b02911a39613d3069c750063853c45f5d9b2a6c34f3e3824009d7c6deccd9d6",
+                        "machine_hex":  "0x014c",
+                        "optional_header_hex":  "0x010b",
+                        "architecture":  "PE32 / Intel i386 / 32-bit Windows"
+                    },
+                    {
+                        "path":  "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/windows/final_color/release/sn100_report_renderer.exe",
+                        "size":  720896,
+                        "sha256":  "1bfd18364d86289a0fdd2532bf3060837d335be16a8820ad5374b03fe7a60060",
+                        "machine_hex":  "0x014c",
+                        "optional_header_hex":  "0x010b",
+                        "architecture":  "PE32 / Intel i386 / 32-bit Windows"
+                    }
+                ],
+    "helper_sha_unchanged":  true,
+    "exit_code":  0,
+    "path_restored":  true,
+    "finished_utc":  "2026-10-24T06:02:14.0679696Z"
+}

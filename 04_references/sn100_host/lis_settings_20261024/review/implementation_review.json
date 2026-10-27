@@ -1,0 +1,124 @@
+{
+  "schema": "sn100-lis-local-settings-implementation-review-v1",
+  "reviewed_utc": "2026-10-24T13:37:16.481637+00:00",
+  "review_mode": "Read-only source/test review, including root follow-up hardening. No builds, GUI, tests, platform enumeration, runtime config/DB/credential reads or device actions by reviewer.",
+  "source_sha256": {
+    "data/lis_settings_store.cpp": "d55d5ab2db4d051ea02a4c923dc04a51324caa8b40a09120b1132082e1dc2d99",
+    "data/lis_settings_store.h": "a84b8fddc1baa698733ea7b163e2a76771aa0b88dc38cfda4d137271e0224fec",
+    "data/serial_port_catalog.cpp": "5a82dd61afe62ad83fb4249f4284794c930cc5e28383b03e50ef99b81febf56f",
+    "data/serial_port_catalog.h": "8fa47693d0b240d81a810b4cf69237df6d08a81c90298827a2b1c941782f6b24",
+    "ui/frmlissetting.cpp": "629d059c61f55dfe9a2d92c2663f099a527b34647ce78aa9f325ea65b772a963",
+    "ui/frmlissetting.h": "32b25da3ec60ffe5d0a5e72a944c0927b25493bef46239f0578b577c0f5295fc",
+    "ui/frmlissetting.ui": "158ff240e1586db7ec1bfbb408cc27d04ade2fb30c2756c0aa44a9684b46666e",
+    "ui/lis_settings.pri": "285fa22071da36a49bdddfe79f90291a041ec081d931eaad616500e94a202d1f",
+    "tests/lis_settings_test.cpp": "2b71050f63a07772bfbea0e9e5d0af05fedc2ece57f78885ec4d69e30afa274a",
+    "tests/lis_settings_test.pro": "6f6ef79c48e99b3d36576d0cbe47b4b9b4f3d742cf638aecfa518030354ae42a"
+  },
+  "blocking_source_findings_remaining": [],
+  "static_review_result": "No remaining blocking issue found in reviewed hardened sources. Root must validate the changed snapshot and retain the observed run_02 failure; this is not a test/release completion claim.",
+  "accepted_design_difference": {
+    "one_save_commits_both_mode_drafts": true,
+    "original": "Only active endpoint pair was updated by original Save.",
+    "new": "New page preserves both modes while toggling and one Save submits all9 visible keys; status/discard messages disclose both-mode behavior.",
+    "test_basis": "twoModeDraftsAndSingleSave edits both modes before one GUI Save; nineFieldsPersistAndReopen separately verifies stored9-field snapshot."
+  },
+  "safety_boundary": {
+    "store_and_ui": "QtCore local INI data plus queued settings signals only; no original LisCommSetting/member transports, socket/listener, SerialPort device open, DNS or HL7 call.",
+    "windows": "RegOpenKeyExW uses only KEY_QUERY_VALUE on existing HKLM HARDWARE/DEVICEMAP/SERIALCOMM, then RegEnumValueW/RegCloseKey. No create/write registry permission or COM handle open.",
+    "linux": "Reads /sys/class/tty and /dev stat metadata; no serial device open or 8250 probing.",
+    "build": "lis_settings.pri includes only local store/catalog/page and original form; win32 adds advapi32. Does not link original commlis sources or QtSerialPort to enumerate metadata.",
+    "limits": "Static boundary check only. Actual Windows registry/runtime and instrument/endpoint behavior remain unverified."
+  },
+  "data_and_gui_findings_resolved_during_review": [
+    {
+      "item": "Strict UTF-8 byte rejection",
+      "initial": "Snapshot lacked explicit strict decoding before QSettings.",
+      "current": "readBytes checks QTextCodec ConverterState invalidChars and remainingChars before parsing, protecting hidden/unrelated keys from lossy canonicalization.",
+      "test_source": "invalidUtf8NeverCanonicalized retains incompleteUTF8 original bytes on rejected initialization."
+    },
+    {
+      "item": "GUI/store address length and Unicode consistency",
+      "initial": "Regex codepoint bound alone could differ from QLineEdit UTF16 maxLength.",
+      "current": "Explicit QString ip.size<=16 plus C0/C1 control category rejection and complete surrogate-pair validation.",
+      "test_source": "Invalid field candidates extended; final actual test results belong to root."
+    },
+    {
+      "item": "Unavailable retained port truthfulness",
+      "initial": "Saved unavailable raw name was inserted without distinguishing availability.",
+      "current": "Saved missing item and combo tooltips explicitly state unavailable/unconfirmed and no device open, while keeping raw storage name."
+    },
+    {
+      "item": "Actual directory write failure recovery / QLockFile cleanup",
+      "initial": "Root reported actual temp-create Permission denied then immediate retry lock-busy after restoring0500 directory permissions.",
+      "current": "Cooperative lock path is consistently .lis-locks/settings.lock; init and save reject symlink in this path/ancestors; existing directory permissions are not changed. Parent INI directory losing only write permission does not stop unlink within existing writable child lock directory.",
+      "test_source": "actualFilesystemWriteFailureAndRecovery induces real parent-directory write loss from injected enumerator, then restores before retry; root execution proof is still required."
+    }
+  ],
+  "save_and_failure_flow_review": {
+    "raw_file_bound": 65536,
+    "schema": "Explicit offline_lis_schema marker; no current-directory old-config discovery.",
+    "unknown_hidden_keys": "writeStored starts from expected raw bytes and changes marker plus9 owned visible keys through unique temporary QSettings;12 hidden and unrelated groups are retained.",
+    "conflict": "Read actual bytes in unique parse path, compare both stored model and committed bytes; check unchanged bytes before and immediately before QSaveFile commit under shared cooperative lock.",
+    "atomic_commit": "No direct-write fallback; encoded size/read errors, open/write/commit errors return false; only successful write updates committed bytes/model.",
+    "gui": "Busy disables controls, error clears busy while preserving draft, saved signal renders committed snapshot then emits GUI-side completion; toggling only changes visibility and preserves both draft pairs; requestLeave covers busy and continue/discard.",
+    "limitations": "Cooperation requires same lock path among writers. Noncooperating external writers can still race after final compare; no stronger atomic compare-and-swap claim is made."
+  },
+  "qt5_lock_followup": {
+    "primary_sources": [
+      {
+        "url": "https://raw.githubusercontent.com/qt/qtbase/v5.15.13-lts-lgpl/src/corelib/io/qlockfile_unix.cpp",
+        "lines": [
+          263,
+          275
+        ]
+      },
+      {
+        "url": "https://raw.githubusercontent.com/qt/qtbase/v5.15.13-lts-lgpl/src/corelib/io/qlockfile.cpp",
+        "lines": [
+          137,
+          140,
+          219,
+          243,
+          343,
+          365
+        ]
+      },
+      {
+        "url": "https://doc.qt.io/archives/qt-5.15/qlockfile.html",
+        "sections": [
+          "unlock",
+          "removeStaleLockFile",
+          "setStaleLockTime"
+        ]
+      }
+    ],
+    "verified_semantics": "Destructor invokes unlock. Unix unlock closes fd first and clears ownership/error state even when unlink fails. Retrying unlock on that object cannot retry deletion. Default30s mtime staleness also applies while PID remains alive; Qt stale removal uses an auxiliary rmlock and native lock protection.",
+    "safe_choice": "Dedicated precreated lock subdirectory shared by all callers avoids this observed parent0500 write-bit-loss case without ad-hoc deletion. Retaining an object after failed unlock is ineffective; retaining it without ever unlocking would need a new long-lived lock/exit protocol.",
+    "not_recommended": "No QFile::remove, PID-only deletion, forced removeStaleLockFile or shortened staleness used as normal retry shortcut.",
+    "remaining_limit": "Revoking write access on the lock directory itself, or traversal rights on its ancestors, can still prevent cleanup and require Qt's normal stale recovery. Do not claim universal immediate recovery after arbitrary permission changes."
+  },
+  "nonblocking_test_and_integration_notes": [
+    {
+      "priority": "low",
+      "item": "Update symlink fixture's old-lock-path assertion",
+      "detail": "At review start symlinkNeverReadOrWritten still named .lis-settings.lock; use .lis-locks/settings.lock or absence of .lis-locks directory, and preferably cover a symlinked private lock directory. Confirm final source after root edits."
+    },
+    {
+      "priority": "low",
+      "item": "Enumeration invalid-name normalization",
+      "detail": "Catalog wrapper rejects blank/NUL/overlength names; visible settings validator rejects all controls/unpaired surrogates on Save. Consider applying same text check to enumerated candidates before display if malformed OS metadata is part of tested scope."
+    },
+    {
+      "priority": "integration gate",
+      "item": "Worker/source/entry/actual side effect binding",
+      "detail": "Caller must move this store to its worker before initialize and use explicit isolated data root. Final main6/subpage4 wiring, busy/login/logout/exit guards, Windows/ARM build and actual enumeration/resource closure have not been reviewed in this source-only subtask."
+    }
+  ],
+  "root_reported_failure_evidence": {
+    "write_failure_trace_01": "Root reported actual exit1 with2 passed/1 failed, showing Permission denied followed by lock busy; not independently rerun or rewritten by reviewer.",
+    "retain_original": true
+  },
+  "product_or_test_source_modified_by_reviewer": false,
+  "runtime_databases_ini_credentials_or_their_derived_values_read": false,
+  "new_experiments_or_builds_run": false
+}

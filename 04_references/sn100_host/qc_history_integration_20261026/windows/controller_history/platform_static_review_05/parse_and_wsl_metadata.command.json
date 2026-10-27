@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "C:\\Users\\52400\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+    "-NoProfile",
+    "-Command",
+    "$paths=@('C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\qc_history_integration_20261026\\integration_drivers\\windows\\build_windows.ps1','C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\qc_history_integration_20261026\\integration_drivers\\windows\\file_helpers.ps1','C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\qc_history_integration_20261026\\integration_drivers\\windows\\makefile_audit.ps1');$count=0;foreach($path in $paths){$t=$null;$e=$null;[System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$t,[ref]$e)|Out-Null;$count+=@($e).Count;$e};if($count){exit 1};$wsl=Join-Path ([Environment]::SystemDirectory) 'wsl.exe';if(!(Test-Path -LiteralPath $wsl -PathType Leaf)){exit 2};$app=@(Get-Command -Name $wsl -CommandType Application -ErrorAction Stop);if($app.Count-ne 1){exit 3};[ordered]@{syntax_errors=0;system_wsl=$wsl;application_type=[string]$app[0].CommandType;application_source=$app[0].Source;sha256=(Get-FileHash -LiteralPath $wsl -Algorithm SHA256).Hash.ToLowerInvariant()}|ConvertTo-Json;exit 0"
+  ],
+  "cwd": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux",
+  "timeout_seconds": 30,
+  "scope": "Parser API, executable metadata and SHA only; no executable/controller/Add-Type/build/GUI started"
+}

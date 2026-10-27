@@ -1,0 +1,171 @@
+{
+  "schema": "sn100-private-coordinate-api-run-v1",
+  "passed": true,
+  "scope": "six_direct_api_boundaries_only",
+  "original_23_executed_here": false,
+  "test_result": {
+    "command": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/api_01/calibration_coordinates_api_test"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private",
+    "timeout_seconds": 5,
+    "started_utc": "2026-10-26T04:20:18.503080+00:00",
+    "pid": 411,
+    "exit_code": 0,
+    "timed_out": false,
+    "cleanup_signals": [],
+    "owned_group_gone": true,
+    "elapsed_seconds": 0.04896667300000068,
+    "state": "finished"
+  },
+  "cases": [
+    {
+      "id": "direction_minus_one",
+      "passed": true,
+      "actual": {
+        "id": "direction_minus_one",
+        "mode": "0",
+        "direction_integer": "-1",
+        "input_token": "12.5",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "UnsupportedDirection",
+        "expected_output_signbit": "-1",
+        "actual_input": "12.5",
+        "input_signbit": "0",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "UnsupportedDirection",
+        "readable": "0",
+        "output_signbit": "-1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "direction_two",
+      "passed": true,
+      "actual": {
+        "id": "direction_two",
+        "mode": "0",
+        "direction_integer": "2",
+        "input_token": "12.5",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "UnsupportedDirection",
+        "expected_output_signbit": "-1",
+        "actual_input": "12.5",
+        "input_signbit": "0",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "UnsupportedDirection",
+        "readable": "0",
+        "output_signbit": "-1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "reciprocal_negative_zero",
+      "passed": true,
+      "actual": {
+        "id": "reciprocal_negative_zero",
+        "mode": "2",
+        "direction_integer": "0",
+        "input_token": "negative_zero",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Domain",
+        "expected_output_signbit": "-1",
+        "actual_input": "-0",
+        "input_signbit": "1",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Domain",
+        "readable": "0",
+        "output_signbit": "-1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "reciprocal_negative_four",
+      "passed": true,
+      "actual": {
+        "id": "reciprocal_negative_four",
+        "mode": "2",
+        "direction_integer": "0",
+        "input_token": "-4",
+        "expected_valid": "1",
+        "expected_value": "-0.25",
+        "expected_error": "None",
+        "expected_output_signbit": "1",
+        "actual_input": "-4",
+        "input_signbit": "1",
+        "actual_valid": "1",
+        "actual_value": "-0.25",
+        "actual_error": "None",
+        "readable": "1",
+        "output_signbit": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "reciprocal_denorm_min_overflow",
+      "passed": true,
+      "actual": {
+        "id": "reciprocal_denorm_min_overflow",
+        "mode": "2",
+        "direction_integer": "0",
+        "input_token": "denorm_min",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Unrepresentable",
+        "expected_output_signbit": "-1",
+        "actual_input": "4.9406564584124654e-324",
+        "input_signbit": "0",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Unrepresentable",
+        "readable": "0",
+        "output_signbit": "-1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "identity_negative_zero_sign",
+      "passed": true,
+      "actual": {
+        "id": "identity_negative_zero_sign",
+        "mode": "0",
+        "direction_integer": "0",
+        "input_token": "negative_zero",
+        "expected_valid": "1",
+        "expected_value": "-0",
+        "expected_error": "None",
+        "expected_output_signbit": "1",
+        "actual_input": "-0",
+        "input_signbit": "1",
+        "actual_valid": "1",
+        "actual_value": "-0",
+        "actual_error": "None",
+        "readable": "1",
+        "output_signbit": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    }
+  ],
+  "case_count": 6,
+  "passed_cases": 6,
+  "failed_cases": 0,
+  "inputs_unchanged": true
+}

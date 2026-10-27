@@ -1,0 +1,13 @@
+{
+  "schema": "sn100-real-main-existing-port-name-enumeration-scope-v1",
+  "createdUTC": "2026-10-26T19:30:52.101364+00:00",
+  "preparedControllerSHA": "eebbbe3942d0e2a28f15534fef88154ce1a58c0d218bb171a8565673cc1a5e3f",
+  "originalPreparationPreserved": true,
+  "correction": "Prepared metadata phrase no device enumeration was overly broad: real --lis-settings initialization already calls localSerialPortNames reading /sys/class/tty and /dev stat metadata for the existing choice list. Main lifecycle does not suppress this original behavior. It never opens serial ports, connects instrument/LIS, sends frames or changes settings. Qt GUI runtime itself also accesses existing display input services.",
+  "sourceEvidence": [
+    "data/lis_settings_store.cpp:91,313",
+    "data/serial_port_catalog.cpp Linux implementation"
+  ],
+  "actualProgramOrExecutorLogicChanged": false,
+  "authorizationScope": "Existing original local-only settings initialization is necessary for the explicitly enabled real-main path; only names/metadata enumeration, no hardware control or endpoint connection"
+}

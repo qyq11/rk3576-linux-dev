@@ -1,0 +1,76 @@
+********* Start testing of QcHistoryStoreTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+INFO   : QcHistoryStoreTest::initTestCase() entering
+PASS   : QcHistoryStoreTest::initTestCase()
+INFO   : QcHistoryStoreTest::realGoldenQueryImmutableUnknownUnitsAndNoWrites() entering
+QINFO  : QcHistoryStoreTest::realGoldenQueryImmutableUnknownUnitsAndNoWrites() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-SAXmKF association= 1
+PASS   : QcHistoryStoreTest::realGoldenQueryImmutableUnknownUnitsAndNoWrites()
+INFO   : QcHistoryStoreTest::sameDayDuplicatesRetainedInDeterministicOrder() entering
+QINFO  : QcHistoryStoreTest::sameDayDuplicatesRetainedInDeterministicOrder() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VmiQOp association= 1
+PASS   : QcHistoryStoreTest::sameDayDuplicatesRetainedInDeterministicOrder()
+INFO   : QcHistoryStoreTest::stableControlProjectAndBatchScopeIsolated() entering
+QINFO  : QcHistoryStoreTest::stableControlProjectAndBatchScopeIsolated() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-EFtezO association= 1
+PASS   : QcHistoryStoreTest::stableControlProjectAndBatchScopeIsolated()
+INFO   : QcHistoryStoreTest::identicalNamesAndIdsInOtherDatasetDoNotCrossRead() entering
+QINFO  : QcHistoryStoreTest::identicalNamesAndIdsInOtherDatasetDoNotCrossRead() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ZmhkIQ association= 1
+QINFO  : QcHistoryStoreTest::identicalNamesAndIdsInOtherDatasetDoNotCrossRead() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-dtrLae association= 1
+PASS   : QcHistoryStoreTest::identicalNamesAndIdsInOtherDatasetDoNotCrossRead()
+INFO   : QcHistoryStoreTest::missingMalformedAndInvalidDateAreExplicitNotZero() entering
+QINFO  : QcHistoryStoreTest::missingMalformedAndInvalidDateAreExplicitNotZero() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gHPcGE association= 1
+PASS   : QcHistoryStoreTest::missingMalformedAndInvalidDateAreExplicitNotZero()
+INFO   : QcHistoryStoreTest::readRequiresLiveBindingAndDoesNotRepairHold() entering
+QINFO  : QcHistoryStoreTest::readRequiresLiveBindingAndDoesNotRepairHold() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FOlWuV association= 1
+QINFO  : QcHistoryStoreTest::readRequiresLiveBindingAndDoesNotRepairHold() HISTORY_ERROR (QVariant(qlonglong, 103), QVariant(qlonglong, 1), QVariant(QString, "catalog_reference_missing"), QVariant(QString, "该关联缺少匹配项目保护；查询未自动补写，请显式重新绑定对账。"))
+QINFO  : QcHistoryStoreTest::readRequiresLiveBindingAndDoesNotRepairHold() HISTORY_ERROR (QVariant(qlonglong, 104), QVariant(qlonglong, 1), QVariant(QString, "catalog_not_bound"), QVariant(QString, "须先完成项目库绑定/引用对账，历史查询不会自动补登记。"))
+PASS   : QcHistoryStoreTest::readRequiresLiveBindingAndDoesNotRepairHold()
+INFO   : QcHistoryStoreTest::schemaAndPathMismatchFailClosed() entering
+QINFO  : QcHistoryStoreTest::schemaAndPathMismatchFailClosed() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-VZuubP association= 1
+QINFO  : QcHistoryStoreTest::schemaAndPathMismatchFailClosed() HISTORY_ERROR (QVariant(qlonglong, 105), QVariant(qlonglong, 1), QVariant(QString, "catalog_schema_mismatch"), QVariant(QString, "已绑定项目库结构标记已改变。"))
+QINFO  : QcHistoryStoreTest::schemaAndPathMismatchFailClosed() HISTORY_ERROR (QVariant(qlonglong, 106), QVariant(qlonglong, 1), QVariant(QString, "dataset_path_mismatch"), QVariant(QString, "数据集物理路径绑定缺失或不匹配，未换UUID或转移预约。"))
+PASS   : QcHistoryStoreTest::schemaAndPathMismatchFailClosed()
+INFO   : QcHistoryStoreTest::unmarkedCatalogAndWrongThreadDoNotQuerySql() entering
+QINFO  : QcHistoryStoreTest::unmarkedCatalogAndWrongThreadDoNotQuerySql() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-gEibxV association= 1
+QINFO  : QcHistoryStoreTest::unmarkedCatalogAndWrongThreadDoNotQuerySql() HISTORY_ERROR (QVariant(qlonglong, 124), QVariant(qlonglong, 1), QVariant(QString, "catalog_not_bound"), QVariant(QString, "须先完成项目库绑定/引用对账，历史查询不会自动补登记。"))
+PASS   : QcHistoryStoreTest::unmarkedCatalogAndWrongThreadDoNotQuerySql()
+INFO   : QcHistoryStoreTest::actualSqlLocksHaveErrorAndRetryWithoutWrites() entering
+QINFO  : QcHistoryStoreTest::actualSqlLocksHaveErrorAndRetryWithoutWrites() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hJdorI association= 1
+QINFO  : QcHistoryStoreTest::actualSqlLocksHaveErrorAndRetryWithoutWrites() HISTORY_ERROR (QVariant(qlonglong, 107), QVariant(qlonglong, 1), QVariant(QString, "sql_query_failed"), QVariant(QString, "读取质控关联: database is locked Unable to fetch row [native=5, driver=Unable to fetch row, database=database is locked]"))
+QINFO  : QcHistoryStoreTest::actualSqlLocksHaveErrorAndRetryWithoutWrites() HISTORY_ERROR (QVariant(qlonglong, 109), QVariant(qlonglong, 1), QVariant(QString, "sql_query_failed"), QVariant(QString, "核项目库结构: database is locked Unable to fetch row [native=5, driver=Unable to fetch row, database=database is locked]"))
+PASS   : QcHistoryStoreTest::actualSqlLocksHaveErrorAndRetryWithoutWrites()
+INFO   : QcHistoryStoreTest::budgetsFailWithNoPartialReply() entering
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(single-large) FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-OdxkhT association= 1
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(single-large) HISTORY_ERROR (QVariant(qlonglong, 111), QVariant(qlonglong, 1), QVariant(QString, "result_character_limit"), QVariant(QString, "单条结果超过65536字符，未读取/解析超预算内容。"))
+PASS   : QcHistoryStoreTest::budgetsFailWithNoPartialReply(single-large)
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(total-large) FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-NGHODX association= 1
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(total-large) HISTORY_ERROR (QVariant(qlonglong, 111), QVariant(qlonglong, 1), QVariant(QString, "total_result_character_limit"), QVariant(QString, "结果总文本超过2Mi字符预算，未返回部分成功。"))
+PASS   : QcHistoryStoreTest::budgetsFailWithNoPartialReply(total-large)
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(row-limit) FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pTdOXp association= 1
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(row-limit) HISTORY_ERROR (QVariant(qlonglong, 111), QVariant(qlonglong, 1), QVariant(QString, "row_limit"), QVariant(QString, "所选当前/前批超过10000行，未截断后伪称完整。"))
+PASS   : QcHistoryStoreTest::budgetsFailWithNoPartialReply(row-limit)
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(date-budget) FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-rwpoiS association= 1
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(date-budget) HISTORY_ERROR (QVariant(qlonglong, 111), QVariant(qlonglong, 1), QVariant(QString, "metadata_character_limit"), QVariant(QString, "历史日期/时间文本超过读取预算。"))
+PASS   : QcHistoryStoreTest::budgetsFailWithNoPartialReply(date-budget)
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(blob-storage) FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-sjdDkB association= 1
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(blob-storage) HISTORY_ERROR (QVariant(qlonglong, 111), QVariant(qlonglong, 1), QVariant(QString, "invalid_storage_type"), QVariant(QString, "历史结果/日期/时间不是原文本存储类型，未隐式转换。"))
+PASS   : QcHistoryStoreTest::budgetsFailWithNoPartialReply(blob-storage)
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(embedded-nul-byte-limit) FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-FrLLOE association= 1
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(embedded-nul-byte-limit) HISTORY_ERROR (QVariant(qlonglong, 111), QVariant(qlonglong, 1), QVariant(QString, "stored_text_byte_limit"), QVariant(QString, "历史原文本字节数超过读取预算，未由NUL或编码差异绕过。"))
+PASS   : QcHistoryStoreTest::budgetsFailWithNoPartialReply(embedded-nul-byte-limit)
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(utf16-metadata-limit) FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-pMqNdU association= 1
+QINFO  : QcHistoryStoreTest::budgetsFailWithNoPartialReply(utf16-metadata-limit) HISTORY_ERROR (QVariant(qlonglong, 111), QVariant(qlonglong, 1), QVariant(QString, "utf16_character_or_row_limit"), QVariant(QString, "历史UTF-16文本或行数超过预算，未截断。"))
+PASS   : QcHistoryStoreTest::budgetsFailWithNoPartialReply(utf16-metadata-limit)
+INFO   : QcHistoryStoreTest::emptyAndPreviousOnlyKeepOriginalCardVisibility() entering
+QINFO  : QcHistoryStoreTest::emptyAndPreviousOnlyKeepOriginalCardVisibility() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-aIQrDY association= 1
+PASS   : QcHistoryStoreTest::emptyAndPreviousOnlyKeepOriginalCardVisibility()
+INFO   : QcHistoryStoreTest::noEnabledResultsIsDistinctFromNoHistory() entering
+QINFO  : QcHistoryStoreTest::noEnabledResultsIsDistinctFromNoHistory() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-ehBUnP association= 1
+PASS   : QcHistoryStoreTest::noEnabledResultsIsDistinctFromNoHistory()
+INFO   : QcHistoryStoreTest::historyProtectionAndCloseKeepIdentityTruthful() entering
+QINFO  : QcHistoryStoreTest::historyProtectionAndCloseKeepIdentityTruthful() FIXTURE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/qc_history_store_20261026_01/runtime/case-hRcGFr association= 1
+QINFO  : QcHistoryStoreTest::historyProtectionAndCloseKeepIdentityTruthful() HISTORY_ERROR (QVariant(qlonglong, 202), QVariant(qlonglong, 999999), QVariant(QString, "association_not_found"), QVariant(QString, "所选质控项目关联已不存在，请重载页面。"))
+QINFO  : QcHistoryStoreTest::historyProtectionAndCloseKeepIdentityTruthful() HISTORY_ERROR (QVariant(qlonglong, 203), QVariant(qlonglong, 1), QVariant(QString, "not_initialized"), QVariant(QString, "质控本地库未就绪或已关闭。"))
+PASS   : QcHistoryStoreTest::historyProtectionAndCloseKeepIdentityTruthful()
+INFO   : QcHistoryStoreTest::cleanupTestCase() entering
+PASS   : QcHistoryStoreTest::cleanupTestCase()
+Totals: 21 passed, 0 failed, 0 skipped, 0 blacklisted, 11111ms
+********* Finished testing of QcHistoryStoreTest *********

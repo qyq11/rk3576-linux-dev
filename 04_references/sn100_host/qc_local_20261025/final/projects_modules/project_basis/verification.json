@@ -1,0 +1,85 @@
+{
+  "name": "project_basis",
+  "qmake_project": "projects/tests/projects_test.pro",
+  "target": "projects_test",
+  "kind": "test",
+  "passed": true,
+  "phases": [
+    {
+      "name": "qmake",
+      "command": [
+        "/usr/lib/qt5/bin/qmake",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/projects/tests/projects_test.pro",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build/Makefile",
+        "-spec",
+        "linux-g++",
+        "CONFIG+=release",
+        "CONFIG-=debug"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build",
+      "started_utc": "2026-10-25T18:14:25.836855+00:00",
+      "timeout_seconds": 120,
+      "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/qmake.log",
+      "exit_code": 0,
+      "timed_out": false,
+      "state": "finished",
+      "seconds": 1.6362463440000283,
+      "finished_utc": "2026-10-25T18:14:27.489456+00:00",
+      "pid": 526,
+      "cleanup": null,
+      "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/qmake.exit.json"
+    },
+    {
+      "name": "make",
+      "command": [
+        "/usr/bin/make",
+        "-C",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build",
+        "-j2"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build",
+      "started_utc": "2026-10-25T18:14:27.538166+00:00",
+      "timeout_seconds": 900,
+      "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/make.log",
+      "exit_code": 0,
+      "timed_out": false,
+      "state": "finished",
+      "seconds": 57.360524752999936,
+      "finished_utc": "2026-10-25T18:15:24.914151+00:00",
+      "pid": 539,
+      "cleanup": null,
+      "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/make.exit.json"
+    },
+    {
+      "name": "test",
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/build/projects_test",
+        "-v1",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/qt.txt,txt",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/qt.xml,junitxml"
+      ],
+      "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/runtime",
+      "started_utc": "2026-10-25T18:15:42.679968+00:00",
+      "timeout_seconds": 240,
+      "stdout_stderr": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/test.log",
+      "exit_code": 0,
+      "timed_out": false,
+      "state": "finished",
+      "seconds": 4.745022267999957,
+      "finished_utc": "2026-10-25T18:15:47.454801+00:00",
+      "pid": 649,
+      "cleanup": null,
+      "exit_receipt": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/projects_modules_final/project_basis/logs/test.exit.json"
+    }
+  ],
+  "binary_sha256": "69ced3b361e60b21bb3553e865255bfb395cb9d6d7f6b36af9d201ff754b8057",
+  "checks": {
+    "fresh_release_build": true,
+    "objects_and_binary_unchanged": true,
+    "source_test_driver_native_binding_unchanged": true,
+    "actual_run_exit_zero": true
+  }
+}

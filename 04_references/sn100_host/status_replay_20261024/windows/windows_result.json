@@ -1,0 +1,85 @@
+﻿{
+    "schema":  "sn100-windows-build-v1",
+    "started_utc":  "2026-10-24T05:43:10.7953381Z",
+    "scope":  "O09-1 Windows32 compile/link only. No GUI execution, network/device connection, installation or deployment.",
+    "configuration":  "Release / Qt5.14.2 / MinGW7.3 32-bit / C++14",
+    "jobs":  2,
+    "published":  true,
+    "stages":  [
+                   {
+                       "target":  "shell",
+                       "project":  "shell/shell.pro",
+                       "directory":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\shell_build",
+                       "qmake_arguments":  [
+                                               "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host\\shell\\shell.pro",
+                                               "-spec",
+                                               "win32-g++",
+                                               "CONFIG+=release",
+                                               "CONFIG-=debug",
+                                               "CONFIG-=debug_and_release"
+                                           ],
+                       "qmake_log":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\shell_qmake.log",
+                       "make_arguments":  [
+                                              "-j2"
+                                          ],
+                       "make_log":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\shell_make.log",
+                       "started_utc":  "2026-10-24T05:43:11.9848522Z",
+                       "qmake_exit":  0,
+                       "input_count":  267,
+                       "make_exit":  0,
+                       "finished_utc":  "2026-10-24T05:45:53.7443800Z",
+                       "output":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\shell_build\\sn100_shell.exe"
+                   },
+                   {
+                       "target":  "renderer",
+                       "project":  "history/renderer.pro",
+                       "directory":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\renderer_build",
+                       "qmake_arguments":  [
+                                               "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\06_programs\\sn100_host\\history\\renderer.pro",
+                                               "-spec",
+                                               "win32-g++",
+                                               "CONFIG+=release",
+                                               "CONFIG-=debug",
+                                               "CONFIG-=debug_and_release"
+                                           ],
+                       "qmake_log":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\renderer_qmake.log",
+                       "make_arguments":  [
+                                              "-j2"
+                                          ],
+                       "make_log":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\renderer_make.log",
+                       "started_utc":  "2026-10-24T05:45:53.7539610Z",
+                       "qmake_exit":  0,
+                       "input_count":  50,
+                       "make_exit":  0,
+                       "finished_utc":  "2026-10-24T05:46:34.5166334Z",
+                       "output":  "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\status_replay_20261024\\windows\\renderer_build\\sn100_report_renderer.exe"
+                   }
+               ],
+    "actual_input_count":  271,
+    "actual_inputs_unchanged":  true,
+    "changed_actual_inputs":  [
+
+                              ],
+    "outputs":  [
+                    {
+                        "path":  "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/windows/release/sn100_shell.exe",
+                        "size":  2605568,
+                        "sha256":  "4e9d8a36ce40430014f0036c8072b7d5a1af1d2a38dffd5ebf97f0dbf40c488d",
+                        "machine_hex":  "0x014c",
+                        "optional_header_hex":  "0x010b",
+                        "architecture":  "PE32 / Intel i386 / 32-bit Windows"
+                    },
+                    {
+                        "path":  "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/windows/release/sn100_report_renderer.exe",
+                        "size":  720896,
+                        "sha256":  "1bfd18364d86289a0fdd2532bf3060837d335be16a8820ad5374b03fe7a60060",
+                        "machine_hex":  "0x014c",
+                        "optional_header_hex":  "0x010b",
+                        "architecture":  "PE32 / Intel i386 / 32-bit Windows"
+                    }
+                ],
+    "pair_publish_condition":  "Both fresh qmake/make builds exit 0, all actual formal input SHA256 unchanged, both executables verified PE32/i386 before same-directory pair publish.",
+    "exit_code":  0,
+    "path_restored":  true,
+    "finished_utc":  "2026-10-24T05:46:35.0416311Z"
+}

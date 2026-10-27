@@ -1,0 +1,126 @@
+{
+  "status": "prepared_only_awaiting_root_slot",
+  "order": [
+    {
+      "stage": "standalone",
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu-24.04",
+        "-u",
+        "qyq",
+        "--",
+        "python3",
+        "-B",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation/execute_stage.py",
+        "--root-go",
+        "--stage",
+        "standalone",
+        "--name",
+        "post_standalone_01"
+      ],
+      "inputs": [
+        "当前447源/210对象/主辅程序",
+        "quality_control.pro及calibration.pro的递归pri",
+        "新匿名运行目录"
+      ],
+      "actions": "两个新Release独立构建；质控与校准各一次xcb启动并1800ms正常关闭；另一次当前主程序只初始化校准所需匿名catalog，等SHELL_READY后正常SIGTERM退出。",
+      "expected": "7个实际阶段退出0；QC新元数据提示、校准加载与正常关闭标记、catalog所有者关闭/线程结束；私有对象及源/native首尾相同。",
+      "owned_group_count": 7
+    },
+    {
+      "stage": "projects",
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu-24.04",
+        "-u",
+        "qyq",
+        "--",
+        "python3",
+        "-B",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation/execute_stage.py",
+        "--root-go",
+        "--stage",
+        "projects",
+        "--name",
+        "post_projects_modules_01"
+      ],
+      "inputs": [
+        "四套当前项目/试剂测试cpp/pro",
+        "项目与试剂独立pro及递归pri",
+        "当前447/210绑定",
+        "新匿名catalog"
+      ],
+      "actions": "6个新Release构建；四套完整回归offscreen，项目与试剂各一次xcb独立启动、1800ms正常关闭。",
+      "expected": "项目高级11/0、项目基础9/0、试剂批组11/0、试剂基础11/0，均含初始化/清理；两个app真实退出0及加载证据。",
+      "owned_group_count": 18
+    },
+    {
+      "stage": "response",
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu-24.04",
+        "-u",
+        "qyq",
+        "--",
+        "python3",
+        "-B",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation/execute_stage.py",
+        "--root-go",
+        "--stage",
+        "response",
+        "--name",
+        "post_response_01"
+      ],
+      "inputs": [
+        "新累计构建中已绑定447/210的qc_local_response_test及binary/moc/object/proof",
+        "额外绑定的根tests响应cpp/pro和新隔离可执行副本"
+      ],
+      "actions": "xcb真实原保存按钮40次；5ms心跳；保留原始时钟、字段与分位数重算；不在测量中做批量hash。",
+      "expected": "Qt3/0，40条成功且字段一致；真实退出0、正常离页、QC/catalog worker关闭，响应及心跳计算逐条匹配。",
+      "owned_group_count": 1,
+      "limit": "只测质控资料保存，不测有历史数据的曲线/查询负载。"
+    },
+    {
+      "stage": "resource",
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu-24.04",
+        "-u",
+        "qyq",
+        "--",
+        "python3",
+        "-B",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_history_integration_20261026/post_platform_preparation/execute_stage.py",
+        "--root-go",
+        "--stage",
+        "resource",
+        "--name",
+        "post_resource_01"
+      ],
+      "inputs": [
+        "当前新主辅程序、447冻结、210鲜编对象",
+        "额外绑定的observe_linux_process.py",
+        "新匿名运行根及一次性引导输入"
+      ],
+      "actions": "xcb1600×900、Guest入口、九SQL加两INI、本地127.0.0.1 Qj回环；30秒普通SIGTERM，观察器50秒内限、外层65秒限。",
+      "expected": "实际观察器及主程序均退出0，summary匹配，九SQL/两INI各关闭一次、THREADS_STOPPED、回环真实报文可解析；组已消失后才只读表行数和文件大小。",
+      "owned_group_count": 1,
+      "limit": "10<=t<30固定观察时钟窗口；不作RK、实时控制、临床效力或长稳结论，也不等价于有历史点的质控负载。"
+    }
+  ],
+  "four_independent_apps": [
+    "质控",
+    "校准",
+    "项目/单位",
+    "试剂"
+  ],
+  "root_scheduling_requirement": "先等ARM64及其他编译/GUI结束；每阶段单独授槽。项目/独立构建清场后才安排响应和资源，测量期间其他窗口不编译、不运行GUI、不批量hash。",
+  "real_exit_and_cleanup": "每阶段先落真实command/process/log/exit，再解析结果；外层stage实际退出独立保留。成功需所有登记PGID已消失且无需强杀；超时或失败保留本目录，重试必须另名。无法确认退出或清场时不得开始下一阶段。",
+  "authentication_input_scope": "仅本轮随机引导文件；不读/hash/归档其内容，正常finally删除；失败控制器仅按已登记命令中的受限临时路径清理。",
+  "host_WSL_exit_requirement": "根执行外层wsl.exe时另保存原始宿主退出码，不从Python验证字段或组消失推断。",
+  "not_executed": true
+}

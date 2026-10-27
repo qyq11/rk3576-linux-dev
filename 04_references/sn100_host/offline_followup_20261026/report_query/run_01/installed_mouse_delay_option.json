@@ -1,0 +1,11 @@
+{
+  "scope": "read installed QtTest implementation only; no Qt application executed",
+  "library": "/usr/lib/x86_64-linux-gnu/libQt5Test.so.5.15.13",
+  "mousedelay_option_present": true,
+  "option_context": "t\u0000-v1\u0000-v2\u0000-vs\u0000%[^,],%s\u0000-eventdelay\u0000-keydelay\u0000-mousedelay\u0000-maxwarnings\u0000-nocrashhandler\u0000-callgrind\u0000-callgrindchild\u0000-perf\u0000-perfcounter\u0000-perfcounterlist\u0000-tickcounter\u0000-eventcounter\u0000-min",
+  "header_default_delay_excerpts": [
+    "    {\n        QTEST_ASSERT(window);\n        extern int Q_TESTLIB_EXPORT defaultMouseDelay();\n\n        // pos is in window local coordinates\n        const QSize windowSize = window->geometry().size();\n        if (windowSize.width() <= pos.x() || windowSize.height() <= pos.y()) {",
+    "        }\n\n        if (delay == -1 || delay < defaultMouseDelay())\n            delay = defaultMouseDelay();\n        if (delay > 0) {\n            QTest::qWait(delay);\n            lastMouseTimestamp += delay;",
+    "\n        if (delay == -1 || delay < defaultMouseDelay())\n            delay = defaultMouseDelay();\n        if (delay > 0) {\n            QTest::qWait(delay);\n            lastMouseTimestamp += delay;\n        }"
+  ]
+}

@@ -39,6 +39,19 @@ ReadOnlyTcpTransport::~ReadOnlyTcpTransport()
     clearConnection(QString(), false);
 }
 
+void ReadOnlyTcpTransport::setTimingEnabled(bool enabled)
+{
+    m_timingEnabled = enabled;
+}
+
+void ReadOnlyTcpTransport::traceTiming(const char *stage, qint64 value, qint64 extra)
+{
+    if(!m_timingEnabled) return;
+    emit timingEvent(QString::fromLatin1(stage), m_clock.nsecsElapsed(), m_generation,
+                     value, extra, m_applicationPendingBytes,
+                     m_socket ? m_socket->bytesToWrite() : 0);
+}
+
 QTcpSocket *ReadOnlyTcpTransport::createSocket(QObject *parent)
 {
     return new QTcpSocket(parent);
@@ -167,6 +180,8 @@ bool ReadOnlyTcpTransport::connectLoopback(quint16 port, QString *error)
         if(!current(socket, connectionGeneration)) return;
         if(bytes > 0)
         {
+            traceTiming("socket.bytesWritten", bytes);
+            if(!current(socket, connectionGeneration)) return;
             m_writeProgressMs = pendingWriteBytes() > 0 ? m_clock.elapsed() : -1;
             emit bytesDelivered(bytes, connectionGeneration);
             if(!current(socket, connectionGeneration)) return;
@@ -225,6 +240,9 @@ bool ReadOnlyTcpTransport::queueQuery(ReadOnlyQuery query, QString *error)
     const quint64 connectionGeneration = m_generation;
     for(const QByteArray &frame : frames) m_frames.enqueue(frame);
     m_applicationPendingBytes += bytes;
+    traceTiming("queue.accepted", bytes, frames.size());
+    if(!current(socket, connectionGeneration))
+        return rejected(error, QStringLiteral("transport.cancelled: 诊断通知期间连接已关闭或改变"));
     if(previousPending == 0) m_writeProgressMs = m_clock.elapsed();
     for(const QByteArray &frame : frames)
     {
@@ -310,6 +328,8 @@ void ReadOnlyTcpTransport::readAvailable(QTcpSocket *socket, quint64 connectionG
         const QByteArray bytes = socket->read(qMin(kReadChunkBytes, budget));
         if(bytes.isEmpty()) break;
         budget -= bytes.size();
+        traceTiming("read.actual", bytes.size(), socket->bytesAvailable());
+        if(!current(socket, connectionGeneration)) return;
         emit wireReceived(bytes, connectionGeneration);
         if(!current(socket, connectionGeneration)) return;
         const DecodeBatch decoded = m_decoder.feed(bytes, m_clock.elapsed());
@@ -336,11 +356,15 @@ void ReadOnlyTcpTransport::scheduleWrite(QTcpSocket *socket, quint64 connectionG
 {
     if(!current(socket, connectionGeneration) || m_peerEof || m_writeScheduled || m_frames.isEmpty()) return;
     m_writeScheduled = true;
+    traceTiming("write.scheduled");
+    if(!current(socket, connectionGeneration)) return;
     const QPointer<QTcpSocket> guardedSocket(socket);
     QTimer::singleShot(0, this, [this, guardedSocket, connectionGeneration]()
     {
         if(!current(guardedSocket.data(), connectionGeneration)) return;
         m_writeScheduled = false;
+        traceTiming("write.callback");
+        if(!current(guardedSocket.data(), connectionGeneration)) return;
         pumpWrite(guardedSocket.data(), connectionGeneration);
     });
 }
@@ -349,6 +373,8 @@ void ReadOnlyTcpTransport::pumpWrite(QTcpSocket *socket, quint64 connectionGener
 {
     if(!current(socket, connectionGeneration) || !isConnected() || m_writeDraining) return;
     m_writeDraining = true;
+    traceTiming("pump.enter");
+    if(!current(socket, connectionGeneration)) return;
     qint64 budget = kPerTurnBytes;
     bool progress = false;
     while(current(socket, connectionGeneration) && !m_frames.isEmpty() && budget > 0)
@@ -358,7 +384,12 @@ void ReadOnlyTcpTransport::pumpWrite(QTcpSocket *socket, quint64 connectionGener
         const qint64 socketRoom = m_maxQueuedBytes - socket->bytesToWrite();
         const qint64 amount = std::min({remaining, qint64(m_writeQuantum), budget, socketRoom});
         if(amount <= 0) break;
+        // 本地write接受、bytesWritten进展和peer实际读取分别取证，不能互当ACK。
+        traceTiming("write.begin", amount, remaining);
+        if(!current(socket, connectionGeneration)) return;
         const qint64 written = socket->write(frame.constData() + m_frameOffset, amount);
+        if(!current(socket, connectionGeneration)) return;
+        traceTiming("write.returned", written, amount);
         if(!current(socket, connectionGeneration)) return;
         if(m_peerEof)
         {
@@ -385,6 +416,8 @@ void ReadOnlyTcpTransport::pumpWrite(QTcpSocket *socket, quint64 connectionGener
     }
     if(!current(socket, connectionGeneration)) return;
     m_writeDraining = false;
+    traceTiming("pump.exit", progress ? 1 : 0);
+    if(!current(socket, connectionGeneration)) return;
     if(pendingWriteBytes() == 0) m_writeProgressMs = -1;
     // quantum只是本层有意限制每次write的大小，不冒称操作系统发生了真实短写。
     if(progress && !m_frames.isEmpty()) scheduleWrite(socket, connectionGeneration);
@@ -394,6 +427,8 @@ void ReadOnlyTcpTransport::tick(QTcpSocket *socket, quint64 connectionGeneration
 {
     if(!current(socket, connectionGeneration)) return;
     const qint64 now = m_clock.elapsed();
+    traceTiming("timer.tick", now, m_writeProgressMs);
+    if(!current(socket, connectionGeneration)) return;
     if(m_peerEof)
     {
         readAvailable(socket, connectionGeneration);

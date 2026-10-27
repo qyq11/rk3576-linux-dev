@@ -1,0 +1,488 @@
+{
+  "schema": "sn100-private-coordinate-run-v1",
+  "test_result": {
+    "command": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/core_01/calibration_coordinates_test",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/cases.tsv",
+      "1e-12",
+      "1e-12"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private",
+    "timeout_seconds": 5,
+    "started_utc": "2026-10-26T04:20:09.499219+00:00",
+    "pid": 395,
+    "exit_code": 0,
+    "timed_out": false,
+    "cleanup_signals": [],
+    "owned_group_gone": true,
+    "elapsed_seconds": 0.03167566100000041,
+    "state": "finished"
+  },
+  "passed": true,
+  "cases": [
+    {
+      "id": "identity_forward",
+      "passed": true,
+      "actual": {
+        "id": "identity_forward",
+        "mode": "0",
+        "direction": "forward",
+        "input": "12.5",
+        "expected_valid": "1",
+        "expected_value": "12.5",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "12.5",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "identity_negative_leaf",
+      "passed": true,
+      "actual": {
+        "id": "identity_negative_leaf",
+        "mode": "0",
+        "direction": "inverse",
+        "input": "-12.5",
+        "expected_valid": "1",
+        "expected_value": "-12.5",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "-12.5",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "log10_one",
+      "passed": true,
+      "actual": {
+        "id": "log10_one",
+        "mode": "1",
+        "direction": "forward",
+        "input": "1",
+        "expected_valid": "1",
+        "expected_value": "0",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "0",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "log10_hundred",
+      "passed": true,
+      "actual": {
+        "id": "log10_hundred",
+        "mode": "1",
+        "direction": "forward",
+        "input": "100",
+        "expected_valid": "1",
+        "expected_value": "2",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "2",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "pow10_zero",
+      "passed": true,
+      "actual": {
+        "id": "pow10_zero",
+        "mode": "1",
+        "direction": "inverse",
+        "input": "0",
+        "expected_valid": "1",
+        "expected_value": "1",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "1",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "pow10_two",
+      "passed": true,
+      "actual": {
+        "id": "pow10_two",
+        "mode": "1",
+        "direction": "inverse",
+        "input": "2",
+        "expected_valid": "1",
+        "expected_value": "100",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "100",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "pow10_minus_two",
+      "passed": true,
+      "actual": {
+        "id": "pow10_minus_two",
+        "mode": "1",
+        "direction": "inverse",
+        "input": "-2",
+        "expected_valid": "1",
+        "expected_value": "0.01",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "0.01",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "reciprocal_four",
+      "passed": true,
+      "actual": {
+        "id": "reciprocal_four",
+        "mode": "2",
+        "direction": "forward",
+        "input": "4",
+        "expected_valid": "1",
+        "expected_value": "0.25",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "0.25",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "reciprocal_inverse_quarter",
+      "passed": true,
+      "actual": {
+        "id": "reciprocal_inverse_quarter",
+        "mode": "2",
+        "direction": "inverse",
+        "input": "0.25",
+        "expected_valid": "1",
+        "expected_value": "4",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "4",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "ln_one",
+      "passed": true,
+      "actual": {
+        "id": "ln_one",
+        "mode": "3",
+        "direction": "forward",
+        "input": "1",
+        "expected_valid": "1",
+        "expected_value": "0",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "0",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "exp_zero",
+      "passed": true,
+      "actual": {
+        "id": "exp_zero",
+        "mode": "3",
+        "direction": "inverse",
+        "input": "0",
+        "expected_valid": "1",
+        "expected_value": "1",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "1",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "exp_one",
+      "passed": true,
+      "actual": {
+        "id": "exp_one",
+        "mode": "3",
+        "direction": "inverse",
+        "input": "1",
+        "expected_valid": "1",
+        "expected_value": "2.718281828459045",
+        "expected_error": "None",
+        "actual_valid": "1",
+        "actual_value": "2.7182818284590451",
+        "actual_error": "None",
+        "readable": "1",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "log10_zero",
+      "passed": true,
+      "actual": {
+        "id": "log10_zero",
+        "mode": "1",
+        "direction": "forward",
+        "input": "0",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Domain",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Domain",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "log10_negative",
+      "passed": true,
+      "actual": {
+        "id": "log10_negative",
+        "mode": "1",
+        "direction": "forward",
+        "input": "-1",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Domain",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Domain",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "reciprocal_zero",
+      "passed": true,
+      "actual": {
+        "id": "reciprocal_zero",
+        "mode": "2",
+        "direction": "forward",
+        "input": "0",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Domain",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Domain",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "inverse_reciprocal_zero",
+      "passed": true,
+      "actual": {
+        "id": "inverse_reciprocal_zero",
+        "mode": "2",
+        "direction": "inverse",
+        "input": "0",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Domain",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Domain",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "ln_zero",
+      "passed": true,
+      "actual": {
+        "id": "ln_zero",
+        "mode": "3",
+        "direction": "forward",
+        "input": "0",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Domain",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Domain",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "nonfinite_nan",
+      "passed": true,
+      "actual": {
+        "id": "nonfinite_nan",
+        "mode": "0",
+        "direction": "forward",
+        "input": "quiet_NaN",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "NonFiniteInput",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "NonFiniteInput",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "nonfinite_inf",
+      "passed": true,
+      "actual": {
+        "id": "nonfinite_inf",
+        "mode": "0",
+        "direction": "inverse",
+        "input": "positive_infinity",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "NonFiniteInput",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "NonFiniteInput",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "pow10_overflow",
+      "passed": true,
+      "actual": {
+        "id": "pow10_overflow",
+        "mode": "1",
+        "direction": "inverse",
+        "input": "400",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Unrepresentable",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Unrepresentable",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "exp_underflow",
+      "passed": true,
+      "actual": {
+        "id": "exp_underflow",
+        "mode": "3",
+        "direction": "inverse",
+        "input": "-1000",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "Unrepresentable",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "Unrepresentable",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "double_log_deferred",
+      "passed": true,
+      "actual": {
+        "id": "double_log_deferred",
+        "mode": "4",
+        "direction": "forward",
+        "input": "100",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "UnsupportedMode",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "UnsupportedMode",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    },
+    {
+      "id": "ambiguous_mode5_deferred",
+      "passed": true,
+      "actual": {
+        "id": "ambiguous_mode5_deferred",
+        "mode": "5",
+        "direction": "forward",
+        "input": "10",
+        "expected_valid": "0",
+        "expected_value": "-",
+        "expected_error": "UnsupportedMode",
+        "actual_valid": "0",
+        "actual_value": "<unavailable>",
+        "actual_error": "UnsupportedMode",
+        "readable": "0",
+        "input_unchanged": "1",
+        "invalid_read_guard": "1",
+        "passed": "1"
+      }
+    }
+  ],
+  "case_count": 23,
+  "passed_cases": 23,
+  "failed_cases": 0,
+  "inputs_unchanged": true
+}

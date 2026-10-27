@@ -1,0 +1,68 @@
+{
+  "schema": "sn100-private-coordinate-static-review-v1",
+  "date": "2026-10-26",
+  "review_type": "manual_source_and_static_fixture_audit",
+  "source_implemented": true,
+  "CXX_compiler_invoked": false,
+  "native_test_executed": false,
+  "python_driver_executed_or_AST_parsed": false,
+  "checks": [
+    {
+      "item": "公式来源",
+      "result": "按已审algorithmcore.h:188-227及AL4A_DLL.h:341-383实现0恒等、1log10/10^x、2倒数、3ln/exp；没有拟合公式或DLL调用。"
+    },
+    {
+      "item": "模式/方向",
+      "result": "未知模式返回UnsupportedMode；未知方向返回UnsupportedDirection。4/5仍拒绝。"
+    },
+    {
+      "item": "失败结果不可消费",
+      "result": "数值payload为private，无隐式double转换或无条件值getter；readValue仅在valid时写destination，拒绝时返回false且保持调用方变量不变。"
+    },
+    {
+      "item": "有限/定义域",
+      "result": "先拒绝非有限输入；正向log/ln要求>0，倒数两个方向拒绝±0；计算后拒绝非有限。"
+    },
+    {
+      "item": "下溢",
+      "result": "指数反变换/倒数数学上非0而浮点结果为0时拒绝。恒等0和log(1)=0仍可读。此为已声明新离线合同，不宣称等同厂商错误行为。"
+    },
+    {
+      "item": "原始值/单位",
+      "result": "输入double按值传递，没有单位/倍率/记录指针；核心不隐式换算，不写回原记录。"
+    },
+    {
+      "item": "独立oracle",
+      "result": "oracle.json是已审JSON的逐字节副本；cases.tsv仅复制字段。23行与原JSON逐行核数值/状态。C++仅比较固定expected，未用log/pow/exp生成期望；Python只解析原期望与比较actual，不计算变换oracle。"
+    },
+    {
+      "item": "输出证据",
+      "result": "单进程跑23个固定案例；逐条输出原输入、期望、actual、error、valid/readable、输入位模式不变、拒绝读取保护及pass；真实退出与raw日志先保存。"
+    },
+    {
+      "item": "范围",
+      "result": "所有新文件只在指定temp目录；标准C++14，无Qt/SQL/GUI/DLL/仪器/真实结果链；正式06、参考源与主记录未改。"
+    },
+    {
+      "item": "错误/清理",
+      "result": "输入清单及全部6个文件SHA在前后核查；新attempt拒绝覆盖。每条子进程独立session，超时只清理该自有组，未回收则停止后续命令。"
+    }
+  ],
+  "fixture_audit": {
+    "source_json_sha256": "2eafd59a859c58a8dd3209245663132c86b999cb66e42c949c2099d494d4e843",
+    "tsv_sha256": "eb56d60a53cbad9fcdfc1b61b11ebc48593cf4750ab554d23254472bba0977c4",
+    "valid": 12,
+    "rejected": 11,
+    "rows": 23,
+    "numeric_and_error_tokens_match_approved_source": true,
+    "calculation_functions_evaluated": false
+  },
+  "unverified": [
+    "C++14真实语法/链接与标准库实际数值行为",
+    "Python驱动真实执行/收据与清理路径",
+    "23案例实际通过情况",
+    "UnsupportedDirection等非固定案例分支只静态审查，本轮没有新增运行案例",
+    "DLL全等、完整拟合/反算、临床效力、资源预算和RK"
+  ],
+  "resource_shape": "源码检查为单值常量次数数学调用；无核心动态分配、线程或IO。未测时延/CPU/内存，不作预算结论。"
+}

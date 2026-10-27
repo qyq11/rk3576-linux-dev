@@ -1,0 +1,117 @@
+{
+  "schema": "sn100-password-login-platforms-v1",
+  "current_source_entries": 353,
+  "current_source_matches_native": true,
+  "build_exit_codes": {
+    "native": 0,
+    "windows_main": 0,
+    "windows_renderer": 0,
+    "arm64_prepare": 0
+  },
+  "safe_artifacts": [
+    {
+      "kind": "native_main",
+      "path": "temp/sn100_host/o02_login/native/wsl_release/sn100_shell",
+      "sha256": "2ce1df6cb0be38085e1e5834fd0037a43bd906c6e87d451a06e4e25cbbfc61c9"
+    },
+    {
+      "kind": "native_renderer",
+      "path": "temp/sn100_host/o02_login/native/wsl_release/sn100_report_renderer",
+      "sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b"
+    },
+    {
+      "kind": "windows_main",
+      "path": "temp/sn100_host/o02_login/platforms/windows/final_release/sn100_shell.exe",
+      "sha256": "56e3857aedf816335fa5ab16bb822cac6f52e25c475f75e6abe3380331709df4"
+    },
+    {
+      "kind": "windows_renderer",
+      "path": "temp/sn100_host/o02_login/platforms/windows/final_release/sn100_report_renderer.exe",
+      "sha256": "0001cee00a743ec3772bce81933b3cc199da5b6aebde3480b2ba33eade38ea82"
+    },
+    {
+      "kind": "arm64_main",
+      "path": "temp/sn100_host/o02_login/platforms/arm64/build/sn100_shell",
+      "sha256": "1be8c669c3b7c6be3b169728cf29da953383606cccf67ca908d1caa4dbb56332"
+    },
+    {
+      "kind": "arm64_renderer",
+      "path": "temp/sn100_host/o02_login/platforms/arm64/build/sn100_report_renderer",
+      "sha256": "0c49bad1c91d8b875cb4799dc9162e18c7deb74edeef984882238e4307c9b71a"
+    },
+    {
+      "kind": "arm64_package_backup",
+      "path": "07_backups/sn100_host/password_login_20261024/sn100_shell_f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2.tar.gz",
+      "sha256": "b8fa6f4c8728c7b03ef8aa76ad29560fe6fa0e65b4e82662784f55f66e6f1660"
+    }
+  ],
+  "formal_package": {
+    "release_id": "f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2",
+    "password_capability_key": "local_password_login",
+    "backup_path": "07_backups/sn100_host/password_login_20261024/sn100_shell_f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2.tar.gz",
+    "sha256": "b8fa6f4c8728c7b03ef8aa76ad29560fe6fa0e65b4e82662784f55f66e6f1660",
+    "source_restore_archive": {
+      "path": "07_backups/sn100_host/password_login_20261024/sn100_source_f558ff278eb332b1c304ac8f69843bd6951830136ee43ce2c2a5c91702cc48a2.tar.gz",
+      "sha256": "55a511242e9c6f3ba85056d6b89e60eef833b6d0064c292583fba8c0127cec28",
+      "member_count": 353,
+      "manifest_path": "07_backups/sn100_host/password_login_20261024/source_snapshot.json",
+      "manifest_sha256": "1f1f054f19c3a5f7b83e464583b707f46d279d06d30d21297423bf51e378c2dd"
+    }
+  },
+  "native_audit": {
+    "actual_compile_commands": 33,
+    "account_header_dependency_objects_recompiled": 19,
+    "all_changed_dependency_objects_compiled": true,
+    "all_140_objects_make_q_exit": 0,
+    "reused_unchanged_objects": 107,
+    "default_make_q_exit": 1,
+    "default_make_q_reason": "Published staging target ../wsl_report_stage/sn100_shell was intentionally moved away by wsl.sh; make -n only proposes relink, no C++ compilation",
+    "original_clock_skew_warning_preserved": true
+  },
+  "windows": {
+    "architecture": "PE32/i386",
+    "main_full_compiled_objects": 140,
+    "renderer_full_compiled_objects": 31,
+    "reused_objects": 0,
+    "existing_warning_count": 22,
+    "warning_notes": "build_warning_notes.json"
+  },
+  "arm64": {
+    "architecture": "AArch64",
+    "full_compiled_objects": 142,
+    "reused_objects": 0,
+    "dependency_file_count": 56,
+    "closure_errors": [],
+    "object_source_proof": "Independent readelf DWARF pairing of existing142 objects with frozen75+57+8 sequence and2 helper sources",
+    "original_parallel_xtrace_single_line_complete": false,
+    "prepare_exit_code": 0,
+    "final_closure_exit_code": 0,
+    "first_wrapper_postprocessor_exit_code": 1,
+    "corrected_read_only_postprocessor_exit_code": 0,
+    "failure_note": "arm64/parser_failure_note.json",
+    "postprocessor_attempt_exit_codes": [
+      1,
+      1,
+      0,
+      0
+    ],
+    "success_json_published_atomically": true,
+    "input_inventory_scope": "Early actual_input_list.tsv enumerates the correct source/form/header/resource order with default include roots; effective_input_list.tsv uses the actual private sysroot/build roots. Executed flags are in original trace/DWARF.",
+    "archive_all_member_sha256_checked": true
+  },
+  "static_arm_input_tests": {
+    "tests": 11,
+    "failed": 0,
+    "exit_code": 0,
+    "log": "static/arm64_inputs.log"
+  },
+  "limits": {
+    "windows_gui_verified": false,
+    "rk_execution_verified": false,
+    "instrument_verified": false,
+    "production_credential_security_verified": false,
+    "deployment_performed": false
+  },
+  "sensitive_data_archived": false,
+  "scope": "Build, source/object/flags and offline dependency/package provenance; business tests/resources are indexed separately by root"
+}

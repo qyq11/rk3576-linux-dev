@@ -1,0 +1,74 @@
+{
+  "source_sha256": {
+    "samples.json": "c19ca43fc8e57062c3c1d72124ee905671c0b6a4468ddda026d9c03c7513529f",
+    "disk_samples.json": "cbe58e283ee632914947fc1289a6b94807ed05b7096e968d1eba6051e52df266",
+    "process.log": "448dc2c12188c2e066e39cba7c3471aca3fc95d056a94aa2b27c25e95ff09828",
+    "summary.json": "e00f5d81e12007f5597845f8398890e11c24c8d89e0e9aff4ea5b3c215a55bc9",
+    "verification.json": "5df1b939ece2cf83168dadd9debc89552b60cb5f86d2cd5ca592323cbe6b94cd",
+    "SHA256SUMS": "2c7085161d2ea649833a855ca5e7c1ace34cf7dee15a7d5f1cf6985f46f237dc"
+  },
+  "existing_run_only": true,
+  "cpu_clock_ticks_per_second": 100,
+  "whole_span_cpu_percent_one_logical_core": 17.11707997425329,
+  "whole_span_scope": "Includes cold GUI initialization, six stores, anonymous account/catalog seeding, 14-step replay, then idle; not a steady-idle CPU measurement",
+  "tail_selection": "Samples at or after (last sample elapsed minus 30 seconds), no interpolation",
+  "tail_threshold_elapsed_seconds": 30.01564267699996,
+  "tail_start_elapsed_seconds": 30.099408797000024,
+  "tail_end_elapsed_seconds": 60.01564267699996,
+  "tail_observed_seconds": 29.916233879999936,
+  "tail_sample_count": 295,
+  "tail_cpu_ticks": 480,
+  "tail_cpu_percent_one_logical_core": 16.044800355732512,
+  "tail_ranges": {
+    "VmRSS": {
+      "minimum": 259604,
+      "maximum": 260180
+    },
+    "VmHWM": {
+      "minimum": 263728,
+      "maximum": 263728
+    },
+    "Pss": {
+      "minimum": 245970,
+      "maximum": 246520
+    },
+    "Threads": {
+      "minimum": 9,
+      "maximum": 41
+    },
+    "fd_count": {
+      "minimum": 23,
+      "maximum": 55
+    }
+  },
+  "log_size_observations": {
+    "shell_ready": {
+      "marker": "SHELL_READY",
+      "prefix_through_line_bytes": 372,
+      "first_size_sample_containing_line_elapsed_seconds": 2.0834088720000636,
+      "first_size_sample_bytes": 1010,
+      "previous_size_sample": {
+        "elapsed_seconds": 1.0301649479999924,
+        "runtime_file_count": 9,
+        "runtime_bytes": 184440,
+        "process_log_bytes": 360
+      }
+    },
+    "replay_eof": {
+      "marker": "STATUS_REPLAY_STEP 14 ",
+      "prefix_through_line_bytes": 3246,
+      "first_size_sample_containing_line_elapsed_seconds": 5.217133315999945,
+      "first_size_sample_bytes": 3246,
+      "previous_size_sample": {
+        "elapsed_seconds": 4.175223473999949,
+        "runtime_file_count": 9,
+        "runtime_bytes": 229496,
+        "process_log_bytes": 2533
+      }
+    }
+  },
+  "log_clock_scope": "1-second driver file-size samples use a monotonic origin immediately after launching the observer; observer process-sample elapsed uses its own earlier monotonic origin. Exact offset was not recorded. These are coarse visibility upper bounds, not instrument or GUI event timestamps.",
+  "tail_phase": "EOF prefix is already visible in the log before the last-30-second selection; selected tail is post-replay idle with the initialized six stores retained.",
+  "replay_schedule": "14 events at nominal 250ms per step (~3.5s) starts after six stores and session are ready; it is not the first 3.5s after process startup.",
+  "limits": "This reuses one run and is not a matched-load before/after comparison. No claim about the source of 41 threads, no UI action latency, RK budget, real instrument or long stability qualification."
+}

@@ -1,0 +1,10 @@
+QT += core
+QT -= gui network
+CONFIG += console c++14 warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = sn100_protocol_replay
+SOURCES += main.cpp frame_codec.cpp status_session.cpp
+HEADERS += frame_codec.h status_session.h
+OBJECTS_DIR = .obj
+MOC_DIR = .moc

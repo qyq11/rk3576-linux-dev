@@ -1,0 +1,38 @@
+{
+  "schema": "sn100-qc-scope-wording-correction-v1",
+  "before": {
+    "id": "F08.local-qc",
+    "buttons": "原质控品管理、项目/批次、默认批、历史点及原始点图",
+    "input": "控制品/项目/批号、保存时单位、目标/上下限等本地元数据和匿名原始记录",
+    "data": "独立本地质控库、稳定catalog引用与启动对账，不改历史结果解释",
+    "output": "已接统一程序；5123存储16/0、页面各7/0、shell各5/0、引用20/0",
+    "source": [
+      "quality_control/quality_control_page.cpp",
+      "quality_control/qc_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/qc_local_20261025/handoff.json",
+      "04_references/sn100_host/qc_local_20261025/final/verification.json"
+    ],
+    "remaining": "Westgard等失控规则含义/边界疑点、真实结果流入、临床判定未完成；独立统计原型不代表临床验证"
+  },
+  "after": {
+    "id": "F08.local-qc",
+    "buttons": "原质控品管理、项目/批次、默认批、规则元数据；主页图表入口存在但可为空",
+    "input": "控制品/项目/批号、保存时单位快照、靶值/上下限及规则元数据；不接真实质控点",
+    "data": "独立本地质控元数据、稳定catalog引用与启动对账；对历史关联只做保护，不代表点数据加载/计算",
+    "output": "已接统一并验证控制品/项目/批次/默认批和规则元数据；5123存储16/0、页面各7/0、shell各5/0、引用20/0。没有质控真实点/曲线已接的结论",
+    "source": [
+      "quality_control/quality_control_page.cpp",
+      "quality_control/qc_store.cpp"
+    ],
+    "evidence": [
+      "04_references/sn100_host/qc_local_20261025/handoff.json",
+      "04_references/sn100_host/qc_local_20261025/final/verification.json"
+    ],
+    "remaining": "真实结果/点的获取、历史点查询/曲线、统计/失控规则和临床判定仍缺；不把校准散点或统计CLI算作QC图表功能"
+  },
+  "evidence": "quality_control/qc_store.h只有控制品/项目/规则/批次读写及引用接口，未提供点加载/保存或曲线接口；本轮未运行QC",
+  "runtime_test": false,
+  "counting_note": "43为旧操作事实总数；15为更新了解释的事实条目；16为重叠的细化操作分组，含已验、未实现、原未启用和本轮准备项，不表示16项新通过。"
+}

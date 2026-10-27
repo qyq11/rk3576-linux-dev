@@ -2,5 +2,6 @@
 INCLUDEPATH += $$PWD
 SOURCES += $$PWD/report_document.cpp $$PWD/report_render.cpp
 HEADERS += $$PWD/report_document.h $$PWD/report_render.h
+HEADERS += $$PWD/report_remaining_html.h
 RESOURCES += $$PWD/report_resources.qrc
 include($$PWD/../thirdparty/qtrpt/qtrpt.pri)

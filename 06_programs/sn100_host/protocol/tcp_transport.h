@@ -37,6 +37,8 @@ public:
     quint64 generation() const;
     int bufferedBytes() const;
     int assemblyBytes() const;
+    // 专用诊断默认关闭。接收槽只采集，不在事件线程写盘或改变连接。
+    void setTimingEnabled(bool enabled);
 
 protected:
     // 唯一测试注入点：默认创建真正QTcpSocket。测试子类可提供受控socket，
@@ -54,6 +56,9 @@ signals:
     void wireQueued(QByteArray frame, quint64 generation);
     // 来自QTcpSocket::bytesWritten，仅说明socket写出进展，不是对端ACK。
     void bytesDelivered(qint64 bytes, quint64 generation);
+    // elapsedNs来自本transport自建单调时钟；不是peer时钟或仪器ACK。
+    void timingEvent(QString stage, qint64 elapsedNs, quint64 generation,
+                     qint64 value, qint64 extra, qint64 applicationPending, qint64 socketPending);
     void errorOccurred(QString message, quint64 generation);
 
 private:
@@ -67,6 +72,7 @@ private:
     void scheduleWrite(QTcpSocket *socket, quint64 generation);
     void pumpWrite(QTcpSocket *socket, quint64 generation);
     void tick(QTcpSocket *socket, quint64 generation);
+    void traceTiming(const char *stage, qint64 value = 0, qint64 extra = 0);
 
     QPointer<QTcpSocket> m_socket;
     QTimer *m_tick = nullptr;
@@ -88,6 +94,7 @@ private:
     bool m_readDraining = false;
     bool m_writeScheduled = false;
     bool m_writeDraining = false;
+    bool m_timingEnabled = false;
 };
 
 } // namespace Sn100Protocol

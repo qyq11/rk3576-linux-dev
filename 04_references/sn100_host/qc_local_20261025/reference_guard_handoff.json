@@ -1,0 +1,213 @@
+{
+  "schema": "sn100-calibration-reference-guard-handoff-v1",
+  "created_utc": "2026-10-25T13:44:15.276387+00:00",
+  "status": "implementation and independent real-store WSL tests complete; source writing and build/test processes stopped",
+  "changed_files": {
+    "06_programs/sn100_host/calibration/calibration_store.h": {
+      "sha256": "9c36dd1e7cc9b6936f0ee6808c39f1baab1d0e72b49c2a262d03dd8e4a237edc",
+      "bytes": 3124
+    },
+    "06_programs/sn100_host/calibration/calibration_store.cpp": {
+      "sha256": "980a717c61c0613c5247b455be8078557057e1a3bc694fe02cf6cf5bc1486dbc",
+      "bytes": 48600
+    },
+    "06_programs/sn100_host/tests/calibration_reference_test.cpp": {
+      "sha256": "0aad1ea448ad6bb17ba19cf0c971fd0fe203e32f569be7de5bfe889c901ce81f",
+      "bytes": 31120
+    },
+    "06_programs/sn100_host/tests/calibration_reference_test.pro": {
+      "sha256": "9c8ca0e5d62a90de707893816b5b2c5ca0d855e6a0d83bff84495a88e40193c9",
+      "bytes": 710
+    }
+  },
+  "pre_integration_sources": {
+    "06_programs/sn100_host/calibration/calibration_store.h": {
+      "sha256": "1afc6b6c2627d7e5872b5bff4676bb3b956d87de107fbac2c41888e69f590015",
+      "bytes": 2270
+    },
+    "06_programs/sn100_host/calibration/calibration_store.cpp": {
+      "sha256": "0b75dd4eb28ef723a808000caf0e36d4a210d5a323c86268f6a2080cde1296b2",
+      "bytes": 35441
+    }
+  },
+  "preimage_backup": "07_backups/sn100_host/offline_four_windows_20261025/pre_integration_sources/calibration/storage_preimage_manifest.json",
+  "public_interface": "No public slot/signal/type changes; initialize emits ready only after project/reagent reservation schemas and all saved/hidden identities are protected.",
+  "startup_dependency": "ProjectsStore.ready and ReagentStore.ready before CalibrationStore.initialize. The module consumes reservation tables without creating/changing catalog schema.",
+  "business_contract": {
+    "project_id": "project_base.id stable local key; no display-row or name-derived identity",
+    "batch_id": "reagent_batch_group.id stable key; zero means no batch selected, with no batch reservation",
+    "reference_owner": "calibration",
+    "reference_key": "dataset:<persistent UUID>:project:<project_id>:batch:<batch_id>",
+    "reservation_order": "own local BEGIN IMMEDIATE serializes same-dataset writers; own worker catalog-reservation BEGIN IMMEDIATE validates identity and commits holds; local record/point commit follows. Two database files are NOT one atomic transaction or a cross-file foreign key.",
+    "failure_order": "while retaining local writer lock, release only catalog holds newly acquired for this failed action, then rollback local transaction. Existing holds, other datasets and QC owner keys are never released.",
+    "soft_delete": "visible=0 retains original record/points and durable project/batch reservations",
+    "units": "Saved concentrationUnit/resultUnit/unitRatio and raw values remain unchanged on update/copy. New records must match current enabled project types/units/ratio. Historical copy still requires enabled project, both Original/Calibration result types and historical unit dictionary rows to exist. No silent conversion or clinical fitting.",
+    "precision_limit": "Calibration raw inputs retain the original maximum 4 decimal places. CalibrationRecord has no newly invented per-result decimal snapshot; QC association resultRefs separately verify their persisted result decimals/ratio snapshot.",
+    "roles": "Original CalibrationStore.canEdit unchanged: authenticated actionReady roles1..5; Guest rejected. No project/reagent/QC permission change.",
+    "migration": "Only known tagged sn100-calibration-local-v3 library may append dataset_uuid/reference_protocol when both keys were absent. Existing rows/points/units are untouched. Partial/invalid identity metadata fails closed; original source preimages are archived separately.",
+    "reconciliation": "Startup scans all records including hidden. Missing/renamed/foreign project/batch or own-dataset orphan holds fails initialization with preserved data/holds. Orphans are never auto-deleted; test demonstrates explicit real ProjectsStore release only after local absence is verified."
+  },
+  "tests": {
+    "environment": "Ubuntu-24.04 WSL/qyq; Qt5.15.13 x86_64 Release, GCC13.2; QtTest GUILESS (no page/screenshot/resource test)",
+    "raw_command": "wsl.exe -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/reference_guard/run.sh 4",
+    "qmake_exit": 0,
+    "make_exit": 0,
+    "test_exit": 0,
+    "passed": 18,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 15595,
+    "test_scope": [
+      "real ProjectsStore/ReagentStore rename/delete/group protection",
+      "soft-hide history and same-pair hold no-op reuse",
+      "current unit/precision change preserves old calibration raw snapshot and old QC resultRefs snapshot",
+      "catalog/local locks and retries",
+      "partial point write rollback and cleanup only newly acquired holds",
+      "local COMMIT and reservation COMMIT failures",
+      "tagged v3 migration including hidden record protection and stable UUID reopen",
+      "unknown catalog identity/absent schemas/partial protocol fail closed",
+      "disabled project startup/read allowed; new/save/copy writes rejected",
+      "two calibration datasets and QC owner isolation",
+      "same-dataset concurrent failed/successful writers cannot cross-release",
+      "missing Original/Calibration type or historical unit blocks copy",
+      "orphan reservation is retained/closed until explicit reconciliation"
+    ],
+    "anonymous_input": "Real ProjectsStore seed and copy produce GUARD_A/GUARD_B stable IDs; explicit anonymous fixture inserts an additional Original result rather than guessing that Time means Original. ReagentStore creates GUARD_BATCH ANON_R1|ANON_R2. Raw points 100.125->[12.25,12.75],50->[18,20]. No production DB/config/device connection.",
+    "artifact": {
+      "path": "temp/sn100_host/qc_local_20261025/reference_guard/build/calibration_reference_test",
+      "sha256": "86c225e8e18fbd73a790461cee6f297b2d69b906c0738ecee324ba2797304780",
+      "bytes": 992896
+    },
+    "source_inputs": "04_references/sn100_host/qc_local_20261025/reference_guard/source_inputs.json",
+    "dependency_inputs": "04_references/sn100_host/qc_local_20261025/reference_guard/dependency_inputs.json",
+    "actual_data_receipts": "04_references/sn100_host/qc_local_20261025/reference_guard/data_receipts.json",
+    "failure_and_retest": [
+      {
+        "attempt": 1,
+        "qmake_exit": 0,
+        "make_exit": 2,
+        "reason": "test .pro omitted CusCheckBox link dependency used by ProjectAdvancedEditor; test never ran; no old binary used"
+      },
+      {
+        "attempt": 2,
+        "qmake_exit": 0,
+        "make_exit": 0,
+        "test_exit": 0,
+        "passed": 14,
+        "reason": "added only real CusCheckBox source/header link dependency"
+      },
+      {
+        "attempt": 3,
+        "qmake_exit": 0,
+        "make_exit": 0,
+        "test_exit": 0,
+        "passed": 18,
+        "reason": "added destructive metadata and orphan-reconciliation test cases"
+      },
+      {
+        "attempt": 4,
+        "qmake_exit": 0,
+        "make_exit": 0,
+        "test_exit": 0,
+        "passed": 18,
+        "reason": "final prepare-error and invalid historical ID diagnostics checked with same suite"
+      }
+    ]
+  },
+  "raw_evidence": {
+    "04_references/sn100_host/qc_local_20261025/reference_guard/commands.txt": {
+      "sha256": "d8ccc1416496406e289dd6e1d3166b596462c4eb20fd5a1dddff7ded74519622",
+      "bytes": 768
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/run.sh": {
+      "sha256": "a1ee822d91e55b6841fe527215130ccfc9d54fd0f9c9d32d12937f62a2cd9d3f",
+      "bytes": 1395
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/build_1.log": {
+      "sha256": "f5015b891718c63624aa7ff9fdd2d3c3942258c6f918e300dc11c79c0c85bd81",
+      "bytes": 23623
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/build_1_receipt.txt": {
+      "sha256": "387597a7eba65c7530987ffd4b690004024a25aed214f613c39ecc1bff7f52d0",
+      "bytes": 25
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/build_2.log": {
+      "sha256": "a26ffad1204a04444e3081b7d342d884074b3ce996cb3ad745a6329a441a224a",
+      "bytes": 4418
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/build_2_receipt.txt": {
+      "sha256": "64ed149d223d46e5f0e4793eaf94b188600bf71e3757f5325173c377ebb1787e",
+      "bytes": 25
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/test_2.log": {
+      "sha256": "b5bb3fb3ae03ebff96838465295caffbb2259c4ded37981154025e77b8e4c3df",
+      "bytes": 22268
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/test_2_receipt.txt": {
+      "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+      "bytes": 12
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/build_3.log": {
+      "sha256": "97a354de5b81274d4002223a4f05a0e29893a48f82055d140187ca7b82dfd510",
+      "bytes": 4572
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/build_3_receipt.txt": {
+      "sha256": "64ed149d223d46e5f0e4793eaf94b188600bf71e3757f5325173c377ebb1787e",
+      "bytes": 25
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/test_3.log": {
+      "sha256": "f286bf8a80086dbd36f8e83e3847c373b35d6f2ee7cfc9efcb8b7e1316f49d28",
+      "bytes": 28438
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/test_3_receipt.txt": {
+      "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+      "bytes": 12
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/build_4.log": {
+      "sha256": "2f1160d314f95f76183c5279749b5a688371d8c50d3d40b99c485e1313946bfe",
+      "bytes": 1890
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/build_4_receipt.txt": {
+      "sha256": "64ed149d223d46e5f0e4793eaf94b188600bf71e3757f5325173c377ebb1787e",
+      "bytes": 25
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/test_4.log": {
+      "sha256": "2daddc61c0873f8c9d9c474cf9af68f2972c11e707325a4da812da50e1277597",
+      "bytes": 28476
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/test_4_receipt.txt": {
+      "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+      "bytes": 12
+    }
+  },
+  "verification_files": {
+    "04_references/sn100_host/qc_local_20261025/reference_guard/source_inputs.json": {
+      "sha256": "617be3a796889330725f29d05af2e5afac4dc83816ee23440d3fa0ed1516811a",
+      "bytes": 702
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/dependency_inputs.json": {
+      "sha256": "da82d582e9dbe5d5ab258bc6b4e2db9c2b42e2a35ec2104c9d2f8f9a03185b0b",
+      "bytes": 2473
+    },
+    "04_references/sn100_host/qc_local_20261025/reference_guard/data_receipts.json": {
+      "sha256": "f69de44526673d7b5c0a2a536dbb2c27fcfcc4f1f168527d793b706af7dc749c",
+      "bytes": 67323
+    }
+  },
+  "rollback_boundary": "Restore only the two archived source/header files for the original independent source version. Do not drop catalog reservation tables/rows, erase metadata, rewrite history or run an older writer against live references. An older binary does not enforce new reservation guards; data rollback/reconciliation is separate and must remain read-only until checked.",
+  "pending": [
+    "root cumulative original calibration store/page tests with protocol fixture additions and evidence-based intentional historical-copy expectation changes",
+    "unified shell lifecycle/permission and cumulative business regression",
+    "final Windows32/ARM64 builds/packages/dependency closure/recovery archive",
+    "original active Windows behavior/visual, RK/instrument, resource budget and long stability",
+    "no clinical calibration fit/inverse/approval/apply/device commands enabled"
+  ],
+  "not_modified": [
+    "calibration page/types/original tests",
+    "projects or reagents source/schema/permissions",
+    "public shell/main/build files",
+    "another window original handoff",
+    "global plan/README/main migration record"
+  ],
+  "no_background_process": true
+}

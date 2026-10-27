@@ -1,0 +1,55 @@
+{
+  "contract": "sn100-catalog-remaining-local-v1",
+  "status": "independent local implementation verified; unified integration pending",
+  "scope": "explicit anonymous catalog.db only; no original database/config import or device action",
+  "compatibility": {
+    "schema_marker": "sn100-catalog-offline-v1 retained",
+    "tables": "existing project_base, project_result, project_sample_rate, option_unit, reagent_* and sample_* contracts retained; new tables only",
+    "project_key": "project_base.id / ProjectRecord.id stable INTEGER; never display name",
+    "instrument_key": "ProjectRecord.instrumentProjectId retained on save/copy; no guessed device mapping",
+    "result_key": "(project_id,result_type) is current local key; no new numeric result_id inferred",
+    "units": "ProjectResult.unit plus ProjectUnit.ratio committed snapshot; decimals 1..6; existing values/ratios unchanged",
+    "history": "existing result values, stored unit and decimal presentation belong to saved history; current catalog must not silently rewrite them"
+  },
+  "reads": {
+    "projects": "ProjectsStore::load(requestId) -> snapshotReady(requestId, ProjectRecords, ProjectUnits), value copies emitted only after a consistent read transaction; no widget pointers or SQL handles cross threads",
+    "reagents": "ReagentStore::load() -> loaded(ReagentSnapshot), existing fields retained, optional batch metadata appended",
+    "advanced": "ProjectRecord gains optional ProjectAdvanced value; absence means unconfigured, never a validated production scheme",
+    "usage": "QC/calibration/report consume committed snapshots, not page drafts; each module keeps own SQL connections in owning thread"
+  },
+  "external_reference_protocol": {
+    "project_table": "catalog_project_reference(owner_module,reference_key,project_id); primary key(owner_module,reference_key), FK project_id -> project_base.id ON DELETE RESTRICT",
+    "project_api": "ProjectsStore::holdProjectReference(requestId,module,key,projectId); releaseProjectReference(requestId,module,key); checkProjectReferences(requestId,projectId) -> projectReferencesReady(requestId,projectId,exists,QStringList)",
+    "batch_table": "catalog_batch_reference owned by ReagentStore, analogous durable reservations against reagent_batch_group.id; exact API in reagent handoff",
+    "write_order": "reserve catalog reference, await success, commit external record; after external deletion commits, release reservation. External failed saves release only their own reservation after determining outcome",
+    "protection": "held project names and held batch identity/group/project cannot change; catalog deletes blocked by local FK. Missing/locked/uninitialized catalog fails closed",
+    "recovery": "a crash may leave an orphan reservation; explicit reconciliation against owning module is required. Never auto-delete unknown holds at startup",
+    "limit": "this is not a cross-database foreign key or one atomic transaction. Snapshot alone cannot protect a later external write. All external writers must use durable reservation protocol before enabling rename/delete with live dependent data"
+  },
+  "rollback": "additive tables do not alter old records; old binaries can read baseline tables but do not enforce new external-reference rename guards, so rollback with external references is read-only until reconciliation. Do not drop tables or rewrite history automatically",
+  "verification_boundaries": [
+    "WSL x86_64 independent project11/0 + prior project9/0; reagent final results in reagents_handoff.json",
+    "original Windows behavior/visual pending",
+    "unified shell integration pending",
+    "Windows32/ARM64 final builds owned by integration window",
+    "RK/instrument/resource budget/long stability pending"
+  ],
+  "advanced_schema": "project_advanced(project_id PK FK project_base.id CASCADE,version=1,payload JSON text with exact fields/samples/reagents keys); catalog_metadata.project_advanced_schema=sn100-project-advanced-local-v1",
+  "action_reference_schema": "project_action_reagent_reference(project_id FK CASCADE,reagent_id FK reagent_list.id RESTRICT); generated atomically on project save/copy; reagent name/type/valid mutations blocked while referenced",
+  "reference_permissions": "Reference bookkeeping supports authenticated actionReady roles1..5; project configuration editing remains role4/5. Receiving modules must still enforce their own original write permission.",
+  "batch_reference_requirement": "External project-and-batch records reserve BOTH IDs before external commit. Batch reservation alone does not protect project name.",
+  "advanced_fields": {
+    "scalars": [
+      "min_test_time",
+      "max_test_time",
+      "stopTime",
+      "sample_change_clean",
+      "first_light",
+      "second_light"
+    ],
+    "storage": "numeric strings preserve empty/invalid draft until rejection; unconfigured advanced has no stored row; sample/reagent actions optional and never scheduled",
+    "units": "four times in integer seconds0..999; wavelengths original405/570/660/800nm, distinct; action *_ul microlitres0..999 max1decimal and *_sec seconds",
+    "cap": "at most64 local reagent action rows, not an instrument capability claim",
+    "unused": "AlgParam,coefficients,d_T,IBS selection,hidden report fields,algorithm/calibration/apply/device commands not enabled"
+  }
+}

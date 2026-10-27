@@ -1,0 +1,63 @@
+{
+  "schema": "sn100-private-coordinate-separate-execution-plan-v1",
+  "status": "not_executed_waiting_explicit_serial_slot",
+  "replace_only": "GRANTED_SLOT_ID with the explicit integrator-granted serial slot; preserve argv and hashes",
+  "slot_policy": "No compile, test, interpreter invocation, native/GUI action or install before explicit slot; run steps sequentially and stop on any nonzero actual exit or unconfirmed child cleanup",
+  "original_scope": "unchanged 23 approved cases, report separately",
+  "supplemental_scope": "6 direct API cases, report separately; never infer these from the original 23 result",
+  "steps": [
+    {
+      "scope": "original_23",
+      "attempt": "core_01",
+      "argv": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu-24.04",
+        "-u",
+        "qyq",
+        "--",
+        "python3",
+        "-B",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/run_core.py",
+        "--execute",
+        "--slot-id",
+        "GRANTED_SLOT_ID",
+        "--attempt",
+        "core_01",
+        "--manifest-sha256",
+        "fbd573f1d3628f4d6b6a285bc1d37452fabe9c27bbee2489bec7aaad85fcd4c6"
+      ],
+      "expected_summary": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/core_01/verification.json",
+      "compiler_metadata_timeout_seconds": 5,
+      "compile_timeout_seconds": 20,
+      "test_timeout_seconds": 5
+    },
+    {
+      "scope": "supplemental_6",
+      "attempt": "api_01",
+      "argv": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu-24.04",
+        "-u",
+        "qyq",
+        "--",
+        "python3",
+        "-B",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/run_api_boundaries.py",
+        "--execute",
+        "--slot-id",
+        "GRANTED_SLOT_ID",
+        "--attempt",
+        "api_01",
+        "--manifest-sha256",
+        "c3da58962b6786ba3890eed8e8ac7e95cc3de8a3738f7db1b06dac418761ceca"
+      ],
+      "expected_summary": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/api_01/verification.json",
+      "compiler_metadata_timeout_seconds": 5,
+      "compile_timeout_seconds": 20,
+      "test_timeout_seconds": 5
+    }
+  ],
+  "after_run": "Inspect every real exit, both separate case counts, inputs_unchanged, source SHA and process-group cleanup; a parent receipt must not be replaced by parser success"
+}

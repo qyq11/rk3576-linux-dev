@@ -1,0 +1,77 @@
+{
+  "audit_date": "2026-10-25",
+  "scope": "Read-only original-source audit for project advanced local editing. No reference build/run/config/database access.",
+  "reference_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "sources": [
+    {"path":"frmsystem/frmsystemmaterial.cpp","sha256":"dd76908c0c75ff7862fcb4abb123a906894e12efecaf9be770388f6c0fc0a25b"},
+    {"path":"frmsystem/frmsystemmaterial.h","sha256":"0abdd9d69036d358e84c42849d011a9f02adfb18a00ac6a29752a3667c574c50"},
+    {"path":"frmsystem/frmsystemmaterial.ui","sha256":"bc08c2e42ef9893b196c6d13d0777bdb58dbb056af1515e998f2f82cef04eaaa"},
+    {"path":"tool/database/system_table_datas.cpp","sha256":"660c590bae91c8b227fc8da3fc1729c16ee7f6d3b9c85837c841b02f3f073718"},
+    {"path":"communication/commandsender.cpp","sha256":"e036e02a5736863f76c95bab4e822dfdae12906b53df15c2746f776706b0f974"}
+  ],
+  "entry_and_persistence": {
+    "ui": "Original frmSystemMaterial .ui: 1751x968 canvas; reuse existing original form and styles, no new business layout.",
+    "tabs": {"on_btnBaseInfo_clicked:2704":0,"on_btnSampleAdd_clicked:2709":1,"on_btnReagentAdd_clicked:2714":2,"on_btnCalibrate_clicked:2719":3,"on_btnReport_clicked:2724":4},
+    "save": "on_btnSave_clicked:2471-2701: projectBase copy and scalar edits -> updateProjectBase -> updateSampleRateTable -> updateReagentAddingTable -> updateResultTable and update_alg_param. Original sequence is NOT one transaction and must not be copied as an atomicity claim.",
+    "cancel": "on_btnCancel_clicked:2466-2469 reloads selected committed row.",
+    "role": "slotUserChange:809-838 enables save/cancel/change/copy/delete at Engineer or above. Existing migrated authenticated/actionReady role 4/5 gate must remain.",
+    "copy": "on_btnCopy_clicked:2840 onward copies original project identity then fixed=0 (2871); local catalog stable id must be distinct.",
+    "delete": "on_btnDelProj_clicked:2965 onward refuses fixed projects; old deletion touches reagent/calibration separately, not a cross-database FK guarantee.",
+    "device_boundary": "on_btnSave_clicked emits signalSendCmdToA53 only for isNewProtocal at 2686; local implementation must omit send/synchronization entirely. No calculation or hardware validity follows from local save."
+  },
+  "active_visibility": {
+    "visible_tabs": ["基本信息 btnBaseInfo", "测试方案 btnSampleAdd", "加样设置 btnReagentAdd", "校准 btnCalibrate"],
+    "hidden_by_constructor": {"wgtMda":85,"btnReTest":86,"btnCalculate":87,"btnReport":88,"btnChange":108,"btnDect":115,"label_32":146,"btnScan":317,"is_related":324},
+    "read_only_or_disabled": {"test_analysis_method":"disabled at 228; original UI enumerates 凝固法/免疫比浊法/发色底物法", "d_T":"read-only at 320", "ldt_methon":"original UI readOnly; display of AlgParam.Coa_endMode at 2235-2240"},
+    "do_not_restore": ["Hidden report/Retest/Calculate/MDA/scan/detection actions", "old report-tab warmup_banding_channel/test_banding_channel fields without a visible entry", "commented cleaning-volume offset", "instrument sync", "unverified algorithm parameter editing or clinical calculation"]
+  },
+  "visible_test_scheme_scalars": [
+    {"field":"stopTime","label":"最小结束时间(s)","input":"integer 0..999","source":"constructor 264-272; .ui 1328; save 2497"},
+    {"field":"min_test_time","label":"反应起始时间(s)","input":"integer 0..999","source":"constructor 264-272; .ui 1774; save 2494"},
+    {"field":"max_test_time","label":"测试时间(s)","input":"integer 0..999","source":"constructor 264-272; .ui 1809; save 2495; on_max_test_time_editingFinished:3041-3061","rule":"editingFinished clamps to at least 40 when stopTime<40; otherwise at least stopTime+8. UI default 11 is inconsistent with this runtime rule and is not an approved production default."},
+    {"field":"sample_change_clean","label":"延迟测试时间(s)","input":"integer 0..999","source":"constructor270; .ui1974; save2509","warning":"Historical field name is not a boolean wash-needle setting; source comments call delay/extension time. Preserve raw local meaning; no hardware behavior inferred."},
+    {"field":"first_light","label":"主波长","input":"405nm|570nm|660nm|800nm","source":".ui and header147; on_first_light_activated3063-3074 excludes main from secondary list"},
+    {"field":"second_light","label":"副波长","input":"405nm|570nm|660nm|800nm excluding chosen first_light","source":"save2498; on_first_light_activated3063-3074"},
+    {"field":"IBS_name","label":"稀释试剂","input":"none plus configured S_IBS reagent names","source":"constructor290-291; slotReloadAllProject840-848; save2507"},
+    {"field":"cbxDefaultRate","label":"默认稀释比例","input":"only sample_option enabled row labels","source":"slotProjectSelectChanged2243-2266; updateSampleRateTable1755-1849"},
+    {"field":"d_T","label":"采集频率(s)","input":"read-only; constructor validator0..1/1decimal is not editing permission","source":"constructor283-286,320; display2234; save2599-2614","warning":"Display reads projectBase.collect_rate_ms with no conversion despite (s) label; save updates existing AlgParam.Coa_dT/Sort_dT keys only. Unit/name discrepancy unresolved. Do not infer ms or silently convert."}
+  ],
+  "basic_tab_algorithm_fields": [
+    {"field":"xishu_a","input":"-9999..9999,4decimals","source":"constructor274-281; save2510","status":"local storage only if explicitly implemented; no equivalence/algorithm validation"},
+    {"field":"xishu_b","input":"-9999..9999,4decimals","source":"constructor274-281; save2511","status":"local storage only if explicitly implemented; no equivalence/algorithm validation"},
+    {"field":"sample_warmup_length","meaning":"coefficient C, not warmup duration","input":"-9999..9999,4decimals","source":"header29; constructor281; save2508; customtools/spectrumcalculate.cpp630-632","status":"Do not infer time units or clinical algorithm validity"}
+  ],
+  "sample_rate_table": {
+    "source": "constructor211-218; addSampleRateTableDate910-998; addSampleRateDefaultTableDate1000-1095; updateSampleRateTable1755-1849",
+    "columns": ["sample_rate","sample_add_mode","IBS_amount_ul","sample_amount_ul","mix_amount_ul","second_IBS_amount_ul","action_amount_ul","blender_type","blender_time_sec","calibration_option","sample_option","before_clean_frequency","before_clean_amount_ul","before_clean_name","after_clean_frequency"],
+    "labels": ["稀释比例","稀释方式","缓冲液量1(ul)","样本量1(ul)","反应量1(ul)","缓冲液量2(ul)","反应量2(ul)","混匀方式","混匀时间","校准稀释比例","样本稀释选项","预清洗次数","清洗液量(ul)","清洗试剂","后清洗次数"],
+    "enums": {"sample_add_mode":["none","onedilute","predilute","twodilute"],"blender_type":["none","slow","fast","strong"],"before_clean_frequency":["0","1","2","3"],"after_clean_frequency":["0","1","2","3"],"before_clean_name":"configured Cleaner reagent names", "calibration_option":"0/1", "sample_option":"0/1"},
+    "numeric": "All remaining numerical editors:0..999,1decimal; *_ul in microlitres, blender_time_sec seconds. sample_rate is a label, not a computed ratio. Its main table editor has no validator; mirrored default label requests Head_Letter_Num length8.",
+    "persisted_extra": ["xuhao=1-based row order","sample_default_option exactly one selected default if rows nonempty; original falls back to first when selection missing"],
+    "save_rules": ["none/onedilute normalize mix_amount_ul and second_IBS_amount_ul to0", "predilute normalize second_IBS_amount_ul to0", "onedilute/predilute/twodilute require sample_amount_ul>0 and IBS_amount_ul>0", "predilute/twodilute require mix_amount_ul>0", "twodilute requires second_IBS_amount_ul>0", "original converts every empty string to0 before rules; reject empty/illegal input explicitly in new local editor instead of preserving silent coercion"],
+    "interactive_rules": ["changeItem1197-1588: none selects either sample or IBS volume; action volume follows nonzero one", "onedilute:action=sample+IBS", "predilute:action=mix", "twodilute:action=mix+secondIBS", "predilute/twodilute if mix>=sample+IBS, GUI resets mix to0 (invalid); local validation can reject instead of silent coercion", "mix/second are reset when incompatible with mode"],
+    "mirror": "sampleRateDefaultTable is the selected default row subset: columns0..8 plus before_clean_frequency; syncSampleTableRate2003-2036 maps mirror columns>8 to full-table index+2 and connects only edits/combos. Stable row/key mapping required when rows deleted/reordered; original captured defaultSampleRateRow can become stale.",
+    "units_warning": "OFFLINE_RATE_A/B fixture labels have no clinical dilution semantics or approved action volumes. Advanced parameters must remain absent until explicitly saved; do not fill production defaults."
+  },
+  "reagent_adding_table": {
+    "source": "constructor220-222; addReagentAddingTableDate1097-1175; addReagentAddingCell1177-1186; updateReagentAddingTable1851-1907",
+    "columns": ["reagent_name","reagent_warmup_length","reagent_amount_ul","needle_select","blender_type","blender_time_sec","before_clean_frequency","before_clean_amount_ul","before_clean_name","after_clean_frequency"],
+    "labels": ["试剂名称","经过时间(s)","试剂量(ul)","试剂针选择","混匀方式","混匀时间","预清洗次数","清洗液量(ul)","清洗试剂","后清洗次数"],
+    "enums": {"reagent_name":"none plus configured R_Reagent names", "needle_select":{"1":"左试剂针","2":"右试剂针"},"blender_type":["none","slow","fast","strong","catcher"],"before_clean_frequency":["0","1","2","3"],"after_clean_frequency":["0","1","2","3"],"before_clean_name":"configured Cleaner names"},
+    "numeric": "All remaining numerical fields0..999,1decimal. reagent_warmup_length label is elapsed time(s); *_ul microlitres; blender_time_sec seconds.",
+    "row_identity": "Original xuhao=1-based order; duplicate reagent names may be legitimate repeated steps, so do not deduplicate by reagent name.",
+    "cleaner_offset": "kCleanerOffset=20 declared at35 but its only volume auto-update at1887-1891 is commented out. Do not apply reagent volume+20 automatically.",
+    "storage_warning": "Original deletes then adds project_reagent without a transaction; new additive schema should replace atomically inside worker-thread transaction."
+  },
+  "mixing_interaction": {"source":"changeItem1199-1226 and1580-1585","on_type_change_seconds":{"none":0,"slow":0.7,"fast":1.3,"strong":3.3,"catcher":0.7},"meaning":"Original UI suggestions on explicit type change, not licensed production defaults or instrument-confirmed durations."},
+  "calibration_options_source_only": {"repeat_number":["1","2","3","4"],"point_number":["1","2","3","4","5","6","7","8"],"calculate_select":["直线法","一元三次曲线法","插值曲线法","折线法"],"x_change":["x","log(x)","1/x","ln(x)","log(log(x))","ln(ln(x))"],"y_change":["y","log(y)","1/y","ln(y)","log(log(y))","ln(ln(y))"],"calibration_mode":["手动稀释","自动稀释"],"auto_apply":"stored bool, does not authorize applying an unverified curve", "point_visibility":"point_number/lblpoint_number hidden for 自动稀释:slotCalModeChanged2460-2464 and2269-2270"},
+  "unresolved_and_forbidden_inferences": [
+    "No current original-Windows runtime screenshot/behavior captured by this audit; source layout is evidence, full visual equivalence remains pending.",
+    "No clinical validity, calibration efficacy, algorithm equivalence, instrument action or production parameter approval is established.",
+    "GetProjectTestParam in system_table_datas.cpp52-57 returns empty test object; it is not an implementation of original action processing.",
+    "AlgParam key update is only on existing keys; never invent missing production algorithms from button names.",
+    "SQL additive schema and separate DB reference checks must not claim cross-database FK or one-transaction behavior.",
+    "Existing results need capture-time value/unit/precision contracts; current project changes cannot silently reinterpret stored historical results."
+  ],
+  "verification": {"kind":"static audit only","commands":["Get-Content relevant source ranges with one-based line numbering","PowerShell XML extraction of QComboBox items and QTableWidget labels from original .ui","rg for UI visibility/read-only and source consumers","Get-FileHash -Algorithm SHA256 for listed read-only files"],"exit_codes":[0],"not_performed":["reference build/run","configuration/production DB access","GUI screenshot capture","tests","RK/instrument/network"]}
+}

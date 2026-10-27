@@ -1,0 +1,7 @@
+The first inline WSL wrapper returned 1 after the inner wsl.sh build produced
+new x86_64 main/helper binaries and their SHA-256 values. Its final shell status
+variable was not preserved at the Windows command boundary:
+bash: line 1: exit: : numeric argument required
+
+This wrapper status is not used as a build success result. build_native.sh is
+the corrected entry with set -Eeuo pipefail and will return the real outcome.

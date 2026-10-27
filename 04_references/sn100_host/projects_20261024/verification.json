@@ -1,0 +1,79 @@
+{
+  "date_local": "2026-10-24",
+  "module": "O07 project/unit offline basis",
+  "environment": {
+    "wsl": "Ubuntu-24.04 ordinary user qyq",
+    "architecture": "x86_64",
+    "qt": "5.15.13",
+    "compiler": "GCC 13.2.0",
+    "configuration": "Release C++14 Widgets/qmake",
+    "canvas": [1751, 968],
+    "font": "Noto Sans CJK SC",
+    "qpa": ["offscreen", "xcb"]
+  },
+  "commands": [
+    "bash 06_programs/sn100_host/projects/wsl.sh build",
+    "bash 06_programs/sn100_host/projects/wsl.sh test",
+    "QT_QPA_PLATFORM=xcb temp/sn100_host/projects/wsl_tests/projects_test",
+    "QT_QPA_PLATFORM=offscreen temp/sn100_host/projects/wsl_release/sn100_projects --data-dir <absolute isolated temp path> --seed-demo --test-engineer --exit-after-ms 1500"
+  ],
+  "results": {
+    "offscreen": {"passed": 9, "failed": 0, "elapsed_ms": 4995, "exit_code": 0},
+    "xcb": {"passed": 9, "failed": 0, "elapsed_ms": 5022, "exit_code": 0},
+    "standalone_smoke": {"exit_code": 0, "output": "项目/单位已读取；当前仅保存本地配置，未同步仪器。"},
+    "arm64_build": {
+      "exit_code": 0,
+      "architecture": "ELF64 PIE AArch64",
+      "compiler": "aarch64-linux-gnu-g++13",
+      "qt_sysroot": "existing isolated Qt5.15.13 ARM64 inputs",
+      "maximum_parallel_compilers": 2,
+      "sha256": "9fca655c29e586e0155d87384f20ae8edb123a45ecfd726af78d096e7b2aee7f",
+      "deployed": false,
+      "executed_on_rk": false
+    },
+    "native_executable_sha256": "20a39d607cd98445d52b154bd99e34c8c641ab139cde247f6b12391e6b5b532b"
+  },
+  "business_cases": [
+    "Explicit anonymous seed DEMO_A; copy DEMO_B creates new stable id, retains instrument id OFFLINE-001 and makes copy nonfixed",
+    "Save Chinese full name 匿名保存验证, lisCode LOCAL8, enabled=false, Calibration unit a.u.x10, decimal4/6 and lower reference1.25; close/reopen retains exact values",
+    "Unit value snapshots contain s=1, a.u.=1 and a.u.x10=10; no numeric result conversion or clinical claim",
+    "Readonly sample rate labels OFFLINE_RATE_A/B retain candidate/default/order on copy/save/reopen",
+    "Delete the unreferenced copy; fixed original project deletion rejected",
+    "Invalid names/ranges/unknown units/missing main result and duplicate names rejected without partial writes",
+    "Guest, unauthenticated, roles1/2/3, unknown role6 and actionReady=false writes rejected in worker",
+    "Same SQLite catalog with independently opened reference connection rejects deletion of a project referenced by reagent_batch_group, preserving its result rows",
+    "Database lock fails after bounded timeout while GUI10ms heartbeat continues; unlock and retry succeeds",
+    "Actual Qt controls exercise dirty draft Cancel, original Cancel revert, unit selection/save and Guest readonly actions",
+    "Nonempty unmarked directories, unrecognized database bytes and reference paths rejected with original files unchanged"
+  ],
+  "lock_response_measurement": {
+    "load": "One local EXCLUSIVE SQL lock during a project request; 10ms PreciseTimer on GUI thread; one interval per QTimer callback",
+    "offscreen": {"heartbeat_count": 99, "operation_ms": 1019},
+    "xcb": {"heartbeat_count": 101, "operation_ms": 1065},
+    "interpretation": "Event-loop responsiveness under the specified WSL lock failure; not pixel/input latency, a hard deadline or RK qualification"
+  },
+  "visual_check": {
+    "original_ui_byte_identical": true,
+    "original_ui_sha256": "bc08c2e42ef9893b196c6d13d0777bdb58dbb056af1515e998f2f82cef04eaaa",
+    "retained": "1751x968 original geometry, original116px result columns/last stretch, 10 visible columns including unit, CusCheckBox icons, original tab ordering, gray right buttons, dark right background and source-derived shipped theme colors",
+    "screenshots": ["projects_offscreen.png", "projects_xcb.png"],
+    "known_adaptations": "Noto font substitution; unavailable unsupported tabs/fields disabled rather than fake success; guest state screenshot after permission test",
+    "original_active_windows_theme_comparison": "pending"
+  },
+  "failure_and_retest": {
+    "first_test": "Anonymous seed empty QString bound as SQL NULL, violating NOT NULL. The pre-fix suite was stopped; its failure log remains under temp/sn100_host/projects/test_build_run.log.",
+    "fix": "Normalize optional string fields to non-null empty SQL text; rebuild and rerun all applicable cases.",
+    "final_status": "All nine cases pass independently under both offscreen and XCB. Formal screenshots were regenerated after restoring original116px columns.",
+    "arm64_first_link": "All source compilation passed; the first module build script omitted sysroot/lib/aarch64-linux-gnu dependency searches. Added the same -L/-rpath-link paths as the existing shell script, rebuilt all module objects with maximum2 compilers, then linked and verified AArch64 successfully. No old artifact was deployed."
+  },
+  "pending": [
+    "Production initial project/unit import and approved parameter/ratio values",
+    "Full test-scheme/dilution action fields, calibration/QC/algorithm/device synchronization",
+    "Original Windows behavior and active-theme comparison",
+    "RK actual screen/input/resources/control coexistence, instrument and long-duration validation",
+    "Resource budget acceptance; final integrated process measurements are recorded separately by the root task"
+  ],
+  "instrument_connected": false,
+  "production_data_read": false,
+  "git_commit_or_push": false
+}

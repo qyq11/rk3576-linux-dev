@@ -1,0 +1,149 @@
+{
+  "schema": "sn100-instrument-resource-independent-verification-v1",
+  "verified_utc": "2026-10-24T10:33:36.024423+00:00",
+  "original_evidence_preserved": true,
+  "source_scope": "Private 468-input source checkpoint exactly equals final_sync.final_sha256. Current formal source has later login work and is not compared.",
+  "source_count": 468,
+  "source_sha256_verified": true,
+  "observer_source_sha256": "d32f759feb1f6736426fe9b59086818760f03976ced9cfc49637b19c95769f70",
+  "driver_source_sha256": "8fa63e190284846f0f8ffbcca481f13d09e3cb775f6e409942d7857495a379f6",
+  "fixture_sha256": "c8c7e9430cea401032c75e6d65792f316567159fb3eaa2121afb98de89a10b1e",
+  "binary_sha256_verified": {
+    "sn100_shell": {
+      "sha256": "c5da853069071eedc12a601cb5cab8be0529e726196b8ce4d79667b7c232aeb3",
+      "size": 4353576
+    },
+    "sn100_report_renderer": {
+      "sha256": "a73acc08b9747a4d36d3fae7ecf2034a1880e750936e53fdbecac793c5603c89",
+      "size": 1048272
+    }
+  },
+  "load": "Cold start as anonymous Guest with seven stores and --seed-catalog-demo; 14-event file replay followed by idle on original instrument page. This is not 30 seconds of continuous communication or business workload.",
+  "environment": "WSL Ubuntu24.04 x86_64 / Qt5.15.13 Release / XCB / 1600x900 host over original 1920x1080 shell canvas.",
+  "preflight_context": {
+    "source": "Parent agent observations immediately before the run and explicit coordination with the other chat; not reconstructed from a later process list.",
+    "windows_compiler_process_count": 0,
+    "wsl_project_compiler_or_gui_process_seen": false,
+    "project_build_compression_large_hash_serialized": true,
+    "other_system_services_existed": true,
+    "system_fully_background_free_claimed": false
+  },
+  "actual_elapsed_seconds": 30.133976501000006,
+  "sample_count": 295,
+  "sample_period_requested_seconds": 0.1,
+  "first_sample_seconds": 0.006434834999936356,
+  "last_sample_seconds": 30.03044713600002,
+  "cpu": {
+    "ticks_per_second_sysconf_SC_CLK_TCK": 100,
+    "first_ticks": 0,
+    "last_ticks": 140,
+    "tick_delta": 140,
+    "observed_span_seconds": 30.024012301000084,
+    "percent_one_logical_core": 4.6629344071823695,
+    "formula": "100 * (last_ticks-first_ticks) / SC_CLK_TCK / (last_sample_seconds-first_sample_seconds)",
+    "scope": "Observed direct process only, cumulative user+system ticks; denominator is the sampled span, not the full launch-to-exit duration."
+  },
+  "full_peaks": {
+    "VmRSS": 279416,
+    "VmHWM": 280624,
+    "Pss": 262533,
+    "Threads": 42,
+    "fd_count": 59
+  },
+  "memory_unit": "KiB",
+  "pss_unavailable_samples": 0,
+  "tail_10_to_30_seconds_same_observation": {
+    "scope": "Reanalysis of the same recorded samples with 10 <= elapsed_seconds < 30; not a new observation or a causal before/after comparison.",
+    "sample_count": 195,
+    "first_sample_seconds": 10.059877311000037,
+    "last_sample_seconds": 29.928348984999957,
+    "observed_span_seconds": 19.86847167399992,
+    "cpu_tick_delta": 20,
+    "cpu_percent_one_logical_core": 1.0066199518593169,
+    "peaks": {
+      "VmRSS": 279416,
+      "VmHWM": 280624,
+      "Pss": 262533,
+      "Threads": 42,
+      "fd_count": 57
+    }
+  },
+  "exit_code": 0,
+  "ordinary_sigterm_and_shutdown_accepted": true,
+  "seven_store_close_marker_counts": {
+    "HOSPITAL_STORE_CLOSED": 1,
+    "ACCOUNT_STORE_CLOSED": 1,
+    "HISTORY_STORE_CLOSED": 1,
+    "PROJECT_STORE_CLOSED": 1,
+    "REAGENT_STORE_CLOSED": 1,
+    "SAMPLE_STORE_CLOSED": 1,
+    "MAINTENANCE_STORE_CLOSED": 1
+  },
+  "thread_stopped": true,
+  "replay_stopped": true,
+  "replay_event_count": 14,
+  "replay_ended_with_fresh_false": true,
+  "runtime_file_count": 11,
+  "runtime_bytes": 262292,
+  "database_rows": {
+    "account/user_Information.db": {
+      "user_information": 5
+    },
+    "catalog/catalog.db": {
+      "catalog_metadata": 3,
+      "option_unit": 3,
+      "project_base": 1,
+      "project_result": 2,
+      "project_sample_rate": 2,
+      "reagent_barcode": 0,
+      "reagent_batch_group": 0,
+      "reagent_bottle_type": 0,
+      "reagent_list": 0,
+      "reagent_setting": 0,
+      "sample_combination": 0,
+      "sample_combination_member": 0,
+      "sample_local_hole": 3,
+      "sample_local_rack": 1,
+      "sample_local_task": 0
+    },
+    "history/history.sqlite": {
+      "offline_metadata": 1,
+      "report_columns": 6,
+      "report_data": 6,
+      "report_results": 11,
+      "report_values": 16
+    },
+    "hospital/hospital_Information.db": {
+      "app_settings": 1,
+      "hospital_information": 0
+    },
+    "instrument/maintenance.db": {
+      "day_maintain": 0,
+      "month_maintain": 0,
+      "week_maintain": 0
+    }
+  },
+  "database_row_correction": {
+    "original_selection": "runtime.rglob('*.db')",
+    "corrected_selection": "Read first 16 signature bytes of each closed-runtime file, then open only SQLite signatures read-only/immutable and query schema table names and COUNT(*).",
+    "original_database_count": 4,
+    "corrected_database_count": 5,
+    "previously_omitted_databases": [
+      "history/history.sqlite"
+    ],
+    "original_listed_counts_preserved": true,
+    "row_field_values_read": false,
+    "runtime_file_sizes_and_mtimes_unchanged": true
+  },
+  "secret_file_deleted": true,
+  "runtime_databases_tags_or_secret_archived": false,
+  "limitations": [
+    "No accepted resource budget",
+    "No RK measurement or same-board real-time control qualification",
+    "No real instrument action",
+    "No long-term stability claim",
+    "Tail is the same observation, with no causal replay-before/after conclusion",
+    "Other system services existed; project serialization is not proof of a fully idle operating system"
+  ],
+  "audit_started_no_gui_build_or_device": true
+}

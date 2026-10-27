@@ -1,0 +1,917 @@
+{
+  "schema": "sn100-instrument-test-resource-independent-audit-v1",
+  "audited_utc": "2026-10-24T10:51:48.874004+00:00",
+  "status": "verified_with_preserved_failures_and_exit_receipt_limitations",
+  "scope": {
+    "checkpoint": "instrument+CPU+O09-2 old frozen checkpoint",
+    "source_file_count": 468,
+    "compiled_source_input_count": 348,
+    "new_353_login_excluded": true,
+    "existing_evidence_only": true,
+    "no_products_tests_builds_gui_benchmarks_or_devices_started": true,
+    "no_database_opened": true,
+    "no_shared_docs_source_or_existing_evidence_modified": true,
+    "only_owned_audit_json_written": "temp/sn100_host/progress_monitor_01a16bdd/instrument_test_evidence_audit.json"
+  },
+  "published_evidence_sha256": {
+    "manifest": "04_references/sn100_host/instrument_20261024/SHA256SUMS",
+    "verified_file_count": 140,
+    "mismatch_count": 0,
+    "categories": {
+      "store/": 3,
+      "final_gui/": 32,
+      "initial_gui/": 38,
+      "cumulative/": 58,
+      "resource/": 9
+    }
+  },
+  "source_and_program_binding": {
+    "frozen_final_sync_count": 468,
+    "relevant_frozen_sources": [
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/instrument_page_test.cpp",
+        "sha256": "8fa16701308a8f072fc521975472702eb010853a7dc3b420d92073be48c0c9c7",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/maintenance_store_test.cpp",
+        "sha256": "e09028e3478dcd639c6a9de523db46433c476b1bb05934640a29342b5597d5a9",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/integrated_shell_test.cpp",
+        "sha256": "ed73156a20c3dfdd90024ae49271c4c2f9ef7df8f82b9076e1c46f3401ec2262",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/status_replay_shell_test.cpp",
+        "sha256": "7965abfe810e008166357a4c838b5b08babc06163c55019d0976916234e25647",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/fixtures/status_replay.json",
+        "sha256": "c8c7e9430cea401032c75e6d65792f316567159fb3eaa2121afb98de89a10b1e",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/observe_linux_process.py",
+        "sha256": "d32f759feb1f6736426fe9b59086818760f03976ced9cfc49637b19c95769f70",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/instrument/maintenance_store.cpp",
+        "sha256": "924886fbd07091c3a995a297c87f95e20503a331f209de4b41ea24bf68d88e12",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/instrument/instrument_page.cpp",
+        "sha256": "b25210fd50ca58e5dcabcbe4c2280321cf87fa52ee965fe9865668451e20b462",
+        "matches": true
+      }
+    ],
+    "store_sources": [
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/instrument/maintenance_store.h",
+        "sha256": "85883da04f9c5192f5418e46956830b8dcbee94aa52c91f6cf182621184fd508",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/instrument/maintenance_store.cpp",
+        "sha256": "924886fbd07091c3a995a297c87f95e20503a331f209de4b41ea24bf68d88e12",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/instrument/maintenance_core.pri",
+        "sha256": "4cac5f91c4df5ebe65d8c4e0b2ba00a66f111c130608171b5f38082290b2ced2",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/maintenance_store_test.cpp",
+        "sha256": "e09028e3478dcd639c6a9de523db46433c476b1bb05934640a29342b5597d5a9",
+        "matches": true
+      },
+      {
+        "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/maintenance_store_test.pro",
+        "sha256": "ef01a6c86c9e14d3a28322fef6163ab083456d9b8d970059796bbcfdd915f978",
+        "matches": true
+      }
+    ],
+    "store_test_binary": {
+      "path": "temp/sn100_host/instrument_store/wsl_release/maintenance_store_test",
+      "sha256": "efb02a5eb8a2cb7237d050c1d72d006cd24af11763aec109147f7b583e01b7f5",
+      "matches": true
+    },
+    "final_gui_production_object_count": 136,
+    "object_hash_mismatches": 0,
+    "actual_makefile_object_count": 137,
+    "exact_object_set_plus_driver": true,
+    "final_gui_driver_binary": {
+      "path": "temp/sn100_host/instrument_20261024/production_test/instrument_page_test",
+      "sha256": "093b1f47473313aa73e46402c672596be03020fa161a9b6f6ef5afce705eca06",
+      "matches": true
+    },
+    "final_gui_driver_object": {
+      "path": "temp/sn100_host/instrument_20261024/production_test/.test_objects/instrument_page_test.o",
+      "sha256": "a01c7a40fab10da3fad4fd3252554caa6ad4be71a5b71f4e725fac73660d1f38",
+      "matches": true
+    },
+    "final_gui_driver_source": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/instrument_page_test.cpp",
+      "sha256": "8fa16701308a8f072fc521975472702eb010853a7dc3b420d92073be48c0c9c7",
+      "matches": true
+    },
+    "observed_native_main_helper_pair": {
+      "sn100_shell": {
+        "path": "temp/sn100_host/instrument_20261024/native/wsl_release/sn100_shell",
+        "sha256": "c5da853069071eedc12a601cb5cab8be0529e726196b8ce4d79667b7c232aeb3",
+        "matches": true
+      },
+      "sn100_report_renderer": {
+        "path": "temp/sn100_host/instrument_20261024/native/wsl_release/sn100_report_renderer",
+        "sha256": "a73acc08b9747a4d36d3fae7ecf2034a1880e750936e53fdbecac793c5603c89",
+        "matches": true
+      }
+    },
+    "resource_fixture": {
+      "path": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/tests/fixtures/status_replay.json",
+      "sha256": "c8c7e9430cea401032c75e6d65792f316567159fb3eaa2121afb98de89a10b1e",
+      "matches": true
+    },
+    "resource_observer": {
+      "path": "04_references/sn100_host/instrument_20261024/resource/observe_linux_process.py",
+      "sha256": "d32f759feb1f6736426fe9b59086818760f03976ced9cfc49637b19c95769f70",
+      "matches": true
+    },
+    "resource_driver": {
+      "path": "04_references/sn100_host/instrument_20261024/resource/run_resource.py",
+      "sha256": "8fa63e190284846f0f8ffbcca481f13d09e3cb775f6e409942d7857495a379f6",
+      "matches": true
+    },
+    "cumulative_driver_products": [
+      {
+        "name": "integrated_shell_test",
+        "binary_sha256": "12235060f9e8ab76cf8f6a21a1508c39e97055585b62e66be65e0b476219166d",
+        "source_sha256": "ed73156a20c3dfdd90024ae49271c4c2f9ef7df8f82b9076e1c46f3401ec2262",
+        "matches_binary": true,
+        "matches_source": true
+      },
+      {
+        "name": "status_replay_shell_test",
+        "binary_sha256": "d59469f7a5bf07824ee8b40ed501478666391563c65c3ea1cbb21c8dbf318f7e",
+        "source_sha256": "7965abfe810e008166357a4c838b5b08babc06163c55019d0976916234e25647",
+        "matches_binary": true,
+        "matches_source": true
+      }
+    ]
+  },
+  "maintenance_store": {
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "blacklisted": 0,
+    "text_elapsed_ms": 3866,
+    "xml_testcase_count": 11,
+    "xml_counts": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "slot_names": [
+      "initTestCase",
+      "savesAllManualPeriodsAndReopens",
+      "rejectsUnauthorizedMachineAndInvalidDates",
+      "lockFailureKeepsEventLoopResponsiveAndRecovers",
+      "refusesUnsafePathsAndUnmarkedExistingData",
+      "rejectsBrokenSchemaWithoutConvertingIt",
+      "errorsForTamperedMarkersAndCorruptDatabases",
+      "neverPublishesPartialMonthAfterInvalidCompletionFlag",
+      "retriesTaggedEmptyDatabaseAfterInitializationLockFailure",
+      "monthUsesOneSnapshotAcrossConcurrentTableCommits",
+      "cleanupTestCase"
+    ],
+    "txt": "store/test.txt",
+    "xml": "store/test.xml",
+    "txt_sha256": "bd87e3ac562fc684debcf63fe8144128260e2b685698b0e24ded4f42e03db9f6",
+    "xml_sha256": "937506ed079edfd1292c636c6ae11164fb20b689c9901d9245e357a0412dfe68",
+    "declared_exit_code": 0,
+    "exit_receipt_scope": "QtTest text/JUnit agree. Published result reports exit 0; separate invocation shell receipt is not present in this public store directory.",
+    "manual_action_ids": [
+      "waste_cup",
+      "waste_water",
+      "waste_cup_box",
+      "clean_pool",
+      "clean_dirver",
+      "clean_needle"
+    ],
+    "device_actions_rejected": [
+      "long_clean",
+      "shut_down"
+    ],
+    "validation_scope": "Anonymous offline tagged maintenance store, six local manual completion actions, roles/date/idempotence, rejection, lock recovery, rollback and concurrent coherent month snapshot. No instrument operations or real-time acceptance."
+  },
+  "final_gui": {
+    "qpa": {
+      "offscreen": {
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 9240,
+        "xml_testcase_count": 10,
+        "xml_counts": {
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "originalCanvasAndNavigation",
+          "permissionsAndUnknownDevice",
+          "manualRecordsAndReopen",
+          "cancellationAndBusyGuard",
+          "lockedDatabaseRecovers",
+          "replayNeverEnablesHardware",
+          "readOnlySourceReplacementKeepsPermissionsAndExpires",
+          "shellIntegrationAndLifecycleGuards",
+          "cleanupTestCase"
+        ],
+        "txt": "final_gui/offscreen.txt",
+        "xml": "final_gui/offscreen.xml",
+        "txt_sha256": "643d47cd3ea0c62fd17f99ed8043fd151ee47a16ae4dd54d806b9b7d71f2084a",
+        "xml_sha256": "2ce12c8710e45f747402b4bdb6e46c6d9383a1ae880c1d4e7f77f21147774157",
+        "exit_receipt": 0,
+        "maximum_synchronous_click_ms": 1.408266,
+        "navigation_operations": 7
+      },
+      "xcb": {
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 9644,
+        "xml_testcase_count": 10,
+        "xml_counts": {
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "originalCanvasAndNavigation",
+          "permissionsAndUnknownDevice",
+          "manualRecordsAndReopen",
+          "cancellationAndBusyGuard",
+          "lockedDatabaseRecovers",
+          "replayNeverEnablesHardware",
+          "readOnlySourceReplacementKeepsPermissionsAndExpires",
+          "shellIntegrationAndLifecycleGuards",
+          "cleanupTestCase"
+        ],
+        "txt": "final_gui/xcb.txt",
+        "xml": "final_gui/xcb.xml",
+        "txt_sha256": "238f49b994a9b7c5fd6b9e2e92dc9e87cfb2095121e719d79e64019bf8dc3cd2",
+        "xml_sha256": "20aa75b6493dad5cd783cb2f02579f05919d782396a9287c030b230dcbe5cec4",
+        "exit_receipt": 0,
+        "maximum_synchronous_click_ms": 2.980348,
+        "navigation_operations": 7
+      }
+    },
+    "verified_png_count": 20,
+    "screenshots": "SHA and 1600x900 PNG geometry checked; no visual equivalence inspection performed in this audit.",
+    "exit_receipts": "Both final_gui .exit files contain 0.",
+    "scope": "Exact frozen production objects plus test driver. Synchronous navigation click timing excludes paint/physical input/instrument latency."
+  },
+  "preserved_initial_gui_failure": {
+    "initial": {
+      "passed": 8,
+      "failed": 1,
+      "skipped": 0,
+      "blacklisted": 0,
+      "text_elapsed_ms": 9327,
+      "xml_testcase_count": 9,
+      "xml_counts": {
+        "passed": 8,
+        "failed": 1,
+        "skipped": 0
+      },
+      "slot_names": [
+        "initTestCase",
+        "originalCanvasAndNavigation",
+        "permissionsAndUnknownDevice",
+        "manualRecordsAndReopen",
+        "cancellationAndBusyGuard",
+        "lockedDatabaseRecovers",
+        "replayNeverEnablesHardware",
+        "shellIntegrationAndLifecycleGuards",
+        "cleanupTestCase"
+      ],
+      "txt": "initial_gui/initial_failure/offscreen.txt",
+      "xml": "initial_gui/initial_failure/offscreen.xml",
+      "txt_sha256": "8b8a68b8e2f0ec2beb2fb0bfedf6ade22b30a157629d1281abc114ffc9d53b7f",
+      "xml_sha256": "9bee42274c09b17309e4d7e711c3b735fc9a29539c031a2169d7bbd3812b8d24"
+    },
+    "corrected": {
+      "offscreen": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 9496,
+        "xml_testcase_count": 9,
+        "xml_counts": {
+          "passed": 9,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "originalCanvasAndNavigation",
+          "permissionsAndUnknownDevice",
+          "manualRecordsAndReopen",
+          "cancellationAndBusyGuard",
+          "lockedDatabaseRecovers",
+          "replayNeverEnablesHardware",
+          "shellIntegrationAndLifecycleGuards",
+          "cleanupTestCase"
+        ],
+        "txt": "initial_gui/corrected/offscreen.txt",
+        "xml": "initial_gui/corrected/offscreen.xml",
+        "txt_sha256": "bcb71135ad384eddb63f932ae4953f5b9e38f4d06e316c27f91bb7f021e59f10",
+        "xml_sha256": "b0d97f6bbe05f683e38b51474c5de473a06b7a69ee244d1341ac07841450c557"
+      },
+      "xcb": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 9545,
+        "xml_testcase_count": 9,
+        "xml_counts": {
+          "passed": 9,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "originalCanvasAndNavigation",
+          "permissionsAndUnknownDevice",
+          "manualRecordsAndReopen",
+          "cancellationAndBusyGuard",
+          "lockedDatabaseRecovers",
+          "replayNeverEnablesHardware",
+          "shellIntegrationAndLifecycleGuards",
+          "cleanupTestCase"
+        ],
+        "txt": "initial_gui/corrected/xcb.txt",
+        "xml": "initial_gui/corrected/xcb.xml",
+        "txt_sha256": "ffb093a5e2c895596ef0bd08a264a54b6d8c29e02a99d0ce6f0d1cd5fe4deabd",
+        "xml_sha256": "c19ddfb1f7184c8078bea1e76d6e4796546ddec766323f3ea1769a459216feae"
+      }
+    },
+    "diagnostic": "account_busy true, hospital_busy false, maintenance_busy false; genuine account async refresh keeps close rejection correct.",
+    "driver_only_patch": "Adds real-idle wait before unchanged close assertion; retained rejection assertions. Product guard not removed.",
+    "final_additional_slot": "readOnlySourceReplacementKeepsPermissionsAndExpires produces final 10/0 from prior 9/0."
+  },
+  "cumulative": {
+    "applicable_invocations": [
+      {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 14771,
+        "xml_testcase_count": 3,
+        "xml_counts": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "writeExperiment",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/offscreen/integrated_writeExperiment.txt",
+        "xml": "cumulative/logs/offscreen/integrated_writeExperiment.xml",
+        "txt_sha256": "5fa13460017e4c4df674fc2a52e11969e7285364112f8db98cefbb90efafe5da",
+        "xml_sha256": "dbcf24a21ad8a256c28b18e8860fe2b7de8dbe0d83ead91aecade27cb46a9e15",
+        "qpa": "offscreen",
+        "case": "integrated_writeExperiment",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 346,
+        "xml_testcase_count": 3,
+        "xml_counts": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "readExperiment",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/offscreen/integrated_readExperiment.txt",
+        "xml": "cumulative/logs/offscreen/integrated_readExperiment.xml",
+        "txt_sha256": "50df46b4a0474d3a5695fcb5b1584767de37f329b5bf3cb4ffe6ff319f7dae9e",
+        "xml_sha256": "1ba1634ddc30720e110f58578457b001886c9a36a8a95b34a474e275c6b72554",
+        "qpa": "offscreen",
+        "case": "integrated_readExperiment",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 282,
+        "xml_testcase_count": 3,
+        "xml_counts": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "initializationFailureExperiment",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/offscreen/integrated_initializationFailureExperiment.txt",
+        "xml": "cumulative/logs/offscreen/integrated_initializationFailureExperiment.xml",
+        "txt_sha256": "ece63545dad31fb99dfa65b705123b8bbcd27d264a7206e4acffadb085632bde",
+        "xml_sha256": "a3f848be615bbf610cbcec11c780ed91eab461726b9f4cc98098553742f37090",
+        "qpa": "offscreen",
+        "case": "integrated_initializationFailureExperiment",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 4529,
+        "xml_testcase_count": 5,
+        "xml_counts": {
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "originalPathAndMapping",
+          "timelineAndViewports",
+          "productLifecycleAndInputFailure",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/offscreen/status_replay.txt",
+        "xml": "cumulative/logs/offscreen/status_replay.xml",
+        "txt_sha256": "7554eb4da4904313c81cb5726c899ef53bc075c4f135de0763ad61aaff3bded8",
+        "xml_sha256": "c9ea6f3e59fb57654325da45f11e91732269f29a8bbbd05437259e0ce65fe901",
+        "qpa": "offscreen",
+        "case": "status_replay",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 19801,
+        "xml_testcase_count": 3,
+        "xml_counts": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "writeExperiment",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/xcb/integrated_writeExperiment.txt",
+        "xml": "cumulative/logs/xcb/integrated_writeExperiment.xml",
+        "txt_sha256": "ab1cbe8be07cdbe79b198662a4e7bbc2b7993dee40807ff67c7261d73a7a6de6",
+        "xml_sha256": "a27d3ec0fbd2faa02c5360a216700f820def934dc42aaa1cf36573382034f099",
+        "qpa": "xcb",
+        "case": "integrated_writeExperiment",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 414,
+        "xml_testcase_count": 3,
+        "xml_counts": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "readExperiment",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/xcb/integrated_readExperiment.txt",
+        "xml": "cumulative/logs/xcb/integrated_readExperiment.xml",
+        "txt_sha256": "7e06620cd7d78e2e2b81c33afdd71a0728ded96fee027e924ba7736786acdad1",
+        "xml_sha256": "ce0c5250ebd7dcdf95a2856b7da85228df5cd1144d06b7ddafff60e203b6641a",
+        "qpa": "xcb",
+        "case": "integrated_readExperiment",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 287,
+        "xml_testcase_count": 3,
+        "xml_counts": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "initializationFailureExperiment",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/xcb/integrated_initializationFailureExperiment.txt",
+        "xml": "cumulative/logs/xcb/integrated_initializationFailureExperiment.xml",
+        "txt_sha256": "b75f4d7852d76744577d912177897446f22670ed0a640482a780794e679a1710",
+        "xml_sha256": "8e6fe11b2ed7dc5c1734b08db0476c9e762bfcdbef93b8743431df8c827b2e8b",
+        "qpa": "xcb",
+        "case": "integrated_initializationFailureExperiment",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 4543,
+        "xml_testcase_count": 5,
+        "xml_counts": {
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "originalPathAndMapping",
+          "timelineAndViewports",
+          "productLifecycleAndInputFailure",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/xcb/status_replay.txt",
+        "xml": "cumulative/logs/xcb/status_replay.xml",
+        "txt_sha256": "04ecaa2852ae986a4c4d44eb826b5c3eef754e64839ca50c360e4169095780e7",
+        "xml_sha256": "ba33024e0d819d65edbd8fd3ddfda61acc16e63833538d6230ce31eeaf65a695",
+        "qpa": "xcb",
+        "case": "status_replay",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 4137,
+        "xml_testcase_count": 3,
+        "xml_counts": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "viewportExperiment",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/xcb/integrated_viewportExperiment.txt",
+        "xml": "cumulative/logs/xcb/integrated_viewportExperiment.xml",
+        "txt_sha256": "d59f4bb561d9de477bca3e4e4af00787ba63f36f162f379680ab9b910804ca29",
+        "xml_sha256": "e07d12e955da1f9a784dfbec6927d77d0d427725c4da1668d6501f8748ebabec",
+        "qpa": "xcb",
+        "case": "integrated_viewportExperiment",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      },
+      {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "blacklisted": 0,
+        "text_elapsed_ms": 12381,
+        "xml_testcase_count": 3,
+        "xml_counts": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "slot_names": [
+          "initTestCase",
+          "applicationExitExperiment",
+          "cleanupTestCase"
+        ],
+        "txt": "cumulative/logs/xcb/integrated_applicationExitExperiment.txt",
+        "xml": "cumulative/logs/xcb/integrated_applicationExitExperiment.xml",
+        "txt_sha256": "d995c614c201381c325e2456364c9745084c7d048c625e18ff74cf0248e57cdc",
+        "xml_sha256": "f51da271d34031122fab45cb1ec47bc1dd92fe875b3571a1ed40b0bf16edddcf",
+        "qpa": "xcb",
+        "case": "integrated_applicationExitExperiment",
+        "reported_exit_code": 0,
+        "exit_code_basis": "Coordinator completed the set-e runner sequence; QtTest text/XML outcomes independently agree. Separate per-invocation shell exit receipts were not persisted.",
+        "separate_shell_exit_receipt_available": false
+      }
+    ],
+    "applicable_invocation_count": 10,
+    "all_text_xml_agree_and_pass": true,
+    "preserved_offscreen_viewport_failure": {
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0,
+      "blacklisted": 0,
+      "text_elapsed_ms": 3240,
+      "xml_testcase_count": 3,
+      "xml_counts": {
+        "passed": 2,
+        "failed": 1,
+        "skipped": 0
+      },
+      "slot_names": [
+        "initTestCase",
+        "viewportExperiment",
+        "cleanupTestCase"
+      ],
+      "txt": "cumulative/logs/offscreen/integrated_viewportExperiment.txt",
+      "xml": "cumulative/logs/offscreen/integrated_viewportExperiment.xml",
+      "txt_sha256": "49023eb5d720f6ad57c15b039328763ab86180b7d4d3db39b200bba63b06f948",
+      "xml_sha256": "f5049aab987638c9dfacae24fe85150848c180607cdc40b312455773b898b3b2"
+    },
+    "offscreen_failure_reclassified_as_pass": false,
+    "physical_viewport_pass_scope": "XCB only; same physical screenAt/widgetAt assertion requires a real mapped native screen.",
+    "original_failure_preserved": true,
+    "separate_per_invocation_shell_exit_receipts_persisted": false,
+    "reported_exit_basis": "Coordinator set-e sequence and independently agreeing raw QtTest text/XML; not fabricated independent receipts.",
+    "60s_measure_experiment_executed_here": false,
+    "product_lifecycle_scope": {
+      "product_sha256": "c5da853069071eedc12a601cb5cab8be0529e726196b8ce4d79667b7c232aeb3",
+      "test_process_id": 1550,
+      "application_process_id": 1557,
+      "native_window_id": "8388614",
+      "exit_code": 0,
+      "configured_and_closed_stores": [
+        "HOSPITAL",
+        "ACCOUNT",
+        "HISTORY"
+      ],
+      "ready_idle_observed_ms": 12017,
+      "test_total_text_elapsed_ms": 12381,
+      "scope": "Functionality only: ready idle, PID-verified WM_DELETE_WINDOW and normal three-store close. The 12.381-second figure is total QtTest text duration, not a precise product runtime or performance acceptance result."
+    },
+    "replay_child_scopes": [
+      {
+        "qpa": "offscreen",
+        "mode": "--offline --status-replay; hospital store only",
+        "exit_code": 0,
+        "checks": {
+          "ready": true,
+          "replay_finished_invalidates_old_status": true,
+          "planned_tx_file_rx_present": true,
+          "replay_stopped": true,
+          "hospital_store_closed": true,
+          "single_worker_stopped": true,
+          "exit_0": true,
+          "invalid_input_runtime_absent": true
+        },
+        "relative_input_child_exit_code": 2,
+        "relative_input_exit_evidence": "Frozen productLifecycleAndInputFailure QCOMPARE(invalid.exitCode(),2) passed; the requested data root is independently absent.",
+        "events": 14
+      },
+      {
+        "qpa": "xcb",
+        "mode": "--offline --status-replay; hospital store only",
+        "exit_code": 0,
+        "checks": {
+          "ready": true,
+          "replay_finished_invalidates_old_status": true,
+          "planned_tx_file_rx_present": true,
+          "replay_stopped": true,
+          "hospital_store_closed": true,
+          "single_worker_stopped": true,
+          "exit_0": true,
+          "invalid_input_runtime_absent": true
+        },
+        "relative_input_child_exit_code": 2,
+        "relative_input_exit_evidence": "Frozen productLifecycleAndInputFailure QCOMPARE(invalid.exitCode(),2) passed; the requested data root is independently absent.",
+        "events": 14
+      }
+    ],
+    "cross_process_readback": "Both QPA read assertions pass after separate write invocations. Numeric writer PIDs retained; reader PID is asserted different in test but numeric reader PID not archived.",
+    "public_runtime_summary_verified_file": "04_references/sn100_host/instrument_20261024/cumulative/public_runtime_summary.json",
+    "coordinator_control_flow_audit": {
+      "evidence_classification": "coordinator_backed_with_independently_consistent_text_xml",
+      "aggregate_completion_reported": true,
+      "aggregate_completion_source": "Published verification and producer archival record state coordinator completed the set-e sequence; this audit separately read the actual archived/private scripts.",
+      "standalone_aggregate_shell_exit_file_persisted": false,
+      "scripts": {
+        "run_all.sh": {
+          "archived_sha256": "68ce52e2a9d32540333639253bd5a31eeb78f8548a574f1948aecce16bc76643",
+          "private_sha256": "68ce52e2a9d32540333639253bd5a31eeb78f8548a574f1948aecce16bc76643",
+          "same_as_archived": true,
+          "set_Eeuo_pipefail": true,
+          "exec_passthrough": false,
+          "timeout_failure_suppression_present": false
+        },
+        "resume_after_offscreen_viewport.sh": {
+          "archived_sha256": "7e65e42f30731d11bcd2b412f09a3a6078f783753bf397787797a15b65bfb8cd",
+          "private_sha256": "7e65e42f30731d11bcd2b412f09a3a6078f783753bf397787797a15b65bfb8cd",
+          "same_as_archived": true,
+          "set_Eeuo_pipefail": true,
+          "exec_passthrough": false,
+          "timeout_failure_suppression_present": false
+        },
+        "run_case.sh": {
+          "archived_sha256": "4cde50e77bd6df27bac6375c9323e0030ad4ea2f9e1402caa841a413a6fdc389",
+          "private_sha256": "4cde50e77bd6df27bac6375c9323e0030ad4ea2f9e1402caa841a413a6fdc389",
+          "same_as_archived": true,
+          "set_Eeuo_pipefail": true,
+          "exec_passthrough": true,
+          "timeout_failure_suppression_present": false
+        },
+        "target_wrapper.sh": {
+          "archived_sha256": "1fa08d26a6fd0145a7ba5909c224cd26f042eafd207acf7dd6cbf21c08341c6b",
+          "private_sha256": "1fa08d26a6fd0145a7ba5909c224cd26f042eafd207acf7dd6cbf21c08341c6b",
+          "same_as_archived": true,
+          "set_Eeuo_pipefail": null,
+          "exec_passthrough": true,
+          "timeout_failure_suppression_present": false
+        }
+      },
+      "actual_control_flow": "run_all.sh initially serializes offscreen write/read/viewport and aborts at original failed viewport. resume_after_offscreen_viewport.sh preserves those logs, then serially invokes offscreen init-failure/status and XCB write/read/viewport/init-failure/status/app-close. Every invocation uses timeout without || true under set -Eeuo pipefail. run_case.sh execs target_wrapper.sh, which execs QtTest, so nonzero QtTest/timeout status propagates.",
+      "applicable_result": "All ten applicable invocations have agreeing raw text/XML with zero failed/skipped slots. Taken with reported coordinator completion and verified control flow, the aggregate is consistent with pass; receipt granularity is a provenance limitation, not a product failure.",
+      "first_runner_failure_is_not_hidden": true,
+      "runner_correction": "run_case.sh now rejects offscreen viewport before launching; old failure file remains 2/1. XCB same actual viewport assertion is 3/0.",
+      "receipt_generation_caveat": "archive_cumulative.py derives each published exit_code from QtTest fail count (line 56), while explicitly labeling the coordinator basis. Therefore the per-row exit code itself is not an independently persisted OS return-code receipt."
+    },
+    "raw_child_exit_and_close_checks": [
+      {
+        "qpa": "xcb",
+        "case": "application_exit",
+        "exit_code": 0,
+        "raw_output_matches_markers": true,
+        "evidence": "04_references/sn100_host/instrument_20261024/cumulative/public/xcb/application_exit_result.json",
+        "evidence_sha256": "1a9c800bed471f5c61058388a720f5d76a0f671b6c218690ce8fa9d9ac233128"
+      },
+      {
+        "qpa": "offscreen",
+        "case": "initialization_failure",
+        "exit_code": 3,
+        "raw_output_matches_markers": true,
+        "evidence": "04_references/sn100_host/instrument_20261024/cumulative/public/offscreen/initialization_failure_result.json",
+        "evidence_sha256": "5fd19190b34610ba5653438288cc30b1fa037a941bce0a44c143a209678a101c"
+      },
+      {
+        "qpa": "xcb",
+        "case": "initialization_failure",
+        "exit_code": 3,
+        "raw_output_matches_markers": true,
+        "evidence": "04_references/sn100_host/instrument_20261024/cumulative/public/xcb/initialization_failure_result.json",
+        "evidence_sha256": "9bab295fff923f8d796b9e9723af4294403d2be9498139f8e695020024d81850"
+      }
+    ]
+  },
+  "resource_recomputed": {
+    "recorded_clock_ticks_per_second": 100,
+    "real_process_elapsed_seconds": 30.133976501000006,
+    "requested_period_seconds": 0.1,
+    "actual_sample_count": 295,
+    "full": {
+      "sample_count": 295,
+      "first_seconds": 0.006434834999936356,
+      "last_seconds": 30.03044713600002,
+      "sampled_span_seconds": 30.024012301000084,
+      "cpu_ticks_first": 0,
+      "cpu_ticks_last": 140,
+      "cpu_ticks_delta": 140,
+      "cpu_percent_one_logical_core": 4.6629344071823695,
+      "maximums": {
+        "VmRSS": 279416,
+        "VmHWM": 280624,
+        "Pss": 262533,
+        "Threads": 42,
+        "fd_count": 59
+      }
+    },
+    "tail_10_inclusive_30_exclusive_same_observation": {
+      "sample_count": 195,
+      "first_seconds": 10.059877311000037,
+      "last_seconds": 29.928348984999957,
+      "sampled_span_seconds": 19.86847167399992,
+      "cpu_ticks_first": 120,
+      "cpu_ticks_last": 140,
+      "cpu_ticks_delta": 20,
+      "cpu_percent_one_logical_core": 1.0066199518593169,
+      "maximums": {
+        "VmRSS": 279416,
+        "VmHWM": 280624,
+        "Pss": 262533,
+        "Threads": 42,
+        "fd_count": 57
+      }
+    },
+    "units": {
+      "VmRSS": "KiB",
+      "VmHWM": "KiB",
+      "Pss": "KiB",
+      "CPU": "100% means one logical core"
+    },
+    "exit_code_from_observer_Popen_wait_summary": 0,
+    "product_exit_marker_0": true,
+    "normal_sigterm_accepted": true,
+    "timeout": false,
+    "seven_store_close_marker_counts": {
+      "HOSPITAL": 1,
+      "ACCOUNT": 1,
+      "HISTORY": 1,
+      "PROJECT": 1,
+      "REAGENT": 1,
+      "SAMPLE": 1,
+      "MAINTENANCE": 1
+    },
+    "threads_and_replay_stopped": true,
+    "input_flags": [
+      "--offline",
+      "--accounts",
+      "--history",
+      "--catalog",
+      "--samples",
+      "--instrument",
+      "--status-replay",
+      "--data-dir",
+      "--seed-anonymous",
+      "--test-secret-file",
+      "--seed-catalog-demo",
+      "--viewport"
+    ],
+    "load": "Cold start anonymous Guest, seven stores, 14-event frozen file replay then idle instrument page; seed catalog demo; XCB 1600x900 viewport over original logical canvas.",
+    "replay_event_steps": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "replay_eof_fresh_false": true,
+    "time_separation": "Replay 0..10420 timestamps are recorded virtual milliseconds, not measured response/instrument latency. Resource 30.134 seconds and /proc sample timestamps are real monotonic observation.",
+    "cpu_comparison": "Tail belongs to the same observation; not a controlled replay/no-replay causal comparison.",
+    "direct_child_only": true,
+    "pss_missing_samples": 0,
+    "runtime_inventory": "Published corrected inventory covers five SQLite files backing seven stores; old *.db omission of history.sqlite explicitly preserved/corrected by producer. This audit did not open runtime files or database fields.",
+    "recorded_clock_ticks_per_second_source": "resource/verification.json cpu.ticks_per_second_sysconf_SC_CLK_TCK",
+    "tail_recomputation_matches_published": true
+  },
+  "limitations": [
+    "Old 348 compiled-input checkpoint does not deliver the newer 353-input formal password login.",
+    "Applicable cumulative QtTest text/XML corroborates success, but per-invocation independent shell exit receipts were not persisted; store public exit receipt is likewise metadata-only. Final instrument GUI has explicit zero exit files.",
+    "Published resource summary records Popen.wait exit 0 and raw process log records normal shutdown; no fresh process was launched by this audit.",
+    "WSL native evidence does not verify original Windows active theme/behavior, RK display/input/target execution, real device communications/actions, accepted shared-control resource/latency budget, or long-term stability.",
+    "This audit verifies hashes, counts, source binding and raw resource derivation; it does not independently prove absence of unrelated host load, inspect pixels for visual equivalence, or reopen runtime databases.",
+    "The 30-second seven-store resource run is a fixed host baseline, not continuous business load, live replay traffic for the whole interval, 8h success, or a causal CPU root-cause proof."
+  ],
+  "issues": []
+}

@@ -1,0 +1,182 @@
+{
+  "schema": "sn100-combination-mode-origins-v1",
+  "status": "landed_formal_source_not_yet_formally_verified",
+  "purpose": "普通分析组合与按试剂瓶模式的本地设置，保留稳定组合id、有序项目成员和重复次数。",
+  "original_SN100_meaning": {
+    "meaning": "原多瓶质控按试剂瓶映射展开普通样本分析任务，不等于高低水平质控品。",
+    "source_evidence": [
+      {
+        "reference": "frmsample/maskdlgcombasetting.cpp:151-166,242-323",
+        "behavior": "原复选框回显/名称前缀和组合保存；候选显式mode代替名称推断。"
+      },
+      {
+        "reference": "frmsample/frmsamplesettingmaterial.cpp:1168-1287",
+        "behavior": "原按瓶展开及TypeQuality孔拒绝；候选缺瓶数据时只保存模式，应用拒绝。"
+      },
+      {
+        "reference": "tool/database/sample/sample_combination_table.cpp:12-22",
+        "behavior": "原id/name/project_contain；当前稳定项目成员表沿用，增加独立mode表。"
+      }
+    ],
+    "original_reference_fingerprints": {
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsample/maskdlgcombasetting.cpp": {
+        "bytes": 13189,
+        "sha256": "5b7bc080312c76045180fa1c7e2c491388d075ddd740d1a17eb6a74992ddd84a"
+      },
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsample/maskdlgcombasetting.ui": {
+        "bytes": 11830,
+        "sha256": "8badf0066eb260c55d0509a854a847f9814889b4156ea68474253b1cb8eb990b"
+      },
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsample/frmsamplesettingmaterial.cpp": {
+        "bytes": 61042,
+        "sha256": "b2aaa723f157334de1e9ad6d1b772743edb2177f3b8b9c4fc0b75dba9cd7d289"
+      },
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/sample/sample_combination_table.cpp": {
+        "bytes": 3835,
+        "sha256": "5e91b4b3d8cd62b43f99794b24554d0d500f9a3f50d624aafcd50ce372812182"
+      },
+      "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/customeventfilter.h": {
+        "bytes": 646,
+        "sha256": "03b5ab436334bf00797f4216e7b24d7bae8a9eac1b1287b602f5cdc808d0d0cb"
+      }
+    },
+    "activation_limit": "这里只证明参考源码含义；当前Windows发行版该分支的实际配置/活动主题未运行确认。参考原件未修改/构建或连接仪器。"
+  },
+  "current_contract": {
+    "user_entry": "原样本分析组合设置弹窗及多瓶质控复选框；按既有已认证角色/忙态操作，保存成功后读取明确模式。",
+    "mode": "Ordinary/ordinary 或 MultiReagentBottle/multi_reagent_bottle；旧库首次迁移全部明确登记ordinary，不凭名称瓶瓶-推定。",
+    "persistence": "模式扩展表与名称/有序成员同事务保存，级联删除；未知版本/模式或缺损结构保留原数据并报错。",
+    "real_bottle_expansion": "未实现、仍拒绝多瓶应用到架；不会把多瓶静默当普通组合执行。",
+    "UI_and_roles": "原.ui、资源、颜色/布局和既有角色1..5/Guest拒绝、普通样本入口条件保留。新增复选框沿现有ready/busy/session门槛，Store再检查。",
+    "quality_reference": "原质量引用/pending guard与单架恢复读取边界保留，不挪用单孔QC数据表或伪造QC协议；真实pending针对验证仍未覆盖。",
+    "draft_refresh": "匹配新快照到达时，若已有架草稿，只重建项目/组合按钮元数据，不showRack、不覆盖editing_/row_/dirty_或已改字段。"
+  },
+  "provenance": {
+    "candidate02_handoff": {
+      "path": "temp/sn100_host/local_features_integration_20261026/sample_combination_mode_candidate_02/handoff.json",
+      "bytes": 1727,
+      "sha256": "a123b19413947b1c1fca514616e7e55207365dd75be4a56220d147533031ca5e"
+    },
+    "candidate01_contract": {
+      "path": "temp/sn100_host/local_features_integration_20261026/sample_combination_mode_candidate_01/contract.json",
+      "bytes": 6382,
+      "sha256": "0a5f739bff40d1a20364ef49db6f5d3224022d9e7f1155d081a51ba0fcef0449"
+    },
+    "candidate01_source_origins": {
+      "path": "temp/sn100_host/local_features_integration_20261026/sample_combination_mode_candidate_01/source_origins.json",
+      "bytes": 24294,
+      "sha256": "8759871df2b27c2055b8a09b7663c6e70982616b35fd5b79fa7083810ca36e77"
+    },
+    "formal_target_sources": [
+      {
+        "target": "06_programs/sn100_host/samples/sample_types.h",
+        "sha256": "1518f308247cf578b0ff7e31059f79a2eb0662e67e23ec9ac50cd6eeed398faf"
+      },
+      {
+        "target": "06_programs/sn100_host/samples/sample_store.cpp",
+        "sha256": "d6670af2b0fd0b451402e17a08749fa8a98714d9af506412ba95b6ff25cd94e0"
+      },
+      {
+        "target": "06_programs/sn100_host/samples/sample_page.cpp",
+        "sha256": "92600e5ed0520b4fff4d4f7395edb9a9bc6375a62bce8d018e4e6f746ddebafd"
+      }
+    ]
+  },
+  "verification_scopes": {
+    "historical_candidate01_storage": {
+      "execution_handoff": {
+        "path": "temp/sn100_host/local_results_20261026/combination_targeted_execution_01/handoff.json",
+        "bytes": 5300,
+        "sha256": "9ce5fde0dea0c8c5db6bd91015b9a07c92ea25a9c45e7a72fd9d1db1c18e524f"
+      },
+      "candidate01_handoff": {
+        "path": "temp/sn100_host/local_features_integration_20261026/sample_combination_mode_candidate_01/handoff.json",
+        "bytes": 2347,
+        "sha256": "d70e84d2e0b165b1323b10b3f6e4c13a0f7f7b24d1842ac4073e58088afe6d8f"
+      },
+      "passed_methods": [
+        {
+          "method": "legacyMigrationAndModeCrudKeepOrderedMembers",
+          "actual_exit": 0,
+          "Qt_business_result": "pass"
+        },
+        {
+          "method": "lateModeAbortPreservesCombinationAndProjectProtection",
+          "actual_exit": 0,
+          "Qt_business_result": "pass"
+        }
+      ],
+      "scope": [
+        "legacy mode migration/ordinary default, CRUD/reopen/deletion with stable IDs and A-B-A ordered members",
+        "real last-mode UPDATE trigger abort rollback and ProjectsStore FK reference protection"
+      ],
+      "old_UI_method_failed": {
+        "method": "originalEditorCancelAndMultiApplyKeepRackDraft",
+        "actual_exit": 1,
+        "where": "original CPP484 mode stayed ordinary"
+      },
+      "not_rerun_on02_or_formal": true
+    },
+    "private_candidate02_UI_regression": {
+      "execution_handoff": {
+        "path": "temp/sn100_host/local_results_20261026/combination_checkbox_regression_execution_02/handoff.json",
+        "bytes": 11395,
+        "sha256": "90688540569e77d0d819adc47c606025140e7918337de40905b784f3ccd9eae4"
+      },
+      "readback": {
+        "path": "temp/sn100_host/local_results_20261026/combination_checkbox_regression_execution_02/regression_readback.json",
+        "bytes": 6431,
+        "sha256": "1927a3a91468e39b841ef00b306d00df18902329a8e41203e6085c0bc1851347"
+      },
+      "candidate02_handoff": {
+        "path": "temp/sn100_host/local_features_integration_20261026/sample_combination_mode_candidate_02/handoff.json",
+        "bytes": 1727,
+        "sha256": "a123b19413947b1c1fca514616e7e55207365dd75be4a56220d147533031ca5e"
+      },
+      "method": "centerAndIndicatorStateTrace",
+      "business": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "scope": "Page fresh metadata refresh fix; original center ineffective, conditional indicator actual toggle then real SQL Multi,577 refusal,578 draft/SQL preservation, final full-rack worker save/readback and close/join passed.",
+      "does_not_replace_old_failures": true
+    },
+    "diagnostic01_preserved_failure": {
+      "handoff": {
+        "path": "temp/sn100_host/local_results_20261026/combination_checkbox_diagnostic_execution_01/handoff.json",
+        "bytes": 11016,
+        "sha256": "84a9e1eb399a0a6c232199cbbded665cd47e0bd1c8ba08775b6662c439d7d307"
+      },
+      "where": "577 lastStatus refusal substring false; actual prior status/handler arguments not logged"
+    },
+    "new_formal_test": {
+      "status": "PREPARED_ONLY_NOT_BUILT_OR_RUN",
+      "CPP": {
+        "path": "temp/sn100_host/local_results_20261026/combination_mode_formal_landing_preparation_01/payload/06_programs/sn100_host/tests/sample_combination_mode_test.cpp",
+        "bytes": 34027,
+        "sha256": "7704f44b867bba7c83655273baf01a900f7ac5488618eec2f6746614d38e3dfd"
+      },
+      "pro": {
+        "path": "temp/sn100_host/local_results_20261026/combination_mode_formal_landing_preparation_01/payload/06_programs/sn100_host/tests/sample_combination_mode_test.pro",
+        "bytes": 314,
+        "sha256": "da637ad7955d134c1c9f0d8e55fbf3b65b6d130890b25a60502212394486d1aa"
+      }
+    },
+    "not_covered": [
+      "Real QC pending protocol blocking combination mode save/remove: retained check guard is static evidence only; no controlled bool or fake worker success used.",
+      "Changed-checkbox Cancel trial: original Cancel center did not toggle; name edit cancel/data invariants covered.",
+      "Non-first-hole runtime selection extension; current private fixture first hole only.",
+      "Actual reagent-bottle task expansion, bottle identity/capacity/exclusion/consumption rules and instrument execution.",
+      "Formal cumulative build/test, Windows original behavior/visual comparison, RK real screen/instrument, resource budget/same-board control and long stability."
+    ],
+    "no_combined_new_full_suite_pass_claim": true
+  },
+  "integration_owner_boundary": "共享package/ARM输入、主入口、正式新冻结和总文档由Root处理。本来源文件不表示正式接入、正式编译或设备验收已完成。",
+  "root_landing": {
+    "createdUTC": "2026-10-26T18:35:31.928529+00:00",
+    "source_handoff": "efb346120634ab12423f3ae88b89661400c31896cf499979911b0394a319fc9f",
+    "source_preimages": "07_backups/sn100_host/combination_mode_20261027/preimages_497_01",
+    "scope": "Mode settings only; no real bottle task expansion, instrument, fullQC pending validation or physical visual acceptance"
+  }
+}

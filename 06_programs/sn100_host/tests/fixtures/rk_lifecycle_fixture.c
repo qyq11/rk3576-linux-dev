@@ -27,6 +27,8 @@ int main(int argc, char **argv)
     const char *mode = getenv("RK_LIFECYCLE_MODE");
     const char *secret_path = NULL;
     const char *data_directory = NULL;
+    int printer_settings = 0;
+    int lis_settings = 0;
     struct sigaction action;
     long elapsed_ms = 0;
     /* /proc/stat's comm field may contain spaces and closing parentheses. */
@@ -37,6 +39,8 @@ int main(int argc, char **argv)
         if (strcmp(argv[index], "--mode") == 0 && index + 1 < argc) mode = argv[++index];
         else if (strcmp(argv[index], "--test-secret-file") == 0 && index + 1 < argc) secret_path = argv[++index];
         else if (strcmp(argv[index], "--data-dir") == 0 && index + 1 < argc) data_directory = argv[++index];
+        else if (strcmp(argv[index], "--printer-settings") == 0) printer_settings = 1;
+        else if (strcmp(argv[index], "--lis-settings") == 0) lis_settings = 1;
     }
     memset(&action, 0, sizeof(action));
     action.sa_handler = request_stop;
@@ -51,6 +55,8 @@ int main(int argc, char **argv)
         fclose(secret);
     }
     printf("FIXTURE_NATIVE_ONLY pid=%ld mode=%s data_supplied=%d\n", (long)getpid(), mode, data_directory != NULL);
+    printf("PRINTER_SETTINGS_OPT_IN=%d\n", printer_settings);
+    printf("LIS_SETTINGS_OPT_IN=%d\n", lis_settings);
     if (strcmp(mode, "early-failure") == 0) return 29;
     if (strcmp(mode, "early-clean") == 0) return 0;
     if (strcmp(mode, "active-log") == 0)

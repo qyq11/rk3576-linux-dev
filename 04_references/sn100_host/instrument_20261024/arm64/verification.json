@@ -1,0 +1,113 @@
+{
+  "schema": "sn100-instrument-o09-arm64-checkpoint-v1",
+  "created_utc": "2026-10-24T10:27:50.246832+00:00",
+  "status": "arm64_build_and_offline_package_verified_board_pending",
+  "frozen_program": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/source/06_programs/sn100_host",
+  "full_checkpoint_input_count": 468,
+  "package_snapshot_input_count": 348,
+  "source_before_after_equal": true,
+  "source_differences": [],
+  "build": {
+    "script_exit": 0,
+    "elapsed_seconds": 1362,
+    "jobs": 2,
+    "type": "Release",
+    "main_object_count": 137,
+    "helper_object_count": 2,
+    "outer_stdin_driver_exit": 1,
+    "outer_stdin_driver_issue": "The real shell/build.sh child exited 0 and published both checked ARM64 outputs. The outer PowerShell stdin driver exited 1 only on its final exit line because PowerShell appended a carriage return to exit \"0\". The post-build snapshot was already written. No build rerun or old artifact fallback occurred; architecture/SHA/source/closure/package checks were then run independently.",
+    "warnings": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/qtrpt.cpp:2482:14: warning: unused variable ‘bandDGH_1’ [-Wunused-variable]",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/source/06_programs/sn100_host/thirdparty/qtrpt/QtRPT/qtrpt.cpp:2483:14: warning: unused variable ‘bandDGH_2’ [-Wunused-variable]"
+    ],
+    "compiler_notes": [
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/arm64_build/ui_frmdriverset.h:829:10: note: variable tracking size limit exceeded with ‘-fvar-tracking-assignments’, retrying without"
+    ]
+  },
+  "binaries": {
+    "sn100_shell": {
+      "sha256": "2278c5fc769fb5b9f60a6f7ca54c3d8dfa0ea4e4564bbe34bf2424610fc692e4",
+      "bytes": 60959304,
+      "machine": "AArch64",
+      "class": "ELF64",
+      "interpreter": "/lib/ld-linux-aarch64.so.1"
+    },
+    "sn100_report_renderer": {
+      "sha256": "6558bf9c791f3b78e88440e183a4cedef5e7102841fd4f1c8665490c050877f1",
+      "bytes": 16643592,
+      "machine": "AArch64",
+      "class": "ELF64",
+      "interpreter": "/lib/ld-linux-aarch64.so.1"
+    }
+  },
+  "dependency_check": {
+    "script_exit": 0,
+    "status": "offline_closure_passed_board_runtime_pending",
+    "inspected_elf": 56,
+    "errors": [],
+    "sqlite_required": true,
+    "svg_required": true,
+    "report_sha256": "c575ea0c0745be437b8b5dcc497c5cee03f6b3e6ed06d270a8511599a1ff573a",
+    "old_sysroot_reused_read_only": true
+  },
+  "package": {
+    "script_exit": 0,
+    "release_id": "00414bde726a3dd1c2460caf413c7240f56b2b907bdee512962d989c201b7354",
+    "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/arm64/packages/sn100_shell_00414bde726a3dd1c2460caf413c7240f56b2b907bdee512962d989c201b7354.tar.gz",
+    "sha256": "22b7579395af3f95afcb2bc88ff931bb687fba611ea87762637cfb026e6b423b",
+    "bytes": 68077183,
+    "regular_files": 33,
+    "directories": 7,
+    "internal_checksum_entries": 31,
+    "all_payload_hashes_match": true,
+    "members": [
+      "SHA256SUMS",
+      "fonts/LICENSE.txt",
+      "fonts/NotoSansCJK-Bold.ttc",
+      "fonts/NotoSansCJK-Regular.ttc",
+      "fonts/fonts.conf",
+      "lib/libQt5Charts.so.5",
+      "lib/libQt5Network.so.5",
+      "lib/libQt5PrintSupport.so.5",
+      "lib/libQt5Qml.so.5",
+      "lib/libQt5Sql.so.5",
+      "lib/libQt5Svg.so.5",
+      "lib/libQt5Xml.so.5",
+      "lib/libcom_err.so.2",
+      "lib/libexpat.so.1",
+      "lib/libfontconfig.so.1",
+      "lib/libgssapi_krb5.so.2",
+      "lib/libk5crypto.so.3",
+      "lib/libkeyutils.so.1",
+      "lib/libkrb5.so.3",
+      "lib/libkrb5support.so.0",
+      "lib/libsqlite3.so.0",
+      "licenses/QtBaseCopyright.txt",
+      "licenses/QtSvgCopyright.txt",
+      "licenses/libexpat1.txt",
+      "licenses/libfontconfig1.txt",
+      "plugins/imageformats/libqsvg.so",
+      "plugins/platforms/libqoffscreen.so",
+      "plugins/sqldrivers/libqsqlite.so",
+      "release.json",
+      "release_id",
+      "rk_board.sh",
+      "sn100_report_renderer",
+      "sn100_shell"
+    ],
+    "capabilities": [
+      "report_preview_pdf",
+      "project_unit_basis",
+      "reagent_basis",
+      "sample_local_presets",
+      "sample_local_tasks",
+      "offline_status_replay",
+      "offline_status_loopback",
+      "instrument_offline_maintenance"
+    ]
+  },
+  "board_runtime_verified": false,
+  "target_elf_executed": false,
+  "deployment_performed": false,
+  "network_or_instrument_access": false
+}

@@ -22,6 +22,8 @@ public:
     void showInformationBox(QString message);
     void showQuestionBox(QString message);
     void showWarningBox(QString message);
+    // 新异步调用保持同一警告卡，旧show*仍保留其exec语义。
+    void openWarningBox(QString message);
     void showErrorBox(QString message);
     QMessageBox::StandardButton getClickButton() const;
     QString getMsg() const;
@@ -42,6 +44,8 @@ private:
 
     void showDialog(const QString &message, const QString &icon,
                     const QString &buttonPrefix, bool question);
+    void prepareDialog(const QString &message, const QString &icon,
+                       const QString &buttonPrefix, bool question);
 };
 
 #endif

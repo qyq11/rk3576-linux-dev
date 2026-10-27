@@ -1,0 +1,67 @@
+--- old/run_projects_modules.py
++++ new/run_projects_modules.py
+@@ -23,8 +23,10 @@
+                     save, sha, stop_owned_group, verify_native)
+ 
+ 
+-STAGE = WORK / 'projects_modules_final'
+-EXPECTED_FREEZE = '5123bf1442472450bbde23a59fc47287dc85ead34e006c523a96a016ac76cf29'
++from common import spawn_owned
++
++STAGE = WORK / 'post_projects_modules_01'
++EXPECTED_FREEZE = '1486686b182dc8d1da55c52b45c91ea72f1b8c41677676cedf16d72b3fc4f401'
+ EXPECTED_STORE = 'b234dd9d2609fc1b424396a2d9244f4dc2a9b4929fb0f9dae46a12685141702f'
+ PROJECT_READY = '项目/单位已读取；当前仅保存本地配置，未同步仪器。'
+ TARGETS = (
+@@ -83,7 +85,7 @@
+     process, failure, cleanup = None, None, None
+     try:
+         with (logs / (name + '.log')).open('wb') as stream:
+-            process = subprocess.Popen(record['command'], cwd=cwd, env=env,
++            process = spawn_owned(record['command'], cwd=cwd, env=env,
+                                        start_new_session=True, stdout=stream, stderr=subprocess.STDOUT)
+             save(logs / (name + '.process.json'), {'pid': process.pid, 'pgid': process.pid,
+                                                    'state': 'running'})
+@@ -308,7 +310,11 @@
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--root-go', action='store_true', required=True)
++    parser.add_argument('--name', default='post_projects_modules_01')
+     args = parser.parse_args()
++    global STAGE
++    require(re.fullmatch(r'[A-Za-z0-9_-]+', args.name), 'Simple fresh attempt name required')
++    STAGE = WORK / args.name
+     require(args.root_go and sys.platform == 'linux' and os.geteuid() != 0,
+             'Explicit --root-go and ordinary Linux WSL user required')
+     import pwd
+@@ -318,9 +324,9 @@
+     require(os.environ.get('WSL_DISTRO_NAME') == 'Ubuntu-24.04', 'Ubuntu-24.04 WSL required')
+     require(not STAGE.exists() and not STAGE.is_symlink(), 'Fresh projects_modules_final required; preserve prior attempts')
+     frozen = load(FREEZE)
+-    require(len(frozen) == 426 and sha(FREEZE) == EXPECTED_FREEZE
++    require(len(frozen) == 447 and sha(FREEZE) == EXPECTED_FREEZE
+             and frozen.get('projects/projects_store.cpp') == EXPECTED_STORE,
+-            'Exact repaired 426-input/5123bf14 source freeze required')
++            'Exact repaired 447-input/1486686b source freeze required')
+     native = verify_native(frozen)
+     baseline = binding_state(frozen, native)
+     require(baseline['source_sha256'] == frozen, 'Actual source differs from freeze')
+@@ -355,6 +361,9 @@
+             save(stage / 'build_before.json', build_inventory(build, binary))
+             checkpoint(stage / 'binding_before.json', frozen, native, baseline)
+             env, env_receipt = private_environment(runtime)
++            if expected is None:
++                env['QT_QPA_PLATFORM'] = 'xcb'
++                env_receipt['overrides']['QT_QPA_PLATFORM'] = 'xcb'
+             save(stage / 'environment.json', env_receipt)
+             build_start = time.time_ns()
+             try:
+@@ -440,7 +449,7 @@
+                             'four_complete_qt_suites': len(report['tests']) == 4,
+                             'two_loaded_standalones_closed_normally': len(report['standalone']) == 2,
+                             'six_artifact_sha256_present': len(report['artifacts']) == 6,
+-                            'source_426_test_driver_main_helper_native_objects_unchanged': True,
++                            'source_447_test_driver_main_helper_native_objects_unchanged': True,
+                             'fresh_objects_and_binaries_unchanged_through_final': True}
+         require(all(report['checks'].values()), 'Final project/reagent coverage gate incomplete')
+         report['passed'] = True

@@ -1,0 +1,53 @@
+{
+  "module": "O07 local project and unit basis",
+  "source_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+  "read_only_sources": [
+    "frmsystem/frmsystemmaterial.ui",
+    "frmsystem/frmsystemmaterial.cpp:frmSystemMaterial/addResultTableDate/loadUnit/slotCusCheckboxChanged/on_btnSave_clicked/on_btnCopy_clicked/on_btnDelProj_clicked",
+    "customwidgets/cuscheckbox.h",
+    "customwidgets/cuscheckbox.cpp",
+    "customwidgets/materialUI/icons/toggle/svg/production/ic_check_box_24px.svg",
+    "customwidgets/materialUI/icons/toggle/svg/production/ic_check_box_outline_blank_24px.svg",
+    "public/stylecolor.cpp:buttonStyle/listWidgetStyle/tableStyle::getStrSheet2/comboboxStyle",
+    "public/systemcommon.h:Permission",
+    "public/systemcommon.cpp:lineEditValidator",
+    "main.cpp:getConfig theme loading",
+    "bin/theme_config.ini:visual color keys only",
+    "frmsample/maskdlgsampledetail.cpp:configured sample rate selection"
+  ],
+  "ui_copy": {
+    "byte_identical_to_reference": true,
+    "sha256": "bc08c2e42ef9893b196c6d13d0777bdb58dbb056af1515e998f2f82cef04eaaa",
+    "logical_canvas": [1751, 968],
+    "result_column_default_width_px": 116
+  },
+  "retained": [
+    "Original page geometry, control object names, groups and ordering",
+    "Original shipped visual theme color keys and dynamic styles",
+    "Original result decimal combobox choices 1 through 6",
+    "Original CusCheckBox main-result single-selection behavior and icons",
+    "Original unit editability: Calibration and Rate only",
+    "Original Engineer or Administrator edit gate and fixed-project delete protection",
+    "Copy preserves instrument project_id and makes the new local project nonfixed",
+    "Read-only sample_rate/sample_option/sample_default_option/xuhao snapshots for the next local sample slice"
+  ],
+  "intentional_local_differences": [
+    "Qt SQL connections live on one worker thread per store; requests and snapshots cross threads as values",
+    "Explicit isolated catalog.db uses stable integer ids and foreign keys rather than name-derived project database filenames",
+    "No original DB/config import; seed-demo on a new DB adds only explicitly anonymous DEMO_A and arbitrary s/a.u./a.u.x10 unit labels",
+    "The original helper produces an ASCII-head exact-length regex inconsistent with Chinese full names; local validation accepts Unicode letter/digit heads, maximum 16 characters, rejects path characters, and validates finite ordered numeric ranges",
+    "Local result names allow up to 16 characters so copied anonymous names remain editable; the original result editor requested length 8 through the inconsistent helper",
+    "Noto Sans CJK SC substitutes the current WSL font while retaining UI sizes and hierarchy; original active Windows font/theme comparison is pending",
+    "Six visible test-scheme scalars and original 15/10-column sample/reagent action details now support optional local editing and atomic storage; no instrument, network, algorithm or calibration success is synthesized",
+    "Readonly sample rate fixtures are OFFLINE_RATE_A/B labels only, with no clinical dilution ratio or volume semantics",
+    "Unsaved-draft guard and safe discard/cancel are explicit; failed writes retain the draft for retry"
+  ],
+  "not_migrated": [
+    "Production initial project/unit import and approved clinical parameters",
+    "Remaining original per-project AlgParam/calibration/IBS selector/hidden report fields, QC, clinical algorithms and device synchronization; local action records are not executable device commands",
+    "Unit dictionary CRUD or ratio changes, for which no original write UI was found",
+    "Original Windows active-theme behavior/visual baseline, RK real screen, instrument operation and control coexistence"
+  ],
+  "advanced_local_evidence": "04_references/sn100_host/projects_remaining_20261025/project_original_audit.json",
+  "advanced_local_contract": "04_references/sn100_host/projects_remaining_20261025/catalog_contract.json"
+}

@@ -1,0 +1,19 @@
+{
+  "scope": "O10-1 original local printer selection; no physical printing",
+  "reference": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmprintersetting",
+  "form_sha256": "bc995dda80a42cc0c8a88504f3d377b74c61972310ecc8492fd7e1f7df98cf69",
+  "entry": "main page 6 / user settings page 3",
+  "fields": ["ldtPrinterSelect (read only)", "lstProject", "btnApply"],
+  "key": "printer/name",
+  "original_access": "No printer-page or parent-navigation role check in inspected original source; active Windows global policy remains unverified",
+  "original_style": "public/stylecolor.cpp listWidgetStyle::getStrSheet1 and inherited user-settings button style; existing documented theme keys retained",
+  "differences": [
+    "Only explicit isolated settings/printer.ini with offline schema 1; no original config discovery/import",
+    "Printer enumeration and INI operations run in worker; temporary INI encoding and QSaveFile atomic commit precede committed snapshot",
+    "Bounded actual-byte reads, zero-wait cooperative lock and source-byte conflict checks protect failed or concurrent saves",
+    "Unified navigation/login/logout/exit guards ask to keep or discard unsaved selection; original page has no Cancel button",
+    "Existing necessary Noto CJK font substitution; original business frame, widget order, dimensions, list row height and color keys retained"
+  ],
+  "report_boundary": "Original QtReport calls printExec(true) without this name; current report remains offline preview/PDF. Saving a local name does not enable printing or change system default.",
+  "pending": ["Original active Windows theme and complete behavior", "RK screen/input and actual printer plugin dependencies", "Physical printing", "Resource budget / same-board RT / long stability", "System print service hang / bounded enumeration shutdown"]
+}

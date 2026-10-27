@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""Link QtTest drivers against verified Release main objects, excluding main()."""
+import argparse
+import concurrent.futures
+import hashlib
+import json
+from pathlib import Path
+import re
+import shlex
+import subprocess
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--build-dir', type=Path, required=True)
+    parser.add_argument('--snapshot', type=Path, required=True)
+    parser.add_argument('--output-dir', type=Path, required=True)
+    parser.add_argument('--jobs', type=int, choices=(1, 2), default=2)
+    parser.add_argument('drivers', nargs='+')
+    args = parser.parse_args()
+    program = Path(__file__).resolve().parents[1]
+    native = args.build_dir.resolve(strict=True)
+    build = args.output_dir
+    if not build.is_absolute() or not args.snapshot.is_absolute():
+        parser.error('Output and frozen snapshot paths must be absolute')
+    if any(not re.fullmatch(r'[a-z][a-z0-9_]*', name) for name in args.drivers):
+        parser.error('Drivers must be test source stems')
+    before = json.loads(args.snapshot.read_text())
+
+    def check_sources():
+        for name, expected in before.items():
+            if sha(program / name) != expected:
+                raise RuntimeError('Source changed: ' + name)
+
+    check_sources()
+    build.mkdir(parents=True, exist_ok=True)
+    for directory in ('.obj', '.moc', 'logs'):
+        (build / directory).mkdir(exist_ok=True)
+    makefile = (native / 'Makefile').read_text().replace('\\\n', ' ')
+    variables = dict(re.findall(r'^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$', makefile, re.M))
+    variables.setdefault('SUBLIBS', '')
+
+    def value(name):
+        text = variables[name]
+        while '$(' in text:
+            text = re.sub(r'\$\(([^)]+)\)', lambda match: value(match[1]), text)
+        return text
+
+    def expand(name):
+        return shlex.split(value(name))
+
+    objects = [(native / name).resolve(strict=True) for name in expand('OBJECTS')]
+    entry = [path for path in objects if path.name == 'main.o']
+    if len(entry) != 1:
+        raise RuntimeError('Expected exactly one main.o')
+    objects = [path for path in objects if path not in entry]
+    rules = {str((native / obj).resolve()): (native / source).resolve(strict=True)
+             for obj, source in re.findall(r'^([^\s:]+\.o):\s+([^\s]+\.cpp)', makefile, re.M)}
+    common = {str(path): {'object_sha256': sha(path), 'source': str(rules[str(path)]),
+                         'source_sha256': sha(rules[str(path)])} for path in objects}
+    defines, flags, includes = (expand(name) for name in ('DEFINES', 'CXXFLAGS', 'INCPATH'))
+    if any('QT_TESTLIB_LIB' in item or 'QT_TESTCASE_BUILDDIR' in item for item in defines):
+        raise RuntimeError('Main Release objects must not be test-instrumented')
+    qt_headers = Path(next(item[2:] for item in includes if item.endswith('/QtCore'))).parent
+    core = Path(next(item for item in expand('LIBS') if item.endswith('/libQt5Core.so')))
+    test_library = core.with_name('libQt5Test.so').resolve(strict=True)
+    test_defines = ['-DQT_TESTLIB_LIB', '-DQT_TESTCASE_BUILDDIR="' + str(build) + '"']
+    test_includes = ['-I' + str(build / '.moc'), '-I' + str(qt_headers / 'QtTest')]
+    predefs = (native / '.moc/moc_predefs.h').resolve(strict=True)
+
+    def build_driver(name):
+        # Keep the existing independent calibration tests at their authoritative
+        # paths while linking them against the same Release business objects.
+        independent = {
+            'calibration_store_test': 'calibration/tests/calibration_store_test.cpp',
+            'calibration_page_test': 'calibration/tests/calibration_page_test.cpp',
+        }
+        source = (program / independent.get(name, 'tests/' + name + '.cpp')).resolve(strict=True)
+        generated, obj, target = build / '.moc' / (name + '.moc'), build / '.obj' / (name + '.o'), build / name
+        commands = [
+            ['/usr/lib/qt5/bin/moc'] + defines + test_defines + ['--include', str(predefs)] +
+            test_includes + includes + [str(source), '-o', str(generated)],
+            expand('CXX') + flags + test_defines + test_includes + includes + ['-c', str(source), '-o', str(obj)],
+            expand('LINK') + expand('LFLAGS') + ['-o', str(target), str(obj)] +
+            [str(path) for path in objects] + expand('LIBS') + [str(test_library)]]
+        receipts = []
+        with (build / 'logs' / (name + '.log')).open('w') as log:
+            for command in commands:
+                log.write(shlex.join(command) + '\n')
+                log.flush()
+                result = subprocess.run(command, cwd=native, stdout=log, stderr=subprocess.STDOUT)
+                receipts.append({'command': command, 'exit_code': result.returncode})
+                if result.returncode:
+                    (build / (name + '.failed.json')).write_text(json.dumps(receipts, indent=2) + '\n')
+                    raise RuntimeError(name + ' failed; see ' + str(log.name))
+        return name, {'source_relative': source.relative_to(program).as_posix(),
+                      'source_sha256': sha(source), 'binary_sha256': sha(target),
+                      'moc_sha256': sha(generated), 'object_sha256': sha(obj), 'receipts': receipts}
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
+        drivers = dict(pool.map(build_driver, args.drivers))
+    check_sources()
+    for path in objects:
+        if sha(path) != common[str(path)]['object_sha256'] or sha(rules[str(path)]) != common[str(path)]['source_sha256']:
+            raise RuntimeError('Main objects changed during test driver build: ' + str(path))
+    proof = {'native_makefile_sha256': sha(native / 'Makefile'), 'snapshot_sha256': sha(args.snapshot),
+             'native_objects_excluding_main': len(objects), 'native_objects': common, 'drivers': drivers}
+    (build / 'binding_proof.json').write_text(json.dumps(proof, indent=2) + '\n')
+    print(json.dumps({'drivers': list(drivers), 'objects': len(objects), 'passed': True}), flush=True)
+
+
+if __name__ == '__main__':
+    main()

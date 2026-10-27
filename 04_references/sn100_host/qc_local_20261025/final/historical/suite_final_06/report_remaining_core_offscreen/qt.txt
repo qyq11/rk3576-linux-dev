@@ -1,0 +1,35 @@
+********* Start testing of ReportRemainingTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+QINFO  : ReportRemainingTest::initTestCase() ANONYMOUS_EVIDENCE /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/report_remaining_core_offscreen/runtime Qt 5.15.13 QPA offscreen
+PASS   : ReportRemainingTest::initTestCase()
+QINFO  : ReportRemainingTest::guestEmptyInvalidAndDuplicate() Guest, empty, zero, negative, duplicate: no visibility changes
+PASS   : ReportRemainingTest::guestEmptyInvalidAndDuplicate()
+QINFO  : ReportRemainingTest::linkedRowsRemainAndBatchRollback() id=2 hidden; references/results/values unchanged; invalid mixed batch rolled back; repeated deletion rejected
+PASS   : ReportRemainingTest::linkedRowsRemainAndBatchRollback()
+QINFO  : ReportRemainingTest::databaseLockAndWriteFailureRecovery() real SQLite lock and injected SQL write failure rolled back; same store retry hid 2 reports
+PASS   : ReportRemainingTest::databaseLockAndWriteFailureRecovery()
+QINFO  : ReportRemainingTest::displayValidationFailureAndRecovery() 10 stable columns; invalid key/duplicate/required/count rejected; lock and INSERT failure restored saved settings
+PASS   : ReportRemainingTest::displayValidationFailureAndRecovery()
+PASS   : ReportRemainingTest::persistenceWrite()
+QINFO  : ReportRemainingTest::persistenceRead() reopened persisted hidden id=2, patient:sex first, patient:age hidden; 4 reports visible
+PASS   : ReportRemainingTest::persistenceRead()
+QINFO  : ReportRemainingTest::csvFrozenUnitPrecisionAndTextRegression() GBK CSV 5 reports/6 rows, Chinese/quotes/newlines, D-D factor1000 ->123.456, PT 1dp; byte-identical after display reorder/hide
+PASS   : ReportRemainingTest::csvFrozenUnitPrecisionAndTextRegression()
+QWARN  : ReportRemainingTest::dialogCancelRequiredAndBusy() This plugin does not support propagateSizeHints()
+QWARN  : ReportRemainingTest::dialogCancelRequiredAndBusy() This plugin does not support propagateSizeHints()
+QINFO  : ReportRemainingTest::dialogCancelRequiredAndBusy() required cannot uncheck; reset retains visibility; busy close/Escape/duplicate rejected; failure draft retried; cancel emitted no write
+PASS   : ReportRemainingTest::dialogCancelRequiredAndBusy()
+QWARN  : ReportRemainingTest::actualPageDeleteCancelBusyAndDisplayReopen() This plugin does not support propagateSizeHints()
+QWARN  : ReportRemainingTest::actualPageDeleteCancelBusyAndDisplayReopen() This plugin does not support propagateSizeHints()
+QWARN  : ReportRemainingTest::actualPageDeleteCancelBusyAndDisplayReopen() This plugin does not support propagateSizeHints()
+QWARN  : ReportRemainingTest::actualPageDeleteCancelBusyAndDisplayReopen() This plugin does not support propagateSizeHints()
+QWARN  : ReportRemainingTest::actualPageDeleteCancelBusyAndDisplayReopen() This plugin does not support propagateSizeHints()
+QWARN  : ReportRemainingTest::actualPageDeleteCancelBusyAndDisplayReopen() This plugin does not support propagateSizeHints()
+QINFO  : ReportRemainingTest::actualPageDeleteCancelBusyAndDisplayReopen() actual widget+worker+SQLite: empty/cancel unchanged, write lock keeps checked selection, retry succeeds, busy guard, committed age hide, external busy+Guest revoke recovers and normal close
+PASS   : ReportRemainingTest::actualPageDeleteCancelBusyAndDisplayReopen()
+QWARN  : ReportRemainingTest::savedColumnOrderAndDeleteLastPage() This plugin does not support propagateSizeHints()
+QINFO  : ReportRemainingTest::savedColumnOrderAndDeleteLastPage() saved stable-key patient/result order applied; 21 reports page2 last-row deletion returns page1 with20 rows
+PASS   : ReportRemainingTest::savedColumnOrderAndDeleteLastPage()
+PASS   : ReportRemainingTest::cleanupTestCase()
+Totals: 12 passed, 0 failed, 0 skipped, 0 blacklisted, 2755ms
+********* Finished testing of ReportRemainingTest *********

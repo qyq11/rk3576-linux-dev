@@ -1,0 +1,246 @@
+{
+  "schema": "sn100-alarm-history-origins-v1",
+  "date": "2026-10-26",
+  "status": "formal_source_prepared_static_only_NOT_COMPILED_NOT_RUN",
+  "authorized_files_only": [
+    "alarm_history/alarm_history_store.h",
+    "alarm_history/alarm_history_store.cpp",
+    "alarm_history/alarm_history_core.pri",
+    "alarm_history/origins.json",
+    "tests/alarm_history_store_test.cpp",
+    "tests/alarm_history_store_test.pro"
+  ],
+  "user_scope": "Promote the verified private read-only Store and26 test scenarios; root owns page/shared wiring, new freeze and platform/GUI acceptance",
+  "root_prior_checkpoint": {
+    "checkpoint_index_sha256": "0e4caa04969050276f375cf2fb78b5d769885e42be605f17add92f8f957c01b7",
+    "kind": "Integrator-reported prior447 checkpoint, not a build binding for these new files"
+  },
+  "private_source": {
+    "directory": "temp/sn100_host/offline_followup_20261026/alarm_history_private",
+    "original_handoff": "handoff.json",
+    "original_handoff_sha256": "f27ec7aa06dc6b6b89c9816aea811fc2be614709d4689d80dc54105747f6c80d",
+    "original_inputs_manifest_sha256": "eff24a837bfac83bf9205dca45e465c5216e32cdadf36149a375227b639b26a4",
+    "execution_handoff": "execution_handoff.json",
+    "execution_handoff_sha256": "27a43206dc3bc8da612b8fa60d7ce640583c957dfefc9e0f4d54efcec965c750",
+    "text_evidence_manifest_sha256": "3d9aaf5f20398f55e47ffce7676c7f5ca071dab6686b0288ee8b38e3b4609b73",
+    "verified": "WSL x86_64 Qt5.15.13/g++13.3/C++14:26 business incidents, Qt28 passed,0 fail/skip/messages, qmake/make/test/parent0, owned parent+7 groups stopped",
+    "formal_run_status": "That evidence applies to unchanged private source before names/path promotion; it does not prove this formal target passes",
+    "preserved_original_inputs": [
+      {
+        "file": "alarm_history_store_test.cpp",
+        "sha256": "8229a558c470d35179e64284f45d4a57672ad686d5fc8057d90e348ea673dc43",
+        "unchanged": true
+      },
+      {
+        "file": "alarm_history_store_test.pro",
+        "sha256": "e251ff82dafef33f352ff4814406cf73a05cdb2e63291c15c9c054b8e2a40c61",
+        "unchanged": true
+      },
+      {
+        "file": "alarm_history_store.cpp",
+        "sha256": "452ce17ec8ce41fb31a80498ff6ce7327139381729eae2896366d7f987b69582",
+        "unchanged": true
+      },
+      {
+        "file": "alarm_history_store.h",
+        "sha256": "99cb6cff3156df8b93a3453c3d7796ae869c5270ab382d1dc70bfd30a375f0c5",
+        "unchanged": true
+      },
+      {
+        "file": "command_plan.json",
+        "sha256": "3140e5146cdd772fb773d2e9aeb145eaf1c72d18da366243c234cb384996a585",
+        "unchanged": true
+      },
+      {
+        "file": "handoff.json",
+        "sha256": "f27ec7aa06dc6b6b89c9816aea811fc2be614709d4689d80dc54105747f6c80d",
+        "unchanged": true
+      },
+      {
+        "file": "interface_contract.json",
+        "sha256": "5e9389f56b743842becdd5a06a79ec4182473a8bd47c901e4eba13d70497e890",
+        "unchanged": true
+      },
+      {
+        "file": "source_after.json",
+        "sha256": "8ef598b78c6a2f90e820a180625cb435ac415e9380dae42bfdb0e374048c92a9",
+        "unchanged": true
+      },
+      {
+        "file": "source_inputs.json",
+        "sha256": "6b68db0c1703db49faced4236cbe781b823ee55aa1c3f66cb36c77eca9e76bee",
+        "unchanged": true
+      },
+      {
+        "file": "sql_case_plan.json",
+        "sha256": "66502a3f4db06caa43ca4fd13a8e1e9c189d889e7acb10d4bc7ba3e626800669",
+        "unchanged": true
+      },
+      {
+        "file": "static_review.json",
+        "sha256": "3f4a46ac69b00bbfc621804c09e4593d07d2d167427c10c133ddb3a3d1857ad4",
+        "unchanged": true
+      }
+    ]
+  },
+  "reference_sources": [
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/abnormal/abnormal_log_table.h",
+      "scope": "Original seven fields/table name and explicit query default limit0"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/abnormal/abnormal_log_table.cpp",
+      "scope": "Column declarations, saved fields, inclusive day SQL and timeDESC"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmabnormal/maskdlgabnormal.cpp",
+      "scope": "Stored yyyy/MM/dd HH:mm:ss; defaulttoday20; selected-date all; four history display fields; reset excluded"
+    }
+  ],
+  "implementation": "Project-authored read-only Qt SQL worker, based on inspected original storage/lookup contract; reference sources remain read-only",
+  "formal_namespace": "AlarmHistory",
+  "formal_header_guard": "SN100_ALARM_HISTORY_STORE_H",
+  "allowed_transformations": [
+    "AlarmHistoryDraft replaced with AlarmHistory in namespace, signal/slot types, Q_DECLARE_METATYPE and test namespace",
+    "Header guard loses PRIVATE",
+    "Opaque SQL connection-name prefix alarm_history_draft_ becomes alarm_history_; matching cleanup assertion updated",
+    "Initial naming-only promotion changed the test-root diagnostic; the later explicit authorization replaces that root guard as described in test_execution_precondition, while all26 business expectations remain unchanged",
+    "Test .pro references shared module .pri and new relative source locations; no shell/global pri registered",
+    "Explicit later root authorization: only formal test initialization path protection adapted from source-child to repository temp/sn100_host empty dedicated directory; Store,26 business assertions, fixed SQL inputs and timeouts unchanged"
+  ],
+  "behavior_unchanged": [
+    "Existing-file readonly QSQLITE/query_only, no create/migration/history fabrication",
+    "Original seven fields, four future display fields, slash wall-clock text, inclusive dates, DESC and documented idDESC tie rule",
+    "Default captured-today20 and explicit full interval retain distinct completion; no silent all-results cap",
+    "Request/source/view identity, one-use continuation credit, explicit error/cancel, SQL-owner thread and normal close",
+    "26 fixed test expectations, candidate128-row/64KiB/30s/250ms budgets, NULL/empty/star/duplicates retained"
+  ],
+  "new_file_sha256_excluding_self": {
+    "06_programs/sn100_host/alarm_history/alarm_history_store.h": "cd08920a1b8f65700fc5bf5d22df0eb8b0e01d3ed33bf07f2afc44170e462749",
+    "06_programs/sn100_host/alarm_history/alarm_history_store.cpp": "5dfb82acbc8d6ae731e6c7d5d61f23a1c512f878854afd7ad8913580c04d63d7",
+    "06_programs/sn100_host/alarm_history/alarm_history_core.pri": "1d05dc0a146e410697d1aed3ed99e77f833824674ab92a105b5c9dedd4619cf7",
+    "06_programs/sn100_host/tests/alarm_history_store_test.cpp": "85edca849253e40ce751f26520ab62de582650fd70e7c82b2c71e34375227f8b",
+    "06_programs/sn100_host/tests/alarm_history_store_test.pro": "eb36e50a19ceafe3247b7fa901905d03782af8d709a79244615f860c3b897918"
+  },
+  "static_equivalence": "Store/header still equal private source after stated lexical naming substitutions. All test slots/assertions/data from latestTwentyAndSevenFields through cleanup/private suffix remain byte-identical after the naming substitutions. Only test-root helper and init path setup were adapted.",
+  "public_interface": {
+    "type_registration": "AlarmHistory::Store::registerTypes() before queued use; metatypes Error/Scope/Completion/Key/Request/Row/Rows",
+    "entry": "Parentless Store moved to SQL worker; openExisting(absolutePath) then begin(Request), advance(Key,continuationStep), cancel(Key), close()",
+    "completion": "opened/openFailed; continuationNeeded/batchReady; finished/failed/cancelled/requestRejected; closed before thread quit",
+    "dependencies": "QtCore/QtSql only in core pri; Test target adds QtTest and excludes GUI; no protocol/device/CSV/INI reference"
+  },
+  "test_execution_precondition": {
+    "status": "formal_test_root_guard_adapted_static_only_NOT_RUN",
+    "environment": "Explicit SN100_ALARM_TEST_ROOT; no global environment mutation",
+    "repository": "Resolve canonical __FILE__, require06_programs/sn100_host/tests ancestry, walk up3 levels to canonical repository root",
+    "accepted_location": "Existing absolute, empty, readable/writable dedicated child directory under this repository temp/sn100_host; base itself is forbidden",
+    "ancestor_resolution": "Clean native separators/path; require lexical AND canonical subtree boundaries. Walk every existing ancestor through temp/sn100_host and temp to repository root; each must be a directory, not isSymLink, with canonical path exactly equal to lexical path (case insensitive onWindows only). This also rejects canonicalized junction/alias escapes.",
+    "existing_content": "Reject any root entry including hidden/system files, directories, valid/broken links; never clear or overwrite it",
+    "use": "Pass the verified canonical directory to QTemporaryDir, which creates its own fresh anonymous_alarm_XXXXXX child",
+    "refusals": [
+      "Unset/relative/NUL/unresolvable paths",
+      "/tmp,other repositories,reference or source tree",
+      "temp/sn100_host itself or a similarly named sibling",
+      "Missing root (controller must create the new empty dedicated root first)",
+      "Symlink/junction/alias ancestor,including links that stay inside temp",
+      "Unreadable/unwritable root or any preexisting contents"
+    ],
+    "scope": "Unique necessary private-to-formal test adaptation. Original private test, executable evidence and28/26 result preserved; formal variant not compiled or run.",
+    "race_boundary": "Preflight canonical-path checks are not a filesystem sandbox against another process replacing ancestors after validation; root must exclusively own and keep the fresh test directory stationary. Actual Qt/Windows alias behavior still needs controlled formal execution."
+  },
+  "remaining_boundaries": [
+    "Formal qmake/moc/compile/CLI rerun pending; name/path changes alone are not acceptance",
+    "Original history page/shared shell hookup and late-view handling belong to root",
+    "Whole-table format/type rejection and idDESC tie policy are explicit completion of old reader behavior",
+    "Long synchronous SQLite sort/scan has no hard interrupt guarantee;30s timer and250ms busy timeout do not establish hard SQL cancellation",
+    "Long snapshots may block rollback-journal writer commits; WAL/journal_mode not modified, contention not measured",
+    "Candidate resource budgets, malformed text bytes, legacy material compatibility, large history and formal Windows/ARM/RK remain pending",
+    "Historical rows never establish current alarm severity/status, device query/reset/beep/ack or start interlocks",
+    "Formal test-root adaptation is statically reviewed only; no formal Qt path/SQL run or symlink/junction runtime case has been executed"
+  ],
+  "no_build_GUI_SQL_run_by_this_promotion": true,
+  "private_sources_and_evidence_unchanged": true,
+  "shared_shell_build_package_qrc_globalpri_and_docs_modified": false,
+  "test_root_static_examples": {
+    "status": "source_level_branch_review_only_not_Qt_or_SQL_execution",
+    "positive": 1,
+    "negative": 11,
+    "cases": [
+      {
+        "path": "<repo>/temp/sn100_host/verification_02/anonymous_input_root",
+        "canonical": "same",
+        "existing": "empty real directories",
+        "expected": "accept",
+        "review": "lexical/canonical descendants,all ancestors match,empty readable writable root"
+      },
+      {
+        "path": "<repo>/temp/sn100_host",
+        "canonical": "same",
+        "expected": "reject",
+        "review": "base itself lacks child-boundary slash"
+      },
+      {
+        "path": "<repo>/temp/sn100_host_other/anon",
+        "canonical": "same",
+        "expected": "reject",
+        "review": "sibling prefix does not satisfy base slash boundary"
+      },
+      {
+        "path": "/tmp/anonymous",
+        "canonical": "same",
+        "expected": "reject",
+        "review": "outside lexical and canonical project subtree"
+      },
+      {
+        "path": "<repo>/06_programs/sn100_host/tests/anon",
+        "canonical": "same",
+        "expected": "reject",
+        "review": "source tree outside allowed subtree"
+      },
+      {
+        "path": "<repo>/06_programs/sn100_host_reference/anon",
+        "canonical": "same",
+        "expected": "reject",
+        "review": "reference tree outside allowed subtree"
+      },
+      {
+        "path": "<repo>/temp/sn100_host/link/anon",
+        "canonical": "/outside/anon",
+        "expected": "reject",
+        "review": "canonical subtree escape"
+      },
+      {
+        "path": "<repo>/temp/sn100_host/link/anon",
+        "canonical": "<repo>/temp/sn100_host/other/anon",
+        "expected": "reject",
+        "review": "even internal alias fails ancestor canonical-equality check"
+      },
+      {
+        "path": "<repo>/temp/sn100_host/run/anon",
+        "canonical": "same",
+        "existing": ".hidden or old.sqlite or child directory/link",
+        "expected": "reject",
+        "review": "all-entry hidden/system directory enumeration nonempty"
+      },
+      {
+        "path": "<repo>/temp/sn100_host/run/missing",
+        "canonical": "empty",
+        "expected": "reject",
+        "review": "required existing root cannot be resolved"
+      },
+      {
+        "path": "relative/anonymous",
+        "canonical": "not consulted",
+        "expected": "reject",
+        "review": "absolute explicit input required"
+      },
+      {
+        "path": "<repo>/temp/sn100_host/run/anon",
+        "canonical": "same",
+        "existing": "unreadable or unwritable root",
+        "expected": "reject",
+        "review": "permissions guard prevents treating inaccessible contents as empty"
+      }
+    ]
+  }
+}

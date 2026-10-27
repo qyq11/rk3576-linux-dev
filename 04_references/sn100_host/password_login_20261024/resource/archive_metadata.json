@@ -1,0 +1,51 @@
+{
+  "source_allowlist": [
+    "verification.json",
+    "summary.json",
+    "samples.json",
+    "process.log",
+    "driver.log"
+  ],
+  "raw_files_copied_byte_equal": {
+    "verification.json": "75e0b1919508c8455e498fc0596d08c5e269b8de668dde86f8824efd85b96b68",
+    "summary.json": "6097802472f0c5657966e7f8692ebf135c0fc9852a6e7c3548533b70c340a334",
+    "samples.json": "ad624e3f8de969d398fe0cc2b7b19a7eda10da6dbd4052bd0c1221f9fb416c2a",
+    "process.log": "94bc67e3d6e7ceec1a1914ec4ee1367d23121692b21867d2fb553b33f36d5530",
+    "driver.log": "760edb91093833df75ce8723f0e22133fe84e2816c60c84079e00c5eca9fd7c5"
+  },
+  "load": "WSL Release/XCB 1600x900, Guest, original instrument page, seven reopened anonymous stores, 1Hz self-owned loopback Qj, local-password capability idle",
+  "observation_window": 30.113367443000016,
+  "whole_run": {
+    "includes_cold_startup": true,
+    "sample_count": 295,
+    "cpu_percent_one_logical_core": 6.33280037984099
+  },
+  "steady_window": {
+    "window": "10 <= elapsed_seconds < 30; excludes cold startup",
+    "sample_count": 195,
+    "observed_span_seconds": 19.80780291799988,
+    "cpu_percent_one_logical_core": 2.675713213596117,
+    "minimum_VmRSS": 274972,
+    "maximum_VmRSS": 274972,
+    "minimum_VmHWM": 282384,
+    "maximum_VmHWM": 282384,
+    "minimum_Pss": 257924,
+    "maximum_Pss": 257935,
+    "minimum_Threads": 43,
+    "maximum_Threads": 43,
+    "minimum_fd_count": 61,
+    "maximum_fd_count": 61
+  },
+  "conditions": "One WSL Qt5.15.13 x86_64 Release/XCB1600x900 observation, no concurrent task compilation or GUI test; seven reopened anonymous stores, Guest, original instrument page, self-owned LocalHost Qj at 1Hz, password capability idle.",
+  "limits": [
+    "Whole-run CPU includes cold startup and must not be substituted for the 10<=elapsed<30 steady window",
+    "Direct-child WSL observations only; no RK, real instrument, business deadline/resource budget, same-board RT or long-stability acceptance",
+    "Ending runtime bytes/file counts are metadata, not storage-growth or journal-peak measurements",
+    "No claim of an equivalent-load before/after product overhead comparison"
+  ],
+  "excluded": [
+    "resource_runtime_01 and every database, journal, credential or database-derived digest",
+    "executables, objects and any process memory"
+  ],
+  "authentication_material_or_runtime_directory_read_or_copied_by_archive": false
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "sn100-report-remaining-html-verification-v1",
+  "date": "2026-10-25",
+  "status": "independent WSL offscreen passed; unified integration and browser visual QA pending",
+  "source_files": [
+    {
+      "path": "06_programs/sn100_host/history/report_controller.cpp",
+      "sha256": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.h",
+      "sha256": "1a085d958309c4f9347eced72858601675d835022ed31026ce3cf52852f6756b"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_renderer.cpp",
+      "sha256": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_html.h",
+      "sha256": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_html_test.cpp",
+      "sha256": "ec912d54a06b4a71a539b2dfde41d8715d7282fc296a9f17e26b5311985eec57"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_html_test.pro",
+      "sha256": "bbe93fafa77eeec51a8fce56ba6e9302926c9f74af0e6c296fd46a9db0acd8a9"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_html_verify.py",
+      "sha256": "2f9398fd212b03dcb96b2d3c3cae7cdafa32c6f77eb8f2b38a317b9a45ddf381"
+    }
+  ],
+  "reference_files": [
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/thirdparty/QtRptProject/QtRPT/qtrpt.cpp",
+      "sha256": "ed805e746b6a598e67d9981abaaeb6156a0533df71a6d20c7fc15666c18b66f5"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/thirdparty/QtRptProject/QtRPT/qtrpt.h",
+      "sha256": "f29141863e14d1aafb923e8b3e8c2b45931272fe473ad8a9532d89b76dd65b8e"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/thirdparty/QtRptProject/QtRPT/RptFieldObject.cpp",
+      "sha256": "c037947a1ee56485db0c26e9a3a6bb987de2af963cdbcf5c532ca3858a38e5fb"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/thirdparty/QtRptProject/QtRPT/config.pri",
+      "sha256": "ba738eddabe2255f420166815cc1f6986d78717ed8f4d1ebe7771222e135def9"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/resource/report_template/report.xml",
+      "sha256": "673788540ab34ef214e513d6241e983586b98d0256166a6c01439aaee954efc2"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/html_renderer/sn100_report_renderer",
+      "sha256": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+    },
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/html_tests/report_remaining_html_test",
+      "sha256": "e04eaef6c08f26e7c0951d1df34bfc7460671b07ede38cb3a8355b1068e1522f"
+    }
+  ],
+  "business": {
+    "entry": "Original preview toolbar actExpToHtml -> HistoryReportController::chooseExport -> async report helper --html",
+    "format": "Original QtRPT printHTML, embedded report.xml unchanged; UTF-8 continuous absolute-positioned HTML",
+    "contract": "Immutable HistoryPrintDocument snapshot; no live database/catalog read, no data changes, no LIS/printer/device action",
+    "units": "Existing saved HistoryResultValue unit/factor/decimals are passed through the existing document builder; no current-catalog reinterpretation",
+    "differences": [
+      "Original printHTML needs a configured QPrinter for QPainter::begin. Helper supplies only a private temporary PDF file device, removed with the job.",
+      "QTextStream locale codec is fixed to UTF-8 in the isolated child only.",
+      "Original action position/icon retained; synchronous exportTo/autobrowser path disconnected for this action only.",
+      "Path restricted to new .html in marked exports; temporary output and final no-overwrite check.",
+      "Original raw ampersand is not escaped; source containing & is explicitly refused rather than changing report text. Original data remain unchanged; PDF available.",
+      "Existing PDF helper invocation without --html remains compatible."
+    ],
+    "xlsx": "Not implemented: original config.pri comments QXLSX_LIBRARY; optional toolbar action is not built. No matching QtXlsx implementation source for WSL/ARM in the reference."
+  },
+  "tests": {
+    "build_command": "wsl -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/report_remaining_20261025/html_build.sh",
+    "build_exit": 0,
+    "jobs": 2,
+    "run_command": "wsl -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/report_remaining_20261025/html_run.sh html_run_03",
+    "run_exit": 0,
+    "qt_totals": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "includes_init_cleanup": true
+    },
+    "cases": [
+      "3 and 64 result rows: UTF-8, all headers and results reopened by QTextDocument",
+      "Wrong suffix/outside exports/empty report/pre-existing target rejected",
+      "Original unescaped & rejected with no partial HTML",
+      "Duplicate export rejected while busy; retry succeeds",
+      "Destination created during render preserved; publication failure then missing helper recovery succeeds",
+      "Original HTML toolbar action enabled; file chooser Cancel/retry; export continues when preview closes; concurrent PDF rejected",
+      "Existing PDF export succeeds, reopens as one page with exact Chinese by pypdf and pdfplumber; PNG visually reviewed"
+    ],
+    "independent_parser": {
+      "script": "06_programs/sn100_host/tests/report_remaining_html_verify.py",
+      "exit": 0,
+      "rows_3_labels": 37,
+      "rows_64_labels": 342,
+      "row_values_exact_count": true
+    },
+    "pdf_regression": {
+      "pages": 1,
+      "bytes": 21770,
+      "parsers": [
+        "pypdf 6.10.0",
+        "pdfplumber 0.11.9"
+      ],
+      "passed": true,
+      "png_review": "Original template, no overlaps or missing glyphs; source narrow fields still wrap name/date as original."
+    },
+    "retained_failures": [
+      {
+        "run": "html_run_01",
+        "exit": 127,
+        "reason": "Test invoked before build had finished; binary absent. Driver cat missing log returned outer 1. No product execution."
+      },
+      {
+        "run": "html_run_02",
+        "exit": 1,
+        "passed": 2,
+        "failed": 5,
+        "reason": "Original HTML QPainter output device not configured; dependent existing-file case, ineffective DrvFs chmod test, and unregistered preview pointer also failed. Product fix and independent deterministic tests in run_03."
+      }
+    ],
+    "warnings": [
+      "WSL localhost proxy warning from launcher.",
+      "qmake-generated Makefile time ~0.2 seconds ahead reported clock skew in DrvFs; all intended CPP/moc linked and later incremental rebuild/test passed.",
+      "Offscreen propagateSizeHints warning retained; no visible WSLg/browser visual claim."
+    ],
+    "direct_helper": {
+      "command": "wsl -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/report_remaining_20261025/html_direct.sh",
+      "exit_code": 0,
+      "actual": "HISTORY_RENDER_HTML_OK rows=3 bytes=10752",
+      "log": "html_direct_3.log"
+    }
+  },
+  "pending": [
+    "Main window integration wiring htmlExported status; reportController automatically handles original toolbar action.",
+    "Actual browser visual comparison of original HTML, including continuous 64-row output; HTML has no PDF-page-count contract.",
+    "Original Windows full behavior/visual parity, Windows32/ARM64 final builds, RK/instrument/physical printing.",
+    "Centralized resource budget/long stability and real browser open; no long measurement run here.",
+    "Original legacy.query intermittent failure remains unknown; no related source/assertion/timeout changes."
+  ]
+}

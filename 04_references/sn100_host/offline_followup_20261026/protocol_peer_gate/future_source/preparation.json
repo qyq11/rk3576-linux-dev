@@ -1,0 +1,81 @@
+{
+  "schema": "sn100-protocol-peer-gate-preparation-v1",
+  "status": "prepared_only_not_compiled_or_executed",
+  "prepared_utc": "2026-10-26T02:07:52.6266744Z",
+  "cases": [
+    "baseline",
+    "peer_read_gate",
+    "peer_reply_gate"
+  ],
+  "source_input_count": 14,
+  "official_protocol_input_count": 10,
+  "private_input_count": 4,
+  "source_inputs": {
+    "06_programs/sn100_host/protocol/read_only_client.cpp": "1cb35dfab1652732da70df6c7a2a28b2f812eebd7e53761dbca4883f7ac3fdd5",
+    "06_programs/sn100_host/protocol/read_only_client.h": "50ec573cf4fa5368e7269862066da404ea170c05759c127924be2e4398b1dd0a",
+    "06_programs/sn100_host/protocol/tcp_transport.cpp": "5bbd83940ba5c9fb4f1c34486f04edf7ab78acf2bbe837debf087ffa4cd2372d",
+    "06_programs/sn100_host/protocol/tcp_transport.h": "96aef64d7b3982a2954740f65bfd30f7f33a26cd1f1b939302e3ceeca9930bf9",
+    "06_programs/sn100_host/protocol/read_only_messages.cpp": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+    "06_programs/sn100_host/protocol/read_only_messages.h": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+    "06_programs/sn100_host/protocol/frame_codec.cpp": "e5fc12fdf2b6a5fcfe0f80b6893853b66913c5d2434a5aee16908755e057bde3",
+    "06_programs/sn100_host/protocol/frame_codec.h": "5e30ffd75edcba275e845f0e4bcafe35c5d6594fd06aee48c85381ee2fbeea56",
+    "06_programs/sn100_host/protocol/status_session.cpp": "6698366cc10e02f8cda353cb2a0a246475fd148cd108372e3bcc33fa4f21c295",
+    "06_programs/sn100_host/protocol/status_session.h": "8d10e03072477a11381be9a44158ae513b46873b7f65e0b96bcc5c50359c11ba",
+    "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/protocol_peer_gate_test.cpp": "a0e5014aba5bdb284ebd4060a91de135cc78106bc3b38e56950a7c6f8b978bc0",
+    "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/protocol_peer_gate_test.pro": "250ae9ce42b2373415bfeffbfd2d428eae88f259e6e628954385425c40b4edff",
+    "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/run_peer_gate.py": "cf863e1b8742eea2a191e718052f6bbeae3a042f22f6efb14f9e648c732583e6",
+    "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/experiment_plan.json": "1f8199842cc1f20d83189975a203c2646c998c058d0e690d1701f76d26f980da"
+  },
+  "source_input_bytes": {
+    "06_programs/sn100_host/protocol/read_only_client.cpp": 11742,
+    "06_programs/sn100_host/protocol/read_only_client.h": 2970,
+    "06_programs/sn100_host/protocol/tcp_transport.cpp": 19122,
+    "06_programs/sn100_host/protocol/tcp_transport.h": 4282,
+    "06_programs/sn100_host/protocol/read_only_messages.cpp": 9274,
+    "06_programs/sn100_host/protocol/read_only_messages.h": 1136,
+    "06_programs/sn100_host/protocol/frame_codec.cpp": 9651,
+    "06_programs/sn100_host/protocol/frame_codec.h": 2074,
+    "06_programs/sn100_host/protocol/status_session.cpp": 11691,
+    "06_programs/sn100_host/protocol/status_session.h": 2113,
+    "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/protocol_peer_gate_test.cpp": 22829,
+    "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/protocol_peer_gate_test.pro": 913,
+    "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/run_peer_gate.py": 19618,
+    "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/experiment_plan.json": 9747
+  },
+  "compared_official_inputs_to": "04_references/sn100_host/offline_followup_20261026/protocol_log_scope/handoff.json",
+  "official_inputs_match_reviewed_handoff": true,
+  "full_app_freeze_binding_claimed": false,
+  "production_hook_required": false,
+  "production_files_written_by_preparation": [],
+  "static_validation": {
+    "python_ast_parse_actual_exit": 0,
+    "python_driver_imported_or_executed": false,
+    "experiment_plan_json_parse_completed": true,
+    "cpp": "Manually reviewed against current Qt5 APIs and real protocol timing signals; not compiled",
+    "qmake": "Five current implementation cpp files and their five headers; no copied state machine"
+  },
+  "actual_qmake_exit": null,
+  "actual_make_exit": null,
+  "actual_test_exit": null,
+  "actual_test_totals": null,
+  "old8h_direct_cause_confirmed": false,
+  "old8h_fixed_claimed": false,
+  "limits": [
+    "Synthetic local peer only; source preparation is not a test pass",
+    "Three arms each once,120ms/one retry,3second per-case guard,250ms post-terminal observation",
+    "No target/GUI/long-run/resource/instrument execution in preparation",
+    "Root must allocate exclusive build/run slot before the explicit --root-go invocation"
+  ],
+  "revision": 2,
+  "revision_utc": "2026-10-26T02:17:25.8605093Z",
+  "previous_preparation_sha256": "0f2ec9c7b954c182684f67da00c29c1efda515b265c5e208829c99249d532340",
+  "revision_scope": "Only future Python JUnit verifier changed. C++/pro/plan unchanged. Original actual test0 and original parent1 stay in run_01; corrected future driver not executed.",
+  "preimage_manifest": "07_backups/sn100_host/offline_followup_20261026/protocol_peer_gate_preimage/manifest.json",
+  "historical_read_only_revalidation": {
+    "directory": "temp/sn100_host/offline_followup_20261026/protocol_peer_gate/revalidation_01",
+    "actual_validator_exit": 0,
+    "original_run_verification_still_false": true,
+    "target_or_build_rerun": false,
+    "verification_sha256": "bed13f8c1dbc31ba6fae4d09f3fc550c40f0f82da74447f45f9c8ff957dc2053"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "scope": "O10-1 independent anonymous printer settings; no print jobs",
+  "before": {
+    "data/printer_settings_store.cpp": "d6c3c7014e8ccd404292c6c1327551b7e07e2afe14fd6ca1ee6d38f4bfb78a8c",
+    "data/printer_settings_store.h": "fa2afce0d46449eda0c911fe14f4f6d1b7761a5c69c22a7dd32b4fd6f2331e10",
+    "ui/frmprintersetting.cpp": "e30e18adf31f4ba96e8ef29351c2492de43c646142a2283078514b513d9976ed",
+    "ui/frmprintersetting.h": "20253d569b8fd54f3fbc74daaa4653b3083ffe425d44dc166d80b68604232ac6",
+    "ui/frmprintersetting.ui": "bc995dda80a42cc0c8a88504f3d377b74c61972310ecc8492fd7e1f7df98cf69",
+    "ui/printer_settings.pri": "6e7c4b1d1d8f4ce368ffedca85c5aa5bdd6cebeac928e774987d5a325b831043",
+    "tests/printer_settings_test.cpp": "8b8d7b8b43e0c05e97fb6965c6b4f22ac228f5cff41c101306035057de868398",
+    "tests/printer_settings_test.pro": "ac1dd60538ac55088ad843e0e489933f735e4d831988df5b29eb0d601445ade2"
+  },
+  "stages": [
+    {
+      "stage": "qmake",
+      "args": [
+        "/usr/lib/qt5/bin/qmake",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/printer_settings_test.pro",
+        "CONFIG+=release",
+        "CONFIG-=debug"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.27224841799999977
+    },
+    {
+      "stage": "make",
+      "args": [
+        "make",
+        "-j2"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 5.093130532000001
+    },
+    {
+      "stage": "offscreen",
+      "args": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/independent/build/printer_settings_test",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/independent/run_06/offscreen.txt,txt",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/independent/run_06/offscreen.xml,junitxml"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "seconds": 20.104616436
+    }
+  ]
+}

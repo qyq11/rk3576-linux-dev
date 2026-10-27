@@ -1,0 +1,19 @@
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp: In member function ‘SampleRack {anonymous}::Harness::ordinary(const QList<SampleTaskState>&) const’:
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp:181:82: warning: missing initializer for member ‘SampleTask::states’ [-Wmissing-field-initializers]
+  181 |         SampleTask task{records.first().id, "OFFLINE_RATE_B", states.size(), true};
+      |                                                                                  ^
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp: In member function ‘void SampleResetWorkflowTest::selectedTestingRefusesBothActionsWithoutPartialDraft()’:
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp:350:75: warning: missing initializer for member ‘SampleTask::states’ [-Wmissing-field-initializers]
+  350 |             SampleTask testing{h.records[0].id, "OFFLINE_RATE_A", 1, false};
+      |                                                                           ^
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp: In member function ‘void SampleResetWorkflowTest::checkedNonTestingHolesKeepIdentityAndBecomeRevisable()’:
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp:372:72: warning: missing initializer for member ‘SampleTask::states’ [-Wmissing-field-initializers]
+  372 |         SampleTask finished{h.records[0].id, "OFFLINE_RATE_A", 1, false};
+      |                                                                        ^
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp: In member function ‘void SampleResetWorkflowTest::emergencyAndZeroNinetyNineRepetitionsRoundTrip()’:
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp:492:69: warning: missing initializer for member ‘SampleTask::states’ [-Wmissing-field-initializers]
+  492 |         SampleTask task{h.records[0].id, "OFFLINE_RATE_A", 99, false};
+      |                                                                     ^
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_reset_workflow_test.cpp:499:40: warning: missing initializer for member ‘SampleTask::states’ [-Wmissing-field-initializers]
+  499 |         emergency.holes[1].tasks.append({h.records[0].id, "OFFLINE_RATE_B", 0, true});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

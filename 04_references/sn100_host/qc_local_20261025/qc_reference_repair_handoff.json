@@ -1,0 +1,193 @@
+{
+  "schema": "sn100-qc-reference-repair-handoff-v1",
+  "created_utc": "2026-10-25T14:21:58.854790+00:00",
+  "status": "IRR-01/02 and same-UUID physical-clone guard implemented; independent real-store WSL tests passed; source/build/test stopped",
+  "changed_files": {
+    "06_programs/sn100_host/quality_control/qc_store.h": {
+      "sha256": "50ec9fbc6701e2790e197c511a356d02553f06a16a5f2588723be659f68fbc27",
+      "bytes": 5480
+    },
+    "06_programs/sn100_host/quality_control/qc_store.cpp": {
+      "sha256": "f79cc60b31757526417447f7a436c26965502e93d6011ce32a9f6ea601816c6b",
+      "bytes": 49565
+    },
+    "06_programs/sn100_host/tests/qc_reference_test.cpp": {
+      "sha256": "f72d7f8e35ab713258b8645b5b96f1c22e23268208cd0afbce24ac9a1a774d4a",
+      "bytes": 24091
+    },
+    "06_programs/sn100_host/tests/qc_reference_test.pro": {
+      "sha256": "e01a1d205e6444dbfaa9f89023d881ed8c9a1ef3cf857c634ab9eee06c8cea6c",
+      "bytes": 466
+    }
+  },
+  "review_input": {
+    "path": "04_references/sn100_host/projects_remaining_20261025/integration_reference_review.json",
+    "sha256": "a4d7267ed9dedbd4bee00b372239a97a64546f685aaa7c8f15b6a208371b824e",
+    "bytes": 27367,
+    "findings": [
+      "IRR-01",
+      "IRR-02"
+    ]
+  },
+  "pre_change_backup": {
+    "path": "07_backups/sn100_host/offline_four_windows_20261025/pre_qc_reference_repair",
+    "manifest": {
+      "sources": {
+        "qc_store.h": {
+          "sha256": "50832adb2916d1c4cb976bd1cb0f8dd4b02ee96ef3e65c7f590ef0ab0a5d81cf",
+          "bytes": 4963,
+          "source": "06_programs/sn100_host/quality_control/qc_store.h"
+        },
+        "qc_store.cpp": {
+          "sha256": "e9861d55ceb35321f02a110bd709aaca656e494ef8b17ca296a0c6be6a53e016",
+          "bytes": 38579,
+          "source": "06_programs/sn100_host/quality_control/qc_store.cpp"
+        }
+      },
+      "scope": "Two QC source/header files before IRR-01/02 repair. No databases/config/runtime restored; reservations require reconciliation before running older writers."
+    },
+    "scope": "Only two QC source/header files. Existing QC16, QC20 and earlier calibration reference evidence remains separate. Does not restore databases/configuration or authorize an older unguarded writer."
+  },
+  "interface_contract": {
+    "public_slots": "Unchanged",
+    "ready": "Existing signal means local SQL initialization, retained for standalone ready->bind connection compatibility. It is not a complete project-reference-ready assertion.",
+    "catalogBound": "Emitted only after all local associations/snapshots/history and own UUID/path/holds are reconciled.",
+    "load_and_writes": "Saved associations/history or a failed bind keep business load/writes closed until a successful bind. Fresh local controls/batches without cross-module references can retain original isolated storage behavior before first bind.",
+    "new_signal": "referenceCheckpoint(QString phase,qint64 controlId): diagnostic observation at after-detach-commit/after-failed-write. No observer causes no wait; tests attach a direct connection with QSemaphore to reproduce legal interleavings deterministically.",
+    "dependencies": "No new source/library or toolkit dependency. Existing header/moc must be rebuilt. No GUI/page/shell/original-test source changes.",
+    "roles": "No QC role/session restriction added: independent workers save/link without any injected account session, preserving original Guest/local-page contract."
+  },
+  "data_and_recovery_contract": {
+    "identity": "Persistent dataset_uuid + stable control_id/project_id; history strings must resolve to an existing control, its association, and a batch of that same control.",
+    "startup": "Includes inactive controls/projects and all history. Local FK violations, missing/mismatched association/rules/snapshots, missing/renamed project/result identities and unresolved history fail closed. Missing matching holds can be restored. Own-dataset orphan/conflicting holds are preserved and block catalogBound for explicit reconciliation.",
+    "snapshot": "Historical unit, ratio, decimals and rule-result names remain stored unchanged; startup checks structure/type identity but never replaces them with current project presentation.",
+    "lock_order": "Local BEGIN IMMEDIATE before catalog BEGIN IMMEDIATE for both reservation and startup reconciliation. Two-file commits remain separate; this is not a cross-file FK or one atomic transaction.",
+    "safe_cleanup": "After committed detach or any failed write, including automatic SQLite ROLLBACK, reacquire a fresh local writer lock, verify history consistency and real association absence, then release only supplied own-dataset keys while holding that local lock. If another writer reattached the same pair, its hold is retained. No assumption that a failed transaction still owns a lock.",
+    "conservative_failure": "If cleanup/recheck cannot complete, retain the hold and emit a warning. A successful local deletion is still reported as local success; the already-integrated page retains its separate reference warning. Reopen diagnoses orphan holds, no automatic orphan deletion.",
+    "physical_dataset_binding": "Existing catalog_metadata holds quality_control_dataset_path:<UUID> -> canonical quality_control.db path. First full successful reconciliation registers a previously unbound dataset. Same canonical file may have multiple workers; a different physical path with the same UUID is rejected without changing UUID/holds.",
+    "portability_and_maintenance": "The canonical path is platform/location specific. Restoring the original path preserves the binding. A deliberate relocation/Windows<->WSL path move requires both instances stopped, explicit validation of local identities/snapshots/history and catalog holds, then one maintenance update of that exact dataset path entry before full rebind. No automatic relocation or migration UI/tool is delivered. Do not delete metadata or regenerate UUID to bypass clone protection.",
+    "unknown_old_dataset_limit": "For pre-binding databases, the first successful full identity/history/hold reconciliation establishes the authorized path; source alone cannot identify which of previously indistinguishable external copies was the intended original."
+  },
+  "verification": {
+    "environment": "Ubuntu-24.04 WSL/qyq, Qt5.15.13 x86_64 Release, GCC13.2; QTEST_GUILESS; no GUI, resource sampling, network, RK or instrument actions",
+    "command": "wsl.exe -d Ubuntu-24.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/qc_reference_repair/run.sh 2",
+    "runtime_environment": "SN100_QC_REFERENCE_ROOT=<dedicated task runtime>; QT_QPA_PLATFORM is unnecessary for GUILESS but can remain offscreen in the final suite.",
+    "qmake_exit": 0,
+    "make_exit": 0,
+    "test_exit": 0,
+    "passed": 20,
+    "business_fixture_cases": 18,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 8654,
+    "scope": [
+      "restore missing hold; inactive control/project/history; old unit/ratio/decimals unchanged with actual QC DB SHA equality",
+      "8 malformed project/control/association/snapshot/history identities fail closed with unchanged QC bytes",
+      "own orphan retained; explicit real ProjectsStore release after local absence checked; another real dataset unaffected",
+      "actual startup SQLite lock and catalog COMMIT failure/retry",
+      "deterministic detach A commit -> B reattach commit -> A cleanup with final protected association",
+      "deterministic ABORT and automatic ROLLBACK A failure -> B successful add -> A cleanup; only absent P2 new hold removed",
+      "control delete vs new control add with distinct stable IDs",
+      "cleanup RAISE(ROLLBACK) warning/conservative hold/reopen closure/explicit recovery",
+      "actual local lock and local COMMIT failure leaves no new leaked hold; retry succeeds",
+      "same-UUID distinct physical file clone refused; original reopen succeeds; no UUID rewrite"
+    ],
+    "real_store_fixture": "ProjectsStore creates catalog and copies anonymous QC_GUARD_A/B projects. QcStore uses actual configured Calibration=2 metadata. Original Time is never guessed as Original. No account session is injected into QC. History is explicit anonymous QC_A/QC_LOT/12.3-13.4.",
+    "attempts": [
+      {
+        "attempt": 1,
+        "qmake_exit": 0,
+        "make_exit": 0,
+        "test_exit": 0,
+        "passed": 20,
+        "duration_ms": 8799,
+        "note": "4 misleading-indentation warnings in new test helper; all functional assertions passed"
+      },
+      {
+        "attempt": 2,
+        "qmake_exit": 0,
+        "make_exit": 0,
+        "test_exit": 0,
+        "passed": 20,
+        "duration_ms": 8654,
+        "note": "Only those test statements expanded and QFileInfo include made explicit; same business code, no such compiler warnings"
+      }
+    ],
+    "artifact": {
+      "path": "temp/sn100_host/qc_local_20261025/qc_reference_repair/build/qc_reference_test",
+      "sha256": "b94b24cccdff3cbc330a1a7978f4da0ac24c89559e5343b1763341e43fe04d07",
+      "bytes": 677616
+    }
+  },
+  "raw_evidence": {
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/commands.txt": {
+      "sha256": "d0adbc8f9f8d1b5910cd20c285077f80c13b474caddfc6383c0940cad18d0918",
+      "bytes": 386
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/run.sh": {
+      "sha256": "c4c82e2903a963566fe82bd0b60bd7ca8b6f7571bab9d468a277b741711ee7bf",
+      "bytes": 1359
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/build_1.log": {
+      "sha256": "b11f2b353db3891f4391142d9de016da6de547502975e9d087e3533bacd84c42",
+      "bytes": 20770
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/build_1_receipt.txt": {
+      "sha256": "64ed149d223d46e5f0e4793eaf94b188600bf71e3757f5325173c377ebb1787e",
+      "bytes": 25
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/test_1.log": {
+      "sha256": "aabdb945cc4dd798f3cb9a6f205487f8b8ffc6aa41bf51d823e7bf243f807d6b",
+      "bytes": 31814
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/test_1_receipt.txt": {
+      "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+      "bytes": 12
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/build_2.log": {
+      "sha256": "0db8ddcf6508d12dcacc99f185c9046fe5c6138fe6823fd459615ef7148b07f3",
+      "bytes": 3046
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/build_2_receipt.txt": {
+      "sha256": "64ed149d223d46e5f0e4793eaf94b188600bf71e3757f5325173c377ebb1787e",
+      "bytes": 25
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/test_2.log": {
+      "sha256": "b06b6a4e43c7ccb5faad5442b9431d04a97969b510cace69b4be5dc58762b13b",
+      "bytes": 31814
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/test_2_receipt.txt": {
+      "sha256": "58304e22a2335464bf6b54991bf5fffa13bc960529269f5fe380c510933ba821",
+      "bytes": 12
+    }
+  },
+  "verification_files": {
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/source_inputs.json": {
+      "sha256": "9eaa78d3028099d5d9671bdd171d5e460d862e7edf8a84bcbc85981a50249482",
+      "bytes": 674
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/dependency_inputs.json": {
+      "sha256": "def1662d0aab5fb638eccdae39224ec945bb421b6eac1d6448cf98b2afd86a83",
+      "bytes": 1160
+    },
+    "04_references/sn100_host/qc_local_20261025/qc_reference_repair/data_receipts.json": {
+      "sha256": "c7789594b3a443a74999135853adaa9f895f219d7eca3c53da36bc7b21dea67f",
+      "bytes": 78871
+    }
+  },
+  "pending": [
+    "Root cumulative QC16/page/shell and other module regression after source freeze",
+    "Windows32/ARM64 full builds, package dependency/SHA and paired recovery archives",
+    "Original Windows active behavior/visual, RK/instrument, resource budget/control impact and long stability",
+    "Explicit dataset relocation/reconciliation maintenance tool remains outside this repair; no automatic bypass"
+  ],
+  "no_background_process": true,
+  "not_modified": [
+    "page/standalone main/shell",
+    "qc_local_store_test or other original tests",
+    "calibration",
+    "projects/reagents source/schema/permission",
+    "global README/plan/main record",
+    "old handoffs/evidence"
+  ]
+}

@@ -1,0 +1,52 @@
+--- before/samples/sample_page.cpp
++++ after/samples/sample_page.cpp
+@@ -528,6 +528,7 @@
+     {
+         dirty_ = false;
+         showRack(editing_.id);
++        report(tr("已放弃未保存更改，已恢复本地已保存设置；未发送设备命令。"));
+     }
+     return true;
+ }
+--- before/samples/tests/sample_reset_workflow_test.cpp
++++ after/samples/tests/sample_reset_workflow_test.cpp
+@@ -297,16 +297,39 @@
+         const QList<SampleTaskState> original{SampleTaskState::Finished, SampleTaskState::Error, SampleTaskState::Reset};
+         QVERIFY(h.save(h.ordinary(original)));
+         QVERIFY(h.openOrdinary());
++        bool sqlRead = false;
++        const QString statesSql = QStringLiteral("SELECT states FROM sample_local_task_state");
++        const QString reviseSql = QStringLiteral("SELECT revise FROM sample_local_hole_state WHERE hole_number=1 "
++                                                 "AND rack_id=(SELECT id FROM sample_local_rack WHERE name='S01')");
++        const QVariant savedStates = sql(h.database(), statesSql, &sqlRead);
++        QVERIFY(sqlRead);
++        QCOMPARE(savedStates.toString(), QString("[3,4,1]"));
++        const QVariant savedRevise = sql(h.database(), reviseSql, &sqlRead);
++        QVERIFY(sqlRead);
++        QCOMPARE(savedRevise.toInt(), 0);
+         h.click("btnResetFin");
+         QVERIFY(h.page->hasUnsavedChanges());
+         QVERIFY(h.viewStates() == QList<SampleTaskState>({SampleTaskState::Idle, SampleTaskState::Idle, SampleTaskState::Idle}));
+         answer(QMessageBox::Cancel);
+         QVERIFY(!h.page->prepareToLeave());
+         QVERIFY(h.page->hasUnsavedChanges());
++        QSignalSpy status(h.page, &SamplePage::statusChanged);
++        QVERIFY(status.isValid());
+         answer(QMessageBox::Discard);
+         QVERIFY(h.page->prepareToLeave());
+         QVERIFY(!h.page->hasUnsavedChanges());
+         QVERIFY(h.viewStates() == original);
++        const QString discarded = QStringLiteral("已放弃未保存更改，已恢复本地已保存设置；未发送设备命令。");
++        QCOMPARE(h.page->property("lastStatus").toString(), discarded);
++        QCOMPARE(status.count(), 1);
++        QCOMPARE(status.first().first().toString(), discarded);
++        const SampleHole committed = h.page->snapshot().racks[1].holes[0];
++        QVERIFY(!committed.revise);
++        QVERIFY(committed.tasks[0].states == original);
++        QCOMPARE(sql(h.database(), statesSql, &sqlRead), savedStates);
++        QVERIFY(sqlRead);
++        QCOMPARE(sql(h.database(), reviseSql, &sqlRead), savedRevise);
++        QVERIFY(sqlRead);
+         h.click("btnResetFin");
+         h.click("btnMenuSave");
+         QVERIFY(waitFor([&]() { return !h.page->isBusy() && !h.page->hasUnsavedChanges(); }));

@@ -1,0 +1,7 @@
+First inline WSL build orchestration failed before qmake could read the project:
+Cannot find file: /06_programs/sn100_host/tests/catalog_shell_test.pro.
+bash: line 1: exit: : numeric argument required
+
+The path/status shell variables were not preserved through the inline Windows
+command boundary. No C++ compilation or product validation ran in that attempt.
+Replaced the inline command with build_tests.sh and a literal WSL script path.

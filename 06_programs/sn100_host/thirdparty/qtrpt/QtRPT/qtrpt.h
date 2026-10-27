@@ -24,6 +24,7 @@ limitations under the License.
 #pragma once
 
 #include <QPainter>
+#include <QPointer>
 #include <QDomDocument>
 #include <QPrintPreviewWidget>
 #include <QTextDocument>
@@ -35,6 +36,7 @@ limitations under the License.
 #include <RptSql.h>
 
 class QPrintPreviewDialog;
+class QAction;
 
 #if QT_VERSION >= 0x50000
     #ifdef QXLSX_LIBRARY
@@ -126,6 +128,8 @@ public:
     void setResolution(QPrinter::PrinterMode resolution);
     // SN100 local patch: preview anonymous reports without physical printing.
     void setOfflinePreview(bool offline);
+    // SN100 local patch: preserve toolbar, dispatch only to the owning controller.
+    void setControlledNativePrintEnabled(bool enabled);
     bool loadReport(QString fileName);
     bool loadReport(QDomDocument xmlDoc);
     void clearObject();
@@ -164,6 +168,8 @@ private:
     bool m_ownsPainter;
     bool m_offlinePreview;
     QPrintPreviewDialog *m_previewDialog;
+    bool m_controlledNativePrintEnabled = false;
+    QList<QPointer<QAction>> m_controlledPrintActions;
     void releasePrintDevices();
     int m_recNo;
     int mg_recNo;
@@ -266,6 +272,7 @@ signals:
     // SN100 local patch: controller owns asynchronous file export and errors.
     void previewOpened(QPrintPreviewDialog *preview);
     void offlineExportRequested(QString format);
+    void controlledNativePrintRequested();
     void renderError(QString message);
     // SN100 PDF helper observes final label text. Direct connections only;
     // preview and printing keep the original painting path.

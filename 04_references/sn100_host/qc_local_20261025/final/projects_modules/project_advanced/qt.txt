@@ -1,0 +1,32 @@
+********* Start testing of ProjectAdvancedTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+INFO   : ProjectAdvancedTest::initTestCase() entering
+PASS   : ProjectAdvancedTest::initTestCase()
+INFO   : ProjectAdvancedTest::scalarSaveCopyReopenPreservesExistingContract() entering
+QINFO  : ProjectAdvancedTest::scalarSaveCopyReopenPreservesExistingContract() ADVANCED_SAVE_REOPEN 1 QMap(("first_light", "405nm")("max_test_time", "40")("min_test_time", "5")("sample_change_clean", "8")("second_light", "570nm")("stopTime", "20")) result_unit "s" sample_rate "OFFLINE_RATE_A"
+PASS   : ProjectAdvancedTest::scalarSaveCopyReopenPreservesExistingContract()
+INFO   : ProjectAdvancedTest::emptyIllegalAndUnknownInputsAreRejected() entering
+PASS   : ProjectAdvancedTest::emptyIllegalAndUnknownInputsAreRejected()
+INFO   : ProjectAdvancedTest::actionRowsSaveInOrderValidateAndProtectReagentReferences() entering
+QINFO  : ProjectAdvancedTest::actionRowsSaveInOrderValidateAndProtectReagentReferences() ACTION_REOPEN 2 2 ordered steps; 15.5uL; GUI sample6uL/reagent16.5uL persisted/reopened; unknown reagent/empty/action-volume mismatch refused; reagent FK delete blocked
+PASS   : ProjectAdvancedTest::actionRowsSaveInOrderValidateAndProtectReagentReferences()
+INFO   : ProjectAdvancedTest::durableReferencesProtectSeparateDatabaseRecords() entering
+QINFO  : ProjectAdvancedTest::durableReferencesProtectSeparateDatabaseRecords() CROSS_DB_REFERENCE 2 hold persisted; rename/delete refused; external old-unit/12.345 preserved; explicit release permits rename
+PASS   : ProjectAdvancedTest::durableReferencesProtectSeparateDatabaseRecords()
+INFO   : ProjectAdvancedTest::referencePermissionMissingProjectAndClosedStoreFailClosed() entering
+PASS   : ProjectAdvancedTest::referencePermissionMissingProjectAndClosedStoreFailClosed()
+INFO   : ProjectAdvancedTest::lockFailureAndRetryKeepCommittedData() entering
+QINFO  : ProjectAdvancedTest::lockFailureAndRetryKeepCommittedData() ADVANCED_LOCK_RECOVERY_GUI_TICKS 99
+PASS   : ProjectAdvancedTest::lockFailureAndRetryKeepCommittedData()
+INFO   : ProjectAdvancedTest::oldCatalogUpgradeAndWriteFailureRollback() entering
+QINFO  : ProjectAdvancedTest::oldCatalogUpgradeAndWriteFailureRollback() OLD_CATALOG_UPGRADE baseline IDs/results preserved; injected write failure rolled back all fields; retry/reopen succeeded
+PASS   : ProjectAdvancedTest::oldCatalogUpgradeAndWriteFailureRollback()
+INFO   : ProjectAdvancedTest::guiCancelDraftBusyAndLocalSave() entering
+QWARN  : ProjectAdvancedTest::guiCancelDraftBusyAndLocalSave() This plugin does not support propagateSizeHints()
+PASS   : ProjectAdvancedTest::guiCancelDraftBusyAndLocalSave()
+INFO   : ProjectAdvancedTest::corruptStoredPayloadFailsWithoutDroppingUnknownData() entering
+PASS   : ProjectAdvancedTest::corruptStoredPayloadFailsWithoutDroppingUnknownData()
+INFO   : ProjectAdvancedTest::cleanupTestCase() entering
+PASS   : ProjectAdvancedTest::cleanupTestCase()
+Totals: 11 passed, 0 failed, 0 skipped, 0 blacklisted, 8204ms
+********* Finished testing of ProjectAdvancedTest *********

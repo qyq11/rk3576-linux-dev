@@ -1,0 +1,92 @@
+{
+  "schema": "sn100-page03-recorder-readonly-review-v1",
+  "status": "all_checks_true",
+  "source_bound_files": 80,
+  "installed_tool_bindings": 21,
+  "actual02_compiled_sources": 18,
+  "actual02_recipe_bindings": {
+    "CXX": {
+      "binding": "CXX assignment",
+      "actual": {
+        "entry": "/usr/bin/g++",
+        "resolved": "/usr/bin/x86_64-linux-gnu-g++-13",
+        "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+      }
+    },
+    "MOC": {
+      "binding": "literal command in actual Makefile recipes",
+      "actual": {
+        "entry": "/usr/lib/qt5/bin/moc",
+        "resolved": "/usr/lib/qt5/bin/moc",
+        "sha256": "a3da97fb55c01cf39745c0abe6316a4b241686b514d11d765c920aaa3e64dc9a"
+      },
+      "recipe_count": 18
+    },
+    "UIC": {
+      "binding": "literal command in actual Makefile recipes",
+      "actual": {
+        "entry": "/usr/lib/qt5/bin/uic",
+        "resolved": "/usr/lib/qt5/bin/uic",
+        "sha256": "5c060c99347e23235c55dd84af7127649b80ce5b68013d67632201f590194ac4"
+      },
+      "recipe_count": 5
+    },
+    "RCC": {
+      "binding": "literal command in actual Makefile recipes",
+      "actual": {
+        "entry": "/usr/lib/qt5/bin/rcc",
+        "resolved": "/usr/lib/qt5/bin/rcc",
+        "sha256": "f3c34c9abb99db83c9e2abe5e89f47972d7fee9486d4271218c18c4160d057be"
+      },
+      "recipe_count": 3
+    }
+  },
+  "dependency_checks": [
+    {
+      "label": "Qt5Widgets",
+      "actual_exit": 0,
+      "group_gone": true
+    },
+    {
+      "label": "offscreen",
+      "actual_exit": 0,
+      "group_gone": true
+    },
+    {
+      "label": "xcb",
+      "actual_exit": 0,
+      "group_gone": true
+    }
+  ],
+  "synthetic_recorder_examples": [
+    {
+      "example": "positive",
+      "accepted": true,
+      "expected": true
+    },
+    {
+      "example": "skip",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "example": "failure",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "example": "missing_case",
+      "accepted": false,
+      "expected": false
+    },
+    {
+      "example": "bad_SQL_close_flag",
+      "accepted": false,
+      "expected": false
+    }
+  ],
+  "business_tests_executed": 0,
+  "qmake_or_make_or_GUI_executed": false,
+  "SQL_connections_opened": 0,
+  "note": "Synthetic XML is recorder-unit metadata only; never used as actual Qt/GUI/business evidence."
+}

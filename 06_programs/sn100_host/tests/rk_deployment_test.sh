@@ -234,6 +234,31 @@ report_release_requires_helper_and_fonts()
     done
 }
 
+sample_release_requires_svg_plugin()
+{
+    local mode staging identity
+    for mode in complete missing_plugin; do
+        make_release "sample_$mode" || return
+        staging=$base/sample_stage
+        mkdir -p "$staging/plugins/imageformats"
+        cp -- "$fixture" "$staging/sn100_shell"
+        cp -- "$board" "$staging/rk_board.sh"
+        printf '%s\n' '{"capabilities":["sample_local_presets","sample_local_tasks"]}' > "$staging/release.json"
+        if [[ $mode == complete ]]; then
+            printf 'native fixture only; not an ARM plugin\n' > "$staging/plugins/imageformats/libqsvg.so"
+        fi
+        (cd "$staging" && sha256sum sn100_shell rk_board.sh release.json > SHA256SUMS
+            if [[ -f plugins/imageformats/libqsvg.so ]]; then sha256sum plugins/imageformats/libqsvg.so >> SHA256SUMS; fi)
+        identity=$(sha256sum "$staging/SHA256SUMS" | cut -d' ' -f1)
+        printf '%s\n' "$identity" > "$staging/release_id"
+        release=$base/releases/$identity
+        mkdir -p "$release"
+        cp -a -- "$staging/." "$release/"
+        if [[ $mode == complete ]]; then board_call verify_release "$release" || return
+        else expect_failure board_call verify_release "$release" || return; fi
+    done
+}
+
 identity_and_forged_metadata()
 {
     local real_ticks real_exe real_boot real_pid
@@ -640,12 +665,67 @@ SH
     printf 'MOCK_PUBLICATION_ONLY=1\nREAL_NETWORK_CALLS=0\nARM_VALIDATION_PERFORMED=0\n'
 }
 
+printer_settings_capability_controls_startup()
+{
+    local option expected identity staging
+    for option in legacy enabled; do
+        make_release "printer_$option" || return
+        staging=$base/releases/staging
+        expected=0
+        if [[ $option == enabled ]]; then
+            expected=1
+            printf '%s\n' '{"capabilities":["local_printer_settings"]}' > "$staging/release.json"
+        else
+            printf '%s\n' '{"capabilities":[]}' > "$staging/release.json"
+        fi
+        (cd "$staging" && sha256sum sn100_shell rk_board.sh release.json > SHA256SUMS)
+        identity=$(sha256sum "$staging/SHA256SUMS" | cut -d' ' -f1)
+        printf '%s\n' "$identity" > "$staging/release_id"
+        release=$base/releases/$identity
+        mkdir -p -- "$release"
+        cp -- "$staging/"* "$release/"
+        board_call verify_release "$release" || return
+        RK_LIFECYCLE_MODE=normal board_call supervise "$base" "$release" "$app_run" 0 '' || return
+        assert grep -qx "PRINTER_SETTINGS_OPT_IN=$expected" "$app_run/app.log" || return
+        assert test "$(cat "$app_run/exit_code")" = 0 || return
+    done
+}
+
+lis_settings_capability_controls_startup()
+{
+    local option expected identity staging
+    for option in legacy enabled; do
+        make_release "lis_$option" || return
+        staging=$base/releases/staging
+        expected=0
+        if [[ $option == enabled ]]; then
+            expected=1
+            printf '%s\n' '{"capabilities":["local_lis_settings"]}' > "$staging/release.json"
+        else
+            printf '%s\n' '{"capabilities":[]}' > "$staging/release.json"
+        fi
+        (cd "$staging" && sha256sum sn100_shell rk_board.sh release.json > SHA256SUMS)
+        identity=$(sha256sum "$staging/SHA256SUMS" | cut -d' ' -f1)
+        printf '%s\n' "$identity" > "$staging/release_id"
+        release=$base/releases/$identity
+        mkdir -p -- "$release"
+        cp -- "$staging/"* "$release/"
+        board_call verify_release "$release" || return
+        RK_LIFECYCLE_MODE=normal board_call supervise "$base" "$release" "$app_run" 0 '' || return
+        assert grep -qx "LIS_SETTINGS_OPT_IN=$expected" "$app_run/app.log" || return
+        assert test "$(cat "$app_run/exit_code")" = 0 || return
+    done
+}
+
 run_test native_fixture_contract fixture_contract
+run_test printer_settings_capability_controls_startup printer_settings_capability_controls_startup
+run_test lis_settings_capability_controls_startup lis_settings_capability_controls_startup
 run_test source_does_not_execute_main source_has_no_main
 run_test native_cli_refuses_board_actions native_cli_refuses_board_actions
 run_test release_sha_tampering_rejected release_integrity
 run_test release_extra_file_and_symlink_rejected release_unlisted_and_symlink_pollution
 run_test release_report_helper_and_font_contract report_release_requires_helper_and_fonts
+run_test release_sample_svg_plugin_contract sample_release_requires_svg_plugin
 run_test real_proc_and_forged_identity identity_and_forged_metadata
 run_test normal_and_nonzero_exit normal_and_nonzero_exit
 run_test early_failure_secret_cleanup early_failure_removes_secret

@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "module": "instrument_offline_maintenance_store",
+  "environment": {
+    "os": "Ubuntu-24.04 (WSL), ordinary user qyq",
+    "qt": "5.15.13",
+    "architecture": "x86_64",
+    "compiler": "GCC 13.2.0",
+    "build": "Release, QtCore/QtSql/QtTest; no GUI or network module"
+  },
+  "result": {
+    "exit_code": 0,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "junit_tests": 11,
+    "junit_failures": 0,
+    "junit_errors": 0,
+    "elapsed_ms": 3866
+  },
+  "manual_actions": [
+    "waste_cup",
+    "waste_water",
+    "waste_cup_box",
+    "clean_pool",
+    "clean_dirver",
+    "clean_needle"
+  ],
+  "rejected_device_actions": [
+    "long_clean",
+    "shut_down"
+  ],
+  "business_rules": [
+    "authenticated role 1..5 for manual completion; Guest read only",
+    "record today only; selected month is query-only",
+    "duplicate same action/date is idempotent",
+    "original day_maintain/day, week_maintain/week, month_maintain/month columns retained",
+    "succeeded emitted only after SQL commit; no device command is produced"
+  ],
+  "worker_contract": "Database created, queried, written and removed in the MaintenanceStore owning QThread. Test driver uses queued calls; QThread finished owns deleteLater.",
+  "measurements": {
+    "concurrent_commits": 11,
+    "consistent_month_snapshots": 100,
+    "event_loop_ticks_during_lock_wait": 24,
+    "lock_wait_ms": 253
+  },
+  "audit_fixes": [
+    "Recover only tagged empty database after failed first-time initialization; existing nonempty or mismatched schema is never converted",
+    "One explicit SQLite read transaction spans all three tables for each month; failure rolls back without emitting a partial snapshot"
+  ],
+  "validation": [
+    "save all six manual actions; query day/week/month; duplicate save; close and reopen; old month empty",
+    "Guest and invalid role rejected; ordinary role with actionReady=false accepted for manual record only",
+    "invalid/past/future dates, unknown and SQL-like action names rejected",
+    "200ms writer lock produces real error while main QCoreApplication event loop continues; unlock and retry succeeds",
+    "invalid month, broken schema/tag, corrupt database and unmarked existing file rejected without overwriting source bytes",
+    "invalid completion flag emits error and no partial loaded signal; corrected data loads again",
+    "initialization under EXCLUSIVE lock fails; same tagged empty DB initializes and saves after unlocking",
+    "100 month snapshots concurrently with atomic all-six-flag commits from an independent worker connection in WAL mode return only 0 or 6 completions"
+  ],
+  "product_sha256": {
+    "path": "temp/sn100_host/instrument_store/wsl_release/maintenance_store_test",
+    "sha256": "efb02a5eb8a2cb7237d050c1d72d006cd24af11763aec109147f7b583e01b7f5"
+  },
+  "sources": [
+    {
+      "path": "06_programs/sn100_host/instrument/maintenance_store.h",
+      "sha256": "85883da04f9c5192f5418e46956830b8dcbee94aa52c91f6cf182621184fd508"
+    },
+    {
+      "path": "06_programs/sn100_host/instrument/maintenance_store.cpp",
+      "sha256": "924886fbd07091c3a995a297c87f95e20503a331f209de4b41ea24bf68d88e12"
+    },
+    {
+      "path": "06_programs/sn100_host/instrument/maintenance_core.pri",
+      "sha256": "4cac5f91c4df5ebe65d8c4e0b2ba00a66f111c130608171b5f38082290b2ced2"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/maintenance_store_test.cpp",
+      "sha256": "e09028e3478dcd639c6a9de523db46433c476b1bb05934640a29342b5597d5a9"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/maintenance_store_test.pro",
+      "sha256": "ef01a6c86c9e14d3a28322fef6163ab083456d9b8d970059796bbcfdd915f978"
+    }
+  ],
+  "evidence": [
+    "test.txt",
+    "test.xml"
+  ],
+  "evidence_sha256": [
+    {
+      "path": "test.txt",
+      "sha256": "bd87e3ac562fc684debcf63fe8144128260e2b685698b0e24ded4f42e03db9f6"
+    },
+    {
+      "path": "test.xml",
+      "sha256": "937506ed079edfd1292c636c6ae11164fb20b689c9901d9245e357a0412dfe68"
+    }
+  ],
+  "runtime_database_archived": false,
+  "authentication_fields_archived": false,
+  "pending": [
+    "original Windows full behavior/visual comparison",
+    "ARM64/RK execution and screen/input validation",
+    "real instrument actions, replies and interlocks",
+    "resource budget, same-board realtime interference and long-duration validation"
+  ],
+  "limits": [
+    "QCoreApplication heartbeat checks event-loop progress only; no GUI rendering or instrument response is measured",
+    "Concurrent-commit test checks the specified 100-snapshot workload; not a long-duration or maximal-load claim"
+  ]
+}

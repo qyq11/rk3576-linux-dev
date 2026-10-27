@@ -1,0 +1,131 @@
+{
+  "schema": "sn100-language-activation-contract-v1",
+  "reference_scope": "所给解压工程源码/资源；不运行参考工程，不读取旧生产配置/数据库，不代表原Windows发行版实际操作验证",
+  "original_entry": {
+    "parent": "frmuserset/frmuserset.cpp:83,89,118",
+    "operation": "主菜单用户设置→语言设置",
+    "stack_index": 2,
+    "page_class": "frmLanguageSetting",
+    "build": "SeeRain450.pro includes frmuserset.pri; 该pri包含语言cpp/h/ui",
+    "entry_enabled_in_source": true
+  },
+  "operations": {
+    "initial_text": "Cn 中文简体",
+    "available_rows": [
+      "Cn 中文简体"
+    ],
+    "row_height": 40,
+    "row_width": "lstProject宽度减5，按原UI为636",
+    "text_edit_readonly": true,
+    "list_selection": "可按QListWidget原行为高亮；源码没有选项到语言字段/locale的同步处理，只有一个中文选项",
+    "apply_button": "应用 / btnApply",
+    "apply_slot": "frmlanguagesetting.cpp:35-38，函数体为空",
+    "apply_writes_config": false,
+    "language_config_keys": [],
+    "success_feedback": false,
+    "translator_switch_request": false,
+    "cancel_button": false,
+    "save_shortcut_implemented": false,
+    "cancel_semantics": "没有语言草稿/保存或取消动作；离开不提交语言状态",
+    "restart_semantics": "没有重启生效链；每次构造仍写死中文文本，不能宣称需重启即可切换"
+  },
+  "startup_and_translation": {
+    "startup": "main.cpp:226创建QApplication，初始化时getConfig()读取主题/其它既有配置，随后构造frmMain；未发现语言读键或翻译器安装",
+    "scan_receipts": "audit_02/search_receipts.json",
+    "QTranslator_install_remove_hits": 0,
+    "LanguageChange_hits": 0,
+    "TRANSLATIONS_or_catalog_resource_entries_hits": 0,
+    "language_configuration_reader_writer_hits": 0,
+    "application_ts_files": 0,
+    "provided_qm_files": 22,
+    "catalog_scope": "均位于bin/translations；不是应用业务英文目录的证据",
+    "english_sidecar": "bin/translations/qt_en.qm",
+    "english_sidecar_bytes": 23,
+    "english_sidecar_sha256": "307cef95dd5b36ff215055d427e1885b7fc3650c9224cf76d63056545996ff60",
+    "english_load_or_context_coverage_measured": false,
+    "hardcoded_text_examples": [
+      "语言页Cn 中文简体由setText硬写",
+      "主菜单用户设置由setButtonInfo硬写"
+    ],
+    "whole_application_english_switch_ready": false
+  },
+  "permission": {
+    "page_check": "语言cpp/h自身无登录、角色或写权限检查",
+    "parent_check": "frmUserSet语言按钮仅切index2，无角色判断",
+    "original_main_role_hook": "frmmain.cpp:970 slotUserChanged只通知账户/仪器/系统/试剂，未通知语言页",
+    "important_limit": "仅证明未找到语言专属门槛；不代表已运行验证访客可越过整个应用登录流程，也不授权未来新增语言配置写入",
+    "current_port": "正式frmUserSet用户设置第2页仍为offlineUserPage2占位；沿全局导航/草稿/忙态/注销守卫，无语言写入"
+  },
+  "geometry_and_style": {
+    "full_contract": "audit_02/layout_contract.json",
+    "page": {
+      "height": 853,
+      "width": 1451
+    },
+    "panel": {
+      "width": 681,
+      "x": 390,
+      "y": 20,
+      "height": 821
+    },
+    "label": {
+      "width": 261,
+      "x": 38,
+      "y": 26,
+      "text": "请选择要切换的语言：",
+      "height": 30
+    },
+    "current_text": {
+      "readOnly": true,
+      "width": 641,
+      "x": 20,
+      "y": 90,
+      "height": 61
+    },
+    "divider": {
+      "width": 641,
+      "x": 20,
+      "y": 170,
+      "height": 20
+    },
+    "list": {
+      "width": 641,
+      "x": 20,
+      "y": 190,
+      "height": 551
+    },
+    "apply": {
+      "width": 161,
+      "x": 500,
+      "y": 750,
+      "height": 61
+    },
+    "fixed_colors": {
+      "divider": "#DDDDDD",
+      "panel_background": "transparent",
+      "panel_border": "#E4E8EB",
+      "text": "#444444"
+    },
+    "font": "苹方 粗体；标题15pt粗体，显示框样式18px，列表样式18px粗体，应用13pt",
+    "list_selected": "listWidgetStyle::getStrSheet1读取theme/kListWidgetRowSelected，白色文字",
+    "apply_theme": "继承frmUserSet的buttonStyle，正常/悬停/按下分别theme/kBtnNormalColor,kBtnHoverColor,kBtnPressedColor，白字，圆角4px，padding2",
+    "menu_theme": "theme/rightBaseColor,rightBtnColor,rightBtnFontColor；白色alpha0→25渐变，按钮radius8",
+    "visual_limits": "未读旧主题配置实值、未运行原Windows/WSL/RK截图；不能把源码几何当视觉验收通过。Linux缺苹方时仅允许明确记录的字体替代，不改布局/配色"
+  },
+  "decision": {
+    "full_switch_portable_now": false,
+    "original_visual_page_can_be_restored_separately": true,
+    "full_english_blockers": [
+      "应用业务TS/QM及消息覆盖清单缺失",
+      "没有合法语言选择/配置写入与启动读取链",
+      "没有翻译器生命周期或现有窗口重翻译链，运行时硬编码中文需单独处理",
+      "保存/取消/重启或热切换、角色/异常恢复合同未实现"
+    ],
+    "keep_original_range": "保留只有中文、未实现切换的原范围；不新增英文选项、不虚构配置键或保存成功",
+    "optional_visual_only": "若root只恢复原外观，可沿用原UI；将空Apply明确禁用/提示属于有意差异，须由root决定，不能勾多语言完成",
+    "prepared_slice": "仅翻译资源抽样核验工具，不是语言页实现或全程序切换；无QSettings、installTranslator或locale写入"
+  },
+  "current_production_changes": 0,
+  "reference_changes": 0,
+  "gui_build_or_tests_run": false
+}

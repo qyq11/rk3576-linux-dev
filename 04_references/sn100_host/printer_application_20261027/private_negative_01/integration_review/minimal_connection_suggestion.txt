@@ -1,0 +1,13 @@
+// Suggested insertion in frmMain::enableHistoryReports, beside existing result connections.
+// Read-only review suggestion; this text has not been applied or compiled.
+connect(reports_, &HistoryReportController::nativePrintFinished, this,
+        [this](const QString &, const QString &outcome,
+               const QString &printer, const QString &)
+{
+    if (outcome != QStringLiteral("Submitted") && outcome != QStringLiteral("Cancelled"))
+        return; // Failed/Unknown already use the existing failed receiver.
+    reportHasOutcome_ = true;
+    reportStatus(outcome == QStringLiteral("Submitted")
+        ? tr("报告已交给本机打印系统（%1）；纸张输出仍需设备核对。").arg(printer)
+        : tr("已取消打印确认，未开始打印。"));
+});

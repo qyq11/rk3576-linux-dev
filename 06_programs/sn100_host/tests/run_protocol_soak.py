@@ -118,6 +118,18 @@ def verify_wire(directory, summary):
             'cancelled_unconfirmed_bytes': unconfirmed, 'independent_golden_and_sequence_check': 'passed'}
 
 
+def verify_timing(directory, summary):
+    value = json.loads((directory / 'timing.json').read_text())
+    events = value['events']
+    assert summary['timing_enabled'] and summary['timing_saved'], 'timing not saved'
+    assert len(events) <= value['capacity'] == 8192, 'timing capacity mismatch'
+    assert len(events) + value['overwritten'] == value['events_seen'] == summary['timing_events']
+    assert events and [row['sequence'] for row in events] == list(range(events[0]['sequence'], value['events_seen'] + 1))
+    assert all(a['collector_ns'] <= b['collector_ns'] for a, b in zip(events, events[1:])), 'collector clock order'
+    return {'retained_events': len(events), 'overwritten_events': value['overwritten'],
+            'events_seen': value['events_seen'], 'bounded_ring_and_clock_order': 'passed'}
+
+
 def supervise(job):
     specification = json.loads((job / 'job.json').read_text())
     binary = job / 'binary/sn100_protocol_soak'
@@ -136,6 +148,8 @@ def supervise(job):
             started = time.monotonic()
             command = [str(binary), '--output-dir', str(destination), '--duration-seconds', str(stage['seconds']),
                        '--rate', '10', '--reconnect-seconds', str(stage['reconnect_seconds']), '--retry-every', '10']
+            if specification.get('timing_trace', False):
+                command.append('--timing-trace')
             status['active_stage'] = stage
             status['updated_utc'] = utc()
             atomic_json(job / 'status.json', status)
@@ -185,6 +199,8 @@ def supervise(job):
             assert not summary['pending_after_close'] and not summary['fresh_status_after_close']
             assert summary['logical_queries'] == summary['completed_queries'] + summary['cancelled_queries']
             checked = verify_wire(destination, summary)
+            if specification.get('timing_trace', False):
+                checked['timing'] = verify_timing(destination, summary)
             measured = resource_summary(job / (stage['name'] + '.resources.jsonl'), elapsed)
             stage_result = {'stage': stage, 'exit_code': code, 'observed_seconds': elapsed,
                             'finished_utc': utc(), 'wire_check': checked, 'resources': measured, 'summary': summary}
@@ -227,6 +243,7 @@ def main():
     parser.add_argument('--continuous-seconds', type=int, default=7200)
     parser.add_argument('--recovery-seconds', type=int, default=28800)
     parser.add_argument('--background', action='store_true')
+    parser.add_argument('--timing-trace', action='store_true', help='Freeze optional bounded target timing capture')
     parser.add_argument('--worker', type=Path, help=argparse.SUPPRESS)
     arguments = parser.parse_args()
     if arguments.worker:
@@ -261,8 +278,11 @@ def main():
     specification = {'schema': 'sn100-o05-3-job-input-v1', 'created_utc': utc(),
         'binary_sha256': digest(frozen), 'original_binary': str(arguments.binary),
         'archive_dir': str(arguments.archive_dir), 'source_sha256': source_hashes,
-        'stages': [{'name': 'continuous_2h', 'seconds': arguments.continuous_seconds, 'reconnect_seconds': 0},
-                   {'name': 'recovery_8h', 'seconds': arguments.recovery_seconds, 'reconnect_seconds': 60}],
+        'timing_trace': arguments.timing_trace,
+        'stages': [{'name': 'continuous_2h' if arguments.continuous_seconds == 7200 else f'continuous_{arguments.continuous_seconds}s',
+                    'seconds': arguments.continuous_seconds, 'reconnect_seconds': 0},
+                   {'name': 'recovery_8h' if arguments.recovery_seconds == 28800 else f'recovery_{arguments.recovery_seconds}s',
+                    'seconds': arguments.recovery_seconds, 'reconnect_seconds': 60}],
         'hardware_verified': False, 'minimum_actual_load_fraction': .90, 'maximum_host_pause_seconds': 120,
         'sleep_policy': 'Actual QElapsedTimer/process monotonic elapsed and minimum90% diagnostic/heartbeat load required; >120s supervisor gap or wall/monotonic discrepancy fails; no RK performance threshold implied'}
     atomic_json(job / 'job.json', specification)

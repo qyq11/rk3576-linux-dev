@@ -1,0 +1,59 @@
+{
+  "kind": "READONLY_SOURCE_LINE_REFERENCES_NO_FORMAL_HASH_SWEEP",
+  "base": "06_programs/sn100_host",
+  "observed_landing": "temp/sn100_host/printer_application_20261027/promotion_01/landing.json",
+  "landing_sha256_supplied_by_root": "713e8077c6c31e85fbe93261b9b696f049ca8804db6e26026e8d3d6c8d700554",
+  "observed_batch": "Root formal497 printing landing, before the subsequently planned outcome-feedback correction. No current full-source freeze/hash claim is made.",
+  "refs": {
+    "startup": [
+      "shell/main.cpp:677-705 Store/page/bridge creation and controller binding",
+      "shell/main.cpp:769-780 threads start after bridge connections",
+      "shell/shell.pri:49-52 bridge source/header included"
+    ],
+    "committed": [
+      "shell/printer_report_shell.cpp:9-19 queued loaded/saved/error/closed/destroyed handlers",
+      "shell/printer_report_shell.cpp:27-59 cache/invalidate/controller rebind",
+      "data/printer_settings_store.cpp:232-243 initialize then loaded",
+      "data/printer_settings_store.cpp:246-307 load/save only emit committed values",
+      "ui/frmprintersetting.cpp:33-52 draft line edit and save request"
+    ],
+    "snapshot": [
+      "history/report_controller.cpp:224-247 document/name/generation captured by value",
+      "history/report_controller.cpp:386-400 saved affects future preview; invalidation increments generation",
+      "history/report_controller.cpp:425-443 busy/name/binding/path/snapshot validation"
+    ],
+    "original_print": [
+      "thirdparty/qtrpt/QtRPT/qtrpt.cpp:1905-1915 offline preview forced, PDF preview device",
+      "thirdparty/qtrpt/QtRPT/qtrpt.cpp:1980-2000 original Print action callback replaced",
+      "thirdparty/qtrpt/QtRPT/qtrpt.cpp:2363-2377 Ctrl+Print interception and no auto-repeat",
+      "history/report_controller.cpp:452-463 disable active print, preserve GUI QPA, canonical argument"
+    ],
+    "helper": [
+      "history/report_renderer.cpp:192-224 exact named-device directory guard before local QPrinter",
+      "history/report_renderer.cpp:227-272 confirmation/cancel/recheck/submit/Unknown/local-system Submitted",
+      "history/report_renderer.cpp:276-307 Native mode determined before QApplication"
+    ],
+    "outcomes": [
+      "history/report_controller.cpp:466-540 bounded protocol/UUID/phase/terminal/actual exit checks",
+      "history/report_controller.cpp:543-574 stop/finish/Unknown, no automatic retry",
+      "shell/history_shell.cpp:94-118 busy and failed status connections",
+      "shell/history_shell.cpp:120-138 PDF/HTML/previewReady connections, nativePrintFinished missing at observation",
+      "shell/history_shell.cpp:149-159 existing ordinary report status sink"
+    ],
+    "closing": [
+      "history/history_page.h:33 combined busy state",
+      "history/history_page.cpp:350-353 reportBusy propagation",
+      "history/history_page.cpp:495-500 busy leave rejection",
+      "shell/frmmain.cpp:517-542 guarded ordinary close",
+      "shell/main.cpp:68-76 viewport delegates guarded close",
+      "shell/shutdown_request.cpp:174-176 SIGINT/SIGTERM delegates same window.close guard",
+      "history/report_controller.cpp:266-272 preview destruction stops native task Unknown",
+      "history/report_controller.cpp:135-158 destructor blocks late UI callbacks, logs token, kill/wait fallback",
+      "shell/frmmain.cpp:163-169 delete report controller before UI"
+    ],
+    "local_results": [
+      "shell/main.cpp:470-486 local-results deliberately does not enable reports",
+      "history/report_controller.cpp:203-218 requires existing anonymous report-root marker"
+    ]
+  }
+}

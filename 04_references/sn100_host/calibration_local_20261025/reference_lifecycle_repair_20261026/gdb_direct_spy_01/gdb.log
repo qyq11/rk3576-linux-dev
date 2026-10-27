@@ -1,0 +1,143 @@
+Breakpoint 1 at 0xa3960
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[Switching to Thread 0x7ffff2ec16c0 (LWP 372)]
+
+Thread 2 "QThread" hit Breakpoint 1, 0x00005555555f7960 in QSignalSpy::qt_metacall(QMetaObject::Call, int, void**) ()
+
+INTENTIONAL_QSIGNALSPY_DIRECT_RECEIVER_BREAKPOINT
+rdi            0x7fffffffcc00      140737488342016
+
+Thread 5 (Thread 0x7ffff1ebf6c0 (LWP 375) "QThread"):
+#0  0x00007ffff591b79d in poll () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#1  0x00007ffff5373b4e in ?? () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#2  0x00007ffff5313ad3 in g_main_context_iteration () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#3  0x00007ffff6335279 in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#4  0x00007ffff62d6a7b in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#5  0x00007ffff60da36b in QThread::exec() () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#6  0x00007ffff60db674 in ?? () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#7  0x00007ffff589cb84 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#8  0x00007ffff5929ecc in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+
+Thread 4 (Thread 0x7ffff26c06c0 (LWP 374) "QThread"):
+#0  0x00007ffff591b79d in poll () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#1  0x00007ffff5373b4e in ?? () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#2  0x00007ffff5313ad3 in g_main_context_iteration () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#3  0x00007ffff6335279 in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#4  0x00007ffff62d6a7b in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#5  0x00007ffff60da36b in QThread::exec() () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#6  0x00007ffff60db674 in ?? () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#7  0x00007ffff589cb84 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#8  0x00007ffff5929ecc in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+
+Thread 3 (Thread 0x7fffea5ff6c0 (LWP 373) "QThread"):
+#0  0x00007ffff591b79d in poll () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#1  0x00007ffff5373b4e in ?? () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#2  0x00007ffff5313ad3 in g_main_context_iteration () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#3  0x00007ffff6335279 in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#4  0x00007ffff62d6a7b in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#5  0x00007ffff60da36b in QThread::exec() () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#6  0x00007ffff60db674 in ?? () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#7  0x00007ffff589cb84 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#8  0x00007ffff5929ecc in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+
+Thread 2 (Thread 0x7ffff2ec16c0 (LWP 372) "QThread"):
+#0  0x00005555555f7960 in QSignalSpy::qt_metacall(QMetaObject::Call, int, void**) ()
+No symbol table info available.
+#1  0x00007ffff6312d19 in ?? () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#2  0x000055555584dfb6 in ProjectsStore::ready(QString) ()
+No symbol table info available.
+#3  0x00005555556dcf2e in ProjectsStore::initialize(QString, bool) ()
+No symbol table info available.
+#4  0x00005555555d5a84 in std::_Function_handler<void (), (anonymous namespace)::Fixture::initialize()::{lambda()#1}>::_M_invoke(std::_Any_data const&) ()
+No symbol table info available.
+#5  0x00007ffff6306343 in QObject::event(QEvent*) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#6  0x00007ffff62d80e6 in QCoreApplication::notifyInternal2(QObject*, QEvent*) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#7  0x00007ffff62db94b in QCoreApplicationPrivate::sendPostedEvents(QObject*, int, QThreadData*) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#8  0x00007ffff6335c0f in ?? () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#9  0x00007ffff5314635 in ?? () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#10 0x00007ffff5373bf7 in ?? () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#11 0x00007ffff5313ad3 in g_main_context_iteration () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
+No symbol table info available.
+#12 0x00007ffff6335279 in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#13 0x00007ffff62d6a7b in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#14 0x00007ffff60da36b in QThread::exec() () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#15 0x00007ffff60db674 in ?? () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#16 0x00007ffff589cb84 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#17 0x00007ffff5929ecc in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+
+Thread 1 (Thread 0x7ffff5a154c0 (LWP 369) "calibration_ref"):
+#0  0x00007ffff58ecbdf in clock_nanosleep () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#1  0x00007ffff58f9b27 in nanosleep () from /lib/x86_64-linux-gnu/libc.so.6
+No symbol table info available.
+#2  0x00007ffff6330b37 in QTestPrivate::qSleep(int) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#3  0x00007ffff6330b99 in QTest::qWait(int) () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#4  0x00005555555d41b1 in (anonymous namespace)::waitFor(std::function<bool ()> const&) ()
+No symbol table info available.
+#5  0x00005555555da680 in (anonymous namespace)::Fixture::initialize() ()
+No symbol table info available.
+#6  0x00005555555dd40f in CalibrationReferenceTest::destroyedTypesOrHistoricalUnitCannotBeCopied() [clone .isra.0] ()
+No symbol table info available.
+#7  0x00007ffff62e3d3a in QMetaMethod::invoke(QObject*, Qt::ConnectionType, QGenericReturnArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument) const () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+No symbol table info available.
+#8  0x00007ffff757dc4f in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+No symbol table info available.
+#9  0x00007ffff757e7c7 in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+No symbol table info available.
+#10 0x00007ffff757ed40 in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+No symbol table info available.
+#11 0x00007ffff757f210 in QTest::qRun() () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+No symbol table info available.
+#12 0x00007ffff757f5e7 in QTest::qExec(QObject*, int, char**) () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+No symbol table info available.
+#13 0x00005555555d2f2f in main ()
+No symbol table info available.
+  Id   Target Id                                         Frame 
+  1    Thread 0x7ffff5a154c0 (LWP 369) "calibration_ref" 0x00007ffff58ecbdf in clock_nanosleep () from /lib/x86_64-linux-gnu/libc.so.6
+* 2    Thread 0x7ffff2ec16c0 (LWP 372) "QThread"         0x00005555555f7960 in QSignalSpy::qt_metacall(QMetaObject::Call, int, void**) ()
+  3    Thread 0x7fffea5ff6c0 (LWP 373) "QThread"         0x00007ffff591b79d in poll () from /lib/x86_64-linux-gnu/libc.so.6
+  4    Thread 0x7ffff26c06c0 (LWP 374) "QThread"         0x00007ffff591b79d in poll () from /lib/x86_64-linux-gnu/libc.so.6
+  5    Thread 0x7ffff1ebf6c0 (LWP 375) "QThread"         0x00007ffff591b79d in poll () from /lib/x86_64-linux-gnu/libc.so.6

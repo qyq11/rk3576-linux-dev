@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="17" failures="0" tests="6" name="ProjectReferenceAtomicTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="renamedThenReferencedCannotBeOverwritten">
+    <!-- tag="project&#x002D;name" message="ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case&#x002D;RfQeby stable_project 2" type="qinfo" -->
+    <!-- tag="project&#x002D;name" message="ATOMIC_INTERLEAVING fullname_only false writerA_success 0 writerA_error 1 saved_names &quot;ATOMIC_NEW&quot; &quot;离线项目A&quot; expected_names &quot;ATOMIC_NEW&quot; &quot;离线项目A&quot; holds QVariant(qlonglong, 1) qc_saved_name QVariant(QString, &quot;ATOMIC_NEW&quot;)" type="qinfo" -->
+    <!-- tag="full&#x002D;name&#x002D;only" message="ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case&#x002D;RLGViK stable_project 2" type="qinfo" -->
+    <!-- tag="full&#x002D;name&#x002D;only" message="ATOMIC_INTERLEAVING fullname_only true writerA_success 0 writerA_error 1 saved_names &quot;ATOMIC_OLD&quot; &quot;并发全称&quot; expected_names &quot;ATOMIC_OLD&quot; &quot;并发全称&quot; holds QVariant(qlonglong, 1) qc_saved_name QVariant(QString, &quot;ATOMIC_OLD&quot;)" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="normalSaveHeldNamesAndIdentityRemainCompatible">
+    <!-- message="ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case&#x002D;bXSBSQ stable_project 2" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 21), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。&quot;))" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 22), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。&quot;))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="everyValidationAndReadFailureRollsBackForRetry">
+    <!-- message="ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case&#x002D;nMrBqR stable_project 2" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 30), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;待保存项目已不存在，请刷新。&quot;))" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 31), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;本切片不能增删结果类型。&quot;))" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 32), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;结果类型不能修改。&quot;))" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 33), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;项目名称和全称须以文字或数字开头，长度1至16，不能有首尾空格或路径字符。&quot;))" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 34), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;access to option_unit.unit is prohibited Unable to execute statement&quot;))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="actualSqlLocksWriteAndCommitFailuresRecover">
+    <!-- message="ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case&#x002D;lztHIX stable_project 2" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 40), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;atomic write failure Unable to fetch row&quot;))" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 41), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;database is locked Unable to fetch row&quot;))" type="qinfo" -->
+    <!-- message="EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 43), QVariant(QString, &quot;save&quot;), QVariant(QString, &quot;database is locked Unable to commit transaction&quot;))" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case-RfQeby stable_project 2]]>
+<![CDATA[ATOMIC_INTERLEAVING fullname_only false writerA_success 0 writerA_error 1 saved_names "ATOMIC_NEW" "离线项目A" expected_names "ATOMIC_NEW" "离线项目A" holds QVariant(qlonglong, 1) qc_saved_name QVariant(QString, "ATOMIC_NEW")]]>
+<![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case-RLGViK stable_project 2]]>
+<![CDATA[ATOMIC_INTERLEAVING fullname_only true writerA_success 0 writerA_error 1 saved_names "ATOMIC_OLD" "并发全称" expected_names "ATOMIC_OLD" "并发全称" holds QVariant(qlonglong, 1) qc_saved_name QVariant(QString, "ATOMIC_OLD")]]>
+<![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case-bXSBSQ stable_project 2]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 21), QVariant(QString, "save"), QVariant(QString, "项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。"))]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 22), QVariant(QString, "save"), QVariant(QString, "项目被外部记录引用或引用检查失败，不能改名；请先在所属模块解除引用。"))]]>
+<![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case-nMrBqR stable_project 2]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 30), QVariant(QString, "save"), QVariant(QString, "待保存项目已不存在，请刷新。"))]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 31), QVariant(QString, "save"), QVariant(QString, "本切片不能增删结果类型。"))]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 32), QVariant(QString, "save"), QVariant(QString, "结果类型不能修改。"))]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 33), QVariant(QString, "save"), QVariant(QString, "项目名称和全称须以文字或数字开头，长度1至16，不能有首尾空格或路径字符。"))]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 34), QVariant(QString, "save"), QVariant(QString, "access to option_unit.unit is prohibited Unable to execute statement"))]]>
+<![CDATA[ANONYMOUS_RUNTIME /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/suite_final_06/project_reference_atomic_offscreen/runtime/case-lztHIX stable_project 2]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 40), QVariant(QString, "save"), QVariant(QString, "atomic write failure Unable to fetch row"))]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 41), QVariant(QString, "save"), QVariant(QString, "database is locked Unable to fetch row"))]]>
+<![CDATA[EXPECTED_OR_ACTUAL_ERROR (QVariant(qlonglong, 43), QVariant(QString, "save"), QVariant(QString, "database is locked Unable to commit transaction"))]]>
+  </system-err>
+</testsuite>

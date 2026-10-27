@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="7" failures="0" tests="4" name="SampleResetWorkflowTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="resetErrorsOnlyChangesDraftThenSavesAndReopens">
+    <!-- message="OBSERVER_ONLY 01_error_finished_mixed_before scroll 167 84 status 本地预设已读取；未下发，真实状态和足料校验待验。" type="qinfo" -->
+    <!-- message="OBSERVER_ONLY 02_error_reset_draft_finished_preserved scroll 167 84 status 本地草稿已复位2次测试；点更新设置后保存，未发送设备命令。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="retestCancelDiscardSaveAndReopen">
+    <!-- message="OBSERVER_ONLY 03_retest_mixed_before scroll 167 84 status 本地预设已读取；未下发，真实状态和足料校验待验。" type="qinfo" -->
+    <!-- message="OBSERVER_ONLY 04_retest_draft_all_idle scroll 167 84 status 本地草稿已复位3次测试；点更新设置后保存，未发送设备命令。" type="qinfo" -->
+    <!-- message="OBSERVER_ONLY 05_cancel_retains_draft scroll 167 84 status 本地草稿已复位3次测试；点更新设置后保存，未发送设备命令。" type="qinfo" -->
+    <!-- message="OBSERVER_ONLY 06_discard_restores_committed scroll 167 84 status 本地草稿已复位3次测试；点更新设置后保存，未发送设备命令。" type="qinfo" -->
+    <!-- message="OBSERVER_ONLY 07_retest_saved_reopened scroll 167 84 status 本地预设已读取；未下发，真实状态和足料校验待验。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[OBSERVER_ONLY 01_error_finished_mixed_before scroll 167 84 status 本地预设已读取；未下发，真实状态和足料校验待验。]]>
+<![CDATA[OBSERVER_ONLY 02_error_reset_draft_finished_preserved scroll 167 84 status 本地草稿已复位2次测试；点更新设置后保存，未发送设备命令。]]>
+<![CDATA[OBSERVER_ONLY 03_retest_mixed_before scroll 167 84 status 本地预设已读取；未下发，真实状态和足料校验待验。]]>
+<![CDATA[OBSERVER_ONLY 04_retest_draft_all_idle scroll 167 84 status 本地草稿已复位3次测试；点更新设置后保存，未发送设备命令。]]>
+<![CDATA[OBSERVER_ONLY 05_cancel_retains_draft scroll 167 84 status 本地草稿已复位3次测试；点更新设置后保存，未发送设备命令。]]>
+<![CDATA[OBSERVER_ONLY 06_discard_restores_committed scroll 167 84 status 本地草稿已复位3次测试；点更新设置后保存，未发送设备命令。]]>
+<![CDATA[OBSERVER_ONLY 07_retest_saved_reopened scroll 167 84 status 本地预设已读取；未下发，真实状态和足料校验待验。]]>
+  </system-err>
+</testsuite>

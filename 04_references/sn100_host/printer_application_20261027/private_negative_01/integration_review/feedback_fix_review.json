@@ -1,0 +1,47 @@
+{
+  "status": "CONFIRMED_FEEDBACK_OMISSION_FIXED_IN_SOURCE_RUNTIME_PENDING",
+  "utc": "2026-10-26T16:31:20.5140451Z",
+  "preceding_review": "review.json",
+  "preceding_handoff_sha256": "eae97db9b13de06dd087bb0e3440bf43c87e38e9f31080d68dabe1ea77c93826",
+  "resolved_finding": "PRINT_UI_OUTCOME_01",
+  "root_reported_new_formal_freeze": {
+    "files": 497,
+    "sha256": "aafe488572863c11b67c7ac651e957105b7c7448776f9beb6ae42359bab26b19",
+    "landing_sha256": "ba2bcc9fed97f90d0b726d750b1513796ef20a780c8cd4e5d7a46402e588ae1c",
+    "independent_full_tree_rehash_performed": false
+  },
+  "inspected": [
+    "shell/history_shell.cpp:94-173 current connection/status block",
+    "history/printer_application_origins.json added formal_outcome_feedback"
+  ],
+  "checks": [
+    {
+      "source": "shell/history_shell.cpp:120-125",
+      "result": "已连接真实nativePrintFinished，只接Submitted/Cancelled；Failed/Unknown直接返回，不抢原错误通道。"
+    },
+    {
+      "source": "shell/history_shell.cpp:126,130",
+      "result": "先设置reportHasOutcome_，再复用原reportStatus；原预览关闭busy回调会保留已有结果，不用普通结束提示抹掉。"
+    },
+    {
+      "source": "shell/history_shell.cpp:127-129",
+      "result": "Submitted明确写已提交给本机打印系统、实际出纸尚未确认；Cancelled写未提交任务，符合原helper取消前不绘制的协议。"
+    },
+    {
+      "source": "shell/history_shell.cpp:113-119",
+      "result": "Failed/Unknown继续通过已有failed接收者设置错误状态；新增回调不会重复提示。"
+    },
+    {
+      "source": "shell/history_shell.cpp:130-131,162-173",
+      "result": "只用原普通状态提示及qInfo记录；没有新弹框、控件、布局或主题改动。"
+    },
+    {
+      "source": "history/printer_application_origins.json:formal_outcome_feedback",
+      "result": "来源说明同步记录四类终态分别走反馈/错误通道，未新增整程序通过宣称。"
+    }
+  ],
+  "conclusion": "原审查中唯一确定的Submitted/Cancelled反馈遗漏，在当前代码中已补齐；本窗口没有实施源修改。",
+  "closing_review": "修前只读关闭链结论仍按其原范围保留：普通关闭/信号关闭走reportBusy守卫；关闭预览停止Native并按Unknown收尾；析构有晚到UI信号阻断及限时回收。没有提出第二处确定遗漏。",
+  "validation_boundary": "这里只确认反馈接线的代码修正。新497正式主辅构建由Root会话98591独占进行，本窗口未编译、GUI、枚举、运行或做全量指纹；主壳实际反馈、关闭时序、正向打印、RK/Windows/ARM和实体纸张结果仍按后续各自收据登记。旧494/首版497/私有负例收据不套新整程序。",
+  "old_review_preserved": "原review/source_references/minimal_suggestion/artifact manifest/handoff原样保留，描述修前观察；本文件只补充修后代码核对。"
+}

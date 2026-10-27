@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="11" failures="0" tests="5" name="StatusLoopbackShellTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase">
+    <!-- message="environment 5.15.13 &quot;xcb&quot; app_sha256 &quot;013eb363c6cd7a928f62f860c5cbd6755421a81808a4e6ad347cc6db0887f176&quot;" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="mappingAndDeviceBoundary"/>
+  <testcase result="pass" name="controllerAndBackgroundLifecycle">
+    <!-- message="STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 1 elapsed_ms= 0 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 2 elapsed_ms= 1 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 3 elapsed_ms= 1050 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 4 elapsed_ms= 1051 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WIRE run= 1 generation= 4 sequence= 5 elapsed_ms= 1080 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WIRE run= 1 generation= 4 sequence= 6 elapsed_ms= 1082 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WORKER_STOPPED 1 wire_events= 6 wire_bytes= 156" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WIRE run= 2 generation= 2 sequence= 1 elapsed_ms= 0 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WIRE run= 2 generation= 2 sequence= 2 elapsed_ms= 2 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09" type="qinfo" -->
+    <!-- message="STATUS_LOOPBACK_WORKER_STOPPED 2 wire_events= 2 wire_bytes= 52" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="fullProductAndMutualExclusion"/>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[environment 5.15.13 "xcb" app_sha256 "013eb363c6cd7a928f62f860c5cbd6755421a81808a4e6ad347cc6db0887f176"]]>
+<![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 1 elapsed_ms= 0 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]>
+<![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 2 elapsed_ms= 1 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09]]>
+<![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 3 elapsed_ms= 1050 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]>
+<![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 2 sequence= 4 elapsed_ms= 1051 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09]]>
+<![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 4 sequence= 5 elapsed_ms= 1080 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]>
+<![CDATA[STATUS_LOOPBACK_WIRE run= 1 generation= 4 sequence= 6 elapsed_ms= 1082 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09]]>
+<![CDATA[STATUS_LOOPBACK_WORKER_STOPPED 1 wire_events= 6 wire_bytes= 156]]>
+<![CDATA[STATUS_LOOPBACK_WIRE run= 2 generation= 2 sequence= 1 elapsed_ms= 0 TX HEX= 02 03 00 06 00 00 00 01 51 6a 3a 04 05]]>
+<![CDATA[STATUS_LOOPBACK_WIRE run= 2 generation= 2 sequence= 2 elapsed_ms= 2 RX HEX= 06 07 00 20 00 00 00 01 51 6a 5b 34 5d 5b 53 49 4d 55 4c 41 54 45 44 5d 5b 32 5d 5b 31 5d 5b 30 5d 5b 30 5d 57 08 09]]>
+<![CDATA[STATUS_LOOPBACK_WORKER_STOPPED 2 wire_events= 2 wire_bytes= 52]]>
+  </system-err>
+</testsuite>

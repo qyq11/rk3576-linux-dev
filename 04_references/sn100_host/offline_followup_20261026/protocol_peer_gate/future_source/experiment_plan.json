@@ -1,0 +1,145 @@
+{
+  "schema": "sn100-protocol-peer-gate-experiment-plan-v1",
+  "status": "prepared_only_not_compiled_or_executed",
+  "purpose": "Distinguish peer Qt receive-buffer consumption delay from peer reply delay without deliberately blocking the client event loop.",
+  "production_hook_required": false,
+  "production_source_changes": [],
+  "actual_implementation": "QtTest instantiates the real ReadOnlyClient and its real ReadOnlyTcpTransport/QTcpSocket child, with public timing signals enabled. Peer uses real QTcpServer/QTcpSocket and the real HostToDevice FrameDecoder. No copied client state machine or injected fake transport.",
+  "cases_once_in_order": [
+    {
+      "name": "baseline",
+      "first_reply": "Deliberately withheld after actual query decode",
+      "retry": "Read/decode and reply immediately",
+      "expected_actual_request_success": true,
+      "expected_terminal_peer_decoded_frames": 2,
+      "expected_terminal_observations": 1
+    },
+    {
+      "name": "peer_read_gate",
+      "first_reply": "Deliberately withheld after actual query decode",
+      "retry": "Record readyRead/bytesAvailable but do not consume Qt peer buffer before the real timeout terminal",
+      "expected_actual_request_success": false,
+      "expected_terminal_detail_prefix": "client.timeout:",
+      "expected_terminal_peer_decoded_frames": 1,
+      "expected_terminal_peer_qt_buffered_bytes": 13,
+      "release": "A queued zero-delay callback after immutable requestFinished(false) reads/decodes the existing buffer and writes the literal reply",
+      "discriminates": "Retry reached the peer Qt receive buffer before terminal but peer application consumption was withheld; absence of peer.read before terminal does not mean TCP loss or unsent retry"
+    },
+    {
+      "name": "peer_reply_gate",
+      "first_reply": "Deliberately withheld after actual query decode",
+      "retry": "Read/decode immediately, withhold reply until the real timeout terminal",
+      "expected_actual_request_success": false,
+      "expected_terminal_detail_prefix": "client.timeout:",
+      "expected_terminal_peer_decoded_frames": 2,
+      "expected_terminal_peer_qt_buffered_bytes": 0,
+      "release": "A queued zero-delay callback after immutable requestFinished(false) writes the already-held literal reply",
+      "discriminates": "Peer application consumed the retry before terminal while the response was deliberately withheld"
+    }
+  ],
+  "unchanged_request_contract": {
+    "timeout_ms": 120,
+    "max_retries": 1,
+    "queries_per_case": 1,
+    "attempts_per_case": 2,
+    "terminal_count_per_case": 1,
+    "post_terminal_observation_ms": 250,
+    "post_terminal_new_queries": 0,
+    "post_terminal_new_retries": 0,
+    "negative_arm_success_events": 0,
+    "late_observation_count_expected": 1,
+    "late_observation_may_change_failure": false
+  },
+  "bounds": {
+    "cases": 3,
+    "case_guard_ms": 3000,
+    "test_process_timeout_seconds": 12,
+    "qmake_timeout_seconds": 60,
+    "make_timeout_seconds": 180,
+    "jobs": 1,
+    "capture_events_per_case": 2048,
+    "overflow_behavior": "Fail, never silently overwrite",
+    "child_cleanup": "Only this start_new_session owned process group; TERM up to3s then KILL up to2s, no unbounded wait; unknown group state fails",
+    "client_event_loop_sleep_or_blocking_wait": false,
+    "test_callback_synchronous_file_io": false,
+    "automatic_rerun_or_long_soak": false
+  },
+  "separate_observation_stages": [
+    "transport.queue.accepted / client.wire.queued: application planned bytes",
+    "client.deadline.initial/retry and revision/attempt: client-local deadline provenance",
+    "transport.write.scheduled/callback/begin/returned: real Qt socket write acceptance",
+    "transport.socket.bytesWritten / client.socket.progress.not_peer_ack: local socket output progress",
+    "peer.readyRead.qt_buffered and terminal bytesAvailable snapshot: bytes visible in peer Qt receive buffer",
+    "peer.read.actual and peer.frame.decoded: actual application read and decoded query frame count, independently checked against literal wire",
+    "peer.reply.gate.held / peer.gate.release: test-only gate identity, not an online transaction identifier",
+    "peer.reply.write.begin/returned and peer.bytesWritten.not_client_ack: response acceptance and local output progress",
+    "client.wire.read / client.observe.enter / client.observed: actual received bytes and real parsed observation",
+    "client.request.failure/success / driver.verdict.latched: original immutable terminal",
+    "driver.postmortem.begin/end:250ms observation only, no new request",
+    "client/peer actual socket state plus close/abort scopes and transport errors: teardown evidence"
+  ],
+  "clock_contract": "Every raw event receives a common per-case collector_ns and seq. Source elapsed/deadline clocks are retained separately; do not subtract client and transport origins. Case/attempt/seq are observer metadata, not wire IDs.",
+  "wire_contract": {
+    "query_literal_hex": "0203000600000001516b3b0405",
+    "reply_literal_hex": "0607000900000001516b5b305d0d0809",
+    "query_payload": "Qk",
+    "reply_payload": "Qk[0]",
+    "provenance": "Independent anonymous synthetic literals already used by the existing protocol_timing_test; not real instrument traffic",
+    "query_frames": 2,
+    "query_wire_bytes": 26,
+    "reply_wire_bytes": 16,
+    "message_count_basis": "Actual FrameDecoder output, never number of read chunks"
+  },
+  "known_source_anchors": {
+    "read_only_client.cpp": "request deadline is created after whole-frame queue acceptance; tick rebases retry deadline; observe calls tick before parsing; finishRequest clears pending before terminal",
+    "tcp_transport.cpp": "queueQuery schedules an asynchronous zero-delay write pump; write acceptance and bytesWritten do not establish peer receive/ACK",
+    "soak_main.cpp": "Full optional log scopes now include size/rotation/stdout. finish sets m_finishing before later peer readyRead and closes/aborts owned sockets before saving timing; no postmortem peer-drain window in the soak tool. This private harness does not change it."
+  },
+  "historical_evidence": {
+    "log_scope_handoff": "04_references/sn100_host/offline_followup_20261026/protocol_log_scope/handoff.json",
+    "old_failure": "04_references/sn100_host/protocol_stability_20261023/long_run_01/recovery_8h_failed/failure_review.json",
+    "old_tcp_review": "04_references/sn100_host/protocol_stability_20261023/long_run_01/recovery_8h_failed/tcp_review.json",
+    "nonreproduction_25m": "04_references/sn100_host/protocol_timing_20261024/recovery_probe_25m/terminal_audit.json",
+    "old_queue_retry_ms": 1149978,
+    "old_failure_terminal_ms": 1150169,
+    "old_retry_queued_bytes_not_observed_in_peer_application_read": 13,
+    "old_direct_cause_confirmed": false,
+    "known_existing_experiment_not_repeated": "protocol_timing_test.over240 blocks attempt2 queryQueued direct receiver for240ms; it already proved a possible global event-loop delay mechanism. These three arms do not sleep/block that receiver."
+  },
+  "remaining_observation_limits": [
+    "Old failure lacks actual retry write/bytesWritten/peer Qt buffered timestamps and packet capture; this experiment cannot reconstruct them",
+    "Current soak closes/aborts immediately after failure and suppresses peer reads with m_finishing; absence of later peer RX remains censored",
+    "Whole-run heartbeat maximum has no located old failure timestamp; a histogram maximum alone cannot identify the old cause",
+    "Qt bytesWritten is not TCP ACK; peer bytesAvailable/read proves only this synthetic peer stage, not real instrument processing",
+    "No online transaction ID: one pending request allows this controlled event association, not generic instrument transaction proof",
+    "If late write or observation fails, retain actual return/bytes/state and fail the arm; never infer delivery",
+    "No confirmed business implementation defect is established by the existing historical evidence or this preparation",
+    "No claim of GUI/Windows/RK execution, actual instrument behavior, resource budget, realtime acceptance,8h or24-72h stability"
+  ],
+  "existing_entry_points": [
+    "06_programs/sn100_host/tests/protocol_timing_test.pro",
+    "06_programs/sn100_host/tests/read_only_client_test.pro",
+    "06_programs/sn100_host/tests/tcp_transport_test.pro",
+    "06_programs/sn100_host/tests/protocol_soak_timing_test.py",
+    "06_programs/sn100_host/protocol/soak.pro"
+  ],
+  "future_execution": {
+    "ordinary_user": "qyq",
+    "environment": "WSL Ubuntu-24.04 native Qt5; headless QtCore/QtNetwork/QtTest, no GUI or external endpoint",
+    "driver_argv": [
+      "python3",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/run_peer_gate.py",
+      "--root-go",
+      "--output-dir",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/protocol_peer_gate/run_01",
+      "--jobs",
+      "1"
+    ],
+    "qmake_argv": ["/usr/lib/qt5/bin/qmake", "<private-source>/protocol_peer_gate_test.pro", "CONFIG+=release", "CONFIG-=debug"],
+    "make_argv": ["make", "-j1"],
+    "test_argv": ["<new-output>/build/sn100_protocol_peer_gate_test", "-o", "<new-output>/qt.txt,txt", "-o", "<new-output>/qt.xml,junitxml"],
+    "test_explicit_environment": {"SN100_PROTOCOL_PEER_GATE_OUTPUT": "<new-output>/evidence"},
+    "expected_qttest_totals_if_actual_checks_succeed": [5, 0, 0],
+    "required_precondition": "Root explicitly assigns the exclusive execution slot; run_01 must not already exist. Driver rejects changed preparation/source hashes. No execution by this preparation."
+  }
+}

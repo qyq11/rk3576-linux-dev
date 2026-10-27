@@ -1,0 +1,172 @@
+--- before.cpp
++++ after.cpp
+@@ -12,6 +12,7 @@
+ #include <QFont>
+ #include <QLabel>
+ #include <QLineEdit>
++#include <QMenu>
+ #include <QMessageBox>
+ #include <QPointer>
+ #include <QPushButton>
+@@ -26,6 +27,7 @@
+ #include <QTextDocument>
+ #include <QThread>
+ #include <QTimer>
++#include <QToolBar>
+ #include <QToolButton>
+ #include <QUuid>
+ #include <functional>
+@@ -62,6 +64,112 @@
+     if (!button->isVisible()) return false;
+     QTest::mouseClick(button, Qt::LeftButton);
+     return true;
++}
++bool activateForInput(QWidget *widget, bool focus = false)
++{
++    if (!widget || !widget->isVisible()) return false;
++    QWidget *top = widget->window();
++    QWidget *modal = QApplication::activeModalWidget();
++    if (modal && modal->isVisible() && modal != top && !modal->isAncestorOf(widget)) return false;
++    top->activateWindow();
++    QApplication::setActiveWindow(top);
++    if (focus) widget->setFocus(Qt::MouseFocusReason);
++    return QApplication::activeWindow() == top;
++}
++bool clickPreviewAction(QPrintPreviewDialog *preview, QAction *action)
++{
++    if (!activateForInput(preview) || !action || !action->isEnabled())
++    {
++        qWarning() << "REPORT_HTML_INPUT_UNAVAILABLE" << preview << action << QApplication::activeModalWidget();
++        return false;
++    }
++    QToolBar *toolbar = nullptr;
++    QToolButton *button = nullptr;
++    QToolButton *extension = nullptr;
++    const auto directlyVisible = [](QWidget *widget, QToolBar *bar)
++    {
++        return widget && widget->isVisible() && widget->isEnabled()
++            && widget->visibleRegion().contains(widget->rect().center())
++            && bar->rect().contains(widget->mapTo(bar, widget->rect().center()));
++    };
++    // previewReady follows open(), before the toolbar necessarily has a layout.
++    if (!until([&]()
++    {
++        for (auto *candidate : preview->findChildren<QToolBar *>())
++            if (candidate->actions().contains(action)) { toolbar = candidate; break; }
++        if (!toolbar) return false;
++        button = qobject_cast<QToolButton *>(toolbar->widgetForAction(action));
++        extension = toolbar->findChild<QToolButton *>(QStringLiteral("qt_toolbar_ext_button"));
++        return directlyVisible(button, toolbar) || directlyVisible(extension, toolbar);
++    }, 5000))
++    {
++        qWarning() << "REPORT_HTML_LAYOUT_UNAVAILABLE" << toolbar << button << extension;
++        if (toolbar) qWarning() << "REPORT_HTML_TOOLBAR" << toolbar->geometry() << toolbar->isVisible();
++        if (button) qWarning() << "REPORT_HTML_BUTTON" << button->geometry() << button->isVisible() << button->isEnabled();
++        if (extension) qWarning() << "REPORT_HTML_EXTENSION" << extension->geometry() << extension->isVisible() << extension->isEnabled();
++        preview->grab().save(QDir(qEnvironmentVariable("SN100_REPORT_REMAINING_EVIDENCE"))
++                            .filePath(QStringLiteral("html_toolbar_layout_failure.png")));
++        return false;
++    }
++    QSignalSpy triggered(action, &QAction::triggered);
++    if (directlyVisible(button, toolbar))
++    {
++        qInfo() << "REPORT_HTML_TOOLBAR_MOUSE direct";
++        QTest::mouseClick(button, Qt::LeftButton);
++        return !triggered.isEmpty();
++    }
++    // The extension may enter QMenu::exec during mousePress. Queue the real
++    // menu click first so both popup implementations retain the mouse workflow.
++    QElapsedTimer elapsed; elapsed.start();
++    QPointer<QMenu> popup;
++    QTimer menuClick;
++    menuClick.setInterval(10);
++    QObject::connect(&menuClick, &QTimer::timeout, &menuClick, [&]()
++    {
++        // A docked Qt5 toolbar may expand into another row instead of using
++        // QMenu. It still exposes the original action's real tool button.
++        if (directlyVisible(button, toolbar))
++        {
++            menuClick.stop();
++            qInfo() << "REPORT_HTML_TOOLBAR_MOUSE expanded";
++            QTest::mouseClick(button, Qt::LeftButton);
++            return;
++        }
++        for (auto *candidate : QApplication::allWidgets())
++            if (auto *menu = qobject_cast<QMenu *>(candidate))
++                if (menu->isVisible() && menu->actions().contains(action)) { popup = menu; break; }
++        if (popup && action->isEnabled())
++        {
++            const QRect area = popup->actionGeometry(action);
++            if (area.isValid() && popup->rect().contains(area.center()))
++            {
++                menuClick.stop();
++                qInfo() << "REPORT_HTML_TOOLBAR_MOUSE overflow";
++                QTest::mouseMove(popup, area.center());
++                QTest::mouseClick(popup, Qt::LeftButton, Qt::NoModifier, area.center());
++                return;
++            }
++        }
++        if (elapsed.elapsed() >= 5000)
++        {
++            menuClick.stop();
++            if (popup) popup->close();
++        }
++    });
++    menuClick.start();
++    QTest::mouseClick(extension, Qt::LeftButton);
++    const bool clicked = until([&]() { return !triggered.isEmpty() || elapsed.elapsed() >= 5000; }, 5000)
++        && !triggered.isEmpty();
++    menuClick.stop();
++    if (!clicked)
++    {
++        qWarning() << "REPORT_HTML_OVERFLOW_UNAVAILABLE" << QApplication::activePopupWidget()
++                   << extension->geometry() << extension->isVisible() << button->geometry() << button->isVisible();
++        preview->grab().save(QDir(qEnvironmentVariable("SN100_REPORT_REMAINING_EVIDENCE"))
++                            .filePath(QStringLiteral("html_toolbar_overflow_failure.png")));
++        if (popup) popup->close();
++    }
++    return clicked;
+ }
+ void answer(QMessageBox::StandardButton response)
+ {
+@@ -372,11 +480,7 @@
+             QVERIFY(preview && preview->isVisible());
+             auto *action=preview->findChild<QAction *>(QStringLiteral("actExpToHtml"));
+             QVERIFY(action);
+-            QToolButton *htmlButton=nullptr;
+-            for (auto *button:preview->findChildren<QToolButton *>())
+-                if (button->defaultAction()==action) htmlButton=button;
+-            QVERIFY(htmlButton && htmlButton->isVisible() && htmlButton->isEnabled());
+-            QTest::mouseClick(htmlButton,Qt::LeftButton);
++            QVERIFY(clickPreviewAction(preview,action));
+             QPointer<QFileDialog> chooser=preview->findChild<QFileDialog *>(QStringLiteral("historyHtmlFileDialog"));
+             QVERIFY(chooser && chooser->isVisible());
+             QVERIFY(!session.window->selectMainPage(0));
+@@ -385,16 +489,24 @@
+             QTest::mouseClick(buttons->button(QDialogButtonBox::Cancel),Qt::LeftButton);
+             QTRY_VERIFY(chooser.isNull());
+             QCOMPARE(complete.size(),0);
+-            QTest::mouseClick(htmlButton,Qt::LeftButton);
++            QVERIFY(clickPreviewAction(preview,action));
+             chooser=preview->findChild<QFileDialog *>(QStringLiteral("historyHtmlFileDialog"));
+             QVERIFY(chooser && chooser->isVisible());
+             auto *filename=chooser->findChild<QLineEdit *>(QStringLiteral("fileNameEdit"));
+             QVERIFY(filename);
++            QVERIFY(activateForInput(filename,true));
+             QTest::mouseClick(filename,Qt::LeftButton);
+             QTest::keyClick(filename,Qt::Key_A,Qt::ControlModifier);
+             QTest::keyClicks(filename,name);
+-            QTest::keyClick(filename,Qt::Key_Return);
+-            QVERIFY(chooser.isNull() || !chooser->isVisible());
++            QCOMPARE(filename->text(),name);
++            QSignalSpy selected(chooser,&QFileDialog::fileSelected);
++            buttons=chooser->findChild<QDialogButtonBox *>();
++            QVERIFY(buttons && buttons->button(QDialogButtonBox::Save));
++            QTRY_VERIFY(buttons->button(QDialogButtonBox::Save)->isEnabled());
++            QTest::mouseClick(buttons->button(QDialogButtonBox::Save),Qt::LeftButton);
++            QTRY_COMPARE(selected.size(),1);
++            QCOMPARE(selected.first().first().toString(),output);
++            QTRY_VERIFY(chooser.isNull());
+             // Closing the actual preview must leave the helper's busy guard on.
+             QVERIFY(preview->close());
+         }

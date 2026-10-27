@@ -1,0 +1,47 @@
+{
+  "scope": "O10-1 independent anonymous printer settings; no print jobs",
+  "before": {
+    "data/printer_settings_store.cpp": "c85d122ab56db4caff661abe1f30b3d05bcf558e3f62216754bc97c4408c0d84",
+    "data/printer_settings_store.h": "c3a816df472a9bbc8fdfd1db89418d45835807bfe74ed1a31df808cbbb9eeed9",
+    "ui/frmprintersetting.cpp": "1663a916bffa9a6e51ef805cc58c0086f6f46e3f86e33edf3a971e1d4f790a9e",
+    "ui/frmprintersetting.h": "20253d569b8fd54f3fbc74daaa4653b3083ffe425d44dc166d80b68604232ac6",
+    "ui/frmprintersetting.ui": "bc995dda80a42cc0c8a88504f3d377b74c61972310ecc8492fd7e1f7df98cf69",
+    "ui/printer_settings.pri": "6e7c4b1d1d8f4ce368ffedca85c5aa5bdd6cebeac928e774987d5a325b831043",
+    "tests/printer_settings_test.cpp": "be409821213a6e07554a5e8b00604404e81ed66b3a8f7da9a02892d210117c53",
+    "tests/printer_settings_test.pro": "ac1dd60538ac55088ad843e0e489933f735e4d831988df5b29eb0d601445ade2"
+  },
+  "stages": [
+    {
+      "stage": "qmake",
+      "args": [
+        "/usr/lib/qt5/bin/qmake",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/printer_settings_test.pro",
+        "CONFIG+=release",
+        "CONFIG-=debug"
+      ],
+      "exit_code": 0,
+      "seconds": 0.32116809999999996
+    },
+    {
+      "stage": "make",
+      "args": [
+        "make",
+        "-j2"
+      ],
+      "exit_code": 0,
+      "seconds": 8.240345596000001
+    },
+    {
+      "stage": "offscreen",
+      "args": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/independent/build/printer_settings_test",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/independent/run_01/offscreen.txt,txt",
+        "-o",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/printer_settings_20261024/independent/run_01/offscreen.xml,junitxml"
+      ],
+      "exit_code": 7,
+      "seconds": 107.22898067499999
+    }
+  ]
+}

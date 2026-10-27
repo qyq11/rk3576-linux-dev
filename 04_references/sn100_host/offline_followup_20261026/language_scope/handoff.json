@@ -1,0 +1,138 @@
+{
+  "schema": "sn100-language-scope-handoff-v2",
+  "finished_utc": "2026-10-26T05:03:04.7896128Z",
+  "task": "语言设置原启用范围/配置/资源/权限/视觉合同只读核查与离线核验草案",
+  "status": "语言范围审查保留；新增一次有界QtCore核验控制器及中文原页最小恢复差异草案，均仅准备/静态核查，未执行或改06",
+  "primary_conclusion": "原语言页不是完整多语言功能：只有Cn中文简体，Apply函数为空，没有语言保存键、取消/草稿或重启读取/应用链。保留原范围，不新增假英文选项或保存成功回执。",
+  "original_entry": "用户设置→语言设置（子页2），原frmUserSet构造/插入/导航均有接线，.pri参与构建",
+  "operations_and_config": {
+    "label": "Cn 中文简体",
+    "choices": [
+      "Cn 中文简体"
+    ],
+    "current_text_readonly": true,
+    "apply": "btnApply/应用，函数体为空",
+    "save_keys": [],
+    "cancel": "没有取消按钮或语言草稿",
+    "restart": "没有语言重启生效实现，启动构造仍写死中文；不能改写成重启后生效",
+    "page_geometry": "页面1451×853；容器(390,20,681,821)相对页面；显示框(20,90,641,61)、列表(20,190,641,551)、应用(500,750,161,61)均相对该容器。",
+    "layout_details": "activation_contract.json及audit_02/layout_contract.json"
+  },
+  "translation_resources": {
+    "source_qtranslator_install_remove_matches": 0,
+    "source_language_change_matches": 0,
+    "build_translation_or_qm_resource_entries": 0,
+    "ts_files": 0,
+    "qm_files": 22,
+    "qt_en_bytes": 23,
+    "qt_en_sha256": "307cef95dd5b36ff215055d427e1885b7fc3650c9224cf76d63056545996ff60",
+    "scope": "所给解压工程；Qt名称侧文件不等于SN100业务英文目录",
+    "runtime_qm_load_or_translation_hits_measured": false,
+    "app_english_switch_usable_now": false,
+    "limits": "只做源码/资源清单审查，未运行原Windows发行版，未断言qt_en.load返回值；代码无加载/安装链且缺应用目录，不能宣称全程序英文可用"
+  },
+  "permission": "语言页及直接父导航未见专属登录/角色检查；原主角色回调只通知账户/仪器/系统/试剂。不能据此宣称访客已绕过整个应用登录；未来真实语言写入的权限合同仍缺。",
+  "visual_scope": "原固定边框/文字/分隔线颜色已记，按钮/选中色来自主题键；未读旧主题配置实值、无原Windows/WSL/RK截图验收，字体和必要屏幕适配另验。",
+  "current_formal_state": "正式用户设置语言子页仍占位，公共接线由根独占，本窗口未修改。",
+  "prepared_draft": {
+    "directory": "temp/sn100_host/offline_followup_20261026/language_scope/draft",
+    "type": "QtCore翻译资源抽样核验CLI，不是语言页或全程序切换实现",
+    "actual_operation": "对明确绝对QM路径载入局部QTranslator并检查语言页两条上下文文字，输出JSON与真实错误/覆盖数",
+    "no_intent_only_implementation": true,
+    "no_settings_write": true,
+    "no_translator_install": true,
+    "no_locale_change": true,
+    "sample_success_is_not_global_switch": true,
+    "test_methods_prepared": 8,
+    "test_data": "匿名QTemporaryDir仅在显式LANGUAGE_SCOPE_TEST_DIR新目录内；23字节Qt文件以hex/SHA重建，不用原工程运行库/真实资料",
+    "tests": "draft/tests/catalog_probe_test.pro",
+    "files_and_sha256": [
+      {
+        "path": "draft/catalog_probe.pro",
+        "sha256": "43eb1db52b38dd10e938bf3c1b7551c17f89eeceb78ea18fbafa456b8318fd97"
+      },
+      {
+        "path": "draft/language_catalog_probe.cpp",
+        "sha256": "c933b75d6e412b2ed98d5f2031a25dbbedc2efc2e972e6ee213f258a039e0efc"
+      },
+      {
+        "path": "draft/language_catalog_probe.h",
+        "sha256": "976ca4480fb8bd0a99112ae814271c55f289187e571b3137694f49d1814f3bda"
+      },
+      {
+        "path": "draft/main.cpp",
+        "sha256": "698b6fb24722ee34f51d2d5a9bad0fc606166180ce1756e0fc98c3530e0888e4"
+      },
+      {
+        "path": "draft/tests/catalog_probe_test.pro",
+        "sha256": "4b316775ac78c1e59d4926300a57d03609de03865362734c85e8034e93592e1c"
+      },
+      {
+        "path": "draft/tests/tst_language_catalog.cpp",
+        "sha256": "d17ac63e60789b37300abcb42f7d3314815218fecbf2c8b1c4fa311cd68079c8"
+      }
+    ],
+    "compiled": false,
+    "tests_run": false,
+    "gui_run": false
+  },
+  "formal_integration_authorized": false,
+  "formal_language_page_implementation_supplied": false,
+  "root_next_options": [
+    "root在ARM及其他独占工作结束后另行分配一次QtCore槽，执行core_verification_command.json；当前只备好命令，不提前运行",
+    "只恢复原中文页如获批准，按chinese_page_restore_proposal.json文件边界由root整合，保持视觉并透明呈现未实现Apply",
+    "全程序中英切换仍缺真实应用目录、覆盖/持久化/启动或热切换/权限合同；资源探针通过与中文外观恢复均不能代替"
+  ],
+  "production_files_modified": [],
+  "reference_files_modified": [],
+  "common_shell_or_launcher_modified": false,
+  "public_docs_modified": false,
+  "report_deliveries_unchanged": true,
+  "dependencies_or_system_language_changed": false,
+  "build_gui_tests_performed": false,
+  "current_slot_owned": false,
+  "timer_or_other_chat_actions": false,
+  "source_search_authority": "audit_02/search_receipts.json；第一轮转义检索已标废弃，仅保留过程证据",
+  "reference_source_hashes_verified_unchanged": 13,
+  "limitations": [
+    "静态检查只确认Python审查脚本语法和qmake源引用/范围，C++草案尚未编译验证",
+    "原Windows实际行为/活动主题、RK屏幕/中文输入及完整多语言均未验",
+    "对两条样本文字的未来命中不能代替全程序覆盖；Qt标准英文文件也不能自动覆盖硬编码中文菜单",
+    "未改06、参考原件或总文档，未构建/运行参考工程，未调整定时计划"
+  ],
+  "handoff_root": "04_references/sn100_host/offline_followup_20261026/language_scope",
+  "controller_preparation": {
+    "controller": "run_core_verification.py",
+    "controller_sha256": "5ecd6b2d375efc4afb7cc95343619bbf77a03280d3753573287e166e2cc4d7fd",
+    "command_packet": "core_verification_command.json",
+    "input_manifest": "core_verification_inputs.json",
+    "input_manifest_sha256": "3e96e34c4ddc54a64d9965be1bc8e73910ac390550edb1f9956b84fc8898e39b",
+    "private_inputs": 8,
+    "formal_447_sources_or_objects_used": false,
+    "requires_root_slot": true,
+    "execute_now": false,
+    "executed": false,
+    "gui": false,
+    "make_jobs": 2,
+    "child_process_budget_seconds": 300,
+    "outer_timeout_suggestion_seconds": 360,
+    "recording": "逐步真实qmake/make/test/catalog命令、cwd、stdout/stderr、PID/PGID/退出/超时/自有组清场，8输入与23B fixture首尾/退出SHA和现有工具链首尾",
+    "negative_catalog_exit": "load失败2、成功载入但无2条应用样本3，严格区分并保留实际码；父核验流程完成不代表语言切换可用",
+    "outer_actual_exit": "controller_return_code只是计划返回值，外层实际退出还须调用窗口收据核实",
+    "no_retry": true,
+    "anonymous_directory": "verification_01新目录；test_data显式指定，TMPDIR局限本次目录，无生产数据",
+    "environment": "仅子进程TMPDIR和测试数据路径；移除潜在交叉QMAKE/PKG_CONFIG覆盖，不更改LANG/LC_ALL/LANGUAGE或全局环境",
+    "current_execution_slot_owned": false
+  },
+  "chinese_page_restore_proposal": "chinese_page_restore_proposal.json",
+  "minimum_apply_presentation": "优先保留原按钮位置/外观/启用：点击时用现有状态区或CusMessageBox::openWarningBox明确提示当前仅支持简体中文，暂不提供语言切换；无保存/已应用/请重启。若采用提示卡须单例且切页回收。属于待root采纳的有意差异，未改正式页。",
+  "required_formal_files_if_root_approves_view_only": [
+    "ui/frmlanguagesetting.cpp",
+    "ui/frmlanguagesetting.h",
+    "ui/frmlanguagesetting.ui",
+    "ui/language_settings.pri",
+    "root独占shell/frmuserset.cpp/h和shell/shell.pri接线；frmmain状态入口可选"
+  ],
+  "no_fake_language_persistence": "恢复中文外观不增加language_store/配置键、英文选项、翻译器或locale更改；不勾全程序语言切换完成。",
+  "theme_integration_boundary": "继承已确认主壳按钮色与背景；按原listWidgetStyle选中theme/kListWidgetRowSelected注入确认值，不套其它模块整张样式/不引入旧SystemCommon或旧配置。原活动选中色/字体与截图仍待视觉核验。"
+}

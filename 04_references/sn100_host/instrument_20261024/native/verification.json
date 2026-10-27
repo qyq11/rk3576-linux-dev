@@ -1,0 +1,116 @@
+{
+  "schema": "sn100-instrument-native-checkpoint-verification-v1",
+  "verified_utc": "2026-10-24T10:15:14.586687+00:00",
+  "source_scope": "Private frozen source matches final_sync.final_sha256; current formal tree has continued work and was not compared.",
+  "source_sha256_matches_final_sync": true,
+  "source_count": 468,
+  "checkpoint_matches_validated_o09_inputs": true,
+  "checkpoint_input_count": 348,
+  "interface_source_hashes_verified": true,
+  "flags_gate_recomputed_from_makefiles": true,
+  "current_object_count": 168,
+  "current_object_sha256_verified": true,
+  "actual_compiler_invocations": 17,
+  "objects_not_recompiled": 151,
+  "same_sha_as_initial_reported_count": 155,
+  "same_sha_as_initial_interpretation": "155 is equal-SHA count, not make reuse. Four actually recompiled main objects remained byte-identical.",
+  "initial_gui_main_object_baseline_count": 129,
+  "same_sha_from_archived_initial_main_baseline": 124,
+  "recompiled_but_same_sha_from_archived_initial_main_baseline": [
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/native/wsl_release/.obj/history_shell.o",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/native/wsl_release/.obj/catalog_shell.o",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/native/wsl_release/.obj/moc_frmmain.o",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/native/wsl_release/.obj/moc_instrument_page.o"
+  ],
+  "changed_dependency_object_coverage": {
+    "wsl_release": {
+      "object_rules": 137,
+      "changed_dependencies_requiring_compile": {
+        ".obj/frmmain.o": [
+          "instrument/instrument_page.h",
+          "shell/frmmain.cpp",
+          "shell/frmmain.h"
+        ],
+        ".obj/history_shell.o": [
+          "shell/frmmain.h"
+        ],
+        ".obj/catalog_shell.o": [
+          "shell/frmmain.h"
+        ],
+        ".obj/device_status_shell.o": [
+          "instrument/instrument_page.h",
+          "protocol/status_loopback.h",
+          "shell/device_status_shell.cpp",
+          "shell/frmmain.h"
+        ],
+        ".obj/maintenance_store.o": [
+          "instrument/maintenance_store.cpp"
+        ],
+        ".obj/instrument_page.o": [
+          "instrument/instrument_page.cpp",
+          "instrument/instrument_page.h"
+        ],
+        ".obj/instrument_shell.o": [
+          "instrument/instrument_page.h",
+          "shell/frmmain.h",
+          "shell/instrument_shell.cpp"
+        ],
+        ".obj/status_loopback.o": [
+          "protocol/status_loopback.cpp",
+          "protocol/status_loopback.h"
+        ],
+        ".obj/main.o": [
+          "instrument/instrument_page.h",
+          "protocol/status_loopback.h",
+          "shell/frmmain.h",
+          "shell/main.cpp"
+        ],
+        ".obj/moc_frmmain.o": [
+          "shell/frmmain.h"
+        ],
+        ".obj/moc_instrument_page.o": [
+          "instrument/instrument_page.h"
+        ],
+        ".obj/moc_status_loopback.o": [
+          "protocol/status_loopback.h"
+        ]
+      },
+      "new_shell_objects_requiring_compile": [
+        ".obj/moc_read_only_client.o",
+        ".obj/moc_status_loopback.o",
+        ".obj/moc_tcp_transport.o",
+        ".obj/read_only_client.o",
+        ".obj/read_only_messages.o",
+        ".obj/status_loopback.o",
+        ".obj/tcp_transport.o"
+      ],
+      "total_required_compilations": 17,
+      "missing_compilations": []
+    },
+    "wsl_renderer_release": {
+      "object_rules": 31,
+      "changed_dependencies_requiring_compile": {},
+      "new_shell_objects_requiring_compile": [],
+      "total_required_compilations": 0,
+      "missing_compilations": []
+    }
+  },
+  "clock_warning_preserved": "Makefile modification time 0.19 s in the future; Clock skew detected. Actual changed-source/header dependency coverage independently passed without another build.",
+  "main_helper_outputs": {
+    "sn100_shell": {
+      "sha256": "c5da853069071eedc12a601cb5cab8be0529e726196b8ce4d79667b7c232aeb3",
+      "size": 4353576,
+      "format": "ELF64 little-endian x86-64"
+    },
+    "sn100_report_renderer": {
+      "sha256": "a73acc08b9747a4d36d3fae7ecf2034a1880e750936e53fdbecac793c5603c89",
+      "size": 1048272,
+      "format": "ELF64 little-endian x86-64"
+    }
+  },
+  "gui_linked_object_count": 136,
+  "gui_linked_object_sha256_verified": true,
+  "gui_actual_makefile_link_set_verified": true,
+  "no_build_or_gui_started_by_this_audit": true,
+  "runtime_data_archived": false
+}

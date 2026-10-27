@@ -1,0 +1,600 @@
+{
+  "schema": "sn100-qc-local-management-next-contract-v1",
+  "reviewed_utc": "2026-10-24T13:53:48.413090+00:00",
+  "status": "Read-only preparation for recommended O11-1/F08 local control/project/batch business. No implementation or runtime acceptance claim; no parallel plan.",
+  "single_plan": "01_docs/plans/sn100_host_migration_plan.md#integration-next-steps",
+  "safety_scope": "Selected original source/header/Designer/schema definitions only. Never opened production database/configuration, credentials, prohibited public/systemcommon.cpp; never instantiated, built or ran reference or product GUI.",
+  "reference_source_sha256": {
+    "SeeRain450.pro": "bc2fe217a77a6260f1f8ae69d2fb30228f7082a8d5ac2ab3bdce99647f4d9cf2",
+    "frmmain/frmmain.cpp": "90ed19d496a8c029e6379356c06b80950e44d2eb412cd8efc16ed4839a7425f7",
+    "frm_quality/frm_quality.pri": "fcb6ab896385223afd638ecad669bdbbdd98996f2e6ef4a718af5ecdc14215c0",
+    "tool/database/table_dal.cpp": "aa54bb9e9587494e6d9ef46a55d8169822d1a44f5d021a7b7e2f0f4e9f769ea2",
+    "tool/database/table_dal.h": "c48d19e47c68817184f3b7c1567ebfd00eb8ae7bf77943cadd1e12a588c24544",
+    "tool/database/database_com.h": "0b3d2230cd2a1581f4775e710455d89d959e72413c89ad8537b43ac3ed336ae0",
+    "frm_quality/frm_quality.h": "2b045e1b5e85cadafd339153c876855c86de178c89ae7cce52af68d28e2f0c20",
+    "frm_quality/frm_quality.cpp": "94a60355d1bda7c6b424146ed857f6980415fd7f36d2d4d4daba40187e668df8",
+    "frm_quality/frm_quality.ui": "d84a8b1636dd4ccd0379adc600c240b970a72a62b79ab9027a477ad342d965c2",
+    "frm_quality/mask_dlg_add_control.h": "ea8f2084d21523f55f0285763c33cecf2510f9108591066d22ae66b51f8dc1c3",
+    "frm_quality/mask_dlg_add_control.cpp": "3e3f3dd9cf229e0776b5313327a714ea5d0a47b6b9478f78e2a188a63c19f90c",
+    "frm_quality/mask_dlg_add_control.ui": "4d914367472fe137d7ed32426c447336c27710e65de52309c9d71370cc433bac",
+    "frm_quality/mask_dlg_control_batch_setting.h": "fa3d861eecaaf9941a4e4fcd34747374cc20e8765934b92d065d02f149d62fcb",
+    "frm_quality/mask_dlg_control_batch_setting.cpp": "d12e0387fe5c8f06abbe28db17ea47a9e5d56ebc8fc3c61eb9256e177a02bc88",
+    "frm_quality/mask_dlg_control_batch_setting.ui": "69fb7c8aa37c5cf5327d734a1f4e332576d26889ac52721514c9044a9cef21a9",
+    "frm_quality/quality_control_add_wgt.h": "667b911b352cf85c218cd0960f058d01e374f8e10a591a62e637e80804f62f36",
+    "frm_quality/quality_control_add_wgt.cpp": "ca4d41e05ebc495197cda0fc3515d50e1b4d5f3d40fd8d0f0ce355d878403c5d",
+    "frm_quality/quality_control_add_wgt.ui": "9e1640457470b35f832c71136bbfa8bba7234073ffbec90c7b4994be050e4846",
+    "frm_quality/quality_control_item_add_project_wgt.h": "895dd6373d0960123fab6ac977dea439d05358c9fc72d8a7c0a13bb013d8889a",
+    "frm_quality/quality_control_item_add_project_wgt.cpp": "0a75dcad334f5e82db7f3edd7b3bfa18f2acd90f0383e9562be8e27827dfcac4",
+    "frm_quality/quality_control_item_add_project_wgt.ui": "bf8a0149afe79ac69e6ba050c6ef273dc57c31384b62f108fdd2e7c320540620",
+    "frm_quality/quality_string_pasher.h": "c3971b02a5de35eb7d4e5e8c652383d1ee420abb72a8b1b858b139ec691d8870",
+    "frm_quality/quality_string_pasher.cpp": "91599215f90171220d9b76f603bc9e3986bee5d5c5714ecb3d81717d3e260e53",
+    "tool/database/quality/quality_item_table.h": "d19ce1a21c53468c7aa194cf677ebf680e86c037aba7c3bed22597650453988f",
+    "tool/database/quality/quality_item_table.cpp": "d9366993d5d744dd7ce1af0d1c5ffbc90208de0a4a7b06339e170abc39877094",
+    "tool/database/quality/quality_item_proj_table.h": "15e5cb2bf1dbb1ba9ebb0a559c7db7d8704adb99db308f059c8bc0e5bb1573be",
+    "tool/database/quality/quality_item_proj_table.cpp": "4d286453ff7917c22e7af221689f57151f473ba4f53be747f829c2e314092615",
+    "tool/database/quality/quality_rules_table.h": "8ff85e1831f993a27b6e57c3856c89517f9f76e4a1d8a1c43dde309765d81e2a",
+    "tool/database/quality/quality_rules_table.cpp": "305060b76b96d411d36bfb068b38b7d8eca98e8f89e08f0bd595bfecf1b0cb1e",
+    "tool/database/quality/quality_batch_table.h": "afc77296872f8bb94ab65914cfe6da8a4515eb409c3d9b36718d89c025c04bc7",
+    "tool/database/quality/quality_batch_table.cpp": "8a4f0f014d08df4006772fde587d897e4ea8abc90b207d61bb22d0a817327603",
+    "tool/database/quality/quality_data_table.h": "ed0b6dcd2bbd1e08d27ddcd18ad9acd95aa5b6d33524c21e47938aac5222587c",
+    "tool/database/quality/quality_data_table.cpp": "0ae7e659b0e86f8ffe8bf1d22abcbc2aff740dd40bbb95962f2f431e5b53b0d3"
+  },
+  "entry_and_role_contract": {
+    "compile_entry": "SeeRain450.pro includes frm_quality/frm_quality.pri at130; it is not a commented/unenabled task/formula entry.",
+    "main_entry": "frmMain unconditionally constructs frmQuality, inserts it at main index4, registers the Quality button at4 and connects menu group directly to setCurrentIndex. Static selected source has no SN100-specific exclusion.",
+    "visible_actions": {
+      "main_btnAddControl": "quality-control material management -> MaskDlgAddControl",
+      "main_btnEditControl": "set batch -> MaskDlgControlBatchSetting for selected control ID",
+      "main_btnPrint": "created/styled but explicitly hidden in init_component; not a printing acceptance claim"
+    },
+    "roles": "No role/identity/connection check found in selected QC add/edit/project/batch handlers. Original logout/user-change wiring refreshes account/driver/system/reagent (and calibration login hookup), not a QC role slot. Do not invent an admin/engineer-only ACL from numeric IDs; preserve the unified existing account session and record any deliberate new restriction separately.",
+    "limits": "Code-level enabled entry is established, but actual deployed SN100 Windows edition/configuration/active theme/role behavior remains unverified. No production configuration was read.",
+    "evidence": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/SeeRain450.pro",
+        "line": 129,
+        "end_line": 130
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 178,
+        "end_line": 212
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 454,
+        "end_line": 454
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 524,
+        "end_line": 527
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 673,
+        "end_line": 682
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+        "line": 970,
+        "end_line": 975
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/frm_quality.cpp",
+        "line": 100,
+        "end_line": 103
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/frm_quality.cpp",
+        "line": 302,
+        "end_line": 339
+      }
+    ]
+  },
+  "table_source_schemas": {
+    "quality_control_list": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "constraints": "PRIMARY KEY AUTOINCREMENT"
+        },
+        {
+          "name": "item_name",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL UNIQUE"
+        },
+        {
+          "name": "is_used",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "factor_name",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        }
+      ],
+      "declared_foreign_keys_in_table_source": false
+    },
+    "quality_item_proj": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "constraints": "PRIMARY KEY AUTOINCREMENT"
+        },
+        {
+          "name": "item_id",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "proj_name",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        }
+      ],
+      "declared_foreign_keys_in_table_source": false
+    },
+    "quality_rules": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "constraints": "PRIMARY KEY AUTOINCREMENT"
+        },
+        {
+          "name": "item_proj_id",
+          "type": "INTEGER",
+          "constraints": ""
+        },
+        {
+          "name": "type",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "used",
+          "type": "INTEGER",
+          "constraints": ""
+        },
+        {
+          "name": "upper_limit",
+          "type": "VARCHAR",
+          "constraints": ""
+        },
+        {
+          "name": "lower_limit",
+          "type": "VARCHAR",
+          "constraints": ""
+        },
+        {
+          "name": "upper_bound",
+          "type": "VARCHAR",
+          "constraints": ""
+        },
+        {
+          "name": "lower_bound",
+          "type": "VARCHAR",
+          "constraints": ""
+        },
+        {
+          "name": "sd_value",
+          "type": "VARCHAR",
+          "constraints": ""
+        },
+        {
+          "name": "target",
+          "type": "VARCHAR",
+          "constraints": ""
+        },
+        {
+          "name": "r1_2s",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "r1_3s",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "r2_2s",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "r4_1s",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "r5_5s",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "rR4s",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "r7T",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "r10X",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "limit_control",
+          "type": "INTEGER",
+          "constraints": "NOT NULL"
+        }
+      ],
+      "declared_foreign_keys_in_table_source": false
+    },
+    "quality_control_batch": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "constraints": "PRIMARY KEY AUTOINCREMENT"
+        },
+        {
+          "name": "fid",
+          "type": "INTEGER",
+          "constraints": ""
+        },
+        {
+          "name": "batch_name",
+          "type": "VARCHAR",
+          "constraints": "UNIQUE"
+        },
+        {
+          "name": "expiration_date",
+          "type": "VARCHAR",
+          "constraints": ""
+        },
+        {
+          "name": "cur_batch",
+          "type": "INTEGER",
+          "constraints": ""
+        },
+        {
+          "name": "prv_batch",
+          "type": "INTEGER",
+          "constraints": ""
+        }
+      ],
+      "declared_foreign_keys_in_table_source": false
+    },
+    "quality_data": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "constraints": "PRIMARY KEY AUTOINCREMENT"
+        },
+        {
+          "name": "control_name",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "project_name",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "control_batch",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "result_val",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        },
+        {
+          "name": "time",
+          "type": "VARCHAR",
+          "constraints": "NOT NULL"
+        }
+      ],
+      "declared_foreign_keys_in_table_source": false
+    }
+  },
+  "schema_and_reference_facts": {
+    "control": "quality_control_list.item_name globally NOT NULL UNIQUE; is_used and factor_name NOT NULL. New control source explicitly sets used=true. Main page filters used; management lists all.",
+    "association": "quality_item_proj links item_id to control ID and stores proj_name string. It has no source-declared composite uniqueness or FK. UI uses multi-selection to add and remove project associations.",
+    "result_metadata": "quality_rules.item_proj_id points to association; source fields include ResultType/name/used,6 string-valued target/bound/SD fields and9 strategies. No batch_id exists here: targets/rules are not stored per batch in this source schema.",
+    "result_type_scope": {
+      "kUnknown": 0,
+      "kOriginal": 1,
+      "kCalibration": 2,
+      "kRate": 3,
+      "kINR": 4,
+      "kMDA": 5,
+      "kFormula": 6,
+      "creation": "Original manager creates metadata only for source-used types kOriginal..kINR (1..4), not all possible result types."
+    },
+    "strategies": "9 integer fields map to kUncheck0/kWaring1/kFinish2. The source names/typos (r5_5s vs widget cbx_r5_05s etc.) are not proof of accepted rule meaning. Preserve metadata; do not enable clinical rule evaluation.",
+    "batch": "quality_control_batch.fid is control ID; batch_name is globally UNIQUE, not UNIQUE(fid,batch_name). Dates serialize yyyy/MM/dd. Source does not constrain current/previous flags or enforce per-control uniqueness of those flags.",
+    "history": "quality_data links by control_name/project_name/control_batch strings, not control/project/batch IDs. Column name is result_val while C++ member is result_value. Rename/delete policies must protect existing history and not silently orphan chart queries.",
+    "daily_upsert": "Original upAddQualityData searches the name/project/batch/date tuple, updates the first existing row or inserts. The table source declares no unique tuple; result_val is a serialized multi-value string, not automatically one row per measured point.",
+    "sql_scope": "These are C++ source schema definitions, not inspection of a deployed production database. No FK/ON DELETE/current-batch uniqueness declarations were found in the five table sources; base DeleteWithId removes only the selected table row.",
+    "storage_decision_before_coding": "Choose explicit isolated tagged SQLite ownership and existing ProjectsStore reference strategy. If extending catalog.db, freeze schema upgrade/rollback and same-file FK/worker rules; if using separate DB, do not pretend cross-file logical references are SQLite FKs or atomic with the project store."
+  },
+  "original_operations_and_validation": {
+    "control_add": "QualityControlAdd requires nonempty control name and manufacturer, caller requests Head_Letter_Num length16 for both; exact shared validator implementation not read. Confirm stores directly set used=true. Upper manager Save updates name/manufacturer plus selected result-rule metadata sequentially.",
+    "control_valid_checkbox": "ckxValid is rendered from item.used and labelled valid, but inspected Save does not assign its state back to control_item and there is no dedicated signal handler. Editable used-state is an original implementation gap, not already proven working behavior.",
+    "projects": "Chooser lists all original project parameters with multi-selection and initially selects existing names. Confirm removes unchecked associations and creates new association plus used result metadata types1..4. New association/rules creation is not a single source transaction; BulkInsert itself iterates steps without a transaction.",
+    "target_editor": "Original numeric-validator caller passes min0/max9999/4 decimals for six target/bounds/SD strings. Save lacks a full final relation/clinical check. No target/SD/limits or rule efficacy defaults should be invented.",
+    "batch_add": "Original Add requires batch-name/date nonempty; batch name validator caller length32. QDate::fromString yyyy/MM/dd is used without a subsequent validity check. First batch becomes current, previous=false; later batches both flags=false.",
+    "batch_remove": "Selected batch ID is deleted immediately and list/default selection reloads. No history/dependency guard or full group transaction is established by source.",
+    "manager_cancel": "Manager Close/Cancel only closes it; previously committed Add/Delete/project/default actions are not undone. It is different from discarding still-uncommitted name/target text.",
+    "project_chooser_cancel_bug": "Bottom cancel sets isClose=true and prevents caller mutation. Top X clears selection and closes without setting isClose, so caller may treat it as confirm-empty and unlink all projects. Both new cancel paths must mean no mutation, recorded as safety correction."
+  },
+  "default_batch_contract": {
+    "UpdataFlag": "Updates only the specified row's cur_batch/prv_batch booleans; caller coordinates multiple rows. It does not scope/validate fid or enforce one current/previous. SQLITE_DONE alone does not prove a matching row existed.",
+    "explicit_user_switch_sequence": [
+      "Clear existing previous P to(false,false).",
+      "Demote existing current C to(false,true).",
+      "Promote selected N to(true,false).",
+      "New current=N and previous=old C; selecting old P therefore swaps the meaningful current/previous roles."
+    ],
+    "local_migration_action": "Preserve the original explicitly named default-combo user action as an immediate queued worker transaction if desired; no extra Save button is required. Suppress writes during programmatic render/load and give actual success/failure feedback with selection rollback.",
+    "atomic_invariants": [
+      "Selected batch must exist and belong to selected control before clearing any flags.",
+      "Current and previous must be distinct and within same fid; at most one of each per declared scope.",
+      "Same selected/current ID is a no-op.",
+      "All clear/demote/promote changes commit or rollback together, checking affected rows.",
+      "Opening/refreshing a view must not silently repair persisted state or choose an arbitrary unordered row."
+    ],
+    "load_side_effect_and_old_defect": "Both management/batch loaders promote previous to current when no current exists, but do not synchronize cached cur/prv IDs afterward; first combo item may not be that promoted record. Multiple current flags also collapse to last-loaded UI choice without repairing DB. Do not copy this implicit repair behavior.",
+    "deletion_policy_to_freeze": "Keep source global batch-name uniqueness unless an intentional compatibility change is approved. Define safe current/previous/history-referenced deletion, rather than letting load-time repair guess a new default.",
+    "evidence": [
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/quality/quality_batch_table.cpp",
+        "line": 26,
+        "end_line": 59
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/mask_dlg_add_control.cpp",
+        "line": 419,
+        "end_line": 449
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/mask_dlg_add_control.cpp",
+        "line": 567,
+        "end_line": 603
+      },
+      {
+        "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_quality/mask_dlg_control_batch_setting.cpp",
+        "line": 124,
+        "end_line": 218
+      }
+    ]
+  },
+  "source_defects_to_separate_from_intended_local_behavior": [
+    "Main control list filters is_used but subsequent row index reads unfiltered quality_items_; bind QListWidget/UserRole stable IDs, not filtered row index.",
+    "Editing/deleting control by display row and renaming history name keys can misassociate or hide old points; define ID/reference-safe policy.",
+    "Top-X project chooser cancellation can unlink all projects, unlike bottom Cancel.",
+    "Unchecking adjacent project rows removes while iterating forward and may skip one; apply an ID-set diff atomically.",
+    "Deleting a control/association via base DeleteWithId has no demonstrated cascade/history cleanup. Preserve referenced data or reject safely; no silent orphaning.",
+    "Association insert followed by rule bulk inserts and control Save followed by rule Save can partially commit. Use one worker transaction per advertised action.",
+    "ckxValid persistence is not wired in original Save despite its visible label; explicitly decide/document safe local completion or truthful disabled behavior.",
+    "Do not call legacy SqlBase.setSqlString(SystemCommon::mysqlConnectString) or original global table singletons from new GUI; use explicit anonymous root and owned worker connections.",
+    "Do not include the original frm_quality.pri wholesale to obtain layout: it also pulls rule algorithm/chart/parser. Keep unvalidated rule execution and clinical result effects isolated."
+  ],
+  "visual_inputs": {
+    "frm_quality/frm_quality.ui": {
+      "sha256": "d84a8b1636dd4ccd0379adc600c240b970a72a62b79ab9027a477ad342d965c2",
+      "designer_root_geometry": [
+        0,
+        0,
+        1751,
+        968
+      ],
+      "buttons": [
+        {
+          "name": "btnAddControl",
+          "class": "QtMaterialFlatButton",
+          "text": "质控品管理"
+        },
+        {
+          "name": "btnEditControl",
+          "class": "QtMaterialFlatButton",
+          "text": "设置批号"
+        },
+        {
+          "name": "btnPrint",
+          "class": "QtMaterialFlatButton",
+          "text": "打印"
+        }
+      ]
+    },
+    "frm_quality/mask_dlg_add_control.ui": {
+      "sha256": "4d914367472fe137d7ed32426c447336c27710e65de52309c9d71370cc433bac",
+      "designer_root_geometry": [
+        0,
+        0,
+        1868,
+        1091
+      ],
+      "buttons": [
+        {
+          "name": "btnClose",
+          "class": "QtMaterialFlatButton",
+          "text": ""
+        },
+        {
+          "name": "btn_save",
+          "class": "QPushButton",
+          "text": "保存"
+        },
+        {
+          "name": "btn_add_control_project",
+          "class": "QPushButton",
+          "text": "管理质控项目"
+        },
+        {
+          "name": "btn_cancel",
+          "class": "QPushButton",
+          "text": "取消"
+        },
+        {
+          "name": "btn_add_control_item",
+          "class": "QPushButton",
+          "text": "新增质控品"
+        },
+        {
+          "name": "btn_delete",
+          "class": "QPushButton",
+          "text": "删除质控品"
+        }
+      ]
+    },
+    "frm_quality/mask_dlg_control_batch_setting.ui": {
+      "sha256": "69fb7c8aa37c5cf5327d734a1f4e332576d26889ac52721514c9044a9cef21a9",
+      "designer_root_geometry": [
+        0,
+        0,
+        1427,
+        895
+      ],
+      "buttons": [
+        {
+          "name": "btnClose",
+          "class": "QtMaterialFlatButton",
+          "text": ""
+        },
+        {
+          "name": "btn_calendar_set",
+          "class": "QtMaterialFlatButton",
+          "text": ""
+        },
+        {
+          "name": "btn_add_item",
+          "class": "QPushButton",
+          "text": "添加"
+        },
+        {
+          "name": "btn_delete",
+          "class": "QPushButton",
+          "text": "删除"
+        }
+      ]
+    },
+    "frm_quality/quality_control_add_wgt.ui": {
+      "sha256": "9e1640457470b35f832c71136bbfa8bba7234073ffbec90c7b4994be050e4846",
+      "designer_root_geometry": [
+        0,
+        0,
+        1337,
+        893
+      ],
+      "buttons": [
+        {
+          "name": "btnSave",
+          "class": "QPushButton",
+          "text": "确定"
+        },
+        {
+          "name": "btnClose",
+          "class": "QtMaterialFlatButton",
+          "text": ""
+        }
+      ]
+    },
+    "frm_quality/quality_control_item_add_project_wgt.ui": {
+      "sha256": "bf8a0149afe79ac69e6ba050c6ef273dc57c31384b62f108fdd2e7c320540620",
+      "designer_root_geometry": [
+        0,
+        0,
+        1337,
+        893
+      ],
+      "buttons": [
+        {
+          "name": "btnClose",
+          "class": "QtMaterialFlatButton",
+          "text": ""
+        },
+        {
+          "name": "btn_close",
+          "class": "QPushButton",
+          "text": "取消"
+        },
+        {
+          "name": "btnSave",
+          "class": "QPushButton",
+          "text": "确定"
+        }
+      ]
+    }
+  },
+  "visual_limit": "Designer root dimensions are logical source geometry, not an executed dialog/window measurement. Keep original groups/colors/control order and runtime style dependencies; verify actual1600x900/1920 reachability with mask/dialog behavior and justify only necessary font/scale/scroll adaptation. Original active Windows theme/RK remains unverified.",
+  "proposed_offline_slices_not_parallel_plan": [
+    {
+      "slice": "O11-1 control/project/batch local CRUD",
+      "do_now_after_lis_freeze": [
+        "Port original main4 frame, manager/add/project-selector/batch forms with store injection.",
+        "Actual control add/edit/delete, project/result selection and batch add/delete/default switch, tagged anonymous persistence, stable IDs and transactions.",
+        "Preserve source fields/constraints and exact enum IDs; make source defects/safety differences explicit.",
+        "Attach to unified main4 only after independent local pass; old pages cumulative, lifecycle, applicable platform/package and response/resource evidence follow."
+      ],
+      "not_waiting_on": "Real curves, clot endpoint algorithm, calibration fitting, LIS endpoint or physical instrument."
+    },
+    {
+      "slice": "QC local2 anonymous historical point/curve browsing",
+      "independent_inputs": [
+        "Explicit anonymous control/project/batch/date/time/result_val fixtures with frozen parser/units/ordering.",
+        "Source-aware raw value parsing with invalid/missing values preserved, never fabricated as zero.",
+        "Display current/previous batch traces and validated pure statistics only; clinical/out-of-control status stays unvalidated."
+      ],
+      "not_waiting_on": "New physical acquisition or acceptance of clinical rule algorithm.",
+      "parser_caution": "Original getRuleValue splits on '-' and discards empty tokens; negative/scientific/malformed strings and ordering need explicit tests before reusing it."
+    },
+    {
+      "slice": "Later clinical QC/task integration",
+      "start_only_when": [
+        "Confirmed rule/window/bounds/CV-unit semantics and original Windows baseline.",
+        "Real measurement/calibration/result identity and approved instrument/endpoint scope."
+      ],
+      "keep_pending": true
+    }
+  ],
+  "minimum_anonymous_acceptance_matrix": [
+    "Control/manufacturer nonempty/length/control-character/Unicode validation, duplicate name, rename and reopen; stable IDs with hidden/visible control rows.",
+    "Project multi-select add/unlink/confirm versus both cancel paths; duplicate association, result type IDs1..4, supported/unknown project/result/unit reference guards.",
+    "All source batch fields roundtrip; global duplicate batch-name across two controls, invalid/expired dates with declared local policy, first batch default only by explicit creation action.",
+    "Current/previous switch, same-batch no-op, selecting previous, missing/foreign batch ID, zero/multiple flags, delete-current/previous/history reference, full rollback on middle-step failure.",
+    "Actual SQLite busy/write/commit/conflict failures, original bytes/rows unchanged where rejected, GUI draft/selection retained and successful retry.",
+    "Opening/refreshing dialogs and canceling must not make implicit DB writes; callbacks carry value IDs/snapshots, not QWidget/QListWidgetItem pointers into worker.",
+    "Busy/draft guards across dialog close, main navigation, login/logout/normal exit; shared store worker ownership and no real task/transport actions.",
+    "Original visual controls/actual mouse/keyboard reachability and page4 final attach; pure layout or direct click() alone is not the full workflow.",
+    "New slice independently passes then immediate unified cumulative validation, fresh build/package freeze and resource evidence; do not call hardware/rules/clinical QC completed."
+  ],
+  "preparation_only": true,
+  "shared_source_plan_record_or_original_evidence_modified": false,
+  "no_reference_runtime_execution": true,
+  "no_production_db_config_credentials_read": true,
+  "no_prohibited_systemcommon_cpp_read": true,
+  "resource_phase_obedience": "This preparation runs no persistent helper/background task. Stop all remaining reads/hashes immediately when root starts isolated resource measurements."
+}

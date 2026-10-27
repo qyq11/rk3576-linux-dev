@@ -46,16 +46,19 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addOption({QStringLiteral("offline"), QStringLiteral("独立匿名脱机运行")});
+    parser.addOption({QStringLiteral("simulate-role"), QStringLiteral("显式匿名本地角色0至5；0为Guest只读，非生产认证"), QStringLiteral("role"), QStringLiteral("0")});
     parser.addOption({QStringLiteral("data-dir"), QStringLiteral("专用匿名实验数据绝对目录（必填）"), QStringLiteral("directory")});
     parser.addOption({QStringLiteral("exit-after-ms"), QStringLiteral("到期后等待操作完成再安全关闭，未保存草稿保留；0为持续运行"), QStringLiteral("milliseconds"), QStringLiteral("0")});
     parser.process(app);
     const QString directory = QDir::cleanPath(parser.value(QStringLiteral("data-dir")));
     bool validDuration = false;
     const int exitAfter = parser.value(QStringLiteral("exit-after-ms")).toInt(&validDuration);
+    bool validRole = false;
+    const int role = parser.value(QStringLiteral("simulate-role")).toInt(&validRole);
     if (!parser.isSet(QStringLiteral("data-dir")) || !QDir::isAbsolutePath(directory) ||
-        !validDuration || exitAfter < 0)
+        !validDuration || exitAfter < 0 || !validRole || role < 0 || role > 5)
     {
-        qCritical() << "An absolute --data-dir and nonnegative --exit-after-ms are required.";
+        qCritical() << "An absolute --data-dir, nonnegative --exit-after-ms and --simulate-role in 0..5 are required.";
         return 2;
     }
 
@@ -66,6 +69,12 @@ int main(int argc, char *argv[])
     store->moveToThread(&databaseThread);
     QObject::connect(&databaseThread, &QThread::finished, store, &QObject::deleteLater);
     auto *page = new HistoryPage(store);
+    AccountSession session;
+    session.name = role == 0 ? QStringLiteral("Guest") : QStringLiteral("Anonymous report test");
+    session.role = role;
+    session.authenticated = role != 0;
+    session.source = role == 0 ? AccountSessionSource::Guest : AccountSessionSource::Simulated;
+    page->setSession(session);
     page->setDataDirectory(directory);
     HistoryHost window(page);
     HistoryReportController reports(&window);
@@ -85,6 +94,13 @@ int main(int argc, char *argv[])
         page->setProperty("lastStatus", message);
         emit page->statusChanged(message);
         qInfo().noquote() << "REPORT_PDF" << rows << path;
+    });
+    QObject::connect(&reports, &HistoryReportController::htmlExported, page,
+                     [page](const QString &path, int rows) {
+        const QString message = QStringLiteral("HTML已导出：%1行，%2").arg(rows).arg(path);
+        page->setProperty("lastStatus", message);
+        emit page->statusChanged(message);
+        qInfo().noquote() << "REPORT_HTML" << rows << path;
     });
     // Retain the original 1751x968 business coordinates. Scrolling keeps every
     // control reachable on smaller WSLg displays without distorting the page.

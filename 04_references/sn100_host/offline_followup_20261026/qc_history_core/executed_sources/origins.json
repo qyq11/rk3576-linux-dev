@@ -1,0 +1,23 @@
+{
+  "schema": "sn100-private-qc-history-core-origins-v1",
+  "scope": "Private QtCore preparation only; production worker/page/UI unchanged.",
+  "contract": "04_references/sn100_host/offline_followup_20261026/qc_history_contract/handoff.json",
+  "contract_sha256": "647480d0c32497be1844883f2d0ae39a70ed3a17cf4172f0489db65108393e42",
+  "statistics_copies": [
+    {"private":"statistics/statistics.h","source":"06_programs/sn100_host/quality/statistics.h","source_sha256":"04388558193519fb831aec3d74ddb9e321f510f92cb2f39804424049af879ad8","copy_policy":"byte-identical"},
+    {"private":"statistics/statistics.cpp","source":"06_programs/sn100_host/quality/statistics.cpp","source_sha256":"17c48489ef4af997adb358c27d00b11498f6ef71cf782dd203ea4895755511dc","copy_policy":"byte-identical"}
+  ],
+  "parser_provenance": "Source-derived grammar from original quality_result writer/getReportResultsString; unsafe legacy split/at/toDouble-default implementation is not reused.",
+  "intentional_safety_differences": [
+    "Single project QC writer envelope only; multiple/nested project blocks, unknown/MDA/Formula and duplicate result types fail closed.",
+    "Signed/decimal/scientific C-locale numbers parsed without splitting their minus signs; invalid/missing/non-finite/overflow values retain error codes and NaN, never zero.",
+    "Original per-batch date DESC preserved; time DESC then row ID DESC explicitly completes same-date determinism. Previous batch still concatenated before current batch.",
+    "legacyTraceAtCounter preserves original reverse-index behavior only for independent comparison; no silent latest-point correction.",
+    "Unknown units or AssociationSnapshotOnly cannot produce converted display values or mixed history aggregation. Only explicitly declared per-row fixture or per-point stored provenance is accepted.",
+    "Invalid requested-result rows are counted/excluded from numeric aggregation; valid numeric rows with unknown units make aggregate unavailable rather than silently calculating a subset.",
+    "Core row/character budgets are private offline guardrails, not instrument specifications or response-budget acceptance."
+  ],
+  "not_provided": ["SQL read/write or dataset authentication","current catalog unit fallback","manual QC point/import UI","clinical thresholds/status/rule evaluation","instrument or LIS access","QC history page completion"],
+  "caller_boundary": "All supplied rows and per-row unit evidence must come from the same verified bound dataset. This pure value core does not authenticate a database/UUID or establish real-world unit provenance. Future worker integration must preserve the existing identity/reference contract.",
+  "cv_contract": "The existing statistics CLI and this copied helper both expose signed legacyCvRatio=SD/(mean+1e-12), ratio-not-percent. Never multiply by100 for this CV field."
+}

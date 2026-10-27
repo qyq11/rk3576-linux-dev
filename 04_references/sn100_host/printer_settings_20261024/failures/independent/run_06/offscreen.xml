@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="16" failures="1" tests="14" name="PrinterSettingsTest">
+  <properties>
+    <property value="5.15.13" name="QTestVersion"/>
+    <property value="5.15.13" name="QtVersion"/>
+    <property value="Qt 5.15.13 (x86_64&#x002D;little_endian&#x002D;lp64 shared (dynamic) release build; by GCC 13.2.0)" name="QtBuild"/>
+  </properties>
+  <testcase result="pass" name="initTestCase"/>
+  <testcase result="pass" name="emptyListAndOriginalGeometry"/>
+  <testcase result="pass" name="saveUnicodeAndReopenMissing"/>
+  <testcase result="pass" name="invalidUnavailableAndNoop">
+    <!-- message="打印机名称不能为空或无效。" type="qinfo" -->
+    <!-- message="所选打印设备当前不可用，请重新读取本机列表。" type="qinfo" -->
+    <!-- message="打印机名称不能为空或无效。" type="qinfo" -->
+  </testcase>
+  <testcase result="fail" name="storageFailureRetry">
+    <!-- message="打印设置文件不是普通文件或超过64KiB。" type="qinfo" -->
+    <failure message="Compared values are not the same
+   Actual   (((f.page.committedName()))): &quot;\u533F\u540D\u6253\u5370\u8BBE\u5907\u7532&quot;
+   Expected (second)                    : &quot;\u533F\u540D\u6253\u5370\u8BBE\u5907\u4E59&quot;" result="fail"/>
+  </testcase>
+  <testcase result="pass" name="rejectForeignAndSymlink">
+    <!-- message="打印设置格式/脱机标记无效；未导入旧配置。" type="qinfo" -->
+    <!-- message="请指定可写、无符号链接的独立打印设置绝对目录。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="rejectAncestorReplacement">
+    <!-- message="打印设置路径已变为符号链接，未读取或修改。" type="qinfo" -->
+    <!-- message="打印设置未就绪或路径已变为符号链接，未读取或修改。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="draftCancelDiscardAndBusy">
+    <!-- message="打印设置正在处理，请等待完成后再离页。" type="qinfo" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="This plugin does not support propagateSizeHints()" type="qwarn" -->
+    <!-- message="打印设置正在处理，请等待完成后再关闭。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="workerEnumerationKeepsGuiResponsive"/>
+  <testcase result="pass" name="externalSameSizeAndMtimeConflict">
+    <!-- message="打印设置已被其他写入方改变，请重开读取后再修改。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="concurrentLockAndEnumerationConflict">
+    <!-- message="打印设置未就绪或正由其他进程处理。" type="qinfo" -->
+    <!-- message="打印设置已改变，未覆盖其他写入方的数据。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="preserveUnrelatedKeys"/>
+  <testcase result="pass" name="closedStoreRejectsWrite">
+    <!-- message="打印设置未就绪或路径已变为符号链接，未读取或修改。" type="qinfo" -->
+  </testcase>
+  <testcase result="pass" name="cleanupTestCase"/>
+  <system-err>
+<![CDATA[打印机名称不能为空或无效。]]>
+<![CDATA[所选打印设备当前不可用，请重新读取本机列表。]]>
+<![CDATA[打印机名称不能为空或无效。]]>
+<![CDATA[打印设置文件不是普通文件或超过64KiB。]]>
+<![CDATA[打印设置格式/脱机标记无效；未导入旧配置。]]>
+<![CDATA[请指定可写、无符号链接的独立打印设置绝对目录。]]>
+<![CDATA[打印设置路径已变为符号链接，未读取或修改。]]>
+<![CDATA[打印设置未就绪或路径已变为符号链接，未读取或修改。]]>
+<![CDATA[打印设置正在处理，请等待完成后再离页。]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[This plugin does not support propagateSizeHints()]]>
+<![CDATA[打印设置正在处理，请等待完成后再关闭。]]>
+<![CDATA[打印设置已被其他写入方改变，请重开读取后再修改。]]>
+<![CDATA[打印设置未就绪或正由其他进程处理。]]>
+<![CDATA[打印设置已改变，未覆盖其他写入方的数据。]]>
+<![CDATA[打印设置未就绪或路径已变为符号链接，未读取或修改。]]>
+  </system-err>
+</testsuite>

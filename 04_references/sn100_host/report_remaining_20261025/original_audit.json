@@ -1,0 +1,106 @@
+{
+  "schema": "sn100-report-remaining-original-audit-v1",
+  "date": "2026-10-25",
+  "reference_read_only": true,
+  "reference_execution": false,
+  "checklist": [
+    {
+      "reference": "frm_report/frm_report_material.cpp",
+      "function": "on_btnDel_clicked:1166",
+      "activation": "enabled",
+      "decision": "勾选优先，无勾选取当前行；Yes确认后visible=false；不删结果/任务/曲线。原逐行非事务，移植为整批事务。"
+    },
+    {
+      "reference": "frm_report/mask_dlg_display_setting.cpp",
+      "function": "constructor save callback:37; set_header_name:74; on_btnDefaultSort_clicked:195",
+      "activation": "enabled",
+      "decision": "患者/结果列勾选及组内次序；主显示单位不可取消。原按按钮文字解析，移植用稳定键。原默认排序提前落库，移植仅草稿保存后提交。"
+    },
+    {
+      "reference": "frm_report/mask_dlg_display_setting.ui",
+      "function": "MaskDlgDisplaySetting",
+      "activation": "enabled",
+      "decision": "保留原患者/结果两列表、154x84按钮、蓝/白选中主题及业务几何；原外层遮罩空白裁掉并加滚动宿主。"
+    },
+    {
+      "reference": "frm_report/frm_report_material.cpp",
+      "function": "on_btnExport_clicked:1332; exportReport:1353",
+      "activation": "enabled-Windows-CSV",
+      "decision": "列表导出仅CSV，原__WIN32条件；保留已有移植GBK CSV，不改扩展名。"
+    },
+    {
+      "reference": "thirdparty/QtRptProject/QtRPT/qtrpt.cpp",
+      "function": "printHTML:1734; preview HTML action:1881",
+      "activation": "enabled",
+      "decision": "原模板HTML；移植复用原printHTML、UTF-8、helper异步、无自动浏览器打开；&原不转义时明确拒绝。"
+    },
+    {
+      "reference": "thirdparty/QtRptProject/QtRPT/config.pri",
+      "function": "QXLSX_LIBRARY:11",
+      "activation": "disabled-by-original-config",
+      "decision": "宏被注释；现有QtXlsx仅头/Windows二进制，无匹配Linux/ARM实现源码，不新增XLSX。"
+    },
+    {
+      "reference": "frm_report/mask_dlg_report_detail.cpp",
+      "function": "getChartData callers:395/442",
+      "activation": "deferred-data-contract",
+      "decision": "曲线需真实任务/AD-OD/波长/采样/标记/ST-EN合同；匿名库仅结果不含原始曲线，保留待验。"
+    },
+    {
+      "reference": "frm_report/mask_dlg_report_detail.cpp",
+      "function": "on_btnUpdateLis_clicked:615; on_btn_recal_clicked:662",
+      "activation": "debug-or-unreachable",
+      "decision": "上传先发无水无杯调试信号后return；重算只发另一调试信号；不按名称发明LIS/算法。"
+    },
+    {
+      "reference": "frm_report/frm_report_material.cpp",
+      "function": "Ctrl+Shift+M/N:348; save_modified_data:1563",
+      "activation": "hidden-maintenance",
+      "decision": "默认隐藏修改按钮，快捷键维护入口按当前单位反算并改日期/状态；权限/历史快照合同缺失，不解禁。"
+    },
+    {
+      "reference": "frmmain/frmmain.cpp",
+      "function": "slotUserChange:713",
+      "activation": "no-original-report-role-gate-found",
+      "decision": "报告删除/显示无原角色限制。新增Guest只读是离线安全补全；所有明确已认证本地角色1至5允许新本地写，不依赖设备运行标志。"
+    }
+  ],
+  "references": [
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_report/frm_report_material.cpp",
+      "bytes": 90448,
+      "sha256": "a36b21512c9a1db0b0066c83b7efe84626f949b7c6302ba411627a52468781dd"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_report/mask_dlg_display_setting.cpp",
+      "bytes": 6954,
+      "sha256": "f21431bcbffbf425b40a90238ccdf5caae2a2d9e62a828972227434bb078ea49"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_report/mask_dlg_display_setting.ui",
+      "bytes": 9193,
+      "sha256": "645903aea8f482c7ccb0d9e46ad556983f00bf37b832d7849c2c9c7e46933ee1"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+      "bytes": 26286,
+      "sha256": "2a6ed3b7dbe7f93bf98b7eea4064380ec867e35b223ffabee02918bc8c3d70d7"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+      "bytes": 93498,
+      "sha256": "90ed19d496a8c029e6379356c06b80950e44d2eb412cd8efc16ed4839a7425f7"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/thirdparty/QtRptProject/QtRPT/config.pri",
+      "bytes": 441,
+      "sha256": "ba738eddabe2255f420166815cc1f6986d78717ed8f4d1ebe7771222e135def9"
+    },
+    {
+      "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/thirdparty/QtRptProject/QtRPT/qtrpt.cpp",
+      "bytes": 103592,
+      "sha256": "ed805e746b6a598e67d9981abaaeb6156a0533df71a6d20c7fc15666c18b66f5"
+    }
+  ],
+  "historical_defect": "首轮legacy.query()偶发失败根因仍未知；本轮未调整该旧断言或超时，未声称修复。"
+}

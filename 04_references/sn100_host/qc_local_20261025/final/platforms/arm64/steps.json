@@ -1,0 +1,163 @@
+[
+  {
+    "name": "compiler_version",
+    "argv": [
+      "aarch64-linux-gnu-g++",
+      "-dumpfullversion"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T18:34:06.262347+00:00",
+    "stdout_stderr": "compiler_version.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T18:34:06.300763+00:00",
+    "pid": 444,
+    "state": "finished"
+  },
+  {
+    "name": "tool_versions",
+    "argv": [
+      "bash",
+      "-c",
+      "aarch64-linux-gnu-g++ --version; aarch64-linux-gnu-ld --version; /usr/lib/qt5/bin/moc -v; /usr/lib/qt5/bin/uic -v; /usr/lib/qt5/bin/rcc -v"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T18:34:06.336186+00:00",
+    "stdout_stderr": "tool_versions.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T18:34:06.403613+00:00",
+    "pid": 445,
+    "state": "finished"
+  },
+  {
+    "name": "snapshot_before",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py",
+      "snapshot",
+      "--output",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/source_before.json"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T18:34:06.439564+00:00",
+    "stdout_stderr": "snapshot_before.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T18:34:10.000184+00:00",
+    "pid": 450,
+    "state": "finished"
+  },
+  {
+    "name": "list_inputs",
+    "argv": [
+      "bash",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/build.sh",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/build/sn100_shell"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T18:34:10.067275+00:00",
+    "stdout_stderr": "list_inputs.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T18:34:10.709578+00:00",
+    "pid": 451,
+    "state": "finished"
+  },
+  {
+    "name": "build",
+    "argv": [
+      "bash",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/build.sh",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/build/sn100_shell"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T18:34:10.809467+00:00",
+    "stdout_stderr": "build.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T19:05:47.205325+00:00",
+    "pid": 456,
+    "state": "finished"
+  },
+  {
+    "name": "snapshot_after_build",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py",
+      "snapshot",
+      "--output",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/source_after_build.json"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T19:05:47.232534+00:00",
+    "stdout_stderr": "snapshot_after_build.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T19:05:50.524954+00:00",
+    "pid": 1709,
+    "state": "finished"
+  },
+  {
+    "name": "closure",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/check_arm64.py",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/build/sn100_shell",
+      "--additional-binary",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/build/sn100_report_renderer",
+      "--sysroot",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/platforms/arm64/sysroot",
+      "--output-dir",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/dependencies"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T19:06:11.013642+00:00",
+    "stdout_stderr": "closure.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T19:06:28.457270+00:00",
+    "pid": 1880,
+    "state": "finished"
+  },
+  {
+    "name": "package",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py",
+      "package",
+      "--binary",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/build/sn100_shell",
+      "--sysroot",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/o02_login/platforms/arm64/sysroot",
+      "--snapshot",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/native/final_before.json",
+      "--dependencies",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/dependencies/dependency_report.json",
+      "--output",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/packages"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T19:06:28.501324+00:00",
+    "stdout_stderr": "package.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T19:07:02.673630+00:00",
+    "pid": 1937,
+    "state": "finished"
+  },
+  {
+    "name": "snapshot_after_package",
+    "argv": [
+      "python3",
+      "-B",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py",
+      "snapshot",
+      "--output",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/platforms/arm64/source_after_package.json"
+    ],
+    "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+    "started_utc": "2026-10-25T19:07:22.753896+00:00",
+    "stdout_stderr": "snapshot_after_package.log",
+    "exit_code": 0,
+    "finished_utc": "2026-10-25T19:07:26.443160+00:00",
+    "pid": 1939,
+    "state": "finished"
+  }
+]

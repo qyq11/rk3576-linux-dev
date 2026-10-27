@@ -1,0 +1,41 @@
+{
+  "retrieved_date": "2026-10-24",
+  "distribution": "Ubuntu noble",
+  "component": "universe",
+  "architecture": "arm64",
+  "qt_abi": "5.15.13",
+  "source_package": "qtsvg-opensource-src",
+  "package_version": "5.15.13-1",
+  "official_repository": "https://ports.ubuntu.com/ubuntu-ports/",
+  "official_package_page": "https://packages.ubuntu.com/noble/arm64/libqt5svg5-dev",
+  "inrelease_url": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/InRelease",
+  "index_url": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/universe/binary-arm64/Packages.xz",
+  "index_sha256_verified_against_inrelease": "6df230cf5cfebcbd59e4e2713b8eed07dc0aaed66fb471ebf046cb70ccb07275",
+  "signature_key_fingerprint": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+  "signature_verifier": "gpgv --keyring /usr/share/keyrings/ubuntu-archive-keyring.gpg (ordinary WSL user, temporary GNUPG home)",
+  "packages": [
+    {
+      "name": "libqt5svg5",
+      "filename": "libqt5svg5_5.15.13-1_arm64.deb",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/universe/q/qtsvg-opensource-src/libqt5svg5_5.15.13-1_arm64.deb",
+      "size": 147502,
+      "sha256": "813202055ca9743206d33e955cac3152a3bac7abbbc8254e01c18feda6e39d0d"
+    },
+    {
+      "name": "libqt5svg5-dev",
+      "filename": "libqt5svg5-dev_5.15.13-1_arm64.deb",
+      "url": "https://ports.ubuntu.com/ubuntu-ports/pool/universe/q/qtsvg-opensource-src/libqt5svg5-dev_5.15.13-1_arm64.deb",
+      "size": 11010,
+      "sha256": "690245647bb8fd8ce21feaf8bece72c4cf64c85747fe6baa96dc20dd4eb95c1d"
+    }
+  ],
+  "restore_script": "06_programs/sn100_host/shell/prepare_runtime.sh",
+  "restore_scope": "Extraction into explicitly selected private sysroot only; QtSvg runtime, imageformats/iconengines plugins, headers, development metadata and copyright. No system install or board change.",
+  "runtime_candidates": [
+    "/usr/lib/aarch64-linux-gnu/libQt5Svg.so.5.15.13",
+    "/usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqsvg.so",
+    "/usr/lib/aarch64-linux-gnu/qt5/plugins/iconengines/libqsvgicon.so"
+  ],
+  "license_source": "/usr/share/doc/libqt5svg5/copyright",
+  "validation_scope": "Official signed release/index/package SHA chain; dpkg package/version/architecture inspection; extraction and ELF verification in private WSL sysroot. Board execution and instrument validation are separate."
+}

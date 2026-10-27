@@ -1,0 +1,103 @@
+{
+  "schema": "sn100-report-query-static-review-v1",
+  "original_failure": {
+    "log": "04_references/sn100_host/catalog_integration_20261024/o08/logs/cumulative_v2_report.txt",
+    "method": "IntegratedReportTest::persistedHospitalAndLegacyEntry",
+    "assertion": "legacy.query()",
+    "test_source_line": 755,
+    "totals_passed": 3,
+    "totals_failed": 1,
+    "elapsed_ms": 17838,
+    "qpa": "xcb",
+    "qt": "5.15.13 / WSL x86_64",
+    "stages_or_actual_filters_in_log": false,
+    "prior_pdf_preview_succeeded": true,
+    "second_method_reached_legacy_navigation": true
+  },
+  "old_binary_provenance": {
+    "test": "temp/sn100_host/catalog_integration/tests/integrated_report_test",
+    "test_sha256": "1f2b25e41552fecbf8c2a2deede92c21ddddc84bf9743398513ba4af6948c96a",
+    "renderer_sha256": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b",
+    "matches_five_round_frozen_receipt": true,
+    "current_test_source_sha256": "7b500eb86676ffb954ac5e3fd7ea39b6edf17c7700b093488ac82840e39c3a7e",
+    "source_prior_record": "04_references/sn100_host/integrated_report_20261023/mixed_load_offscreen_01/execution.json",
+    "source_matches_prior_load_record": true,
+    "limits": "原失败构建日志指向同一测试源路径及755行；没有原失败瞬间的逐阶段/参数记录，不能用当前观测倒推出原失败直接原因。"
+  },
+  "read_only_database_findings": {
+    "failed_and_retry_db_sha256": "8ed9ebb9516b195664f00dfeac73ebfb36cbbe32c7cdcaa9bf5dc733893ca7e4",
+    "failed_and_retry_byte_identical": true,
+    "all_reports": 6,
+    "visible_reports": 5,
+    "expected_oct23_visible_count": 3,
+    "expected_filter_audited": [
+      "visible=1",
+      "20261023000000 <= data_time <= 20261023235959",
+      "empty sample/barcode"
+    ],
+    "old_actual_ui_filter_known": false,
+    "excluded": "两轮留存数据库的持久内容或结构差异",
+    "not_excluded": [
+      "GUI输入/模态/焦点/可见区域",
+      "日历实际选中值",
+      "当时请求是否提交或排队",
+      "临时SQL锁或异步错误",
+      "实际请求与回复编号/状态"
+    ],
+    "db_reads": "mode=ro&immutable=1；仅计数、日期范围、列名，未读取患者字段值，读前后SHA相同"
+  },
+  "current_call_chain": [
+    {
+      "source": "history/history_page.cpp",
+      "entry": "openQuery()",
+      "meaning": "原控件创建非阻塞查询对话框；日期由日历clicked写入；保存后校验、转换文本到时间并queryPage(0)"
+    },
+    {
+      "source": "history/history_page.cpp",
+      "entry": "queryPage()",
+      "meaning": "ready且非busy才递增请求编号，设busy，通过队列发送HistoryFilter"
+    },
+    {
+      "source": "history/history_store.cpp",
+      "entry": "HistoryStore::query()",
+      "meaning": "工作线程内检查、事务读计数/分页/结果/显示配置，成功发queryReady，失败发带编号error"
+    },
+    {
+      "source": "history/history_page.cpp",
+      "entry": "queryReady/error callbacks",
+      "meaning": "仅接当前请求编号，更新列表/状态并operationFinished；旧测试等非busy且query成功信号"
+    }
+  ],
+  "hypotheses": [
+    {
+      "candidate": "日历点击未落到可见且活动的目标日期",
+      "basis": "selectDate按日历模型中的23定位并发鼠标事件，再等文本；原失败约含一个15秒等待，但没有阶段证据",
+      "proof_required": "目标格坐标/viewport可见区域、activeModal/focus、calendar.clicked日期、实际日期文本、失败阶段",
+      "confirmed": false
+    },
+    {
+      "candidate": "请求未提交、校验未通过或异步回复未被接受",
+      "basis": "query()还包含打开窗口、保存按钮及operationFinished等待多个分支，单个QVERIFY掩盖具体分支",
+      "proof_required": "按钮clicked计数、保存前输入、requestQuery完整filter/id、queryReady/error/id及operationFinished",
+      "confirmed": false
+    },
+    {
+      "candidate": "旧匿名库内容不同",
+      "basis": "两个留存SQLite字节完全相同、预期条件均3条",
+      "confirmed": false,
+      "excluded_as_persistent_difference": true
+    }
+  ],
+  "diagnostic_copy": {
+    "production_changed": false,
+    "assertions_unchanged": true,
+    "wait_limit_15000_unchanged": true,
+    "retry_logic_added": false,
+    "contains_wait_added": false,
+    "new_observers": "按钮点击信号、日历/文本、查询请求、GUI收到的store结果/错误、操作完成；每条带单调时钟与焦点/模态/几何，仅匿名数据",
+    "observer_effect": "文件追加/观察连接可能改变调度；观测副本通过也不能证明旧根因修复",
+    "compiled_or_executed": false
+  },
+  "root_cause_status": "尚未定位；原失败与五轮通过原样保留",
+  "next": "按execution_slot_request.json排队；若出现失败，先按stage和实际filter缩到最短对照，再决定有证据的最小修改，不先加超时或改断言"
+}

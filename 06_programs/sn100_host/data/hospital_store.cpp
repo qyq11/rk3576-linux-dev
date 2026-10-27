@@ -168,6 +168,7 @@ void HospitalStore::registerTypes()
 {
     qRegisterMetaType<HospitalRow>("HospitalRow");
     qRegisterMetaType<HospitalRows>("HospitalRows");
+    registerHospitalDictionaryTypes();
 }
 
 bool HospitalStore::isAllowedType(const QString &type)
@@ -388,6 +389,84 @@ bool HospitalStore::readSnapshot(const QString &type, QString *hospitalName,
         return false;
     }
     return true;
+}
+
+void HospitalStore::queryCommittedDictionary(HospitalDictionaryRequest request)
+{
+    HospitalDictionaryReply reply;
+    reply.request = request;
+    // The editor's uncorrelated error/loaded signals must not end this query,
+    // and a picker failure must not end an unrelated editor operation.
+    const auto readCommitted = [this, &reply, &request]() -> bool
+    {
+        if (QThread::currentThread() != thread())
+        {
+            reply.error = QStringLiteral("字典读取线程不匹配，未执行查询");
+            return false;
+        }
+        if (!m_ready || !m_database.isOpen())
+        {
+            reply.error = QStringLiteral("医院字典尚未准备好或已经关闭");
+            return false;
+        }
+        if (request.requestId.isNull() || !isAllowedType(request.type))
+        {
+            reply.error = QStringLiteral("字典查询已失效，请重新打开选择器");
+            return false;
+        }
+        if (request.filter.size() > kHospitalDictionaryFilterLimit)
+        {
+            reply.error = QStringLiteral("筛选内容过长，请缩短后重试");
+            return false;
+        }
+        QString sql = QStringLiteral("SELECT id,column_one,column_two FROM hospital_information WHERE type=:type");
+        if (!request.filter.isEmpty())
+            sql += QStringLiteral(" AND (column_one LIKE :pattern OR column_two LIKE :pattern)");
+        // The old query left ordering unspecified; use persistent id, not the
+        // displayed row number, to make the committed snapshot deterministic.
+        sql += QStringLiteral(" ORDER BY id ASC");
+        QSqlQuery query(m_database);
+        if (!query.prepare(sql))
+        {
+            reply.error = sqlFailure(QStringLiteral("准备字典查询失败"), query);
+            return false;
+        }
+        query.bindValue(QStringLiteral(":type"), request.type);
+        if (!request.filter.isEmpty())
+            query.bindValue(QStringLiteral(":pattern"), QLatin1Char('%') + request.filter + QLatin1Char('%'));
+        if (!query.exec())
+        {
+            reply.error = sqlFailure(QStringLiteral("读取医院字典失败"), query);
+            return false;
+        }
+        while (query.next())
+        {
+            bool validId = false;
+            HospitalDictionaryEntry entry;
+            entry.id = query.value(0).toLongLong(&validId);
+            if (!validId || entry.id <= 0)
+            {
+                reply.error = QStringLiteral("医院字典记录标识无效，未返回不完整结果");
+                return false;
+            }
+            entry.name = query.value(1).toString();
+            entry.mnemonic = query.value(2).toString();
+            reply.entries.append(entry);
+        }
+        if (query.lastError().isValid())
+        {
+            reply.error = sqlFailure(QStringLiteral("读取医院字典未完成"), query);
+            return false;
+        }
+        query.finish();
+        return true;
+    };
+    reply.succeeded = readCommitted();
+    if (!reply.succeeded)
+        reply.entries.clear();
+    // Destroy the SQL cursor before notifying receivers, including a receiver
+    // that may synchronously close the store. One executed request, one reply.
+    emit dictionaryQueryCompleted(reply);
 }
 
 void HospitalStore::load(QString type)

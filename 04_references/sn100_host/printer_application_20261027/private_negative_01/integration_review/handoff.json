@@ -1,0 +1,38 @@
+{
+  "status": "READONLY_REVIEW_COMPLETE_ONE_CONFIRMED_OMISSION_STOPPED",
+  "utc": "2026-10-26T16:29:41.8979388Z",
+  "directory": "temp/sn100_host/printer_application_20261027/integration_review_cal_01",
+  "conclusion": "Store提交→缓存→预览快照→原Print→独立helper与关闭/未知结局保护路径已有正式代码；本轮只发现一处确定遗漏：Submitted/Cancelled没有接回原主壳状态提示。Root已确认拟修。",
+  "exact_fix_entry": "shell/history_shell.cpp:113-138 enableHistoryReports result connections; existing reportStatus:149-159",
+  "existing_error_path": "history/report_controller.cpp:573-574 emits nativePrintFinished for all outcomes and failed only for Failed/Unknown; existing history_shell.cpp:113-118 receives failed.",
+  "minimal_suggestion": "minimal_connection_suggestion.txt，仅新增两个非错误终态的普通状态连接，复用reportHasOutcome_/reportStatus；没有应用或编译。",
+  "closing_conclusion": "Normal close and signal close share reportBusy guard; preview close stops Native as Unknown; destruction blocks late UI callbacks and bounded-reaps before UI deletion. No second definite missing closing connection established; runtime timing remains pending.",
+  "current_source_notice": "Line references describe the pre-fix497 observation. Root may now change the feedback connection and refreeze; no fix-complete/current hash claim is made.",
+  "artifacts": [
+    {
+      "file": "minimal_connection_suggestion.txt",
+      "bytes": 779,
+      "sha256": "1496732c550d04be260362ab3fbdab57bfd8b9bdbaa9fd629231aad704fe75ca"
+    },
+    {
+      "file": "review.json",
+      "bytes": 7025,
+      "sha256": "e443b6d631ced75cd776df8f0c97d63dd9f716ed755f9fe48c12c22eeac914ac"
+    },
+    {
+      "file": "source_references.json",
+      "bytes": 3666,
+      "sha256": "70339ee9aebf45889dc95c2d38b07649c341ed70ab3782bca055dc344c1a0daf"
+    }
+  ],
+  "artifact_manifest_sha256": "8a6db02a610b167df27f46a487286eb6b2842dd03f1393022ace31e03304496d",
+  "not_run": [
+    "formal497/full-tree rehash",
+    "compiler/qmake/make",
+    "GUI/helper/probe/enumeration",
+    "new general validation controller",
+    "device/spool/default queue actions"
+  ],
+  "writes": "Only this new private review directory; no06/07/candidates/old receipts/README/plan/records writes.",
+  "stopped_writing": true
+}

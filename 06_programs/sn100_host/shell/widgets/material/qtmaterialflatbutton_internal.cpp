@@ -136,7 +136,14 @@ void QtMaterialFlatButtonStateMachine::setHaloSize(qreal size)
 void QtMaterialFlatButtonStateMachine::setHaloScaleFactor(qreal factor)
 {
     m_haloScaleFactor = factor;
-    m_button->update();
+    // 原脉冲时相继续推进；只有实际可见的光晕才需要逐帧重绘。
+    // 透明/禁用按钮原本不画光晕，update却会使带阴影的整块区域反复绘制。
+    // 焦点、按压、勾选和首末帧仍由各自属性setter正常请求更新。
+    if (m_button->isVisible() && m_button->isEnabled() && m_button->isHaloVisible()
+        && m_haloOpacity > 0 && m_haloSize > 0)
+    {
+        m_button->update();
+    }
 }
 
 void QtMaterialFlatButtonStateMachine::startAnimations()

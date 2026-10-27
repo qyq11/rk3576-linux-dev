@@ -1,0 +1,58 @@
+{
+  "schema": "sn100-discard-feedback-targeted-preparation-v1",
+  "status": "Source changed and driver AST checked; no qmake/make/test/GUI run after fix",
+  "module_source_sha256": {
+    "samples/sample_page.cpp": "e9542708ea9225a615b2a91807f9692fb964fb0e2fc236f0e88f9745d2172a7a",
+    "samples/tests/sample_reset_workflow_test.cpp": "c4ff4d35db058f8df40816e78b0e950da0c3dc48910be320fe13e72af099efa9",
+    "samples/tests/sample_reset_workflow_test.pro": "b55af97c6c06c77738db32eaa3752b40887b41501a8ce09b5fe596dd5bf09d1b"
+  },
+  "modified_source_sha256": {
+    "samples/sample_page.cpp": "e9542708ea9225a615b2a91807f9692fb964fb0e2fc236f0e88f9745d2172a7a",
+    "samples/tests/sample_reset_workflow_test.cpp": "c4ff4d35db058f8df40816e78b0e950da0c3dc48910be320fe13e72af099efa9"
+  },
+  "driver_inputs_sha256": {
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_discard_feedback.py": "9dab32b638bc0fbedcbeefa4c7945e6f9a222b21f81e7ea6fd926ec5eb591984",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_reset_slice.py": "589e092c92843da4eaa1917cbc92f6a72610a44f7fb224abb5d9d6b90ce1c02b",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_workflow.py": "de9f43a076c35bbd1e73af17dea531d2e4f7d964fe5421ed872c5c3a744f6972",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell/package_arm64.py": "6d9eeae6ecec97ce132ba0ed5bf461020ec258e85e638f6ed1b519def993f7ac"
+  },
+  "exact_source_backup": "07_backups/sn100_host_sample_discard_feedback_20261026/pre_fix/backup_manifest.json",
+  "old_432_results_validate_post_fix": false,
+  "method": "retestCancelDiscardSaveAndReopen",
+  "expected_totals_each_QPA": [
+    3,
+    0,
+    0
+  ],
+  "QPA": [
+    "offscreen",
+    "xcb"
+  ],
+  "fresh_build_required": true,
+  "command_template": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu-24.04",
+    "-u",
+    "qyq",
+    "--",
+    "python3",
+    "-B",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/run_discard_feedback.py",
+    "--root-go",
+    "--output",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/samples_reset/discard_feedback_01",
+    "--snapshot",
+    "<NEW_FULL_SOURCE_FREEZE_ABSOLUTE_WSL_PATH>"
+  ],
+  "pending_dependency": "Integration chat must supply new full source snapshot and explicit build/GUI slot",
+  "after_fix_compilation_or_GUI_executed": false,
+  "driver_AST_parse_passed": true,
+  "assertions_added": [
+    "Discard clears dirty and restores view states (existing assertions retained)",
+    "lastStatus exact success message and statusChanged exactly once with same payload",
+    "cached committed memory states and revise remain original",
+    "SQL task states and hole revise equal pre-reset saved values",
+    "Original subsequent retest/save/reopen assertions retained"
+  ]
+}

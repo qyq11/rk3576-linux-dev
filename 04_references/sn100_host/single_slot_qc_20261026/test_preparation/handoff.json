@@ -1,0 +1,68 @@
+{
+  "schema": "sn100-single-slot-qc-workflow-test-preparation-v1",
+  "state": "prepared-stopped",
+  "created": "2026-10-26",
+  "formal_delta": {
+    "added": [
+      {
+        "path": "06_programs/sn100_host/samples/tests/sample_qc_workflow_test.cpp",
+        "bytes": 54850,
+        "sha256": "aded17b9af35007907eaab8b738a557099102039b3203ac19fa3dfb9e82840cf"
+      },
+      {
+        "path": "06_programs/sn100_host/samples/tests/sample_qc_workflow_test.pro",
+        "bytes": 442,
+        "sha256": "4958265e814158d1d41c932b4421cfbbd80ee25d34c8f5d7fbf99949bc60485e"
+      }
+    ],
+    "preimage": "Both targets absent before creation; no existing content overwritten",
+    "deleted": [],
+    "modified": []
+  },
+  "actual_qmake_exit": null,
+  "actual_make_exit": null,
+  "actual_test_exit": null,
+  "passed": null,
+  "actual_processes_started": 0,
+  "source_inputs": {
+    "path": "source_inputs.json",
+    "sha256": "3e24300121076b4d039bd11c10c712922b3f7af3bebaa1939039b426010c3500",
+    "scope": "24 directly reviewed small source/harness inputs observed and re-read equal; not a complete transitive frozen build/object proof"
+  },
+  "cases": {
+    "path": "cases.json",
+    "sha256": "e274b045f0ee59fa24b3adaac0d923a7870999d5a160d65f1853eed8d2f5d16a",
+    "business_functions": 7,
+    "business_rows": 8
+  },
+  "future_execution": {
+    "owner": "root only after this handoff; no process started here",
+    "backend": "xcb only, per root current desktop-slot decision",
+    "offscreen": "not scheduled; default small offscreen screen does not satisfy1600x900+frame precondition; no skip/geometry weakening",
+    "fresh_build_directory": "temp/sn100_host/single_slot_qc_20261026/workflow_01/build (must not exist before root creates it)",
+    "qmake_argv": [
+      "qmake",
+      "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/samples/tests/sample_qc_workflow_test.pro",
+      "CONFIG+=release",
+      "CONFIG-=debug"
+    ],
+    "make_argv": [
+      "make",
+      "-j2"
+    ],
+    "test_argv": [
+      "./sample_qc_workflow_test",
+      "-o",
+      "qt.txt,txt",
+      "-o",
+      "qt.xml,junitxml"
+    ],
+    "test_environment": {
+      "QT_QPA_PLATFORM": "xcb",
+      "SN100_SAMPLE_QC_TEST_ROOT": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/single_slot_qc_20261026/workflow_01/runtime_xcb"
+    },
+    "requirements": "Root records actual fresh transitive source/Makefile/object/tool bindings and raw exits; preserve first failure without silently rerunning"
+  },
+  "permissions": "Only new samples/tests cpp/pro plus this own temp explanation; no other formal source or shared build change",
+  "source_write_stopped": true
+}

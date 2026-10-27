@@ -1,6 +1,7 @@
 #include "report_render.h"
 #include "report_pdf_mapping.h"
 #include "qtrpt.h"
+#include "report_remaining_html.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -11,6 +12,13 @@
 #include <QJsonParseError>
 #include <QTemporaryFile>
 #include <QTemporaryDir>
+#include <QTextCodec>
+#include <QJsonObject>
+#include <QPrintDialog>
+#include <QPrinterInfo>
+#include <QUuid>
+#include <cstdio>
+#include <memory>
 #ifdef Q_OS_WIN
 #include <QFontDatabase>
 #include <QSet>
@@ -161,13 +169,117 @@ int fail(int code, const QString &message)
     qCritical().noquote() << "HISTORY_RENDER_ERROR" << message;
     return code;
 }
+
+// 私有Native模式的单请求JSONL；不建立持久队列或跨进程设备对象。
+bool nativeMessage(const QString &token, const QString &kind, const QString &value,
+                   const QString &printer, const QString &message)
+{
+    QJsonObject object;
+    object.insert("protocol", QStringLiteral("sn100-native-print-v1"));
+    object.insert("token", token); object.insert("kind", kind); object.insert("value", value);
+    object.insert("printer", printer); object.insert("message", message.left(1024));
+    const QByteArray bytes = QJsonDocument(object).toJson(QJsonDocument::Compact) + '\n';
+    const size_t size = static_cast<size_t>(bytes.size());
+    return std::fwrite(bytes.constData(), 1, size, stdout) == size && std::fflush(stdout) == 0;
+}
+
+int nativeTerminal(const QString &token, const QString &outcome, const QString &printer, const QString &message)
+{
+    const int code = outcome == "Submitted" ? 0 : outcome == "Cancelled" ? 20 : outcome == "Failed" ? 21 : 22;
+    return nativeMessage(token, QStringLiteral("terminal"), outcome, printer, message) ? code : 22;
+}
+
+bool nativeDevice(const QString &name, QPrinterInfo *result, QString *error)
+{
+    if (name.trimmed().isEmpty() || name.size() > 1024 || name.contains(QChar::Null))
+    { *error = QStringLiteral("没有有效的已保存打印机名称，未使用系统默认设备。"); return false; }
+    bool found = false;
+    for (const QPrinterInfo &known : QPrinterInfo::availablePrinters())
+    {
+        if (known.printerName() != name) continue;
+        if (found || known.isNull())
+        { *error = QStringLiteral("命名打印设备不唯一或不可用，未使用默认设备。"); return false; }
+        *result = known;
+        found = true;
+    }
+    if (!found) *error = QStringLiteral("本机未找到指定打印设备：%1；未提交打印。").arg(name);
+    return found;
+}
+
+int nativePrint(const QStringList &arguments)
+{
+    if (arguments.size() != 5 || QUuid(arguments.at(2)).isNull())
+        return fail(2, QStringLiteral("Usage: sn100_report_renderer --native-print <token> <name64:base64-utf8> <snapshot.json>"));
+    const QString token = arguments.at(2);
+    const QByteArray encodedName = arguments.at(3).mid(7).toLatin1();
+    const QByteArray nameBytes = QByteArray::fromBase64(encodedName);
+    const QString requestedName = QString::fromUtf8(nameBytes);
+    if (!arguments.at(3).startsWith(QStringLiteral("name64:")) || nameBytes.toBase64() != encodedName ||
+        requestedName.toUtf8() != nameBytes)
+        return nativeTerminal(token, "Failed", QString(), QStringLiteral("打印设备名称传值无效，未绘制。"));
+    QString error;
+    HistoryPrintDocument document;
+    QPrinterInfo initialInfo;
+    if (!readSnapshot(arguments.at(4), &document, &error) || !nativeDevice(requestedName, &initialInfo, &error))
+        return nativeTerminal(token, "Failed", requestedName, error);
+
+    // 构造顺序保证借用设备的engine先析构；不走printExec的默认设备回退。
+    QPrinter printer(initialInfo, QPrinter::HighResolution);
+    if (!printer.isValid() || printer.printerName() != requestedName || printer.outputFormat() != QPrinter::NativeFormat)
+        return nativeTerminal(token, "Failed", requestedName, QStringLiteral("无法精确绑定已保存设备，未绘制或替换成默认打印机。"));
+    QString renderError;
+    QtRPT engine;
+    QObject::connect(&engine, &QtRPT::renderError, &engine,
+                     [&renderError](const QString &message) { renderError = message; });
+    if (!prepareHistoryReport(&engine, document, &error) || !renderError.isEmpty() || !engine.setPrinter(&printer))
+    {
+        QString reason = error.isEmpty() ? renderError : error;
+        if (reason.isEmpty()) reason = QStringLiteral("不能绑定本次报告设备。");
+        return nativeTerminal(token, "Failed", requestedName, reason);
+    }
+    if (!nativeMessage(token, "phase", "confirming", requestedName, QString())) return 22;
+
+    // 标准Qt确认页完全属于子进程GUI线程。取消不会调用任何报告绘制。
+    bool rejected = false;
+    QPrintDialog confirmation(&printer);
+    confirmation.setObjectName(QStringLiteral("nativeReportPrintConfirmation"));
+    confirmation.setOption(QAbstractPrintDialog::PrintToFile, false);
+    confirmation.setOption(QAbstractPrintDialog::PrintPageRange, true);
+    QObject::connect(&confirmation, &QDialog::rejected, &confirmation, [&rejected]() { rejected = true; });
+    if (confirmation.exec() != QDialog::Accepted)
+        return rejected
+            ? nativeTerminal(token, "Cancelled", requestedName, QStringLiteral("已取消打印确认，未开始Native绘制。"))
+            : nativeTerminal(token, "Unknown", requestedName, QStringLiteral("确认窗口未给出明确拒绝结局，未宣称取消成功。"));
+
+    const QString selectedName = printer.printerName();
+    QPrinterInfo selectedInfo;
+    // 允许本次确认明确选择其他现有设备；不保存此选择，不猜纸盒/双面规则。
+    if (!nativeDevice(selectedName, &selectedInfo, &error) || !printer.isValid() ||
+        printer.outputFormat() != QPrinter::NativeFormat || !printer.outputFileName().isEmpty())
+        return nativeTerminal(token, "Failed", selectedName,
+                              error.isEmpty() ? QStringLiteral("确认后的命名设备无效或输出不是Native设备，未绘制。") : error);
+    if (!nativeMessage(token, "phase", "submit_started", selectedName, QString())) return 22;
+
+    // 从这次调用起，任何begin/绘制/end错误都不能证明未提交，保守返回Unknown。
+    engine.printPreview(&printer);
+    const QPrinter::PrinterState state = printer.printerState();
+    if (!renderError.isEmpty() || !printer.isValid() || printer.printerName() != selectedName ||
+        printer.outputFormat() != QPrinter::NativeFormat || !printer.outputFileName().isEmpty() ||
+        (state != QPrinter::Idle && state != QPrinter::Active))
+        return nativeTerminal(token, "Unknown", selectedName, renderError.isEmpty()
+                              ? QStringLiteral("设备API未确认正常结束，提交结局不明；不会自动重试。") : renderError);
+    return nativeTerminal(token, "Submitted", selectedName,
+                          QStringLiteral("报告已交给本机打印系统；纸张输出是否完成仍需设备核对。"));
+}
 }
 
 int main(int argc, char **argv)
 {
-    // No desktop preview, physical printer dialog, SQL connection, network or
-    // device operation is created by this independent value-snapshot process.
-    qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("offscreen"));
+    // Mode is determined before QApplication chooses QPA. File exports retain
+    // their isolation; Native confirmation preserves the caller's GUI platform.
+    const bool nativeOutput = argc > 1 && QByteArray(argv[1]) == QByteArrayLiteral("--native-print");
+    if (!nativeOutput)
+        qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("offscreen"));
 #ifdef Q_OS_WIN
     // This child has redirected channels and no console window. Keep its real
     // validation/rendering errors visible to the controller instead of sending
@@ -185,22 +297,35 @@ int main(int argc, char **argv)
     // image or printing plugins; QPA is already loaded. Empty process-local
     // paths make QPrinter use its built-in PDF engine without driver discovery.
     // Never apply this isolation to the main GUI, whose SQL worker needs plugins.
-    QCoreApplication::setLibraryPaths(QStringList());
-    qInfo() << "HISTORY_REPORT_PLUGIN_ISOLATION builtin_pdf_only"
-            << QCoreApplication::libraryPaths();
+    if (!nativeOutput)
+    {
+        QCoreApplication::setLibraryPaths(QStringList());
+        qInfo() << "HISTORY_REPORT_PLUGIN_ISOLATION builtin_pdf_only"
+                << QCoreApplication::libraryPaths();
+    }
 #endif
-    if (application.arguments().size() != 3)
-        return fail(2, QStringLiteral("Usage: sn100_report_renderer <absolute-snapshot.json> <new-absolute-output.pdf>"));
-    const QString snapshotPath = application.arguments().at(1);
-    const QString outputPath = application.arguments().at(2);
+    if (nativeOutput) return nativePrint(application.arguments());
+    const bool htmlOutput = application.arguments().size() == 4
+        && application.arguments().at(1) == QStringLiteral("--html");
+    if (application.arguments().size() != 3 && !htmlOutput)
+        return fail(2, QStringLiteral("Usage: sn100_report_renderer [--html] <absolute-snapshot.json> <new-absolute-output>"));
+    const QString snapshotPath = application.arguments().at(htmlOutput ? 2 : 1);
+    const QString outputPath = application.arguments().at(htmlOutput ? 3 : 2);
     const QFileInfo output(outputPath);
     if (!QDir::isAbsolutePath(outputPath) || output.fileName().isEmpty()
-        || !QFileInfo(output.absolutePath()).isDir() || output.exists() || output.isSymLink())
+        || !QFileInfo(output.absolutePath()).isDir() || output.exists() || output.isSymLink()
+        || (htmlOutput && output.suffix().compare(QStringLiteral("html"), Qt::CaseInsensitive) != 0))
         return fail(2, QStringLiteral("PDF输出必须是已有目录下尚不存在的绝对文件路径；不会覆盖已有文件。"));
 
     QString error;
     HistoryPrintDocument document;
     if (!readSnapshot(snapshotPath, &document, &error)) return fail(3, error);
+    if (htmlOutput && !validateHistoryHtmlSource(document, &error)) return fail(4, error);
+    // Original printHTML still starts a QPainter on its QPrinter even though
+    // labels are emitted to HTML. Supply a private file device explicitly;
+    // an unconfigured/default printer is neither required nor contacted.
+    std::unique_ptr<QTemporaryDir> htmlPainterDirectory;
+    std::unique_ptr<QPrinter> htmlPrinter;
     QtRPT engine;
     QString renderError;
     QObject::connect(&engine, &QtRPT::renderError, &application,
@@ -232,6 +357,31 @@ int main(int argc, char **argv)
         textOpen = false;
     }, Qt::DirectConnection);
     if (!prepareHistoryReport(&engine, document, &error)) return fail(4, error);
+    if (htmlOutput)
+    {
+        // QtRPT uses a default QTextStream codec. Fix it in this isolated
+        // process only; UTF-8 in its meta header must match the actual bytes.
+        QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+        htmlPainterDirectory.reset(new QTemporaryDir(QDir(output.absolutePath()).filePath(QStringLiteral(".history-html-device-XXXXXX"))));
+        if (!htmlPainterDirectory->isValid()) return fail(5, QStringLiteral("不能创建HTML绘制临时目录。"));
+        htmlPrinter.reset(new QPrinter(QPrinter::ScreenResolution));
+        htmlPrinter->setOutputFormat(QPrinter::PdfFormat);
+        htmlPrinter->setOutputFileName(htmlPainterDirectory->filePath(QStringLiteral("drawing.pdf")));
+        if (!engine.setPrinter(htmlPrinter.get())) return fail(4, QStringLiteral("不能设置HTML文件绘制设备。"));
+        QTemporaryFile html(QDir(output.absolutePath()).filePath(QStringLiteral(".history-render-XXXXXX.html")));
+        if (!html.open()) return fail(5, QStringLiteral("不能创建HTML临时文件。"));
+        const QString temporaryHtml = html.fileName();
+        html.close();
+        engine.printHTML(temporaryHtml, false);
+        if (!renderError.isEmpty()) return fail(4, renderError);
+        if (!html.open() || html.size() > kMaximumPdfBytes
+            || !validateHistoryHtml(html.readAll(), &document, &error)) return fail(4, error);
+        html.close();
+        if (!publishPdf(temporaryHtml, outputPath, &error)) return fail(5, error);
+        qInfo().noquote() << "HISTORY_RENDER_HTML_OK rows=" << document.rows.size()
+                         << "bytes=" << QFileInfo(outputPath).size();
+        return 0;
+    }
     QTemporaryFile temporary(QDir(output.absolutePath()).filePath(QStringLiteral(".history-render-XXXXXX.pdf")));
     temporary.setAutoRemove(true);
     if (!temporary.open()) return fail(5, QStringLiteral("无法在输出目录创建本次渲染临时文件。"));

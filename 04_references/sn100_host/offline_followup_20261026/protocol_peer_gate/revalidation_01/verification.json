@@ -1,0 +1,78 @@
+{
+  "schema": "sn100-protocol-peer-gate-revalidation-v1",
+  "passed": true,
+  "original_evidence_before_after_equal": true,
+  "bound_input_count": 56,
+  "revalidation_only": true,
+  "target_or_build_launched_by_revalidator": false,
+  "original_run_modified": false,
+  "original_failure_changed_to_pass": false,
+  "old8h_direct_cause_confirmed": false,
+  "old8h_fixed_claimed": false,
+  "scope": "Validate original Qt text, Qt5 grouped JUnit and all three raw case invariants without a new target run",
+  "exception_type": null,
+  "exception": null,
+  "original_child_receipts": {
+    "qmake": {
+      "actual_exit_code": 0,
+      "owned_group_stopped": true,
+      "original_receipt_sha256": "90f06f1fac35d499b7564c4fbf94b757cf859190959e4da129e62bda5151e8cd"
+    },
+    "make": {
+      "actual_exit_code": 0,
+      "owned_group_stopped": true,
+      "original_receipt_sha256": "dda0ac9fe43acb990fab58593f4e17cc326ced105d740cb2e717508c58ba29f5"
+    },
+    "test": {
+      "actual_exit_code": 0,
+      "owned_group_stopped": true,
+      "original_receipt_sha256": "8706f59ef63acfb6d423396487dab0a79ddf0adfc2d805b1106b40d776944c08"
+    }
+  },
+  "original_parent_exit": 1,
+  "original_parent_exit_source": "Root retrospective tool observation, not a process-emitted independent receipt",
+  "original_run_verification_passed": false,
+  "xml_group_count": 3,
+  "xml_all_groups_pass": true,
+  "qt_text_totals": [
+    5,
+    0,
+    0,
+    0
+  ],
+  "case_results": [
+    {
+      "case": "baseline",
+      "expected_failure": false,
+      "actual_request_success": true,
+      "actual_request_finished": 1,
+      "events": 114,
+      "raw_sha256": "e7c7e8472a0caeb42095b7e56a1fa593c812011bb6311e3b58fa97161bda8c20",
+      "independent_raw_order_and_byte_checks": true
+    },
+    {
+      "case": "peer_read_gate",
+      "expected_failure": true,
+      "actual_request_success": false,
+      "actual_request_finished": 1,
+      "events": 135,
+      "raw_sha256": "52557766faca29e457db1d7386f42ba2cbccec1724f8ff9d2604fb6fa465a219",
+      "independent_raw_order_and_byte_checks": true
+    },
+    {
+      "case": "peer_reply_gate",
+      "expected_failure": true,
+      "actual_request_success": false,
+      "actual_request_finished": 1,
+      "events": 135,
+      "raw_sha256": "7d60cac40d1e6ad45526e2dc23796511253e0931b9daa775a1cfcee158c9bb17",
+      "independent_raw_order_and_byte_checks": true
+    }
+  ],
+  "executed_old_driver_sha256": "2d2b92f533706ba82fc5877ed76fd3b8115f2a72320e9e3c4dfc030d0656b264",
+  "reused_validate_case_source_sha256": "aeacb407eb7bf551301e17945d957c10bfeb95ef43c05ebdf9641856211c4b14",
+  "recorded_driver_main_or_execute_called": false,
+  "binary_sha256_from_original_preexecution_receipt": "d06783b0b821b33b2bf906944dd77144f9cb9f938314ede74c7cdb3a6ae80bb2",
+  "target_reexecuted": false,
+  "build_reexecuted": false
+}

@@ -1,0 +1,88 @@
+{
+  "status": "passed_one_authorized_WSL_negative_execution",
+  "slot": "CALIBRATION_FORMAL_PRINTER_FLOW_01",
+  "slot_release": true,
+  "created_utc": "2026-10-26T18:02:15.493156+00:00",
+  "reviewed_preparation": {
+    "path": "temp/sn100_host/printer_application_20261027/formal_flow_execution_preparation_02/handoff.json",
+    "sha256": "f7d05ae5dff4e677bf507b73dd8c1be23b8ec404114093e4158071b259586f5a",
+    "member_manifest_sha256": "97fa43e14e02b2e59fc1c5ea6b1c3c70dec7281e7f45672fd33d9a4b962a325c"
+  },
+  "execution": "temp/sn100_host/printer_application_20261027/formal_flow_execution_01",
+  "windows_parent": "temp/sn100_host/printer_application_20261027/formal_flow_execution_parent_01",
+  "controls": "temp/sn100_host/printer_application_20261027/formal_flow_execution_controls_01",
+  "actual_windows_parent_exit": 0,
+  "actual_windows_postflight_exit": 0,
+  "actual_negative_helper_normal_exit": 21,
+  "native_child_starts": 1,
+  "native_child_exits": 1,
+  "controller_failed_signals": 1,
+  "compiled_new_driver_objects": 1,
+  "reused_native02_production_objects": 202,
+  "excluded_original_main_object": "wsl_release/.obj/main.o",
+  "new_moc_objects": 0,
+  "formal_inputs_verified": 497,
+  "native_original_objects_verified": 233,
+  "original_tools_verified": 9,
+  "all_seven_commands_match_sealed_argv": true,
+  "no_retries": true,
+  "real_Qt_directory_both_reads": [],
+  "missing_printer_name": "SN100_FORMAL_ABSENT_d5f2dac2-93e1-4b66-89cc-36da8f56e8d1",
+  "controller_outcome": "Failed",
+  "main_shell_error_status_verified": true,
+  "busy_close_rejected": true,
+  "normal_original_guarded_close": true,
+  "workers": {
+    "all_joined": true,
+    "history_closed": 1,
+    "hospital_closed": 1,
+    "printer_closed": 1
+  },
+  "eight_owned_groups_gone": [
+    "301",
+    "392",
+    "395",
+    "401",
+    "405",
+    "408",
+    "409",
+    "421"
+  ],
+  "actual_helper_pid_gone": 419,
+  "formal_freeze_sha256": "cde62734463a6efa65d2b8d8f600e497bcd02a13902763bf5e86e62a4c41d185",
+  "current_formal_helper_sha256": "cfe7085824d62168cfd2242631566f58de8056e49ac2b0a03f05f34436debcd1",
+  "new_artifacts": {
+    "passed": true,
+    "phase": "after_run",
+    "source_headers_resources": 497,
+    "native_receipt_objects_checked_by_existing_api": 233,
+    "production_main_objects": 203,
+    "production_objects_reused": 202,
+    "new_driver_object_expected": 1,
+    "new_moc_expected": 0,
+    "new_driver_object_sha256": "6fabce526ea8fae03054e614a1a5afbea6e37e2dbb691c75925e89027d4a04e3",
+    "new_driver_binary_sha256": "e0db2434466007193de70f27a4efad4b45d81d5836623912f692cffa8d5dd132"
+  },
+  "evidence_manifest": {
+    "file": "evidence_manifest.json",
+    "sha256": "97fc4061e760e1d1a34c095402ab5251e08ea3955f7a9bd7123b42a1a2d93d99",
+    "files": 74
+  },
+  "result_verification": {
+    "file": "result_verification.json",
+    "sha256": "f4726fdb8d061566d40dbd34014b3400008140215931541afa2dd67c43a333fa"
+  },
+  "scope_zh": "WSL 电脑环境中，用原版公开预览 Print 动作验证已保存设备当前不存在这一负例；实际正式子进程、控制器、历史页及主壳错误状态、关闭保护和三个数据工作线程收尾均通过。测试入口替代 main.o，复用当前正式对象，未重新构建整个正式主壳。",
+  "not_verified_zh": [
+    "原版界面视觉及鼠标点击",
+    "主列表选择到打印按钮的入口",
+    "不存在设备的设置保存操作",
+    "系统打印确认、提交和打印队列",
+    "Submitted/Cancelled 分支",
+    "真实出纸",
+    "本轮 ARM64 交叉编译及 RK 板端运行",
+    "真实仪器"
+  ],
+  "diagnostics_zh": "Qt 在挂载的 Windows 临时路径报告运行目录权限为 0777；原控制器将其追加到设备不存在提示中。原始日志保留，未为此修改权限、配置或断言。Windows 原始 stderr 为 132 字节 WSL 提示，按原始字节保留。",
+  "writes_zh": "本轮仅新增 temp 下执行控制、执行输出、Windows 父进程证据和本交接目录；正式源码、封存准备包及旧证据保持原样。未提交或推送 Git。"
+}

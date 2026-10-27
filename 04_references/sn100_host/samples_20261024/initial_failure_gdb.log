@@ -1,0 +1,25 @@
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+********* Start testing of SamplesTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+QINFO  : SamplesTest::initTestCase() environment 5.15.13 "offscreen"
+PASS   : SamplesTest::initTestCase()
+[New Thread 0x7ffff21ff6c0 (LWP 397)]
+[New Thread 0x7ffff19fe6c0 (LWP 398)]
+
+Thread 1 "samples_test" received signal SIGSEGV, Segmentation fault.
+0x00005555555db912 in SamplesTest::pageDraftAndDependencyRefresh() [clone .isra.0] ()
+#0  0x00005555555db912 in SamplesTest::pageDraftAndDependencyRefresh() [clone .isra.0] ()
+#1  0x00007ffff6ce3d3a in QMetaMethod::invoke(QObject*, Qt::ConnectionType, QGenericReturnArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument, QGenericArgument) const () from /lib/x86_64-linux-gnu/libQt5Core.so.5
+#2  0x00007ffff77c3c4f in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#3  0x00007ffff77c47c7 in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#4  0x00007ffff77c4ca9 in ?? () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#5  0x00007ffff77c5210 in QTest::qRun() () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#6  0x00007ffff77c55e7 in QTest::qExec(QObject*, int, char**) () from /lib/x86_64-linux-gnu/libQt5Test.so.5
+#7  0x00005555555800df in main ()

@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux\temp\sn100_host\qc_history_integration_20261026\integration_drivers\archive_history_measure.py", line 426, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux\temp\sn100_host\qc_history_integration_20261026\integration_drivers\archive_history_measure.py", line 388, in main
+    worker(attempt)
+    ~~~~~~^^^^^^^^^
+  File "C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux\temp\sn100_host\qc_history_integration_20261026\integration_drivers\archive_history_measure.py", line 266, in worker
+    summary = validate()
+  File "C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux\temp\sn100_host\qc_history_integration_20261026\integration_drivers\archive_history_measure.py", line 193, in validate
+    require(metrics['schema'] == 'sn100-private-history-response-v1' and metrics['complete'] is True
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            and metrics['errors'] == 0 and metrics['measured_click_queries'] == 40
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            and metrics['setup_history_queries'] == 1 and metrics['total_history_queries'] == 41
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            and metrics['worker_reply_count_total'] == 41 and len(metrics['samples']) == 40,
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            'Actual response operation counts differ')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux\temp\sn100_host\qc_history_integration_20261026\integration_drivers\archive_history_measure.py", line 33, in require
+    raise RuntimeError(message)
+RuntimeError: Actual response operation counts differ

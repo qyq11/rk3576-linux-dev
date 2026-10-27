@@ -1,0 +1,10 @@
+--- preserved01/common.py
++++ new02/common.py
+@@ -247,6 +247,7 @@
+ 
+ def verify_preparation():
+     plan = load(Path(__file__).with_name('preparation.json'))
++    require(plan['status'] == 'prepared_static_checks_passed', 'Static role checks must be completed before execution')
+     for path, digest in plan['executed_inputs_sha256'].items():
+         require(sha(path) == digest, 'Prepared post-platform driver/input changed: ' + path)
+     require(sha(NATIVE / 'verification.json') == plan['native_verification_sha256'], 'Native receipt changed')

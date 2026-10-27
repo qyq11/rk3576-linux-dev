@@ -1,0 +1,361 @@
+{
+  "schema": "sn100-report-remaining-handoff-v1",
+  "date": "2026-10-25",
+  "module": "报告剩余功能移植",
+  "status": "独立离线交付完成、源码停止写入、等待统一整合",
+  "ready_for_integration": true,
+  "baseline": "已验371项输入的LIS检查点；本清单仅报告切片48项相关输入指纹，不是新的整程序冻结，也不沿用旧361/353/348包冒充新功能。",
+  "completed_slices": [
+    "原规则软删除及关联保留/权限补全/取消/事务失败恢复/末页复位",
+    "患者显示列隐藏、稳定键排序与保存重开；同项目结果排序及主显示/未知保护",
+    "原QtRPT模板HTML异步文件导出、中文回读、取消/不覆盖/失败恢复",
+    "保留既有患者编辑、统计、GBK CSV、模板/PDF及中文映射，并运行适用离线回归"
+  ],
+  "changed_files": [
+    {
+      "path": "06_programs/sn100_host/history/history_core.pri",
+      "bytes": 757,
+      "sha256": "2a2c6d2d0f91903c791cf3ba69922e2f0a35d61d5cd82c1388142e8da04a6843"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.cpp",
+      "bytes": 47230,
+      "sha256": "bf238e626bcb58ce45de1512cdfe2ef46e5ca6e9578a0e261810d1b863594cce"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.h",
+      "bytes": 3622,
+      "sha256": "a94ed3e36247811eaa0652b214b8a18ab5de2ceb1af69a865bd4b3c46d658244"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_store.cpp",
+      "bytes": 44456,
+      "sha256": "c6737173a876d7a92e1941c0e3dcbf6e2470d7bf72041fc258e45088b612d5df"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_store.h",
+      "bytes": 6099,
+      "sha256": "8c682ccf824742654c4d5a3581e34c73a80f7e02ca0b1f5fb85de409d63acd6b"
+    },
+    {
+      "path": "06_programs/sn100_host/history/main.cpp",
+      "bytes": 6849,
+      "sha256": "4e44cd2a372f5a90c70c5270d69a3285f31373852594a268ac39a23e02cb479e"
+    },
+    {
+      "path": "06_programs/sn100_host/history/renderer.pro",
+      "bytes": 525,
+      "sha256": "e43441cd58a254910979615222a1b9f4922e76b5e86d00a44fe2007fbcd75a7f"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.cpp",
+      "bytes": 13729,
+      "sha256": "474d3607c3c7bfad0220ab5e2ec353aee4a3d5c225749f7a89e05b79e755c5ba"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_controller.h",
+      "bytes": 2510,
+      "sha256": "1a085d958309c4f9347eced72858601675d835022ed31026ce3cf52852f6756b"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_engine.pri",
+      "bytes": 342,
+      "sha256": "6443f4db2ca9c2f5fef6b911ef8a766fe3b314410518f4e096c2e64aa91b990f"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_renderer.cpp",
+      "bytes": 13464,
+      "sha256": "d8c933f5cd086c753fa0ae507bf17608afb93e39fe7b64200e10d35bb8b55581"
+    },
+    {
+      "path": "06_programs/sn100_host/history/resources.qrc",
+      "bytes": 259,
+      "sha256": "3dcc69422678c9832c9c10e37424758b662fac41abe1f3deb57858f4e2de7f82"
+    },
+    {
+      "path": "06_programs/sn100_host/history/mask_dlg_display_setting.ui",
+      "bytes": 8455,
+      "sha256": "abde85d2aba7482641b444ae7ee421340a7c8ee3420245b80de519c159dd6730"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_display_dialog.cpp",
+      "bytes": 11922,
+      "sha256": "1400458a5d0d1c51e371e7227d5193bf829ba687c837a45534f234f8494cafa0"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_display_dialog.h",
+      "bytes": 1220,
+      "sha256": "0afcfec5f22d5209c622dd118b9c85f32c1d8cfd59aea9b2d8ec50f7871a4f9c"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_html.h",
+      "bytes": 2736,
+      "sha256": "95d0a55ea6746334691659a4b7535924ec40c65a4c34ad1d2740d1820bc52a9a"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_store.cpp",
+      "bytes": 10900,
+      "sha256": "2d325e1b82ac703b2ceba147a92b89b43a8c79a4f4045be7138277463aa72618"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_view.h",
+      "bytes": 659,
+      "sha256": "abcb636b46a732c762859471491f6a17291e6d67710d4468afba9780b9d89fb8"
+    },
+    {
+      "path": "06_programs/sn100_host/history/report_remaining_wsl.sh",
+      "bytes": 2426,
+      "sha256": "440af44a7854416f8493fe9ec4d1fd1bf62c3e0e1076c0f1df447d90d8dbc291"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_html_test.cpp",
+      "bytes": 10622,
+      "sha256": "ec912d54a06b4a71a539b2dfde41d8715d7282fc296a9f17e26b5311985eec57"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_html_test.pro",
+      "bytes": 484,
+      "sha256": "bbe93fafa77eeec51a8fce56ba6e9302926c9f74af0e6c296fd46a9db0acd8a9"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_html_verify.py",
+      "bytes": 3319,
+      "sha256": "2f9398fd212b03dcb96b2d3c3cae7cdafa32c6f77eb8f2b38a317b9a45ddf381"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_test.cpp",
+      "bytes": 22929,
+      "sha256": "512bbbec714a9cc3145ce969917e8a203f9f49794cbdb23eff8289de5fb4d117"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_test.pro",
+      "bytes": 319,
+      "sha256": "0ea7161fab31071f4e30dae4da5eac16cf347b1da4002e0ce37e8e33f9811213"
+    },
+    {
+      "path": "06_programs/sn100_host/tests/report_remaining_verify_csv.py",
+      "bytes": 1625,
+      "sha256": "27899af557996e7e96ccc565339a678dd837eb15d2c7ae92d1b2ed9b74b925bc"
+    }
+  ],
+  "deleted_files": [],
+  "moved_files": [],
+  "original_basis": "original_audit.json",
+  "interface_and_data_contract": "interface_contract.json",
+  "tests": [
+    {
+      "name": "final report remaining",
+      "command": "SN100_REPORT_FORCE_REBUILD=1 bash 06_programs/sn100_host/history/report_remaining_wsl.sh core-test",
+      "exit_code": 0,
+      "qt": {
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "core_final_02.log",
+      "scope": "真实worker/SQLite/Widgets：正常、空非法、重复、Guest、软删引用保留、整批回滚、锁/SQL写失败恢复、取消、草稿/busy、外部busy撤权、列排序、21条末页删除、正常关闭。"
+    },
+    {
+      "name": "separate process reopen",
+      "command": "QT_QPA_PLATFORM=offscreen SN100_REPORT_REMAINING_DIR=<same final case directory> core_build/report_remaining_test persistenceRead",
+      "exit_code": 0,
+      "qt": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "core_final_02.log",
+      "scope": "独立OS进程回读id2已隐藏、4份可见、性别首列、年龄隐藏。"
+    },
+    {
+      "name": "CSV independent parser",
+      "command": "python3 06_programs/sn100_host/tests/report_remaining_verify_csv.py <final case directory>",
+      "exit_code": 0,
+      "reports": 5,
+      "data_rows": 6,
+      "columns": 12,
+      "exact_cells": 84,
+      "scope": "GBK中文、双引号/逗号/换行/未知原文/非法值；D-D倍率1000、PT小数1位；显示改动前后逐字节相同。"
+    },
+    {
+      "name": "HTML and existing PDF",
+      "command": "bash temp/sn100_host/report_remaining_20261025/html_run.sh html_run_03",
+      "exit_code": 0,
+      "qt": {
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "html/html_run_03.log",
+      "scope": "原toolbar、3/64行UTF8、两解析器逐字段/数值数量、取消/重复/busy/失败恢复/竞态不覆盖/缺helper恢复及PDF1页双解析器回归。"
+    },
+    {
+      "name": "patient draft guard final",
+      "command": "QT_QPA_PLATFORM=offscreen regression_history_page_guard_test/history_page_guard_test",
+      "exit_code": 0,
+      "qt": {
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "guard_final.txt"
+    },
+    {
+      "name": "existing report/statistics contract",
+      "command": "QT_QPA_PLATFORM=offscreen regression_history_report_test/history_report_test statisticsGolden statisticsBoundaries statisticsGrouping documentContract rendererOwnership",
+      "exit_code": 0,
+      "qt": {
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "old_report_contract.txt",
+      "scope": "此组在末页两行修复前构建；被测统计/文档/渲染所有权代码未改，最终page由core/guard/standalone重验。"
+    },
+    {
+      "name": "existing exact Chinese PDF",
+      "command": "bash temp/sn100_host/report_remaining_20261025/run_regressions.sh; see saved env and individual invocation",
+      "exit_code": 0,
+      "qt": {
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "pdf_text_regression.txt",
+      "scope": "1页/5页、64行、Unicode别名/非BMP/合字/组合字符：pypdf及pdfplumber精确字符/结果/页数；6张渲染实际审查，无缺行遮挡。"
+    },
+    {
+      "name": "standalone native build and normal exit",
+      "command": "bash temp/sn100_host/report_remaining_20261025/main_final.sh",
+      "exit_code": 0,
+      "log": "main_final.log",
+      "scope": "WSL x86_64 Release，正式独立main+helper。offscreen真实启动/建匿名库/首查/退出，EXIT code=0；非长期测试。"
+    },
+    {
+      "name": "invalid CLI",
+      "command": "sn100_history --offline --data-dir <new absolute dedicated directory> --simulate-role 6 --exit-after-ms 10",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "log": "invalid_cli_final.log"
+    }
+  ],
+  "counts_note": "所有Qt项数含init/cleanup，不能把各调用数相加称独立业务用例。所有本轮GUI用例为offscreen真实Qt控件/worker，非可见WSLg命中验收。",
+  "failures_and_retests": [
+    {
+      "kind": "test harness",
+      "log": "failure_core_pagination_wrong_widget_type.log",
+      "exit_code": 134,
+      "actual": "新增末页用例完成列序/删除断言后，把ldtCurPage的QLabel误作QLineEdit解引用，QtTest进程signal11；修正为QLabel并先核非空，最终12/0及3/0通过。不是产品自动崩溃。"
+    },
+    {
+      "kind": "original HTML prerequisite and test conditions",
+      "log": "html/html_run_02.log",
+      "exit_code": 1,
+      "actual": "原printHTML无输出设备导致QPainter begin失败；helper改为私有临时PDF绘制设备。DrvFs chmod不形成真实只读失败、预览指针注册缺失分别纠正测试；最终7/0，原日志保留。"
+    },
+    {
+      "kind": "static review recovery fix",
+      "actual": "显示保存信号进入busy后被外部busy/撤权拒绝可能卡住；拒绝时saveFailed恢复可取消，最终真实页面用例覆盖。"
+    },
+    {
+      "kind": "static review pagination fix",
+      "actual": "原新删除成功沿旧总数留末页可能空页；改按原版回第一页，新增21条页面用例已通过。"
+    },
+    {
+      "kind": "known historical unresolved",
+      "actual": "legacy.query()首轮偶发失败根因仍未知；旧复测通过及本批离线通过不代表修复。"
+    },
+    {
+      "kind": "environment",
+      "actual": "WSL localhost代理提示、offscreen propagateSizeHints及DrvFs约0.2s未来时间/clock skew保留；core用make -B，最终page/main显式强制对象重编并重新链接，不把警告隐藏。"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/standalone/sn100_history",
+      "bytes": 1392696,
+      "sha256": "323e58808ae477aea7023ce3ce2d6282917f21c2de9a9e2a241991abd1f17001"
+    },
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/standalone/sn100_report_renderer",
+      "bytes": 1119544,
+      "sha256": "2de67df76a6871884e52584cefb613fa89daa657a59938435f61f4bd875fe7eb"
+    },
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/core_build/report_remaining_test",
+      "bytes": 742272,
+      "sha256": "e3095554cda501dfe628cf7fdc454f25d6475d61ee512b5e2c057151c5970c95"
+    },
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/html_tests/report_remaining_html_test",
+      "bytes": 1117392,
+      "sha256": "e04eaef6c08f26e7c0951d1df34bfc7460671b07ede38cb3a8355b1068e1522f"
+    },
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/regression_history_page_guard_test/history_page_guard_test",
+      "bytes": 681696,
+      "sha256": "7bff2b3a7c56847a8f3a90beac2b36c267111e63f9e834bb69ff137e53fd62e2"
+    },
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/regression_history_report_test/history_report_test",
+      "bytes": 1670608,
+      "sha256": "bef40b18fe7a3661b1d49caf2d47ca90c45f63944ff65c1811531c351fc2da78"
+    },
+    {
+      "path": "temp/sn100_host/report_remaining_20261025/regression_history_pdf_text_test/history_pdf_text_test",
+      "bytes": 80464,
+      "sha256": "61269a312c3a66d2dd1e027f3602fe61b9c11160819a75655303f4ef8ba9cb3b"
+    }
+  ],
+  "source_fingerprints": "source_fingerprints.json",
+  "screenshots": {
+    "report_pdf_renderings": [
+      "pdf_text/five_pages_64_rows-1.png",
+      "pdf_text/five_pages_64_rows-2.png",
+      "pdf_text/five_pages_64_rows-3.png",
+      "pdf_text/five_pages_64_rows-4.png",
+      "pdf_text/five_pages_64_rows-5.png",
+      "pdf_text/one_page_alias_pairs_quotes_nonbmp-1.png"
+    ],
+    "html_pdf_regression": "html/pdf_regression-1.png",
+    "business_gui": "原Windows及最终统一WSLg/1600x900截图、真实拖放与输入命中由整合窗口串行取证；本窗口未代称视觉通过。"
+  },
+  "standalone_entry": {
+    "build": "bash 06_programs/sn100_host/history/report_remaining_wsl.sh build",
+    "test": "bash 06_programs/sn100_host/history/report_remaining_wsl.sh core-test",
+    "run": "bash 06_programs/sn100_host/history/report_remaining_wsl.sh run",
+    "runtime": "temp/sn100_host/report_remaining_20261025/standalone_runtime",
+    "permission": "独立run显式模拟role4；直接main默认role0 Guest，--simulate-role 1..5仅匿名本地验证。"
+  },
+  "required_shell_wiring": [
+    "attachHistoryPage时connect(frmMain::sessionChanged,HistoryPage::setSession)并page->setSession(accountSession())；page自带requestSetSession->worker queued连接，整合方不要再跨线程直接操作SQL。未接时新删除/显示默认Guest禁用。",
+    "enableHistoryReports给htmlExported接与pdfExported同等级的reportHasOutcome_/reportStatus/REPORT_HTML；已有busyChanged同时覆盖预览/HTML/PDF。原toolbar接管已在controller，无新增菜单或公共UI需求。",
+    "统一history_core.pri已带新增store/dialog/UI；renderer.pro已带新增store，report_engine.pri已带HTML头。公共freeze/ARM对象复用/Windows输入白名单须纳入新文件和history_display_contract.json的QRC alias，按新依赖重新moc/编译。不要只复用371旧对象。",
+    "累计核Guest/所有角色、身份切换撤销、显示草稿取消/保存、末页删除、报告预览/HTML/PDF忙态切页/注销/退出；保留原legacy.query偶发记录。",
+    "回读项目catalog_contract.json；本批不创建项目/试剂关联或假结果，真实结果项目ID/单位快照联动另接明确合同。"
+  ],
+  "resource_measurement_entry": {
+    "command": "python3 06_programs/sn100_host/tests/observe_linux_process.py --output-dir <new dedicated central resource directory> --timeout 45 -- env QT_QPA_PLATFORM=xcb <standalone/sn100_history> --offline --data-dir <dedicated marked runtime> --simulate-role 4 --exit-after-ms 30000",
+    "load": "匿名固定6报告/5可见、含复测；先在界面选2026/10/22至24并固定操作序列，另以core-test的21条末页/列序输入补交互采样。空闲启动观测不能代表业务预算。",
+    "status": "仅提供可复用独立入口；本窗口未启动长期测量，资源/响应/线程FD/存储增长/RT同板影响由整合窗口集中执行。"
+  },
+  "deferred_and_skipped": [
+    "XLSX原QXLSX_LIBRARY未定义，参考仅Windows DLL/头缺Linux/ARM实现源码；没有安装依赖或CSV伪装。",
+    "曲线有真实原入口，但匿名结果库缺AD/OD/波长/采样/标记/ST-EN合同；修改为隐藏维护快捷键且按当前配置反算，未经确认不解禁。",
+    "原详情上传提前return并触调试信号，重算仅调试信号；实际LIS/算法/新结果生成/实体打印均未实施。",
+    "当前结果列缺非主main_result=false合同，全部保护不隐藏；未知不能猜。患者列与排序已验。",
+    "损坏显示偏好人工核查/恢复、磁盘满/断电和真实生产数据导入迁移仍待验。",
+    "原Windows完整行为/主题、浏览器HTML版面、可见WSLg拖放/1600x900、三平台统一主辅构建、RK/仪器、资源预算/长稳均由整合或设备阶段分别验收。"
+  ],
+  "validation_boundaries": {
+    "WSL_x86_64_independent": "passed as listed",
+    "original_Windows_behavior_visual": "pending",
+    "Windows32_final_build": "integration owner pending",
+    "ARM64_final_build": "integration owner pending",
+    "unified_shell": "pending wiring and cumulative tests",
+    "RK_instrument": "unavailable; no connection/actions",
+    "resource_budget_long_stability": "pending centralized measurement; no 60-round/hour-long repeat"
+  },
+  "rollback": "只回退本清单history/及专属测试改动并重建匹配main+helper；保留所有匿名运行数据/导出/证据。optional偏好表不改原结果格式，旧版忽略它；soft-delete visible=0旧版仍尊重，不自动复活报告。不得删除或降级覆盖catalog/医院/账户/原件，公共整合接线由整合方单独回退。",
+  "scope_confirmation": "没有改shell/main/frmmain/frmuserset、projects/reagents/calibration/quality/data、公共构建/总文档；无worktree/commit/push/定时任务；未连接RK/仪器/LIS。"
+}

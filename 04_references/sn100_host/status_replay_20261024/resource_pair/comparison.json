@@ -1,0 +1,983 @@
+{
+  "started_utc": "2026-10-24T06:12:39.543607+00:00",
+  "finished_utc": "2026-10-24T06:13:04.378590+00:00",
+  "checks": {
+    "both_groups_run": true,
+    "groups_pass": true,
+    "initial_data_identical": true,
+    "original_runtime_unchanged": true,
+    "final_inputs_unchanged": true
+  },
+  "passed": true,
+  "frozen_inputs": {
+    "temp/sn100_host/status_replay_20261024/native/wsl_release/sn100_shell": "150c9f0335e564cc0cef367c82a876908afa1177657e3944864e01d12fd54bbc",
+    "temp/sn100_host/status_replay_20261024/native/wsl_release/sn100_report_renderer": "cc1c0d4562f6a56670a7884a2875ecede77407ae5ee83e7db4587375b8001d3b",
+    "06_programs/sn100_host/tests/fixtures/status_replay.json": "c8c7e9430cea401032c75e6d65792f316567159fb3eaa2121afb98de89a10b1e"
+  },
+  "cpu_clock_ticks_per_second": 100,
+  "groups": [
+    {
+      "name": "without_replay",
+      "pid": 416,
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/native/wsl_release/sn100_shell",
+        "--offline",
+        "--accounts",
+        "--history",
+        "--catalog",
+        "--samples",
+        "--data-dir",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/resource_pair/without_replay/runtime",
+        "--viewport",
+        "1600x900"
+      ],
+      "elapsed_seconds": 12.170196141999998,
+      "exit_code": 0,
+      "sample_count": 118,
+      "nominal_sample_period_seconds": 0.1,
+      "checks": {
+        "exit_zero": true,
+        "ordinary_sigterm": true,
+        "ready": true,
+        "threads_stopped": true,
+        "final_inputs_unchanged": true,
+        "hospital_closed": true,
+        "account_closed": true,
+        "history_closed": true,
+        "project_closed": true,
+        "reagent_closed": true,
+        "sample_closed": true,
+        "no_replay_output": true
+      },
+      "passed": true,
+      "tail": {
+        "selection": "existing process samples with 6 <= elapsed <= 12 seconds; no interpolation",
+        "start_elapsed_seconds": 6.1018858620000005,
+        "end_elapsed_seconds": 11.963320906,
+        "observed_seconds": 5.861435043999999,
+        "sample_count": 58,
+        "cpu_tick_delta": 114,
+        "cpu_percent_one_logical_core": 19.44916204721828,
+        "ranges": {
+          "VmRSS": {
+            "minimum": 259808,
+            "maximum": 267928
+          },
+          "VmHWM": {
+            "minimum": 263380,
+            "maximum": 267928
+          },
+          "Pss": {
+            "minimum": 246799,
+            "maximum": 255515
+          },
+          "Threads": {
+            "minimum": 41,
+            "maximum": 41
+          },
+          "fd_count": {
+            "minimum": 55,
+            "maximum": 55
+          }
+        },
+        "threads_by_observed_cpu_delta": [
+          {
+            "tid": 416,
+            "start_time_ticks": 667,
+            "comm": "sn100_shell",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 112,
+            "cpu_percent_of_tail_one_core": 19.10794867796884
+          },
+          {
+            "tid": 417,
+            "start_time_ticks": 677,
+            "comm": "QXcbEventQueue",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 2,
+            "cpu_percent_of_tail_one_core": 0.3412133692494435
+          },
+          {
+            "tid": 418,
+            "start_time_ticks": 681,
+            "comm": "QDBusConnection",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 420,
+            "start_time_ticks": 684,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 421,
+            "start_time_ticks": 684,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 422,
+            "start_time_ticks": 684,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 423,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 424,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 425,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 426,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 427,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 428,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 429,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 430,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 431,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 432,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 433,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 434,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 435,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 436,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 437,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 438,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 439,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 440,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 441,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 442,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 443,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 444,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 445,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 446,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 447,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 448,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 449,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 450,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 451,
+            "start_time_ticks": 701,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 452,
+            "start_time_ticks": 738,
+            "comm": "O03HospitalData",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 453,
+            "start_time_ticks": 738,
+            "comm": "O03AccountDatab",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 454,
+            "start_time_ticks": 738,
+            "comm": "O03HistoryDatab",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 455,
+            "start_time_ticks": 738,
+            "comm": "O08SampleDataba",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 456,
+            "start_time_ticks": 738,
+            "comm": "O07ReagentDatab",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 457,
+            "start_time_ticks": 738,
+            "comm": "O07ProjectDatab",
+            "observed_first_seconds": 6.1018858620000005,
+            "observed_last_seconds": 11.963320906,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          }
+        ],
+        "thread_accounting_limit": "10Hz /proc sampling. A transient thread can disappear between reads; first/last observed counters omit CPU before first observation and after last. comm is a kernel thread name, not a causal explanation."
+      }
+    },
+    {
+      "name": "with_replay",
+      "pid": 461,
+      "command": [
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/native/wsl_release/sn100_shell",
+        "--offline",
+        "--accounts",
+        "--history",
+        "--catalog",
+        "--samples",
+        "--data-dir",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/status_replay_20261024/resource_pair/with_replay/runtime",
+        "--viewport",
+        "1600x900",
+        "--status-replay",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/fixtures/status_replay.json"
+      ],
+      "elapsed_seconds": 12.176667884999997,
+      "exit_code": 0,
+      "sample_count": 118,
+      "nominal_sample_period_seconds": 0.1,
+      "checks": {
+        "exit_zero": true,
+        "ordinary_sigterm": true,
+        "ready": true,
+        "threads_stopped": true,
+        "final_inputs_unchanged": true,
+        "hospital_closed": true,
+        "account_closed": true,
+        "history_closed": true,
+        "project_closed": true,
+        "reagent_closed": true,
+        "sample_closed": true,
+        "replay_eof_invalid": true,
+        "replay_stopped": true
+      },
+      "passed": true,
+      "tail": {
+        "selection": "existing process samples with 6 <= elapsed <= 12 seconds; no interpolation",
+        "start_elapsed_seconds": 6.076397846999999,
+        "end_elapsed_seconds": 11.969331466,
+        "observed_seconds": 5.892933619000001,
+        "sample_count": 58,
+        "cpu_tick_delta": 145,
+        "cpu_percent_one_logical_core": 24.605741278417067,
+        "ranges": {
+          "VmRSS": {
+            "minimum": 268084,
+            "maximum": 268084
+          },
+          "VmHWM": {
+            "minimum": 268084,
+            "maximum": 268084
+          },
+          "Pss": {
+            "minimum": 252864,
+            "maximum": 252864
+          },
+          "Threads": {
+            "minimum": 41,
+            "maximum": 41
+          },
+          "fd_count": {
+            "minimum": 55,
+            "maximum": 55
+          }
+        },
+        "threads_by_observed_cpu_delta": [
+          {
+            "tid": 461,
+            "start_time_ticks": 1904,
+            "comm": "sn100_shell",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 143,
+            "cpu_percent_of_tail_one_core": 24.26635174354235
+          },
+          {
+            "tid": 462,
+            "start_time_ticks": 1906,
+            "comm": "QXcbEventQueue",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 2,
+            "cpu_percent_of_tail_one_core": 0.3393895348747182
+          },
+          {
+            "tid": 463,
+            "start_time_ticks": 1909,
+            "comm": "QDBusConnection",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 464,
+            "start_time_ticks": 1910,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 465,
+            "start_time_ticks": 1910,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 466,
+            "start_time_ticks": 1910,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 467,
+            "start_time_ticks": 1922,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 468,
+            "start_time_ticks": 1922,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 469,
+            "start_time_ticks": 1922,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 470,
+            "start_time_ticks": 1922,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 471,
+            "start_time_ticks": 1922,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 472,
+            "start_time_ticks": 1922,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 473,
+            "start_time_ticks": 1922,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 474,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 475,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 476,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 477,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 478,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 479,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 480,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 481,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 482,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 483,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 484,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 485,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 486,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 487,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 488,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 489,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 490,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 491,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 492,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 493,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 494,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 495,
+            "start_time_ticks": 1923,
+            "comm": "Thread (pooled)",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 496,
+            "start_time_ticks": 1945,
+            "comm": "O03HospitalData",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 497,
+            "start_time_ticks": 1945,
+            "comm": "O03AccountDatab",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 498,
+            "start_time_ticks": 1945,
+            "comm": "O03HistoryDatab",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 499,
+            "start_time_ticks": 1945,
+            "comm": "O08SampleDataba",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 500,
+            "start_time_ticks": 1945,
+            "comm": "O07ReagentDatab",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          },
+          {
+            "tid": 501,
+            "start_time_ticks": 1945,
+            "comm": "O07ProjectDatab",
+            "observed_first_seconds": 6.076397846999999,
+            "observed_last_seconds": 11.969331466,
+            "observed_samples": 58,
+            "cpu_tick_delta": 0,
+            "cpu_percent_of_tail_one_core": 0.0
+          }
+        ],
+        "thread_accounting_limit": "10Hz /proc sampling. A transient thread can disappear between reads; first/last observed counters omit CPU before first observation and after last. comm is a kernel thread name, not a causal explanation."
+      }
+    }
+  ],
+  "scope": "One sequential pair, WSL x86_64 Release, same Qt xcb/1600x900 and six-store parameters, cloned identical closed anonymous data; only replay flag differs. No new seeding/credential, no network/device.",
+  "limits": "Short exploratory comparison only, one run per condition, fixed order without replication. Does not establish statistical significance, complete causality, RK resource budget, UI latency or long stability. Thread names identify measured counters only."
+}

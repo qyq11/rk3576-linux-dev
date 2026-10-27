@@ -1,0 +1,122 @@
+{
+  "schema": "sn100-project-modules-preparation-v1",
+  "prepared_utc": "2026-10-25T16:50:23.1302692Z",
+  "status": "prepared_not_executed",
+  "explanation": "仅准备四组原测试与两个独立入口的补验驱动，并做Python AST语法检查；没有导入或执行驱动，没有启动构建、测试、GUI或资源测量。待主窗口35次回归全部停止后，串行运行。",
+  "driver": "run_projects_modules.py",
+  "driver_sha256": "c0b67f95fd7b9e70bfd59383e0b8e74e2008c590ae7dd7b3d424fd6150621d55",
+  "common_sha256_observed_at_preparation": "87e36ba3135a9b2e76b025e025ce693bac77bad4f806ed4ebe1cef7942ced4d0",
+  "python_ast": {
+    "actual_exit": 0,
+    "marker": "AST_SYNTAX_OK run_projects_modules.py; not imported or executed",
+    "driver_imported": false,
+    "driver_executed": false,
+    "argv": [
+      "wsl.exe",
+      "-d",
+      "Ubuntu-24.04",
+      "-u",
+      "qyq",
+      "--",
+      "python3",
+      "-B",
+      "-c",
+      "import ast,pathlib; p=pathlib.Path('/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/integration_drivers/run_projects_modules.py'); ast.parse(p.read_text(encoding='utf-8-sig'), filename=str(p)); print('AST_SYNTAX_OK run_projects_modules.py; not imported or executed')"
+    ]
+  },
+  "builds_started": false,
+  "tests_started": false,
+  "gui_started": false,
+  "native_verification_executed_during_preparation": false,
+  "production_or_test_sources_modified": false,
+  "shared_helpers_or_public_docs_modified": false,
+  "original_formal_deliveries_modified": false,
+  "run_after_cumulative_35_stops": true,
+  "execution_command_powershell": "wsl.exe -d Ubuntu-24.04 -u qyq -- python3 -B /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/qc_local_20261025/integration_drivers/run_projects_modules.py --root-go",
+  "explicit_gate": "--root-go; Ubuntu-24.04; ordinary qyq; fresh projects_modules_final; no installation or remote actions",
+  "expected_source_inputs": 426,
+  "required_freeze_sha256": "57f3b03290cc3635a5772a7169d22c1713f164186ab3b368028a0f35f8b710ed",
+  "required_projects_store_sha256": "b234dd9d2609fc1b424396a2d9244f4dc2a9b4929fb0f9dae46a12685141702f",
+  "explicit_source_hashes_at_preparation": {
+    "projects/tests/project_advanced_test.pro": "0e380d108e314a60868d485fe71a6e6869cb647caad18673360730b9bc20ca7d",
+    "projects/tests/project_advanced_test.cpp": "488f78d4fdc102727cd3f2862ef6fbe4afb010b65492cce3c6f5f5e172ff9c84",
+    "projects/tests/projects_test.pro": "d4612acd00a9e94cb852fa1e2cbd276b8bf895fadd4b5467b4bbcce07134c929",
+    "projects/tests/projects_test.cpp": "faf2e15b6977f201d4f52f10eb21755aa11bc4373c845c777c0c0110b0002212",
+    "reagents/tests/reagent_batch_test.pro": "ca8a0bce20e7ca190f9ccb31140cd5e199fb045dfb5042a99aee6ebd6e0a1eb5",
+    "reagents/tests/reagent_batch_test.cpp": "2e604438cd9d31dab13745c11b3f7260186f1850de6b27970c8b47f52cac7287",
+    "reagents/tests/tests.pro": "4969319efb5d2de336c9a3929d1a423ec55f05de8e8ca67c5be114bdfc54c9fd",
+    "reagents/tests/test_reagents.cpp": "a175ce2ed536b11916afce4b614b6e79734f0ba33cf9a3d48e9205f1cc8be5a2",
+    "projects/projects.pro": "6d615ae1cf05b5ab808ff4d7cc69d20bebad395b871ec1a026e8639f054c6b71",
+    "projects/main.cpp": "5cd49a60eda922e079168fa567629efcdce92114be2386db977b27e3c49d79ab",
+    "reagents/reagents.pro": "6003b88830d8dc8965c69332bf1cdd2fb1ffbb2a5847a08d0ee85d62514c56da",
+    "reagents/main.cpp": "ce596354b924e4e39df18dbd1f36142da4fb40294091bb5b357f0f70db59d936",
+    "projects/projects_store.cpp": "b234dd9d2609fc1b424396a2d9244f4dc2a9b4929fb0f9dae46a12685141702f"
+  },
+  "serial_targets": [
+    {
+      "project": "projects/tests/project_advanced_test.pro",
+      "target": "project_advanced_test",
+      "expected_passes_including_init_cleanup": 11
+    },
+    {
+      "project": "projects/tests/projects_test.pro",
+      "target": "projects_test",
+      "expected_passes_including_init_cleanup": 9
+    },
+    {
+      "project": "reagents/tests/reagent_batch_test.pro",
+      "target": "reagent_batch_test",
+      "expected_passes_including_init_cleanup": 11
+    },
+    {
+      "project": "reagents/tests/tests.pro",
+      "target": "test_reagents",
+      "expected_passes_including_init_cleanup": 11
+    },
+    {
+      "project": "projects/projects.pro",
+      "target": "sn100_projects",
+      "anonymous_cli": "--data-dir <fresh absolute runtime/catalog> --seed-demo --test-engineer --exit-after-ms 1800"
+    },
+    {
+      "project": "reagents/reagents.pro",
+      "target": "sn100_reagents",
+      "anonymous_cli": "--data-dir <fresh absolute runtime/catalog> --seed-demo --test-engineer --quit-after-ms 1800 --screenshot <fresh stage/page_loaded.png>"
+    }
+  ],
+  "execution_limits": {
+    "max_make_jobs": 2,
+    "qmake_timeout_seconds": 120,
+    "make_timeout_seconds": 900,
+    "test_timeout_seconds": 240,
+    "app_timeout_seconds": 30,
+    "cleanup": "Only the new session/process group owned by this invocation; no broad process matching"
+  },
+  "readiness": {
+    "projects": "核对源码实际输出：项目/单位已读取；当前仅保存本地配置，未同步仪器。出现一次，并且实际退出码为0、未超时。",
+    "reagents": "源码没有正向加载日志。现成 --screenshot 只在 ReagentStore::loaded -> ReagentsPage::readyChanged(true) 后300ms生成；核对全新1751x968 PNG的结构/CRC，并核对实际0退出、未超时。此截图只证明页面加载，不声明外观验收。",
+    "catalog": "程序自行创建全新匿名库；退出后只读检查真实标记、版本、匿名种子、空表、完整性和引用。试剂初始化不会持久化24个孔位，因此不伪造24行断言。运行数据库不做哈希归档。",
+    "normal_close": "1800ms现成 QWidget::close 定时器；主程序既有阻塞close及线程wait之后返回实际0。没有虚构额外close日志。"
+  },
+  "expected_output": {
+    "directory": "temp/sn100_host/qc_local_20261025/projects_modules_final/",
+    "directory_exists_at_preparation": false,
+    "verification": "projects_modules_final/verification.json",
+    "schema": "sn100-project-modules-final-v1",
+    "fields": [
+      "passed",
+      "source_inputs",
+      "source_snapshot_sha256",
+      "main_artifacts",
+      "checks",
+      "stages",
+      "tests",
+      "standalone",
+      "artifacts"
+    ],
+    "raw_receipts": "<stage>/logs/{qmake,make,test|app}.{command.json,process.json,exit.json,exit,log}; test raw qt.txt + qt.xml (junitxml)",
+    "hash_receipts": "426 source + 8 test inputs + driver/common + native Makefile/main/helper/native objects before/after; each fresh build empty-before, generated sources/Makefile/all objects/binary after-make/after-run/final; qmake SOURCES/OBJECTS proof; six artifact SHA individually indexed",
+    "pass_policy": "passed initially false; true only after all6 fresh builds, all4 complete Qt suites, both real loaded/normal-close apps and all hash comparisons actually succeed; exceptions retain original exit and partial receipts"
+  },
+  "collector_followup": "Root在35次回归完成后串行执行本脚本；将projects_modules_final/verification.json及原始收据纳入最终collect必需门槛。此准备未编辑collect_final.py。"
+}

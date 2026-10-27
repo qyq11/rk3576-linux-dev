@@ -1,0 +1,322 @@
+make: Entering directory '/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_core_execution_01/build'
+g++ -c -pipe -O2 -std=gnu++1y -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_TESTLIB_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR='"/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_core_execution_01/build"' -I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_targeted_preparation_01 -I. -I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate -I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/history -I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -o projects_store.o /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_store.cpp
+g++ -c -pipe -O2 -std=gnu++1y -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_TESTLIB_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR='"/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_core_execution_01/build"' -I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_targeted_preparation_01 -I. -I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate -I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/history -I/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -o projects_current_format.o /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp: In member function ‘bool ProjectsStore::readCurrentResultFormat(ProjectCurrentFormatSnapshot*, QString*)’:
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:68:53: error: invalid use of incomplete type ‘class QVariant’
+   68 |     while (query.next()) metadata.insert(query.value(0).toString(), query.value(1).toString());
+      |                                          ~~~~~~~~~~~^~~
+In file included from /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType:1,
+                 from /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/../data/account_store.h:5,
+                 from /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_store.h:4,
+                 from /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:1:
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:68:80: error: invalid use of incomplete type ‘class QVariant’
+   68 |     while (query.next()) metadata.insert(query.value(0).toString(), query.value(1).toString());
+      |                                                                     ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:79:39: error: invalid use of incomplete type ‘class QVariant’
+   79 |     const bool haveTable = query.value(0).toInt() == 1;
+      |                            ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:87:20: error: invalid use of incomplete type ‘class QVariant’
+   87 |     if (query.value(0).toLongLong() > 1024 || query.value(1).toLongLong() > 4096 || query.value(2).toLongLong() > 256)
+      |         ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:87:58: error: invalid use of incomplete type ‘class QVariant’
+   87 |     if (query.value(0).toLongLong() > 1024 || query.value(1).toLongLong() > 4096 || query.value(2).toLongLong() > 256)
+      |                                               ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:87:96: error: invalid use of incomplete type ‘class QVariant’
+   87 |     if (query.value(0).toLongLong() > 1024 || query.value(1).toLongLong() > 4096 || query.value(2).toLongLong() > 256)
+      |                                                                                     ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:116:57: error: invalid use of incomplete type ‘class QVariant’
+  116 |             const QString selectionKey = key(query.value(0).toLongLong(), query.value(1).toString());
+      |                                              ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:116:86: error: invalid use of incomplete type ‘class QVariant’
+  116 |             const QString selectionKey = key(query.value(0).toLongLong(), query.value(1).toString());
+      |                                                                           ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:117:48: error: invalid use of incomplete type ‘class QVariant’
+  117 |             const qint64 resultId = query.value(2).toLongLong();
+      |                                     ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:118:94: error: invalid use of incomplete type ‘class QVariant’
+  118 |             if (selections.size() == 4096 || selections.contains(selectionKey) || query.value(0).toLongLong() <= 0
+      |                                                                                   ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:119:44: error: invalid use of incomplete type ‘class QVariant’
+  119 |                     || !bounded(query.value(1).toString(), 32) || resultId < 1 || resultId > 4
+      |                                 ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:120:35: error: invalid use of incomplete type ‘class QVariant’
+  120 |                     || query.value(5).toString() != QStringLiteral("integer")
+      |                        ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:121:35: error: invalid use of incomplete type ‘class QVariant’
+  121 |                     || query.value(6).toString() != QStringLiteral("integer") || query.value(7).toString() != QStringLiteral("integer")
+      |                        ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:121:93: error: invalid use of incomplete type ‘class QVariant’
+  121 |                     || query.value(6).toString() != QStringLiteral("integer") || query.value(7).toString() != QStringLiteral("integer")
+      |                                                                                  ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:122:36: error: invalid use of incomplete type ‘class QVariant’
+  122 |                     || (query.value(3).toLongLong() != 0 && query.value(3).toLongLong() != 1)
+      |                         ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:122:72: error: invalid use of incomplete type ‘class QVariant’
+  122 |                     || (query.value(3).toLongLong() != 0 && query.value(3).toLongLong() != 1)
+      |                                                             ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:123:36: error: invalid use of incomplete type ‘class QVariant’
+  123 |                     || (query.value(4).toLongLong() != 0 && query.value(4).toLongLong() != 1))
+      |                         ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:123:72: error: invalid use of incomplete type ‘class QVariant’
+  123 |                     || (query.value(4).toLongLong() != 0 && query.value(4).toLongLong() != 1))
+      |                                                             ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:125:85: error: invalid use of incomplete type ‘class QVariant’
+  125 |             selections.insert(selectionKey, {static_cast<int>(resultId), query.value(3).toBool(), query.value(4).toBool()});
+      |                                                                          ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:125:110: error: invalid use of incomplete type ‘class QVariant’
+  125 |             selections.insert(selectionKey, {static_cast<int>(resultId), query.value(3).toBool(), query.value(4).toBool()});
+      |                                                                                                   ~~~~~~~~~~~^~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:134:21: note: forward declaration of ‘class QVariant’
+  134 |     F(QVariant, 41, QVariant) \
+      |                     ^~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2087:11: note: in definition of macro ‘QT_FORWARD_DECLARE_STATIC_TYPES_ITER’
+ 2087 |     class Name;
+      |           ^~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h:2089:1: note: in expansion of macro ‘QT_FOR_EACH_STATIC_CORE_CLASS’
+ 2089 | QT_FOR_EACH_STATIC_CORE_CLASS(QT_FORWARD_DECLARE_STATIC_TYPES_ITER)
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:125:30: error: no matching function for call to ‘QMap<QString, {anonymous}::Selection>::insert(const QString&, <brace-enclosed initializer list>)’
+  125 |             selections.insert(selectionKey, {static_cast<int>(resultId), query.value(3).toBool(), query.value(4).toBool()});
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap:1,
+                 from /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/project_advanced.h:5,
+                 from /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_store.h:5:
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h:711:51: note: candidate: ‘QMap<K, V>::iterator QMap<K, V>::insert(const Key&, const T&) [with Key = QString; T = {anonymous}::Selection]’
+  711 | Q_INLINE_TEMPLATE typename QMap<Key, T>::iterator QMap<Key, T>::insert(const Key &akey, const T &avalue)
+      |                                                   ^~~~~~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h:711:98: note:   no known conversion for argument 2 from ‘<brace-enclosed initializer list>’ to ‘const {anonymous}::Selection&’
+  711 | Q_INLINE_TEMPLATE typename QMap<Key, T>::iterator QMap<Key, T>::insert(const Key &akey, const T &avalue)
+      |                                                                                         ~~~~~~~~~^~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h:738:33: note: candidate: ‘QMap<K, V>::iterator QMap<K, V>::insert(const_iterator, const Key&, const T&) [with Key = QString; T = {anonymous}::Selection]’
+  738 | typename QMap<Key, T>::iterator QMap<Key, T>::insert(const_iterator pos, const Key &akey, const T &avalue)
+      |                                 ^~~~~~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h:738:33: note:   candidate expects 3 arguments, 2 provided
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h:806:24: note: candidate: ‘void QMap<K, V>::insert(const QMap<K, V>&) [with Key = QString; T = {anonymous}::Selection]’
+  806 | Q_INLINE_TEMPLATE void QMap<Key, T>::insert(const QMap<Key, T> &map)
+      |                        ^~~~~~~~~~~~
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h:806:24: note:   candidate expects 1 argument, 2 provided
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp: In member function ‘void ProjectsStore::replaceCurrentResultFormat(qint64, qint64, QString, ProjectResults, ProjectCurrentFormatSelections)’:
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:298:24: error: cannot convert ‘qint64’ {aka ‘long long int’} to ‘const QVariant&’
+  298 |     query.addBindValue(projectId);
+      |                        ^~~~~~~~~
+      |                        |
+      |                        qint64 {aka long long int}
+In file included from /usr/include/x86_64-linux-gnu/qt5/QtSql/QSqlQuery:1,
+                 from /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:11:
+/usr/include/x86_64-linux-gnu/qt5/QtSql/qsqlquery.h:107:39: note:   initializing argument 1 of ‘void QSqlQuery::addBindValue(const QVariant&, QSql::ParamType)’
+  107 |     void addBindValue(const QVariant& val, QSql::ParamType type = QSql::In);
+      |                       ~~~~~~~~~~~~~~~~^~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:304:28: error: cannot convert ‘qint64’ {aka ‘long long int’} to ‘const QVariant&’
+  304 |         query.addBindValue(projectId); query.addBindValue(selection.resultType); query.addBindValue(selection.resultId);
+      |                            ^~~~~~~~~
+      |                            |
+      |                            qint64 {aka long long int}
+/usr/include/x86_64-linux-gnu/qt5/QtSql/qsqlquery.h:107:39: note:   initializing argument 1 of ‘void QSqlQuery::addBindValue(const QVariant&, QSql::ParamType)’
+  107 |     void addBindValue(const QVariant& val, QSql::ParamType type = QSql::In);
+      |                       ~~~~~~~~~~~~~~~~^~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:304:69: error: cannot convert ‘const QString’ to ‘const QVariant&’
+  304 |         query.addBindValue(projectId); query.addBindValue(selection.resultType); query.addBindValue(selection.resultId);
+      |                                                           ~~~~~~~~~~^~~~~~~~~~
+      |                                                                     |
+      |                                                                     const QString
+/usr/include/x86_64-linux-gnu/qt5/QtSql/qsqlquery.h:107:39: note:   initializing argument 1 of ‘void QSqlQuery::addBindValue(const QVariant&, QSql::ParamType)’
+  107 |     void addBindValue(const QVariant& val, QSql::ParamType type = QSql::In);
+      |                       ~~~~~~~~~~~~~~~~^~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:304:111: error: cannot convert ‘const int’ to ‘const QVariant&’
+  304 |         query.addBindValue(projectId); query.addBindValue(selection.resultType); query.addBindValue(selection.resultId);
+      |                                                                                                     ~~~~~~~~~~^~~~~~~~
+      |                                                                                                               |
+      |                                                                                                               const int
+/usr/include/x86_64-linux-gnu/qt5/QtSql/qsqlquery.h:107:39: note:   initializing argument 1 of ‘void QSqlQuery::addBindValue(const QVariant&, QSql::ParamType)’
+  107 |     void addBindValue(const QVariant& val, QSql::ParamType type = QSql::In);
+      |                       ~~~~~~~~~~~~~~~~^~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:305:38: error: cannot convert ‘const int’ to ‘const QVariant&’
+  305 |         query.addBindValue(selection.used); query.addBindValue(selection.display);
+      |                            ~~~~~~~~~~^~~~
+      |                                      |
+      |                                      const int
+/usr/include/x86_64-linux-gnu/qt5/QtSql/qsqlquery.h:107:39: note:   initializing argument 1 of ‘void QSqlQuery::addBindValue(const QVariant&, QSql::ParamType)’
+  107 |     void addBindValue(const QVariant& val, QSql::ParamType type = QSql::In);
+      |                       ~~~~~~~~~~~~~~~~^~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_candidate_02/candidate/projects/projects_current_format.cpp:305:74: error: cannot convert ‘const int’ to ‘const QVariant&’
+  305 |         query.addBindValue(selection.used); query.addBindValue(selection.display);
+      |                                                                ~~~~~~~~~~^~~~~~~
+      |                                                                          |
+      |                                                                          const int
+/usr/include/x86_64-linux-gnu/qt5/QtSql/qsqlquery.h:107:39: note:   initializing argument 1 of ‘void QSqlQuery::addBindValue(const QVariant&, QSql::ParamType)’
+  107 |     void addBindValue(const QVariant& val, QSql::ParamType type = QSql::In);
+      |                       ~~~~~~~~~~~~~~~~^~~
+make: *** [Makefile:501: projects_current_format.o] Error 1
+make: *** Waiting for unfinished jobs....
+make: Leaving directory '/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/local_results_20261026/result_format_core_execution_01/build'

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "case": "IntegratedShellTest::viewportExperiment",
+  "failed_invocation": {
+    "qpa": "offscreen",
+    "passed": 2,
+    "failed": 1,
+    "reclassified_as_pass": false,
+    "evidence": [
+      {
+        "path": "logs/offscreen/integrated_viewportExperiment.txt",
+        "sha256": "49023eb5d720f6ad57c15b039328763ab86180b7d4d3db39b200bba63b06f948"
+      },
+      {
+        "path": "logs/offscreen/integrated_viewportExperiment.xml",
+        "sha256": "f5049aab987638c9dfacae24fe85150848c180607cdc40b312455773b898b3b2"
+      }
+    ]
+  },
+  "actual_diagnostics": [
+    "This plugin does not support raise()",
+    "VIEWPORT_REACHABILITY_FAILURE btnUserSettingAdptive",
+    "screen=QRect(0,0 0x0)",
+    "actual widget hit=none",
+    "accessibleClick returned false at integrated_shell_test.cpp:1053"
+  ],
+  "classification": "Environment not applicable to this native screen-reachability test. Preserve the original failing result; it is neither a passed viewport test nor evidence of a production-code regression.",
+  "original_script_evidence": {
+    "path": "source/06_programs/sn100_host/shell/wsl.sh",
+    "sha256": "8b6296dbda05fca78eb6906f24cc3756ccfa9994632932a30f95e10bd134878b",
+    "facts": [
+      "Line 73 launches the product with QT_QPA_PLATFORM=xcb.",
+      "Lines 75-85 integrated-test build only and expressly require separately coordinated test execution; they do not prescribe an offscreen viewport run.",
+      "Lines 91,99,106 explicitly run the other existing GUI tests under XCB.",
+      "The original integrated test contains X11 mapping/activation comments and requires real screen geometry plus QApplication.widgetAt; it does not contain an explicit offscreen QSKIP guard."
+    ],
+    "conclusion": "The existing execution conventions are XCB-oriented, but there was no earlier integrated-test runner enforcing a per-case QPA boundary. This temporary runner incorrectly allowed viewportExperiment under offscreen."
+  },
+  "test_source_evidence": {
+    "path": "source/06_programs/sn100_host/tests/integrated_shell_test.cpp",
+    "sha256": "ed73156a20c3dfdd90024ae49271c4c2f9ef7df8f82b9076e1c46f3401ec2262",
+    "required_operations": [
+      "raise and activate mapped native top-level window",
+      "qWaitForWindowExposed and qWaitForWindowActive",
+      "QApplication.widgetAt at global click center",
+      "QGuiApplication.screenAt and availableGeometry containment"
+    ]
+  },
+  "runner_correction": "Temporary run_case.sh rejects offscreen viewportExperiment with exit 2 before launching any Qt process. run_contract.json and its build-script generator now identify viewportExperiment and applicationExitExperiment as XCB-only.",
+  "refusal_check": {
+    "exit_code": 2,
+    "gui_launched": false,
+    "original_failure_file_sha256_mismatches": 0
+  },
+  "preserved_successes": "Existing offscreen write/read 3/0 results are retained without rerunning.",
+  "next": "Continue offscreen initializationFailure/status, then coordinated XCB write/read/viewport/initializationFailure/status/applicationExit.",
+  "formal_source_modified": false,
+  "production_code_modified": false,
+  "assertions_weakened": false
+}

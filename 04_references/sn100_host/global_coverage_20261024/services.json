@@ -1,0 +1,202 @@
+{
+  "schema": "sn100-read-only-functional-coverage-facts-v1",
+  "review_scope": [
+    "F09",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F18"
+  ],
+  "mode": "Static read-only inspection of the frozen checkpoint. No source/doc/plan edits, build, GUI execution, database access or device operation.",
+  "snapshot_program": "temp/sn100_host/instrument_20261024/source/06_programs/sn100_host",
+  "snapshot_manifest": "temp/sn100_host/instrument_20261024/checkpoint_inputs.json",
+  "claims_limit": "This is source coverage evidence, not final acceptance or a second plan. Current checkpoint remains under active owner validation; later password-login work is claimed by that owner and absent from this checkpoint.",
+  "facts": [
+    {
+      "id": "F09-query-patient-csv",
+      "classification": "integrated_offline_subset",
+      "operation": "History query, date/sample/barcode filters, paging, selected detail, patient metadata save and selected/all-query GBK CSV",
+      "evidence": [
+        "shell/main.cpp:354 creates HistoryPage and :357 attaches it; :358 enables report controller",
+        "shell/history_shell.cpp:19 replaces actual navigation page2 placeholder",
+        "history/history_page.cpp:185 connects export, :199-202 queues query/detail/patient-save/CSV requests",
+        "history/history_store.h:133-148 exposes initialize/query/detail/savePatient/exportCsv/close",
+        "history/history_store.cpp:471 seeds only embedded anonymous fixture; :742 query, :805 detail, :822 patient metadata save, :866 CSV"
+      ],
+      "limits": "Existing patient-save is not result editing/recalculation. The store accepts a marked anonymous schema; production history import and device-result ingestion are not shown by this entry chain. Do not reimplement this existing subset merely because constructor placeholders exist."
+    },
+    {
+      "id": "F09-report-display-delete-modify",
+      "classification": "existing_ui_missing_business_or_enablement_uncertain",
+      "operation": "Report column/display ordering, report deletion, result-value editing/save",
+      "evidence": [
+        "history/history_page.cpp:127-132 disables btnDisplay/btnUpdate/btnDel/btn_save_modify and hides save_modify",
+        "history/history_store.h:133-148 has no report-delete or result-update slot",
+        "reference frm_report/frm_report_material.cpp:1166 implements original delete selection handling, :1313 opens display/column settings, :1979 saves modified results"
+      ],
+      "original_enablement_caveat": "Original save_modify is hidden initially at :169 but shown through a QShortcut path at :367 and hidden again at :401. Confirm intended SN100 shipped enablement, permissions and data/audit semantics before restoring editing; a hidden default does not prove permanent absence.",
+      "conditions": "Deletion, display settings and an explicit anonymous result-edit contract can be verified offline, but deletion/clinical editing semantics and roles must come from the original behavior rather than guesses."
+    },
+    {
+      "id": "F09-detail-curve-recalc",
+      "classification": "partial_ui_with_missing_data_and_algorithm_chain",
+      "operation": "Raw light/AD curve, channel/axis selection, result selection and recalculation",
+      "evidence": [
+        "history/history_page.cpp:621-626 disables btn_recal/cbxLightType/cbxYaixsType/tableResultSelect/row navigation and supplies a pending tooltip to wgtChart",
+        "history/history_store.h:HistoryResult/HistoryResultValue hold normalized result values, not curve storage or a recalculation API",
+        "reference frm_report/mask_dlg_report_detail.cpp:442 refresh_spectrum, :493 result selection; :662 on_btn_recal_clicked emits a no-water/no-cup signal only"
+      ],
+      "conditions": "Separate an offline curve viewer/data contract from a clinically valid algorithm. Actual curve channels/units/zero point, approved algorithm/parameters/error and original debug-button behavior require confirmation; do not make a no-op succeed."
+    },
+    {
+      "id": "F09-F10-project-report-config-link",
+      "classification": "integrated_modules_with_missing_cross_module_business_link",
+      "operation": "Committed project/unit/precision configuration feeding history results and printed report columns",
+      "evidence": [
+        "shell/history_shell.cpp:68 calls HistoryReportDocument::anonymousOptions, :74-80 keeps explicit anonymous project columns and only injects committedHospitalName_",
+        "history/report_document.cpp:25-56 reads :/history_report/anonymous_options.json and explicit columns",
+        "history/report_resources.qrc:4 maps anonymous_options.json to tests/fixtures/history_report_options.json"
+      ],
+      "conditions": "O07 local project/unit UI existing does not prove report configuration integration. A real project identity/result-type/unit/precision mapping and persisted snapshots are needed; do not join clinical entities by guessed display strings."
+    },
+    {
+      "id": "F10-preview-pdf",
+      "classification": "integrated_offline_subset_verification_separate",
+      "operation": "Original template preview and isolated PDF export",
+      "evidence": [
+        "shell/history_shell.cpp:65-82 creates shared report controller and enables HistoryPage preview",
+        "history/history_page.cpp:262 enables printer-preview button and :275-286 emits immutable selected report",
+        "history/report_controller.cpp:163-195 constructs QtRPT preview, setsOfflinePreview(true) and routes pdf export",
+        "history/report_controller.cpp:238 onward uses a bounded helper process and temporary job output"
+      ],
+      "limits": "Main and detail print buttons are subsequently enabled for preview by setBusy (:368/:375). Initial disable lists must not be misread as no printing capability. Physical printing, chosen external PDF reader behavior, original Windows and RK remain separate acceptance."
+    },
+    {
+      "id": "F10-physical-print-html-xlsx",
+      "classification": "library_capabilities_not_exposed_or_original_enablement_uncertain",
+      "operation": "Physical printer/print settings, HTML and XLSX export",
+      "evidence": [
+        "thirdparty/qtrpt/QtRPT/qtrpt.cpp:1895-1905 forces non-direct preview and QPrinter::PdfFormat in offline mode",
+        "thirdparty/qtrpt/QtRPT/qtrpt.cpp:1969-1989 disables physical print controls, HTML and conditional XLSX in offline preview",
+        "thirdparty/qtrpt/QtRPT/qtrpt.cpp:2028-2032 forwards only PDF in offline export handler",
+        "thirdparty/qtrpt/qtrpt.pri:2-5 documents original NO_BARCODE/undefined QXLSX_LIBRARY and explicitly removes QXLSX_LIBRARY",
+        "shell/frmuserset.cpp:38-39 defines printer settings index3; :78-87 leaves that page as offlineUnavailable"
+      ],
+      "conditions": "Local printer-settings UI, HTML and file-export validation may be independent offline slices. Physical printer output needs a chosen device/driver/format. XLSX and barcode must not automatically be called lost original features: original root SeeRain450.pro:15 uses NO_BARCODE, and shipped QXLSX enablement needs confirmation. CSV is already implemented."
+    },
+    {
+      "id": "F11-LIS-stack",
+      "classification": "not_ported_in_checkpoint",
+      "operation": "LIS connection/settings, HL7/MLLP parsing/encoding, task query, result upload, ACK, reconnect, deduplication and automatic transfer",
+      "evidence": [
+        "shell/frmuserset.cpp:38-39 gives LIS settings index4; :78-87 is an offline placeholder because only indices0/1 get real pages",
+        "shell/shell.pri:24-44 links history/project/reagent/sample/instrument and device-protocol loopback, no commlis or HL7 component",
+        "protocol/status_loopback.cpp:319-323 accepts Qj only and :388 requests ReadOnlyQuery::Status",
+        "reference commlis/liscommreceiver.cpp:40 constrains version2.3.1, :71 ACK, :118 DSR, :123 sends QRY task result, :415 emits ACK; reference commlis/liscommsender.cpp:8 includes ORU"
+      ],
+      "conditions": "Port settings/codec and anonymous task/result/ACK contracts before using a real LIS service. Device Qj TCP support is not an LIS transport or HL7 business implementation. Confirm dialect, charset and task/result identity for production integration."
+    },
+    {
+      "id": "F09-F11-upload-actions",
+      "classification": "missing_business_with_original_defect_caveat",
+      "operation": "Main report upload and detail upload control",
+      "evidence": [
+        "history/history_page.cpp:127 disables main btnUpdate; :622-625 disables detail btnUpdateLis",
+        "reference frm_report/frm_report_material.cpp:1306-1309 main btnUpdate calls updateResult2Lis(false)",
+        "reference frm_report/mask_dlg_report_detail.cpp:615-620 emits signalUpdateNoWaterAndNoCup(0), returns, then has unreachable SignalUpdateLisResult"
+      ],
+      "conditions": "The main upload is a genuine missing LIS business link. The detail handler contains an original unsafe/debug behavior; do not restore a physical no-water/no-cup action just to match its button name. Record old defect versus confirmed intended business separately."
+    },
+    {
+      "id": "F12-instrument-offline-maintenance",
+      "classification": "integrated_offline_subset_owner_verification_in_progress",
+      "operation": "Original instrument subpage navigation and six manual maintenance records",
+      "evidence": [
+        "shell/main.cpp:248 creates MaintenanceStore and :445 attaches InstrumentPage",
+        "shell/instrument_shell.cpp:9-30 replaces actual navigation page7 placeholder",
+        "instrument/instrument_page.cpp:43-63 preserves original subpage indices and board-layout route; :65-77 defines manual maintenance table actions",
+        "instrument/maintenance_store.cpp:250-260 creates transaction/schema with unique date; :291 loads month; :373-440 records with role1..5 checks, rejects machine washing/shutdown and uses idempotent completion",
+        "instrument/instrument_page.cpp:379-400 preserves admin/engineer navigation and authenticated manual-write conditions",
+        "shell/shell.pri:38 includes instrument_widgets.pri and :39 links instrument_shell.cpp"
+      ],
+      "limits": "This checkpoint contains source integration, not final build/GUI/resource release acceptance by this reviewer. Busy/dirty guards and store failure recovery must be taken from the active owner final evidence. Do not classify the entire original eight-page instrument area as missing or fully implemented."
+    },
+    {
+      "id": "F12-real-device-functional-gaps",
+      "classification": "existing_ui_with_deliberately_disabled_hardware_and_missing_external_business",
+      "operation": "Real TCP connection/config, sensor/temperature/AD/channel status, board/firmware versions, pumps/needles/grabber/washing/calibration tests",
+      "evidence": [
+        "instrument/instrument_page.h:16 states no device send interface; public operations are session/replay/readonly display",
+        "instrument/instrument_page.cpp:191-219 disables all nonlocal actions and combo inputs, clears endpoint inputs rather than loading production config",
+        "instrument/instrument_page.cpp:222-290 clears design-time values to unknown and marks algorithm versions not integrated",
+        "instrument/instrument_page.cpp:487-516 maps only Qj model/mainStatus/ledStatus/errorWorkType and explicitly refuses guessed subsystem mapping",
+        "protocol/status_loopback.cpp:62 owns LocalHost:0, :321-323 rejects non-Qj commands, :368 emits SIMULATED response",
+        "instrument/maintenance_store.cpp:390-393 refuses offline long_clean/shut_down completion"
+      ],
+      "conditions": "Keep hardware actions disabled until exact device/firmware/transport role/endpoint/encoding/command semantics/interlocks/authorized range are confirmed. Offline decoder/state mapping or command-planning tests may be possible, but visible controls are not an implementation of real actions."
+    },
+    {
+      "id": "F13-alarm-center-interlocks",
+      "classification": "protocol_parse_subset_not_integrated_alarm_business",
+      "operation": "Alarm center/current and history, code/severity/description mapping, repeated/cleared alarms, acknowledge/reset/beep and test-start interlocks",
+      "evidence": [
+        "protocol/read_only_messages.h:11-23 supports Alarm as a limited readonly query; read_only_messages.cpp:159-179 builds parsed alarm arrays",
+        "protocol/status_loopback.cpp:108/122/388 restricts unified simulation requests to Status, not alarm lifecycle",
+        "shell/frmmain.cpp:204-215 leaves btnAbnormal/btnCloseBeep disabled; no Alarm page/controller/store is linked by shell.pri",
+        "reference frmabnormal/maskdlgabnormal.cpp:74 canStartTest, :186-239 handles old/new abnormal/alarm lists, :384/400 history, :472 reset"
+      ],
+      "conditions": "A safe local alarm catalog/view/history and injected-event lifecycle can be implemented offline from confirmed mappings. Live reset/beep/stop/start blocking needs confirmed protocol and safety semantics; do not infer it from Qj.errorWorkType or simply enable the existing icon."
+    },
+    {
+      "id": "F18-source-enablement-and-variants",
+      "classification": "original_scope_or_defect_confirmation_required",
+      "operation": "Language Apply, hidden result editing, task/formula/estimation, barcode/XLSX build variants and different device board layouts",
+      "evidence": [
+        "01_docs/knowledge/sn100_host_project_guide.md:282 records task/formula, language Apply, estimation and450/6600 branches as requiring original release enablement confirmation",
+        "shell/frmuserset.cpp:38-39 and :78-87 keep language index2 as placeholder",
+        "instrument/instrument_page.cpp:60-63 uses only a reference board layout for unknown model and :515 declines guessed SN100 subsystem mapping",
+        "thirdparty/qtrpt/qtrpt.pri:2-5 documents disabled build capabilities",
+        "reference report detail upload/recalc handlers :615/:662 contain debug no-water/no-cup signals rather than the named business"
+      ],
+      "conditions": "Source existence, a hidden menu or another model's layout does not establish SN100 shipped functionality. Separate known old defects and user-authorized enhancements from missing ports; preserve uncertain original source and do not imitate unsafe debug actions."
+    }
+  ],
+  "additional_execution": {
+    "build": false,
+    "gui": false,
+    "device": false,
+    "reference_run_or_build": false
+  },
+  "source_hashes": {
+    "shell/main.cpp": "eb99e623f486dd331ab1951507440508cdb594e60e65c408da9fc49c98e6b7af",
+    "shell/history_shell.cpp": "f9cbc08872670a783e1c3676524958c4580a61049d34065b812a8094952f3697",
+    "shell/instrument_shell.cpp": "36af4a8eba74636d4dc6033ffd0bff830e443035583475064a9d94f86837c212",
+    "shell/frmuserset.cpp": "a85690a04672e6ce037cc3cae95ff4ca6efcff5ee0d0ee51e4912492d482cc5b",
+    "shell/frmmain.cpp": "c7d49265e5a2c20860607197938e2bb688c5ab7198eb4741029b7879cd86ac11",
+    "shell/shell.pri": "87f5da4a0ca54eb39c5b8a7cc7166881d4a828cc5f5aaf3a2e696808363be5d3",
+    "history/history_page.cpp": "0b7173fab4842fa72345c0ea2ea54835d4df85da7cd95f10c9eaedbbab4bdcd9",
+    "history/history_page.h": "f4ce14e59d5d8bf98116b9d877f2968aad452bc8e0c171e96e25c3bfde98d956",
+    "history/history_store.cpp": "51b52c8e205ceb14a96be9c4087802ef954c364801cc62f725ab516e1a902558",
+    "history/history_store.h": "385d976d549fba18fa94420668e4cd8f0360d0bd24f1a148c720e69c97dcf6ab",
+    "history/report_controller.cpp": "79325bb5f8a25a885f2d38ebf8890fd18f0d0ceb25e451afc991bfa9af5dc491",
+    "history/report_document.cpp": "ebe25d4f18b8e896f3865f0a18a97ee0c3d3301a96a72b6a982a06715dbe78f8",
+    "history/report_resources.qrc": "90e45d3956f33bdc91375cf67fa7bf461be3b5c554e31324bd9d00c8ea783389",
+    "thirdparty/qtrpt/qtrpt.pri": "64e413f646e3b0d05d1c7874f1bd13e709a14ee670da307180fd1bd9db1d2a76",
+    "thirdparty/qtrpt/QtRPT/qtrpt.cpp": "55589d03453c9928679d6840ae58d7c0d7b624a9f1adfe3abf7e9592ae49e4a3",
+    "instrument/instrument_page.cpp": "b25210fd50ca58e5dcabcbe4c2280321cf87fa52ee965fe9865668451e20b462",
+    "instrument/instrument_page.h": "32b0126b4609c91c39a2ee9d963a7ecb68fe3f31f9adabc93aa4338ec5d7ee7e",
+    "instrument/maintenance_store.cpp": "924886fbd07091c3a995a297c87f95e20503a331f209de4b41ea24bf68d88e12",
+    "instrument/maintenance_store.h": "85883da04f9c5192f5418e46956830b8dcbee94aa52c91f6cf182621184fd508",
+    "protocol/read_only_messages.cpp": "5fff7197a101343a16c46e38d15649b5e1e7fb6460e457c3c9628169488c3175",
+    "protocol/read_only_messages.h": "62f1c52941457c77c87598b118dc1e51604fb8403a87e97bfb2ad69a23332264",
+    "protocol/status_loopback.cpp": "37e934d0716abf0f505ba9f0dda7294a7094b7ab1c4ef5eae7acdfd0f87b80a3"
+  },
+  "snapshot_consistency": {
+    "validation_scope": "Selected inspected source files, not a full executable/runtime or final348-input re-audit",
+    "reviewed_files": 22,
+    "reviewed_files_match_checkpoint": true,
+    "checkpoint_manifest_items": 348,
+    "differences": []
+  }
+}

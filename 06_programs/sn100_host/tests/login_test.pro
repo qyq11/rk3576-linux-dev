@@ -1,0 +1,16 @@
+QT += core gui widgets sql testlib
+QT -= network
+CONFIG += c++14 console testcase warn_on
+CONFIG -= app_bundle
+TEMPLATE = app
+TARGET = login_test
+INCLUDEPATH += $$PWD/.. $$PWD/../ui
+SOURCES += login_test.cpp ../data/account_store.cpp ../ui/maskdlglogin.cpp
+SOURCES += ../ui/cusmessagebox.cpp ../ui/cusdialogmask.cpp
+HEADERS += ../data/account_store.h ../ui/maskdlglogin.h
+HEADERS += ../ui/cusmessagebox.h ../ui/cusdialogmask.h
+FORMS += ../ui/maskdlglogin.ui ../ui/cusmessagebox.ui ../ui/cusdialogmask.ui
+RESOURCES += ../resources.qrc
+MOC_DIR = .moc
+UI_DIR = .ui
+OBJECTS_DIR = .obj

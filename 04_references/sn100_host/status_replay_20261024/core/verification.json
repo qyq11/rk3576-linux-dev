@@ -1,0 +1,59 @@
+{
+  "schema": "sn100-status-replay-core-verification-v1",
+  "date": "2026-10-24",
+  "scope": "O09-1 pure offline file replay core, no QObject/timer/socket/thread, does not mutate account/actionReady or send device commands",
+  "environment": "WSL Ubuntu-24.04 qyq x86_64 Qt5.15.13 Release",
+  "test": {
+    "passed": 30,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_ms": 506,
+    "exit_code": 0,
+    "totals_include_init_cleanup": true,
+    "log": "core_test_01.log",
+    "binary_path": "temp/sn100_host/status_replay_20261024/core_build/status_replay_test",
+    "binary_sha256": "03f60891632c10b319cd693108afcfa8a10b91652a8d9b01eb02cf9882aff4ab",
+    "binary_bytes": 179760,
+    "ldd_missing": [],
+    "qt_modules": [
+      "Qt5Core",
+      "Qt5Test"
+    ]
+  },
+  "limits": {
+    "file_bytes": 1048576,
+    "events": 256,
+    "single_rx_bytes": 8192,
+    "total_rx_bytes": 131072,
+    "recorded_ms": 86400000,
+    "time_semantics": "strict nonnegative integral JSON numeric value, nondecreasing, recorded time only"
+  },
+  "cases": [
+    "14-step anonymous literal-frame fixture with planned Qj TX and exact RX logs",
+    "split/coalesced status frames, last valid snapshot",
+    "bad checksum plus valid recovery",
+    "120ms with one retry, request timeout then new observation, 200000ms silence",
+    "disconnect/reconnect clears old half frame and latest snapshot",
+    "EOF and stop invalidate old display; stop idempotent",
+    "strict root/event key whitelist and action whitelist",
+    "reject wrong schema/JSON/root, empty or too many events, fraction/string/bool/negative/backward/too-large time",
+    "reject missing/empty/odd/invalid/overlong hex and total RX budget",
+    "exact maximum event/RX/time budgets accepted",
+    "reject relative/missing/directory/symlink/reference-named paths"
+  ],
+  "source_basis": [
+    "Reference commandreceiver.cpp::pcQueryStatus field order",
+    "Reference public/systemcommon.h DMainStatus/DLedStatus enum",
+    "Independent literal ASCII synthetic frames, BE header length and XOR; prior protocol_replay fixture"
+  ],
+  "first_compile_failure": "Test helper event() was hidden by QObject::event, and QByteRef has no operator^=; test-only helper renamed and checksum corruption assignment corrected. Original compile failure preserved; core source did not need repair.",
+  "interpretation": "Latest valid Qj is a simulated observation, not an instrument ACK; after an earlier timeout a later observation may be fresh without reporting prior-request success.",
+  "pending": [
+    "Unified shell UI/cumulative runtime and three-target package validation by root",
+    "Original Windows active theme and behavior",
+    "RK screen/input/runtime/resources",
+    "Instrument protocol/configuration/real actions",
+    "Resource budget, long stability and same-board realtime impact"
+  ],
+  "source_manifest": "source_manifest.json"
+}

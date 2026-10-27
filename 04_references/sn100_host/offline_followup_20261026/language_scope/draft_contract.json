@@ -1,0 +1,35 @@
+{
+  "schema": "sn100-language-catalog-probe-draft-contract-v1",
+  "code": "draft/catalog_probe.pro",
+  "tests": "draft/tests/catalog_probe_test.pro",
+  "purpose": "独立只读核2条语言页文字在指定QM中的上下文命中，防止将Qt侧文件或部分命中当应用语言支持",
+  "operations": [
+    "检查显式绝对.qm路径",
+    "QTranslator局部对象load，只查frmLanguageSetting上下文的应用和请选择要切换的语言：",
+    "输出UTF8 JSON的load状态、错误、命中样本及覆盖数",
+    "不向QCoreApplication安装该翻译器，不保存任何设置，不修改系统/应用locale"
+  ],
+  "exit_codes": {
+    "zero": "两个抽样条目均查到，只代表样本覆盖，不是全程序多语言可用",
+    "three": "成功载入但抽样条目不全",
+    "two": "输入路径/读取/Qt载入失败，原样输出错误",
+    "four": "标准输出写入失败"
+  },
+  "global_readiness": "full_application_switching_assessed始终false，明确不评估全程序切换",
+  "real_fixture": "fixtures/qt_en_catalog.json，原23字节只以hex/SHA存档，测试在新的QTemporaryDir重建，不运行原工程",
+  "test_methods": [
+    "emptySamplesAreNotCoverage",
+    "frameworkMessagesDoNotCoverApplicationContext",
+    "partialCatalogIsNotCompleteCoverage",
+    "sampleCoverageDoesNotSwitchTheApplication",
+    "relativePathIsRejectedWithoutImplicitSearch",
+    "missingCatalogIsAnExplicitFailure",
+    "malformedCatalogDoesNotModifyItsInput",
+    "providedQtEnglishSidecarIsNotApplicationCoverage"
+  ],
+  "test_scope": "8项功能测试待编译/执行；QTEST_GUILESS_MAIN，QtCore/QtTest，不启动GUI；实际QM load返回值等待未来受控运行，不预判",
+  "formal_language_ui_implementation_supplied": false,
+  "compiled": false,
+  "tested": false,
+  "anonymous_test_root": "LANGUAGE_SCOPE_TEST_DIR显式指定本事项verification_01/test_data新目录，禁止参考路径，不默认系统临时目录。"
+}

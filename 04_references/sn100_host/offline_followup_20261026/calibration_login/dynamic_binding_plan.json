@@ -1,0 +1,67 @@
+{
+  "schema": "sn100-calibration-login-dynamic-binding-plan-v1",
+  "date": "2026-10-26",
+  "status": "awaiting_new_actual_snapshot_native_receipt_and_serial_slot",
+  "supersedes_execution_plan": "command_plan.json is the pre-dynamic historical plan only; do not execute its old-cohort argv.",
+  "no_old_validator_executed_after_scope_change": true,
+  "interface": {
+    "snapshot": "--snapshot: exact new formal source SHA JSON, absolute path",
+    "native_root": "--native-root: explicit base of verification fresh_objects relative paths",
+    "native_build": "--native-build: actual Makefile/main binaries directory within that artifact root",
+    "native_verification": "--native-verification: real completed successful verification JSON for that exact snapshot/build",
+    "missing_inputs": "plan/execute fail before creating a run directory if any of these four arguments is absent; no old native/freeze path fallback.",
+    "no_common_import": true,
+    "recipe_source": "new native Makefile expands CXX/flags/includes/libs/objects; excludes its one main.o; finds moc from its actual recipe. No old driver recipe, binding_proof, fixed426/167 count or fixed5123 SHA is consulted.",
+    "complete_guard": "At execute before/after: formal inventory set and all SHA equal supplied snapshot; real verification passed/exit0/source count/snapshot SHA/Makefile SHA; every fresh object created in that build and unchanged; every selected Makefile object in that receipt; main/helper unchanged. Generated-source/predefs and private source/runner/header SHA also recorded. All counts follow actual supplied input.",
+    "map_separation": "Original failure test source SHA stays explicit in prepared/inputs.json. New native production SHA/count/object paths are independent dynamic inputs. An old test source linked with new production objects is a new diagnostic scope, not the original57f/5123 executable or a retest of the old frozen checkpoint."
+  },
+  "actual_new_snapshot_sha256": null,
+  "actual_new_native_paths": null,
+  "slot_granted": false,
+  "preparation_only_checks": {
+    "python_AST_parse_only": 0,
+    "full_native_validator_executed": false,
+    "CXX_or_moc_or_link_executed": false,
+    "QtTest_GUI_resource_device_executed": false
+  },
+  "phases": [
+    {
+      "phase": "calibration",
+      "estimated_minutes": "3-5",
+      "compiler_jobs": 1,
+      "GUI": false,
+      "test_calls": 2,
+      "selection": "one original full sequence each for old/current exact test source; only test translation units get ASan/UBSan; production objects follow supplied native receipt"
+    },
+    {
+      "phase": "login",
+      "estimated_minutes": "2-4",
+      "compiler_jobs": 1,
+      "GUI": true,
+      "test_calls": 4,
+      "selection": "legacyOptInAndGuestLogin old/current x natural/explicit queued own-host move; original assertions unchanged"
+    }
+  ],
+  "command_templates": {
+    "plan": "python3 -B <project>/temp/sn100_host/offline_followup_20261026/calibration_login/bounded_probes.py plan --plan-name dynamic_command_plan_01 --snapshot <NEW_SNAPSHOT_JSON> --native-root <NEW_NATIVE_ARTIFACT_ROOT> --native-build <NEW_ACTUAL_MAIN_BUILD> --native-verification <NEW_REAL_VERIFICATION_JSON>",
+    "calibration": "python3 -B <project>/temp/sn100_host/offline_followup_20261026/calibration_login/bounded_probes.py execute --phase calibration --attempt calibration_dynamic_01 --slot-id <GRANTED_SLOT_ID> --snapshot <NEW_SNAPSHOT_JSON> --native-root <NEW_NATIVE_ARTIFACT_ROOT> --native-build <NEW_ACTUAL_MAIN_BUILD> --native-verification <NEW_REAL_VERIFICATION_JSON>",
+    "login": "python3 -B <project>/temp/sn100_host/offline_followup_20261026/calibration_login/bounded_probes.py execute --phase login --attempt login_dynamic_01 --slot-id <GRANTED_SLOT_ID> --snapshot <NEW_SNAPSHOT_JSON> --native-root <NEW_NATIVE_ARTIFACT_ROOT> --native-build <NEW_ACTUAL_MAIN_BUILD> --native-verification <NEW_REAL_VERIFICATION_JSON>"
+  },
+  "limits": [
+    "Interface accepted only by static review/AST so far; runtime recipe parsing and diagnostic C++ still await actual new native inputs and slot.",
+    "No production/test source changes; no common/collector/frozen checkpoint edits.",
+    "Original suite05 SIGSEGV and suite07 contains direct causes remain unknown; a future clean diagnostic will not close them."
+  ],
+  "pending": [
+    "New actual source/native fingerprints from integrator",
+    "Export fresh exact command plan against those inputs",
+    "Explicit serial slot per phase",
+    "Real compiler/test receipts and root-cause interpretation"
+  ],
+  "sanitizer_crash_capture": {
+    "calibration_test_only_flag": "-nocrashhandler",
+    "reason": "Allow sanitizer stack output instead of old denied Qt auto-attach; no ptrace/ASLR/permission changes",
+    "installed_QtTest_option_literal_read": true,
+    "actual_QtTest_option_execution": false
+  }
+}

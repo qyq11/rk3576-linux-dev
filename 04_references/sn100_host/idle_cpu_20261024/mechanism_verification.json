@@ -1,0 +1,63 @@
+{
+  "schema": "sn100-idle-repaint-mechanism-verification-v1",
+  "verified_utc": "2026-10-24T09:37:20.236900+00:00",
+  "independent_observer_passed": true,
+  "cpu_percentage_attributed": false,
+  "repair_verified": false,
+  "binary_sha256": "150c9f0335e564cc0cef367c82a876908afa1177657e3944864e01d12fd54bbc",
+  "source_provenance": {
+    "path": "shell/widgets/material/qtmaterialflatbutton_internal.cpp",
+    "git_head_bytes_match_prior_frozen_sha": true,
+    "sha256": "d24f96b9fe12277c78f2387b271dbe815c8774177ae2cc9d136c4b62f13918bb",
+    "archived": "frozen_material_state_machine.cpp"
+  },
+  "scope": "Frozen prior product, cloned closed anonymous data, XCB1600x900/page7, once12s normal exit0; passive observation6..10s from QApplication::exec",
+  "observed": {
+    "material_buttons": 39,
+    "material_update_calls": 10062,
+    "hidden_buttons": 38,
+    "hidden_button_update_calls": 9804,
+    "logout_update_calls": 258,
+    "logout_paint_events": 254,
+    "status_area_paint_events": 254,
+    "halo_opacity_at_both_snapshots": 0,
+    "halo_size_at_both_snapshots": 0,
+    "halo_group_running_at_both_snapshots": true,
+    "halo_loop_begin": 3,
+    "halo_loop_end": 5,
+    "all_object_paint_events": 7112,
+    "animation_driver_timer_events": 250
+  },
+  "evidence": {
+    "observer": "observer/verification.json",
+    "raw_events": "observer/observation.json",
+    "resolved_analysis": "probe_tool/observation_analysis.json",
+    "failed_perf": "perf_profile/verification.json"
+  },
+  "interpretation": "Invisible halo animation continues property writes/update requests. The visible disabled logout and its shadow-bearing parent each paint254 times. Update and paint stacks corroborate animation/meta-property writer and drop-shadow sourcePixmap/render paths; not a sampled CPU share or completed repair proof.",
+  "perf": {
+    "valid_cpu_stack_samples": false,
+    "exit_code": 255,
+    "reason": "Failed at delayed recording activation with Bad address; empty data area. Child cleanup/exit could not be certified. No repeat, no surviving job process seen; raw stack memory retained only in temp."
+  },
+  "limitations": [
+    "Only the zero-argument QWidget::update hook is covered; all events and updates are forwarded",
+    "Probe has overhead; Paint delivery is not raster/GPU cost",
+    "Optimized tail call resolves to state-machine meta-property writer, not a separate setter frame on every request",
+    "No product source changes, product builds or post-repair GUI/resource runs were performed by this monitor",
+    "Other active user-owned chats began material guard and instrument source edits after initial check; shared docs/plans and product writes are left to their completion window",
+    "Original Windows, RK, instrument, budgets and long-run qualification remain separate"
+  ],
+  "active_source_owners": [
+    {
+      "thread_id": "01a16be0-04fc-7891-92e2-68481c94345a",
+      "title": "查明试剂样本业务未移植原因",
+      "observed_scope": "GUI idle correction and O09 loopback"
+    },
+    {
+      "thread_id": "01a16d3e-7970-7e60-b3d2-50453e5e08e7",
+      "title": "梳理原版仪器操作界面功能",
+      "observed_scope": "Instrument offline page and maintenance records"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "sn100-four-windows-final-driver-static-review-v1",
+  "reviewed_utc": "2026-10-25T14:21:04.1502745Z",
+  "scope": "Read-only production/test inspection; only reviewed temp driver fixes and extra-suite descriptor written",
+  "executions": {
+    "python_ast_parser_files": 12,
+    "python_ast_exit": 0,
+    "powershell_parser_files": 3,
+    "powershell_parser_errors": 0,
+    "json_descriptors": 6,
+    "extra_suite_invocations": 10,
+    "build": false,
+    "gui": false,
+    "resource": false,
+    "driver_import_or_execution": false,
+    "RK_instrument_LIS": false,
+    "dependency_install_restore": false
+  },
+  "pre_edit_originals": "audit_originals/pre_driver_review_01",
+  "fixed_findings": [
+    "Formal freeze now checks complete current package.snapshot key set and SHA, so new QC/cal source additions after freeze cannot be silently omitted.",
+    "Native verification persists Makefile SHA; bind/suite/resource/archive verify matching native source freeze, main/helper binaries and original object hashes. Binding proof snapshot_sha256/native_makefile_sha256 correctly map to native snapshot_sha256/makefile_sha256.",
+    "Test cpp/pro are hashed before and after driver compilation; suite verifies executed driver/source hashes and binding-proof identity before and after runs.",
+    "Native/common and ARM child commands persist before launch; interrupted/spawn-failed processes retain actual exit or explicit not_started state. Cleanup is restricted to their newly created process group.",
+    "Windows child exit is retained in finally before parsing; owned process-tree cleanup and not_started/exit_unknown states are explicit.",
+    "ARM sysroot fingerprint includes Qt header inputs as well as previous runtime closure; compiler/Qt generator executable hashes and frozen snapshot bytes are checked before/after.",
+    "Archive rejects disabled assertions and checks exact application manifest membership; resource checks full source/native receipt only outside the measured interval."
+  ],
+  "confirmed": [
+    "All current native/Windows/ARM/test binding compile concurrency limits are 2.",
+    "Input count is dynamic; quality_control/qc_store.cpp,quality_control/quality_control_page.cpp,calibration/calibration_store.cpp,calibration/calibration_page.cpp are required freeze members.",
+    "Extra suite uses exact source-read env names, includes both shell tests on offscreen/xcb, each reference test once offscreen, and both remaining report pure tests on offscreen/xcb.",
+    "Extra runtime child directories are not precreated; report_remaining_html_test receives a new nonexistent runtime as its own contract requires.",
+    "Response tests are not in extra_suite.json; root-owned run_response.py was not edited.",
+    "Formal production and test source files were not modified by this driver audit."
+  ],
+  "not_yet_run": [
+    "All final build/binding/suite/platform/package/archive/resource drivers remain unexecuted by this reviewer.",
+    "Subprocess interruption/timeout cleanup paths have static review only; no injected execution was performed.",
+    "Resource driver explicitly retains unknown child state on observer-driver timeout and forbids runtime inspection; such an outcome must fail acceptance and be resolved by root.",
+    "Final Windows/ARM dependencies, artifact signatures, runtime exits and backup LFS attributes require actual root-coordinated execution.",
+    "Original Windows/RK/instrument/clinical effect/resource budget/long stability remain separate pending gates."
+  ],
+  "suite": {
+    "base_invocations": 20,
+    "extra_invocations": 14,
+    "expected_total_invocations": 34,
+    "response_in_suite": false
+  },
+  "production_and_test_read_sha256": {
+    "06_programs/sn100_host/shell/package_arm64.py": "d7335c16441b4cc4deeb6d0809dbb61ca67c657d0cebdcf673b4b6451754809e",
+    "06_programs/sn100_host/shell/build.sh": "9d82588ece30564e2935c2238262a3d650e8d1fdfab461937d10f262079bfae5",
+    "06_programs/sn100_host/tests/build_shell_drivers.py": "c08c4d617b8c99941d4ba590fd9d0516d2df5ac298995a2677ad140d6240fc33",
+    "06_programs/sn100_host/tests/calibration_shell_test.cpp": "9f285eedfaa3e7409bf15dd3b7bd1691e2d5dd9bb2943a92d3a77e0fc24e654a",
+    "06_programs/sn100_host/tests/report_remaining_shell_test.cpp": "4778080f2338bdb8e271cc46506de455619508cdd88521f85315928e8667699b",
+    "06_programs/sn100_host/tests/calibration_reference_test.cpp": "5b8cfa9653218b193f5b1f916f651a863ed23ab056fa2328ada128094f48e155",
+    "06_programs/sn100_host/tests/qc_reference_test.cpp": "f72d7f8e35ab713258b8645b5b96f1c22e23268208cd0afbce24ac9a1a774d4a",
+    "06_programs/sn100_host/tests/report_remaining_test.cpp": "512bbbec714a9cc3145ce969917e8a203f9f49794cbdb23eff8289de5fb4d117",
+    "06_programs/sn100_host/tests/report_remaining_html_test.cpp": "ec912d54a06b4a71a539b2dfde41d8715d7282fc296a9f17e26b5311985eec57"
+  },
+  "driver_files_sha256": {
+    "archive_arm64.py": "16f3d335a7721f5b8be0362ab79226dd6578f8b48292d8be6f28949b6fffb4ca",
+    "arm64/capture_compiler.py": "0ba21a66a63a54320afafb9f194e7d768265a110e0ee9be592db89fe3283b165",
+    "arm64/run_arm64.py": "fdd3827438fd2ea5db3eb28cfbed3480364f41e307f7a95e903833a44081dc37",
+    "build_test_drivers.py": "d93c940720b9fe6652ad47ed58e6f3788a8c24c7bfc6a5c214516991d06a4e85",
+    "common.py": "87e36ba3135a9b2e76b025e025ce693bac77bad4f806ed4ebe1cef7942ced4d0",
+    "extra_suite.json": "a978aae12ab9216e9a26ce237f107df791f88a201732965f75c2a1aca1ad742a",
+    "freeze_and_build.py": "70161e13d75ee29ef3dd92e65e38d71fefb9f80c0a861363a005e11bd18e218a",
+    "preparation.json": "7e89ba9c5c24f0fc5e67939b21ae6fae9322131df148774a1f5b0345dc3e344a",
+    "run_calibration_regression.py": "6bbf03b778340cd18948eb9903b1acff4a609546f95a3e63626124412ad84b5a",
+    "RUN_COMMANDS.txt": "f37dc25610ede74d16c786920524b18b73e32aca29e3edf79a557e0c89ac25a5",
+    "run_qc_gate.py": "089ae436648163d234829446648bf949a0d3c5ef8aac7d1c6149d6fbf71edd49",
+    "run_resource.py": "2d6982edf74be970a7eb520470ab011a1db8213ed4d2ff59ad10cdcf95bcec9f",
+    "run_response.py": "121fb58297ec4bfb1c252c5fe6b4002b9dcf48224e48f5d7e6b9b032e6e7368d",
+    "run_suite.py": "8a48bad9eada95ed5315aeed2e08918de6a7ef0e78b80f70c0072af5b350df72",
+    "stop_hung_qc_gate.py": "58ec2cd87530aee05ad0af50114d9be42236fe0ca8471af1378d4c3ef8e1d444",
+    "windows/build_windows.ps1": "47319bfc7cca77a40364ece3c32b12aab68d4d95ab756a98b3b8bb112e4d7f86",
+    "windows/file_helpers.ps1": "fdf70a4de2dc37a354e136a1a0ff6510a43f043089a82502f997f1932726025d",
+    "windows/makefile_audit.ps1": "d4695e3dc055fbdd6073109cb619d1d8db6d049ba5a9b0b4c36d55f2d3e69d0f"
+  },
+  "incremental_source_relative_update": {
+    "updated_utc": "2026-10-25T14:22:27.2456372Z",
+    "modified_only": [
+      "run_suite.py",
+      "extra_suite.json",
+      "review.json"
+    ],
+    "pre_edit_originals": "audit_originals/pre_extra_suite_expansion_01",
+    "syntax_ast_exit": 0,
+    "json_descriptor_count": 9,
+    "extra_invocations": 14,
+    "base_invocations": 20,
+    "total_invocations": 34,
+    "source_contract": "Reads proof.source_relative, rejects absolute/parent paths, resolves strictly inside PROGRAM and checks source_sha256 before/after actual execution",
+    "added_drivers": [
+      "qc_local_store_test",
+      "calibration_store_test",
+      "calibration_page_test"
+    ],
+    "extra_environment_verified_from_authoritative_sources": true,
+    "runtime_directories_not_precreated": true,
+    "response_not_in_suite": true,
+    "production_and_tests_written": false,
+    "build_gui_measurement_or_driver_execution": false,
+    "common_native_platform_drivers_unchanged_since_prior_review": true,
+    "wrapper_compatibility_notice_sent_to_root": "Existing build_test_drivers.py prehash still needs explicit calibration/tests fallback; reviewer did not modify it under the native-freeze restriction",
+    "run_suite_sha256": "80088205722bbffce3326cbce2411b39474429fe0f80ebaf35b6a151559f87ba",
+    "extra_suite_sha256": "bba92a40f6dab688a3e405f91487ced8b879a402799727335c7f3e39b1e81fd9",
+    "formal_binder_source_sha256": "40630204ac1ac2be581e1292936da80e29cdbdaa3dc2ecd069edd61d37aa9c71"
+  }
+}

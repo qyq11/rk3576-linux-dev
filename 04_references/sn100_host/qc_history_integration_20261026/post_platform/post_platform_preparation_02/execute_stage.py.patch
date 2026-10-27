@@ -1,0 +1,30 @@
+--- preserved01/execute_stage.py
++++ new02/execute_stage.py
+@@ -11,8 +11,7 @@
+                     clean_environment, group_state, process_identity, cleanup_recorded_groups,
+                     cleanup_ephemeral_inputs, stop_owned_group)
+ 
+-STAGES = {'standalone': ('run_standalone.py', 2400), 'projects': ('run_projects_modules.py', 7200),
+-          'response': ('run_response.py', 180), 'resource': ('run_resource.py', 100)}
++STAGES = {'standalone': ('run_standalone.py', 2400)}
+ 
+ 
+ def bound_state(native):
+@@ -37,8 +36,6 @@
+     script, timeout = STAGES[args.stage]
+     out = WORK / args.name
+     destinations = [out, WORK / (args.name + '_control')]
+-    if args.stage == 'resource':
+-        destinations += [WORK / (args.name + suffix) for suffix in ('_runtime', '_driver')]
+     require(not any(path.exists() or path.is_symlink() for path in destinations),
+             'All output/control/runtime/driver paths must be fresh; use a new name after failure')
+     native = verify_native(load(FREEZE))
+@@ -86,7 +83,7 @@
+                 and not record['recorded_group_cleanup']['signals_used'],
+                 'Normal completion requires every owned group already gone without forced cleanup')
+         require(len(record['recorded_group_cleanup']['groups']) ==
+-                {'standalone': 7, 'projects': 18, 'response': 1, 'resource': 1}[args.stage],
++                {'standalone': 7}[args.stage],
+                 'Expected owned phase count missing from actual launch ledger')
+         require(record['ephemeral_inputs']['all_absent'], 'Owned ephemeral input was not unlinked')
+         binding_after = bound_state(verify_native(load(FREEZE)))

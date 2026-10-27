@@ -1,0 +1,68 @@
+{
+  "schema": "sn100-private-coordinate-command-plan-v1",
+  "status": "prepared_not_executed_waiting_serial_slot",
+  "execute_argv": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu-24.04",
+    "-u",
+    "qyq",
+    "--",
+    "python3",
+    "-B",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/run_core.py",
+    "--execute",
+    "--slot-id",
+    "GRANTED_SLOT_ID",
+    "--attempt",
+    "core_01",
+    "--manifest-sha256",
+    "fbd573f1d3628f4d6b6a285bc1d37452fabe9c27bbee2489bec7aaad85fcd4c6"
+  ],
+  "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private",
+  "evidence_directory": "temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/core_01",
+  "compiler_resolution": "Only after slot: existing shutil.which('g++'), resolved absolute path and --version recorded. No install or toolchain modification.",
+  "compiler_version_argv": [
+    "<resolved-existing-g++>",
+    "--version"
+  ],
+  "compile_argv": [
+    "<resolved-existing-g++>",
+    "-std=c++14",
+    "-O2",
+    "-fno-fast-math",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic",
+    "-Werror",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/calibration_coordinates.cpp",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/calibration_coordinates_test.cpp",
+    "-o",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/core_01/calibration_coordinates_test"
+  ],
+  "test_argv": [
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/core_01/calibration_coordinates_test",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/offline_followup_20261026/calibration_coordinates_private/cases.tsv",
+    "1e-12",
+    "1e-12"
+  ],
+  "limits": {
+    "version_seconds": 5,
+    "compile_seconds": 20,
+    "test_seconds": 5,
+    "compiler_jobs": 1,
+    "planned_test_processes": 1,
+    "case_count": 23,
+    "retries": 0,
+    "GUI_DB_DLL_device": false
+  },
+  "estimated_seconds": "约2至5秒，尚未实测；每条命令有以上硬上限，源校验/元数据另计",
+  "source_manifest_sha256": "fbd573f1d3628f4d6b6a285bc1d37452fabe9c27bbee2489bec7aaad85fcd4c6",
+  "formal_context_from_integrator": {
+    "source_inputs": 447,
+    "snapshot_prefix": "1486686b",
+    "verified_or_linked_by_this_private_leaf": false,
+    "reason": "Private standard-C++ core uses no production object, Qt or application binary; no full native tree hashing during the integrator's occupied slot."
+  },
+  "failure_policy": "Keep fresh attempt, raw stdout/stderr and actual exits. Compilation failure skips test; timeout cleans only the new owned process group; actual receipts precede output parsing. No hidden retry or previous binary."
+}

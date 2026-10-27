@@ -1,0 +1,84 @@
+{
+  "schema": "sn100-windows-build-v1",
+  "started_utc": "2026-10-24T09:37:48.7581190Z",
+  "scope": "Instrument offline page/maintenance Windows32 compile/link only, frozen source. No GUI execution, network/device connection, installation or deployment.",
+  "configuration": "Release / Qt5.14.2 / MinGW7.3 32-bit / C++14",
+  "jobs": 2,
+  "published": true,
+  "stages": [
+    {
+      "target": "shell",
+      "project": "shell/shell.pro",
+      "directory": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\windows\\shell_build",
+      "qmake_arguments": [
+        "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\source\\06_programs\\sn100_host\\shell\\shell.pro",
+        "-spec",
+        "win32-g++",
+        "CONFIG+=release",
+        "CONFIG-=debug",
+        "CONFIG-=debug_and_release"
+      ],
+      "qmake_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\windows\\shell_qmake.log",
+      "make_arguments": [
+        "-j2"
+      ],
+      "make_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\windows\\shell_make.log",
+      "started_utc": "2026-10-24T09:37:50.0550489Z",
+      "qmake_exit": 0,
+      "input_count": 283,
+      "make_exit": 0,
+      "finished_utc": "2026-10-24T09:40:58.3724563Z",
+      "output": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\windows\\shell_build\\sn100_shell.exe"
+    },
+    {
+      "target": "renderer",
+      "project": "history/renderer.pro",
+      "directory": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\windows\\renderer_build",
+      "qmake_arguments": [
+        "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\source\\06_programs\\sn100_host\\history\\renderer.pro",
+        "-spec",
+        "win32-g++",
+        "CONFIG+=release",
+        "CONFIG-=debug",
+        "CONFIG-=debug_and_release"
+      ],
+      "qmake_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\windows\\renderer_qmake.log",
+      "make_arguments": [
+        "-j2"
+      ],
+      "make_log": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\windows\\renderer_make.log",
+      "started_utc": "2026-10-24T09:40:58.3827783Z",
+      "qmake_exit": 0,
+      "input_count": 50,
+      "make_exit": 0,
+      "finished_utc": "2026-10-24T09:41:43.8246210Z",
+      "output": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\instrument_20261024\\windows\\renderer_build\\sn100_report_renderer.exe"
+    }
+  ],
+  "actual_input_count": 287,
+  "actual_inputs_unchanged": true,
+  "changed_actual_inputs": [],
+  "toolchain_unchanged": true,
+  "outputs": [
+    {
+      "path": "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/windows/release/sn100_shell.exe",
+      "size": 3169792,
+      "sha256": "7436463714061eb10c8445595cf442359247b241c31f7e13cc36b2aa6c4b846a",
+      "machine_hex": "0x014c",
+      "optional_header_hex": "0x010b",
+      "architecture": "PE32 / Intel i386 / 32-bit Windows"
+    },
+    {
+      "path": "C:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/instrument_20261024/windows/release/sn100_report_renderer.exe",
+      "size": 720896,
+      "sha256": "a0d8f5afd878c113c7f48ad4f340b175302762563cbfb335b58d7a1571feda05",
+      "machine_hex": "0x014c",
+      "optional_header_hex": "0x010b",
+      "architecture": "PE32 / Intel i386 / 32-bit Windows"
+    }
+  ],
+  "pair_publish_condition": "Both fresh qmake/make builds exit 0, all actual formal input SHA256 unchanged, both executables verified PE32/i386 before same-directory pair publish.",
+  "exit_code": 0,
+  "path_restored": true,
+  "finished_utc": "2026-10-24T09:41:44.2752340Z"
+}
