@@ -102,6 +102,11 @@ quint64 ReadOnlyTcpTransport::clearConnection(const QString &error, bool notify)
 
 bool ReadOnlyTcpTransport::connectLoopback(quint16 port, QString *error)
 {
+    return connectNumericAddress(QStringLiteral("127.0.0.1"), port, error);
+}
+
+bool ReadOnlyTcpTransport::connectNumericAddress(const QString &address, quint16 port, QString *error)
+{
     if(error) error->clear();
     const quint64 connectionGeneration = clearConnection(QString(), true);
     // 公开信号的接收者也可能重入close/connect，不能覆盖其新连接。
@@ -109,6 +114,9 @@ bool ReadOnlyTcpTransport::connectLoopback(quint16 port, QString *error)
         return rejected(error, QStringLiteral("transport.reentered: 连接清理期间代次已改变"));
     if(port == 0)
         return rejected(error, QStringLiteral("transport.port: 本进程回环测试端口不能为0"));
+    QHostAddress endpoint;
+    if (!endpoint.setAddress(address) || endpoint.protocol() != QAbstractSocket::IPv4Protocol)
+        return rejected(error, QStringLiteral("transport.address: 主控地址须为数值IPv4地址"));
 
     QTcpSocket *socket = createSocket(this);
     // 测试工厂也是用户可覆写调用，允许close/reconnect重入时必须尊重新代次。
@@ -194,8 +202,8 @@ bool ReadOnlyTcpTransport::connectLoopback(quint16 port, QString *error)
         tick(guardedSocket.data(), connectionGeneration);
     });
     m_tick->start();
-    // 数值回环地址、NoProxy；不查DNS、不读配置、不接受外部IP，不自动重连。
-    socket->connectToHost(QHostAddress(QHostAddress::LocalHost), port);
+    // 地址由显式调用者提供；NoProxy、不查DNS，不读取旧配置或自动重发控制命令。
+    socket->connectToHost(endpoint, port);
     if(!current(socket, connectionGeneration))
         return rejected(error, QStringLiteral("transport.connect: 回环连接启动失败或已取消"));
     return true;
@@ -225,6 +233,14 @@ bool ReadOnlyTcpTransport::queueQuery(ReadOnlyQuery query, QString *error)
     }
     if(payload != "Qj" && payload != "Qk" && payload != "QH")
         return rejected(error, QStringLiteral("transport.query: 查询payload不在本轮只读白名单"));
+    return queueMessage(payload, error);
+}
+
+bool ReadOnlyTcpTransport::queueMessage(const QByteArray &payload, QString *error)
+{
+    if (error) error->clear();
+    if (!isConnected())
+        return rejected(error, QStringLiteral("transport.not_connected: 尚未建立主控连接"));
     QString encodingError;
     const QList<QByteArray> frames = encodeMessage(payload, Direction::HostToDevice, &encodingError);
     if(!encodingError.isEmpty() || frames.isEmpty())

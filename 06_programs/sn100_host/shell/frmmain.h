@@ -20,6 +20,8 @@ class ReagentsPage;
 class SamplePage;
 class InstrumentPage;
 class MaskDlgLogin;
+class MaskDlgShutDown;
+class DeviceControl;
 class frmPrinterSetting;
 class frmLisSetting;
 class QualityControlPage;
@@ -81,6 +83,9 @@ public:
     bool enablePasswordLogin();
     bool requestLogin();
     bool requestLogout();
+    bool requestShutdown();
+    bool enableDeviceControl(bool connectAtStartup = true);
+    DeviceControl *deviceControl() const { return deviceControl_; }
     int currentMainPage() const;
     int currentUserPage() const;
     bool selectMainPage(int index);
@@ -163,6 +168,12 @@ private:
     bool alarmHistoryShutdownRetryQueued_ = false;
     bool readOnlyStatusEnabled_ = false;
     QString readOnlyStatusText_, readOnlyStatusDetail_, readOnlyStatusColor_;
+    QPointer<MaskDlgShutDown> shutdownDialog_;
+    bool shutdownClosing_ = false;
+    DeviceControl *deviceControl_ = nullptr;
+    bool connectDeviceAtStartup_ = false;
+    void updateDeviceControlActions();
+    QString detectionStartBlocker() const;
 
     void restoreMainSelection();
     void configureOfflineStatus();

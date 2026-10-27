@@ -1,14 +1,21 @@
 #include "maintenance_store.h"
+#include "original_files/original_ini.h"
 
 #include <QDir>
+#include <QCryptographicHash>
 #include <QFile>
 #include <QFileInfo>
 #include <QSaveFile>
+#include <QHostAddress>
+#include <QLockFile>
+#include <QSettings>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QThread>
 #include <QUuid>
 #include <QVariant>
+#include <QRegularExpression>
+#include <QSet>
 
 namespace
 {
@@ -151,6 +158,48 @@ bool verifySchema(QSqlDatabase &database, QString *message)
     }
     return true;
 }
+
+QString connectionFileFingerprint(const QString &path, QString *message)
+{
+    const QFileInfo info(path);
+    const QString canonical = info.canonicalFilePath();
+    const QStringList parts = QDir::fromNativeSeparators(canonical)
+                                  .split(QLatin1Char('/'), Qt::SkipEmptyParts);
+    if (!info.isAbsolute() || !info.isFile() || info.isSymLink() || canonical.isEmpty() ||
+        info.size() > 262144 || parts.contains(QStringLiteral("sn100_host_reference"), Qt::CaseInsensitive) ||
+        parts.contains(QStringLiteral("baseline"), Qt::CaseInsensitive))
+    {
+        *message = QStringLiteral("请选择工作副本中不超过256KiB的普通配置文件，不能修改参考原件或基线副本。");
+        return {};
+    }
+    QFile file(canonical);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        *message = QStringLiteral("无法读取连接配置：") + file.errorString();
+        return {};
+    }
+    const QByteArray bytes = file.readAll();
+    if (file.error() != QFile::NoError)
+    {
+        *message = QStringLiteral("读取连接配置失败：") + file.errorString();
+        return {};
+    }
+    return QString::fromLatin1(QCryptographicHash::hash(bytes, QCryptographicHash::Sha256).toHex());
+}
+
+QString validateConnectionAddress(const QString &address, const QString &port)
+{
+    QHostAddress parsed;
+    static const QRegularExpression digits(QStringLiteral("^[1-9][0-9]{0,4}$"));
+    bool ok = false;
+    const uint number = port.toUInt(&ok);
+    if (address != address.trimmed() || !parsed.setAddress(address) ||
+        parsed.protocol() != QAbstractSocket::IPv4Protocol)
+        return QStringLiteral("主控地址须为有效IPv4地址，例如192.168.100.123。");
+    if (!digits.match(port).hasMatch() || !ok || number < 1 || number > 65535)
+        return QStringLiteral("主控端口须为1至65535的整数，不能留空。");
+    return {};
+}
 }
 
 MaintenanceStore::MaintenanceStore(QObject *parent) : QObject(parent)
@@ -162,6 +211,174 @@ MaintenanceStore::~MaintenanceStore()
 {
     Q_ASSERT(!m_database.isValid() || QThread::currentThread() == thread());
     releaseDatabase();
+}
+
+void MaintenanceStore::loadConnectionSettings(quint64 requestId, QString configurationFile)
+{
+    if (QThread::currentThread() != thread() || !requestId || requestId <= m_lastConnectionRequest)
+    {
+        emit connectionSettingsError(requestId, QStringLiteral("连接配置读取请求重复、过期或线程不正确。"), false);
+        return;
+    }
+    m_lastConnectionRequest = requestId;
+    QString message;
+    const QString fingerprint = connectionFileFingerprint(configurationFile, &message);
+    if (fingerprint.isEmpty())
+    {
+        emit connectionSettingsError(requestId, message, false);
+        return;
+    }
+    OriginalIni::Settings settings;
+    if (!OriginalIni::read(configurationFile, &settings, &message))
+    {
+        emit connectionSettingsError(requestId, message, false);
+        return;
+    }
+    const QString address = settings.values.value(QStringLiteral("tcpmain/ip")).toString();
+    const QString port = settings.values.value(QStringLiteral("tcpmain/port")).toString();
+    message = validateConnectionAddress(address, port);
+    if (!message.isEmpty() ||
+        fingerprint != connectionFileFingerprint(configurationFile, &message))
+    {
+        emit connectionSettingsError(requestId, message.isEmpty()
+            ? QStringLiteral("配置格式错误或读取期间文件已变化，请重新读取。") : message, false);
+        return;
+    }
+    // 原MaskDlgAbnormal::canStartTest依据CSV第6列决定是否阻止开始，warning/none不阻止。
+    QStringList blockingCodes;
+    QFile alarms(QFileInfo(configurationFile).dir().filePath(QStringLiteral("db/systemInfo/abnormal_Config.csv")));
+    bool alarmAvailable = alarms.size() > 0 && alarms.size() <= 1048576 && alarms.open(QIODevice::ReadOnly);
+    if (alarmAvailable)
+    {
+        const QList<QByteArray> rows = alarms.readAll().split('\n');
+        int validRows = 0;
+        for (int i = 1; i < rows.size(); ++i)
+        {
+            if (rows[i].trimmed().isEmpty()) continue;
+            const auto fields = rows[i].split(',');
+            if (fields.size() < 9) { alarmAvailable = false; break; }
+            ++validRows;
+            const QByteArray action = fields[5].trimmed();
+            if (!action.isEmpty() && action != "warning" && action != "none")
+                blockingCodes.append(QString::fromLatin1(fields[1].trimmed()));
+        }
+        alarmAvailable = alarmAvailable && validRows > 0 && alarms.error() == QFile::NoError;
+    }
+    emit connectionAlarmPolicyReady(requestId, blockingCodes, alarmAvailable);
+    emit connectionSettingsReady(requestId, address, port, fingerprint, false);
+}
+
+void MaintenanceStore::saveConnectionSettings(quint64 requestId, QString configurationFile,
+                                              QString expectedFingerprint, QString address, QString port)
+{
+    if (QThread::currentThread() != thread() || !requestId || requestId <= m_lastConnectionRequest)
+    {
+        emit connectionSettingsError(requestId, QStringLiteral("连接配置保存请求重复、过期或线程不正确。"), false);
+        return;
+    }
+    m_lastConnectionRequest = requestId;
+    if (!m_session.authenticated || m_session.role != 5)
+    {
+        emit connectionSettingsError(requestId, QStringLiteral("与原版一致，仅管理员可修改主控连接配置。"), false);
+        return;
+    }
+    QString message = validateConnectionAddress(address, port);
+    if (!message.isEmpty())
+    {
+        emit connectionSettingsError(requestId, message, false);
+        return;
+    }
+    const QString current = connectionFileFingerprint(configurationFile, &message);
+    if (current.isEmpty() || expectedFingerprint.isEmpty() || current != expectedFingerprint)
+    {
+        emit connectionSettingsError(requestId, message.isEmpty()
+            ? QStringLiteral("连接配置已被其他操作修改，请保留草稿并重新读取后再保存。") : message, false);
+        return;
+    }
+    QLockFile lock(configurationFile + QStringLiteral(".sn100-connection.lock"));
+    if (!lock.tryLock(0))
+    {
+        emit connectionSettingsError(requestId, QStringLiteral("另一个连接配置操作正在进行，请稍后重试。"), false);
+        return;
+    }
+    if (current != connectionFileFingerprint(configurationFile, &message))
+    {
+        emit connectionSettingsError(requestId, QStringLiteral("连接配置在保存前已变化，请重新读取。"), false);
+        return;
+    }
+    OriginalIni::Settings settings;
+    if (!OriginalIni::read(configurationFile, &settings, &message))
+    {
+        emit connectionSettingsError(requestId, message, false);
+        return;
+    }
+    // 只替换原版三个键的值，保留#注释、未知键、换行和其余原始字节。
+    QFile source(configurationFile);
+    if (!source.open(QIODevice::ReadOnly))
+    {
+        emit connectionSettingsError(requestId, source.errorString(), false);
+        return;
+    }
+    QByteArray original = source.readAll();
+    const bool readFailed = source.error() != QFile::NoError;
+    source.close();
+    const QMap<QByteArray, QByteArray> replacements = {
+        {"tcpmain/ip", address.toUtf8()}, {"tcpmain/port", port.toUtf8()},
+        {"tcplog/ip", address.toUtf8()}};
+    QSet<QByteArray> seen;
+    QByteArray group, rewritten;
+    const QList<QByteArray> lines = original.split('\n');
+    for (int i = 0; i < lines.size(); ++i)
+    {
+        QByteArray line = lines[i];
+        QByteArray trimmed = line.trimmed();
+        if (i == 0 && trimmed.startsWith("\xef\xbb\xbf")) trimmed.remove(0, 3);
+        if (trimmed.startsWith('[') && trimmed.endsWith(']')) group = trimmed.mid(1, trimmed.size() - 2);
+        else if (!trimmed.startsWith('#') && !trimmed.startsWith(';'))
+        {
+            const int equal = line.indexOf('=');
+            const QByteArray key = group + '/' + line.left(equal).trimmed();
+            if (equal >= 0 && replacements.contains(key))
+            {
+                if (seen.contains(key))
+                {
+                    emit connectionSettingsError(requestId, QStringLiteral("连接配置有重复键，未保存，请先核对原文件。"), false);
+                    return;
+                }
+                seen.insert(key);
+                line = line.left(equal + 1) + replacements.value(key) + (line.endsWith('\r') ? "\r" : "");
+            }
+        }
+        rewritten += line;
+        if (i + 1 < lines.size()) rewritten += '\n';
+    }
+    // tcplog原键若不存在，增加同名组不会改变其原端口；不补造主连接的必需键。
+    if (!seen.contains("tcplog/ip")) rewritten += "\n[tcplog]\nip=" + address.toUtf8() + '\n';
+    QSaveFile output(configurationFile);
+    if (readFailed || !seen.contains("tcpmain/ip") || !seen.contains("tcpmain/port") ||
+        current != connectionFileFingerprint(configurationFile, &message) ||
+        !output.open(QIODevice::WriteOnly) || output.write(rewritten) != rewritten.size() || !output.commit())
+    {
+        emit connectionSettingsError(requestId, QStringLiteral("连接配置未能原子保存，请核对文件后重试：") + output.errorString(), false);
+        return;
+    }
+    const QString fingerprint = connectionFileFingerprint(configurationFile, &message);
+    if (fingerprint.isEmpty())
+    {
+        // 写入结局不明时先要求重读，不能让重复保存覆盖可能已提交的配置。
+        emit connectionSettingsError(requestId, QStringLiteral("连接配置写入或回读失败，请重新读取确认实际文件。"), true);
+        return;
+    }
+    OriginalIni::Settings verified;
+    if (!OriginalIni::read(configurationFile, &verified, &message) ||
+        verified.values.value(QStringLiteral("tcpmain/ip")).toString() != address ||
+        verified.values.value(QStringLiteral("tcpmain/port")).toString() != port ||
+        verified.values.value(QStringLiteral("tcplog/ip")).toString() != address)
+    {
+        emit connectionSettingsError(requestId, QStringLiteral("配置已写入但回读不一致，请重新读取确认后再修改。"), true);
+        return;
+    }
+    emit connectionSettingsReady(requestId, address, port, fingerprint, true);
 }
 
 void MaintenanceStore::registerTypes()

@@ -1,0 +1,68 @@
+{
+  "state": "ready_for_integration",
+  "apiReady": true,
+  "codeReady": true,
+  "modifiedFiles": [
+    "06_programs/sn100_host/projects/project_page.h",
+    "06_programs/sn100_host/projects/project_page.cpp"
+  ],
+  "sha256": {
+    "06_programs/sn100_host/projects/project_page.h": "27a931ccd46292540558bebbee8cd965d7bcc7b2af6d7750796d270a33e5d1d6",
+    "06_programs/sn100_host/projects/project_page.cpp": "405b143b6d884cd1d0718c90dc888330c7ca68b12cf7fdedd3905c41140ba014"
+  },
+  "slice": "空库真实入口、页面按钮状态、算法系数/结果启用和稀释取值接入",
+  "contract": "temp/sn100_host/project_config_20261027/page/contract.md",
+  "completedBehaviors": [
+    "原btnChange位置项目管理菜单：新建/导入/单位维护/重新读取，空库无需演示数据",
+    "新建四结果类型，明确填写仪器编号和单位；进入页面草稿后原保存提交create",
+    "单位弹窗新增/修改/删除等待真实回执、失败保留输入、忙时禁止关闭",
+    "保存/create/copy/remove/import/单位操作按请求号和operation核回执",
+    "写成功后读取失败锁住旧快照，重新读取后恢复可编辑",
+    "取消恢复提交值，新建取消不落库；复制成功选中新项目；固定项目页面和Store保护",
+    "三系数按原范围/小数位，C不误当预热，结果used与display/mainResult分开",
+    "稀释列表取编辑器新值并送入sampleRates，接有效稀释液信号",
+    "离页/关窗/弹窗/重复点击/角色变更/销毁及过期回执保护",
+    "数值使用不接受千位分隔符的固定小数格式，避免逗号数字转成0"
+  ],
+  "dependencies": [
+    "projects_store.h/.cpp和projects_current_format.cpp按data/contract.md稳定接口",
+    "project_advanced.h/.cpp取值和校验接口及setDiluentChoices",
+    "无需增加正式源码文件或工程清单项"
+  ],
+  "pendingRKCases": [
+    "工程师空库实际点击btnChange菜单，建单位，再新建四结果项目并保存",
+    "选择实际JSON文件完成合法导入，非法输入/重复名整批失败",
+    "单位未引用改名/倍率/删除；已引用拒绝；失败输入可重试",
+    "修改名称/结果范围/三系数/启用状态，保存后关闭重开一致",
+    "参数为空/部分为空/超范围/超过4位小数不写入，草稿保留",
+    "取消不落库，新建取消空库仍空，复制独立并选新项目",
+    "固定/跨库引用不能删除，普通独立项目可删",
+    "访客及actionReady=false按钮只读，角色变更即时生效",
+    "稀释增删/默认/可选/稀释液由实际编辑控件保存，取消重开一致",
+    "保存失败后修正重试；写成功后load失败要求重新读取",
+    "离页/关闭草稿询问，在途操作及弹窗不能被直接关闭",
+    "过期/其他operation回执不清当前草稿",
+    "结果格式弹窗与算法启用同表一致",
+    "RK显示布局/键鼠、响应/资源和同板负载",
+    "三系数及结果范围带逗号数字不应保存成0"
+  ],
+  "unknown": [
+    "ARM64单文件语法检查通过不等于完整链接通过",
+    "未运行电脑版本，未部署或操作RK；RK功能、重开、故障和资源待整合",
+    "原Windows截图/实际主题及HDMI物理操作待对照",
+    "完整算法/校准应用未实现，采样频率单位未明确故保持只读",
+    "新建范围初值沿用数据值对象的0至999/两位小数，须使用者按有效资料核对，非临床推荐"
+  ],
+  "verification": {
+    "sourceDiffCheck": "passed",
+    "arm64SourceSyntax": "passed (aarch64-linux-gnu-g++ -std=c++14 -fsyntax-only, exit 0)",
+    "fullArm64Build": "pending_integration",
+    "rkFunctional": "pending_integration",
+    "rkVisual": "pending",
+    "resource": "pending_integration",
+    "instrument": "not_applicable_to_configuration"
+  },
+  "noLocalRuntime": true,
+  "noRkDeployment": true,
+  "documentsOwner": "integration"
+}

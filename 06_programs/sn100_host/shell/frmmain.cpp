@@ -4,6 +4,7 @@
 #include "ui/frmhospinfosetting.h"
 #include "ui/frmaccountsetting.h"
 #include "ui/maskdlglogin.h"
+#include "ui/maskdlgshutdown.h"
 #include "ui/frmlissetting.h"
 #include "history/history_page.h"
 #include "history/report_controller.h"
@@ -12,6 +13,7 @@
 #include <QButtonGroup>
 #include <QCloseEvent>
 #include <QDateTime>
+#include <QDebug>
 #include <QFontMetrics>
 #include <QLabel>
 #include <QListWidget>
@@ -105,6 +107,7 @@ frmMain::frmMain(HospitalStore *store, QWidget *parent, AccountStore *accounts) 
     ui->label_2->setStyleSheet(QStringLiteral(
         "QLabel { border-image: url(:/shell/logo/sn_logo_2.png); }"));
     configureOfflineStatus();
+    connect(ui->btnShutDown, &CusBadgeButton::clicked, this, [this]() { requestShutdown(); });
 
     if (accounts)
     {
@@ -237,6 +240,10 @@ void frmMain::configureOfflineStatus()
         badge.first->setEnabled(false);
         badge.first->setToolTip(tr("脱机：未接入设备，状态未知，操作不可用。"));
     }
+    // 原版隐藏“关闭仪器”选项后，这个按钮只负责确认退出上位机软件。
+    ui->btnShutDown->setEnabled(true);
+    ui->btnShutDown->setAccessibleName(tr("退出上位机"));
+    ui->btnShutDown->setToolTip(tr("退出上位机；未保存内容和正在进行的操作会先核对。"));
     ui->btnUser->setNormalBgImage(QStringLiteral(":/shell/main_state/user_pic.png"));
     ui->btnUser->setHoverBgImage(QStringLiteral(":/shell/main_state/user_pic.png"));
     ui->btnUser->setPressedBgImage(QStringLiteral(":/shell/main_state/user_pic.png"));
@@ -266,7 +273,7 @@ void frmMain::configureOfflineStatus()
             "QPushButton:pressed { background-color: rgb(211,47,47); color: white; }"
             "QPushButton:disabled { background-color: transparent; color: #636363; }"));
         device.first->setBtnDisabled(true);
-        device.first->setToolTip(tr("脱机：设备操作不可用。"));
+        device.first->setToolTip(tr("检测任务下发、暂停、应答与实时状态尚未接通，当前不能操作仪器。"));
     }
     const QList<QLabel *> stateIcons = {
         ui->lblCupHave,ui->lblWasteCup,ui->lblTemp,ui->lblWaterHave,ui->lblWasteWater
@@ -514,8 +521,48 @@ void frmMain::setDataDirectory(const QString &directory)
     hospitalPage()->setDataDirectory(directory);
 }
 
+bool frmMain::requestShutdown()
+{
+    if (shutdownClosing_ || rejectLoginNavigation() || logoutPending_)
+        return false;
+    if (shutdownDialog_)
+    {
+        shutdownDialog_->raise();
+        shutdownDialog_->activateWindow();
+        return false;
+    }
+    auto *dialog = new MaskDlgShutDown(this);
+    shutdownDialog_ = dialog;
+    qInfo() << "EXIT_BUTTON_CONFIRMATION_OPEN";
+    connect(dialog, &QDialog::finished, this, [this, dialog](int result)
+    {
+        if (shutdownDialog_ != dialog) return;
+        shutdownDialog_.clear();
+        dialog->deleteLater();
+        if (result != QDialog::Accepted)
+        {
+            qInfo() << "EXIT_BUTTON_CANCELLED";
+            return;
+        }
+        shutdownClosing_ = true;
+        // 业务窗可能嵌在滚动宿主中，关闭子窗只会隐藏页面，必须关闭真正的外层窗。
+        const bool accepted = window()->close();
+        qInfo() << (accepted ? "EXIT_BUTTON_ACCEPTED" : "EXIT_BUTTON_REJECTED_BY_PAGE_GUARD");
+        shutdownClosing_ = false;
+    });
+    dialog->showDialog();
+    return true;
+}
+
 void frmMain::closeEvent(QCloseEvent *event)
 {
+    if (shutdownDialog_)
+    {
+        shutdownDialog_->raise();
+        emit navigationRejected(tr("请先确认或取消关机窗口。"));
+        event->ignore();
+        return;
+    }
     if (rejectLoginNavigation())
     {
         event->ignore();

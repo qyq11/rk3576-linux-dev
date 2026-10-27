@@ -66,12 +66,13 @@ public:
 
 void checkControls(frmMain &window)
 {
-    for (const char *name : {"btnStart", "btnPause", "btnShutDown", "btnCloseBeep", "btnAbnormal", "btnLis"})
+    for (const char *name : {"btnStart", "btnPause", "btnCloseBeep", "btnAbnormal", "btnLis"})
     {
         auto *button = find<QWidget>(&window, name);
         QVERIFY2(button, name);
         QVERIFY2(!button->isEnabled(), name);
     }
+    QVERIFY(find<QWidget>(&window, "btnShutDown")->isEnabled());
     for (const char *name : {"lblCupHave", "lblWasteCup", "lblTemp", "lblWaterHave", "lblWasteWater"})
     {
         auto *label = find<QLabel>(&window, name);

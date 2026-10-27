@@ -1,4 +1,5 @@
 #include "projects_store.h"
+#include "original_project_repository.h"
 
 #include <QCoreApplication>
 #include <QThread>
@@ -46,6 +47,12 @@ struct Selection
 // caches values; a failed attempt cannot reuse a prior committed snapshot.
 bool ProjectsStore::readCurrentResultFormat(ProjectCurrentFormatSnapshot *output, QString *message)
 {
+    if (m_original)
+    {
+        ProjectRecords projects;
+        ProjectUnits units;
+        return readOriginalFormat(output, &projects, &units, message);
+    }
     *output = ProjectCurrentFormatSnapshot();
     const QFileInfo database(m_database.databaseName());
     const QString databasePath = database.canonicalFilePath();
@@ -188,7 +195,9 @@ bool ProjectsStore::readCurrentResultFormat(ProjectCurrentFormatSnapshot *output
     for (const auto &project : projects)
     {
         stream << project.id << project.instrumentProjectId << project.name << project.fullName
-               << project.enabled << project.changedAt;
+               << project.enabled << project.changedAt << project.algorithm.configured
+               << project.algorithm.coefficientA << project.algorithm.coefficientB << project.algorithm.coefficientC
+               << project.algorithm.autoApply;
         for (const auto &result : project.results)
             stream << result.type << result.name << result.decimals << result.testLow << result.testHigh
                    << result.normalLow << result.normalHigh << result.lisCode << result.unit << result.mainResult;
@@ -207,10 +216,92 @@ bool ProjectsStore::readCurrentResultFormat(ProjectCurrentFormatSnapshot *output
     return true;
 }
 
+bool ProjectsStore::readOriginalFormat(ProjectCurrentFormatSnapshot *output, ProjectRecords *projects,
+                                       ProjectUnits *units, QString *message)
+{
+    *output = ProjectCurrentFormatSnapshot();
+    const QString before = OriginalProjectRepository::databaseFingerprint(m_original->unitsDatabasePath(), message);
+    if (before.isEmpty()) return false;
+    if (!read(projects, units, message)) return false;
+    const QString after = OriginalProjectRepository::databaseFingerprint(m_original->unitsDatabasePath(), message);
+    if (after.isEmpty()) return false;
+    if (before != after)
+    { *message = QStringLiteral("读取期间原单位库发生变化，请重新读取。"); return false; }
+    QCryptographicHash fingerprint(QCryptographicHash::Sha256);
+    fingerprint.addData(m_original->root().toUtf8());
+    fingerprint.addData(before.toLatin1());
+    ProjectCurrentFormatSnapshot snapshot;
+    snapshot.directory_ = m_original->root();
+    snapshot.databasePath_ = m_original->unitsDatabasePath();
+    // 明确区别于新catalog；历史报告不能把它当成旧检测时的单位证明。
+    snapshot.catalogVersion_ = QStringLiteral("sn100-original-projects-v1");
+    snapshot.formatVersion_ = QStringLiteral("sn100-original-project-result-format-v1");
+    snapshot.capturedAtUtc_ = QDateTime::currentDateTimeUtc();
+    snapshot.generation_ = ++m_formatGeneration;
+    snapshot.selectionProfilePresent_ = true;
+    for (const auto &unit : *units) snapshot.units_.append({unit.name, unit.ratio});
+    for (const auto &project : *projects)
+    {
+        const QString actual = OriginalProjectRepository::databaseFingerprint(
+            QDir(m_original->root()).filePath(QStringLiteral("project/") + project.originalFileName), message);
+        if (actual.isEmpty() || actual != project.originalFingerprint)
+        { *message = QStringLiteral("读取期间原项目文件发生变化，请重新读取。"); return false; }
+        fingerprint.addData(project.originalFileName.toUtf8());
+        fingerprint.addData(project.originalFingerprint.toLatin1());
+        snapshot.projects_.append({project.id, project.instrumentProjectId, project.name, project.enabled});
+        for (const auto &result : project.results)
+        {
+            ProjectCurrentFormatEntry entry;
+            entry.projectId = project.id;
+            entry.instrumentProjectId = project.instrumentProjectId;
+            entry.projectName = project.name;
+            entry.projectEnabled = project.enabled;
+            entry.resultTypeName = result.type;
+            entry.resultType = result.sourceResultId;
+            entry.sourceResultId = result.sourceResultId;
+            entry.resultName = result.name;
+            entry.unit = result.unit;
+            entry.decimals = result.decimals;
+            entry.selectionKnown = result.selectionKnown;
+            entry.used = result.used;
+            entry.display = result.display;
+            entry.mainResult = result.mainResult;
+            const auto unit = std::find_if(units->cbegin(), units->cend(),
+                [&](const ProjectUnit &value) { return value.name == result.unit; });
+            if (unit != units->cend() && std::isfinite(unit->ratio) && unit->ratio >= 1 &&
+                unit->ratio <= std::numeric_limits<int>::max() && std::floor(unit->ratio) == unit->ratio &&
+                result.decimals >= 1 && result.decimals <= 6 && result.selectionKnown)
+            {
+                entry.integerRatio = int(unit->ratio);
+                entry.known = true;
+            }
+            else entry.unknownReason = QStringLiteral("原配置保留；单位倍率或结果选择未满足当前报告解释条件，未推定临床显示值。");
+            snapshot.entries_.append(entry);
+        }
+    }
+    snapshot.fingerprint_ = QString::fromLatin1(fingerprint.result().toHex());
+    snapshot.valid_ = true;
+    *output = snapshot;
+    return true;
+}
+
 void ProjectsStore::loadCurrentResultFormat(qint64 requestId)
 {
     const QString operation = QStringLiteral("loadCurrentResultFormat");
     if (!check(requestId, operation)) return;
+    if (m_original)
+    {
+        if (requestId <= 0)
+        { fail(requestId, operation, QStringLiteral("原结果配置读取需要有效请求编号。")); return; }
+        ProjectCurrentFormatSnapshot snapshot;
+        ProjectRecords records;
+        ProjectUnits units;
+        QString message;
+        if (!readOriginalFormat(&snapshot, &records, &units, &message))
+        { fail(requestId, operation, message); return; }
+        emit currentResultFormatReady(requestId, snapshot);
+        return;
+    }
     if (!m_database.transaction()) { fail(requestId, operation, m_database.lastError().text()); return; }
     ProjectCurrentFormatSnapshot snapshot;
     QString message;
@@ -229,6 +320,47 @@ void ProjectsStore::replaceCurrentResultFormat(qint64 requestId, qint64 projectI
 {
     const QString operation = QStringLiteral("replaceCurrentResultFormat");
     if (!check(requestId, operation, true)) return; // Exact existing canEdit gate.
+    if (m_original)
+    {
+        if (!checkOriginalRequest(requestId, operation, true)) return;
+        ProjectCurrentFormatSnapshot snapshot;
+        ProjectRecords records;
+        ProjectUnits units;
+        QString message;
+        if (!readOriginalFormat(&snapshot, &records, &units, &message))
+        { fail(requestId, operation, message); return; }
+        if (snapshot.fingerprint() != expectedFingerprint)
+        { fail(requestId, operation, QStringLiteral("原结果配置已经变化，请重新读取，未用旧草稿覆盖。")); return; }
+        auto found = std::find_if(records.cbegin(), records.cend(),
+            [projectId](const ProjectRecord &record) { return record.id == projectId; });
+        if (found == records.cend() || configurations.size() != found->results.size() || selections.size() != configurations.size())
+        { fail(requestId, operation, QStringLiteral("须保留原项目的全部结果行，不能用四槽替换丢掉MDA或未知原行。")); return; }
+        ProjectRecord replacement = *found;
+        QSet<QString> seen;
+        for (auto &configuration : configurations)
+        {
+            const auto previous = std::find_if(found->results.cbegin(), found->results.cend(),
+                [&](const ProjectResult &value) { return value.type == configuration.type; });
+            const auto selection = std::find_if(selections.cbegin(), selections.cend(),
+                [&](const ProjectCurrentFormatSelection &value) { return value.resultType == configuration.type; });
+            if (previous == found->results.cend() || selection == selections.cend() || seen.contains(configuration.type) ||
+                selection->resultId != previous->sourceResultId || (selection->used != 0 && selection->used != 1) ||
+                (selection->display != 0 && selection->display != 1))
+            { fail(requestId, operation, QStringLiteral("原结果身份、启用或显示字段不完整，未保存。")); return; }
+            seen.insert(configuration.type);
+            configuration.selectionKnown = previous->selectionKnown;
+            configuration.sourceResultId = previous->sourceResultId;
+            configuration.used = selection->used == 1;
+            configuration.display = selection->display == 1;
+        }
+        replacement.results = configurations;
+        qint64 savedId = 0;
+        bool changed = false;
+        if (!m_original->save(replacement, &savedId, &changed, &message))
+        { fail(requestId, operation, message); return; }
+        emit succeeded(requestId, operation, savedId);
+        return;
+    }
     if (projectId <= 0 || expectedFingerprint.size() != 64 || configurations.size() != 4 || selections.size() != 4)
     { fail(requestId, operation, QStringLiteral("请先读取当前快照，并明确提供完整四槽结果配置和选择字段。")); return; }
     QSqlQuery query(m_database);
@@ -281,6 +413,15 @@ void ProjectsStore::replaceCurrentResultFormat(qint64 requestId, qint64 projectI
     }
     ProjectRecord replacement = *found; // Identity, advanced scheme and labels remain actual committed values.
     replacement.results = configurations; // Explicit replacement, never read-time migration.
+    // 两个编辑入口保存同一份原选择字段，读回的ProjectResult也须表达已知状态。
+    for (auto &result : replacement.results)
+    {
+        const auto selection = requested.value(result.type);
+        result.selectionKnown = true;
+        result.sourceResultId = selection.resultId;
+        result.used = selection.used == 1;
+        result.display = selection.display == 1;
+    }
     message = validate(replacement, units);
     if (!message.isEmpty()) { reject(); return; }
     const QStringList schema{
@@ -336,6 +477,10 @@ void ProjectsStore::replaceCurrentResultFormat(qint64 requestId, qint64 projectI
                 || saved.testLow != expected->testLow || saved.testHigh != expected->testHigh
                 || saved.normalLow != expected->normalLow || saved.normalHigh != expected->normalHigh)
         { message = QStringLiteral("已保存格式/结果字段读回与明确输入不一致。 "); reject(); return; }
+        const auto selection = requested.value(saved.type);
+        if (!saved.selectionKnown || saved.sourceResultId != selection.resultId ||
+            saved.used != (selection.used == 1) || saved.display != (selection.display == 1))
+        { message = QStringLiteral("结果启用或显示选择读回与明确输入不一致。"); reject(); return; }
     }
     if (!m_database.commit()) { message = m_database.lastError().text(); reject(); return; }
     emit succeeded(requestId, operation, projectId); // Reload gives a new generation and committed fingerprint.
@@ -346,6 +491,22 @@ void ProjectsStore::loadCurrentProjectFormat(qint64 requestId, qint64 projectId)
 {
     const QString operation = QStringLiteral("loadCurrentProjectFormat");
     if (!check(requestId, operation)) return;
+    if (m_original)
+    {
+        if (requestId <= 0 || projectId <= 0)
+        { fail(requestId, operation, QStringLiteral("原结果配置读取需要有效请求和项目编号。")); return; }
+        ProjectCurrentFormatSnapshot snapshot;
+        ProjectRecords records;
+        ProjectUnits units;
+        QString message;
+        if (!readOriginalFormat(&snapshot, &records, &units, &message))
+        { fail(requestId, operation, message); return; }
+        const auto found = std::find_if(records.cbegin(), records.cend(),
+            [projectId](const ProjectRecord &value) { return value.id == projectId; });
+        if (found == records.cend()) { fail(requestId, operation, QStringLiteral("原项目已不存在，未返回旧编辑记录。")); return; }
+        emit currentProjectFormatReady(requestId, *found, snapshot);
+        return;
+    }
     if (requestId <= 0 || projectId <= 0 || (QCoreApplication::instance() &&
         QThread::currentThread() == QCoreApplication::instance()->thread()))
     { fail(requestId, operation, QStringLiteral("格式读取须在存储工作线程使用有效请求和项目ID。")); return; }

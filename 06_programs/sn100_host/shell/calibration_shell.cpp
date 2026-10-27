@@ -26,7 +26,15 @@ void frmMain::attachCalibrationPage(CalibrationPage *page)
     ui->stkCenterAdptive->setCurrentIndex(previous);
     page->setSession(session_);
     connect(this, &frmMain::sessionChanged, page, &CalibrationPage::setSession);
-    connect(projects_, &ProjectPage::snapshotChanged, page, &CalibrationPage::setProjects);
+    connect(projects_, &ProjectPage::snapshotChanged, page,
+            [page](ProjectRecords records, ProjectUnits units)
+    {
+        ProjectRecords local;
+        for (const auto &record : records)
+            if (record.originalFileName.isEmpty()) local.append(record);
+        // 不把原项目编号误交给尚未接原库的校准存储。
+        page->setProjects(local, units);
+    });
     connect(reagents_, &ReagentsPage::snapshotChanged, page, &CalibrationPage::setReagents);
     connect(page, &CalibrationPage::statusChanged, this, [this](const QString &message)
     {

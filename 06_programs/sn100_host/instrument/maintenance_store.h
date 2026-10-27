@@ -7,6 +7,7 @@
 #include <QMetaType>
 #include <QObject>
 #include <QSqlDatabase>
+#include <QStringList>
 
 struct MaintenanceRecord
 {
@@ -37,6 +38,10 @@ public slots:
     void loadMonth(QDate month);
     // Manual completion records only. Device washing/shutdown cannot be forged.
     void record(QString action, QDate date);
+    // 沿用原config.ini中的tcpmain字段；仅维护连接配置，不创建socket或发送命令。
+    void loadConnectionSettings(quint64 requestId, QString configurationFile);
+    void saveConnectionSettings(quint64 requestId, QString configurationFile, QString expectedFingerprint,
+                                QString address, QString port);
     void close();
 
 signals:
@@ -45,6 +50,9 @@ signals:
     void succeeded(QString action);
     void error(QString operation, QString message);
     void closed();
+    void connectionSettingsReady(quint64 requestId, QString address, QString port, QString fingerprint, bool saved);
+    void connectionSettingsError(quint64 requestId, QString message, bool requiresReload);
+    void connectionAlarmPolicyReady(quint64 requestId, QStringList blockingCodes, bool available);
 
 private:
     bool checkThread(const QString &operation);
@@ -55,6 +63,7 @@ private:
     QString m_connectionName;
     AccountSession m_session;
     bool m_ready = false;
+    quint64 m_lastConnectionRequest = 0;
 };
 
 #endif

@@ -1,0 +1,58 @@
+DATABASE /home/rkshare/programs/sn100_shell/verification/project_config_store_03/data/catalog.db
+PASS 新匿名空库初始化，无演示种子
+PASS 读取实际资料
+PASS 项目与单位确实为空
+RECEIPT 10002 "addUnit" 0
+PASS 单位录入：s
+REJECTED 10003 addUnit 新增单位失败，可能已有同名单位；未覆盖。UNIQUE constraint failed: option_unit.unit Unable to fetch row
+PASS 单位录入：s
+REJECTED 10004 addUnit 单位倍率须为1至2147483647的整数，不能截断小数或无效值。
+PASS 单位录入：invalid
+REJECTED 10005 create 结果单位未在已加载单位字典中配置。
+PASS 新增项目：ANON_A
+RECEIPT 10006 "create" 1
+PASS 新增项目：ANON_A
+PASS 读取实际资料
+PASS 新增保存后读回，未用SQL造记录
+RECEIPT 10008 "save" 1
+PASS 保存项目：ANON_A
+PASS 读取实际资料
+PASS 算法参数实际保存读回
+REJECTED 10010 save 系数A、B、C须为-9999至9999的有限数值，最多四位小数。
+PASS 保存项目：ANON_A
+RECEIPT 10011 "copy" 2
+PASS 复制产生独立项目
+PASS 读取实际资料
+RECEIPT 10013 "save" 2
+PASS 保存项目：ANON_COPY
+PASS 读取实际资料
+PASS 改副本不改变原项目
+PASS 登记真实业务引用
+REJECTED 10016 remove 删除失败；项目可能被试剂/样本引用。FOREIGN KEY constraint failed Unable to fetch row
+PASS 被跨库引用的项目拒绝删除
+REJECTED 10017 removeUnit 单位已被项目结果使用，不能删除。
+PASS 被引用单位拒绝删除
+REJECTED 10018 addUnit 仅工程师/管理员可在就绪状态修改项目。
+PASS 单位录入：guest
+PASS 建立写失败用连接
+PASS 占用数据库写锁
+REJECTED 10019 addUnit database is locked Unable to fetch row
+PASS 单位录入：recoverable
+PASS 释放写锁
+RECEIPT 10020 "addUnit" 0
+PASS 单位录入：recoverable
+PASS 写入显式匿名导入文件
+RECEIPT 10021 "importFile" 3
+PASS 真实JSON文件导入
+PASS 读取实际资料
+PASS 导入后项目数量为3
+REJECTED 10023 importFile 项目“ANON_IMPORTED”重复或已存在，整批未覆盖。
+PASS 重复导入拒绝覆盖
+DATABASE /home/rkshare/programs/sn100_shell/verification/project_config_store_03/data/catalog.db
+PASS 同目录无种子重开
+PASS 读取实际资料
+PASS 重开后项目与单位一致
+PASS 独立只读数据库核对
+PASS 数据库完整性核对
+PASS 数据库线程正常退出
+RESULT passed 39 failed 0 instrumentActions 0 backendOnly true

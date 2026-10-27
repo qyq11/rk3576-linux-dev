@@ -10,6 +10,7 @@ class frmSystemMaterial;
 }
 class ProjectFormatDialog;
 class HistoryCurrentDisplayState;
+class QDialog;
 class ProjectPage : public QWidget
 {
     Q_OBJECT
@@ -53,6 +54,20 @@ class ProjectPage : public QWidget
     void updateActions();
     void showProject(qint64 id);
     void openResultFormat();
+    void openOriginalResultFormat();
+    void openOriginalParameters();
+    void openProjectMenu(const QPoint &position);
+    void openOriginalDirectory();
+    void importOriginalProject();
+    void exportOriginalProjects(bool allProjects);
+    void createProject();
+    void importProjects();
+    void manageUnits();
+    void cancel();
+    bool canStartOperation(bool requireProject = false) const;
+    qint64 beginOperation(const QString &operation);
+    void requestLoad();
+    void updateResultSelection(const QString &type, bool used);
     ProjectRecord editedProject() const;
     void markDirty();
     void save();
@@ -64,17 +79,28 @@ class ProjectPage : public QWidget
     QPointer<ProjectsStore> m_store;
     ProjectAdvancedEditor *m_advanced;
     ProjectRecords m_projects;
+    ProjectRecord m_draftProject;
     ProjectUnits m_units;
     AccountSession m_session;
     qint64 m_selectedId = 0;
     qint64 m_request = 0;
     qint64 m_selectAfterLoad = 0;
+    qint64 m_beforeCreateId = 0;
     QPointer<ProjectFormatDialog> m_formatDialog;
+    QPointer<QDialog> m_auxiliaryDialog;
+    QString m_pendingOperation;
     QString m_catalogDatabasePath;
+    QString m_advancedSourcePath; // 高级控件只在同一资料源、同一项目且原值完全相同时复用。
     bool m_formatRefreshAfterClose = false;
     bool m_ready = false;
     bool m_busy = false;
     bool m_dirty = false;
     bool m_populating = false;
+    bool m_creating = false;
+    bool m_refreshRequired = false;
+    bool m_promptOpen = false;
+    bool m_originalProfile = false;
+    bool m_advancedEdited = false;
+    QString m_originalRoot;
 };
 #endif

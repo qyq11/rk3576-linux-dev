@@ -231,8 +231,18 @@ KMS
     if grep -q '"calibration_local"' "$release/release.json"; then calibration_arguments=(--calibration); fi
     alarm_history_arguments=()
     if grep -q '"alarm_history_readonly"' "$release/release.json"; then alarm_history_arguments=(--alarm-history); fi
+    original_arguments=()
+    if [[ -e $base/original_project_root ]]; then
+        [[ -f $base/original_project_root && ! -L $base/original_project_root ]] || die 'Original project root pointer must be a regular file.'
+        IFS= read -r original_root < "$base/original_project_root"
+        [[ $original_root == /* && $(readlink -f "$original_root") == "$original_root" \
+            && -f $original_root/.sn100-original-work-v1 && ! -L $original_root/.sn100-original-work-v1 ]] || die 'Original project working root is invalid.'
+        [[ $(cat "$original_root/.sn100-original-work-v1") == sn100-original-work-v1 ]] || die 'Original working-copy permission marker is invalid.'
+        original_arguments=(--original-db-root "$original_root" --start-project-page)
+        printf 'ORIGINAL_DB_ROOT=%s\n' "$original_root" >> "$run/runtime.txt"
+    fi
     "$release/sn100_shell" --offline --accounts --history --catalog --samples --instrument --password-login "${printer_arguments[@]}" "${lis_arguments[@]}" "${quality_arguments[@]}" "${calibration_arguments[@]}" "${alarm_history_arguments[@]}" --data-dir "$data" --viewport 1600x900 \
-        "${seed[@]}" "${actor[@]}" > "$run/app.log" 2>&1 &
+        "${seed[@]}" "${actor[@]}" "${original_arguments[@]}" > "$run/app.log" 2>&1 &
     child=$!
     printf '%s\n' "$child" > "$run/app.pid"
     printf '%s\n' "$release/sn100_shell" > "$run/app.exe"

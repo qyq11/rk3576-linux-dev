@@ -79,7 +79,7 @@ pwd
 
 ## 6. 修复启动时的 gsudo 管理员授权弹窗
 
-2026-10-21，用户反馈每次打开 WindTerm 都出现管理员授权窗口。[查看用户提供的原始照片](../03_photos/20261021_windterm_uac_01.jpg)，照片原文件已归档，字节校验与用户原件一致。弹窗显示程序为 `C:\WindTerm\vendors\gsudo\gsudo.exe`。
+2026-10-21，用户反馈每次打开 WindTerm 都出现管理员授权窗口。[查看用户提供的原始照片](../03_photos/05_电脑开发环境与Qt调试/20261021_windterm_uac_01.jpg)，照片原文件已归档，字节校验与用户原件一致。弹窗显示程序为 `C:\WindTerm\vendors\gsudo\gsudo.exe`。
 
 **原因：**`wsl` 和 `windows` 会话的 `session.target` 仍指向 gsudo；当时进程检查也确认是 `gsudo.exe` 在启动 WSL。修改默认目录时只调整参数，不会消除这个管理员启动目标。
 
@@ -164,7 +164,7 @@ AUTO_ROOT_PWD=/root
 AUTO_ROOT_CHECK=PASS
 ```
 
-root shell 正常退出并关闭测试连接；[原始交互日志](../04_references/workspace_setup/root_session_20261022/interactive_20261022.log)保留终端控制字符，按回车分行后逐项核对上述结果。[配置与核查日志](../04_references/workspace_setup/root_session_20261022/)已正式归档，一次性辅助脚本已清理；回退仍使用前述 `07_backups/root_session/` 正式资料。本次验证了已保存的会话配置与相同命令的实际交互提权；没有启动 WindTerm 并采集该会话界面，因此首次 GUI 连接结果以实际打开该会话为准。
+root shell 正常退出并关闭测试连接；[原始交互日志](../04_references/workspace_setup/root_session_20261022/interactive_20261022.log)保留终端控制字符，按回车分行后逐项核对上述结果。[配置与核查日志](../04_references/workspace_setup/root_session_20261022/)已正式归档，一次性辅助脚本已清理；回退仍使用前述 `07_backups/root_session/` 正式资料。本次验证了已保存的会话配置与相同命令的实际交互提权；没有启动 WindTerm 并采集该会话界面，因此首次 图形界面 连接结果以实际打开该会话为准。
 
 以后打开 WindTerm，双击原来的 **`lckfb`** 会话，认证成功后约 1 秒自动进入 root，提示符应为 `root@localhost:~#`。此时终端命令以 root 执行，主目录为 `/root`；`exit` 可返回原 lckfb shell。SFTP 仍使用会话的 lckfb 身份；AI 构建部署工作流继续按项目约定使用普通用户。
 
@@ -178,26 +178,46 @@ root shell 正常退出并关闭测试连接；[原始交互日志](../04_refere
 
 | 需要做什么 | 当前入口及用途 |
 | --- | --- |
-| 继续修改、编译或调试 Qt 程序 | [Qt 工程](../06_programs/qt_demo/qt_demo.pro)、[当前源码](../06_programs/qt_demo/app_main.cpp)；按 [Qt 记录第 8 节](20261022_qt_environment.md#8-清理后文件入口与重新构建)重新构建，旧 EXE / ELF / 对象文件已清理 |
-| 查旧 Linux 专用 Qt 源码 | [linux_main_20261022.cpp](../06_programs/qt_demo/history/linux_main_20261022.cpp)，仅历史原件，不参与当前 `.pro` 和 `build.sh` 构建 |
-| 查 Qt 显示、输入及调试证据 | [Qt 原始证据目录](../04_references/qt_environment/)，具体日志、状态及图片见 [Qt 文件入口](20261022_qt_environment.md#8-清理后文件入口与重新构建) |
+| 查SN100源码和Qt依赖 | [SN100工程说明](../06_programs/sn100_host/README.md)及[当前Qt环境](20261022_qt_environment.md) |
 | 查 RT 测量与镜像验证 | [实时内核记录](20261022_preempt_rt.md)、[构建核查日志](../04_references/preempt_rt/work_logs/)、[方法原稿](../04_references/preempt_rt/methods/)、[控制台与调优核查](../04_references/preempt_rt/console/)；原始普通 / RT 数据继续使用既有 ZIP，恢复仍使用 `07_backups/preempt_rt/` |
 | 查串口历史收发与启动原始数据 | [2026-10-21 串口证据](../04_references/uart/20261021/)，原始接收二进制、日志及历史脚本同目录；当前接口测试仍使用 [C 版源码](../05_tools/tests/uart/uart4_loopback.c) |
 | 查主目录变更与 root 会话核查 | [主目录日志](../04_references/workspace_setup/home_path_20261022/)、[会话日志](../04_references/workspace_setup/root_session_20261022/)；恢复脚本继续在 `07_backups/home_path/`、`07_backups/root_session/` |
 | 查此前 Samba 双向测试文本 | [电脑写入文本](../04_references/samba/20261021/pc_to_rk.txt)、[RK 写入文本](../04_references/samba/20261021/rk_to_pc.txt)，仅对应当时验证，不代表 RT 内核下已复测 |
 
-`temp/` 当前仅保留约 102.6 MiB 的 `qt_demo/sysroot/` 和一份说明。它是电脑端 Qt ARM64 编译依赖；如以后主动删除，在 WSL 的 `06_programs/` 执行下列命令，可从[正式构建输入](../07_backups/qt_environment/qt5_arm64/source.json)核验并重建：
-
-```bash
-bash qt_demo/prepare.sh
-```
+当前SN100的ARM64依赖单独放在`temp/sn100_host/arm64_sysroot/`，基础恢复输入见[SN100专用Qt依赖](../07_backups/qt_environment/sn100_base_arm64/README.md)。当前恢复入口为正式SN100工程的`prepare_arm64.sh`。
 
 `.gitattributes` 对原始证据、可编辑 SVG 和历史源码保留字节，正式镜像和压缩备份继续使用 Git LFS。本次仅整理项目文件，未运行历史脚本、编译、连接或修改 RK；后续新运行仍会在 `temp/<program>/` 生成当次输出，重要证据再按事项归档。
 
 ### 9.1 根目录复核（2026-10-23）
 
-本次在原项目根目录核查进度和文件用途。基础开发链路及 Qt 最小示例已有实测；SN100 正式移植目录仅有 `AGENTS.md`，业务模块尚未实现或验收。RT 长测、恢复、外设复测及最终跨平台示例的 HDMI/USB 对照复测仍待完成；本次未连接设备或补做硬件测试。
+本次在原项目根目录核查进度和文件用途。基础开发链路已有实测；SN100 正式移植目录仅有 `AGENTS.md`，业务模块尚未实现或验收。RT 长测、恢复及所用外设复测仍待完成；本次未连接设备或补做硬件测试。
 
-旧 `SN100_host/` 下重新出现一份 `Seerain450_PC/Seerain450_PC/SeeRain450.pro.user`，共 22,766 字节。逐行比较后确认，与参考工程中的配置仅相差 Qt Creator 自动写入的保存时间，实际设置相同。删除此副本及 3 个空目录，根目录不再保留旧入口。原文件和保留副本的 SHA-256、比较边界及清理结果追加至[原工程位置记录](../04_references/sn100_host/reference_location.json)。
+旧 `SN100_host/` 下重新出现一份 `Seerain450_PC/SeeRain450.pro.user`，共 22,766 字节。逐行比较后确认，与参考工程中的配置仅相差 Qt Creator 自动写入的保存时间，实际设置相同。删除此副本及 3 个空目录，根目录不再保留旧入口。原文件和保留副本的 SHA-256、比较边界及清理结果追加至[原工程位置记录](../04_references/sn100_host/reference_location.json)。
 
-参考工程仍有 3567 个文件、1,160,786,644 字节，与原清单一致；压缩包、主工程、入口和接收器的 SHA-256 均与原清单相同。本次未改参考工程、正式源码或备份。`temp/qt_demo/sysroot/` 是当前 ARM64 Qt 构建使用的依赖，继续保留；此前已归档的证据和恢复材料仍沿用本节已有入口。
+参考工程仍有 3567 个文件、1,160,786,644 字节，与原清单一致；压缩包、主工程、入口和接收器的 SHA-256 均与原清单相同。本次未改参考工程、正式源码或备份。此处为当时的目录核对结果；2026-10-27清理后，SN100依赖按上文专用目录和当前工程说明恢复。
+
+
+<a id="qt-demo-removal-20261027"></a>
+## 2026-10-27：删除Qt独立显示示例，保留SN100专用依赖
+
+用户明确要求删除截图所示的Qt显示/鼠标/键盘示例、所有相关目录、照片和说明；随后进一步要求取消任何将示例目录作为备用依赖来源的路径，需要的依赖归入SN100相关目录。本轮直接执行已授权清理，没有追加确认，也没有扩大为卸载Qt开发工具或删除SN100业务环境。
+
+先核对源码、脚本、原环境记录、恢复输入、图片及引用和正在运行的进程。旧SN100 shell/prepare_runtime.sh在独立加载器归档缺失时，曾从旧临时目录复制备用加载器；SN100当前已有带SHA-256的board_loader.tar.gz，因此移除整个备用分支，缺归档时明确停止。SN100基础Qt头文件和运行库6个文件迁入[专用依赖目录](../07_backups/qt_environment/sn100_base_arm64/README.md)，逐文件指纹前后一致；prepare_arm64.sh、history/build.sh及shell/prepare_runtime.sh同步新位置。源码和资源的原有未提交/并行修改保留。
+
+### 实际删除和保留范围
+
+- 删除独立示例工程目录（含旧源码、个人工程配置和README）、专用显示/构建/调试证据目录、专用Windows工程设置备份及调试工具归档，共4个目录；并删除20张原图/标注PNG/SVG。本组共69文件、5,953,965字节。
+- 删除示例的本机临时依赖目录，共1,934个常规文件、22个Linux符号链接，常规文件107,557,326字节。Linux链接在WSL中按链接本身处理，不追随链接到其他位置。
+- 只读确认RK的示例服务未运行、无示例及目录内辅助进程后，删除其独立部署目录，共33个常规文件、31,840,006字节；未操作SN100运行/数据目录，未更改系统包、内核、网络或显示配置。
+- 删除示例的使用步骤、调试教程、图片说明和导航；原Qt环境记录缩为SN100版本、依赖和中文输入资料。保留SN100原版Qt工程设置图、WSL/终端图片、全部业务图片和其他实验文件。
+- 保留SN100现用的独立arm64_sysroot，以及SQL、报表、网络、字体、SVG、输入法等正式恢复输入。共用基础依赖只移动归属，不改字节。历史固定来源、校验和SN100旧版本恢复包保持原件，历史路径不再作为当前命令。
+
+照片整理窗口同轮将图片分类到中文目录，本轮沿用新位置删除对应20张图片，未撤回分类。现存229个归类文件逐一比对原文件指纹不变；图片导航计数及当前移动对照同步，SN100原工程截图仍保留。初次分类时的249项历史记录保持当时范围，不改写成从未存在被删除文件。
+
+### 核对结果与边界
+
+所有递归删除/移动均先检查解析后的绝对路径位于本项目指定目录或板端明确的独立应用目录。电脑侧与板端分别在各自同一shell内检查并删除，不按模糊Qt关键词清空系统文件。删除的源码和正式证据已有Git历史，临时产物可重建；本次按用户要求不再复制一份示例备份。
+
+3份受影响脚本的bash语法检查通过；在全新SN100隔离目录实际运行prepare_runtime.sh，从新专用归档完整恢复基础Qt、SQL/SQLite、报表、字体、网络、SVG和检查用加载器。所有归档校验通过，恢复的Core/Sql/Svg库为AArch64，加载器指纹匹配；示例目录已不存在，恢复仍成功。完成后仅删除本轮新建的重复验证目录，SN100现用依赖目录未改。此为依赖恢复核对，不是新应用构建或RK业务验收。
+
+当前维护的源码/脚本、计划、说明和图片导航不再依赖已删目录，迁移后的压缩包及deb仍匹配Git LFS规则。清理清单、逐文件指纹和依赖恢复日志在temp/qt_cleanup_20261027/；当前资料入口为[SN100 Qt环境](20261022_qt_environment.md)及[工程说明](../06_programs/sn100_host/README.md)。没有运行新的Windows/WSL产品测试，也没有新SN100功能或仪器通过结论；不自动提交或推送Git。

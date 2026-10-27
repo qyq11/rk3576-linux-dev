@@ -1,8 +1,10 @@
 #include "frmmain.h"
 #include "ui_frmmain.h"
 #include "instrument/instrument_page.h"
+#include "projects/project_page.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QLabel>
 #include <QScrollArea>
 
@@ -45,6 +47,25 @@ void frmMain::attachInstrumentPage(InstrumentPage *page)
         updateInstrumentStatus();
         updateAccountStatus();
     });
+    // 原项目工作目录同时保留config.ini；只转交文件路径，读写仍在存储线程。
+    const auto loadOriginalConnection = [this, page]()
+    {
+        if (!projects_ || !projects_->property("originalProfile").toBool() || !page->isReady() || page->isBusy()) return;
+        const QString root = projects_->property("originalRoot").toString();
+        if (root.isEmpty()) return;
+        const QString file = QDir(root).filePath(QStringLiteral("config.ini"));
+        if (page->property("connectionConfigurationFile").toString() != file)
+            page->setConnectionConfigurationFile(file);
+    };
+    if (projects_)
+        connect(projects_, &ProjectPage::operationFinished, page,
+                [loadOriginalConnection](const QString &operation, bool success)
+                { if (operation == QStringLiteral("load") && success) loadOriginalConnection(); });
+    connect(page, &InstrumentPage::operationFinished, page,
+            [loadOriginalConnection](const QString &, bool success)
+            { if (success) loadOriginalConnection(); });
+    loadOriginalConnection();
+    if (deviceControl_) page->attachDeviceControl(deviceControl_, connectDeviceAtStartup_);
 }
 
 bool frmMain::requestInstrumentLeave(const QString &action)
@@ -60,6 +81,8 @@ bool frmMain::requestInstrumentLeave(const QString &action)
 void frmMain::updateInstrumentStatus()
 {
     if (!instrument_ || currentMainPage() != 7) return;
+    // 实际连接状态由DeviceControl的更新信号呈现，不能被本地维护的“脱机”字样覆盖。
+    if (deviceControl_) return;
     if (readOnlyStatusEnabled_)
     {
         updateReadOnlyStatusDisplay();

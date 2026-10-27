@@ -1,24 +1,30 @@
 #include "instrument_page.h"
+#include "device_control.h"
+#include "original_device_commands.h"
 #include "ui_frmdriverset.h"
 #include "ui/cusmessagebox.h"
 #include "samples/material/qtmaterialscrollbar.h"
 
 #include <QAbstractButton>
+#include <QAtomicInteger>
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QHeaderView>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QScroller>
 #include <QSet>
+#include <QSignalBlocker>
 #include <QTableWidget>
 #include <QTextBrowser>
+#include <QTextDocument>
 
 namespace
 {
-const QString deviceUnavailable = QStringLiteral("脱机：真实仪器功能待设备验证；未建立连接、未发送命令。");
+const QString deviceUnavailable = QStringLiteral("仪器控制命令尚未接入；当前未建立真实连接、未发送命令。");
 const QString buttonStyle = QStringLiteral(
     ".QPushButton{background-color:rgba(42,118,242,255);color:#FFFFFF;border-radius:4px;padding:2px;}"
     ".QPushButton:hover{background-color:rgba(42,118,242,170);}"
@@ -27,6 +33,12 @@ const QString buttonStyle = QStringLiteral(
 QString stateName(const QStringList &names, int value)
 {
     return value >= 0 && value < names.size() ? names.at(value) : QStringLiteral("未知");
+}
+
+quint64 nextConnectionRequest()
+{
+    static QAtomicInteger<quint64> sequence(0);
+    return sequence.fetchAndAddRelaxed(1) + 1;
 }
 }
 
@@ -49,9 +61,11 @@ InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
     {
         connect(item.first,&QPushButton::clicked,this,[this,item]()
         {
-            if (busy_) return;
+            if (isBusy()) return;
             ui->stackedWidget->setCurrentIndex(item.second);
             if (item.second == 2 && ready_) loadSelectedMonth();
+            if (item.second == 0 && !connectionFile_.isEmpty() && prepareToLeave())
+                loadConnectionConfiguration();
         });
     }
     connect(ui->btn_board_status,&QPushButton::clicked,this,[this]()
@@ -90,9 +104,56 @@ InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
         ui->label_SendCount->setText(QStringLiteral("0"));
         ui->label_ReceiveCount->setText(QStringLiteral("0"));
     });
+    for (QLineEdit *edit : {ui->lblTcpIp, ui->lblTcpPort})
+        connect(edit, &QLineEdit::textChanged, this, [this]()
+        {
+            connectionDirty_ = ui->lblTcpIp->text() != committedAddress_ ||
+                               ui->lblTcpPort->text() != committedPort_;
+            updatePermissions();
+        });
+    connect(ui->btnSaveTcpSet, &QPushButton::clicked, this, &InstrumentPage::saveConnectionConfiguration);
 
     if (store_)
     {
+        connect(store_, &MaintenanceStore::connectionAlarmPolicyReady, this,
+            [this](quint64 requestId, const QStringList &codes, bool available)
+        {
+            if (requestId != connectionRequest_) return;
+            blockingAlarmCodes_ = codes;
+            alarmPolicyAvailable_ = available;
+            if (deviceControl_) deviceControl_->setAlarmPolicy(codes, available);
+        });
+        connect(store_, &MaintenanceStore::connectionSettingsReady, this,
+            [this](quint64 requestId, const QString &address, const QString &port,
+                   const QString &fingerprint, bool saved)
+        {
+            if (requestId != connectionRequest_) return;
+            connectionRequest_ = 0;
+            committedAddress_ = address;
+            committedPort_ = port;
+            connectionFingerprint_ = fingerprint;
+            restoreConnectionDraft();
+            setConnectionBusy(false);
+            report(saved ? tr("主控连接配置已保存并回读。下次连接使用保存值。")
+                         : tr("已从原config.ini读取主控连接配置。"));
+            emit operationFinished(saved ? QStringLiteral("saveConnectionSettings")
+                                         : QStringLiteral("loadConnectionSettings"), true);
+            if (deviceControl_ && autoConnectDevice_ && !deviceControl_->state().connected)
+            {
+                autoConnectDevice_ = false;
+                deviceControl_->open(committedAddress_, committedPort_.toUShort());
+            }
+        });
+        connect(store_, &MaintenanceStore::connectionSettingsError, this,
+            [this](quint64 requestId, const QString &message, bool requiresReload)
+        {
+            if (requestId != connectionRequest_) return;
+            connectionRequest_ = 0;
+            if (requiresReload) connectionFingerprint_.clear();
+            setConnectionBusy(false);
+            report(message);
+            emit operationFinished(QStringLiteral("connectionSettings"), false);
+        });
         connect(store_,&MaintenanceStore::ready,this,[this]()
         { ready_=true;loadSelectedMonth(); });
         connect(store_,&MaintenanceStore::loaded,this,[this](const MaintenanceRecords &records)
@@ -390,27 +451,186 @@ void InstrumentPage::updatePermissions()
     ui->lstBoardVersion->hide();
     for (QPushButton *button : manualButtons_)
     {
-        button->setEnabled(authenticated && ready_ && !busy_);
+        button->setEnabled(authenticated && ready_ && !isBusy());
         button->setToolTip(authenticated
             ? tr("确认人工已完成后，登记今天的本地维护记录；不会驱动仪器。")
             : tr("请先选择有效账户；Guest只能查看维护记录。"));
     }
-    ui->dateSelect->setEnabled(ready_ && !busy_);
-    ui->btnPrvMonth->setEnabled(ready_ && !busy_);
-    ui->btnNextMonth->setEnabled(ready_ && !busy_);
+    ui->dateSelect->setEnabled(ready_ && !isBusy());
+    ui->btnPrvMonth->setEnabled(ready_ && !isBusy());
+    ui->btnNextMonth->setEnabled(ready_ && !isBusy());
+    const bool editConnection = administrator && !isBusy() && !connectionFingerprint_.isEmpty();
+    ui->lblTcpIp->setReadOnly(!editConnection);
+    ui->lblTcpPort->setReadOnly(!editConnection);
+    ui->btnSaveTcpSet->setEnabled(editConnection && connectionDirty_);
+    ui->btnSaveTcpSet->setProperty("requiresInstrument", false);
+    ui->btnSaveTcpSet->setToolTip(connectionFile_.isEmpty()
+        ? tr("尚未指定原config.ini工作副本。")
+        : tr("管理员修改后写回同一config.ini；保存完成前不重复提交，不自动连接仪器。"));
+    updateDeviceButtons();
+}
+
+void InstrumentPage::attachDeviceControl(DeviceControl *control, bool connectAtStartup)
+{
+    if (!control || deviceControl_) return;
+    deviceControl_ = control;
+    control->setAlarmPolicy(blockingAlarmCodes_, alarmPolicyAvailable_);
+    autoConnectDevice_ = connectAtStartup;
+    connect(control, &DeviceControl::changed, this, [this](const DeviceControlState &state)
+    {
+        setReadOnlyStatus(state.status, state.connected && state.fresh, tr("设备"), state.message);
+        updateDeviceButtons();
+        report(state.message);
+    });
+    connect(control, &DeviceControl::wireActivity, this,
+        [this](const QString &direction, const QByteArray &bytes)
+    {
+        // 使用原通信收发区域，限制界面保留量，避免长时间接收无限增长。
+        QTextBrowser *view = direction.startsWith(QStringLiteral("TX"))
+                                 ? ui->textBrowser_SendData : ui->textBrowser_ReceiveData;
+        if (view->document()->blockCount() > 500) view->clear();
+        view->append(direction + QStringLiteral(" hex=") + QString::fromLatin1(bytes.toHex(' ')));
+    });
+    const auto toggleConnection = [this]()
+    {
+        if (!deviceControl_ || isBusy() || connectionDirty_) return;
+        if (deviceControl_->state().connected) deviceControl_->close();
+        else deviceControl_->open(committedAddress_, committedPort_.toUShort());
+    };
+    connect(ui->btnTcpConnect, &QPushButton::clicked, this, toggleConnection);
+    connect(ui->pushButton_Connect, &QPushButton::clicked, this, toggleConnection);
+    for (const auto &command : originalDeviceButtons())
+        if (auto *button = findChild<QPushButton *>(command.name))
+            connect(button, &QPushButton::clicked, this, [this, command]()
+            {
+                if (!deviceControl_ || !session_.authenticated || session_.role != 5) return;
+                if (command.payload == "Qj" && deviceControl_->state().outcomeUnknown && deviceControl_->state().fresh)
+                {
+                    CusMessageBox question(this);
+                    question.showQuestionBox(tr("上一条控制命令结果未知。已根据当前状态和实际设备核对完成，解除等待？旧命令不会重发。"));
+                    if (question.getClickButton() == QMessageBox::Yes) deviceControl_->confirmObservedState();
+                }
+                deviceControl_->maintenanceCommand(command.payload);
+            });
+    connect(ui->pushButton_updateTime, &QPushButton::clicked, this, [this]()
+    {
+        if (deviceControl_ && session_.authenticated && session_.role == 5) deviceControl_->updateDeviceTime();
+    });
+    if (autoConnectDevice_ && !committedAddress_.isEmpty() && !isBusy())
+    {
+        autoConnectDevice_ = false;
+        control->open(committedAddress_, committedPort_.toUShort());
+    }
+    updateDeviceButtons();
+}
+
+void InstrumentPage::updateDeviceButtons()
+{
+    const bool administrator = session_.authenticated && session_.role == 5;
+    const bool connected = deviceControl_ && deviceControl_->state().connected;
+    const bool available = deviceControl_ && administrator && !isBusy();
+    for (QPushButton *button : {ui->btnTcpConnect, ui->pushButton_Connect})
+    {
+        button->setEnabled(available && !connectionDirty_ && !committedAddress_.isEmpty());
+        button->setText(connected ? tr("断开") : tr("连接"));
+    }
+    for (const auto &command : originalDeviceButtons())
+        if (auto *button = findChild<QPushButton *>(command.name))
+        {
+            const bool controlPending = connected && (!deviceControl_->state().pending.isEmpty() ||
+                                                      deviceControl_->state().outcomeUnknown);
+            button->setEnabled(available && connected &&
+                (!controlPending || command.payload.startsWith('Q') || command.payload.startsWith('U')));
+            button->setToolTip(tr("沿用原Windows仪器通信测试页的命令；实际返回见收发区域。"));
+        }
+    ui->pushButton_updateTime->setEnabled(available && connected);
 }
 
 void InstrumentPage::setBusy(bool busy)
 {
-    if (busy_ != busy) { busy_=busy;emit busyChanged(busy); }
+    const bool previous = isBusy();
+    busy_ = busy;
+    if (previous != isBusy()) emit busyChanged(isBusy());
     updatePermissions();
 }
 
 bool InstrumentPage::prepareToLeave()
 {
-    if (!busy_) return true;
-    report(tr("维护操作处理中，请稍后重试。"));
-    return false;
+    if (isBusy())
+    {
+        report(tr("仪器页面的数据操作正在进行，请等待结果。"));
+        return false;
+    }
+    if (!connectionDirty_) return true;
+    QMessageBox question(QMessageBox::Question, tr("确认放弃连接配置草稿"),
+        tr("主控地址或端口尚未保存，是否放弃本次修改？"), QMessageBox::Yes | QMessageBox::No, this);
+    question.setObjectName(QStringLiteral("discardConnectionConfigurationDialog"));
+    question.setDefaultButton(QMessageBox::No);
+    question.setButtonText(QMessageBox::Yes, tr("放弃修改"));
+    question.setButtonText(QMessageBox::No, tr("继续编辑"));
+    if (question.exec() != QMessageBox::Yes) return false;
+    restoreConnectionDraft();
+    return true;
+}
+
+bool InstrumentPage::setConnectionConfigurationFile(const QString &absoluteFile)
+{
+    if (isBusy() || connectionDirty_) return false;
+    connectionFile_ = absoluteFile;
+    connectionFingerprint_.clear();
+    setProperty("connectionConfigurationFile", absoluteFile);
+    loadConnectionConfiguration();
+    return true;
+}
+
+void InstrumentPage::restoreConnectionDraft()
+{
+    const QSignalBlocker addressBlock(ui->lblTcpIp), portBlock(ui->lblTcpPort);
+    ui->lblTcpIp->setText(committedAddress_);
+    ui->lblTcpPort->setText(committedPort_);
+    ui->lblTcpIp->setToolTip(tr("原config.ini的tcpmain/ip；主控默认192.168.100.123。"));
+    ui->lblTcpPort->setToolTip(tr("原config.ini的tcpmain/port；沿用原值，当前原配置为5000。"));
+    connectionDirty_ = false;
+    updatePermissions();
+}
+
+void InstrumentPage::setConnectionBusy(bool busy)
+{
+    const bool previous = isBusy();
+    connectionBusy_ = busy;
+    if (previous != isBusy()) emit busyChanged(isBusy());
+    updatePermissions();
+}
+
+void InstrumentPage::loadConnectionConfiguration()
+{
+    if (!store_ || connectionFile_.isEmpty() || connectionBusy_) return;
+    connectionRequest_ = nextConnectionRequest();
+    setConnectionBusy(true);
+    if (!QMetaObject::invokeMethod(store_, "loadConnectionSettings", Qt::QueuedConnection,
+        Q_ARG(quint64, connectionRequest_), Q_ARG(QString, connectionFile_)))
+    {
+        connectionRequest_ = 0;
+        setConnectionBusy(false);
+        report(tr("连接配置读取未进入工作线程，请重新读取。"));
+    }
+}
+
+void InstrumentPage::saveConnectionConfiguration()
+{
+    if (!store_ || isBusy() || !connectionDirty_ || connectionFingerprint_.isEmpty() ||
+        !session_.authenticated || session_.role != 5) return;
+    connectionRequest_ = nextConnectionRequest();
+    setConnectionBusy(true);
+    if (!QMetaObject::invokeMethod(store_, "saveConnectionSettings", Qt::QueuedConnection,
+        Q_ARG(quint64, connectionRequest_), Q_ARG(QString, connectionFile_),
+        Q_ARG(QString, connectionFingerprint_), Q_ARG(QString, ui->lblTcpIp->text()),
+        Q_ARG(QString, ui->lblTcpPort->text())))
+    {
+        connectionRequest_ = 0;
+        setConnectionBusy(false);
+        report(tr("连接配置保存未进入工作线程，草稿保留。"));
+    }
 }
 
 void InstrumentPage::loadSelectedMonth()

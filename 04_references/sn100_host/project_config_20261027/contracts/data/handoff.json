@@ -1,0 +1,51 @@
+{
+  "sha256": {
+    "06_programs/sn100_host/projects/projects_current_format.cpp": "dc0d25166c7e340c85cdb11b41be6cb590ba7cb2a6bff4299b51ca92c5b702eb",
+    "06_programs/sn100_host/projects/projects_store.h": "f7a8a950dc880e6e7ea55afcb09dce4c960a7e5b200b2f4f632b1f644a3eb83e",
+    "06_programs/sn100_host/projects/projects_store.cpp": "bfd93bee9295e4686978b48ddbc10b664001c9e433d26b1a8e9a1e902ac899e2"
+  },
+  "contract": "temp/sn100_host/project_config_20261027/data/contract.md",
+  "dependencies": [
+    "高级窗口IBS_name字段支持",
+    "主页面接入contract",
+    "整合窗口ARM64编译和RK验证"
+  ],
+  "codeReady": true,
+  "modifiedFiles": [
+    "06_programs/sn100_host/projects/projects_store.h",
+    "06_programs/sn100_host/projects/projects_store.cpp",
+    "06_programs/sn100_host/projects/projects_current_format.cpp"
+  ],
+  "unknown": [
+    "完整算法未实现，采样频率单位未确认",
+    "当前未编译，未运行电脑版本，未部署或运行RK"
+  ],
+  "pendingRKCases": [
+    "空库新增/导入/单位维护",
+    "失败后无部分行，重新打开一致",
+    "结果格式入口与算法启用一致",
+    "唯一默认及加样行对齐",
+    "旧库未知值不被默认配置"
+  ],
+  "apiReady": true,
+  "slice": "空库新增、显式JSON导入、单位维护，算法/结果选择存取，save稀释列表覆盖修复",
+  "state": "ready_for_integration",
+  "completedBehaviors": [
+    "新增/导入只追加，整批事务",
+    "单位引用拒绝改名倍率和删除",
+    "算法系数A/B/C明确存取；原sample_warmup_length为C",
+    "结果used/display与格式源同表",
+    "稀释列表和高级行一致校验",
+    "稀释液类型为缓冲稀释液并登记试剂引用"
+  ],
+  "verification": {
+    "sourceDiffCheck": "passed",
+    "resources": "pending_rk_integration",
+    "localRuntime": "not_run_per_user",
+    "instrument": "configuration_only_no_device_action",
+    "rkFunctional": "pending_integration",
+    "arm64Compile": "pending_integration"
+  },
+  "modifiedScope": "仅三个分配源码文件及data临时交接；不改公共文档/工程清单/其他窗口文件",
+  "schemaAndRecovery": "project_algorithm加表及版本标记；不回写未配置旧行；结果选择复用原表；实际数据备份/发布回退由整合窗口按受影响catalog.db核查"
+}

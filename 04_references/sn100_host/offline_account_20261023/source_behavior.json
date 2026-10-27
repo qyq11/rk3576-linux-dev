@@ -7,7 +7,7 @@
     "production_credentials_read": false,
     "old_connection_configuration_read": false,
     "instrument_connected": false,
-    "source_root": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC",
+    "source_root": "06_programs/sn100_host_reference/Seerain450_PC",
     "source_fingerprints": [
       {
         "path": "frmuserset/frmaccountsetting.cpp",
@@ -97,7 +97,7 @@
       "source_observation": "Permission enum: Guest=0, SendDoctor=1, TestDoctor=2, CheckDoctor=3, Engineer=4, Administrator=5.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.h",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/public/systemcommon.h",
           "line": 132,
           "end_line": 141
         }
@@ -108,17 +108,17 @@
       "source_observation": "Designer combo defaults are 检验医生/审核医生/工程师. Constructor does not invoke slotUserChanged. Runtime slotUserChanged clears and rebuilds both combos: role0 none; role1 送检医师; role2 送检医师/检验医师; role3 adds 审核医师; role4 and role5 add 工程师. The exact runtime labels use 医师, not designer 医生.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.ui",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.ui",
           "line": 209,
           "end_line": 223
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.ui",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.ui",
           "line": 796,
           "end_line": 810
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 139,
           "end_line": 160,
           "function": "slotUserChanged"
@@ -131,12 +131,12 @@
       "source_observation": "After role rebuilding Add remains first option when nonempty. Update is set to permission-1. Thus role1/2/3/4 select index0/1/2/3. Administrator5 requests index4 in a four-item combo; Guest0 requests -1 in an empty combo.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 150,
           "end_line": 158
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 173,
           "end_line": 185,
           "function": "on_btnMenuChange_clicked"
@@ -149,7 +149,7 @@
       "source_observation": "Guest hides the account table and returns before clearing old cells. For permissions1..4 the nested predicate hides all records with role>=4. Administrator5 hides records role>=5 and can see Engineer4. Lower roles are not filtered against the current role: SendDoctor can see TestDoctor/CheckDoctor.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 74,
           "end_line": 113,
           "function": "frmGetAccount"
@@ -162,12 +162,12 @@
       "source_observation": "Table is read-only, no selection, no focus, ScrollPerPixel; rows are 41px high. A cellDoubleClicked connection is made within every displayed-row iteration on each refresh.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 84,
           "end_line": 92
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 114,
           "end_line": 134
         }
@@ -179,13 +179,13 @@
       "source_observation": "Double-click copies the last-column username into ldtUserNameAdd, ldtUserNameDel, ldtUserNameUpdate and ldtUserNameUpdate2. It does not alter passwords or role combos. Entering the change tab forces both update username fields readOnly and resets both to the current session name and current role index. A subsequent double-click still calls setText and can replace those readOnly names.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 63,
           "end_line": 72,
           "function": "slotSetText"
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 173,
           "end_line": 185,
           "function": "on_btnMenuChange_clicked"
@@ -198,7 +198,7 @@
       "source_observation": "Add validation order: Guest rejection; username OR confirmation-password empty rejection; password mismatch rejection; combo index==Administrator-1 rejection; role lookup by selected text; duplicate username rejection; insert id-auto/name/role/pwd/isdefault=0.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 189,
           "end_line": 242,
           "function": "on_btnAdd_clicked"
@@ -211,7 +211,7 @@
       "source_observation": "Add failure keeps fields; success shows 保存成功 then clears both passwords and username, selects Add index0 and refreshes list.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 243,
           "end_line": 257
         }
@@ -222,7 +222,7 @@
       "source_observation": "Delete always asks 确认删除用户？ before any validation. Any answer other than QMessageBox::Yes returns without database change. Then deleting the current session user while actionReady==false is rejected before existence/password checks.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 261,
           "end_line": 278,
           "function": "on_btnDel_clicked"
@@ -234,7 +234,7 @@
       "source_observation": "Delete validation after confirmation/busy: target exists; target stored pwd equals entered target password; reject if current permission<target role; reject target role==Administrator. The equality/role checks do not have a separate Guest branch. The source permits deletion of other same-role accounts with known target password.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 279,
           "end_line": 310
         }
@@ -246,7 +246,7 @@
       "source_observation": "Delete database failure keeps fields/no logout. Success shows 删除成功; if deleted name equals current session name emit signalLoginOut; then clears delete name/password and refreshes.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 311,
           "end_line": 335
         }
@@ -257,7 +257,7 @@
       "source_observation": "Update busy predicate rejects when combo.currentIndex()==permission-1 AND actionReady==false. This is equality, despite the comment saying changing user type while running is forbidden. Changed index can bypass this particular source check.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 338,
           "end_line": 348,
           "function": "on_btnUpdate_clicked"
@@ -270,7 +270,7 @@
       "source_observation": "Update order after busy: find old username; verify target old password; verify two new passwords equal; require new username nonempty. New-password empty check is commented out, so two empty new-password fields pass. No duplicate-new-name check and no current-role-vs-target-role check exist in this slot.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 349,
           "end_line": 379
         }
@@ -282,7 +282,7 @@
       "source_observation": "Update obtains roleId by current combo text, writes old record id/new username/new pwd/new role/old isdefault; DB failure returns. Success shows 更新成功, clears all three update password fields, always emits signalLoginOut, then refreshes.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 380,
           "end_line": 415
         }
@@ -294,17 +294,17 @@
       "source_observation": "user_information schema is id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, role INTEGER, pwd VARCHAR, isdefault INTEGER. There is no UNIQUE(name) declaration. user_role is id INTEGER PRIMARY KEY AUTOINCREMENT, role VARCHAR. getIdByRole returns0 on not-found or prepare error; getRoleById returns empty on failure.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_information_table.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/tool/database/user/user_information_table.cpp",
           "line": 13,
           "end_line": 24
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_role_table.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/tool/database/user/user_role_table.cpp",
           "line": 12,
           "end_line": 22
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_role_table.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/tool/database/user/user_role_table.cpp",
           "line": 54,
           "end_line": 104
         }
@@ -316,12 +316,12 @@
       "source_observation": "The username validator config is Head_Letter_Num with lenght=16 for all four username edits. Actual regex is ^[A-Za-z0-9].{16}$, which has17 total characters for an Acceptable full match, while tooltip claims16. Intermediate validator states may still be present when a button handler reads text; handler does not call hasAcceptableInput().",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmaccountsetting.cpp",
           "line": 44,
           "end_line": 51
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/public/systemcommon.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/public/systemcommon.cpp",
           "line": 445,
           "end_line": 462
         }
@@ -333,26 +333,26 @@
       "source_observation": "Original account signalLoginOut is connected to main on_btnLoginOut_clicked. That resets permission/name to Guest, emits signalLogout then opens login. Original login success notifies multiple pages; login showLoadInformation may send query reagent and deferred check-config signals.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmmain/frmmain.cpp",
           "line": 508
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmmain/frmmain.cpp",
           "line": 524,
           "end_line": 527
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmmain/frmmain.cpp",
           "line": 678,
           "end_line": 682
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmmain/frmmain.cpp",
           "line": 2077,
           "end_line": 2093
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmlogin/maskdlglogin.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmlogin/maskdlglogin.cpp",
           "line": 76,
           "end_line": 102
         }
@@ -364,7 +364,7 @@
       "source_observation": "UserPower::canDoPower scans user_powers.can_role_id split on semicolons and matches current numeric role. No such general capability lookup is called inside frmAccountSetting; this slice must not invent a replacement user_powers fixture or derive all permissions from rank.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/customtools/userpower.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/customtools/userpower.cpp",
           "line": 9,
           "end_line": 37
         }
@@ -375,22 +375,22 @@
       "source_observation": "Original default-account lookup and authentication live in UserInformationTable. Login empty password enters defaultPermission/Guest before confirmUserInfo; nonempty login consults name/password and may update isdefault for roles<=Engineer.",
       "source": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_information_table.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/tool/database/user/user_information_table.cpp",
           "line": 94,
           "end_line": 118
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_information_table.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/tool/database/user/user_information_table.cpp",
           "line": 149,
           "end_line": 166
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/tool/database/user/user_information_table.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/tool/database/user/user_information_table.cpp",
           "line": 206,
           "end_line": 238
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmlogin/maskdlglogin.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmlogin/maskdlglogin.cpp",
           "line": 145,
           "end_line": 187
         }

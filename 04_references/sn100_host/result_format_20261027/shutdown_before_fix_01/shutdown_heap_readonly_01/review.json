@@ -1,0 +1,330 @@
+{
+  "schema": "sn100-current-result-shutdown-heap-readonly-review-v1",
+  "created_utc": "2026-10-26T23:06:00.353275+00:00",
+  "status": "DEFINITE_DESTRUCTION_CALLBACK_LIFETIME_DEFECT_FOUND_HISTORICAL_HEAP_FIRST_CORRUPTOR_NOT_PROVEN",
+  "reviewer": "/root/integration_audit",
+  "original_failure": {
+    "directory": "temp/sn100_host/result_format_20261027/main_operation_01/configure_02",
+    "logical_marker": "EXIT code= 0 printed before C++ stack/local/QWidget destruction finishes; it is not the process return receipt.",
+    "actual_app_Popen_wait": -6,
+    "actual_parent_exit_from_session": 1,
+    "timed_out": false,
+    "cleanup": null,
+    "owned_process_group_stopped": true,
+    "cleanup_errors": [],
+    "log_closed_markers": [
+      "REAGENT_STORE_CLOSED",
+      "PROJECT_STORE_CLOSED",
+      "HOSPITAL_STORE_CLOSED",
+      "ACCOUNT_STORE_CLOSED",
+      "HISTORY_STORE_CLOSED"
+    ],
+    "threads_stopped_marker": true,
+    "logical_exit_marker": true,
+    "heap_diagnostic": true,
+    "scope": "Root reports manual four-slot configuration committed, then report navigation without pressing Query and normal titlebar close. UI steps are human/tool observations, not automatically asserted by this process session. No runtime DB or anonymous catalog SQL was read by this review.",
+    "first_attempt_900s_cap_minus9": "Separate earlier cap/cleanup event, not treated as this natural-abort reproduction; its files are not rewritten or reused as this cause."
+  },
+  "binding": {
+    "formal_source_map": {
+      "path": "temp/sn100_host/result_format_20261027/formal_source_before_01.json",
+      "bytes": 55426,
+      "sha256": "d4c1cf9fbc402f9e1a927a559735297915f2f981eb582aee2feff59b5890050d"
+    },
+    "native_source_map": {
+      "path": "temp/sn100_host/result_format_20261027/native_01/final_before.json",
+      "bytes": 54906,
+      "sha256": "e61e0487dfacc89e464bd8cfe759fc690100ee8998e8f92832d1e902ee52d24e"
+    },
+    "native_after_map": {
+      "path": "temp/sn100_host/result_format_20261027/native_01/final_after.json",
+      "bytes": 54906,
+      "sha256": "e61e0487dfacc89e464bd8cfe759fc690100ee8998e8f92832d1e902ee52d24e"
+    },
+    "source_entries": 518,
+    "source_maps_equal_as_dictionaries": true,
+    "serialization_note": "Approved d4c1 raw JSON and native e61e raw JSON have different serialization hashes but all518 dictionary entries equal. No objects/binaries were rehashed.",
+    "runtime_binding_before_after_equal": true,
+    "actual_bound_main_sha256": "04f5bf42de6eb543da8f2f0978d6411567f9fdc4df69e0793ca09a2cc76d2c97",
+    "actual_bound_helper_sha256": "0a5446f23118f2418a04e9c09b03561b9567f31eeee21751d9e12dc8cfbbcf0e",
+    "reviewed_source_members_match_518": [
+      "shell/main.cpp",
+      "shell/frmmain.cpp",
+      "shell/frmmain.h",
+      "shell/history_shell.cpp",
+      "shell/catalog_shell.cpp",
+      "history/history_page.cpp",
+      "history/history_page.h",
+      "history/history_current_display_state.cpp",
+      "history/history_current_display_state.h",
+      "projects/project_page.cpp",
+      "projects/project_page.h",
+      "projects/project_format_dialog.cpp",
+      "projects/project_format_dialog.h",
+      "projects/project_current_format.h"
+    ],
+    "verification_scope": "Existing native build proof only; not new runtime success."
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "priority": "P1",
+      "classification": "DEFINITE_STATIC_USE_AFTER_DERIVED_MEMBER_LIFETIME_IN_NORMAL_TEARDOWN",
+      "file": "06_programs/sn100_host/history/history_page.cpp",
+      "lines": [
+        539,
+        543
+      ],
+      "trigger": "Destroy an integrated local-results HistoryPage as a child of frmMain after main has returned from app.exec and logged close/join/EXIT. No Query is required.",
+      "event_chain": [
+        {
+          "location": "shell/main.cpp:805,867,929-930",
+          "event": "Stack-owned ShellViewport contains the main shell; after the logical EXIT log and return expression, stack/QWidget ownership teardown destroys it and its shell/page child tree."
+        },
+        {
+          "location": "shell/frmmain.cpp:163-169; shell/frmmain.h:107-116",
+          "event": "frmMain destructor body deletes its Ui helper. C++ then destroys derived members, including historyStatus_ QString, accounts_ QPointer and session_, before its QWidget base destructor deletes child pages."
+        },
+        {
+          "location": "history/history_page.cpp:539-543",
+          "event": "HistoryPage destructor sets m_currentClosing=true, then calls the still-owned actual State.invalidateConfiguration."
+        },
+        {
+          "location": "history/history_current_display_state.cpp:98-108",
+          "event": "invalidateConfiguration synchronously clears values and unconditionally emits cleared(reason). No SQL is performed."
+        },
+        {
+          "location": "history/history_page.cpp:323-326,563-586,901-905",
+          "event": "cleared receiver checks only m_localResultsMode, not destructor state, then clears presentation and calls status(reason), which emits HistoryPage.statusChanged."
+        },
+        {
+          "location": "shell/history_shell.cpp:42-47",
+          "event": "Same-GUI-thread AutoConnection directly invokes the frmMain lambda while QWidget child destruction is running. It assigns historyStatus_=message and calls status/account update methods."
+        },
+        {
+          "location": "shell/frmmain.cpp:301-327",
+          "event": "updateAccountStatus reads already-ended accounts_/session_ members and dereferences the Ui helper deleted earlier. The prior historyStatus_ assignment already accesses an ended QString object lifetime, so a ui-null check alone cannot fix this."
+        }
+      ],
+      "why_QObject_context_does_not_protect": "QObject connection lifetime ends at QObject destruction; QWidget deletes its child widgets during its earlier base teardown. Thus the receiver still has QObject connection machinery when its derived C++ members and Ui helper are already destroyed. Same-thread delivery does not wait for an event loop.",
+      "why_no_query_needed": "clearCurrentResultPresentation always calls status even for empty m_reports and never-loaded results. m_currentClosing does not suppress the cleared callback.",
+      "causal_limit": "This is a source-proven invalid lifetime access and a plausible heap writer matching post-EXIT timing. No stack/watchpoint/allocator trace has identified it as the first corrupting write behind this exact malloc diagnostic. Do not mark the original failure repaired or its direct cause confirmed by this static review."
+    },
+    {
+      "id": "F2",
+      "priority": "P1",
+      "classification": "SECOND_DESTRUCTOR_SIGNAL_ENTRY_TO_SAME_CROSS_PAGE_PATH",
+      "file": "06_programs/sn100_host/projects/project_page.cpp",
+      "lines": [
+        262,
+        265
+      ],
+      "trigger": "ProjectPage is destroyed while a bound HistoryPage/State remains alive in the same shell teardown.",
+      "event_chain": [
+        {
+          "location": "projects/project_page.cpp:262-265",
+          "event": "Destructor emits currentFormatInvalidated before deleting Ui."
+        },
+        {
+          "location": "projects/project_page.cpp:702-704",
+          "event": "Its real optional QObject connection calls the bound State.invalidateConfiguration slot."
+        },
+        {
+          "location": "shell/main.cpp:569-570; history/history_page.cpp:597-601",
+          "event": "A second direct connection also calls HistoryPage.invalidateCurrentResultFormat, which invokes the same State clear path."
+        },
+        {
+          "location": "history/history_current_display_state.cpp:104-108; history_page.cpp:323-326,586,905; history_shell.cpp:42-47",
+          "event": "Each still-valid path can emit Page.statusChanged back into the already-derived-destroyed shell described by F1."
+        }
+      ],
+      "qualification": "If HistoryPage and State have already been completely destroyed, Qt disconnects their receiver connections and this branch cannot fire. Destruction order was not observed here; do not claim it occurred in configure_02. This is not an explicit double-delete: it is a destructor-time outbound UI callback and two ordinary invalidation connections."
+    }
+  ],
+  "minimal_two_source_repair_proposal_not_applied": [
+    {
+      "file": "06_programs/sn100_host/history/history_page.cpp",
+      "scope": "HistoryPage constructor-owned State teardown and destructor only; keep active-mode invalidation semantics.",
+      "steps": [
+        "At destructor entry set closing and explicitly detach the relevant outbound statusChanged/operationFinished receivers before any operation capable of notifying the outer shell. Prefer targeted signal disconnection; do not blanket-disconnect unrelated QObject.destroyed cleanup consumers.",
+        "Take the actual QPointer State; explicitly disconnect State-to-this inputs, including cleared/destroyed handlers, while HistoryPage derived fields and Ui still exist.",
+        "Directly destroy that GUI-owned State in the HistoryPage destructor body and clear the live QPointer. It has value-only members and QObject connections, not SQL/worker ownership. Do not call invalidateConfiguration merely to clear a soon-to-be-destroyed value cache, since that emits UI-facing signals. Parent ownership removes the deleted child automatically; do not leave a second delete for QWidget base.",
+        "Continue existing detail-dialog/Ui cleanup, preserving legitimate per-dialog cleanup connections. Do not enter an event loop, send new requests, or pretend a pending write was acknowledged."
+      ],
+      "not_recommended_shortcuts": [
+        "Only setting ui=null or checking it in updateAccountStatus leaves the earlier dead historyStatus_ assignment.",
+        "A blanket m_currentClosing early-return in all cleared callbacks changes more than destructor semantics: the same flag is set for actual Store.closed/aboutToQuit and their current invalidation/display rules must be preserved."
+      ]
+    },
+    {
+      "file": "06_programs/sn100_host/projects/project_page.cpp",
+      "scope": "ProjectPage destructor only; all actual save/error/start invalidation and close/draft guards stay unchanged.",
+      "steps": [
+        "Remove the destructor currentFormatInvalidated emit, or detach that specific outbound signal before any destructor notification. The owner teardown is not a new committed-source event that needs cross-page painting.",
+        "If an owned format dialog still exists, disconnect dialog-to-Page callbacks before deleting it during the still-live ProjectPage destructor body; then clear its live QPointer. Do not call accept/reject/save or fabricate Discard/ACK. This prevents child callbacks from surviving into Page member destruction.",
+        "Preserve normal committed/operation-failed/session/source invalidation while both pages are alive."
+      ]
+    }
+  ],
+  "disconnect_direction_contract": {
+    "outgoing": "QObject::disconnect(this, relevantSignal, receiver-or-null, slot-or-null) detaches signals emitted by this object; it does not cancel every incoming Store/app-to-Page connection.",
+    "incoming": "QObject::disconnect(actualState, nullptr, this, nullptr) or actualDialog equivalent detaches that sender-to-Page input only. Own-State/dialog destruction then lets Qt remove all their remaining connections and queued receiver events.",
+    "queued_worker_signals": "Store-to-State and Store-to-HistoryPage destruction/closed connections use queued delivery; after app.exec returns, main blocks on real Store closes/joins without processing the GUI loop. This review found no direct new worker-thread GUI deletion or explicit State duplicate-delete path. Incoming events are ultimately removed with the actual QObject receiver; no synthetic event pumping/close ACK is proposed.",
+    "optional_shell_structural_hardening": "If Root instead changes frmMain, detach Page-to-shell status/operation callbacks or delete owned pages in the frmMain destructor body before deleting Ui or ending derived member lifetimes. Doing it only in QObject::~QObject is too late. This is an alternative broader boundary, not an additional required source in the proposed two-Page patch."
+  },
+  "other_reviewed_paths": {
+    "aboutToQuit": "HistoryPage and Root aboutToQuit invalidation currently run while main/Page/frmMain derived members are alive; no source-proven post-release callback was identified there. The same cache invalidation becomes unsafe when repeated from the Page destructor under the already-destroyed shell.",
+    "State_child_destroyed_callback": "HistoryPage:328-336 has a m_currentClosing return guard, and the destructor sets it true, so the normal child-destroyed path is not asserted to execute its QPointer.clear/invalidate branch. Explicit own-State deletion/disconnection also avoids relying on a derived-state guard after Page member lifetimes have ended.",
+    "main_pending_bool": "currentFormatRefreshPending is a local captured by reference, but the new natural destructor entry currentFormatInvalidated itself does not write that bool. No source-proven bool callback after its lifetime is claimed here.",
+    "format_snapshot_unit_iterators": "ProjectCurrentFormatSnapshot::units returns const reference; the inspected save iterator expressions are not iterators into two temporary unit lists. No additional defect asserted.",
+    "SQL_or_data_corruption": "No runtime SQL, DB content, catalog readback file or credentials were read; successful Store/save receipts do not establish memory integrity, and this review does not allege old business-row corruption."
+  },
+  "independent_static_review": {
+    "agent": "/root/integration_audit/toolbar_readonly_review",
+    "confirmed": "The cleared callback ignores destructor closing, reaches statusChanged and shell derived members after their lifetime. QObject context disconnection occurs too late for QWidget child teardown.",
+    "ran_or_modified": false
+  },
+  "required_followup_scope": "Root owns any GDB use of the original binary and all actual execution slots. Preserve518 and natural -6 receipts. Apply no patch from this audit automatically. A later bounded natural close/empty-query path must use newly bound exact sources and show real process0 plus no allocator diagnostic; a static patch or logical EXIT marker is not runtime verification.",
+  "activities": {
+    "only_explicit_small_source_and_metadata_reads_hashes": true,
+    "no_formal_or_candidate_write": true,
+    "no_build_GUI_GDB_process_network_SQL_or_test_execution": true,
+    "no_object_binary_sysroot_or_runtime_DB_hash_or_read": true,
+    "only_new_review_json_written": true
+  },
+  "small_inputs": [
+    {
+      "path": "temp/sn100_host/result_format_20261027/formal_source_before_01.json",
+      "bytes": 55426,
+      "sha256": "d4c1cf9fbc402f9e1a927a559735297915f2f981eb582aee2feff59b5890050d"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/native_01/final_before.json",
+      "bytes": 54906,
+      "sha256": "e61e0487dfacc89e464bd8cfe759fc690100ee8998e8f92832d1e902ee52d24e"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/native_01/final_after.json",
+      "bytes": 54906,
+      "sha256": "e61e0487dfacc89e464bd8cfe759fc690100ee8998e8f92832d1e902ee52d24e"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/native_01/verification.json",
+      "bytes": 43747,
+      "sha256": "c3f1c013825d4a13925f2d8ce13703763617fe4a5cc5c3f23f537ab6536ecffd"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/native_01/root_readback_01.json",
+      "bytes": 1517,
+      "sha256": "ee76b2cea3a6d99b9f5930432f89b09d62112bb869e1fdc190ff78ea534106cc"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/main_operation_01/configure_02/binding_before.json",
+      "bytes": 640,
+      "sha256": "558bbf7a8a872c10f9047fc41869c46b8312150630bf7c5093427188c6ea3008"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/main_operation_01/configure_02/binding_after.json",
+      "bytes": 640,
+      "sha256": "558bbf7a8a872c10f9047fc41869c46b8312150630bf7c5093427188c6ea3008"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/main_operation_01/configure_02/app.exit.json",
+      "bytes": 1220,
+      "sha256": "d6b91914196be5a94dcf35c00eb4d1bb7d4858a86a062ec83b366f472d061377"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/main_operation_01/configure_02/app.raw_exit.json",
+      "bytes": 161,
+      "sha256": "7a93a9e7d7ec6ccb4b298a541ac733cb2270af8a7594df869aeb070c147e750c"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/main_operation_01/configure_02/session_exit.json",
+      "bytes": 595,
+      "sha256": "9d6a51ffd5b0782a7d315ea4df300720d057275ebd9bd9ed9d054594d8ff7468"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/main_operation_01/configure_02/app.command.json",
+      "bytes": 905,
+      "sha256": "281dc9a8f1e19c579e62b9810da3cc1001ded3d389ae21e0d048c28881c15ddb"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/main_operation_01/configure_02/app.log",
+      "bytes": 863,
+      "sha256": "6fe540ef45b8979715188ea5517f4cd0c9784f7f740713e1995e1d8802159c8d"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/main.cpp",
+      "bytes": 51361,
+      "sha256": "541d44c85454d588782d981ba4a532142cf0d53a307f924513330211fc3c39a0"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.cpp",
+      "bytes": 22095,
+      "sha256": "eadba55ec10f5829f5e766387b3aa09a9dd2f3796fa1fa7b34c4bdd487b242df"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.h",
+      "bytes": 7845,
+      "sha256": "e7c8a6485a7fdfa17eb5fac85f04bc49750df89d88140ea60222392fe9a3336f"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/history_shell.cpp",
+      "bytes": 8648,
+      "sha256": "ee2fdf6ca8d23b6de903c53a0d1d958be8b521f5d9723fab9d0a51660c589a43"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/catalog_shell.cpp",
+      "bytes": 9742,
+      "sha256": "c61ed3dcb51f960dbe177e5efcd905161fea2644edca1857e0a1c37fc5f457bf"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.cpp",
+      "bytes": 76774,
+      "sha256": "fa9fa943a3d53ecdfe0e0ff5ed6e053f9ca51c38bab8bf5077eb36b0e0a12f7c"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.h",
+      "bytes": 6010,
+      "sha256": "ed1c13ea8c135bad137ad8d5fbeb870326865441738b4da8c697465ace620252"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_current_display_state.cpp",
+      "bytes": 6220,
+      "sha256": "3cbf563250ea858e5e74c3d78f3e1063f36070b492d40607d88b5852297de0d0"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_current_display_state.h",
+      "bytes": 1898,
+      "sha256": "9400ef60ba72418253e37c92a123309691cc7b3045a4525f111c70f13ee33683"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_page.cpp",
+      "bytes": 31586,
+      "sha256": "bfe525a2d1245c475bf819ff336d4d106c6a2274ccf7902a2e1b68a83238236e"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_page.h",
+      "bytes": 2038,
+      "sha256": "1f9c101c5753ac46ad766995492d383d3c38f8a003a6cf87da3571596d8f988b"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_format_dialog.cpp",
+      "bytes": 21475,
+      "sha256": "e722ce0430d143dbaa2f65fdf6970adc18c09e213cfe27d64564ffbf3a5e644d"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_format_dialog.h",
+      "bytes": 2025,
+      "sha256": "17264b0339e1436e0ad7d34b601604f63880df58cc67fa2df363f029d8fd51f6"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_current_format.h",
+      "bytes": 3150,
+      "sha256": "3487b66f99f4bec2ac8ba1249bf180c49a0c00929de5b187a2701ea54fbe4e3f"
+    }
+  ],
+  "small_input_count": 26,
+  "stop": "Readonly investigation finished; no owned process or GUI. No original failure/source changed.",
+  "all_small_inputs_rechecked_unchanged": true
+}

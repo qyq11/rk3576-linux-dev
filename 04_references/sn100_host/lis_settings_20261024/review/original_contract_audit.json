@@ -3,12 +3,12 @@
   "reviewed_utc": "2026-10-24T13:25:38.692763+00:00",
   "scope": "Static original-source/Designer/previous-contract review only. No migration completion, GUI, build, test, enumeration, network, serial or instrument run.",
   "read_scope_sha256": {
-    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp": "ba2ce86aa539dce304f3af34faf0ee13c5f33636f0be1b70b921ea607efd7b8e",
-    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.h": "5a99fbb2ddba135d24c8afd4b50cbe089c7df203547bc1858856f5f2459a2cfc",
-    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.ui": "158ff240e1586db7ec1bfbb408cc27d04ade2fb30c2756c0aa44a9684b46666e",
-    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp": "88dbbbf67c2485374e32780e520a74fefbb7187ce1228765a4567e94ddcdf636",
-    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.h": "f8e73be84d47aef8baab2dfd50e149b0a5f8530fc155c8f20686f421cfe64497",
-    "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/commlis.pri": "c41339b9d89c65bcbb7e7165cb22b4fb8adc7b1d6a95c5b8a92f0096c4fc7206"
+    "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp": "ba2ce86aa539dce304f3af34faf0ee13c5f33636f0be1b70b921ea607efd7b8e",
+    "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.h": "5a99fbb2ddba135d24c8afd4b50cbe089c7df203547bc1858856f5f2459a2cfc",
+    "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.ui": "158ff240e1586db7ec1bfbb408cc27d04ade2fb30c2756c0aa44a9684b46666e",
+    "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp": "88dbbbf67c2485374e32780e520a74fefbb7187ce1228765a4567e94ddcdf636",
+    "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.h": "f8e73be84d47aef8baab2dfd50e149b0a5f8530fc155c8f20686f421cfe64497",
+    "06_programs/sn100_host_reference/Seerain450_PC/commlis/commlis.pri": "c41339b9d89c65bcbb7e7165cb22b4fb8adc7b1d6a95c5b8a92f0096c4fc7206"
   },
   "prepared_contract": {
     "path": "temp/sn100_host/global_coverage_20261024/lis_settings_contract.json",
@@ -114,21 +114,21 @@
       "detail": "label_23 at50,390 is only the group title above auto flags. tcptype has no visible editor. ckxAutoLink says response mode, not connected or automatic connection.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             34,
             36
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.ui",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.ui",
           "lines": [
             1,
             590
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp",
           "lines": [
             160,
             184
@@ -142,14 +142,14 @@
       "detail": "Original setConfig does not assign configSet. A copied helper followed by refresh will read old values when openComm is correctly isolated. Update the new committed snapshot only after actual commit and GUI acknowledgment.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp",
           "lines": [
             62,
             77
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             135,
             159
@@ -163,7 +163,7 @@
       "detail": "Original Save commits active endpoint pair only. Keeping both drafts does not automatically imply saving both pairs. If new Save commits both edited pairs, document that behavior difference and test reopen; if it keeps inactive edits pending, preserve dirty state and leave guards truthfully.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             135,
             154
@@ -177,28 +177,28 @@
       "detail": "Original Save ternary maps any nonzero/no-selection index to1. Test invalid stored2/-1/noninteger text separately from legitimate missing-key default0.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             41,
             43
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             120,
             120
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             142,
             142
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp",
           "lines": [
             42,
             42
@@ -212,7 +212,7 @@
       "detail": "Original appends none to a temporary list but then adds a fresh enumeration, omitting none. Saved-case comparison is insensitive but setCurrentText has no explicit normalized match handling. Use one enumeration snapshot and test missing/case-colliding/stale names; never silently choose a device.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             82,
             94
@@ -226,7 +226,7 @@
       "detail": "Original empties/adds the fixed list then calls setCurrentText on a noneditable combo. An absent/unmatched saved baud can leave first item1200 rather than a truthful unknown state. Preserve unknown/unconfigured value until explicit selection.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             95,
             98
@@ -240,14 +240,14 @@
       "detail": "Do not use broad toBool or normalize hidden mixed-case keys. Keep missing versus present values and inactive/hidden/unrelated values when modifying visible settings. Hidden repeat-test getter differs from exact-true visible flag getters.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp",
           "lines": [
             31,
             59
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp",
           "lines": [
             109,
             158
@@ -261,14 +261,14 @@
       "detail": "IP caller requests Head_Letter_Num length16; port Num min0/max99999/length5. There is no final Save hasAcceptableInput/status check in the original. Exact validator implementation was deliberately not read from prohibited systemcommon.cpp. Choose/record any stricter local address/port/incomplete-save policy without DNS/connect validation.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             49,
             60
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmuserset/frmlissetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/frmuserset/frmlissetting.cpp",
           "lines": [
             135,
             159
@@ -282,35 +282,35 @@
       "detail": "LisCommSetting owns TcpBase and SerialPortBase by value; constructor wires I/O signals. openComm can bind server/connect client/open serial and loadConfig changes a business global. No Save/connect signal, comm receiver/thread/sender, packet builder or connection-state getter belongs in this local slice.",
       "evidence": [
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.h",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.h",
           "lines": [
             72,
             74
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp",
           "lines": [
             21,
             28
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp",
           "lines": [
             59,
             59
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/liscommsetting.cpp",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/liscommsetting.cpp",
           "lines": [
             160,
             214
           ]
         },
         {
-          "path": "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/commlis/commlis.pri",
+          "path": "06_programs/sn100_host_reference/Seerain450_PC/commlis/commlis.pri",
           "lines": [
             1,
             12

@@ -1,24 +1,48 @@
 # SN100 移植工程、AI 规则与资料入口
 
-**当前功能补齐（2026-10-27）：**本地资料、样本草稿、单孔质控预设、质控历史、报告本地处理及原值结果后端已有正式代码。项目结果显示配置已在真正主程序从原菜单保存，关闭后同目录重开能读回四类结果、单位、小数位及独立主结果/选用/显示。正常关闭暴露了页面销毁仍通知主窗口已释放成员的问题，原程序自然异常退出及调用栈已保留；仅两页析构已作最小修正，新冻结518（2d45ecd8）正在全新编译，修后关闭仍待验。本次未观察到报告自动刷新来源提示，不登记该项通过。报告使用当前已提交配置，四原值不改，不冒检测时单位快照；新原值文件输出仍关。检测调度、完整算法、真实结果、LIS收发、实时告警、正向打印及一致业务备份恢复仍有实现或具体资料缺口。
+**原库沿用要求（2026-10-27新增）：**用户要求尽量完整沿用原数据库及配置方式，不因移植重新设计表、字段或参数。已核对截图所指`bin`的全部文件，原29库、项目参数和配置用途见[原文件说明](sn100_original_bin_files.md)。当前新库结构与原库有差异，应优先适配程序读写原结构；RK完整接入及现场有效性待验，不把此前匿名新库通过算成原库已通过。
+
+**后续验证约定（2026-10-27）：**每项功能或修复完成后直接在RK操作并核对实际数据、错误恢复和资源；Windows/WSL只用于编辑、源码检查、ARM64交叉编译及上传，不再安排本机运行测试或Windows测试构建。历史电脑证据保留原范围；旧阅读示例中的电脑测试不作为新任务步骤。编译、RK功能、接真实仪器分别登记，RK不可达时保留待验。[确认记录](../../02_records/20261021_ai_workflow.md#rk-direct-verification)
+
+**按文件查用途：**[根目录导航](../../README.md#先看文件用途) → [正式程序目录](../../06_programs/README.md) → [SN100源码目录表](../../06_programs/sn100_host/README.md#源码文件从哪里看)。各子目录README只维护文件职责，不复制本文件、计划或验收记录。
+**2026-10-27用户最新方向：**RK可接现有仪器，型号/连接细节暂待查；先补齐原上位机全部实际功能，特定缺失资料逐项列出，当前不要求用户立即补齐参数。真实连接模式、配置、任务/算法/结果及其余业务的唯一实施顺序见[当前功能卡](../plans/sn100_host_migration_plan.md#full-function-next-20261027)；脱机发布首验和真实仪器验收分开，小屏/分辨率在全部功能实现后做。
+
+**2026-10-27板端更新：**当前已实现主程序及报告组件已部署RK，初始运行/退出/重开、匿名中文报告生成和现场显示/鼠标确认已有本轮证据；这不是完整业务验收。实时进度以[RK首验卡](../plans/sn100_host_migration_plan.md#rk-offline-card)和[同一记录](../../02_records/20261022_sn100_host_migration.md#rk-board-first-deployment-20261027)为准，下方旧版本检查点各自保留原范围。
 
 
-**当前实现结论：**尚未完成全套SN100业务。本地资料、样本草稿、单孔质控预设、质控历史和报告本地处理已有正式实现；检测投递与暂停恢复、完整校准拟合逆算审核、真实质控判定、真实结果与单位映射、LIS收发、实时告警互锁、一致业务备份恢复仍有程序或资料缺口。打印正式接线已有电脑缺设备失败链验证，正向确认与实际出纸待验；离线原报文辅助组件及真正主程序的初始化重开/关闭已通过电脑验证，仍非完整LIS。功能实现与验证范围分别登记，不能说代码全齐只等设备。
+**当前实现结论：**整套SN100功能还没有做完。医院、项目和试剂等本地资料，样本草稿，单个孔位的质控样本预设，质控历史查看，以及报告本地处理已有正式代码。实际检测任务下发、暂停和恢复，完整校准计算、反求结果、审核和应用，真实质控异常判定，真实结果及单位对应，实验室信息系统（LIS）收发，实时告警及动作保护，以及多份业务数据一起备份和恢复，仍缺部分代码或明确资料。打印按钮已接到报告程序，并在电脑上验证了“没有打印设备时提示失败”的处理；正常确认打印和实际出纸还没验证。离线原始通信消息导入组件，以及主程序新建数据、重开和关闭已通过电脑检查；这还不代表LIS通信完整。代码实现和实际测试分别记录。
 
 
 
 **用户当前重点（2026-10-26 18:33）：**先逐项确认功能有没有实现，再优先补有依据、能离线完成的缺口。已实现但待验证、确实未实现、缺资料、只待设备验证分别登记；测试次数和源码数量不当作功能完成度。原三个窗口继续分担，每10分钟检查保持ACTIVE；新功能和修复做必要针对验证，已有通过项不反复跑。
 更新：2026-10-26。本文件说明目录职责、Codex阅读入口与原版依据。[运行与维护](../../06_programs/sn100_host/README.md)见工程README；日常看[下一步清单](../plans/next_steps.md)，边界在[移植计划](../plans/sn100_host_migration_plan.md)，实际过程统一追加[移植记录](../../02_records/20261022_sn100_host_migration.md)，环境事实见[Qt记录](../../02_records/20261022_qt_environment.md)，不复制第二份进度清单。
 
-上一轮426项输入的四窗口本地检查点已加入质控、校准、项目高级/试剂批组和报告剩余本地功能，保留全部已接业务页；完整离线回归、WSL运行、Windows/ARM主程序与报告辅助程序编译、离线依赖/配对归档和短时响应资源已有证据。[当前总索引](../../04_references/sn100_host/qc_local_20261025/final/verification.json)。此前371等检查点和旧361收据缺口分别保留；实际LIS/打印/仪器、原Windows/RK、预算与长稳另验。
+上一轮426项输入的四窗口本地检查点已加入质控、校准、项目高级/试剂批组和报告剩余本地功能，保留全部已接业务页；完整离线复测、WSL运行、Windows/ARM主程序与报告辅助程序编译、离线依赖/配对归档和短时响应资源已有证据。[当前总索引](../../04_references/sn100_host/qc_local_20261025/final/verification.json)。此前371等检查点和旧361执行结果记录缺失分别保留；实际LIS/打印/仪器、原Windows/RK、预算与长时间运行稳定性另验。
+
+### 文中用语说明
+
+下面保留必要的技术名称，便于查代码和原始记录。阅读时可按右侧含义理解。
+
+| 写法 | 这里的意思 |
+| --- | --- |
+| WSL | Windows电脑中的Linux环境，本项目用它交叉编译RK程序 |
+| ARM64 | RK板所用的64位处理器架构，编译时需要生成匹配的程序 |
+| LIS | 实验室信息系统，用来接收检测任务、上传检测结果 |
+| SHA-256 | 文件指纹，用来比较上传或复制前后的内容是否一致 |
+| 两种界面运行方式 | 历史电脑测试使用的无窗口方式（offscreen）和有窗口方式（XCB/WSLg），都不代替RK实际屏幕操作 |
+| RSS/PSS | 两种内存占用统计方法，用于观察程序用了多少内存 |
+| 基线 | 本次测出的初始对照结果，供以后在相同条件下比较 |
+| AL4A | 原Windows程序使用的算法库名称；RK需要能在Linux上运行的对应实现 |
+
+测试中的“13/0”表示13项通过、0项失败；“退出码0”表示该次程序正常结束。它们都只说明所列测试范围，不能代表整套仪器业务通过。
 
 ## 1. 当前目录与工程边界
 
 准备学习业务与代码时，先看[SN100功能与Linux移植分析](sn100_host_function_and_porting_review.md)：包含整体功能、原Windows与正式工程差异、后续建议，以及保存、复测草稿和报告导出的阅读路线。该专题按核查日期说明事实，实时待办仍维护在移植计划。
 
-O10-1打印子页3和O10-2 LIS子页4已接本地设置；本轮新增打印报告接线从`main.cpp`的`PrinterReportShell`追到`HistoryReportController`固定预览与原Print，再到隔离helper；原设置Apply本身不提交打印。`ui/frmlissetting.cpp`→`data/lis_settings_store.cpp`、`shell/lis_shell.cpp`仅保存意图，`data/serial_port_catalog.cpp`只读枚举。主菜单3校准、4质控已接各自本地页面及worker；语言2已落原中文单项页接线，常规两后端各14项通过，统一运行与小屏命中另待验。质控、校准、项目高级方案/试剂批组与报告剩余本地业务已接统一程序；上一轮426项输入（冻结`5123bf14`）的完整35次离线调用、额外4组项目/试剂测试和4个独立界面启动/正常退出均通过。WSL实际运行、Windows32/ARM64主程序与报告辅助程序全量编译、ARM离线依赖及匹配应用/源码归档通过；单次40保存响应与30秒整程序资源基线已留证。[当前索引](../../04_references/sn100_host/qc_local_20261025/final/verification.json)。原Windows完整行为/活动主题、RK实屏/输入、仪器/实际LIS/实体打印、真实结果链、临床校准/质控、认可资源预算/同板实时控制及长稳仍待验；该历史检查点的语言设置仍占位；新中文页状态见上方当前说明，原版未启用的XLSX未开放。旧报告查询、8小时恢复，以及suite05校准引用崩溃和suite07登录1920几何失败的直接原因尚未确证，原失败保留。用法见[操作说明](../../06_programs/sn100_host/README.md#offline-four-window-usage)，全局仍沿第13节F01–F18唯一清单核差异。
+O10-1打印子页3和O10-2 LIS子页4已接本地设置；本轮新增打印报告接线从`main.cpp`的`PrinterReportShell`追到`HistoryReportController`固定预览与原Print，再到隔离报告辅助程序；原设置Apply本身不提交打印。`ui/frmlissetting.cpp`→`data/lis_settings_store.cpp`、`shell/lis_shell.cpp`仅保存意图，`data/serial_port_catalog.cpp`只读枚举。主菜单3校准、4质控已接各自本地页面及后台工作线程；语言2已落原中文单项页接线，常规两后端各14项通过，统一运行与小屏命中另待验。质控、校准、项目高级方案/试剂批组与报告剩余本地业务已接统一程序；上一轮426项输入（固定版本`5123bf14`）的完整35次离线调用、额外4组项目/试剂测试和4个独立界面启动/正常退出均通过。WSL实际运行、Windows32/ARM64主程序与报告辅助程序全量编译、ARM离线依赖及匹配应用/源码归档通过；40次保存操作的响应测量与30秒整程序资源占用初始测量已留证。[当前索引](../../04_references/sn100_host/qc_local_20261025/final/verification.json)。原Windows完整行为/实际使用的界面主题、RK实屏/输入、仪器/实际LIS/实体打印、真实结果产生、保存和显示流程、临床校准/质控、已确认的资源占用上限/同板实时控制及长时间运行稳定性仍待验；该历史检查点的语言设置仍占位；新中文页状态见上方当前说明，原版未启用的XLSX未开放。旧报告查询、8小时恢复，以及suite05校准引用崩溃和suite07登录1920宽度下位置或尺寸检查失败的直接原因尚未确证，原失败保留。用法见[操作说明](../../06_programs/sn100_host/README.md#offline-four-window-usage)，全局仍沿第13节F01–F18唯一清单核差异。
 
-新维护入口为`quality_control/quality_control_page.cpp`→`qc_store.cpp`及`calibration/calibration_page.cpp`→`calibration_store.cpp`；主壳接线在`shell/quality_shell.cpp`、`calibration_shell.cpp`及`main.cpp`。两模块维护本地元数据/原始记录，已保存校准记录及质控项目关联各有单位快照；原版质控历史日结果没有逐点单位快照，不能用关联快照补作证明。本轮历史只读查询SQL21项、核心20项、新图卡/真实页面两种后端各10项及原页各7项已通过；447项统一程序WSL鲜编、22个累计驱动绑定、完整35次调用和Windows32主辅编译均通过。ARM64主辅鲜编及56项离线依赖也已通过，180对象全新；匹配恢复归档通过，当前独立启动及短响应资源待核；旧单位未知时统计保持不可用。未开放临床规则、拟合审核应用或仪器动作。引用登记先于本地提交，两库分别提交，启动须对账；UUID绑定规范数据文件路径，同路径恢复可重开，跨Windows/WSL/RK或移位须停写后显式核对绑定，不直接删UUID或保护登记。当前10分钟检查与现有聊天分工按用户最新授权执行。
+新维护入口为`quality_control/quality_control_page.cpp`→`qc_store.cpp`及`calibration/calibration_page.cpp`→`calibration_store.cpp`；主窗口操作与处理代码的连接在`shell/quality_shell.cpp`、`calibration_shell.cpp`及`main.cpp`。两模块维护本地配置资料/原始记录，已保存校准记录及质控项目关联各有检测时保存的单位记录；原版质控历史日结果没有逐点检测时保存的单位记录，不能用关联快照补作证明。本轮历史只读查询SQL21项、核心20项、新图卡/真实页面两种后端各10项及原页各7项已通过；447项统一程序WSL从源码重新完整编译、22个已有功能的测试执行程序绑定、完整35次调用和Windows32主程序和报告辅助程序编译均通过。ARM64主程序和报告辅助程序从源码重新完整编译及56项离线依赖也已通过，180对象全新；匹配恢复归档通过，当前独立启动及短响应资源待核；旧单位未知时统计保持不可用。未开放临床规则、拟合审核应用或仪器动作。引用登记先于本地提交，两库分别提交，启动须对账；UUID绑定规范数据文件路径，同路径恢复可重开，跨Windows/WSL/RK或移位须停写后显式核对绑定，不直接删UUID或保护登记。当前10分钟检查与现有聊天分工按用户最新授权执行。
 
 ```text
 项目根目录/
@@ -42,16 +66,18 @@ O10-1打印子页3和O10-2 LIS子页4已接本地设置；本轮新增打印报�
 │   └── sn100_host_reference/         原SN100_host整体移入，只作参考
 │       ├── Seerain450_PC.rar         老板提供的压缩原件
 │       └── Seerain450_PC/
-│           └── Seerain450_PC/
-│               └── SeeRain450.pro    原版Qt5.14.2/MinGW32工程
+│           ├── SeeRain450.pro        原版Qt5.14.2/MinGW32工程
+│           └── bin/                  原版程序、数据库、配置和资源
 └── temp/sn100_host/                  本机/ARM构建、隔离测试数据与临时日志
 ```
 
-当前新建的程序目录是 [`06_programs/sn100_host/`](../../06_programs/sn100_host/)，其[局部AGENTS](../../06_programs/sn100_host/AGENTS.md)已写入。参考工程整体移至相邻目录，原有内层结构和文件名保留；没有把原程序当作已移植工程。
+正式程序目录是 [`06_programs/sn100_host/`](../../06_programs/sn100_host/)，其[局部AGENTS](../../06_programs/sn100_host/AGENTS.md)说明开发约定。用户在2026-10-27已去掉参考工程中重复的`Seerain450_PC/`层；当前主工程是[SeeRain450.pro](../../06_programs/sn100_host_reference/Seerain450_PC/SeeRain450.pro)，原文件目录是[bin/](../../06_programs/sn100_host_reference/Seerain450_PC/bin/)。这是文件位置调整，业务移植是否完成仍看正式工程的实现和验收记录。
 
 参考包含大量Windows二进制、数据库/配置和个人IDE设置，默认由 `06_programs/.gitignore` 排除，继续在本机完整保留。后续逐模块审查、提取所需源码和可分发资源到正式工程并纳入版本管理；不整包 `git add -f`。需正式交付的依赖输入、安装/恢复材料按用途归档到 `07_backups/` 并遵循LFS/来源/SHA规则，测试数据匿名化。
 
 移位校验见[位置和校验依据](../../04_references/sn100_host/reference_location.json)：文件数、总字节数一致；压缩原件和主工程/入口/接收器三个源码 SHA 前后一致。这不是对全部解压文件逐一重新计算 SHA 的声明。2026-10-22 当日只移动和整理文件；2026-10-23 起授权在正式工作目录进行离线移植，参考原件仍保持不变。
+
+2026-10-27的目录层级调整已补齐当前说明、源码来源清单和核对脚本中的引用。历史批次和旧恢复包仍记录原路径；查找时将`sn100_host_reference/Seerain450_PC/`对应到现在的`sn100_host_reference/Seerain450_PC/`，不需要重建旧目录。核对范围见[本次记录](../../02_records/20261022_sn100_host_migration.md#reference-layout-20261027)。
 
 ## 2. AGENTS、计划、知识、记录和Skill各管什么
 
@@ -147,7 +173,7 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 | [立创RK3576 Qt5.15开发指南](https://wiki.lckfb.com/zh-hans/tspi-3-rk3576/system-development-compilation/qt-5-15/) | 包括交叉编译、Kit、模块配置、部署和调试；当前主线是Buildroot/Qt5.15.11，Ubuntu路线显示待推出 | 板级参考价值高；与现有Ubuntu24.04/Qt5.15.13区别登记，不套用其必须烧录/工具链版本结论 |
 | [立创命令行交叉编译](https://wiki.lckfb.com/zh-hans/tspi-3-rk3576/system-development-compilation/qt-5-15/buildroot/command-line-cross-compilation.html) | 区分主机qmake、交叉工具链、目标sysroot和产物架构；误用主机库排查 | 借鉴检查方法，实际仍使用与当前Ubuntu目标匹配的工具和库；不是切换Buildroot的操作指令 |
 | [Qt5.15高DPI](https://doc.qt.io/archives/qt-5.15/highdpi.html) | 逻辑坐标、DPR、字体和固定尺寸的关系 | 用于1600×900与原1920×1080逐页/弹窗适配，不把全局缩放当全部验证 |
-| [Qt5.15线程与QObject](https://doc.qt.io/archives/qt-5.15/threads-qobject.html) | GUI、socket/timer、对象所属线程和排队连接约束 | 用于拆分协议、数据、算法与页面，审查原自移入QThread及跨线程UI指针 |
+| [Qt5.15线程与QObject](https://doc.qt.io/archives/qt-5.15/threads-qobject.html) | 图形界面、socket/timer、对象所属线程和排队连接约束 | 用于拆分协议、数据、算法与页面，审查原自移入QThread及跨线程UI指针 |
 | [QtXlsx源码](https://github.com/dbzhang800/QtXlsxWriter)、[qtcsv源码](https://github.com/iamantony/qtcsv) | 双目标重建来源候选；qtcsv的Qt5分支与当前master有区别 | 先匹配本地版本/补丁/许可再用，不默认为相同DLL实现；算法源码仍需供应商提供 |
 | [Codex AGENTS](https://developers.openai.com/codex/guides/agents-md/)、[Skill](https://developers.openai.com/codex/skills/) | 常驻规则与可复用流程的作用、仓库发现位置、按需加载 | 依据现有项目约定设置 AGENTS 入口与根 `.agents/skills/`；不用另建一套平行计划体系 |
 
@@ -157,7 +183,7 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 
 | 实际 Skill / 来源 | 能借鉴什么 | 当前项目的边界 |
 | --- | --- | --- |
-| [Qt 官方 qt-cpp-review](https://github.com/TheQtCompanyRnD/agent-skills/blob/main/skills/qt-cpp-review/SKILL.md) | QObject 生命周期、线程、错误、模型契约与性能审查 | 面向 Qt6，选择兼容 Qt5 的检查点；本次未安装/运行其 linter |
+| [Qt 官方 qt-cpp-review](https://github.com/TheQtCompanyRnD/agent-skills/blob/main/skills/qt-cpp-review/SKILL.md) | QObject 从启动、运行到关闭的过程、线程、错误、模型契约与性能审查 | 面向 Qt6，选择兼容 Qt5 的检查点；本次未安装/运行其 linter |
 | [Qt 官方 qt-cmake-project](https://github.com/TheQtCompanyRnD/agent-skills/blob/main/skills/qt-cmake-project/SKILL.md) | Qt6/CMake 项目、目标与资源组织 | 会提出 Qt5→Qt6 迁移要求；不直接用于当前 qmake/Qt5 工程 |
 | [Qt 官方 qt-qml-profiler](https://github.com/TheQtCompanyRnD/agent-skills/blob/main/skills/qt-qml-profiler/SKILL.md) | Qt6 二维 Qt Quick 性能分析 | 当前 Widgets 场景不直接适用，不以 QML 分析代替 Widgets 实测 |
 | [ComposioHQ file-organizer](https://github.com/ComposioHQ/awesome-claude-skills/blob/master/file-organizer/SKILL.md) | 整理前盘点、移动映射和冲突处理 | 面向通用文件/下载目录，不覆盖 Qt 构建和动态资源依赖；不照搬按扩展名拆分、按日期清理 |
@@ -170,13 +196,13 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 
 每模块用一张模块卡维护：范围和依赖、原版代码入口、Windows 参考输入/输出、平台差异、构建版本、回放、RK/仪器连接条件、实际输入/输出及界面/DB 变化、通过标准、证据/缺陷和下一步。已有O01示例为原医院信息设置页面，详细验收见[医院模块范围](../plans/sn100_host_migration_plan.md#20-当前离线模块-o01医院信息设置)；离线依赖顺序、V批次范围和进入条件见[逐模块仪器验收](../plans/sn100_host_migration_plan.md#26-逐模块移植和现有仪器验收用户已确认)。
 
-已有算法/第三方库阻断是完整系统的放行条件，不要求先把全系统库都解决才能做与其无关的模块；例如连接/只读状态子模块可以先隔离验证。每个模块完成都要回归已经通过的相关模块，全部模块之后仍需端到端联调与性能验收。
+已有算法/第三方库阻断是完整系统的放行条件，不要求先把全系统库都解决才能做与其无关的模块；例如连接/只读状态子模块可以先隔离验证。每个模块完成都要复测已经通过的相关模块，全部模块之后仍需端到端联调与性能验收。
 
 ## 7. 资源调配与验证后删减代码
 
 用户要求每模块都注意上位机运行资源。以相同输入/规模/吞吐/显示条件采集CPU、RSS/PSS/峰值、线程/队列、响应及日志/存储增长，必要阶段测温度/降频和同板控制竞争；预算先明确再调线程、轮询、缓存和展示频率，不通过降低必需功能、原始数据或告警可见性换性能。
 
-代码删减先建立原版基线，并查两端构建、配置/机型、动态加载、字符串信号槽、自动槽、QRC和异常恢复等；必要时通过可撤回副本的禁用/候选补丁对照验证。确认对适用功能、数据/报文/仪器用例无影响后才纳入正式删减，删后仍回归并测资源；不能只凭未搜到引用或菜单注释决定，不确定用途保留，参考原件不清理。
+代码删减先建立原版基线，并查两端构建、配置/机型、动态加载、字符串信号槽、自动槽、QRC和异常恢复等；必要时通过可撤回副本的禁用/候选补丁对照验证。确认对适用功能、数据/报文/仪器用例无影响后才纳入正式删减，删后仍复测并测资源；不能只凭未搜到引用或菜单注释决定，不确定用途保留，参考原件不清理。
 
 详细执行门槛见[资源与删减门槛](../plans/sn100_host_migration_plan.md#27-每模块资源核查与代码删减门槛用户新增约定)，实际依据和前后数据写入[统一移植记录](../../02_records/20261022_sn100_host_migration.md)。该项目习惯也已补入个人work-habits，工程风格仍由局部AGENTS维护。
 
@@ -190,12 +216,12 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 | [Ubuntu24.04 qtbase5-dev](https://packages.ubuntu.com/noble/qtbase5-dev)、[SQLite 驱动包](https://packages.ubuntu.com/en/noble/libs/libqt5sql5-sqlite) | 可安装 Qt5.15.13 的本机开发库、qmake 与 SQLite 驱动；WSL x86_64 库与 AArch64 sysroot 各自隔离 |
 | [Qt5 qmake SUBDIRS](https://doc.qt.io/archives/qt-5.15/qmake-variable-reference.html#subdirs) | qmake 已支持子项目和 `.depends`；模块化无需升级 Qt6/CMake，也无需先拆成动态插件或多个进程 |
 | [Qt5 Widgets Model/View](https://doc.qt.io/archives/qt-5.15/model-view-programming.html) | 可将数据访问/业务与界面逐步分离，保留真实 `.ui` 和字段契约；不是要求一次改写全库控件 |
-| [Qt5 线程与 QObject](https://doc.qt.io/archives/qt-5.15/threads-qobject.html)、[SQL 线程约束](https://doc.qt.io/archives/qt-5.15/threads-modules.html) | QWidget 只在主线程；耗时操作通过工作线程和排队信号返回结果。Qt5 SQL 连接只在创建线程使用，不把 GUI 创建的连接交给 worker |
-| [Qt5 Test](https://doc.qt.io/archives/qt-5.15/qttest-index.html)、[SQLite integrity_check](https://sqlite.org/pragma.html#pragma_integrity_check) | 关键交互、信号和数据可做自动对照；数据库完整性成功返回 `ok`，外键另查 `foreign_key_check`，仍需验证具体业务字段与重启持久化 |
+| [Qt5 线程与 QObject](https://doc.qt.io/archives/qt-5.15/threads-qobject.html)、[SQL 线程约束](https://doc.qt.io/archives/qt-5.15/threads-modules.html) | QWidget 只在主线程；耗时操作通过工作线程和排队信号返回结果。Qt5 SQL 连接只在创建线程使用，不把 图形界面 创建的连接交给 后台工作线程 |
+| [Qt5 Test](https://doc.qt.io/archives/qt-5.15/qttest-index.html)、[SQLite integrity_check](https://sqlite.org/pragma.html#pragma_integrity_check) | 关键交互、信号和数据可做自动对照；数据库完整性成功返回 `ok`，外键另查 `foreign_key_check`，仍需验证具体业务字段与重启长期保存 |
 
-结合上述能力，本项目采用**按业务切片迁移、先保留功能基线再局部简化**的工程判断：已迁移的O01入口、UI、数据worker分开，保留原医院表字段和助记符映射，以参数绑定和事务替代字符串拼接。它是渐进提取，不是完整原程序已经可用。优化前后比较相同输入、UI/数据/错误语义和资源，删除仍遵守第7节的调用/配置/动态依赖证据；不确定用途保留。
+结合上述能力，本项目采用**按业务切片迁移、先保留功能基线再局部简化**的工程判断：已迁移的O01入口、UI、数据后台工作线程分开，保留原医院表字段和助记符映射，以参数绑定和事务替代字符串拼接。它是渐进提取，不是完整原程序已经可用。优化前后比较相同输入、UI/数据/错误语义和资源，删除仍遵守第7节的调用/配置/动态依赖证据；不确定用途保留。
 
-首轮只写显式测试数据目录，不读取原生产库/旧配置、不自动连接网络。响应核对以真实操作、GUI 定时器延迟和固定负载测量为证；单纯窗口打开、测试输出 PASS 或机器更快不能替代此结论。每次实际结果只在统一记录写一次，计划同步对应勾选与待验范围。
+首轮只写显式测试数据目录，不读取原生产库/旧配置、不自动连接网络。响应核对以真实操作、图形界面 定时器延迟和固定负载测量为证；单纯窗口打开、测试输出 PASS 或机器更快不能替代此结论。每次实际结果只在统一记录写一次，计划同步对应勾选与待验范围。
 
 ## 9. 工程化管理的常用名称与本项目落点
 
@@ -203,17 +229,17 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 
 | 常用名称 | 本项目怎样落实 |
 | --- | --- |
-| 编码规范 / Coding Conventions、Style Guide | 局部 AGENTS 保留旧风格；模块 skill 要求业务命名、完整而清楚的函数、规则/单位/状态变化注释、明确错误和生命周期 |
+| 编码规范 / Coding Conventions、Style Guide | 局部 AGENTS 保留旧风格；模块 skill 要求业务命名、完整而清楚的函数、规则/单位/状态变化注释、明确错误和从启动、运行到关闭的过程 |
 | 架构约束 / 分层 / 关注点分离 | 按实际需要划分 UI、业务、协议、传输、存储与平台；小模块保持简单，不强制 MVC/MVP/MVVM 或通用框架 |
 | 非功能需求 / NFR | 把“稳定、不卡顿”展开为固定场景下的响应分布、最大阻塞、资源上限、持续运行和异常恢复；RK 与 WSL 分别取证 |
-| 完成定义 / DoD、质量门禁 | 功能/字段/报文对照、实际构建/运行、目标显示、仪器、性能和长稳按各自门槛验收；不足的项目保持待验 |
+| 完成定义 / DoD、质量门禁 | 功能/字段/报文对照、实际构建/运行、目标显示、仪器、性能和长时间运行稳定性按各自门槛验收；不足的项目保持待验 |
 | 软件配置管理 / SCM、可追溯性 | Git 管理源码/构建/skill/匿名输入，区分生成物与运行数据；版本/依赖/校验/输入输出/回退和证据链接可追溯 |
 
 [Qt Coding Style](https://wiki.qt.io/Qt_Coding_Style)、[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)和[C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)是借鉴来源；不据此把当前 C++14、Allman 或 qmake 全库改造成另一套风格。
 
-用户特别要求**人能读懂业务、方便人修改**，因此验收还包括：维护者能从操作入口找到规则、数据落点/设备副作用及失败恢复；说明为什么如此处理。具体人审问题、实现边界和测量合同只维护在[业务可读性与验收参考](../../.agents/skills/sn100-module-migration/references/engineering-and-verification.md)。不以更多层、类、接口数量代替可维护性。
+用户特别要求**人能读懂业务、方便人修改**，因此验收还包括：维护者能从操作入口找到规则、数据落点/设备副作用及失败恢复；说明为什么如此处理。具体人审问题、实现边界和测量规则依据只维护在[业务可读性与验收参考](../../.agents/skills/sn100-module-migration/references/engineering-and-verification.md)。不以更多层、类、接口数量代替可维护性。
 
-2026-10-23 用户补充**界面颜色和布局尽量保持原版，只做 Linux / RK3576 屏幕必需适配**。单模块移植也不自行换配色或重排页面；O01首版明显视觉差异已按原源码纠正并完成离线复测；原Windows实际活动主题/字体和RK实屏完整视觉仍待对照，功能/数据验证不代替视觉验收。执行时同时核对原 `.ui`、共享和动态样式、主题、字体及资源，保留同状态对照与必要差异原因；详细要求仍只维护在上述参考的“原版界面保持与最小适配”，根/局部 AGENTS 和模块 skill 均已接入。
+2026-10-23 用户补充**界面颜色和布局尽量保持原版，只做 Linux / RK3576 屏幕必需适配**。单模块移植也不自行换配色或重排页面；O01首版明显视觉差异已按原源码纠正并完成离线复测；原Windows实际实际使用的界面主题/字体和RK实屏完整视觉仍待对照，功能/数据验证不代替视觉验收。执行时同时核对原 `.ui`、共享和动态样式、主题、字体及资源，保留同状态对照与必要差异原因；详细要求仍只维护在上述参考的“原版界面保持与最小适配”，根/局部 AGENTS 和模块 skill 均已接入。
 
 文件管理的归属表、移动/改名引用检查和 Git/LFS 门槛只维护在[文件管理 Skill](../../.agents/skills/sn100-project-files/SKILL.md)。当前工作工程已经按入口、`ui/`、`data/` 和影子构建组织，`data/` 是源码目录；本次没有为统一模板移动正在开发的源码或删除未提交内容。
 
@@ -224,15 +250,15 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 | 接口 | 数值含义与结果 | 维护注意 |
 | --- | --- | --- |
 | `percentageEndpoint()` | 首末稳定窗口算术均值为基线/平台；求指定变化比例的唯一交点，线性插值时间 | 50%是当前试验设置；必须包含完整反应与末端平台，不能拿采集中最后一点当100% |
-| `maximumDerivativeEndpoint()` | 用奇数点局部线性回归求方向正化的一阶导数，返回内部最大速率的采样时刻 | 能处理非均匀时间；不亚采样拟合峰顶，不将该时刻默认映射到全部项目临床CT |
+| `maximumDerivativeEndpoint()` | 用奇数点局部线性复测求方向正化的一阶导数，返回内部最大速率的采样时刻 | 能处理非均匀时间；不亚采样拟合峰顶，不将该时刻默认映射到全部项目临床CT |
 
 `CurvePoint.timeSeconds`是**相对加试剂起点的非负秒数**，程序不减首点；原始AD索引须由上游换算，起采延迟不能丢失。`CurveDirection`必须显式指定，下降信号不靠猜测反转。`EndpointResult.ok=false`时数值字段不可用；CLI用`candidate_found`和空时间表达失败，并保留原因/警告。基线、平台、幅度、多峰与搜索边缘检查仅是本轮工程启发式，参数默认值不代表SN100或临床阈值。不得把两方法结果平均、失败时静默切换或直接送入患者报告/设备停机。
 
-各模块保留独立入口。O03-3医院/账户/历史三页与O03-4原模板预览/PDF作为[历史基线](../../02_records/20261022_sn100_host_migration.md#o03-4-offline)保留，原报告[证据索引](../../04_references/sn100_host/integrated_report_20261023/index.json)对应当时范围。**当前统一主壳另已接项目/单位、试剂基础与样本本地预设/任务**；`shell/wsl.sh integrated-run`和RK启动封装均显式启用`--accounts --history --catalog --samples`。医院、账户、历史、项目、试剂、样本六个store各自在所属worker管理SQL；前三者分别使用运行根的`hospital/`、`account/`、`history/`，项目/试剂/样本共用`catalog/catalog.db`，由项目先建schema，再初始化试剂和样本。`shell/main.cpp`负责六worker启动/首读就绪/退出，`shell/catalog_shell.cpp`传递已提交值快照及会话，页面负责草稿守卫；[当前运行与维护](../../06_programs/sn100_host/README.md#o08)给出实际用法。原导航、布局和主题保留，默认Guest，显式匿名工程师只用于脱机模拟，生产认证与仪器联机另验。协议能力后续在后台供状态/业务使用，凝血研究接口须先经实际项目验证再接结果流程。
+各模块保留独立入口。O03-3医院/账户/历史三页与O03-4原模板预览/PDF作为[历史基线](../../02_records/20261022_sn100_host_migration.md#o03-4-offline)保留，原报告[证据索引](../../04_references/sn100_host/integrated_report_20261023/index.json)对应当时范围。**当前统一主窗口另已接项目/单位、试剂基础与样本本地预设/任务**；`shell/wsl.sh integrated-run`和RK启动封装均显式启用`--accounts --history --catalog --samples`。医院、账户、历史、项目、试剂、样本六个store各自在所属后台工作线程管理SQL；前三者分别使用运行根的`hospital/`、`account/`、`history/`，项目/试剂/样本共用`catalog/catalog.db`，由项目先建schema，再初始化试剂和样本。`shell/main.cpp`负责六后台工作线程启动/首读就绪/退出，`shell/catalog_shell.cpp`传递已提交值快照及会话，页面负责草稿守卫；[当前运行与维护](../../06_programs/sn100_host/README.md#o08)给出实际用法。原导航、布局和主题保留，默认Guest，显式匿名工程师只用于脱机模拟，生产认证与仪器联机另验。协议能力后续在后台供状态/业务使用，凝血研究接口须先经实际项目验证再接结果流程。
 
-最新任务与依赖见[O07/O08当前卡](../plans/sn100_host_migration_plan.md#catalog-sample-card)及[业务顺序](../plans/sn100_host_migration_plan.md#integration-next-steps)：报告、项目/单位、试剂基础和样本本地任务已整合，设备下发/执行与消耗/足料另验。根`build.sh`保留医院/账户独立入口，统一壳用`shell/build.sh`产出主程序与helper；新增源码必须重编并纳入freeze，历史ARM包不能代表新业务已发布。当前QtSvg匹配归档及私有恢复见[来源与范围](../../07_backups/qt_environment/sn100_samples_arm64/README.md)，修后ARM最终审计以同一记录为准。[RK用法](../../06_programs/sn100_host/README.md#rk-prepare)与[首验卡](../plans/sn100_host_migration_plan.md#rk-offline-card)区分构建/离线闭包和实屏/输入/资源。O05当前只支持本机回环，仪器V01还需实际协议/参数和显式外部Transport；本知识页只提供入口，不维护另一套勾选任务。
+最新任务与依赖见[O07/O08当前卡](../plans/sn100_host_migration_plan.md#catalog-sample-card)及[业务顺序](../plans/sn100_host_migration_plan.md#integration-next-steps)：报告、项目/单位、试剂基础和样本本地任务已整合，设备下发/执行与消耗/试剂充足检查另验。根`build.sh`保留医院/账户独立入口，统一主程序用`shell/build.sh`产出主程序与报告辅助程序；新增源码必须重编并纳入freeze，历史ARM包不能代表新业务已发布。当前QtSvg匹配归档及私有恢复见[来源与范围](../../07_backups/qt_environment/sn100_samples_arm64/README.md)，修后ARM最终审计以同一记录为准。[RK用法](../../06_programs/sn100_host/README.md#rk-prepare)与[首验卡](../plans/sn100_host_migration_plan.md#rk-offline-card)区分构建/电脑端运行组件完整性检查和实屏/输入/资源。O05当前只支持本机回环，仪器V01还需实际协议/参数和显式外部Transport；本知识页只提供入口，不维护另一套勾选任务。
 
-仪器操作另已接入原8子页及6项人工维护，`--instrument`使用第七个SQL worker与运行根`instrument/maintenance.db`；入口`instrument/instrument_page.cpp`、规则/事务`maintenance_store.cpp`，主壳`instrument_shell.cpp`传会话与来源。机器洗针/关机等不允许人工登记，设备动作保持禁用；回放/模拟只显示已核实字段并在失效时清空。存储11/0、两QPA各10/0、适用累计与三平台检查点/30秒资源有证据，[实际结果](../../02_records/20261022_sn100_host_migration.md#instrument-offline-result-20261024)和[匹配源码/包](../../07_backups/sn100_host/instrument_offline_20261024/README.md)固定该版本，后续登录源码另验，RK/仪器/预算及长稳仍待验。
+仪器操作另已接入原8子页及6项人工维护，`--instrument`使用第七个数据库后台工作线程与运行根`instrument/maintenance.db`；入口`instrument/instrument_page.cpp`、规则/事务`maintenance_store.cpp`，主窗口`instrument_shell.cpp`传会话与来源。机器洗针/关机等不允许人工登记，设备动作保持禁用；回放/模拟只显示已核实字段并在失效时清空。存储11/0、两种界面运行方式各10/0、相关已有功能的复测与Windows、电脑Linux和RK三个环境检查点/30秒资源有证据，[实际结果](../../02_records/20261022_sn100_host_migration.md#instrument-offline-result-20261024)和[匹配源码/包](../../07_backups/sn100_host/instrument_offline_20261024/README.md)固定该版本，后续登录源码另验，RK/仪器/预算及长时间运行稳定性仍待验。
 
 <a id="sn100-code-risks"></a>
 ## 11. 原参考工程的代码风险
@@ -245,16 +271,16 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 | 阻断 | `customtools/algorithmcore.cpp:539–604` 等 Linux 分支跳过初始化/计算仍返回 true；`AL4A_Driver.cpp:20–67` 依赖 LoadLibrary/GetProcAddress | “能编译/返回成功”不表示计算正确；必须逐一消除空实现假成功，用已知曲线对照原 DLL |
 | 阻断 | `SeeRain450.pro` Linux 链接分支为空；`customtools/dumpreport.cpp:277–301` 存在未隔离 HANDLE / DbgHelp 调用 | Linux 构建路径并未完成；不能仅替换 qmake 命令就部署 |
 | 阻断 | `logger.h:70–90` Linux 部分日志宏为空且存在 X/x 大小写问题；`logger.cpp:84–124` 实际实现主要在 Windows 分支 | 必须补齐跨平台日志、真实 TX/RX 和错误取证，不能删除日志求编译通过 |
-| 高 | 原参考工程含 Network/XML/SQL/SerialPort/PrintSupport/Svg/Concurrent；`QtRPT.pri:1` 又引入 QML/Charts | 现有 demo 的 Core/Gui/Widgets sysroot 不完整；需完整目标依赖闭包和主机生成工具 |
+| 高 | 原参考工程含 Network/XML/SQL/SerialPort/PrintSupport/Svg/Concurrent；`QtRPT.pri:1` 又引入 QML/Charts | 现有 demo 的 Core/Gui/Widgets sysroot 不完整；需完整目标所需运行组件的完整清单和主机生成工具 |
 | 高 | `frmmain.ui:5–25` 初始1920×1080；7个业务页初始1751×968；68个自有 UI 中27个无 layout，geometry 属性1723处 | 当前1600×900屏需要逐层布局适配和实屏验收；设计初始尺寸不等于全部为固定尺寸 |
 | 高 | `uiadaptive.cpp:7–60` 基准1366×768，只处理名称含 Adptive 的对象，分别乘 x/y；未发现应用层调用 | 不能声称现有自适应已启用；不能直接全局调用后认为适配完成 |
 | 高 | `frmmain.cpp:184–195,273–307` 登录前即创建通信线程、打开设备TCP并可能自动连LIS | 首次启动前先建立脱机/模拟入口；不能直接用原配置连接真仪器 |
 | 高 | `tool/database/sqlite_helper.cpp:16–22` 默认 MEMORY journal、synchronous=OFF | 嵌入式持久性需要专门设计和验证，不能以减少写盘代替数据可靠性 |
 | 高 | `public/systemcommon.cpp:601–620` 有 UNC 路径、net use；完整命令可能进入日志 | 重划本地/远程存储边界；日志不得包含连接凭据，文档不收录原配置值 |
 | 高 | `main.cpp:289–294` QMovie::CacheAll 后对无效动画无限忙等；启动时一次创建8个页面 | 先解决有界失败和测量资源，再评估缓存/展示刷新/惰性加载 |
-| 待核验 | 自移入QThread、UI对象指针进入LIS线程、同步引用信号、数据库事务归属 | 建立线程与对象生命周期表，再进行模块拆分；不能机械改为异步connect |
+| 待核验 | 自移入QThread、UI对象指针进入LIS线程、同步引用信号、数据库事务归属 | 建立线程与对象从启动、运行到关闭的过程表，再进行模块拆分；不能机械改为异步connect |
 
-已发现的**原有问题**单列：`frmmain.cpp:367` 的 `sloLIStDisConnected()` 与实际 `slotLIStDisConnected()` 拼写不一致；`TimeCalculateThread` 虽被创建，但开始处的 `StartCalculate` 调用被注释；语言页只有中文且 Apply 槽为空；task/formula 目录存在而主菜单接线被注释。应先确认原版实际行为，再决定修复/启用范围，不把它们误记成迁移新增回归或已完成产品功能。
+已发现的**原有问题**单列：`frmmain.cpp:367` 的 `sloLIStDisConnected()` 与实际 `slotLIStDisConnected()` 拼写不一致；`TimeCalculateThread` 虽被创建，但开始处的 `StartCalculate` 调用被注释；语言页只有中文且 Apply 槽为空；task/formula 目录存在而主菜单接线被注释。应先确认原版实际行为，再决定修复/启用范围，不把它们误记成迁移新增复测或已完成产品功能。
 
 <a id="sn100-dependencies"></a>
 ## 12. 算法与第三方依赖核查依据
@@ -265,18 +291,18 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 | --- | --- | --- | --- |
 | AL4A算法 | Windows32 DLL、供应商头/加载封装；部分Linux空实现 | 逐函数区分活跃/历史分支，确认真正调用库、版本、配置、符号、调用约定和许可；取得完整源码或AArch64 Linux库 | 初始化与所有实际使用计算均有结果/错误码；金样本达标。若无ARM实现，算法相关移植受阻；可讨论供应商移植或外部Windows算法服务，后者须明确偏离独立RK目标 |
 | GL4A日志后端 | GL4Ad为Windows32 DLL；GL4A_Driver/logger封装 | 与算法分开处理；取得ARM64后端或用Qt/合适日志库实现等价分类、格式、轮转和错误行为 | 实际TX/RX、LIS、错误和运行日志可取证；日志替代不以取得算法源码为前提 |
-| QtXlsx 0.3.0 | 头文件/Windows DLL、私有头路径 | 匹配源码/补丁后分别为MinGW32和ARM64重建，隔离Qt私有头依赖 | 读写既有模板、中文/日期/数值/公式与文件重新打开一致；替代库需单独批准格式差异并回归 |
+| QtXlsx 0.3.0 | 头文件/Windows DLL、私有头路径 | 匹配源码/补丁后分别为MinGW32和ARM64重建，隔离Qt私有头依赖 | 读写既有模板、中文/日期/数值/公式与文件重新打开一致；替代库需单独批准格式差异并复测 |
 | qtcsv 1.5.0 | 头文件/Windows DLL | 找匹配Qt5版本来源和许可证，双目标重建 | 编码/BOM、引号、逗号、换行、空值、中文和数值精度一致 |
-| QtRPT 3.0.0 | 本地第三方源码/.pri，传递引入QML/Charts | 核查版本/补丁、模板及CommonFiles源码闭包，重建所需模块 | 预览/页数/分页/字段/PDF/实体打印；不能删打印入口求轻量 |
+| QtRPT 3.0.0 | 本地第三方源码/.pri，传递引入QML/Charts | 核查版本/补丁、模板及CommonFiles源码运行组件完整性检查，重建所需模块 | 预览/页数/分页/字段/PDF/实体打印；不能删打印入口求轻量 |
 | SQLite/DAL | `tool/database/sqlite3/sqlite3.h:149`为3.42.0，`customtools/include/1_Sqlite3/sqlite3.h:126`为3.34.1 | 固定实际头文件、编译源码/链接库版本及选项，确认直接sqlite3和QtSQL实际调用范围；不混头文件和库 | 运行记录sqlite版本，建库/升级/事务/查询/异常恢复与原格式兼容 |
 | QCustomPlot/MaterialUI/Eigen等 | 部分源码在工程内；QCustomPlot头声明GPLv3或以后版本，QtRPT本地license为Apache2.0 | 逐项保留版权/许可并核对已有商业授权及实际分发方案；同时检查CPU专用宏、对齐/SIMD假设 | ARM可构建，图表/数值/对齐边界通过，不携带x86专用指令；不能仅凭Qt本体许可推定全部依赖可分发 |
 | 供应商头及其他内嵌库 | Eigen3.4.0/MPL2.0、spdlog1.8.0/MIT、nlohmann-json3.4.0/MIT；ALGL头有GPLv2+声明 | 追踪实际使用及实现来源，核对供应商修改、已有授权与需分发文件；QtRPT/QCustomPlot等各自许可分别登记 | 实际依赖与许可清单一致；ALGL的头文件存在不能证明实现源码齐全或可直接交叉编译 |
-| 字体/软键盘/词库 | 内嵌PingFangBold约10.4MiB，另有输入法资源 | 核查分发许可和实际启用资源；必要时选许可清楚的中文字体替换并做版面回归 | 中文/符号覆盖、字段无截断、报告分页不变；未核实许可不宣称可正式分发 |
+| 字体/软键盘/词库 | 内嵌PingFangBold约10.4MiB，另有输入法资源 | 核查分发许可和实际启用资源；必要时选许可清楚的中文字体替换并做版面复测 | 中文/符号覆盖、字段无截断、报告分页不变；未核实许可不宣称可正式分发 |
 
 <a id="sn100-functional-scope"></a>
 ## 13. 功能范围F01–F18
 
-当前实现状态与优先级见[功能完成账](../plans/sn100_host_migration_plan.md#current-function-completion)；下面是原版范围对照，不代表每项已迁入。
+当前实现状态与优先级见[功能完成账](../plans/sn100_host_migration_plan.md#current-function-completion)；逐操作的原/新入口、已实现与缺代码、只缺验证及原版范围疑点见[2026-10-27对照表](sn100_host_function_and_porting_review.md#original-feature-audit-20261027)。下面是18类原版范围索引，不代表每项已迁入。
 
 本表承接旧计划3.3节的首轮源码清单；模块实施时继续展开按钮、配置、角色与异常用例。实际SN100启用范围和原有缺陷需与原Windows发行版核对，不能据源码存在、菜单齐全或按钮能点击推定功能完成。
 
@@ -294,8 +320,8 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 | F10 打印/PDF/导出 | 报告页、QtRPT模板、QtXlsx/qtcsv调用 | 打印机/纸型/边距/页数、中文字体、图表、分页与字段、CSV/XLSX内容、取消/失败、文件再次读取 |
 | F11 LIS/HL7 | `commlis/liscommsetting.cpp`、`liscommthread.cpp`、`liscommreceiver.cpp` | TCP/串口、MLLP帧/HL7 2.3.1实际限制、QRY/DSR任务、ORU结果、ACK、自动收发、重连和重复/超长报文 |
 | F12 仪器操作/维护 | `frmdriverset/frmdriverset.cpp:356,615,767,927,1002,1046,1364` | 板卡/状态/AD、版本/TCP配置、日周月维护、扫描/泵阀/针/抓手/清洗/标定/耗材测试；先模拟命令，实物逐项授权范围验收 |
-| F13 告警/互锁 | `frmabnormal/maskdlgabnormal.cpp:74,186–239,386–472` | 告警编码/级别/描述、新旧协议、持续/消失/重复/复位/蜂鸣、历史、是否阻止启动 |
-| F14 系统设置 | `frmuserset/`、医院/账户/打印机/LIS页 | 字典/医院信息、账户角色、保存重开、Linux设备名/不存在设备提示；原中文单项页已落与常规专项通过、统一接线待验；英文翻译链未实现 |
+| F13 告警/动作之间的相互限制及故障保护 | `frmabnormal/maskdlgabnormal.cpp:74,186–239,386–472` | 告警编码/级别/描述、新旧协议、持续/消失/重复/复位/蜂鸣、历史、是否阻止启动 |
+| F14 系统设置 | `frmuserset/`、医院/账户/打印机/LIS页 | 字典/医院信息、账户角色、保存后关闭并重新打开、Linux设备名/不存在设备提示；原中文单项页已落与常规专项通过、统一接线待验；英文翻译链未实现 |
 | F15 数据可靠性 | `tool/database/`、`AllDal`、旧`sqlbase` | 原库兼容、schema升级、事务/并发/重启、数据库忙/损坏/磁盘满提示、备份恢复、断电策略 |
 | F16 交互/自绘 | `customwidgets/`、`customtools/Keyboard/`、`public/customeventfilter.cpp` | 键鼠/焦点/Tab/Enter/Esc、中文和软键盘、遮罩、弹窗、自绘孔位命中、曲线游标/缩放和单位 |
 | F17 日志/诊断 | `customtools/logger.*`、`dumpreport.*` | 时间/版本/模块/线程、实际TX/RX和错误、轮转/背压、退出和崩溃取证、敏感字段脱敏 |
@@ -304,19 +330,19 @@ Codex 从当前工作目录到仓库根发现 `.agents/skills/`；先加载技�
 <a id="sn100-v-batches"></a>
 ## 14. 仪器逐模块验收V01–V10范围
 
-本表承接旧计划2.6节的候选批次范围，按实际依赖逐模块验收并累计回归，可继续拆成更小批次。每批的开始条件、任务和当前状态只在[移植计划](../plans/sn100_host_migration_plan.md#26-逐模块移植和现有仪器验收用户已确认)维护；实际TX/RX、数据及实物结果追加[统一记录](../../02_records/20261022_sn100_host_migration.md)。
+本表承接旧计划2.6节的候选批次范围，按实际依赖逐模块验收并新旧功能一起复测，可继续拆成更小批次。每批的开始条件、任务和当前状态只在[移植计划](../plans/sn100_host_migration_plan.md#26-逐模块移植和现有仪器验收用户已确认)维护；实际TX/RX、数据及实物结果追加[统一记录](../../02_records/20261022_sn100_host_migration.md)。
 
 | 验收批次（候选） | 模块最小范围 | 该模块如何对现有仪器验证 | 前提/进入下一模块条件 |
 | --- | --- | --- | --- |
 | V01 连接和状态/版本显示 | 最小Qt框架、连接参数、TCP/帧协议、状态值对象、日志和状态页；不引入无关算法/DAL/报表 | 人工触发连接/查询，显示真实TX/RX与解析后的型号、版本、连接/工作状态；断开、超时和重连后不残留“已连接” | 确认主控接口/固件和查询语义、单/多客户端限制；所有实际发出命令均在该范围，未触发校时/配置写入/机械动作 |
-| V02 配置与权限 | 本机配置/路径、登录角色、项目/单位等必要数据边界 | 匿名账号及配置双端保存重开，RK实屏检查权限和信息；与仪器返回型号/能力匹配 | V01通过；不把原生产库/用户配置直接覆盖到RK |
+| V02 配置与权限 | 本机配置/路径、登录角色、项目/单位等必要数据边界 | 匿名账号及配置双端保存后关闭并重新打开，RK实屏检查权限和信息；与仪器返回型号/能力匹配 | V01通过；不把原生产库/用户配置直接覆盖到RK |
 | V03 试剂 | 先显示/读取试剂状态，再逐项加入已确定的设置/探测操作 | 对照孔位、通道、余量和原版状态；写入/探测按本模块动作与响应验证并核对恢复 | V01/V02及相关数据依赖通过，接线/试剂/现场条件明确 |
-| V04 样本与任务 | 逐种增加普通/急诊/重复/稀释；开始/暂停/恢复可再拆小批次 | 样本架孔位/任务ID、下发/应答、实际执行状态、取消/掉线/去重；已有模块回归 | 试剂/项目/状态基础满足；测试样本、控制器条件明确 |
-| V05 算法结果 | 一种实际启用算法/结果链路一次 | 先金样本对照，再将仪器实际采集曲线按同一参数与原版比较，保留原始点/中间状态/结果/误差 | 真实ARM算法实现和认可的容差具备；不能拿空Linux分支验收 |
+| V04 样本与任务 | 逐种增加普通/急诊/重复/稀释；开始/暂停/恢复可再拆小批次 | 样本架孔位/任务ID、下发/应答、实际执行状态、取消/掉线/去重；已有模块复测 | 试剂/项目/状态基础满足；测试样本、控制器条件明确 |
+| V05 算法结果 | 一种实际启用算法/结果产生、保存和显示流程路一次 | 先金样本对照，再将仪器实际采集曲线按同一参数与原版比较，保留原始点/中间状态/结果/误差 | 真实ARM算法实现和认可的容差具备；不能拿空Linux分支验收 |
 | V06 校准 | 按项目/方法分批接入校准与批号关联 | 实际校准流程、原始点/拟合/逆算、审核保存、后续结果应用 | 依赖算法和数据模块已通过 |
 | V07 质控 | 按控制品/项目及规则逐步加入 | 仪器结果、目标范围、越界提示和历史图，与原版对照 | 算法/校准及规则基线具备 |
 | V08 报告/导出 | 查询和明细先行，CSV/XLSX/PDF/实体打印分别验收 | 使用前述模块形成的匿名结果，对照字段/单位/精度/分页与文件或打印品 | 对应库、模板和实际打印条件具备；不等待全部报表能力才验收查询 |
 | V09 LIS | 任务查询/结果上传/自动模式分批 | 测试对端收发/ACK、仪器任务和结果关联、失败重试/重复处理 | 测试LIS参数及对端具备，与仪器TCP重试分开 |
-| V10 维护与告警 | 每项维护动作/告警链路独立小批次 | 对应实物动作、应答、互锁/复位/历史；不一次开放全部工程按钮 | 相关硬件范围和准备明确，前置模块已通过 |
+| V10 维护与告警 | 每项维护动作/告警链路独立小批次 | 对应实物动作、应答、动作之间的相互限制及故障保护/复位/历史；不一次开放全部工程按钮 | 相关硬件范围和准备明确，前置模块已通过 |
 
-V01只证明该批已确认的连接/状态范围。V10后仍须完整流程、最大负载、资源/RT同板并发、长稳、部署更新和回退；离线回放、编译及WSL资源基线不替代RK/仪器结论。
+V01只证明该批已确认的连接/状态范围。V10后仍须完整流程、最大负载、资源/RT同板并发、长时间运行稳定性、部署更新和回退；离线回放、编译及WSL资源占用初始测量不替代RK/仪器结论。

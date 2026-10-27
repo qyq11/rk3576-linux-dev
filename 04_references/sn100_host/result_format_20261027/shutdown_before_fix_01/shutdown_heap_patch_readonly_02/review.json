@@ -1,0 +1,323 @@
+{
+  "schema": "sn100-result-format-shutdown-patch-readonly-review-v1",
+  "created_utc": "2026-10-26T23:11:31.545697+00:00",
+  "status": "STATIC_PATCH_REVIEW_ACCEPTED_NO_NEW_RUNTIME_PASS_CLAIM",
+  "reviewer": "/root/integration_audit",
+  "definite_static_blockers": [],
+  "preimages": {
+    "manifest": {
+      "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/manifest.json",
+      "bytes": 749,
+      "sha256": "00694d6ae822a33600476aaf3550d1ac61e8e208340179c5047cca5b22e5852f"
+    },
+    "members_verified": [
+      {
+        "relative_path": "history/history_page.cpp",
+        "preimage": {
+          "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/history/history_page.cpp",
+          "bytes": 76774,
+          "sha256": "fa9fa943a3d53ecdfe0e0ff5ed6e053f9ca51c38bab8bf5077eb36b0e0a12f7c"
+        },
+        "current": {
+          "path": "06_programs/sn100_host/history/history_page.cpp",
+          "bytes": 77231,
+          "sha256": "6ca7f3c79876bf89b077cdf6087f26104445026c568e9d02dea01e1f6e8027bc"
+        },
+        "preimage_matches_old518": true,
+        "current_matches_new518": true
+      },
+      {
+        "relative_path": "projects/project_page.cpp",
+        "preimage": {
+          "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/projects/project_page.cpp",
+          "bytes": 31586,
+          "sha256": "bfe525a2d1245c475bf819ff336d4d106c6a2274ccf7902a2e1b68a83238236e"
+        },
+        "current": {
+          "path": "06_programs/sn100_host/projects/project_page.cpp",
+          "bytes": 32156,
+          "sha256": "084bbaca14ffa2bf6b6d2768aa5ea07f817d3f0b815c338142bea9e8538a61aa"
+        },
+        "preimage_matches_old518": true,
+        "current_matches_new518": true
+      },
+      {
+        "relative_path": "history/origins.json",
+        "preimage": {
+          "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/history/origins.json",
+          "bytes": 17032,
+          "sha256": "ef265b10ff9afa6e0633bb7e4684ffbb1f3ba0050f140718cb5132fbd10b559d"
+        },
+        "current": {
+          "path": "06_programs/sn100_host/history/origins.json",
+          "bytes": 17804,
+          "sha256": "ce29b29a0ea755aca71b01e800234c7907a4ff51ae137c8e1011de2be3e7a782"
+        },
+        "preimage_matches_old518": true,
+        "current_matches_new518": true
+      },
+      {
+        "relative_path": "projects/origins.json",
+        "preimage": {
+          "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/projects/origins.json",
+          "bytes": 11659,
+          "sha256": "57c94877856910436dfd27c13c413fb219112e78c9a14d88a0a66178ad137be9"
+        },
+        "current": {
+          "path": "06_programs/sn100_host/projects/origins.json",
+          "bytes": 12431,
+          "sha256": "0b36799699e1b3056f2cbe7407cc7f333a6993a4165e04801f9feb9fcc8ece1d"
+        },
+        "preimage_matches_old518": true,
+        "current_matches_new518": true
+      }
+    ],
+    "actual_count": 4,
+    "exact_old518_bound": true,
+    "no_old_evidence_written": true
+  },
+  "approved_new_freeze": {
+    "receipt": {
+      "path": "temp/sn100_host/result_format_20261027/formal_source_before_03.json",
+      "bytes": 55426,
+      "sha256": "2d45ecd89658e3fc8c09881080b1ba7f69b6d44a3e4e313a0cf36c75fc064ee6"
+    },
+    "source_entries": 518,
+    "actual_changed_keys": [
+      "history/history_page.cpp",
+      "history/origins.json",
+      "projects/origins.json",
+      "projects/project_page.cpp"
+    ],
+    "all_other_514_dictionary_entries_unchanged": true,
+    "whole_current_source_tree_or_object_hash_performed": false
+  },
+  "two_destructor_diff_only": true,
+  "checks": [
+    {
+      "topic": "HistoryPage relevant outbound notifications",
+      "file": "06_programs/sn100_host/history/history_page.cpp",
+      "lines": [
+        539,
+        550
+      ],
+      "conclusion": "Sets closing first, then detaches statusChanged and operationFinished emitted by Page before any owned-child teardown. This directly cuts the proven Page-to-dead-shell path; it does not claim to disconnect every incoming Store/app connection or every QObject.destroyed cleanup consumer."
+    },
+    {
+      "topic": "HistoryPage State-to-Page inputs and one-time deletion",
+      "file": "06_programs/sn100_host/history/history_page.cpp",
+      "lines": [
+        546,
+        550
+      ],
+      "conclusion": "Reads the actual still-live QPointer, detaches this State sender to this Page receiver (cleared/destroyed included), then directly deletes the actual GUI-owned State and clears the live QPointer. No invalidateConfiguration call and no custom cleared/status emit is added. State has implicit/default destructor and value members; QObject teardown disconnects its remaining incoming Store/Project signals. Explicit deletion removes it from the parent child list, so QWidget base will not delete it again. State.destroyed cannot run the disconnected Page callback after derived members end."
+    },
+    {
+      "topic": "Existing detail/UI teardown preserved",
+      "file": "06_programs/sn100_host/history/history_page.cpp",
+      "lines": [
+        552,
+        554
+      ],
+      "conclusion": "Existing detailDialog/detailUi/Ui deletion remains byte-identical after the new State teardown. The patch does not change active clearCurrentResultPresentation, source-closed/aboutToQuit behavior, requestLeave, patient drafts or real SQL operation handling."
+    },
+    {
+      "topic": "ProjectPage destructor no longer invents a source-change event",
+      "file": "06_programs/sn100_host/projects/project_page.cpp",
+      "lines": [
+        262,
+        268
+      ],
+      "conclusion": "Removes destructor currentFormatInvalidated emit and detaches currentFormatInvalidated/statusChanged/operationFinished outputs. The actual commit/error/start/session invalidation connections outside the destructor remain byte-identical, so the normal current display contract is preserved."
+    },
+    {
+      "topic": "Residual actual dialog ownership",
+      "file": "06_programs/sn100_host/projects/project_page.cpp",
+      "lines": [
+        269,
+        273
+      ],
+      "conclusion": "If the actual QPointer still names an owned ProjectFormatDialog, first detaches dialog-to-Page input callbacks, then deletes it while Page fields still exist and clears the live QPointer. Constructor still creates the dialog with parent=this. QObject deletion removes it from parent ownership and pending deferred-delete receiver events; it does not call the override accept/reject/save or fabricate a pending write ACK/Cancel. If finished previously cleared the QPointer, the old Qt parent ownership/deferred-delete mechanism remains; no additional second delete is introduced."
+    },
+    {
+      "topic": "No normal guard or thread/lifecycle relaxation",
+      "conclusion": "Byte comparison proves both C++ files differ only in their destructor bodies. No closeEvent/prepareToLeave/requestLeave/draft-confirm/save/readback/role/SQL/worker-join logic is changed. No new event pumping, timer, queued request, UI painting/status callback, or forced Store close is introduced. This is static scope verification, not post-patch runtime evidence."
+    }
+  ],
+  "disconnect_directions": {
+    "Page_specific_signal_to_any_receiver": "Outbound only; disconnects that Page emitted status/operation/current-format signal. Incoming Store/app callbacks are not thereby all disconnected.",
+    "State_or_Dialog_to_Page": "Explicit sender-to-this input disconnection. Real owned child destruction also automatically tears down that child QObject connections.",
+    "not_done": "No broad global disconnect of all QObject.destroyed consumers, no null-sender wildcard assumption, and no reliance on frmMain QObject automatic disconnection after its QWidget-base child deletion."
+  },
+  "origins": [
+    {
+      "path": "history/origins.json",
+      "appended_key": "shutdown_lifetime_fix_20261027",
+      "old_values_unchanged": true,
+      "runtime_validation_value": "Pending new source build and bounded normal close; no claim of old unrelated crash cause"
+    },
+    {
+      "path": "projects/origins.json",
+      "appended_key": "shutdown_lifetime_fix_20261027",
+      "old_values_unchanged": true,
+      "runtime_validation_value": "Pending new source build and bounded normal close; no claim of old unrelated crash cause"
+    }
+  ],
+  "original_gdb_evidence": {
+    "log": {
+      "path": "temp/sn100_host/result_format_20261027/shutdown_diagnostic_01/gdb.log",
+      "bytes": 6625,
+      "sha256": "204ed96441e20d2d09700c9dc6dd9f00648e5b29366c48a9bb26641b422ff2bb"
+    },
+    "actual_gdb_process_exit": 1,
+    "actual_inferior_signal_from_log": "SIGSEGV",
+    "logical_EXIT0_before_crash": true,
+    "bound_original_main_sha256": "04f5bf42de6eb543da8f2f0978d6411567f9fdc4df69e0793ca09a2cc76d2c97",
+    "bound_original_source_map_sha256": "d4c1cf9fbc402f9e1a927a559735297915f2f981eb582aee2feff59b5890050d",
+    "binding_metadata_same": true,
+    "timed_out": false,
+    "cleanup": null,
+    "owned_group_stopped": true,
+    "cleanup_errors": [],
+    "stack_confirms_previous_F1_path": true,
+    "scope": "Actual old-binary normal-close GDB stack confirms the destructor/callback crash path. Keep actual gdb1 and the original standalone natural -6 distinct; neither is rewritten as success. This review does not claim the allocator first bad write was separately instrumented or that all other faults are excluded."
+  },
+  "runtime_validation_pending": "The new exact 2d45 source cohort still requires Root-owned fresh build and bounded real normal-close verification with actual process0/no allocator diagnostic. No new binary/build/GUI/SQL run was performed by this review.",
+  "small_input_count": 25,
+  "small_inputs": [
+    {
+      "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/manifest.json",
+      "bytes": 749,
+      "sha256": "00694d6ae822a33600476aaf3550d1ac61e8e208340179c5047cca5b22e5852f"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/formal_source_before_01.json",
+      "bytes": 55426,
+      "sha256": "d4c1cf9fbc402f9e1a927a559735297915f2f981eb582aee2feff59b5890050d"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/formal_source_before_03.json",
+      "bytes": 55426,
+      "sha256": "2d45ecd89658e3fc8c09881080b1ba7f69b6d44a3e4e313a0cf36c75fc064ee6"
+    },
+    {
+      "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/history/history_page.cpp",
+      "bytes": 76774,
+      "sha256": "fa9fa943a3d53ecdfe0e0ff5ed6e053f9ca51c38bab8bf5077eb36b0e0a12f7c"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.cpp",
+      "bytes": 77231,
+      "sha256": "6ca7f3c79876bf89b077cdf6087f26104445026c568e9d02dea01e1f6e8027bc"
+    },
+    {
+      "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/projects/project_page.cpp",
+      "bytes": 31586,
+      "sha256": "bfe525a2d1245c475bf819ff336d4d106c6a2274ccf7902a2e1b68a83238236e"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_page.cpp",
+      "bytes": 32156,
+      "sha256": "084bbaca14ffa2bf6b6d2768aa5ea07f817d3f0b815c338142bea9e8538a61aa"
+    },
+    {
+      "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/history/origins.json",
+      "bytes": 17032,
+      "sha256": "ef265b10ff9afa6e0633bb7e4684ffbb1f3ba0050f140718cb5132fbd10b559d"
+    },
+    {
+      "path": "06_programs/sn100_host/history/origins.json",
+      "bytes": 17804,
+      "sha256": "ce29b29a0ea755aca71b01e800234c7907a4ff51ae137c8e1011de2be3e7a782"
+    },
+    {
+      "path": "07_backups/sn100_host/result_format_20261027/preimages_shutdown_02/projects/origins.json",
+      "bytes": 11659,
+      "sha256": "57c94877856910436dfd27c13c413fb219112e78c9a14d88a0a66178ad137be9"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/origins.json",
+      "bytes": 12431,
+      "sha256": "0b36799699e1b3056f2cbe7407cc7f333a6993a4165e04801f9feb9fcc8ece1d"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_current_display_state.cpp",
+      "bytes": 6220,
+      "sha256": "3cbf563250ea858e5e74c3d78f3e1063f36070b492d40607d88b5852297de0d0"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_current_display_state.h",
+      "bytes": 1898,
+      "sha256": "9400ef60ba72418253e37c92a123309691cc7b3045a4525f111c70f13ee33683"
+    },
+    {
+      "path": "06_programs/sn100_host/history/history_page.h",
+      "bytes": 6010,
+      "sha256": "ed1c13ea8c135bad137ad8d5fbeb870326865441738b4da8c697465ace620252"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_format_dialog.cpp",
+      "bytes": 21475,
+      "sha256": "e722ce0430d143dbaa2f65fdf6970adc18c09e213cfe27d64564ffbf3a5e644d"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_format_dialog.h",
+      "bytes": 2025,
+      "sha256": "17264b0339e1436e0ad7d34b601604f63880df58cc67fa2df363f029d8fd51f6"
+    },
+    {
+      "path": "06_programs/sn100_host/projects/project_page.h",
+      "bytes": 2038,
+      "sha256": "1f9c101c5753ac46ad766995492d383d3c38f8a003a6cf87da3571596d8f988b"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/frmmain.cpp",
+      "bytes": 22095,
+      "sha256": "eadba55ec10f5829f5e766387b3aa09a9dd2f3796fa1fa7b34c4bdd487b242df"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/history_shell.cpp",
+      "bytes": 8648,
+      "sha256": "ee2fdf6ca8d23b6de903c53a0d1d958be8b521f5d9723fab9d0a51660c589a43"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/shutdown_diagnostic_01/gdb.log",
+      "bytes": 6625,
+      "sha256": "204ed96441e20d2d09700c9dc6dd9f00648e5b29366c48a9bb26641b422ff2bb"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/shutdown_diagnostic_01/gdb.exit.json",
+      "bytes": 1569,
+      "sha256": "44d512b109fb45b583a5435308da48653c29049fdd013279e25b127d1f172415"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/shutdown_diagnostic_01/gdb.raw_exit.json",
+      "bytes": 160,
+      "sha256": "5ec0149e969237027049d31c86aa141b5f0b41182d5b93cd8bfb1f9786d6d38f"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/shutdown_diagnostic_01/binding_before.json",
+      "bytes": 253,
+      "sha256": "3e068078d2ff09c25027458c143181a9b58d3c81014cb61236d85205f8e70f14"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/shutdown_diagnostic_01/binding_after.json",
+      "bytes": 253,
+      "sha256": "3e068078d2ff09c25027458c143181a9b58d3c81014cb61236d85205f8e70f14"
+    },
+    {
+      "path": "temp/sn100_host/result_format_20261027/shutdown_diagnostic_01/diagnostic_receipt.json",
+      "bytes": 518,
+      "sha256": "7758e974b0e2df64bc14600f8a1c457aa452e9cf9dec31c4fa0f5e9cc3efc090"
+    }
+  ],
+  "activities": {
+    "strict_utf8_small_text_reads_and_hashes_only": true,
+    "formal_source_candidate_backup_or_old_failure_written": false,
+    "compiler_GUI_SQL_GDB_or_target_process_launched": false,
+    "object_binary_sysroot_runtime_DB_or_credentials_read_or_hashed": false,
+    "review_json_only_written": true
+  },
+  "stop": "Readonly review completed, no owned active process. Stop all writes after handoff.",
+  "all_small_inputs_rechecked_unchanged": true
+}

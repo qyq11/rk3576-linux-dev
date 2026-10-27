@@ -12,7 +12,7 @@ sysroot=$root/temp/sn100_host/arm64_sysroot
 if [[ ! -f $sysroot/usr/lib/aarch64-linux-gnu/libQt5Sql.so.5.15.13 ]]; then
     # The shared restorer has a download branch; this offline build only permits
     # its existing archived-input branch and otherwise stops before any network.
-    [[ -f $root/07_backups/qt_environment/qt5_arm64/SHA256SUMS
+    [[ -f $root/07_backups/qt_environment/sn100_base_arm64/SHA256SUMS
        && -f $root/07_backups/qt_environment/sn100_arm64/SHA256SUMS ]] \
         || { echo 'Archived base/SQL ARM64 inputs are required for offline restoration.' >&2; exit 1; }
     bash "$program_dir/prepare_arm64.sh"

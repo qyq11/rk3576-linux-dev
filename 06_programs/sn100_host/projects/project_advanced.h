@@ -10,8 +10,7 @@
 class QWidget;
 class QTableWidget;
 
-// Original field names remain explicit in the allowlists below. Text retains
-// empty/invalid drafts; no unchecked QString::toDouble() may turn them into 0.
+// 沿用原字段名，空白和非法草稿保留原文，交给保存校验报告错误。
 using ProjectActionFields = QMap<QString, QString>;
 struct ProjectAdvanced
 {
@@ -22,8 +21,7 @@ struct ProjectAdvanced
 };
 Q_DECLARE_METATYPE(ProjectAdvanced)
 
-// Binds the existing original form, without SQL, commands, calibration or
-// algorithms. QObject owns the binder; tables own their replacement editors.
+// 绑定原版表单，只维护待保存草稿；不访问数据库，也不发送仪器命令。
 class ProjectAdvancedEditor : public QObject
 {
     Q_OBJECT
@@ -33,8 +31,15 @@ public:
     ProjectAdvanced advanced() const;
     void setWritable(bool writable);
     void setReagentChoices(const QStringList &reagents, const QStringList &cleaners);
+    void setDiluentChoices(const QStringList &names);
     void setSampleSelections(const QMap<QString, bool> &options, const QString &defaultLabel);
-    static QString validate(const ProjectAdvanced &value, const QStringList &rateLabels);
+    void setOriginalProfile(bool original);
+    QStringList sampleRateLabels() const;
+    QMap<QString, bool> sampleSelections() const;
+    QString defaultSampleLabel() const;
+    QString validateSampleSelections() const;
+    static QString validate(const ProjectAdvanced &value, const QStringList &rateLabels,
+                            bool originalProfile = false);
     static QStringList scalarFields();
     static QStringList sampleColumns();
     static QStringList reagentColumns();
@@ -46,17 +51,20 @@ private:
     void populateRow(QTableWidget *table, const ProjectActionFields &values, bool sample);
     ProjectActionFields rowFields(QTableWidget *table, int row, bool sample) const;
     void changed();
+    void refreshDefaultChoices();
     void refreshDefaultSample();
     QWidget *m_root;
     QTableWidget *m_samples;
     QTableWidget *m_reagents;
-    QStringList m_rateLabels;
     QStringList m_reagentNames;
     QStringList m_cleanerNames;
     QString m_defaultLabel;
     bool m_populating = false;
     bool m_writable = false;
     bool m_configured = false;
+    bool m_diluentSpecified = false;
+    bool m_sampleActionsPresent = false;
+    bool m_originalProfile = false;
 };
 
 #endif

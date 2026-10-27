@@ -27,6 +27,12 @@ sources=("$module_dir/main.cpp" "$module_dir/projects_store.cpp" "$module_dir/pr
     "$program_dir/shell/widgets/cusview.cpp" "$program_dir/shell/widgets/material/"*.cpp "$program_dir/shell/widgets/material/lib/"*.cpp)
 headers=("$module_dir/projects_store.h" "$module_dir/project_page.h" "$module_dir/cuscheckbox.h" "$module_dir/project_advanced.h"
     "$program_dir/shell/widgets/cusview.h" "$program_dir/shell/widgets/material/"*.h "$program_dir/shell/widgets/material/lib/"*.h)
+# 原库适配与结果显示由同一存储入口引用，独立构建也必须带齐。
+sources+=("$module_dir/projects_current_format.cpp" "$module_dir/original_project_repository.cpp")
+headers+=("$module_dir/project_current_format.h" "$module_dir/original_project_repository.h")
+sources+=("$module_dir/project_format_dialog.cpp")
+headers+=("$module_dir/project_format_dialog.h")
+
 for header in "${headers[@]}"; do
     if grep -q Q_OBJECT "$header"; then
         generated=$build_dir/moc_$(basename -- "${header%.h}").cpp

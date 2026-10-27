@@ -14,7 +14,7 @@
 | --- | --- |
 | 正式移植目录 | [`06_programs/sn100_host/`](../06_programs/sn100_host/)，2026-10-22 仅有 AGENTS，2026-10-23 起加入 O01 源码、构建/测试文件；验收见当前模块卡与后续实施证据 |
 | 老板原工程 | [`06_programs/sn100_host_reference/`](../06_programs/sn100_host_reference/)，原根目录SN100_host整体移入，只作参考 |
-| 原主工程 | `06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/SeeRain450.pro` |
+| 原主工程 | `06_programs/sn100_host_reference/Seerain450_PC/SeeRain450.pro` |
 | 原压缩包 | `06_programs/sn100_host_reference/Seerain450_PC.rar`，保留原件 |
 | Windows原版 | 用户截图和文件核查：Qt5.14.2 / MinGW32，截图为Release；与qt_demo的64位Kit区分 |
 | RK目标候选 | 当前Ubuntu24.04 / AArch64 / Qt5.15.13，RT内核6.1.99-rt36-tspi；本轮未重测或切换 |
@@ -332,7 +332,7 @@ SN100_EVIDENCE_DIR="$PWD/../temp/sn100_host/experiment_new" bash sn100_host/wsl.
 
 ### 8.1 O03到底包含哪些工作
 
-下表原版路径相对 `06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/`，行号为本次静态定位，后续以函数/objectName为准。
+下表原版路径相对 `06_programs/sn100_host_reference/Seerain450_PC/`，行号为本次静态定位，后续以函数/objectName为准。
 
 | 内容 | 源码依据与本次发现 |
 | --- | --- |
@@ -1424,8 +1424,8 @@ bash sn100_host/history/wsl.sh pdf-text-test
 **源码核查与术语边界：**
 
 - 正式主程序的[shell/frmmain.cpp](../06_programs/sn100_host/shell/frmmain.cpp)对试剂/样本等尚未迁入的业务创建文字占位，历史页再替换结果报告占位；当前统一入口实际是医院、账户与历史查询/统计/CSV。模板/PDF有独立实现，试剂/样本并不是已有完整模块只差挂菜单。
-- 原版[frmmain/frmmain.cpp](../06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmmain/frmmain.cpp)统一创建八个业务页并连接菜单、通信发送和状态/结果回调。原版已按模块组织；移植后的交付也应让用户在同一主窗口完成业务，独立入口用于测试和排错。
-- 原版[试剂保存](../06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmreagent/maskdlgreagentsetting.cpp)含资料/瓶型、批号/容量/警戒量及新旧协议分支；[样本保存与任务](../06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmsample/frmsamplematerial.cpp)含架/舱盖、试剂/缓冲液校验、任务对象更新和后续下发/结果链。因此“页面接入”包含真实业务与数据/状态协作，“仪器联机”另指实际控制器通信；两者分别实施和验收。
+- 原版[frmmain/frmmain.cpp](../06_programs/sn100_host_reference/Seerain450_PC/frmmain/frmmain.cpp)统一创建八个业务页并连接菜单、通信发送和状态/结果回调。原版已按模块组织；移植后的交付也应让用户在同一主窗口完成业务，独立入口用于测试和排错。
+- 原版[试剂保存](../06_programs/sn100_host_reference/Seerain450_PC/frmreagent/maskdlgreagentsetting.cpp)含资料/瓶型、批号/容量/警戒量及新旧协议分支；[样本保存与任务](../06_programs/sn100_host_reference/Seerain450_PC/frmsample/frmsamplematerial.cpp)含架/舱盖、试剂/缓冲液校验、任务对象更新和后续下发/结果链。因此“页面接入”包含真实业务与数据/状态协作，“仪器联机”另指实际控制器通信；两者分别实施和验收。
 
 **本轮计划调整：**[详细计划](../01_docs/plans/sn100_host_migration_plan.md#o03-4-card)新增O03-4：先登记原版8个主菜单、5个用户设置子菜单的实现缺口，优先把已有原模板预览/PDF及辅助程序接入统一“结果报告”；沿用单一账户、医院配置和历史接口，纳入报告忙态/未保存、取消/失败恢复、全局退出、累计回归、资源测量和三目标构建/新冻结包。O03-3原结果和冻结包继续保留，新增功能不沿用旧包冒充已发布。PDF映射修复已在独立helper有离线证据，统一入口和指定阅读器仍需复测；实际拼音输入问题也保留，不用自动化填字代替。
 

@@ -25,6 +25,7 @@
 #include "history/history_page.h"
 #include "history/history_store.h"
 #include "projects/project_page.h"
+#include "../original_files/original_ini.h"
 #include "reagents/reagents_page.h"
 #include "samples/sample_page.h"
 #include "protocol/status_replay.h"
@@ -107,8 +108,11 @@ int main(int argc, char *argv[])
     parser.addOption({QStringLiteral("history"), QStringLiteral("O03-3：接入匿名历史查询；使用独立history子目录")});
     parser.addOption({QStringLiteral("local-results"), QStringLiteral("启用空白本地原值结果库；需要--history和--catalog，未接检测调度、单位映射或文件输出")});
     parser.addOption({QStringLiteral("catalog"), QStringLiteral("O07：接入本地项目/单位及试剂基础；使用catalog子目录，需要--accounts")});
+    parser.addOption({QStringLiteral("original-db-root"), QStringLiteral("项目配置直接读写原bin分类的工作副本根；需要--catalog，不转换原项目库"), QStringLiteral("directory")});
+    parser.addOption({QStringLiteral("start-project-page"), QStringLiteral("本次启动就绪后显示分析项目页；需要--catalog")});
     parser.addOption({QStringLiteral("samples"), QStringLiteral("O08：接入本地样本预设/任务；需要--catalog，无真实投递或执行")});
     parser.addOption({QStringLiteral("instrument"), QStringLiteral("仪器操作原版页面及本地维护记录；需要--accounts，设备动作禁用")});
+    parser.addOption({QStringLiteral("instrument-control"), QStringLiteral("启用原Windows主控命令和原配置真实连接；需要--instrument及--original-db-root")});
     parser.addOption({QStringLiteral("status-replay"), QStringLiteral("O09-1：显式匿名状态文件回放；无网络或设备动作"), QStringLiteral("path")});
     parser.addOption({QStringLiteral("status-loopback"), QStringLiteral("O09-2：自建127.0.0.1模拟端的后台只读Qj；不接受外部端点，不执行仪器动作")});
     parser.addOption({QStringLiteral("seed-catalog-demo"), QStringLiteral("仅新catalog库：显式匿名项目/单位/比例候选，非生产配置")});
@@ -152,6 +156,21 @@ int main(int argc, char *argv[])
 
     const bool withHistory = parser.isSet(QStringLiteral("history"));
     const bool withCatalog = parser.isSet(QStringLiteral("catalog"));
+    const bool withOriginalProjects = parser.isSet(QStringLiteral("original-db-root"));
+    const QString originalDbRoot = withOriginalProjects
+        ? QDir::cleanPath(parser.value(QStringLiteral("original-db-root"))) : QString();
+    const bool sharedOriginalRoot = withOriginalProjects && originalDbRoot == dataDir;
+    if ((withOriginalProjects && (!withCatalog || !QDir::isAbsolutePath(originalDbRoot) ||
+         originalDbRoot.contains(QChar::Null) || originalDbRoot.contains(QStringLiteral("sn100_host_reference"), Qt::CaseInsensitive) ||
+         (sharedOriginalRoot && !withAccounts && !withHistory) ||
+         (!sharedOriginalRoot && (originalDbRoot.startsWith(dataDir + QLatin1Char('/')) ||
+          dataDir.startsWith(originalDbRoot + QLatin1Char('/')))) || parser.isSet(QStringLiteral("seed-catalog-demo")))) ||
+        (parser.isSet(QStringLiteral("start-project-page")) && !withCatalog))
+    {
+        qCritical() << "Original project root must be absolute and use --catalog without seed-catalog-demo; "
+                       "a shared data-dir requires --accounts or --history, separate roots cannot contain each other";
+        return 2;
+    }
     const bool withLocalResults = parser.isSet(QStringLiteral("local-results"));
     if (withLocalResults && (!withHistory || !withCatalog))
     {
@@ -160,6 +179,13 @@ int main(int argc, char *argv[])
     }
     const bool withSamples = parser.isSet(QStringLiteral("samples"));
     const bool withInstrument = parser.isSet(QStringLiteral("instrument"));
+    const bool withDeviceControl = parser.isSet(QStringLiteral("instrument-control"));
+    if (withDeviceControl && (!withInstrument || !withOriginalProjects ||
+        parser.isSet(QStringLiteral("status-replay")) || parser.isSet(QStringLiteral("status-loopback"))))
+    {
+        qCritical() << "--instrument-control requires --instrument and --original-db-root without replay/loopback";
+        return 2;
+    }
     const bool withStatusReplay = parser.isSet(QStringLiteral("status-replay"));
     const bool withStatusLoopback = parser.isSet(QStringLiteral("status-loopback"));
     if (withStatusReplay && withStatusLoopback)
@@ -364,9 +390,12 @@ int main(int argc, char *argv[])
                      &app, [](const QString &message) { qWarning().noquote() << "STATUS_LOOPBACK_ERROR" << message; });
     QObject::connect(&statusLoopback, &Sn100Protocol::StatusLoopbackController::started,
                      &app, []() { qInfo() << "STATUS_LOOPBACK_STARTED self_owned_peer=127.0.0.1 instrument=false"; });
-    const QString hospitalDir = (withAccounts || withHistory)
+    // 同一部署根保留原db、project、result及根INI；未接原库的业务仍各用现有子目录。
+    // 医院配置单独放hospital/config.ini，不能覆盖原根config.ini；不转换原DB。
+    const QString hospitalDir = (withAccounts || withHistory || sharedOriginalRoot)
         ? QDir(dataDir).filePath(QStringLiteral("hospital")) : dataDir;
     shell->setDataDirectory(hospitalDir);
+    if (withDeviceControl) shell->enableDeviceControl(true);
     bool hospitalReady = false;
     bool accountReady = !withAccounts;
     bool historyReady = !withHistory;
@@ -396,7 +425,14 @@ int main(int argc, char *argv[])
                 return;
             }
             qInfo() << "SHELL_READY";
-            if (withLocalResults) qInfo() << "LOCAL_RESULTS_READY empty_profile_allowed=true scheduler=false current_config_format=true measurement_unit_snapshot=false file_output=false";
+            if (withOriginalProjects)
+            {
+                qInfo() << "ORIGINAL_PROJECTS_READY direct_original_files=true other_modules=independent_catalog instrument=false";
+                qInfo().noquote() << "ORIGINAL_PROJECTS_SCOPE 本批直接维护原项目配置；其他页面仍使用独立资料，原29库的其他业务尚待接入。";
+            }
+            if (withLocalResults) qInfo() << "LOCAL_RESULTS_READY empty_profile_allowed=true scheduler=false current_config_format="
+                << !withOriginalProjects << "measurement_unit_snapshot=false file_output=false";
+            if (parser.isSet(QStringLiteral("start-project-page"))) shell->selectMainPage(5);
             if (alarmHistory)
             {
                 shell->setAlarmHistoryAvailable(alarmHistoryThread.isRunning());
@@ -553,7 +589,7 @@ int main(int argc, char *argv[])
         auto *projectPage = new ProjectPage(projects);
         auto *reagentPage = new ReagentsPage(reagents);
         shell->attachCatalogPages(projectPage,reagentPage);
-        if (withLocalResults)
+        if (withLocalResults && !withOriginalProjects)
         {
             auto *resultPage = shell->historyPage();
             auto *displayState = resultPage ? resultPage->currentDisplayState() : nullptr;
@@ -622,8 +658,10 @@ int main(int argc, char *argv[])
             shell->attachQualityControlPage(page);
             const QString qualityDir = QDir(dataDir).filePath(QStringLiteral("quality_control"));
             QObject::connect(projects, &ProjectsStore::ready, quality,
-                             [quality, qualityDir, catalogDir]()
+                             [quality, qualityDir, catalogDir, initialized = false]() mutable
             {
+                if (initialized) return;
+                initialized = true;
                 quality->initialize(qualityDir);
                 quality->bindCatalog(catalogDir);
             }, Qt::QueuedConnection);
@@ -701,11 +739,45 @@ int main(int argc, char *argv[])
         }
         const bool seedDemo = parser.isSet(QStringLiteral("seed-catalog-demo"));
         QObject::connect(&projectThread,&QThread::started,projects,
-                         [projects,catalogDir,seedDemo]() { projects->initialize(catalogDir,seedDemo); });
+                         [projects,catalogDir,seedDemo,withOriginalProjects,originalDbRoot,&app]()
+        {
+            if (withOriginalProjects)
+            {
+                // 工作线程只核对配置能否完整读取，不启用原文件里的仪器或网络连接。
+                const QStringList iniFiles{QStringLiteral("config.ini"), QStringLiteral("config_Debug.ini"),
+                    QStringLiteral("theme_config.ini"), QStringLiteral("calibrationFile/ReagentAmountCalibration.ini")};
+                int fileCount = 0, keyCount = 0, commentCount = 0;
+                for (const QString &relative : iniFiles)
+                {
+                    const QString path = QDir(originalDbRoot).filePath(relative);
+                    if (!QFileInfo::exists(path) && !QFileInfo(path).isSymLink()) continue;
+                    OriginalIni::Settings settings;
+                    QString message;
+                    if (!OriginalIni::read(path, &settings, &message))
+                    {
+                        qCritical().noquote() << "ORIGINAL_INI_ERROR" << relative << message;
+                        QTimer::singleShot(0, &app, [&app]() { app.exit(3); });
+                        return; // 读取不完整时不能继续报告原配置就绪。
+                    }
+                    ++fileCount;
+                    keyCount += settings.values.size();
+                    commentCount += settings.commentLines;
+                }
+                qInfo() << "ORIGINAL_INI_READ_OK files=" << fileCount << "keys=" << keyCount
+                        << "compatible_comment_lines=" << commentCount << "connection_settings_applied=false";
+                projects->initializeOriginal(originalDbRoot, catalogDir);
+            }
+            else projects->initialize(catalogDir,seedDemo);
+        });
         // All threads run before initialization. The catalog creator commits its
         // schema/marker first, then the reagent worker may open its own connection.
         QObject::connect(projects,&ProjectsStore::ready,reagents,
-                         [reagents,catalogDir](const QString &) { reagents->initialize(catalogDir); },Qt::QueuedConnection);
+                         [reagents,catalogDir,initialized = false](const QString &) mutable
+        {
+            if (initialized) return;
+            initialized = true;
+            reagents->initialize(catalogDir);
+        },Qt::QueuedConnection);
         QObject::connect(projectPage,&ProjectPage::operationFinished,&app,[&,projectPage](const QString &operation,bool success)
         {
             if (operation==QStringLiteral("load") && success && !projectPage->isBusy())
@@ -716,7 +788,7 @@ int main(int argc, char *argv[])
         QObject::connect(projects,&ProjectsStore::error,&app,[&](qint64,const QString &operation,const QString &message)
         {
             qWarning().noquote()<<"PROJECT_ERROR"<<operation<<message;
-            if (operation==QStringLiteral("initialize") || !projectReady) app.exit(3);
+            if (operation==QStringLiteral("initialize") || operation==QStringLiteral("initializeOriginal") || !projectReady) app.exit(3);
         });
         QObject::connect(reagents,&ReagentStore::error,&app,[&](const QString &operation,const QString &message)
         {

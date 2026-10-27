@@ -138,11 +138,12 @@ void checkDeviceBoundary(frmMain &window)
             QVERIFY2(!button->isEnabled(), name);
         }
     }
-    for (const char *name : {"btnShutDown", "btnCloseBeep", "btnAbnormal", "btnLis"})
+    for (const char *name : {"btnCloseBeep", "btnAbnormal", "btnLis"})
     {
         auto *button = find<CusBadgeButton>(&window, name);
         QVERIFY2(button && !button->isEnabled(), name);
     }
+    QVERIFY(find<CusBadgeButton>(&window, "btnShutDown")->isEnabled());
     for (const char *name : {"lblCupHave", "lblWasteCup", "lblTemp", "lblWaterHave", "lblWasteWater"})
     {
         auto *label = find<QLabel>(&window, name);

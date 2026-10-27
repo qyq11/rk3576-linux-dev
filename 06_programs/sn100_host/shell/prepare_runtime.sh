@@ -13,19 +13,11 @@ mkdir -p "$work" "$archive" "$sysroot"
 exec 8>"$work/runtime.lock"
 flock -n 8 || { echo 'Runtime inputs are in use.' >&2; exit 1; }
 
-# Preserve the exact loader already captured by the successful 2026-10-22 RK
-# debugger session. It is inspection input, NEVER a library to install on RK.
-if [[ ! -f $archive/board_loader.tar.gz ]]; then
-    loader=$root/temp/qt_demo/sysroot/lib/ld-linux-aarch64.so.1
-    expected=390027e5f45f236bd1838bc54bf464c5ff01d260ab9f8b415ea8276641bce505
-    [[ -f $loader ]] || { echo 'Archived board loader is absent; restore the known input, do not substitute host libc.' >&2; exit 1; }
-    [[ $(sha256sum "$loader" | cut -d' ' -f1) == "$expected" ]] || { echo 'Unexpected historical board loader hash.' >&2; exit 1; }
-    mkdir -p "$work/loader/lib"
-    cp -L -- "$loader" "$work/loader/lib/ld-linux-aarch64.so.1"
-    tar -czf "$archive/board_loader.tar.gz.new" -C "$work/loader" lib/ld-linux-aarch64.so.1
-    mv -- "$archive/board_loader.tar.gz.new" "$archive/board_loader.tar.gz"
-    (cd "$archive" && sha256sum board_loader.tar.gz > loader.SHA256SUMS)
-fi
+# SN100已有独立归档的加载器，仅用于电脑端依赖检查，不安装到RK。
+# 示例目录已删除；缺少正式归档时明确停止，不能依赖临时旧副本恢复。
+[[ -f $archive/board_loader.tar.gz && -f $archive/loader.SHA256SUMS ]] || {
+    echo 'Archived board loader is absent; restore the known input, do not substitute host libc.' >&2; exit 1;
+}
 (cd "$archive" && sha256sum -c loader.SHA256SUMS)
 
 # Noble main supplies the missing libsqlite3 provider. Pin the downloaded file
@@ -47,7 +39,7 @@ if [[ ! -f $archive/sqlite.SHA256SUMS ]]; then
 fi
 (cd "$archive" && sha256sum -c sqlite.SHA256SUMS)
 
-base=$root/07_backups/qt_environment/qt5_arm64
+base=$root/07_backups/qt_environment/sn100_base_arm64
 sql=$root/07_backups/qt_environment/sn100_arm64
 (cd "$base" && sha256sum -c SHA256SUMS)
 (cd "$sql" && sha256sum -c SHA256SUMS)

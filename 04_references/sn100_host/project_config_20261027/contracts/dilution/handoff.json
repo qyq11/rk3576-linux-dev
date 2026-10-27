@@ -1,0 +1,78 @@
+{
+  "codeReady": true,
+  "rkSteps": [
+    "工程师打开项目，新增空方案填写所有动作数值，勾选选用并设默认",
+    "新增第二方案，默认小表修改参数后切稀释页核同一行",
+    "改名、取消选用默认、删除默认：保存应清楚报错或要求重选",
+    "重复名、空/非法体积、各模式不一致、none稀释液有缓冲量均拒绝且不落库",
+    "有效缓冲稀释液保存后关闭重开核行序、选用、默认、全部动作和IBS_name",
+    "未保存新增/删除/改名/默认/稀释液后取消，恢复全部提交状态",
+    "先删除前面的行，再编辑后续行和默认小表，核反应量写正确行",
+    "最后方案删除允许返回未配置空列表，取消可恢复",
+    "只读账户不可编辑，Store失败后草稿保留并可重试"
+  ],
+  "inputBoundaries": [
+    "名称1至64字，无首尾空白、路径/控制字符，重名拒绝",
+    "最多64方案，空列表代表未配置",
+    "非空方案必须恰有一个选用的默认",
+    "数值0至999且最多1位小数，保留非法草稿",
+    "none/onedilute/predilute/twodilute按原体积关系检查，不增加临床参数"
+  ],
+  "interfaces": [
+    "sampleRateLabels()",
+    "sampleSelections()",
+    "defaultSampleLabel()",
+    "validateSampleSelections()",
+    "setDiluentChoices(QStringList)",
+    "advanced().fields[IBS_name]"
+  ],
+  "apiReady": true,
+  "noRkDeployment": true,
+  "state": "ready_for_integration",
+  "remaining": [
+    "ARM64编译、RK操作/数据库重开/取消/故障回滚待整合",
+    "原版无删除最后方案临床可用性限制；空列表只登记未配置",
+    "原Windows截图与RK实屏对照、资源与同板负载待验"
+  ],
+  "verification": {
+    "sourceDiffCheck": "passed",
+    "resource": "pending_integration",
+    "arm64Compile": "pending_integration",
+    "rkVisual": "pending",
+    "rkFunctional": "pending_integration",
+    "instrument": "not_applicable_to_configuration"
+  },
+  "completedBehavior": [
+    "方案增删、名称与选用草稿编辑",
+    "唯一默认候选只来自选用行，删默认不静默换行",
+    "全部动作行原样返回，新增空行不丢失",
+    "默认小表同步真实行编辑",
+    "缓冲稀释液目录、已存值恢复及缺字段兼容",
+    "体积模式一致性校验、反应量2有依据计算",
+    "showAdvanced加setSampleSelections恢复提交状态"
+  ],
+  "documentsOwner": "integration",
+  "noLocalRuntime": true,
+  "modifiedFiles": [
+    "06_programs/sn100_host/projects/project_advanced.h",
+    "06_programs/sn100_host/projects/project_advanced.cpp"
+  ],
+  "dependencies": [
+    "主页面/Store已按本contract接入，源码核对确认；尚待整合窗口ARM64/RK验证"
+  ],
+  "files": [
+    {
+      "sha256": "e2b3dacc4ea6e969c0c4f304d4cde043d67c811c96a97dfed5a33b47e0d7e0f3",
+      "path": "06_programs/sn100_host/projects/project_advanced.h"
+    },
+    {
+      "sha256": "72f4c3881af59e3b781fa6f602e58dbd33884da17a1caffc64caa4dccd7548bb",
+      "path": "06_programs/sn100_host/projects/project_advanced.cpp"
+    }
+  ],
+  "sha256": {
+    "06_programs/sn100_host/projects/project_advanced.h": "e2b3dacc4ea6e969c0c4f304d4cde043d67c811c96a97dfed5a33b47e0d7e0f3",
+    "06_programs/sn100_host/projects/project_advanced.cpp": "72f4c3881af59e3b781fa6f602e58dbd33884da17a1caffc64caa4dccd7548bb"
+  },
+  "sourceFrozen": true
+}

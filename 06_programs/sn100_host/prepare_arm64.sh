@@ -5,7 +5,7 @@ set -Eeuo pipefail
 export PATH=/usr/local/bin:/usr/bin:/bin
 program_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 root=$(cd -- "$program_dir/../.." && pwd)
-base=$root/07_backups/qt_environment/qt5_arm64
+base=$root/07_backups/qt_environment/sn100_base_arm64
 archive=$root/07_backups/qt_environment/sn100_arm64
 work=$root/temp/sn100_host
 sysroot=$work/arm64_sysroot

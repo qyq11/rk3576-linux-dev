@@ -84,7 +84,7 @@ def main():
         (EVIDENCE / "source_inputs.json").write_text(json.dumps(after, ensure_ascii=False, indent=2), encoding="utf-8")
         results["artifacts"] = {str(path.relative_to(ROOT)): {"sha256": digest(path), "bytes": path.stat().st_size}
             for path in [binary, TEMP / "wsl_store_tests/calibration_store_test", TEMP / "wsl_page_tests/calibration_page_test"]}
-        original = ROOT / "06_programs/sn100_host_reference/Seerain450_PC/Seerain450_PC/frmcalibration/frmcalibrationmaterial.ui"
+        original = ROOT / "06_programs/sn100_host_reference/Seerain450_PC/frmcalibration/frmcalibrationmaterial.ui"
         results["ui_byte_identical_to_reference"] = digest(original) == digest(MODULE / "frmcalibrationmaterial.ui")
         results["passed"] = before == after and results["ui_byte_identical_to_reference"]
         results["finished_utc"] = datetime.now(timezone.utc).isoformat(); save()

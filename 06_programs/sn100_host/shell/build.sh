@@ -61,9 +61,11 @@ sources+=("$program_dir/history/report_controller.cpp" "$program_dir/history/rep
 # Match projects_core.pri and reagents.pri explicitly. Their standalone main.cpp,
 # tests and alternate widget bundles do not belong to the unified executable.
 sources+=("$module_dir/catalog_shell.cpp"
+         "$program_dir/original_files/original_ini.cpp"
          "$program_dir/projects/projects_store.cpp" "$program_dir/projects/project_page.cpp" "$program_dir/projects/cuscheckbox.cpp"
          "$program_dir/projects/project_advanced.cpp"
          "$program_dir/projects/projects_current_format.cpp" "$program_dir/projects/project_format_dialog.cpp"
+         "$program_dir/projects/original_project_repository.cpp"
          "$program_dir/reagents/reagent_store.cpp" "$program_dir/reagents/reagents_page.cpp"
          "$program_dir/reagents/wgtreagentpanel.cpp" "$program_dir/reagents/cusreagenthole.cpp")
 # samples_core.pri contains the local preset/task page and only the additional
@@ -83,7 +85,8 @@ sources+=("$module_dir/device_status_shell.cpp" "$program_dir/protocol/status_re
 sources+=("$program_dir/protocol/status_loopback.cpp" "$program_dir/protocol/read_only_client.cpp"
           "$program_dir/protocol/tcp_transport.cpp" "$program_dir/protocol/read_only_messages.cpp")
 sources+=("$module_dir/instrument_shell.cpp" "$program_dir/instrument/instrument_page.cpp"
-         "$program_dir/instrument/maintenance_store.cpp")
+         "$program_dir/instrument/maintenance_store.cpp" "$module_dir/device_control_shell.cpp"
+         "$program_dir/instrument/device_control.cpp" "$program_dir/instrument/original_device_commands.cpp")
 sources+=("$module_dir/login_shell.cpp" "$program_dir/ui/maskdlglogin.cpp")
 sources+=("$module_dir/printer_shell.cpp" "$module_dir/printer_report_shell.cpp" "$program_dir/ui/frmprintersetting.cpp" "$program_dir/data/printer_settings_store.cpp")
 sources+=("$module_dir/lis_shell.cpp" "$program_dir/ui/frmlissetting.cpp" "$program_dir/data/lis_settings_store.cpp" "$program_dir/data/serial_port_catalog.cpp")
@@ -153,7 +156,8 @@ forms+=("$program_dir/quality_control/frm_quality.ui" "$program_dir/quality_cont
          "$program_dir/quality_control/quality_control_add_wgt.ui"
          "$program_dir/quality_control/quality_control_item_add_project_wgt.ui"
          "$program_dir/quality_control/cus_quality_chart.ui")
-headers+=("$program_dir/instrument/instrument_page.h" "$program_dir/instrument/maintenance_store.h")
+headers+=("$program_dir/instrument/instrument_page.h" "$program_dir/instrument/maintenance_store.h"
+          "$program_dir/instrument/device_control.h")
 headers+=("$program_dir/ui/maskdlglogin.h")
 headers+=("$module_dir/printer_report_shell.h" "$program_dir/ui/frmprintersetting.h" "$program_dir/data/printer_settings_store.h"
            "$program_dir/ui/frmlissetting.h" "$program_dir/data/lis_settings_store.h" "$program_dir/data/serial_port_catalog.h")
@@ -175,6 +179,10 @@ headers+=("$program_dir/lis_raw_inbox/lis_dsr_raw.h" "$program_dir/lis_raw_inbox
 forms+=("$program_dir/ui/frmlanguagesetting.ui" "$program_dir/history/mask_dlg_select.ui"
         "$program_dir/alarm_history/maskdlgabnormal.ui" "$program_dir/alarm_history/cusmaskcalendar.ui"
         "$program_dir/alarm_history/calendar/cuscalendar.ui")
+# 原关机确认卡：只关闭软件，沿用主窗已有的退出检查。
+sources+=("$program_dir/ui/maskdlgshutdown.cpp")
+headers+=("$program_dir/ui/maskdlgshutdown.h")
+forms+=("$program_dir/ui/maskdlgshutdown.ui")
 # One stable name for each QRC prevents basename collisions with other modules.
 resource_names=(shell_resources account_resources report_resources imagesRpt projects_resources reagents_resources samples_resources instrument_resources qc_history_resources)
 resource_files=("$module_dir/resources.qrc" "$module_dir/account_resources.qrc"

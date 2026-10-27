@@ -41,6 +41,9 @@ public:
     void setTimingEnabled(bool enabled);
 
 protected:
+    // 真实仪器控制器复用同一有界封包/短写/代次处理；旧只读接口仍只连接回环。
+    bool connectNumericAddress(const QString &address, quint16 port, QString *error);
+    bool queueMessage(const QByteArray &payload, QString *error);
     // 唯一测试注入点：默认创建真正QTcpSocket。测试子类可提供受控socket，
     // 覆写Qt5虚函数writeData/connectToHost以覆盖短写/0/-1/黑洞超时。
     // 返回值须为新建、未连接、与本对象同事件线程且parent为参数的socket；

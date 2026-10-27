@@ -15,7 +15,7 @@ def sha(path):
 
 def snapshot(program):
     paths = []
-    for name in ("shell", "data", "ui", "history", "projects", "reagents", "samples", "instrument", "quality_control", "calibration", "alarm_history", "lis_raw_inbox", "resources", "thirdparty/qtrpt"):
+    for name in ("shell", "data", "ui", "history", "projects", "reagents", "samples", "instrument", "quality_control", "calibration", "alarm_history", "lis_raw_inbox", "resources", "original_files", "thirdparty/qtrpt"):
         paths.extend(p for p in (program / name).rglob("*")
                      if p.is_file() and p.suffix not in (".md", ".pyc")
                      and "__pycache__" not in p.parts)
@@ -145,6 +145,10 @@ def main():
                                       "external_endpoint": False, "instrument_execution": False, "default_enabled": False},
             "sample_ui_dependencies": {"library": "libQt5Svg.so.5", "image_plugin": "plugins/imageformats/libqsvg.so",
                                        "original_qss_svg": ":/image/arrow_drop_down.svg", "license": "licenses/QtSvgCopyright.txt"},
+            "original_project_configuration": {"opt_in_argument": "--original-db-root", "original_directory_layout": True,
+                "project_databases": 7, "full_algorithm_keys_preserved": True, "unknown_algorithm_keys_editable": False,
+                "ini_compatible_reader": True, "old_connections_activated": False,
+                "remaining_original_business_databases_supported": False, "instrument_verified": False},
             "private_runtime": private, "sources": current, "board_runtime_verified": False,
             "system_runtime": "Existing Qt5.15.13 Core/Gui/Widgets, EGLFS/KMS and GPU/input plugins; preflight required"}
     (stage / "release.json").write_text(json.dumps(info, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

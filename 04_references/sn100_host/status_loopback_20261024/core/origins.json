@@ -8,8 +8,8 @@
     {"path": "protocol/soak_main.cpp:75,103", "rules": "Existing local experiment uses 120ms/one retry and 1000ms query interval"},
     {"path": "protocol/status_session.cpp", "rules": "Existing parseStatus and StatusSnapshot field validation reused without device side effects"},
     {"path": "tests/read_only_client_test.cpp:20-25", "rules": "Independent synthetic Qj query/status golden bytes; not an instrument capture"},
-    {"path": "../sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commandsender.cpp:271", "rules": "Original Qj query sender"},
-    {"path": "../sn100_host_reference/Seerain450_PC/Seerain450_PC/communication/commandreceiver.cpp:534", "rules": "Original Qj model/main/LED/error fields; automatic calibration/configuration/login/time-setting chains are excluded"}
+    {"path": "../sn100_host_reference/Seerain450_PC/communication/commandsender.cpp:271", "rules": "Original Qj query sender"},
+    {"path": "../sn100_host_reference/Seerain450_PC/communication/commandreceiver.cpp:534", "rules": "Original Qj model/main/LED/error fields; automatic calibration/configuration/login/time-setting chains are excluded"}
   ],
   "local_contract": {
     "endpoint": "Worker creates QTcpServer on QHostAddress::LocalHost port 0, then connects only its serverPort; controller exposes no host/port argument",

@@ -28,7 +28,7 @@
 | 线程与绑核 | 8 个线程，分别绑定 CPU0–7 |
 | 周期与优先级 | 每线程 1000 μs；SCHED_FIFO 80；锁定内存 |
 | 时长与场景 | 每个内核各测空载 60 秒、CPU 压力下 60 秒 |
-| CPU 压力 | 8 个 CPU worker，`--cpu-method all`；预热 5 秒，总运行 70 秒 |
+| CPU 压力 | 8 个 CPU 后台工作线程，`--cpu-method all`；预热 5 秒，总运行 70 秒 |
 | 系统设置 | `--default-system`，未设置 cpu_dma_latency 或持久调优；两版 CPU governor、最小/最大频率策略一致 |
 
 **实际执行的 5 份 shell 原稿已逐字节保存**，不再只留在临时目录。原稿保留了当次版本、目录和防覆盖检查；复测应设置新的结果目录，不能覆盖既有数据。
@@ -42,7 +42,7 @@
 | [plot_latency.py](../05_tools/tests/preempt_rt/plot_latency.py) | 在电脑本机读取原始数据、重算指标并生成 PNG / SVG 对比图，不在板端运行 |
 | [源码 SHA256SUMS](../05_tools/tests/preempt_rt/SHA256SUMS)、[工具与原稿清单](../04_references/preempt_rt/test_method_manifest.json) | 原稿与工具版本、来源和校验值 |
 
-当次使用的 [rt-tests 安装包](../07_backups/preempt_rt/test_tools/rt-tests_2.5-1_arm64.deb)已读回归档，与板端原包 SHA-256 一致。原始结果完整保存在 [普通内核数据](../04_references/preempt_rt/normal_baseline.zip)和 [RT 启动与测试数据](../04_references/preempt_rt/rt_validation.zip)，包含 JSON、直方图、条件、退出码和日志。
+当次使用的 [rt-tests 安装包](../07_backups/preempt_rt/test_tools/rt-tests_2.5-1_arm64.deb)已读复测档，与板端原包 SHA-256 一致。原始结果完整保存在 [普通内核数据](../04_references/preempt_rt/normal_baseline.zip)和 [RT 启动与测试数据](../04_references/preempt_rt/rt_validation.zip)，包含 JSON、直方图、条件、退出码和日志。
 
 在本机项目根目录重新出图：
 
@@ -54,9 +54,9 @@ python 05_tools/tests/preempt_rt/plot_latency.py
 
 ## 3. 结果对比
 
-![普通内核与 PREEMPT_RT 的平均值、P99.9 和最大唤醒延迟对比](../03_photos/20261022_rt_latency_comparison_01.png)
+![普通内核与 PREEMPT_RT 的平均值、P99.9 和最大唤醒延迟对比](../03_photos/04_实时内核与延迟测量/20261022_rt_latency_comparison_01.png)
 
-[可编辑 SVG](../03_photos/20261022_rt_latency_comparison_01.svg)｜[绘图数据 CSV](../04_references/preempt_rt/latency_comparison.csv)｜[数据来源与计算清单](../04_references/preempt_rt/plot_manifest.json)
+[可编辑 SVG](../03_photos/04_实时内核与延迟测量/20261022_rt_latency_comparison_01.svg)｜[绘图数据 CSV](../04_references/preempt_rt/latency_comparison.csv)｜[数据来源与计算清单](../04_references/preempt_rt/plot_manifest.json)
 
 | 场景 | 内核 | 平均（μs） | P99.9（μs） | 最大（μs） | 有效周期数 |
 | --- | --- | ---: | ---: | ---: | ---: |
@@ -67,9 +67,9 @@ python 05_tools/tests/preempt_rt/plot_latency.py
 
 平均值为各线程已报告平均值按周期数加权；P99.9 从全部线程合并直方图计算，表示本轮至少 99.9% 的样本不超过该值。四轮 cyclictest 及两轮压力工具均正常退出。RT 两轮共 959475 个有效周期，直方图无溢出，未观察到超过 1000 μs 的唤醒延迟。
 
-![空载与 CPU 压力场景的延迟尾部分布](../03_photos/20261022_rt_latency_tail_01.png)
+![空载与 CPU 压力场景的延迟尾部分布](../03_photos/04_实时内核与延迟测量/20261022_rt_latency_tail_01.png)
 
-纵轴为对数刻度，表示延迟**超过横轴阈值**的样本比例；图中是样本分布，不是时间序列。[可编辑 SVG](../03_photos/20261022_rt_latency_tail_01.svg)
+纵轴为对数刻度，表示延迟**超过横轴阈值**的样本比例；图中是样本分布，不是时间序列。[可编辑 SVG](../03_photos/04_实时内核与延迟测量/20261022_rt_latency_tail_01.svg)
 
 **结论：**空载最大值降低约 29.0%；压力下最大值由 128 升到 143 μs，增加 15 μs，而平均值和 P99.9 略低。因此不能认定所有指标均改善，也不能据单次最大值判断长期提升或退化。
 
@@ -193,7 +193,7 @@ T: 0 ( 7011) P:80 I:1000 C:  19996 Min:      3 Act:   17 Avg:   14 Max:      76
 
 ### 7.1 按用户提供的 RK3568 截图复现参数
 
-用户提供的[参考截图原件](../03_photos/20261022_rk3568_rt_reference_01.png)来自此前 RK3568 的普通/RT 内核对比，已逐字节复制保存，未修改原图；该图不是 RK3576 本次测试证据。
+用户提供的[参考截图原件](../03_photos/04_实时内核与延迟测量/20261022_rk3568_rt_reference_01.png)来自此前 RK3568 的普通/RT 内核对比，已逐字节复制保存，未修改原图；该图不是 RK3576 本次测试证据。
 
 图中命令为 `sudo cyclictest -p 80 -t5 -n` 与后台一次性 `hackbench -l 1 -g 15 -f 25 -p`。cyclictest 的 5 个线程均为 FIFO 80，周期分别为 1000、1500、2000、2500、3000 μs，来自基准周期 1000 μs、线程间隔增量 500 μs。当前板端工具为 rt-tests 2.50，已确认两项工具存在且依赖正常；新版默认使用 clock_nanosleep，不再提供旧 `-n` 选项。[cyclictest 参数手册](https://manpages.debian.org/bookworm/rt-tests/cyclictest.8.en.html)说明周期、距离、调度策略与默认计时方式，[hackbench 手册](https://manpages.debian.org/bookworm/rt-tests/hackbench.8.en.html)说明组数、进程和 pipe 模式。
 
@@ -217,7 +217,7 @@ sudo ./cyclictest --policy=fifo -p80 -t5 -i1000 -d500
 
 默认持续运行，按 Ctrl+C 结束。若要定时结束，可在末尾增加 `-D60s`，但这项时长不是截图给定参数。没有沿用前一演示的单线程绑核、`-d0`、`-m` 或 `--default-system`；程序会按图申请 `/dev/cpu_dma_latency` 的 0 μs 约束，仅在本次进程持有请求时生效，不写持久配置。`hackbench` 的 `-p` 是 pipe 通信，`-f25` 对应每组 25 对收发进程，15 组共 750 个进程任务；默认消息大小 100 字节，`-l1` 表示每个收发组合的消息循环次数为 1。
 
-**负载边界：**`hackbench -l1` 很快结束，图中的 `Time: 0.093`、`Time: 0.415` 和 Done 已表明它不是持续负载。上述命令保留原图的一次性条件，不能据此声称整个 cyclictest 运行期间都有压力；若手动输入第二条命令时 hackbench 已结束，则没有负载重叠。持续压力测试需另行定义负载生命周期与共同测量窗口。图中普通/RT 两组应分别在实际启动的对应内核上运行，不能通过更改 cyclictest 参数模拟未打补丁内核；本次未切换或烧录内核。
+**负载边界：**`hackbench -l1` 很快结束，图中的 `Time: 0.093`、`Time: 0.415` 和 Done 已表明它不是持续负载。上述命令保留原图的一次性条件，不能据此声称整个 cyclictest 运行期间都有压力；若手动输入第二条命令时 hackbench 已结束，则没有负载重叠。持续压力测试需另行定义负载从启动、运行到关闭的过程与共同测量窗口。图中普通/RT 两组应分别在实际启动的对应内核上运行，不能通过更改 cyclictest 参数模拟未打补丁内核；本次未切换或烧录内核。
 
 **RK3576 实际短跑：**为核验可执行性，通过 SSH 启动上述一次性后台 hackbench 和相同参数的 cyclictest，额外用 `-D3s` 及超时保护限定验证时长。hackbench 输出 15 组、每组 50 个文件描述符、750 tasks、每发送端 1 条 100 字节消息，耗时 0.116 秒；cyclictest 显示 `/dev/cpu_dma_latency set to 0us`，末尾为：
 
@@ -237,7 +237,7 @@ T: 4 (10430) P:80 I:3000 C: 997 Min:3 Act:20 Avg:15 Max:59
 
 ### 7.2 用户 RK3576 实测截图解读与后续调优
 
-2026-10-22 用户提供[RK3576 实测截图原件](../03_photos/20261022_rk3576_rt_user_result_01.png)，已逐字节复制保存。图中先运行单线程 20 秒演示，`C=19998`、`Avg=14`、`Max=71`；随后一次性 hackbench 耗时 0.150 秒，再运行 5 线程测量。下表只转录用户截图中的数据，单位为 μs：
+2026-10-22 用户提供[RK3576 实测截图原件](../03_photos/04_实时内核与延迟测量/20261022_rk3576_rt_user_result_01.png)，已逐字节复制保存。图中先运行单线程 20 秒演示，`C=19998`、`Avg=14`、`Max=71`；随后一次性 hackbench 耗时 0.150 秒，再运行 5 线程测量。下表只转录用户截图中的数据，单位为 μs：
 
 | 线程 / 周期 | RK3568 参考 RT：Avg / Max | RK3576 用户截图：Avg / Max |
 | --- | --- | --- |
@@ -255,7 +255,7 @@ RK3576 的 Min 均为 3 μs，参考 RK3568 的 Min 为 9–11 μs。以 `C × I
 
 - RT 标志 1；`CONFIG_PREEMPT_RT=y`、`HIGH_RES_TIMERS=y`，`HZ=250`。
 - CPU0–3 为 Cortex-A53，容量值 442，当前可用最高频率 2016 MHz；CPU4–7 为 Cortex-A72，容量值 1024，当前可用最高频率 2208 MHz。
-- 两个调频策略均为 `schedutil`，`performance` 可用；采样时大核当前频率约 1608 MHz。这是一个瞬时读数，不能单独当作尖峰根因。
+- 两个调频策略均为 `schedutil`，`performance` 可用；采样时大核当前频率约 1608 MHz。这是一个瞬时读数，不能单独当作尖峰故障原因。
 - 采样时温度约 49–51 °C；历史压力测试曾读到 76.7 °C，正式对照需记录温度和实际频率。
 - 当前 `isolated` 列表为空。用户命令未指定 `-a`，线程快照中多个测量线程落在 CPU5/6；不是固定的一核一线程布局，也不能凭一帧进程快照证明迁移造成了 166 μs 尖峰。
 - 观察到的 IRQ 线程为 FIFO 50，测量线程为 FIFO 80；应结合业务依赖规划优先级，不能简单全部提高到 99。

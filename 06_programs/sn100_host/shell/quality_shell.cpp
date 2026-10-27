@@ -15,6 +15,8 @@ QcProjectRefs qualityProjects(const ProjectRecords &records, const ProjectUnits 
     QcProjectRefs choices;
     for (const ProjectRecord &record : records)
     {
+        // 此页的引用仍属于独立catalog；原项目先只由本批项目页直接维护。
+        if (!record.originalFileName.isEmpty()) continue;
         QcProjectRef choice;
         choice.id = record.id;
         choice.name = record.name;

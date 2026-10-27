@@ -32,7 +32,7 @@ SOURCES += $$PWD/catalog_shell.cpp
 # O08 local preset/task gate: independent offline 14/0 before shell integration.
 include($$PWD/../samples/samples_core.pri)
 # O09-1 offline file replay only; no sockets, timers/DB or device side effects in the parser.
-SOURCES += $$PWD/device_status_shell.cpp $$PWD/../protocol/status_replay.cpp \
+SOURCES *= $$PWD/device_status_shell.cpp $$PWD/../protocol/status_replay.cpp \
            $$PWD/../protocol/status_session.cpp $$PWD/../protocol/frame_codec.cpp
 HEADERS += $$PWD/../protocol/status_replay.h $$PWD/../protocol/status_session.h $$PWD/../protocol/frame_codec.h
 include($$PWD/../instrument/instrument_widgets.pri)
@@ -42,7 +42,7 @@ SOURCES += $$PWD/login_shell.cpp $$PWD/../ui/maskdlglogin.cpp
 HEADERS += $$PWD/../ui/maskdlglogin.h
 FORMS += $$PWD/../ui/maskdlglogin.ui
 # O09-2只连接本轮自建LocalHost:0模拟端，保持既有只读客户端终态语义。
-SOURCES += $$PWD/../protocol/status_loopback.cpp $$PWD/../protocol/read_only_client.cpp \
+SOURCES *= $$PWD/../protocol/status_loopback.cpp $$PWD/../protocol/read_only_client.cpp \
            $$PWD/../protocol/tcp_transport.cpp $$PWD/../protocol/read_only_messages.cpp
 HEADERS += $$PWD/../protocol/status_loopback.h $$PWD/../protocol/read_only_client.h \
            $$PWD/../protocol/tcp_transport.h $$PWD/../protocol/read_only_messages.h
@@ -70,3 +70,10 @@ include($$PWD/../alarm_history/alarm_history_page.pri)
 
 SOURCES += $$PWD/sample_qc_shell.cpp
 HEADERS += $$PWD/sample_qc_shell.h
+
+# 原关机卡只退出软件，实际关闭仍经过主窗的草稿与后台操作守卫。
+SOURCES += $$PWD/../ui/maskdlgshutdown.cpp
+HEADERS += $$PWD/../ui/maskdlgshutdown.h
+FORMS += $$PWD/../ui/maskdlgshutdown.ui
+SOURCES *= $$PWD/../original_files/original_ini.cpp $$PWD/device_control_shell.cpp
+HEADERS *= $$PWD/../original_files/original_ini.h

@@ -9,6 +9,17 @@
 #include <QScrollArea>
 #include <QTimer>
 
+namespace
+{
+ProjectRecords localCatalogProjects(const ProjectRecords &records)
+{
+    ProjectRecords local;
+    for (const auto &record : records)
+        if (record.originalFileName.isEmpty()) local.append(record);
+    return local;
+}
+}
+
 // Pages own their edit buffers; the entry point owns their SQL workers. Only
 // committed value snapshots cross from project settings into reagent choices.
 void frmMain::attachCatalogPages(ProjectPage *projects, ReagentsPage *reagents)
@@ -47,6 +58,8 @@ void frmMain::attachCatalogPages(ProjectPage *projects, ReagentsPage *reagents)
         ReagentProjects choices;
         for (const ProjectRecord &record : records)
         {
+            // 原项目尚未接入这个模块的独立catalog，不能把原编号当作其外键。
+            if (!record.originalFileName.isEmpty()) continue;
             // A disabled project can still be referenced by a saved batch.
             // Preserve its name here; sample task creation filters enabled state.
             ReagentProject choice;choice.id=record.id;choice.name=record.name;choice.enabled=record.enabled;
@@ -110,11 +123,11 @@ void frmMain::attachSamplePage(SamplePage *samples)
     ui->stkCenterAdptive->insertWidget(1,sampleViewport_);
     ui->stkCenterAdptive->setCurrentIndex(previous);
     samples->setSession(session_);
-    samples->setProjects(projects_->projects());
+    samples->setProjects(localCatalogProjects(projects_->projects()));
     samples->setReagents(reagents_->snapshot());
     connect(this,&frmMain::sessionChanged,samples,&SamplePage::setSession);
     connect(projects_,&ProjectPage::snapshotChanged,samples,
-            [samples](ProjectRecords records,ProjectUnits) { samples->setProjects(records); });
+            [samples](ProjectRecords records,ProjectUnits) { samples->setProjects(localCatalogProjects(records)); });
     connect(reagents_,&ReagentsPage::snapshotChanged,samples,&SamplePage::setReagents);
     connect(samples,&SamplePage::statusChanged,this,[this](const QString &message)
     { sampleStatus_=message;updateCatalogStatus(); });
