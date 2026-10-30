@@ -504,6 +504,7 @@ bool OriginalProjectRepository::readUnits(ProjectUnits *units, QString *message)
         ProjectUnit unit;
         unit.name = query.value(0).toString();
         unit.originalType = query.value(1).toString();
+        unit.originalRatio = query.value(2).toString();
         if (names.contains(unit.name) || !numeric(query.value(2).toString(), &unit.ratio))
             return fail(message, QStringLiteral("原单位名称重复或倍率不是有限数值，未默认为1。"));
         names.insert(unit.name);

@@ -5,6 +5,12 @@
 #include <QObject>
 #include <QSqlDatabase>
 #include <QSet>
+#include <memory>
+#include "projects/projects_store.h"
+class OriginalSampleRepository;
+class OriginalDetectionSession;
+class OriginalDeviceSync;
+struct OriginalConfigurationStep;
 
 class QTimer;
 
@@ -19,6 +25,14 @@ class SampleStore : public QObject
     static bool canEdit(const AccountSession &session);
   public slots:
     void initialize(QString catalogDir);
+    void initializeOriginal(QString root);
+    void prepareDeviceTasks(quint64 request, bool linuxNew);
+    void cancelDeviceTaskPreparation();
+    void answerDeviceRackRequest(QByteArray payload, quint64 connection);
+    void receiveDevicePacket(QByteArray payload, quint64 connection, quint64 packet);
+    void beginOriginalDeviceSync(quint64 connection, bool linuxNew);
+    void invalidateOriginalDeviceSync();
+    void prepareOriginalReagentUpdate(QString holeName, bool updateAmount, quint64 connection);
     void setSession(AccountSession session);
     void load(qint64 requestId);
     void saveRack(qint64 requestId, SampleRack rack);
@@ -34,6 +48,18 @@ class SampleStore : public QObject
     void invalidateQualityBinding();
   signals:
     void ready(QString databasePath);
+    void originalProfileReady(QString root, int ordinaryHoles, int emergencyHoles);
+    void originalProjectsReady(ProjectRecords projects);
+    void deviceTasksPrepared(quint64 request, bool success, QString message);
+    void deviceRackTasksPrepared(QByteArray payload, quint64 connection);
+    void deviceTaskError(QString message);
+    void deviceTaskStateChanged();
+    void originalResultsChanged(); // 原Tr曲线及报告状态保存成功后，历史页重读同一原库。
+    void originalReagentsChanged(); // 原Ur写回完成后，试剂页重读，避免只改设备缓存。
+    void originalProjectsChanged(); // 原UP保存后，项目页重读同一原库。
+    void originalConfigurationPacket(QByteArray payload, quint64 connection);
+    void originalConfigurationState(quint64 connection, bool ready, QString message);
+    void devicePacketProcessed(quint64 packet, quint64 connection, QByteArray command, bool success, QString message);
     void snapshotReady(qint64 requestId, SampleSnapshot snapshot);
     void succeeded(qint64 requestId, QString operation, qint64 id);
     void error(qint64 requestId, QString operation, QString message);
@@ -50,6 +76,12 @@ class SampleStore : public QObject
     QString validateRack(const SampleRack &rack);
     bool finish(qint64 requestId, const QString &operation, qint64 id, bool ok, QString message);
     void release();
+    std::unique_ptr<OriginalSampleRepository> originalSamples_;
+    std::unique_ptr<OriginalDetectionSession> originalDetection_;
+    std::unique_ptr<OriginalDeviceSync> originalDeviceSync_;
+    QTimer *originalConfigurationTimeout_ = nullptr;
+    void sendOriginalConfigurationStep(const OriginalConfigurationStep &step);
+    bool originalRackChange(qint64 request, const QString &operation, const SampleRack &rack, qint64 id);
     QSqlDatabase database_;
     QString connection_;
     AccountSession session_;

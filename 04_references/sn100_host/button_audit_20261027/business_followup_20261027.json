@@ -1,0 +1,2447 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-27T20:12:28.79168+08:00",
+  "scope": "沿用固定367项和已有源码/日志补查，仅整理补测要求与责任范围；未重扫源码、未重跑旧脚本、未新增功能通过。此文件不是平行开发计划。",
+  "source_task": "01_docs/knowledge/sn100_next_chat_prompts_20261027.md：共用约定、提示词三",
+  "maintained_review": "01_docs/knowledge/sn100_buttons_rk_review.md",
+  "baseline": {
+    "release": "f8c6e73f59f458981e243af5dd00999c12a671f449f0daaf3f4ff70e82d8a11f",
+    "binary_sha256": "07ae71ce7dc2d484f9eba8c4a993c5c8768c6a232fbbbd0c0bc0b286464582c2",
+    "inventory_path": "04_references/sn100_host/button_audit_20261027/rk_f8c6e73f/button_review.json",
+    "identity_rule": "用完整form路径和object共同定位；相同按钮名不能互借证据。",
+    "ui_files": 45,
+    "ui_forms_with_inventory_controls": 41,
+    "inventory_controls": 367,
+    "static_ui_hash_list": {
+      "path": "04_references/sn100_host/button_audit_20261027/static_input_hashes.json",
+      "sha256": "c960343c5c4e2bc4e688594e6bbcf5d054bf1c8cdf3ad27579770b0dcf32ea53"
+    },
+    "four_ui_outside_button_matrix": [
+      {
+        "path": "06_programs/sn100_host/alarm_history/cusmaskcalendar.ui",
+        "sha256": "49c929e011eae76e99b810a9b693a04ec37b0b160765f4c9b384f22160240676"
+      },
+      {
+        "path": "06_programs/sn100_host/samples/cussamplehole.ui",
+        "sha256": "7d07f1796c4ec81514ef3022686cfc8d39406b7c9ca6462cc68f2fba17a13df0"
+      },
+      {
+        "path": "06_programs/sn100_host/ui/cusdialogmask.ui",
+        "sha256": "bda358a92c69a564328151370c095087ae91678aee220b92f8d9606a6b0b05bd"
+      },
+      {
+        "path": "06_programs/sn100_host/shell/widgets/cusflageimage.ui",
+        "sha256": "2355c3c6055b790b33774e33722ec9a118b1672aaf20a4a42279c4ddfe4de115"
+      }
+    ],
+    "ui_count_explanation": "固定源码范围是45份UI；367个按钮/选项实际分布于41份UI。另外4份是日期遮罩、样本孔位、通用遮罩和状态图像，仍沿用既有动态/弹窗补查，不新增或删减367项。",
+    "runtime_status_counts_unchanged": {
+      "本轮未进入或未取得此控件证据，待核": 61,
+      "已发送鼠标事件；完整业务另核": 71,
+      "本轮可见但禁用": 93,
+      "本轮已创建但未显示": 36,
+      "本轮可见可操作，尚未触发": 106
+    },
+    "input_hashes": [
+      {
+        "path": "temp/sn100_host/all_buttons_audit_20261027/handoff.json",
+        "sha256": "b79bc83dfad65c0a8a75ea87f9d571a0b90678ccbe29081d5cce2874c7052be3"
+      },
+      {
+        "path": "04_references/sn100_host/button_audit_20261027/rk_f8c6e73f/summary.json",
+        "sha256": "689293be057594082c26e284d41117b7c30377d85ced020560245046b95d73e8"
+      },
+      {
+        "path": "04_references/sn100_host/button_audit_20261027/rk_f8c6e73f/button_review.json",
+        "sha256": "6463c3c37086909bd04a3a3854faf61cdfa59c4175c3e702d2214efc96a077b9"
+      },
+      {
+        "path": "04_references/sn100_host/button_audit_20261027/rk_f8c6e73f/SHA256SUMS",
+        "sha256": "42c847a9086e014d9b1741032e73045632b994005657232e57454e22e37e5adb"
+      },
+      {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "sha256": "a6913be51f3996ff6c848d89883dbb41fc515a224f471903848d6f17d5278e35"
+      },
+      {
+        "path": "04_references/sn100_host/button_audit_20261027/dynamic_controls_20261027.json",
+        "sha256": "99ce56461d00cae0f9f9535ac11a15f7bb8d2264780d91e26c49a13b77f2af65"
+      }
+    ]
+  },
+  "current_context": {
+    "board_read_only_at": "2026-10-27T20:08:22+08:00",
+    "release_observed": "f8c6e73f59f458981e243af5dd00999c12a671f449f0daaf3f4ff70e82d8a11f",
+    "binary_sha256_observed": "07ae71ce7dc2d484f9eba8c4a993c5c8768c6a232fbbbd0c0bc0b286464582c2",
+    "board_process_and_locks": "该时点本用户未见匹配的主窗口/独立驱动、sn100或lifecycle已持锁项及tty7/card0占用；未申请或获取锁，不代表后续时段可用。",
+    "board_log": "temp/sn100_host/all_buttons_audit_20261027/business_resume_20261027_200818/board_context.txt",
+    "wsl_process_log": "temp/sn100_host/all_buttons_audit_20261027/business_resume_20261027_200818/wsl_process_context.txt",
+    "old_threads": "三个旧聊天在应用清单均idle，两个开发聊天已有最终停止交接；未向旧聊天发继续。",
+    "coordination_path": "temp/sn100_host/original_db_20261027/integration/coordination.json",
+    "coordination_sha256": "4357f492ed5bbafa912ac5477f21e75e08fca3e8c5e29f9a744b2e43b128eb89",
+    "coordination_state_observed": "new_integration_active",
+    "rk_owner_observed": "01a17d3f-891b-7de3-a2ee-a52b34acbf2b",
+    "new_release_received": null,
+    "display_window_received": null,
+    "file_ownership_later_observed": {
+      "integration": "main/shell、共享构建、部署启停显示、公共文档、data与original_files配置接线",
+      "protected": "旧stop交接、已归档证据及现场runtime不覆盖",
+      "samplesThread": "01a17d3f-a352-72a1-b13e-349ad830cc13：samples/reagents/protocol及tests；另明确移交shell/device_control_shell.cpp、frmmain.h中仅任务链声明，接同步/单孔/开始暂停/有界收包，保留既有runtime声明及其他内容"
+    },
+    "coordination_note": "最新文件归属已扩大样本试剂仅任务接线范围；当前仍未收到本审计的新发布/显示安排。coordination_sha256是整理索引时的快照，不代表后续未改。",
+    "latest_continuation_check": {
+      "date": "2026-10-28",
+      "attempted_at": "2026-10-28T09:25:47+08:00",
+      "board_ssh_exit_code": 255,
+      "board_status": "连接192.168.100.123:22超时，未取得当日current、进程或锁",
+      "observed_current_release": null,
+      "new_release_received": null,
+      "display_window_received": null,
+      "coordination_state": "new_integration_active",
+      "coordination_sha256": "b73eb872491bf821ba97407cfd2f4848c81a9d9258fbb0812f677af802d556d1",
+      "evidence_directory": "temp/sn100_host/all_buttons_audit_20261027/resume_check_20261028_092547",
+      "next": "恢复RK可达，取得新整合发布、实际参数/数据模式和本次显示安排后，再补未验或受影响分支",
+      "old_runtime_counts_changed": false
+    },
+    "board_recovered_observation": {
+      "at": "2026-10-28T09:53:48+08:00",
+      "ssh_exit_code": 0,
+      "current_release": "f8c6e73f59f458981e243af5dd00999c12a671f449f0daaf3f4ff70e82d8a11f",
+      "binary_sha256": "07ae71ce7dc2d484f9eba8c4a993c5c8768c6a232fbbbd0c0bc0b286464582c2",
+      "log": "temp/sn100_host/all_buttons_audit_20261027/check_20261028_095347/board_context.txt",
+      "scope": "本用户当时未见主窗口/相关已持锁或显示占用；未申请或获取锁，不能替代本聊天显示安排",
+      "formal_new_release_received": null,
+      "own_display_window_received": null
+    }
+  },
+  "resume_requirements": [
+    "整合提供本次目标新发布、主程序/辅助程序/源码指纹及实际启动参数；再次现场核current，不能把新源码当部署。",
+    "整合明确本次GUI显示时段和生命周期安排；旧released、锁空闲或旧临时许可不替代。",
+    "核各页面实际使用的原库/独立库/演示模式及匿名目录，不能按文件已存在推定已接原库。",
+    "每轮全新隔离匿名数据和输出目录，不复用现场runtime，不复制患者、口令或认证资料。",
+    "只补未验分支和本次修改影响路径；旧01至08及固定清单不覆盖，不运行旧全量扫描。",
+    "先合法输入并核实际结果，再补取消、失败恢复、关闭重开；物理输入与视觉另验。"
+  ],
+  "classification_rules": {
+    "原Windows无动作": "已有有效源码证明为空或未调用；忽略注释函数，不仅凭搜索不到接线。",
+    "原隐藏或限制": "记录原机型、权限、状态、快捷键及隐藏条件；不强行解禁。",
+    "移植未接": "原有实际动作而目标版本缺实现/入口/主入口桥接，给明确责任范围。",
+    "已实现但条件不满足": "必须有实现和缺少条件的证据，不能把未接动作写成未连接。",
+    "运行缺陷": "实际输入与结果不符，有版本、数据模式、日志和重现步骤；驱动失败单列。",
+    "依据不足": "缺原行为、版本身份或实际结果时保留待核，不推断通过或无动作。"
+  },
+  "responsibility": {
+    "integration": {
+      "thread": "01a17d3f-891b-7de3-a2ee-a52b34acbf2b",
+      "title": "整合SN100数据库配置与主程序",
+      "scope": "公共main/shell、构建、部署启停及显示；医院/账户/设置和其他公共页面接线。整合已单独授权样本试剂负责device_control_shell.cpp和frmmain.h仅任务链范围，后续以最新coordination为准。质控、校准、历史及告警专属改动由整合明确接手人。"
+    },
+    "samples": {
+      "thread": "01a17d3f-a352-72a1-b13e-349ad830cc13",
+      "title": "接续SN100试剂任务链",
+      "scope": "samples/reagents/protocol及独立业务类和对应检查；整合已另授权device_control_shell.cpp和frmmain.h仅任务链接线，main初始化及公共构建仍属整合。"
+    },
+    "integration_routes_owner": "整合先明确专属代码接手人；审计只登记问题和证据，不擅自重写或修改别窗业务。"
+  },
+  "targeted_retest_policy": "下列15组只索引固定45份UI范围中41份含按钮/选项UI的367项，不能把组数/控件数当通过数。保留旧软件退出的既有范围；每次只执行新版本已就绪的未验/受影响分支。",
+  "packages": [
+    {
+      "id": "hospital",
+      "title": "医院名称和五类字典",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnKeShiInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnBingRenInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnSongJianInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnJianYanInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnShenHeInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnCalculate"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnDel"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnReload"
+        }
+      ],
+      "anonymous_setup": "新建匿名原结构，名称及五类字典使用人工构造值；确认主页面实际读取这个根目录。",
+      "business_assertions": [
+        "合法名称/新增/修改/删除核实际行与字段，页面重读和正常关闭重开一致。",
+        "修改后取消、离页取消及删除确认的否分支，核业务值和记录未改。",
+        "保存失败须显示真实错误、保持可修正草稿；恢复后能正确保存。",
+        "与打印/LIS轮流保存根config.ini，核其他键、类型和未知字节保持。"
+      ],
+      "known_gap_and_route": "74/0是旧独立后台范围；正式医院页面与共享配置仍由整合接入，不能用74/0代替。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "accounts",
+      "title": "账户、登录及默认账户",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmaccountsetting.ui",
+          "object": "btnMenuAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmaccountsetting.ui",
+          "object": "btnMenuDel"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmaccountsetting.ui",
+          "object": "btnMenuChange"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmaccountsetting.ui",
+          "object": "btnAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmaccountsetting.ui",
+          "object": "btnDel"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmaccountsetting.ui",
+          "object": "btnUpdate"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/maskdlglogin.ui",
+          "object": "btnLogin"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/maskdlglogin.ui",
+          "object": "cbx_isdefault"
+        }
+      ],
+      "anonymous_setup": "专用匿名账户环境及临时口令，不读取现场账户，不把口令、哈希或认证库归档。",
+      "business_assertions": [
+        "新增/修改/删除后核匿名身份与权限；口令只核验证结果，不在证据写值。",
+        "登录正确/错误、重复提交、取消、注销和默认账户选择核会话变化；锁定仅在原规则存在时核对。",
+        "按原有效角色及权限字典选择条件，特别核有效role0，不硬编码成离线管理员。"
+      ],
+      "known_gap_and_route": "旧按钮轮未点头像/注销；原账户后台独立检查不代替正式登录及权限。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "settings",
+      "title": "打印和实验室信息系统设置",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "radioBoxTcp"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "radioBoxCom"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "ckxAutoGet"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "ckxAutoSend"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "ckxAutoLink"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmprintersetting.ui",
+          "object": "btnApply"
+        }
+      ],
+      "anonymous_setup": "新匿名四份INI与显式模拟参数；关闭自动连接，确认设置保存不私自连接现场设备。",
+      "business_assertions": [
+        "TCP/串口分别改合法参数，保存仅当前方式、重读和重开核原键/枚举/未知字段。",
+        "取消离页、写失败及交错保存不丢另一页或医院配置。",
+        "打印设置应用与实际打印分开；发送结果到LIS须另有具体TX/RX和对端确认。"
+      ],
+      "known_gap_and_route": "旧交接说明有未编译/未专项RK验证的新行；先由整合按新输入接入，不借旧结果放行。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "settings_navigation",
+      "title": "用户设置入口和原语言空动作",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/shell/frmuserset.ui",
+          "object": "btnAccount"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmuserset.ui",
+          "object": "btnHospInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmuserset.ui",
+          "object": "btnLanguage"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmuserset.ui",
+          "object": "btnPrinter"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmuserset.ui",
+          "object": "btnLis"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmlanguagesetting.ui",
+          "object": "btnApply"
+        }
+      ],
+      "anonymous_setup": "使用本批明确的匿名会话与权限，进入对应设置页。",
+      "business_assertions": [
+        "只补未点或改动影响的导航分支，核目标页和当前选择。",
+        "语言应用原函数为空、只有简体中文，保留原无动作结论；无新改动不重测空动作。"
+      ],
+      "known_gap_and_route": "语言不是待自行实现的切换需求，不能因按钮名称扩展业务。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "projects",
+      "title": "原项目、单位、参数及九种菜单",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnBaseInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnSampleAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnReagentAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnCalibrate"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnReport"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnReTest"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnCalculate"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "is_used"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "is_related"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "ckxCalibrationUsed"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "ckxRUsed"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "ckxINRUsed"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "ckxMdaUsed"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnAddReagent"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnDelReagent"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnAddSampleRate"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnDelSampleRate"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "auto_apply"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnCheck_12"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnCheck_14"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnCheck_15"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnSaveRuleSet"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnAddControl"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnDelControl"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnChange"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnDect"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnScan"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnCopy"
+        },
+        {
+          "form": "06_programs/sn100_host/projects/frmsystemmaterial.ui",
+          "object": "btnDelProj"
+        }
+      ],
+      "anonymous_setup": "使用该发布实际支持的匿名原项目、单位、关联试剂和完整参数；原仪器编号与早期本地键分开。",
+      "business_assertions": [
+        "合法修改后保存/读回/重开；取消不改，复制删除核实际记录和原关联限制。",
+        "九种菜单按实际模式分别进入，选项触发后核目标数据；文件框出现或menu_choice不算成功。",
+        "导出原项目DB/整组配置核实际文件、目录组织、字段、关联和未知值；以导出副本只读回读，不覆盖源。",
+        "导入用全新匿名目标，核原格式、错误文件拒绝及失败恢复；仅补未验/受新接线影响部分。"
+      ],
+      "known_gap_and_route": "原隐藏参数页签仍按原条件；历史90/114项只保留其既有范围，未受影响项不无条件重跑。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "report_query_export",
+      "title": "报告查询、显示设置和文件导出",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnPrvRow"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnFirstPage"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnNextPage"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnLastPage"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnNextRow"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnPrvPage"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnDetail"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnQuery"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnDisplay"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnUpdate"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnPrinter"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnExport"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btnDel"
+        },
+        {
+          "form": "06_programs/sn100_host/history/frm_report_material.ui",
+          "object": "btn_save_modify"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_display_setting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_display_setting.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_display_setting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_display_setting.ui",
+          "object": "btnDefaultSort"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_export.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_export.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_export.ui",
+          "object": "ckxByAll"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_export.ui",
+          "object": "ckxBySelect"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+          "object": "btnCalendarEnd"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+          "object": "btnCalendarStart"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+          "object": "ckxByDate"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+          "object": "ckxBySampleCode"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_query_report.ui",
+          "object": "btnEditBatch"
+        }
+      ],
+      "anonymous_setup": "人为构造指定日期、不同样本号及多条匿名结果；选中集合与全部集合有可区分记录。",
+      "business_assertions": [
+        "日期边界、样本号筛选、分页/前后条核实际记录标识；无结果不能当查询成功样本。",
+        "显示设置修改/默认排序/保存/取消/重开核列及顺序，不只看弹窗关闭。",
+        "全部/选中导出分别核实际支持的格式、路径、文件非空、行数、字段、中文编码、精度和单位。",
+        "导出取消不新增文件；路径不可写或输出失败应报错并能恢复；文件指纹与内容核对共同留证。",
+        "报告主页上传单独核LIS发送及确认，不能借明细调试按钮证明上传。"
+      ],
+      "known_gap_and_route": "目前仅有入口事件；导出文件框和打印对话框不算文件导出或出纸通过。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "report_detail",
+      "title": "报告明细、字典选择和人工修改",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnPrinter"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnUpdateLis"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btn_recal"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnUpRow"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnNextRow"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnMenuResult"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnMenuInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnMenuResultInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnMenuErrorInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_select.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_select.ui",
+          "object": "btnSave"
+        }
+      ],
+      "anonymous_setup": "按匿名记录的确切日期查询并选中，准备匿名医院字典；不读取真实患者记录。",
+      "business_assertions": [
+        "进入四个页签，保存匿名资料后读回/重开；取消或关闭不改。",
+        "字段选择核筛选、选中、确定回填及关闭不提交，不能借医院主页同名按钮证据。",
+        "Ctrl+Shift+M/N按原进入/退出人工修改，保存须核结果真实写入；当前未接时记移植缺口。",
+        "明细上传/重算原为无水无杯调试切换，核原分支和启用范围；未有现场具体授权不发送。"
+      ],
+      "known_gap_and_route": "前后条禁用原因须单列；不能统一写成缺选中记录。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "quality",
+      "title": "质控品、关联项目、批次与历史图",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/quality_control/cus_quality_chart.ui",
+          "object": "btnRight"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/cus_quality_chart.ui",
+          "object": "btnLeft"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/cus_quality_chart.ui",
+          "object": "btnAddCode"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/frm_quality.ui",
+          "object": "btnAddControl"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/frm_quality.ui",
+          "object": "btnEditControl"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/frm_quality.ui",
+          "object": "btnPrint"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_add_control.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_add_control.ui",
+          "object": "btn_save"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_add_control.ui",
+          "object": "ckxValid"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_add_control.ui",
+          "object": "btn_add_control_project"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_add_control.ui",
+          "object": "btn_cancel"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_add_control.ui",
+          "object": "btn_add_control_item"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_add_control.ui",
+          "object": "btn_delete"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_control_batch_setting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_control_batch_setting.ui",
+          "object": "btn_calendar_set"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_control_batch_setting.ui",
+          "object": "btn_add_item"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_control_batch_setting.ui",
+          "object": "btn_delete"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_add_wgt.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_add_wgt.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_item_add_project_wgt.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_item_add_project_wgt.ui",
+          "object": "btn_close"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_item_add_project_wgt.ui",
+          "object": "btnSave"
+        }
+      ],
+      "anonymous_setup": "全新匿名质控品、厂家、有效批次、项目关联和有日期/单位的历史结果。",
+      "business_assertions": [
+        "先合法保存质控品再选中，按管理→新增/编辑→批次/项目选择进入缺失弹窗。",
+        "新增/修改/删除和关联多选差异核记录、批号、到期日及重开；取消保留旧集合。",
+        "原限制和历史引用按同一条件核，未改旧规则不应凭当前校验重设计。",
+        "图卡左右核具体日期、数值和单位；原隐藏btnAddCode/打印保留原范围。"
+      ],
+      "known_gap_and_route": "整合明确质控接手人；29/0为独立旧驱动，未改旧规则被校验等差异仍待处理；资料保存不算临床判定。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "calibration",
+      "title": "校准本地资料与曲线入口",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnLineInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnLineUse"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btn_use_curve_2"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnApply"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnCheck"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnShowChart"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnReCalculate"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnDelLine"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnCopy"
+        },
+        {
+          "form": "06_programs/sn100_host/calibration/frmcalibrationmaterial.ui",
+          "object": "btnCalculateIDSetting"
+        }
+      ],
+      "anonymous_setup": "有依据的匿名项目、批号、历史曲线/参数及有效权限；不伪造计算结果。",
+      "business_assertions": [
+        "本地保存/取消/复制/删除核真实记录和重开，逐操作核原权限，不能笼统套power1。",
+        "曲线审核/重算/应用/计算方法入口按实际实现分别分类。",
+        "算法暂缓时保留原参数与原始点、登记待验，不把资料保存当计算或临床应用通过。"
+      ],
+      "known_gap_and_route": "整合明确校准接手人；原方法设置弹窗的布局差异和权限差异保留待核。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "reagents",
+      "title": "试剂资料、批组、孔位和单孔更新",
+      "responsibility": "samples",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/reagents/addbatchgroupdialog.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/addbatchgroupdialog.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnUpdatePriority"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnChangeHole"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnDectOne"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnReagentInfoPage"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnReagentCountPage"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnChange"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnDect"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnScan"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnUsaged"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnReagentSet"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnGroupSet"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnReagentInfoSet"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btn_restore"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btn_clearPanel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btn_calibrationmode"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnDel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnAddRBatch"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnDelRBatch"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnNormal"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnIsiVal"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+          "object": "cbx_use_Batch_Group"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnEditBatch"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnCalendarSet"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnAddCode"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnDelCode"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "ckxValid"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "ckxClean"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "ckxCheckDate"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnEditCode"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnDel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+          "object": "btnCopy"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentsetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentsetting.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentsetting.ui",
+          "object": "btnEditBatch"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentsetting.ui",
+          "object": "btnCalendarSet"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentsetting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/wgtreagentpanel.ui",
+          "object": "btnDisplayKeepTime"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/wgtreagentpanel.ui",
+          "object": "btnDisplayAmount"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/wgtreagentpanel.ui",
+          "object": "btnDisplayTime"
+        }
+      ],
+      "anonymous_setup": "新匿名原试剂资料、批号、瓶型及指定孔位；有效会话和设备分支分别记录。",
+      "business_assertions": [
+        "资料/批号/组新增修改保存后读回和重开；取消不改，合法日期、原字符/长度规则逐项对照。",
+        "原AddBatchGroupDialog在f8c未构造，不能因就地列表可编辑认原弹窗已移植。",
+        "单击/双击孔位分开，记录R_1至R_20/SD_1至SD_4的实际孔位身份与编辑对象，不按同名控件推断。",
+        "单孔保存和清孔分别核原库值、区域类型保留及未知列；清盘按原整体行为另核，不等同单孔。",
+        "Us核15字段顺序、编码、数字精度、原第14字段最大容量及第15字段更新容量标志。",
+        "核originalHoleSaved到prepareOriginalReagentUpdate再到DeviceControl的主入口桥接；原LinuxNew与连接标识决定发送，保存成功不等于设备同步。",
+        "默认盘面原lambda未调用；旧无动作不自行改为恢复。探测/优先/更换/耗材须分别核报文与状态。"
+      ],
+      "known_gap_and_route": "samples负责业务；main/shell桥接交整合。旧11项未验状态以新窗口实际证据更新，旧10/0不覆盖新Us/清孔。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "samples",
+      "title": "样本架、组合、批量与任务",
+      "responsibility": "samples",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/samples/cussamplerack.ui",
+          "object": "btnEdit"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnDelRackAll"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnUpdateLis"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnEditRack"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnDelRack"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnMenuReturn"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnMenuSave"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnRepeatHoleTask"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnHoleDetail"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnDelHoleTask"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnSetSample"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnResetErr"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnResetFin"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnCombSetting"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnDelRack_current"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnDelRackAll_2"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnPrvRack"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnNextRack"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplematerial.ui",
+          "object": "btnAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplesettingmaterial.ui",
+          "object": "btnCombProj"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/frmsamplesettingmaterial.ui",
+          "object": "btnCalProj"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgcombasetting.ui",
+          "object": "cbk_multiCtrl"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgcombasetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgcombasetting.ui",
+          "object": "btnAdd"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgcombasetting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgcombasetting.ui",
+          "object": "btnDel"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgcombasetting.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_5"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_6"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_1"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_2"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_3"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_4"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_7"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_Del"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_9"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_8"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnNum_0"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000010"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000007"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000005"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000004"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000008"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000001"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000002"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000006"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000009"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnRackID_000003"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgracknosetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_5"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_6"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_4"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_9"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_2"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_8"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_7"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_1"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_3"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "ckxAuto"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_10"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgsampledetail.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgsampledetail.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgsampledetail.ui",
+          "object": "btnCancle"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgsampledetail.ui",
+          "object": "radioBoxSM"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgsampledetail.ui",
+          "object": "radioBoxQC"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgsampledetail.ui",
+          "object": "btnEditBatch"
+        }
+      ],
+      "anonymous_setup": "新匿名普通样本号、原项目编号、指定架号/孔位，准备可编辑和受保护状态。",
+      "business_assertions": [
+        "记录实际rack ID和孔位，数字键/退格/选择编号/前后架核对象身份；双击编辑与单击选择分开。",
+        "合法项目选择、组合、多瓶、批量数量和自动编号核草稿→保存→读回→重开，取消不改。",
+        "动态重复次数1/2/3/5/10/18/24、表格孔位复选和稀释输入分别核任务字段，不纳入367事件统计。",
+        "删除/重置/复测核准备、检测中、结束、失败等原状态分支及原权限，不能强行解禁。",
+        "开始/暂停/恢复与任务/结果返回另核原命令、稳定任务号、TX/RX、断线及失败恢复；原LinuxNew标识决定完整或简化格式。"
+      ],
+      "known_gap_and_route": "samples/protocol负责原数据和协议，main/shell桥接交整合；不猜造sample_setting.db或用早期catalog键代替原编号。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "main",
+      "title": "主界面连接状态、开始暂停与退出",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnAbnormal"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnShutDown"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnLis"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnCloseBeep"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnUser"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnLoginOut"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnStart"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnPause"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/maskdlgshutdown.ui",
+          "object": "btnShutDown"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/maskdlgshutdown.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/maskdlgshutdown.ui",
+          "object": "ckxClose"
+        }
+      ],
+      "anonymous_setup": "本批发布、实际会话、设备状态及匿名目录全部明确；无参数时保持不连真实仪器。",
+      "business_assertions": [
+        "开始/暂停及状态区核当前真实业务结果，按钮发事件或未连接提示不能算任务执行。",
+        "头像/注销、静音和告警入口核各自状态；不借同名弹窗事件。",
+        "旧07/08软件退出取消/确认与线程结束已有通过；仅新接线影响关闭或有新分支时针对复测。",
+        "原关闭仪器选项隐藏，软件退出、RK系统关机和仪器关机分开。"
+      ],
+      "known_gap_and_route": "只有整合负责启停部署及显示，锁空闲和旧临时许可均不自动授权本轮GUI。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "alarm",
+      "title": "告警日期、历史和复位",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.ui",
+          "object": "btnLeft"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.ui",
+          "object": "btnRight"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnErrorLog"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnReset"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnReturn"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnQuery"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnCalendarSetStart"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnCalendarSetEnd"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnClose"
+        }
+      ],
+      "anonymous_setup": "显式匿名告警历史来源，准备月末/年末及区间边界记录。",
+      "business_assertions": [
+        "进入起止日历，左右跨月跨年及选日回填核查询实际结果；关闭保留原日期。",
+        "Reset/Return/ErrorLog在f8c实时链未接，分类为移植缺口，不能说原无动作。",
+        "复位须核原getResetCommand、任务/告警状态及应答，不以清空显示代替；无现场条件不执行实物动作。"
+      ],
+      "known_gap_and_route": "整合明确告警接手人；只读历史与实时告警/处置分别验收。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "instrument",
+      "title": "仪器维护及通信结果",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnPort"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnHil"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnStatus"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnMaintain"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnVersion"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_board_status"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnFunTest"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_CommunicationTest"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnSaveTcpSet"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnTcpConnect"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnNextMonth"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnPrvMonth"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnPrint"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_SBlender5"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_RBlender5"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnClearText"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnReagentRelease"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnContinueLV_Total"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnContinueLV"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnServosSample_M"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_ScannerOpen"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnServosReagent_N"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_ScannerClose"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnEmLV"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnSamLV"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnTotalLV"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnSampleCatcherTest"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnSampleShuffle"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnTestCatcherTest"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnStatic"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_calSD"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_calRG"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_mainExit"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_calSD_face"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_calRG_face"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_StopTest"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnReagent3Fa_F1"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnReagentWaster_e1"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnOpenBen_E"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnReagentWater_B1"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnSampleWaster_c1"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnSampleWater_A1"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnClearCup_C"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnSampleWater_A0"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnCloseBen_f"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnReagentWater_B0"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnSampleWaster_c0"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnReagent3Fa_F0"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_WaterEmpty"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btnReagentWaster_e0"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_ScannerOpen_2"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_ScannerClose_2"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_ScannerOpen_3"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "btn_ScannerClose_3"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_start"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_pause"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_taskSend"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_taskRackUdp"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_reagentUpdate"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_channelUpdate"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_queryStatus"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_queryAlarm"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_queryConsume"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_alarmUpdate"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_consumeUpdate"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "movement_btn"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_send"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_requestChannel"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_requestReagent"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_Connect"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_updateTime"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_Connect_ClearData"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_ShowSwitch"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_OpenFile"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_requestProject"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "push_send_btn"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "cleanReagentCount_btn"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "pushButton_Connect_ClearData_2"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "changenowater_btn"
+        },
+        {
+          "form": "06_programs/sn100_host/instrument/frmdriverset.ui",
+          "object": "changewater_btn"
+        }
+      ],
+      "anonymous_setup": "每项先有原命令、数据与状态依据；模拟端或真实端条件及动作范围由整合明确。",
+      "business_assertions": [
+        "按具体按钮记录实际启用条件、发送字节、回复字节、解析字段和最终状态，不把80个控件一起概括成已测。",
+        "连接、查询和通信显示过滤分别核发送/接收、分包/长报文、断线、超时与可恢复错误。",
+        "维护记录保存核原表与重开；打印记录另核实际文件或打印结果。",
+        "机械/液路/扫码/清洗/校时/复位等按具体现场条件和授权逐项核，不启用instrument-control绕过禁用。"
+      ],
+      "known_gap_and_route": "协议差异交samples/protocol，主入口交整合，其余仪器页面由整合明确接手人；模拟应答不能标真实仪器通过。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    },
+    {
+      "id": "messages",
+      "title": "通用信息、警告及确认分支",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/cusmessagebox.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/cusmessagebox.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/cusmessagebox.ui",
+          "object": "btnSure"
+        }
+      ],
+      "anonymous_setup": "用合法匿名业务触发信息/警告/问题，等待显示动画结束。",
+      "business_assertions": [
+        "按原getClickButton语义核Yes/No、关闭、取消和保护业务的变化/不变。",
+        "保存后的关闭、未保存的取消离页和确认丢弃分开记录，不借早期驱动清理退出充当成功。"
+      ],
+      "known_gap_and_route": "旧01至06失败/清理记录完整保留；新增产品缺陷只凭新实际证据登记。",
+      "execution": "待新整合版本及明确显示安排后，选择未验或本次修改影响的分支；不是要求重跑本包全部控件。",
+      "new_result": null
+    }
+  ],
+  "pending_entry_groups": [
+    {
+      "id": "pending-entry-01",
+      "title": "日期选择",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "cuscalendar.ui"
+      },
+      "package": "alarm",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.ui",
+          "object": "btnLeft"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.ui",
+          "object": "btnRight"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.ui",
+          "object": "btnClose"
+        }
+      ],
+      "setup": "准备明确的匿名告警历史来源，进入告警查询，再打开起止日期日历。",
+      "required_evidence": "核跨月/跨年和选定日期回填，关闭不改日期；不以源码存在算RK通过。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-02",
+      "title": "告警历史与复位",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "maskdlgabnormal.ui"
+      },
+      "package": "alarm",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnErrorLog"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnReset"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnReturn"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnQuery"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnCalendarSetStart"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnCalendarSetEnd"
+        },
+        {
+          "form": "06_programs/sn100_host/alarm_history/maskdlgabnormal.ui",
+          "object": "btnClose"
+        }
+      ],
+      "setup": "匿名来源只核查询、日期和关闭；原实时/历史页切换及复位另追原命令与状态链，未接时不强行解禁。",
+      "required_evidence": "查询核实际匿名记录/日期边界；复位核相同原命令、任务/告警状态及设备回复，不能点击后清空界面冒充。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-03",
+      "title": "报告明细",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "mask_dlg_report_detail.ui"
+      },
+      "package": "report_detail",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnPrinter"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnUpdateLis"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btn_recal"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnUpRow"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnNextRow"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnMenuResult"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnMenuInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnMenuResultInfo"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_report_detail.ui",
+          "object": "btnMenuErrorInfo"
+        }
+      ],
+      "setup": "按匿名夹具日期2026/10/23查询并选报告，打开明细及四个页签。",
+      "required_evidence": "保存核患者匿名字段和重开，打印核文件/设备；前后条及原调试按钮分别列实现/启用范围。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-04",
+      "title": "报告中的医院字典选择",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "mask_dlg_select.ui"
+      },
+      "package": "report_detail",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_select.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/history/mask_dlg_select.ui",
+          "object": "btnSave"
+        }
+      ],
+      "setup": "先准备匿名医院字典和一条可编辑报告，再在明细里打开对应科室/检验等字段选择。",
+      "required_evidence": "核筛选、选中、确认回填、关闭取消及数据不变；不借用医院主页的保存按钮证据。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-05",
+      "title": "质控历史图卡",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "cus_quality_chart.ui"
+      },
+      "package": "quality",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/quality_control/cus_quality_chart.ui",
+          "object": "btnRight"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/cus_quality_chart.ui",
+          "object": "btnLeft"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/cus_quality_chart.ui",
+          "object": "btnAddCode"
+        }
+      ],
+      "setup": "准备匿名质控品、项目关联、批次和历史结果，选中关联使图卡生成。",
+      "required_evidence": "左右切换核具体日期/数值/单位边界；原隐藏详细入口不按移植漏接判。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-06",
+      "title": "质控批次",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "mask_dlg_control_batch_setting.ui"
+      },
+      "package": "quality",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_control_batch_setting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_control_batch_setting.ui",
+          "object": "btn_calendar_set"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_control_batch_setting.ui",
+          "object": "btn_add_item"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/mask_dlg_control_batch_setting.ui",
+          "object": "btn_delete"
+        }
+      ],
+      "setup": "先新增保存匿名质控品并选中，再进批次维护和有效期日历。",
+      "required_evidence": "添加/删除核批号和到期日保存重开、当前/前批与历史引用保护；关闭取消不提交。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-07",
+      "title": "新增质控品",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "quality_control_add_wgt.ui"
+      },
+      "package": "quality",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_add_wgt.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_add_wgt.ui",
+          "object": "btnClose"
+        }
+      ],
+      "setup": "在质控品管理中点新增，输入合法匿名名称和厂家。",
+      "required_evidence": "保存核新记录与重开，空/重复拒绝和关闭草稿分别核；临床判定不随资料保存通过。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-08",
+      "title": "质控项目选择",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "quality_control_item_add_project_wgt.ui"
+      },
+      "package": "quality",
+      "responsibility": "integration_routes_owner",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_item_add_project_wgt.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_item_add_project_wgt.ui",
+          "object": "btn_close"
+        },
+        {
+          "form": "06_programs/sn100_host/quality_control/quality_control_item_add_project_wgt.ui",
+          "object": "btnSave"
+        }
+      ],
+      "setup": "先保存匿名质控品并打开编辑，确保有可选项目，再开选择窗口。",
+      "required_evidence": "核多选增加/移除实际关联及取消保留旧集合，不以列表出现代表关联成功。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-09",
+      "title": "原独立添加批号组弹窗",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "addbatchgroupdialog.ui"
+      },
+      "package": "reagents",
+      "responsibility": "samples",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/reagents/addbatchgroupdialog.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/addbatchgroupdialog.ui",
+          "object": "btnCancel"
+        }
+      ],
+      "setup": "对照原AddBatchGroupDialog及父入口：原独立输入校验、保存/取消与当前就地编辑的字符、长度和取消语义需补一致性核对。",
+      "required_evidence": "按用户完整移植原则列差异；批号组字符串保存及重开有独立证据后才认业务通过。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-10",
+      "title": "试剂批号资料",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "maskdlgreagentcode.ui"
+      },
+      "package": "reagents",
+      "responsibility": "samples",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnEditBatch"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnCalendarSet"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+          "object": "btnClose"
+        }
+      ],
+      "setup": "准备匿名试剂和批号，选择后开批号窗口及有效期日历。",
+      "required_evidence": "保存核名称/批号/到期日与重开；取消不改库，原软键盘图标和直接输入差异另核。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-11",
+      "title": "批量样本设置",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "maskdlgrepeatsetting.ui"
+      },
+      "package": "samples",
+      "responsibility": "samples",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_5"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_6"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_4"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_9"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_2"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_8"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_7"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_1"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_3"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "ckxAuto"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/samples/maskdlgrepeatsetting.ui",
+          "object": "btnNum_10"
+        }
+      ],
+      "setup": "先设置一孔普通样本号与项目，再进入批量设置，限定匿名目标孔。",
+      "required_evidence": "核数量、自动编号、目标状态拒绝、草稿保存/取消/重开；批量预设不等于下发仪器。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-12",
+      "title": "通用信息和确认弹窗",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "cusmessagebox.ui"
+      },
+      "package": "messages",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/cusmessagebox.ui",
+          "object": "btnCancel"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/cusmessagebox.ui",
+          "object": "btnClose"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/cusmessagebox.ui",
+          "object": "btnSure"
+        }
+      ],
+      "setup": "分别以匿名输入触发信息/警告/确认，等动画结束再点击，不强制绕过正式关闭。",
+      "required_evidence": "核getClickButton的Yes/No及被保护业务的数据变化/不变，关闭与取消按原语义。",
+      "new_result": null
+    },
+    {
+      "id": "pending-entry-13",
+      "title": "密码登录与默认账户",
+      "baseline_group": {
+        "path": "04_references/sn100_host/button_audit_20261027/pending_entry_sources_20261027.json",
+        "form": "maskdlglogin.ui"
+      },
+      "package": "accounts",
+      "responsibility": "integration",
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/maskdlglogin.ui",
+          "object": "btnLogin"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/maskdlglogin.ui",
+          "object": "cbx_isdefault"
+        }
+      ],
+      "setup": "新隔离账户环境用专用临时口令，通过头像入口开登录；不要读取或导出现有认证库。",
+      "required_evidence": "正确/错误/锁定、重复提交、默认账户选择、取消与旧会话保留分别核；不输出或归档口令。",
+      "new_result": null
+    }
+  ],
+  "dynamic_controls": {
+    "baseline_path": "04_references/sn100_host/button_audit_20261027/dynamic_controls_20261027.json",
+    "excluded_from_367": true,
+    "uncovered": [
+      "双击试剂孔位打开编辑及正向保存没有事件/数据确认",
+      "样本架事件未带实际rack ID，不能按同名对象路径认定全部架身份已测",
+      "项目重复次数QComboBox、样本表格复选孔位和稀释选择没有被buttonLike枚举，需单独补输入和数据核对",
+      "sampleProject_1/detailProject_1只代表本轮可见本地键；未覆盖全部原项目、校准/质控任务或原仪器项目编号",
+      "菜单选择事件和文件框取消不证明新增、导入、导出或原参数修改已完成"
+    ],
+    "menu_names": [
+      "manageProjectUnits",
+      "openOriginalProjectDirectory",
+      "importOriginalProjectDatabase",
+      "exportOriginalProjectDatabase",
+      "exportOriginalProjectConfiguration",
+      "viewOriginalProjectParameters",
+      "reloadProjects",
+      "createProject",
+      "importProjectConfiguration"
+    ],
+    "requirements": [
+      "记录实际孔位/架号/原项目编号与匿名数据身份。",
+      "单击、双击、选择尝试、实际触发和业务结果分开留证。",
+      "下拉次数、表格复选和稀释输入补独立记录，不能因不在按钮枚举中漏掉。"
+    ],
+    "new_result": null
+  },
+  "result_record_template": {
+    "case_id": null,
+    "form_and_object_or_dynamic_business_id": null,
+    "target_release_and_source_sha256": null,
+    "binary_sha256": null,
+    "launch_arguments_and_actual_data_mode": null,
+    "anonymous_fixture_and_expected_result": null,
+    "action_and_actual_result": null,
+    "database_fields_before_after_reread_reopen": null,
+    "cancel_or_failure_recovery": null,
+    "export_path_sha256_and_content_check": null,
+    "tx_rx_and_final_state": null,
+    "input_method_and_resolution": null,
+    "logs_and_exit_code": null,
+    "classification_and_responsibility": null,
+    "entry_business_physical_visual_instrument_scope": null
+  },
+  "verification_scope": {
+    "new_build": "本次未编译；只整理文件与固定清单。",
+    "new_rk_product_run": "本次未启动、停止、部署或操作产品；只有只读现场检查。",
+    "new_entry_or_business_passes": "未新增；不把null当0项失败或全业务待验结论。",
+    "physical_input_visual": "本次未验；Qt事件不代替1600×900物理命中和屏幕布局。",
+    "real_instrument_resources_endurance": "本次未验；模拟、独立后台和旧资源快照各保留原范围。"
+  },
+  "related_new_independent_evidence": [
+    {
+      "batch": "single_reagent_01",
+      "scope": "匿名原库后台和Us15字段金样；含初始化/收尾",
+      "passed": 11,
+      "failed": 0,
+      "actual_exit_code": 0,
+      "binary_sha256": "2852eddfcc823c8d66148a12d57675cf910baf486a5851323fd2792a8fc68826",
+      "artifact_hashes": [
+        {
+          "path": "04_references/sn100_host/original_flow_20261027/single_reagent_01/verification.json",
+          "sha256": "5178769cc1e266766aeea112766e0de38b49c65622a5742e3f53329f11aa2616"
+        },
+        {
+          "path": "04_references/sn100_host/original_flow_20261027/single_reagent_01/app.log",
+          "sha256": "ad06d1d593bbcd29318797bf560445bee06f672fc1496eb04798c0582704c72e"
+        },
+        {
+          "path": "04_references/sn100_host/original_flow_20261027/single_reagent_01/runtime.txt",
+          "sha256": "1a69175d8f3b9d6b8fac4597a5be9ed9999610483839ca963af3e58df7995198"
+        },
+        {
+          "path": "04_references/sn100_host/original_flow_20261027/single_reagent_01/exit_code",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        }
+      ],
+      "review_result": "汇总、真实Qt输出、runtime指纹/退出和exit_code一致；没有重跑驱动。",
+      "source_binding_limit": "50份停止清单及构建日志已由原执行聊天核对；本审计不重做旧源码扫描。",
+      "formal_page_verified": false,
+      "physical_input_verified": false,
+      "instrument_verified": false,
+      "contains_initialization_cleanup": true,
+      "does_not_increment_367_runtime_counts": true
+    },
+    {
+      "batch": "reagent_role_clear_01",
+      "scope": "原试剂后台：清孔全字段和Us按钮优先级99、有效role0及Guest/忙碌拒绝",
+      "passed": 11,
+      "failed": 0,
+      "actual_exit_code": 0,
+      "binary_sha256": "5589302789dc7d71ec602a28e2a408d75d295d30c7995b32851a5d9814ec422c",
+      "artifact_hashes": [
+        {
+          "path": "04_references/sn100_host/original_flow_20261027/reagent_role_clear_01/verification.json",
+          "sha256": "b1e7e94086c871a089fed67a08ff9820bcb79fa9184d131d989acfc2828e2785"
+        },
+        {
+          "path": "04_references/sn100_host/original_flow_20261027/reagent_role_clear_01/app.log",
+          "sha256": "41682ea0e3f9af62f469f5aa5d6c32dcb6a23548314b49512478c3241c93f315"
+        },
+        {
+          "path": "04_references/sn100_host/original_flow_20261027/reagent_role_clear_01/runtime.txt",
+          "sha256": "836dc437b0a35cc255debbca291d88d50b51ec8ab2be343edadbfa4084266eeb"
+        },
+        {
+          "path": "04_references/sn100_host/original_flow_20261027/reagent_role_clear_01/exit_code",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        }
+      ],
+      "review_result": "汇总、真实Qt输出、runtime指纹/退出和exit_code一致；没有重跑驱动。",
+      "source_binding_limit": "该归档当前有构建日志、驱动指纹和运行输出，未附完整逐文件冻结输入清单；不能套用后续又改的工作源码。新发布须重新绑定实际源码。",
+      "formal_page_verified": false,
+      "physical_input_verified": false,
+      "instrument_verified": false,
+      "contains_initialization_cleanup": true,
+      "does_not_increment_367_runtime_counts": true,
+      "prior_failure": {
+        "path": "04_references/sn100_host/original_flow_20261027/reagent_role_clear_01/first_test_failure",
+        "passed": 10,
+        "failed": 1,
+        "exit_code": 1,
+        "reason_from_executor": "驱动连续两次清孔未重读，原指纹保护拒绝；按实际Store流程重读后另轮通过。",
+        "audit_limit": "本审计保留失败输出；原因引用执行聊天的说明，不独立推定为产品缺陷或已验证全部恢复。"
+      }
+    }
+  ],
+  "related_new_independent_evidence_scope": "只核新收到归档之间的一致性；两组各含初始化/收尾，不能相加成22项独立功能，也不替代367按钮正式页面、物理输入或真实仪器验收。",
+  "received_flow_review": {
+    "path": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/review.json",
+    "sha256": "6c2da262240521130caf40f3a223067d2977af4f502fff00d2ce93802615c932",
+    "candidate_main_sha256": "f5514952a08fd9009e610fb04478c62a58fd88deb83858b805166fee9219990a",
+    "results": "设置页11/0、主窗任务链5/0、后台串联6/0、原配置49/0各按独立范围复核，均exit0，不相加",
+    "new_product_runs_by_this_audit": 0,
+    "changes_to_old_inventory_counts": 0
+  }
+}

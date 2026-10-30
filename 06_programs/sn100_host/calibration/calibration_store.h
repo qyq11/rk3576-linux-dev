@@ -26,6 +26,13 @@ public:
 
 public slots:
     void initialize(QString absoluteDataDir, QString catalogDatabasePath);
+    void initializeOriginal(QString root);
+    void setOriginalCatalog(ProjectRecords projects, ProjectUnits units, ReagentSnapshot reagents);
+    void setOriginalReview(qint64 requestId, qint64 id, qint64 revision, bool checked);
+    void setOriginalMethod(qint64 requestId, qint64 id, qint64 revision, QString method, QString xTransform, QString yTransform);
+    void applyOriginalCurve(qint64 requestId, qint64 id, qint64 revision, QString batchGroup);
+    void loadIsi(qint64 requestId);
+    void saveIsi(qint64 requestId, CalibrationIsiRecord record);
     void setSession(AccountSession session);
     void loadCatalog(qint64 requestId);
     void load(qint64 requestId);
@@ -36,6 +43,8 @@ public slots:
 
 signals:
     void ready(QString databasePath);
+    void originalSourceReady(QString root);
+    void isiReady(qint64 requestId, CalibrationIsiRecords records);
     void catalogReady(qint64 requestId, ProjectRecords projects, ProjectUnits units, ReagentSnapshot reagents);
     void snapshotReady(qint64 requestId, CalibrationRecords records);
     void succeeded(qint64 requestId, QString operation, qint64 id);
@@ -43,6 +52,21 @@ signals:
     void closed();
 
 private:
+    bool m_originalMode = false;
+    QString m_originalRoot, m_originalFingerprint;
+    qint64 m_originalLastWrite = 0;
+    ProjectRecords m_originalProjects;
+    ProjectUnits m_originalUnits;
+    ReagentSnapshot m_originalReagents;
+    std::unique_ptr<QLockFile> m_originalProjectLock, m_originalReagentLock;
+    bool beginOriginal(qint64 requestId, const QString &operation, QString *message);
+    void finishOriginal(qint64 requestId, const QString &operation, qint64 id);
+    void rejectOriginal(qint64 requestId, const QString &operation, const QString &message);
+    bool readOriginal(CalibrationRecords *records, QString *message, bool includeHidden = false);
+    void loadOriginal(qint64 requestId);
+    void saveOriginal(qint64 requestId, CalibrationRecord record);
+    void copyOriginal(qint64 requestId, qint64 sourceId, qint64 sourceRevision);
+    void removeOriginal(qint64 requestId, qint64 id, qint64 revision);
     bool check(qint64 requestId, const QString &operation, bool write = false);
     bool read(CalibrationRecords *records, QString *message, bool includeHidden = false);
     bool checkCatalog(CalibrationRecord *record, bool existingIdentity, QString *message,

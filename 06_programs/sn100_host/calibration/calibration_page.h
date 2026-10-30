@@ -28,6 +28,9 @@ public slots:
     void copyCurrent();
     void deleteCurrent();
     void cancelDraft();
+    void reviewOriginalCurve();
+    void applyOriginalCurve(bool useDefault = false);
+    void editOriginalMethod();
 signals:
     void snapshotChanged(CalibrationRecords records);
     void statusChanged(QString message);
@@ -64,5 +67,7 @@ private:
     bool m_busy = false;
     bool m_dirty = false;
     bool m_populating = false;
+    bool m_originalMode = false;
+    QString m_originalRoot;
 };
 #endif

@@ -1,0 +1,685 @@
+{
+  "release": "f8c6e73f59f458981e243af5dd00999c12a671f449f0daaf3f4ff70e82d8a11f",
+  "source_archive_sha256": "b2de8b613fa656f97d33eda9f133ce784b508cdb99f42c605b617bca4431f788",
+  "scope": "只读源码补查；未编译、未启动GUI、未新增RK或完整业务通过结论",
+  "controls": 61,
+  "groups": [
+    {
+      "form": "cuscalendar.ui",
+      "title": "日期选择",
+      "count": 3,
+      "objects": [
+        "btnLeft",
+        "btnRight",
+        "btnClose"
+      ],
+      "reason": "已有月份切换和关闭处理；本轮未进入告警日期弹窗。",
+      "next_anonymous_setup": "准备明确的匿名告警历史来源，进入告警查询，再打开起止日期日历。",
+      "required_evidence": "核跨月/跨年和选定日期回填，关闭不改日期；不以源码存在算RK通过。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.cpp",
+          "line": 146,
+          "snippet": "void CusCalendar::on_btnLeft_clicked()",
+          "source_sha256": "d55ecaaa8f91886445cd1bd630faee67225017037ae1774e4e9cafa7b80be349"
+        },
+        {
+          "file": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.cpp",
+          "line": 151,
+          "snippet": "void CusCalendar::on_btnRight_clicked()",
+          "source_sha256": "d55ecaaa8f91886445cd1bd630faee67225017037ae1774e4e9cafa7b80be349"
+        },
+        {
+          "file": "06_programs/sn100_host/alarm_history/calendar/cuscalendar.cpp",
+          "line": 156,
+          "snippet": "void CusCalendar::on_btnClose_clicked()",
+          "source_sha256": "d55ecaaa8f91886445cd1bd630faee67225017037ae1774e4e9cafa7b80be349"
+        },
+        {
+          "file": "06_programs/sn100_host/alarm_history/alarm_history_page.cpp",
+          "line": 113,
+          "snippet": "connect(ui->btnCalendarSetStart,&QPushButton::clicked,this,[this](){calendar(true);});",
+          "source_sha256": "9f5ab45737261401668e2b63c509d68918d27c17ac7de1cd1836319564263244"
+        }
+      ],
+      "original_handlers": [],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "maskdlgabnormal.ui",
+      "title": "告警历史与复位",
+      "count": 7,
+      "objects": [
+        "btnErrorLog",
+        "btnReset",
+        "btnReturn",
+        "btnQuery",
+        "btnCalendarSetStart",
+        "btnCalendarSetEnd",
+        "btnClose"
+      ],
+      "reason": "需分开判断：查询/日期依赖显式历史来源；Reset、Return、ErrorLog在f8c明确禁用，实时告警及处置链尚未接。原Reset会确认后发getResetCommand并触发状态复位，不是原空回调。",
+      "next_anonymous_setup": "匿名来源只核查询、日期和关闭；原实时/历史页切换及复位另追原命令与状态链，未接时不强行解禁。",
+      "required_evidence": "查询核实际匿名记录/日期边界；复位核相同原命令、任务/告警状态及设备回复，不能点击后清空界面冒充。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/alarm_history/alarm_history_page.cpp",
+          "line": 99,
+          "snippet": "const QString unknown=tr(\"只读历史；当前告警、严重度、设备处置和互锁未知，功能未接入。\");",
+          "source_sha256": "9f5ab45737261401668e2b63c509d68918d27c17ac7de1cd1836319564263244"
+        },
+        {
+          "file": "06_programs/sn100_host/alarm_history/alarm_history_page.cpp",
+          "line": 100,
+          "snippet": "for(QWidget *control:QList<QWidget*>{ui->tblAbnormal,ui->txtTestInfo,ui->btnReset,ui->btnReturn,ui->btnErrorLog})",
+          "source_sha256": "9f5ab45737261401668e2b63c509d68918d27c17ac7de1cd1836319564263244"
+        },
+        {
+          "file": "06_programs/sn100_host/alarm_history/alarm_history_page.cpp",
+          "line": 205,
+          "snippet": "ui->btnQuery->setEnabled((stationary&&!sourcePath_.isEmpty())||(active_&&!cancelling_&&!localAbort_&&!closingDialog_&&!warning));",
+          "source_sha256": "9f5ab45737261401668e2b63c509d68918d27c17ac7de1cd1836319564263244"
+        },
+        {
+          "file": "06_programs/sn100_host/alarm_history/alarm_history_page.cpp",
+          "line": 207,
+          "snippet": "ui->btnCalendarSetStart->setEnabled(stationary&&!sourcePath_.isEmpty());",
+          "source_sha256": "9f5ab45737261401668e2b63c509d68918d27c17ac7de1cd1836319564263244"
+        }
+      ],
+      "original_handlers": [
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmabnormal/maskdlgabnormal.cpp",
+          "line": 256,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmabnormal/maskdlgabnormal.cpp",
+          "line": 472,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmabnormal/maskdlgabnormal.cpp",
+          "line": 262,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmabnormal/maskdlgabnormal.cpp",
+          "line": 457,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmabnormal/maskdlgabnormal.cpp",
+          "line": 439,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmabnormal/maskdlgabnormal.cpp",
+          "line": 448,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmabnormal/maskdlgabnormal.cpp",
+          "line": 251,
+          "empty": false
+        }
+      ],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "mask_dlg_report_detail.ui",
+      "title": "报告明细",
+      "count": 12,
+      "objects": [
+        "btnClose",
+        "btnSave",
+        "btnCancel",
+        "btnPrinter",
+        "btnUpdateLis",
+        "btn_recal",
+        "btnUpRow",
+        "btnNextRow",
+        "btnMenuResult",
+        "btnMenuInfo",
+        "btnMenuResultInfo",
+        "btnMenuErrorInfo"
+      ],
+      "reason": "明细需当前报告行。本轮初始查询未准备指定日期记录；明细上传/重算原为调试替代动作，前后条当前禁用，不能一概归为缺选中数据。",
+      "next_anonymous_setup": "按匿名夹具日期2026/10/23查询并选报告，打开明细及四个页签。",
+      "required_evidence": "保存核患者匿名字段和重开，打印核文件/设备；前后条及原调试按钮分别列实现/启用范围。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/history/history_page.cpp",
+          "line": 1261,
+          "snippet": "void HistoryPage::openDetail()",
+          "source_sha256": "6ca7f3c79876bf89b077cdf6087f26104445026c568e9d02dea01e1f6e8027bc"
+        },
+        {
+          "file": "06_programs/sn100_host/history/history_page.cpp",
+          "line": 368,
+          "snippet": "|| !hasCurrentRow() || m_reports.at(ui->tableResultReportOne->currentRow()).id != report.id)",
+          "source_sha256": "6ca7f3c79876bf89b077cdf6087f26104445026c568e9d02dea01e1f6e8027bc"
+        },
+        {
+          "file": "06_programs/sn100_host/history/history_page.cpp",
+          "line": 1326,
+          "snippet": "for (QWidget *control : QList<QWidget *>{m_detailUi->btnPrinter, m_detailUi->btnUpdateLis,",
+          "source_sha256": "6ca7f3c79876bf89b077cdf6087f26104445026c568e9d02dea01e1f6e8027bc"
+        },
+        {
+          "file": "06_programs/sn100_host/history/history_page.cpp",
+          "line": 1327,
+          "snippet": "m_detailUi->btn_recal, m_detailUi->cbxLightType, m_detailUi->cbxYaixsType,",
+          "source_sha256": "6ca7f3c79876bf89b077cdf6087f26104445026c568e9d02dea01e1f6e8027bc"
+        }
+      ],
+      "original_handlers": [
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 556,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 622,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 654,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 615,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 662,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 581,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 596,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 571,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 576,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 561,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_report_detail.cpp",
+          "line": 566,
+          "empty": false
+        }
+      ],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "mask_dlg_select.ui",
+      "title": "报告中的医院字典选择",
+      "count": 2,
+      "objects": [
+        "btnClose",
+        "btnSave"
+      ],
+      "reason": "已实现独立字典选择；只从报告明细的相应字段进入，本轮未到该层。",
+      "next_anonymous_setup": "先准备匿名医院字典和一条可编辑报告，再在明细里打开对应科室/检验等字段选择。",
+      "required_evidence": "核筛选、选中、确认回填、关闭取消及数据不变；不借用医院主页的保存按钮证据。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/history/report_dictionary_dialog.cpp",
+          "line": 41,
+          "snippet": "ReportDictionaryDialog::ReportDictionaryDialog(const QString &type, QWidget *parent) :",
+          "source_sha256": "72bad26289aba39a34dd29643d57d2fa07873a5b035c0f461bd163037e2f5b4f"
+        },
+        {
+          "file": "06_programs/sn100_host/history/report_dictionary_dialog.cpp",
+          "line": 46,
+          "snippet": "setObjectName(QStringLiteral(\"MaskDlgSelect\"));",
+          "source_sha256": "72bad26289aba39a34dd29643d57d2fa07873a5b035c0f461bd163037e2f5b4f"
+        },
+        {
+          "file": "06_programs/sn100_host/history/history_page.cpp",
+          "line": 724,
+          "snippet": "auto *dialog = new ReportDictionaryDialog(type, m_detailDialog);",
+          "source_sha256": "6ca7f3c79876bf89b077cdf6087f26104445026c568e9d02dea01e1f6e8027bc"
+        }
+      ],
+      "original_handlers": [
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_select.cpp",
+          "line": 59,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_report/mask_dlg_select.cpp",
+          "line": 87,
+          "empty": false
+        }
+      ],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "cus_quality_chart.ui",
+      "title": "质控历史图卡",
+      "count": 3,
+      "objects": [
+        "btnRight",
+        "btnLeft",
+        "btnAddCode"
+      ],
+      "reason": "图卡按已选质控关联和历史结果动态生成；本轮没有所需历史输入。btnAddCode原版也setVisible(false)，其余左右是历史点切换。",
+      "next_anonymous_setup": "准备匿名质控品、项目关联、批次和历史结果，选中关联使图卡生成。",
+      "required_evidence": "左右切换核具体日期/数值/单位边界；原隐藏详细入口不按移植漏接判。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/quality_control/cus_quality_chart.cpp",
+          "line": 15,
+          "snippet": "ui->btnAddCode->hide(); // 原“查看详细”本来隐藏；不发明新详细/导入窗口。",
+          "source_sha256": "355fad68fdda68933caa296d8007a9dc4b76eb65fa35cd8c3b07384076de635d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/cus_quality_chart.cpp",
+          "line": 93,
+          "snippet": "void CusQualityChart::on_btnLeft_clicked()",
+          "source_sha256": "355fad68fdda68933caa296d8007a9dc4b76eb65fa35cd8c3b07384076de635d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/cus_quality_chart.cpp",
+          "line": 97,
+          "snippet": "void CusQualityChart::on_btnRight_clicked()",
+          "source_sha256": "355fad68fdda68933caa296d8007a9dc4b76eb65fa35cd8c3b07384076de635d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/qc_history_presenter.cpp",
+          "line": 66,
+          "snippet": "if (!result.used || !selection.legacyCardVisible) continue;",
+          "source_sha256": "7378bfcce22d88157484f32d103641022ae38963803c6349160db12f0dafeac2"
+        }
+      ],
+      "original_handlers": [
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_quality/cus_quality_chart.cpp",
+          "line": 274,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frm_quality/cus_quality_chart.cpp",
+          "line": 266,
+          "empty": false
+        }
+      ],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "mask_dlg_control_batch_setting.ui",
+      "title": "质控批次",
+      "count": 4,
+      "objects": [
+        "btnClose",
+        "btn_calendar_set",
+        "btn_add_item",
+        "btn_delete"
+      ],
+      "reason": "批次管理须已有选中质控品，空列表不会打开；不能把前置缺失当原按钮无动作。",
+      "next_anonymous_setup": "先新增保存匿名质控品并选中，再进批次维护和有效期日历。",
+      "required_evidence": "添加/删除核批号和到期日保存重开、当前/前批与历史引用保护；关闭取消不提交。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 737,
+          "snippet": "void QualityControlPage::openBatches(qint64 controlId)",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 741,
+          "snippet": "if (!control(controlId)) return;",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 749,
+          "snippet": "dialog->setObjectName(QStringLiteral(\"QcBatchManager\"));",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        }
+      ],
+      "original_handlers": [],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "quality_control_add_wgt.ui",
+      "title": "新增质控品",
+      "count": 2,
+      "objects": [
+        "btnSave",
+        "btnClose"
+      ],
+      "reason": "新增质控品有独立保存/关闭处理，本轮只到管理层，没有取得新增窗口证据。",
+      "next_anonymous_setup": "在质控品管理中点新增，输入合法匿名名称和厂家。",
+      "required_evidence": "保存核新记录与重开，空/重复拒绝和关闭草稿分别核；临床判定不随资料保存通过。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 667,
+          "snippet": "void QualityControlPage::showAddControl()",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 685,
+          "snippet": "dialog->setObjectName(QStringLiteral(\"QcControlAdd\"));",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 661,
+          "snippet": "QString message=QcStore::validateControl(dialogs_->draft);",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        }
+      ],
+      "original_handlers": [],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "quality_control_item_add_project_wgt.ui",
+      "title": "质控项目选择",
+      "count": 3,
+      "objects": [
+        "btnClose",
+        "btn_close",
+        "btnSave"
+      ],
+      "reason": "须已有质控品草稿身份；确认提交选择差异，关闭/取消不提交空集合。",
+      "next_anonymous_setup": "先保存匿名质控品并打开编辑，确保有可选项目，再开选择窗口。",
+      "required_evidence": "核多选增加/移除实际关联及取消保留旧集合，不以列表出现代表关联成功。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 702,
+          "snippet": "void QualityControlPage::showProjectChooser()",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 657,
+          "snippet": "if (busy_ || !dialogs_->manager || !dialogs_->draft.id) return;",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        },
+        {
+          "file": "06_programs/sn100_host/quality_control/quality_control_page.cpp",
+          "line": 710,
+          "snippet": "dialog->setObjectName(QStringLiteral(\"QcProjectChooser\"));",
+          "source_sha256": "ed6fc61bf5a5d7a84ee73ce111929477264100ee125e607ea3f5a9b1d290dc8d"
+        }
+      ],
+      "original_handlers": [],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "addbatchgroupdialog.ui",
+      "title": "原独立添加批号组弹窗",
+      "count": 2,
+      "objects": [
+        "btnSave",
+        "btnCancel"
+      ],
+      "reason": "f8c未构造原AddBatchGroupDialog；当前改为从可编辑批号栏直接加入列表。原弹窗的保存/取消不能在该版本取得事件，属于操作入口差异，不能标原Windows无动作。",
+      "next_anonymous_setup": "对照原AddBatchGroupDialog及父入口：原独立输入校验、保存/取消与当前就地编辑的字符、长度和取消语义需补一致性核对。",
+      "required_evidence": "按用户完整移植原则列差异；批号组字符串保存及重开有独立证据后才认业务通过。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+          "line": 798,
+          "snippet": "connect(form->btnAddRBatch, &QPushButton::clicked, dialog,",
+          "source_sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc"
+        },
+        {
+          "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+          "line": 802,
+          "snippet": "if (value.isEmpty() || value.contains('|'))",
+          "source_sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc"
+        },
+        {
+          "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+          "line": 721,
+          "snippet": "form->lstRBatch->addItems(current->batchGroup.split('|', Qt::SkipEmptyParts));",
+          "source_sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc"
+        }
+      ],
+      "original_handlers": [
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmreagent/addbatchgroupdialog.cpp",
+          "line": 32,
+          "empty": false
+        }
+      ],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "maskdlgreagentcode.ui",
+      "title": "试剂批号资料",
+      "count": 5,
+      "objects": [
+        "btnSave",
+        "btnCancel",
+        "btnEditBatch",
+        "btnCalendarSet",
+        "btnClose"
+      ],
+      "reason": "入口须先在试剂资料管理中选试剂，再新增/编辑批号，本轮未完成此选择链。",
+      "next_anonymous_setup": "准备匿名试剂和批号，选择后开批号窗口及有效期日历。",
+      "required_evidence": "保存核名称/批号/到期日与重开；取消不改库，原软键盘图标和直接输入差异另核。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+          "line": 538,
+          "snippet": "QTimer::singleShot(0, this, [this, id]() { openBarcodeEditor(id); });",
+          "source_sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc"
+        },
+        {
+          "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+          "line": 877,
+          "snippet": "void ReagentsPage::openBarcodeEditor(qint64 reagentId, qint64 barcodeId)",
+          "source_sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc"
+        },
+        {
+          "file": "06_programs/sn100_host/reagents/reagents_page.cpp",
+          "line": 882,
+          "snippet": "auto form = std::make_shared<Ui::MaskDlgReagentCode>();",
+          "source_sha256": "fd168a95b07efccf9b0f9ec08146b35d5bfeb288c956cbadfca161381ed277fc"
+        }
+      ],
+      "original_handlers": [
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmreagent/maskdlgreagentcode.cpp",
+          "line": 96,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmreagent/maskdlgreagentcode.cpp",
+          "line": 91,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmreagent/maskdlgreagentcode.cpp",
+          "line": 150,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmreagent/maskdlgreagentcode.cpp",
+          "line": 86,
+          "empty": false
+        }
+      ],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "maskdlgrepeatsetting.ui",
+      "title": "批量样本设置",
+      "count": 13,
+      "objects": [
+        "btnClose",
+        "btnNum_5",
+        "btnNum_6",
+        "btnNum_4",
+        "btnNum_9",
+        "btnNum_2",
+        "btnNum_8",
+        "btnNum_7",
+        "btnNum_1",
+        "btnNum_3",
+        "ckxAuto",
+        "btnSave",
+        "btnNum_10"
+      ],
+      "reason": "须当前可编辑的普通样本，且已有样本号和项目任务；本轮空草稿未达到条件。",
+      "next_anonymous_setup": "先设置一孔普通样本号与项目，再进入批量设置，限定匿名目标孔。",
+      "required_evidence": "核数量、自动编号、目标状态拒绝、草稿保存/取消/重开；批量预设不等于下发仪器。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/samples/sample_page.cpp",
+          "line": 1632,
+          "snippet": "void SamplePage::repeat()",
+          "source_sha256": "92600e5ed0520b4fff4d4f7395edb9a9bc6375a62bce8d018e4e6f746ddebafd"
+        },
+        {
+          "file": "06_programs/sn100_host/samples/sample_page.cpp",
+          "line": 1639,
+          "snippet": "if (source.sampleType != 0 || source.sampleId.isEmpty() || source.tasks.isEmpty())",
+          "source_sha256": "92600e5ed0520b4fff4d4f7395edb9a9bc6375a62bce8d018e4e6f746ddebafd"
+        },
+        {
+          "file": "06_programs/sn100_host/samples/sample_page.cpp",
+          "line": 1647,
+          "snippet": "auto form = std::make_shared<Ui::MaskDlgRepeatSetting>();",
+          "source_sha256": "92600e5ed0520b4fff4d4f7395edb9a9bc6375a62bce8d018e4e6f746ddebafd"
+        }
+      ],
+      "original_handlers": [
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmsample/maskdlgrepeatsetting.cpp",
+          "line": 115,
+          "empty": false
+        },
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmsample/maskdlgrepeatsetting.cpp",
+          "line": 127,
+          "empty": false
+        }
+      ],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "cusmessagebox.ui",
+      "title": "通用信息和确认弹窗",
+      "count": 3,
+      "objects": [
+        "btnCancel",
+        "btnClose",
+        "btnSure"
+      ],
+      "reason": "须等显示动画完成；问题、信息、警告的可见按钮不同。07/08没有此控件的对应证据，早期失败轮的弹窗不借作成功。",
+      "next_anonymous_setup": "分别以匿名输入触发信息/警告/确认，等动画结束再点击，不强制绕过正式关闭。",
+      "required_evidence": "核getClickButton的Yes/No及被保护业务的数据变化/不变，关闭与取消按原语义。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/ui/cusmessagebox.cpp",
+          "line": 115,
+          "snippet": "void CusMessageBox::on_btnSure_clicked()",
+          "source_sha256": "91e44b433823ac4b25c86d81b799ac77f81854a1f661f537cd4f1aa3c4cac332"
+        },
+        {
+          "file": "06_programs/sn100_host/ui/cusmessagebox.cpp",
+          "line": 124,
+          "snippet": "void CusMessageBox::on_btnCancel_clicked()",
+          "source_sha256": "91e44b433823ac4b25c86d81b799ac77f81854a1f661f537cd4f1aa3c4cac332"
+        },
+        {
+          "file": "06_programs/sn100_host/ui/cusmessagebox.cpp",
+          "line": 110,
+          "snippet": "void CusMessageBox::on_btnClose_clicked()",
+          "source_sha256": "91e44b433823ac4b25c86d81b799ac77f81854a1f661f537cd4f1aa3c4cac332"
+        },
+        {
+          "file": "06_programs/sn100_host/ui/cusmessagebox.cpp",
+          "line": 95,
+          "snippet": "bool CusMessageBox::isReadyForInput() const",
+          "source_sha256": "91e44b433823ac4b25c86d81b799ac77f81854a1f661f537cd4f1aa3c4cac332"
+        },
+        {
+          "file": "06_programs/sn100_host/ui/cusdialogmask.cpp",
+          "line": 130,
+          "snippet": "bool CusDialogMask::isReadyForInput() const",
+          "source_sha256": "13988a85e7393aaa94e4ab9aaf14c380b642638c5b569da1e48701b9814d15d0"
+        }
+      ],
+      "original_handlers": [],
+      "runtime_status_unchanged": true
+    },
+    {
+      "form": "maskdlglogin.ui",
+      "title": "密码登录与默认账户",
+      "count": 2,
+      "objects": [
+        "btnLogin",
+        "cbx_isdefault"
+      ],
+      "reason": "此轮审计主动未点账户/注销，使用显式匿名角色；因此没有验证密码登录或默认账户勾选。",
+      "next_anonymous_setup": "新隔离账户环境用专用临时口令，通过头像入口开登录；不要读取或导出现有认证库。",
+      "required_evidence": "正确/错误/锁定、重复提交、默认账户选择、取消与旧会话保留分别核；不输出或归档口令。",
+      "frozen_source_anchors": [
+        {
+          "file": "06_programs/sn100_host/ui/maskdlglogin.cpp",
+          "line": 161,
+          "snippet": "void MaskDlgLogin::submitLogin()",
+          "source_sha256": "99a75c1d01869be405bf04a271f379a7e998eddcc442d8027926b2d4f40535a7"
+        },
+        {
+          "file": "06_programs/sn100_host/ui/maskdlglogin.cpp",
+          "line": 170,
+          "snippet": "const bool queued = store_ && QMetaObject::invokeMethod(store_, \"authenticate\", Qt::QueuedConnection,",
+          "source_sha256": "99a75c1d01869be405bf04a271f379a7e998eddcc442d8027926b2d4f40535a7"
+        },
+        {
+          "file": "06_programs/sn100_host/ui/maskdlglogin.cpp",
+          "line": 172,
+          "snippet": "Q_ARG(QString, ui->ldtPassword->text()), Q_ARG(bool, ui->cbx_isdefault->isChecked()));",
+          "source_sha256": "99a75c1d01869be405bf04a271f379a7e998eddcc442d8027926b2d4f40535a7"
+        },
+        {
+          "file": "06_programs/sn100_host/shell/login_shell.cpp",
+          "line": 48,
+          "snippet": "bool frmMain::requestLogin()",
+          "source_sha256": "dc5e996ac82159b00d9afc2fcc31c429a12833e1e6635590c39b4fa52430e5c3"
+        }
+      ],
+      "original_handlers": [
+        {
+          "file": "06_programs/sn100_host_reference/Seerain450_PC/frmlogin/maskdlglogin.cpp",
+          "line": 145,
+          "empty": false
+        }
+      ],
+      "runtime_status_unchanged": true
+    }
+  ]
+}

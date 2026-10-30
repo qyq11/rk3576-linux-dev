@@ -11,11 +11,14 @@
 
 namespace
 {
-ProjectRecords localCatalogProjects(const ProjectRecords &records)
+ProjectRecords localCatalogProjects(const ProjectRecords &records, bool originalProfile)
 {
     ProjectRecords local;
     for (const auto &record : records)
-        if (record.originalFileName.isEmpty()) local.append(record);
+    {
+        const bool fromOriginal = !record.originalFileName.isEmpty();
+        if (fromOriginal == originalProfile) local.append(record);
+    }
     return local;
 }
 }
@@ -123,11 +126,15 @@ void frmMain::attachSamplePage(SamplePage *samples)
     ui->stkCenterAdptive->insertWidget(1,sampleViewport_);
     ui->stkCenterAdptive->setCurrentIndex(previous);
     samples->setSession(session_);
-    samples->setProjects(localCatalogProjects(projects_->projects()));
+    samples->setProjects(localCatalogProjects(projects_->projects(), samples->originalProfile()));
     samples->setReagents(reagents_->snapshot());
     connect(this,&frmMain::sessionChanged,samples,&SamplePage::setSession);
     connect(projects_,&ProjectPage::snapshotChanged,samples,
-            [samples](ProjectRecords records,ProjectUnits) { samples->setProjects(localCatalogProjects(records)); });
+            [samples](ProjectRecords records,ProjectUnits)
+    {
+        // 原模式保留原仪器项目编号；普通模式继续只接自身catalog编号。
+        samples->setProjects(localCatalogProjects(records, samples->originalProfile()));
+    });
     connect(reagents_,&ReagentsPage::snapshotChanged,samples,&SamplePage::setReagents);
     connect(samples,&SamplePage::statusChanged,this,[this](const QString &message)
     { sampleStatus_=message;updateCatalogStatus(); });
@@ -185,6 +192,12 @@ void frmMain::updateCatalogStatus()
     const bool reagent=index==0 && reagents_;
     const bool sample=index==1 && samples_;
     if (!project && !reagent && !sample) return;
+    // 接通DeviceControl后由有效设备状态维护主状态区；本地保存回调不能盖成“脱机”。
+    if (deviceControl_)
+    {
+        updateDeviceControlActions();
+        return;
+    }
     const bool busy=project ? projects_->isBusy() : sample ? samples_->isBusy() : reagents_->isBusy();
     const bool ready=project ? projects_->isReady() : sample ? samples_->isReady() : reagents_->isReady();
     const bool dirty=project ? projects_->hasUnsavedChanges() : sample ? samples_->hasUnsavedChanges() : reagents_->hasUnsavedChanges();

@@ -1,0 +1,165 @@
+[New LWP 459474]
+[New LWP 459473]
+[New LWP 459472]
+[New LWP 459471]
+[New LWP 459470]
+[New LWP 459469]
+[New LWP 459468]
+[New LWP 459467]
+[New LWP 459466]
+[New LWP 459465]
+[New LWP 459464]
+[New LWP 459463]
+[New LWP 459462]
+[New LWP 459429]
+[New LWP 459428]
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
+0x0000007f83940bdc in __GI___poll (fds=0x55b4ca24b0, nfds=4, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+
+warning: 41	../sysdeps/unix/sysv/linux/poll.c: No such file or directory
+
+Thread 16 (Thread 0x7f738ae100 (LWP 459428) "sn100_s:disk$0"):
+#0  0x0000007f838e1d6c in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55b35afdd0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x55b35afdd0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x55b35afdd0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x0000007f838e49f0 in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x55b35afd70, cond=0x55b35afda8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x55b35afda8, mutex=0x55b35afd70) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000007f7c98ed20 in ?? () from /lib/aarch64-linux-gnu/libgallium-25.2.8-0ubuntu0.24.04.2.so
+#6  0x0000007f7c968cdc in ?? () from /lib/aarch64-linux-gnu/libgallium-25.2.8-0ubuntu0.24.04.2.so
+
+Thread 15 (Thread 0x7f7309e100 (LWP 459429) "QThread"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f64001ad0, nfds=2, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f7f34cd6c in ?? () from /lib/aarch64-linux-gnu/libQt5EglFsKmsSupport.so.5
+
+Thread 14 (Thread 0x7f55f99100 (LWP 459462) "O03HospitalData"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f3802dc10, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 13 (Thread 0x7f55789100 (LWP 459463) "AlarmHistoryRea"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f240013f0, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 12 (Thread 0x7f50a13100 (LWP 459464) "O03AccountDatab"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f2c012520, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 11 (Thread 0x7f48911100 (LWP 459465) "O03HistoryDatab"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f28002d50, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 10 (Thread 0x7f23fff100 (LWP 459466) "O08SampleDataba"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f1c0013b0, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 9 (Thread 0x7f33fff100 (LWP 459467) "InstrumentMaint"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f1402b060, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 8 (Thread 0x7f337ef100 (LWP 459468) "O10PrinterSetti"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f10002110, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 7 (Thread 0x7f32fdf100 (LWP 459469) "O10LisSettings"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f180025d0, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 6 (Thread 0x7f327cf100 (LWP 459470) "QualityControlD"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f08001350, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 5 (Thread 0x7f31fbf100 (LWP 459471) "CalibrationData"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f0c0013b0, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 4 (Thread 0x7f317af100 (LWP 459472) "O07ReagentDatab"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7f040013b0, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 3 (Thread 0x7f30f9f100 (LWP 459473) "O07ProjectDatab"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x7efc0082a0, nfds=1, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f83e533b4 in QThread::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f83e54c48 in ?? () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+
+Thread 2 (Thread 0x7f237ef100 (LWP 459474) "sn100_s:disk$1"):
+#0  0x0000007f838e1d6c in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x55b35afdd0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x55b35afdd0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x55b35afdd0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x0000007f838e49f0 in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x55b35afd70, cond=0x55b35afda8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x55b35afda8, mutex=0x55b35afd70) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000007f7c98ed20 in ?? () from /lib/aarch64-linux-gnu/libgallium-25.2.8-0ubuntu0.24.04.2.so
+#6  0x0000007f7c968cdc in ?? () from /lib/aarch64-linux-gnu/libgallium-25.2.8-0ubuntu0.24.04.2.so
+
+Thread 1 (Thread 0x7f85b5ab20 (LWP 459419) "sn100_shell"):
+#0  0x0000007f83940bdc in __GI___poll (fds=0x55b4ca24b0, nfds=4, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:41
+#1  0x0000007f82cd1a2c in ?? () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#2  0x0000007f82c6ebc8 in g_main_context_iteration () from /lib/aarch64-linux-gnu/libglib-2.0.so.0
+#3  0x0000007f840d7c8c in QEventDispatcherGlib::processEvents(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#4  0x0000007f8406a634 in QEventLoop::exec(QFlags<QEventLoop::ProcessEventsFlag>) () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#5  0x0000007f840745b0 in QCoreApplication::exec() () from /lib/aarch64-linux-gnu/libQt5Core.so.5
+#6  0x0000007f85be6620 in QCoreApplication::exec () at /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/tests/button_audit_rk.cpp:355
+[Inferior 1 (process 459419) detached]

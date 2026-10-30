@@ -77,3 +77,27 @@ HEADERS += $$PWD/../ui/maskdlgshutdown.h
 FORMS += $$PWD/../ui/maskdlgshutdown.ui
 SOURCES *= $$PWD/../original_files/original_ini.cpp $$PWD/device_control_shell.cpp
 HEADERS *= $$PWD/../original_files/original_ini.h
+
+# 原库读写依赖与ARM64 build.sh保持一致；仅链接后台不等于所有页面已接通。
+SOURCES *= $$PWD/../original_files/original_business_database.cpp \
+           $$PWD/../original_files/original_ini_write.cpp \
+           $$PWD/../original_files/original_system_profile.cpp \
+           $$PWD/../history/original_history_source.cpp \
+           $$PWD/../alarm_history/original_alarm_events.cpp \
+           $$PWD/../quality_control/qc_original_store.cpp \
+           $$PWD/../calibration/calibration_original_store.cpp \
+           $$PWD/../reagents/original_reagent_repository.cpp \
+           $$PWD/../reagents/original_reagent_editor.cpp \
+           $$PWD/../reagents/original_reagent_store.cpp \
+           $$PWD/../samples/original_sample_store.cpp \
+           $$PWD/../samples/original_sample_repository.cpp \
+           $$PWD/../samples/original_detection_session.cpp \
+           $$PWD/../samples/original_task_codec.cpp \
+           $$PWD/../samples/original_result_codec.cpp \
+           $$PWD/../samples/original_device_sync.cpp \
+           $$PWD/../samples/original_project_device_repository.cpp \
+           $$PWD/../projects/original_project_codec.cpp
+HEADERS *= $$PWD/../original_files/original_business_database.h \
+           $$PWD/../original_files/original_ini_write.h \
+           $$PWD/../original_files/original_system_profile.h \
+           $$PWD/../reagents/original_reagent_editor.h

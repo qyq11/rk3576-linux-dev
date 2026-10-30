@@ -26,13 +26,14 @@ void frmMain::attachCalibrationPage(CalibrationPage *page)
     ui->stkCenterAdptive->setCurrentIndex(previous);
     page->setSession(session_);
     connect(this, &frmMain::sessionChanged, page, &CalibrationPage::setSession);
+    const bool originalProfile = !property("originalDataRoot").toString().isEmpty();
     connect(projects_, &ProjectPage::snapshotChanged, page,
-            [page](ProjectRecords records, ProjectUnits units)
+            [page, originalProfile](ProjectRecords records, ProjectUnits units)
     {
         ProjectRecords local;
         for (const auto &record : records)
-            if (record.originalFileName.isEmpty()) local.append(record);
-        // 不把原项目编号误交给尚未接原库的校准存储。
+            if ((!record.originalFileName.isEmpty()) == originalProfile) local.append(record);
+        // 原模式沿用原项目编号；独立模式仍只传自身catalog编号。
         page->setProjects(local, units);
     });
     connect(reagents_, &ReagentsPage::snapshotChanged, page, &CalibrationPage::setReagents);
@@ -76,6 +77,7 @@ bool frmMain::requestCalibrationLeave(const QString &action, bool currentOnly)
 void frmMain::updateCalibrationStatus()
 {
     if (!calibration_ || currentMainPage() != 3) return;
+    if (deviceControl_) { updateDeviceControlActions(); return; }
     const QString state = calibrationStatusError_ ? tr("脱机／失败")
         : calibration_->isBusy() ? tr("脱机／处理中")
         : calibration_->hasUnsavedChanges() ? tr("脱机／未保存")

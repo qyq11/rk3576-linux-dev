@@ -1,5 +1,7 @@
 #include "lis_settings_store.h"
 #include "serial_port_catalog.h"
+#include "original_files/original_business_database.h"
+#include "original_files/original_ini_write.h"
 
 #include <QDir>
 #include <QFile>
@@ -144,8 +146,57 @@ bool LisSettingsStore::readBytes(QByteArray *bytes, QString *message)
     return true;
 }
 
-bool LisSettingsStore::readStored(LisSettings *value, QByteArray *bytes, QString *message)
+bool LisSettingsStore::readStored(LisSettings *value, QByteArray *bytes, QString *message, QString *fingerprint)
 {
+    if (!originalRoot_.isEmpty())
+    {
+        OriginalIni::Snapshot snapshot;
+        if (!OriginalIni::readVersioned(originalRoot_, QStringLiteral("config.ini"), &snapshot, message)) return false;
+        bool valid = true;
+        const auto get = [&](const QString &key, const QVariant &fallback = QVariant()) -> QVariant
+        {
+            QString actual;
+            if (!OriginalIni::resolveKey(snapshot.parsed, key, &actual, message)) { valid = false; return fallback; }
+            return actual.isEmpty() ? fallback : snapshot.parsed.values.value(actual);
+        };
+        LisSettings result;
+        result.originalProfile = true; result.originalRoot = originalRoot_;
+        result.originalFingerprint = snapshot.fingerprint;
+        for (auto it = snapshot.parsed.values.cbegin(); it != snapshot.parsed.values.cend(); ++it)
+            if (it.key().startsWith(QStringLiteral("lis/"), Qt::CaseInsensitive)) result.originalValues.insert(it.key(), it.value());
+        result.type = get("lis/type").toString(); result.ip = get("lis/ip").toString();
+        result.port = get("lis/port").toString(); result.commName = get("lis/commname").toString();
+        result.baudrate = get("lis/baudrate").toString();
+        const QString mode = get("lis/samMode", "0").toString();
+        if (mode != "0" && mode != "1") { *message = tr("原LIS样本上传模式无效，未猜测替换。"); return false; }
+        result.sampleMode = mode.toInt();
+        result.autoGet = get("lis/autoget").toString() == "true";
+        result.autoSend = get("lis/autosend").toString() == "true";
+        result.link = get("lis/link").toString() == "true";
+        result.tcpType = get("lis/tcptype").toString(); result.sequenceNumber = get("lis/sequencenumber").toString();
+        result.serverId = get("lis/serverID", "").toString(); result.linkIntervalMs = get("lis/linkintervalms").toString();
+        result.simulation = get("lis/moni").toString() == "true";
+        result.uploadForHole = get("lis/isUploadForHole", false).toInt() != 0;
+        result.utf16 = get("lis/lisCode", "false").toString() == "true";
+        result.sampleCodeCanRepeatTest = get("lis/sampleCodeCanRepeatTest", "true").toString() != "false";
+        // 与原SerialPortBase的名称到Qt枚举映射一致；未知串口格式保留原键，不擅自补成8N1。
+        const QString bits = get("lis/databits").toString();
+        const QString parity = get("lis/parity").toString();
+        const QString stops = get("lis/stopbits").toString();
+        const QString flow = get("lis/flowcontrol").toString();
+        const QMap<QString,int> bitValues{{"data5",5},{"data6",6},{"data7",7},{"data8",8}};
+        const QMap<QString,int> parityValues{{"noparity",0},{"evenparity",2},{"oddparity",3},{"spaceparity",4},{"markparity",5}};
+        const QMap<QString,int> stopValues{{"onestop",1},{"oneandhalfstop",3},{"twostop",2}};
+        const QMap<QString,int> flowValues{{"noflowcontrol",0},{"hardwarecontrol",1},{"softwarecontrol",2}};
+        result.dataBits = bitValues.value(bits); result.parity = parityValues.value(parity);
+        result.stopBits = stopValues.value(stops); result.flowControl = flowValues.value(flow);
+        result.serialFramingKnown = bitValues.contains(bits) && parityValues.contains(parity)
+            && stopValues.contains(stops) && flowValues.contains(flow);
+        if (!valid) return false;
+        *value = result; *bytes = snapshot.bytes;
+        if (fingerprint) *fingerprint = snapshot.fingerprint;
+        return true;
+    }
     if (!readBytes(bytes, message)) return false;
     // 唯一临时路径解析实际字节，避开QSettings同size/mtime全局缓存。
     QTemporaryFile parsed(QFileInfo(path_).absolutePath() + QStringLiteral("/.lis-read-XXXXXX.ini"));
@@ -185,6 +236,21 @@ bool LisSettingsStore::readStored(LisSettings *value, QByteArray *bytes, QString
 bool LisSettingsStore::writeStored(const LisSettings &settings, const QByteArray &expected,
                                       QByteArray *written, QString *message)
 {
+    if (!originalRoot_.isEmpty())
+    {
+        OriginalIni::Snapshot before, after;
+        if (!OriginalIni::readVersioned(originalRoot_, QStringLiteral("config.ini"), &before, message)) return false;
+        if (before.bytes != expected) { *message = tr("原LIS配置提交前已变化，请重读后保存。"); return false; }
+        QMap<QString,QVariant> changes{{"lis/type",settings.type},{"lis/samMode",QString::number(settings.sampleMode)},
+            {"lis/autoget",settings.autoGet ? "true" : "false"}, {"lis/autosend",settings.autoSend ? "true" : "false"},
+            {"lis/link",settings.link ? "true" : "false"}};
+        // 原Windows只保存当前可见通讯方式，另一方式的配置及全部底层键原样保留。
+        if (settings.type == "tcp") { changes.insert("lis/ip",settings.ip); changes.insert("lis/port",settings.port); }
+        else { changes.insert("lis/commname",settings.commName); changes.insert("lis/baudrate",settings.baudrate); }
+        if (!OriginalIni::patch(originalRoot_, "config.ini", before.fingerprint, changes, changes.keys(), &after, message)) return false;
+        *written = after.bytes; originalFingerprint_ = after.fingerprint;
+        return true;
+    }
     if (containsSymlink(path_))
     {
         *message = tr("LIS设置路径包含符号链接，原文件保留。");
@@ -278,6 +344,7 @@ bool LisSettingsStore::writeStored(const LisSettings &settings, const QByteArray
 void LisSettingsStore::initialize(QString directory)
 {
     if (!checkThread(QStringLiteral("initialize"))) return;
+    originalRoot_.clear(); originalFingerprint_.clear();
     ready_ = false;
     directory = QDir::cleanPath(directory);
     if (!QDir::isAbsolutePath(directory) || containsSymlink(directory) || !QDir().mkpath(directory))
@@ -324,6 +391,23 @@ void LisSettingsStore::initialize(QString directory)
     emit loaded(settings, ports);
 }
 
+void LisSettingsStore::initializeOriginal(QString root)
+{
+    const QString operation = QStringLiteral("initialize");
+    if (!checkThread(operation)) return;
+    ready_ = false;
+    QString message;
+    if (!OriginalBusiness::workingRoot(root, &message)) { emit error(operation, message); return; }
+    originalRoot_ = QFileInfo(root).canonicalFilePath();
+    path_ = QDir(originalRoot_).filePath(QStringLiteral("config.ini"));
+    lockPath_ = QDir(originalRoot_).filePath(QStringLiteral(".lis-settings.lock"));
+    LisSettings settings; QByteArray bytes; QStringList ports;
+    if (!readStored(&settings, &bytes, &message, &originalFingerprint_) || !enumerate(&ports, &message))
+    { emit error(operation, message); return; }
+    committed_ = settings; committedBytes_ = bytes; available_ = ports; ready_ = true;
+    emit loaded(settings, ports);
+}
+
 void LisSettingsStore::load()
 {
     if (!checkThread(QStringLiteral("load"))) return;
@@ -359,10 +443,15 @@ void LisSettingsStore::save(LisSettings settings)
         emit error(QStringLiteral("save"), message.isEmpty() ? tr("LIS设置正由其他进程处理。") : message);
         return;
     }
-    if (stored != committed_ || bytes != committedBytes_)
+    if (stored != committed_ || (originalRoot_.isEmpty() && bytes != committedBytes_))
     {
         emit error(QStringLiteral("save"), tr("LIS设置已被其他写入方改变，请重开读取后再修改。"));
         return;
+    }
+    if (!originalRoot_.isEmpty())
+    {
+        if (settings.type == "tcp") { settings.commName = stored.commName; settings.baudrate = stored.baudrate; }
+        else { settings.ip = stored.ip; settings.port = stored.port; }
     }
     message = validate(settings);
     if (!message.isEmpty())
@@ -388,6 +477,12 @@ void LisSettingsStore::save(LisSettings settings)
         emit error(QStringLiteral("save"), message);
         return;
     }
+    if (!originalRoot_.isEmpty())
+    {
+        // 回传真正保存的两种方式及隐藏参数，不能把未保存的另一模式草稿当已提交值。
+        if (!readStored(&settings, &committedBytes_, &message, &originalFingerprint_))
+        { emit error(QStringLiteral("save"), tr("原LIS已提交但回读未完成，请重新读取核对。")); return; }
+    }
     committed_ = settings;
     available_ = ports;
     emit saved(settings, ports);
@@ -397,5 +492,6 @@ void LisSettingsStore::close()
 {
     if (!checkThread(QStringLiteral("close"))) return;
     ready_ = false;
+    originalRoot_.clear(); originalFingerprint_.clear();
     emit closed();
 }

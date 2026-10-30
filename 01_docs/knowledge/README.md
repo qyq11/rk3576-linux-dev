@@ -13,6 +13,8 @@
 | [sn100_host_function_and_porting_review.md](sn100_host_function_and_porting_review.md) | 介绍上位机业务、原Windows与Linux版逐项功能差异、代码阅读路线和待补实现。 |
 | [sn100_host_manual_test_guide.md](sn100_host_manual_test_guide.md) | 给使用者看的RK操作说明：启动关闭、保存与导出位置、20组“点什么、应看到什么”的人工用例。 |
 | [sn100_original_bin_files.md](sn100_original_bin_files.md) | 原文件用途及直接复制清单；原DB读取、输入、保存、导入导出、防卡顿和防重复点击要求，供后续窗口读取派发，按Windows原上位机维护原库。 |
+| [sn100_original_files_rk_checklist.md](sn100_original_files_rk_checklist.md) | 对照Windows与RK的39份DB、配置和报表模板，逐项列出完整路径、内容指纹是否相同及当前业务接入阶段，可逐行人工确认。 |
+| [sn100_next_chat_prompts_20261027.md](sn100_next_chat_prompts_20261027.md) | 旧聊天收尾边界及三个新聊天的接续提示词；先读最终交接，再继续整合、样本试剂和按钮核查。 |
 
 ## 如何理解文中的状态
 

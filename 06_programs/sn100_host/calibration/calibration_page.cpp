@@ -16,6 +16,7 @@
 #include <QVBoxLayout>
 #include <cmath>
 #include <numeric>
+#include <limits>
 
 CalibrationPage::CalibrationPage(CalibrationStore *store, QWidget *parent)
     : QWidget(parent), ui(new Ui::frmCalibrationMaterial), m_store(store)
@@ -49,6 +50,12 @@ CalibrationPage::CalibrationPage(CalibrationStore *store, QWidget *parent)
     connect(ui->btnCancel, &QPushButton::clicked, this, &CalibrationPage::cancelDraft);
     connect(ui->btnCopy, &QPushButton::clicked, this, &CalibrationPage::copyCurrent);
     connect(ui->btnDelLine, &QPushButton::clicked, this, &CalibrationPage::deleteCurrent);
+    connect(store,&CalibrationStore::originalSourceReady,this,[this](const QString &root)
+    {m_originalMode=true;m_originalRoot=root;updateActions();});
+    connect(ui->btnCheck,&QPushButton::clicked,this,&CalibrationPage::reviewOriginalCurve);
+    connect(ui->btnApply,&QPushButton::clicked,this,[this](){applyOriginalCurve(false);});
+    connect(ui->btn_use_curve_2,&QPushButton::clicked,this,[this](){applyOriginalCurve(true);});
+    connect(ui->btnCalculateIDSetting,&QPushButton::clicked,this,&CalibrationPage::editOriginalMethod);
     // This original button refers to instrument test waveforms, which are not
     // present in anonymous point records. The raw scatter remains on this page.
     ui->btnShowChart->setToolTip(tr("原始点在页面图中显示；真实测试波形尚未提供。"));
@@ -123,7 +130,7 @@ CalibrationPage::CalibrationPage(CalibrationStore *store, QWidget *parent)
         showProject(m_projectId);
         if (selected) showRecord(selected);
         setBusy(false);
-        report(tr("已读取本地原始点记录；全部未审核、未应用。右键曲线列表可新增。"));
+        report(m_originalMode?tr("已读取原校准库，审核标志与批组应用关系按原记录显示；拟合与反算另行核对。"):tr("已读取本地原始点记录；全部未审核、未应用。右键曲线列表可新增。"));
         emit snapshotChanged(m_records);
         emit operationFinished(QStringLiteral("load"), true);
     });
@@ -236,6 +243,18 @@ void CalibrationPage::updateActions()
     for (QWidget *control : QList<QWidget *>{ui->btnCheck, ui->btnReCalculate,
          ui->btnShowChart, ui->btnCalculateIDSetting, ui->btnApply, ui->btn_use_curve_2})
     { control->setEnabled(false); control->setToolTip(unavailable); }
+    if(m_originalMode)
+    {
+        const bool stable=edit&&m_record.id>0&&!m_dirty;
+        ui->btnCheck->setEnabled(stable&&!m_record.checked);
+        ui->btnCheck->setToolTip(tr("按原版保存操作者确认的审核标志；不会把未执行的计算标记为已计算。"));
+        ui->btnApply->setEnabled(stable);
+        ui->btn_use_curve_2->setEnabled(stable);
+        ui->btnCalculateIDSetting->setEnabled(stable&&m_session.role>=4);
+        ui->btnApply->setToolTip(tr("把所选原批组绑定到当前原校准编号。"));
+        ui->btn_use_curve_2->setToolTip(tr("把原Default批组绑定到当前原校准编号。"));
+        ui->btnCalculateIDSetting->setToolTip(tr("保存原计算方法及坐标变换；拟合和反算仍需匹配算法实现。"));
+    }
     ui->btnCalculateIDSetting->setVisible(m_session.role >= 4);
 }
 void CalibrationPage::reload()
@@ -323,7 +342,7 @@ void CalibrationPage::renderRecord()
 {
     m_populating = true;
     const QString storedDate = m_record.changedAt.isEmpty() ? m_record.createdAt : m_record.changedAt;
-    const QDateTime date = QDateTime::fromString(storedDate, Qt::ISODateWithMs);
+    const QDateTime date = m_record.originalProfile?QDateTime::fromString(storedDate,QStringLiteral("yyyyMMddHHmmss")):QDateTime::fromString(storedDate,Qt::ISODateWithMs);
     ui->ldtChangeDate->setText(date.isValid() ? date.toLocalTime().toString(QStringLiteral("yyyy/MM/dd HH:mm:ss")) : storedDate);
     ui->ldtChangeDate->setToolTip(storedDate);
     ui->ldtBooldBatch->setText(m_record.bloodBatch);
@@ -341,10 +360,16 @@ void CalibrationPage::renderRecord()
     for (int row = 0; row < m_record.points.size(); ++row)
     {
         const CalibrationPoint &point = m_record.points[row];
-        QStringList values = {QString::number(point.index), point.sampleRate, QString::number(point.concentration, 'g', 15)};
-        for (double value : point.measurements) values << QString::number(value, 'g', 15);
-        const double mean = std::accumulate(point.measurements.cbegin(), point.measurements.cend(), 0.0) / repeats;
-        values << QString::number(mean, 'g', 15) << tr("未计算");
+        const double displayedConcentration=point.concentration*(m_record.originalProfile?m_record.unitRatio:1.0);
+        QStringList values = {QString::number(point.index), point.sampleRate,QString::number(displayedConcentration,'g',17)};
+        if(m_record.originalProfile&&!std::isfinite(displayedConcentration))values[2]=point.originalValues.value("concentration").toString();
+        const QStringList originalMeasurements=point.originalValues.value("result_value").toString().split('|',Qt::KeepEmptyParts);
+        for (int index=0;index<point.measurements.size();++index)
+            values << (m_record.originalProfile&&!point.originalValues.isEmpty()?originalMeasurements.value(index):QString::number(point.measurements[index],'g',17));
+        double sum=0;int count=0;
+        for(double value:point.measurements)if(std::isfinite(value)&&(!m_record.originalProfile||value!=0)){sum+=value;++count;}
+        const double mean=count?sum/count:std::numeric_limits<double>::quiet_NaN();
+        values << (std::isfinite(mean)?QString::number(mean,'g',15):tr("无有效值")) << tr("未计算");
         for (int column = 0; column < values.size(); ++column)
         {
             auto *item = new QTableWidgetItem(values[column]);
@@ -360,12 +385,23 @@ void CalibrationPage::renderRecord()
             .arg(m_record.method, m_record.batchCode.isEmpty() ? tr("未关联") : m_record.batchCode,
                  m_record.concentrationUnit, m_record.resultUnit) :
         tr("无本地曲线\n右键曲线列表或按Insert录入原始点。\n拟合、审核、应用未启用。"));
+    if(m_record.originalProfile)
+        ui->lblDetail->setPlainText(tr("原校准编号：%1\n原审核：%2；原编辑：%3\n原应用批组：%4\n方法：%5；X：%6；Y：%7\n原始值直接读写；曲线拟合与浓度反算尚未执行。")
+            .arg(m_record.id).arg(m_record.checked?tr("已审核"):tr("未审核"),m_record.edited?tr("已编辑"):tr("未编辑"),m_record.appliedBatchGroups.isEmpty()?tr("无"):m_record.appliedBatchGroups.join(QStringLiteral("、")),m_record.method,m_record.xTransform,m_record.yTransform));
     m_populating = false;
     updateRawPlot();
 }
 void CalibrationPage::renderBatchReferences()
 {
     ui->tblLineApply->setRowCount(0);
+    if(m_originalMode)
+    {
+        QStringList groups{QStringLiteral("Default")};
+        for(const ReagentBatch &batch:m_reagents.batches)if(batch.projectId==m_projectId&&!groups.contains(batch.batchGroup))groups<<batch.batchGroup;
+        for(const QString &group:groups)
+        {const int row=ui->tblLineApply->rowCount();ui->tblLineApply->insertRow(row);ui->tblLineApply->setItem(row,0,new QTableWidgetItem(group));QStringList ids;for(const auto &record:m_records)if(record.projectId==m_projectId&&record.appliedBatchGroups.contains(group))ids<<QString::number(record.id);ui->tblLineApply->setItem(row,1,new QTableWidgetItem(ids.isEmpty()?tr("未绑定"):ids.join(',')));}
+        return;
+    }
     for (const ReagentBatch &batch : m_reagents.batches)
     {
         if (batch.projectId != m_projectId) continue;
@@ -433,6 +469,7 @@ void CalibrationPage::startNewRecord()
     if (blood->text().trimmed().isEmpty()) { report(tr("校准品批号不能为空，未创建草稿。")); return; }
     m_record = CalibrationRecord();
     m_record.projectId = selected.id; m_record.projectName = selected.name;
+    m_record.originalProfile=m_originalMode;m_record.originalRoot=m_originalRoot;
     m_record.batchId = batch->currentData().toLongLong();
     if (m_record.batchId) m_record.batchCode = batch->currentText();
     for (const ReagentBatch &value : m_reagents.batches)
@@ -477,12 +514,19 @@ bool CalibrationPage::readEditedRecord(CalibrationRecord *record, QString *messa
         for (int column = 2; column < 3 + repeats; ++column)
         {
             const QString value = ui->tbCalibrationResult->item(row, column)->text().trimmed();
+            QString unchanged;
+            if(record->originalProfile&&record->id>0&&!point.originalValues.isEmpty())
+            {
+                if(column==2){const double displayed=point.concentration*record->unitRatio;unchanged=std::isfinite(displayed)?QString::number(displayed,'g',17):point.originalValues.value("concentration").toString();}
+                else unchanged=point.originalValues.value("result_value").toString().split('|',Qt::KeepEmptyParts).value(column-3);
+                if(value==unchanged.trimmed())continue; // 未编辑的原文本、未知值和额外精度不经新库格式重写。
+            }
             if (!numeric.match(value).hasMatch())
             { *message = tr("第%1点第%2列须为0至99999、最多4位小数的数，不能为空。").arg(row + 1).arg(column + 1); return false; }
             bool ok = false; const double number = value.toDouble(&ok);
             if (!ok || !std::isfinite(number) || number > 99999)
             { *message = tr("原始点超出允许范围。"); return false; }
-            if (column == 2) point.concentration = number;
+            if (column == 2) point.concentration = number/(record->originalProfile?record->unitRatio:1.0);
             else point.measurements[column - 3] = number;
         }
     }
@@ -512,9 +556,11 @@ void CalibrationPage::updateRawPlot()
     for (int row = 0; row < edited.points.size(); ++row)
     {
         const CalibrationPoint &point = edited.points[row];
-        const double mean = std::accumulate(point.measurements.cbegin(), point.measurements.cend(), 0.0) / point.measurements.size();
-        points << QPointF(point.concentration, mean);
-        ui->tbCalibrationResult->item(row, ui->tbCalibrationResult->columnCount() - 2)->setText(QString::number(mean, 'g', 12));
+        double sum=0;int count=0;
+        for(double value:point.measurements)if(std::isfinite(value)&&(!edited.originalProfile||value!=0)){sum+=value;++count;}
+        const double mean=count?sum/count:std::numeric_limits<double>::quiet_NaN();
+        if(std::isfinite(mean)&&std::isfinite(point.concentration))points<<QPointF(point.concentration*(edited.originalProfile?edited.unitRatio:1.0),mean);
+        ui->tbCalibrationResult->item(row,ui->tbCalibrationResult->columnCount()-2)->setText(std::isfinite(mean)?QString::number(mean,'g',12):tr("无有效值"));
     }
     ui->cuplotCalibration->setRawPoints(points, edited.concentrationUnit, edited.resultUnit);
 }
@@ -561,6 +607,44 @@ void CalibrationPage::cancelDraft()
     const qint64 id = m_record.id;
     showRecord(id);
     report(tr("已取消本地草稿，数据库未改变。"));
+}
+void CalibrationPage::reviewOriginalCurve()
+{
+    if(!m_originalMode||m_busy||m_dirty||!m_record.id||!CalibrationStore::canEdit(m_session))return;
+    if(QMessageBox::question(this,tr("审核原曲线"),tr("确认按原业务审核当前曲线？此操作只保存原审核标志；尚未接入的拟合与反算不会自动执行。"),QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes)return;
+    setBusy(true);
+    QMetaObject::invokeMethod(m_store,"setOriginalReview",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,m_record.id),Q_ARG(qint64,m_record.revision),Q_ARG(bool,true));
+}
+void CalibrationPage::applyOriginalCurve(bool useDefault)
+{
+    if(!m_originalMode||m_busy||m_dirty||!m_record.id||!CalibrationStore::canEdit(m_session))return;
+    QString group=QStringLiteral("Default");
+    if(!useDefault)
+    {const int row=ui->tblLineApply->currentRow();if(row<0||!ui->tblLineApply->item(row,0)){report(tr("请先选择原试剂批组。"));return;}group=ui->tblLineApply->item(row,0)->text();}
+    if(!m_record.checked)
+    {report(tr("请先审核该原曲线，再选择批组应用；项目已明确启用自动应用时由后台按原规则核对。"));
+     bool autoApply=false;for(const auto &project:m_projects)if(project.id==m_record.projectId)autoApply=project.algorithm.autoApply;if(!autoApply)return;}
+    if(QMessageBox::question(this,tr("应用原曲线"),tr("把原批组“%1”绑定到校准编号%2？").arg(group).arg(m_record.id),QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes)return;
+    setBusy(true);
+    QMetaObject::invokeMethod(m_store,"applyOriginalCurve",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,m_record.id),Q_ARG(qint64,m_record.revision),Q_ARG(QString,group));
+}
+void CalibrationPage::editOriginalMethod()
+{
+    if(!m_originalMode||m_busy||m_dirty||!m_record.id||m_session.role<4||!CalibrationStore::canEdit(m_session))return;
+    QDialog dialog(this);dialog.setObjectName("originalCalibrationMethodDialog");dialog.setWindowTitle(tr("原计算方法设置"));
+    auto *form=new QFormLayout(&dialog);auto *method=new QComboBox(&dialog),*x=new QComboBox(&dialog),*y=new QComboBox(&dialog);
+    method->setObjectName("originalCalibrationMethod");x->setObjectName("originalCalibrationXTransform");y->setObjectName("originalCalibrationYTransform");
+    method->addItems({tr("直线法"),tr("一元三次曲线法"),tr("插值曲线法"),tr("折线法"),tr("双线回归法")});
+    x->addItems({"x","log(x)","1/x","ln(x)","log(log(x))","ln(ln(x))"});
+    y->addItems({"y","log(y)","1/y","ln(y)","log(log(y))","ln(ln(y))"});
+    for(auto pair:{qMakePair(method,m_record.method),qMakePair(x,m_record.xTransform),qMakePair(y,m_record.yTransform)})
+    {if(pair.first->findText(pair.second)<0)pair.first->insertItem(0,pair.second);pair.first->setCurrentText(pair.second);}
+    form->addRow(tr("计算方法"),method);form->addRow(tr("X坐标变换"),x);form->addRow(tr("Y坐标变换"),y);
+    auto *buttons=new QDialogButtonBox(QDialogButtonBox::Save|QDialogButtonBox::Cancel,&dialog);form->addRow(buttons);
+    connect(buttons,&QDialogButtonBox::accepted,&dialog,&QDialog::accept);connect(buttons,&QDialogButtonBox::rejected,&dialog,&QDialog::reject);
+    setBusy(true);const int result=dialog.exec();setBusy(false);
+    if(result!=QDialog::Accepted)return;
+    setBusy(true);QMetaObject::invokeMethod(m_store,"setOriginalMethod",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,m_record.id),Q_ARG(qint64,m_record.revision),Q_ARG(QString,method->currentText()),Q_ARG(QString,x->currentText()),Q_ARG(QString,y->currentText()));
 }
 bool CalibrationPage::prepareToLeave()
 {

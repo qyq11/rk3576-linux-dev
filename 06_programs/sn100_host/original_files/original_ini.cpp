@@ -34,7 +34,7 @@ bool OriginalIni::read(const QString &path, Settings *settings, QString *message
     }
     QTextCodec::ConverterState state;
     QTextCodec::codecForName("UTF-8")->toUnicode(bytes.constData(), bytes.size(), &state);
-    if (state.invalidChars || bytes.contains('\0'))
+    if (state.invalidChars || state.remainingChars || bytes.contains('\0'))
     {
         *message = QStringLiteral("原INI不是有效UTF-8文本，未猜测或替换原字符。");
         return false;
@@ -43,23 +43,44 @@ bool OriginalIni::read(const QString &path, Settings *settings, QString *message
     if (bytes.startsWith("\xef\xbb\xbf")) bytes.remove(0, 3);
     int comments = 0;
     bool continued = false;
+    bool quoted = false;
     for (int start = 0; start < bytes.size(); )
     {
         const int newline = bytes.indexOf('\n', start);
         const int end = newline < 0 ? bytes.size() : newline;
         int first = start;
         while (first < end && (bytes[first] == ' ' || bytes[first] == '\t')) ++first;
-        const bool comment = first < end && (bytes[first] == '#' || bytes[first] == ';');
-        if (!continued && first < end && bytes[first] == '#')
+        const bool comment = !continued && !quoted && first < end
+            && (bytes[first] == '#' || bytes[first] == ';');
+        if (comment && bytes[first] == '#')
         {
             bytes[first] = ';';
             ++comments;
+        }
+        // 多行双引号值中的行首#属于值本身；只在真正的整行注释处做Qt兼容替换。
+        if (!comment)
+        {
+            int valueStart = start;
+            if (!continued && !quoted)
+            {
+                const int equals = bytes.indexOf('=',start);
+                valueStart = equals >= start && equals < end ? equals+1 : end;
+            }
+            bool escaped = false;
+            for (int offset=valueStart; offset<end; ++offset)
+            {
+                const char ch=bytes[offset];
+                if (escaped) { escaped=false; continue; }
+                if (ch=='\\') { escaped=true; continue; }
+                if (ch=='"') quoted=!quoted;
+                if (ch==';' && !quoted) break;
+            }
         }
         int tail = end;
         if (tail > start && bytes[tail - 1] == '\r') --tail;
         int backslashes = 0;
         while (tail > start && bytes[--tail] == '\\') ++backslashes;
-        continued = !(comment && !continued) && backslashes % 2;
+        continued = !comment && backslashes % 2;
         start = end + 1;
     }
     QTemporaryFile compatible(QDir::tempPath() + QStringLiteral("/sn100-ini-XXXXXX.ini"));
@@ -79,5 +100,22 @@ bool OriginalIni::read(const QString &path, Settings *settings, QString *message
     }
     for (const QString &key : keys) settings->values.insert(key, parsed.value(key));
     settings->commentLines = comments;
+    return true;
+}
+
+bool OriginalIni::resolveKey(const Settings &settings, const QString &key, QString *actualKey, QString *message)
+{
+    if (!actualKey || !message) return false;
+    actualKey->clear();
+    for (auto it = settings.values.cbegin(); it != settings.values.cend(); ++it)
+    {
+        if (it.key().compare(key, Qt::CaseInsensitive) != 0) continue;
+        if (!actualKey->isEmpty())
+        {
+            *message = QStringLiteral("原INI有多个仅大小写不同的同名键，未猜测读取或覆盖：") + key;
+            return false;
+        }
+        *actualKey = it.key();
+    }
     return true;
 }

@@ -20,6 +20,12 @@ void cusReagentHole::setSelected(bool selected)
     selected_ = selected;
     update();
 }
+void cusReagentHole::setSelectedColour(QColor colour)
+{
+    if (!colour.isValid() || colour==selectedColour_) return;
+    selectedColour_=colour;
+    update();
+}
 void cusReagentHole::setDisplayMode(int mode)
 {
     displayMode_ = mode;
@@ -44,7 +50,7 @@ void cusReagentHole::paintEvent(QPaintEvent*)
     const int side = qMin(width(), height()) - 12;
     const double x = (width() - side) / 2.0, y = (height() - side) / 2.0;
     QRectF all(x, y, side, side), border(x - 3, y - 3, side + 6, side + 6);
-    QPen pen(selected_ ? QColor(42, 118, 242) : QColor("#C8C8C8"));
+    QPen pen(selected_ ? selectedColour_ : QColor("#C8C8C8"));
     pen.setWidth(6);
     pen.setJoinStyle(Qt::RoundJoin);
     p.setPen(pen);

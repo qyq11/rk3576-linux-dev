@@ -68,13 +68,12 @@ bool frmMain::enableHistoryReports(const QString &directory)
 {
     if (!history_ || reports_ || !QDir::isAbsolutePath(directory)) return false;
     QString error;
-    if (!HistoryReportDocument::anonymousOptions(&reportOptions_, &error))
+    if (property("originalDataRoot").toString().isEmpty() && !HistoryReportDocument::anonymousOptions(&reportOptions_, &error))
     {
         reportStatus(error, true);
         return false;
     }
-    // Project columns remain the explicit anonymous O04 contract until the
-    // project module is migrated. The hospital comes from the shared store.
+    // 原结果的打印参数随后台快照提供；普通独立模式继续使用其明确匿名配置。
     reportOptions_.hospitalName = committedHospitalName_;
     reports_ = new HistoryReportController(this);
     reports_->setObjectName(QStringLiteral("unifiedHistoryReports"));

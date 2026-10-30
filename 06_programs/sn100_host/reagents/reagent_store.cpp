@@ -1,4 +1,5 @@
 #include "reagent_store.h"
+#include "original_reagent_editor.h"
 #include <QDate>
 #include <QDateTime>
 #include <QDir>
@@ -383,6 +384,7 @@ bool ReagentStore::finish(const QString& operation, bool success, const QString&
 }
 void ReagentStore::load()
 {
+    if (originalEditor_) { loadOriginal(); return; }
     const QString operation = QStringLiteral("读取试剂");
     if (!onWorker(operation))
         return;
@@ -500,6 +502,13 @@ void ReagentStore::load()
 }
 void ReagentStore::saveReagent(ReagentRecord r)
 {
+    if (originalEditor_)
+    {
+        const QString operation=QStringLiteral("保存试剂资料");
+        if (!originalMayEdit(operation)) return;
+        QString message; const bool success=originalEditor_->saveReagent(r,&message);
+        finishOriginal(operation,success,message); return;
+    }
     const QString op = QStringLiteral("保存试剂资料");
     if (!begin(op))
         return;
@@ -567,6 +576,13 @@ void ReagentStore::saveReagent(ReagentRecord r)
 }
 bool ReagentStore::remove(const QString& table, qint64 id, const QString& op, const QString& extra)
 {
+    if (originalEditor_)
+    {
+        if (!originalMayEdit(op)) return false;
+        const QString kind=table=="reagent_list" ? "reagent" : table=="reagent_bottle_type" ? "bottle" : table=="reagent_batch_group" ? "batch" : "barcode";
+        QString message; const bool success=originalEditor_->remove(kind,id,&message);
+        finishOriginal(op,success,message); return success;
+    }
     if (!begin(op))
         return false;
     QString message;
@@ -597,6 +613,13 @@ void ReagentStore::removeBarcode(qint64 id)
 }
 void ReagentStore::saveBottle(ReagentBottle b)
 {
+    if (originalEditor_)
+    {
+        const QString operation=QStringLiteral("保存瓶型");
+        if (!originalMayEdit(operation)) return;
+        QString message; const bool success=originalEditor_->saveBottle(b,&message);
+        finishOriginal(operation,success,message); return;
+    }
     const QString op = QStringLiteral("保存瓶型");
     if (!begin(op))
         return;
@@ -635,6 +658,13 @@ void ReagentStore::saveBottle(ReagentBottle b)
 }
 void ReagentStore::saveBatch(ReagentBatch b)
 {
+    if (originalEditor_)
+    {
+        const QString operation=QStringLiteral("保存试剂批号");
+        if (!originalMayEdit(operation)) return;
+        QString message; const bool success=originalEditor_->saveBatch(b,&message);
+        finishOriginal(operation,success,message); return;
+    }
     const QString op = QStringLiteral("保存试剂批号");
     if (!begin(op))
         return;
@@ -740,6 +770,13 @@ void ReagentStore::saveBatch(ReagentBatch b)
 }
 void ReagentStore::saveBarcode(ReagentBarcode b)
 {
+    if (originalEditor_)
+    {
+        const QString operation=QStringLiteral("保存条码");
+        if (!originalMayEdit(operation)) return;
+        QString message; const bool success=originalEditor_->saveBarcode(b,&message);
+        finishOriginal(operation,success,message); return;
+    }
     const QString op = QStringLiteral("保存试剂条码");
     if (!begin(op))
         return;
@@ -763,6 +800,15 @@ void ReagentStore::saveBarcode(ReagentBarcode b)
 }
 void ReagentStore::saveHole(ReagentHole h)
 {
+    if (originalEditor_)
+    {
+        const QString operation=QStringLiteral("保存孔位");
+        if (!originalMayEdit(operation)) return;
+        QString message; const bool success=originalEditor_->saveHole(h,&message);
+        finishOriginal(operation,success,message);
+        if (success) emit originalHoleSaved(h.name);
+        return;
+    }
     const QString op = QStringLiteral("保存孔位配置");
     if (!begin(op))
         return;
@@ -827,6 +873,15 @@ void ReagentStore::saveHole(ReagentHole h)
 }
 void ReagentStore::clearHole(QString name)
 {
+    if (originalEditor_)
+    {
+        const QString operation=QStringLiteral("清除孔位配置");
+        if (!originalMayEdit(operation)) return;
+        QString message; const bool success=originalEditor_->clearHole(name,&message);
+        finishOriginal(operation,success,message);
+        if (success) emit originalHoleSaved(name);
+        return;
+    }
     const QString op = QStringLiteral("清除本地孔位配置");
     if (!begin(op))
         return;
@@ -836,6 +891,11 @@ void ReagentStore::clearHole(QString name)
 }
 void ReagentStore::close()
 {
+    if (originalEditor_)
+    {
+        if (!onWorker(QStringLiteral("关闭原试剂"))) return;
+        originalEditor_.reset(); ready_=false; emit closed();
+    }
     ready_ = false;
     if (connectionName_.isEmpty())
         return;

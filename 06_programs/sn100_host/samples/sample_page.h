@@ -31,6 +31,8 @@ class SamplePage : public QWidget
         return dirty_ || dialogDirty_;
     }
     bool prepareToLeave();
+    SampleStore *taskStore() const { return store_; }
+    bool originalProfile() const { return originalProfile_; }
     SampleSnapshot snapshot() const
     {
         return snapshot_;
@@ -90,6 +92,8 @@ class SamplePage : public QWidget
     ReagentSnapshot reagents_;
     AccountSession session_;
     SampleSnapshot snapshot_;
+    bool originalProfile_ = false, pendingDeviceReload_ = false;
+    int ordinaryHoles_ = 8, emergencyHoles_ = 3;
     SampleRack editing_;
     QPointer<QDialog> dialog_;
     bool initialized_ = false, ready_ = false, busy_ = false, dirty_ = false, dialogDirty_ = false,

@@ -316,19 +316,24 @@ void frmMain::updateAccountStatus()
     // The original user-name region is narrow. Preserve its geometry and show
     // the complete anonymous actor/role plus simulation boundary in a tooltip.
     const QString name = session_.authenticated ? session_.name : QStringLiteral("Guest");
-    const QString role = session_.role == 0 ? tr("访客") : AccountStore::roleName(session_.role);
+    const bool original = !property("originalDataRoot").toString().isEmpty() || !session_.originalPolicySource.isEmpty();
+    const QString role = original && !session_.roleLabel.isEmpty() ? session_.roleLabel
+        : session_.role == 0 ? tr("访客") : AccountStore::roleName(session_.role);
     const QString identity = QStringLiteral("%1: %2").arg(role,name);
     ui->lblUserName->setText(ui->lblUserName->fontMetrics().elidedText(
         identity,Qt::ElideRight,ui->lblUserName->width()));
-    const QString source = session_.source == AccountSessionSource::Password
-        ? tr("本地测试库密码认证") : session_.source == AccountSessionSource::Simulated
+    const QString source = session_.source == AccountSessionSource::Configured
+        ? tr("原配置默认身份，显示名为Guest") : session_.source == AccountSessionSource::Password
+        ? original ? tr("原账户口令认证") : tr("本地测试库密码认证") : session_.source == AccountSessionSource::Simulated
         ? tr("显式匿名模拟会话") : tr("Guest访客会话");
-    ui->lblUserName->setToolTip(tr("%1；%2。设备动作状态为模拟%3，登录不改变设备动作条件。")
-        .arg(identity,source,session_.actionReady ? tr("ready") : tr("running")));
+    ui->lblUserName->setToolTip(original
+        ? tr("%1；%2。业务是否允许还需核对当前设备状态。 ").arg(identity, source)
+        : tr("%1；%2。设备动作状态为模拟%3，登录不改变设备动作条件。")
+            .arg(identity,source,session_.actionReady ? tr("ready") : tr("running")));
     const bool idle = businessPagesIdle() && !logoutPending_ && !loginOpen;
     ui->btnUser->setEnabled(passwordLoginEnabled_ && idle);
     ui->btnUser->setToolTip(passwordLoginEnabled_
-        ? tr("本地密码登录；只验证独立测试库账户，不连接仪器。")
+        ? original ? tr("按原账户库登录，权限按原角色字典核对。") : tr("本地密码登录；只验证独立测试库账户，不连接仪器。")
         : tr("脱机：只使用显式匿名模拟会话；密码登录未启用。"));
     ui->btnLoginOut->setEnabled(session_.authenticated && idle);
     ui->btnLoginOut->setToolTip(logoutPending_ ? tr("正在清除本地会话…")

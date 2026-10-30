@@ -98,14 +98,19 @@ bool validateFieldGlyphs(const QDomElement &element, const QString &staticText,
 
 bool loadEmbeddedTemplate(QDomDocument *xml, const HistoryPrintDocument &document, QString *error)
 {
-    QFile file(QStringLiteral(":/history_report/report.xml"));
-    if (!file.open(QIODevice::ReadOnly) || file.size() > 256 * 1024)
+    QByteArray source = document.originalTemplateXml;
+    const bool original = !source.isEmpty();
+    if (!original)
     {
-        *error = QStringLiteral("内嵌原报告模板缺失或超出容量。");
-        return false;
+        QFile file(QStringLiteral(":/history_report/report.xml"));
+        if (!file.open(QIODevice::ReadOnly) || file.size() > 256 * 1024)
+        {
+            *error = QStringLiteral("内嵌原报告模板缺失或超出容量。");
+            return false;
+        }
+        source = file.readAll();
     }
-    const QByteArray source = file.readAll();
-    if (source.contains("<!DOCTYPE") || !xml->setContent(source)
+    if (source.size() > 256 * 1024 || source.contains("<!DOCTYPE") || !xml->setContent(source)
         || xml->documentElement().tagName() != QStringLiteral("Reports"))
     {
         *error = QStringLiteral("内嵌原报告模板不是允许的独立XML格式。");
@@ -169,6 +174,19 @@ bool loadEmbeddedTemplate(QDomDocument *xml, const HistoryPrintDocument &documen
             return false;
         }
         QString value = element.attribute(QStringLiteral("value"));
+        if (original)
+        {
+            // 原XML保持原字节；只在本次内存副本绑定原QtReport::setValue中的名字。
+            const QMap<QString, QString> fields{{"yiyuanmingcheng","hospital_name"},{"xingming","name"},
+                {"xingbie","sex"},{"nianling","age"},{"chuanghao","bed_number"},{"keshi","department"},
+                {"songjianyisheng","sample_provider"},{"biaobenhao","sample_sn"},{"bingrenleixing","patient_type"},
+                {"baogaoriqi","report_date"},{"beizhu","mark"},{"jianyanyisheng","checker"},{"shenheyisheng","reviewer"},
+                {"xiangmu","project"},{"xiangmuquancheng","project_name"},{"jieguo","project_result"},
+                {"cankaoqujian","reference_range"},{"danwei","unit"}};
+            for (auto field = fields.cbegin(); field != fields.cend(); ++field)
+                value.replace('[' + field.key() + ']', '[' + field.value() + ']');
+            element.setAttribute(QStringLiteral("value"), value);
+        }
         const QRegularExpression variable(QStringLiteral("\\[([^\\[\\]]+)\\]"));
         auto matches = variable.globalMatch(value);
         QStringList parameters;

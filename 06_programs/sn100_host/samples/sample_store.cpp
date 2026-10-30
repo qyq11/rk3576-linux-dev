@@ -1,4 +1,7 @@
 #include "sample_store.h"
+#include "original_sample_repository.h"
+#include "original_detection_session.h"
+#include "original_device_sync.h"
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -271,14 +274,13 @@ void SampleStore::registerTypes()
     qRegisterMetaType<SampleRack>();
     qRegisterMetaType<SampleCombination>();
     qRegisterMetaType<SampleSnapshot>();
+    qRegisterMetaType<ProjectRecords>();
 }
 bool SampleStore::canEdit(const AccountSession &session)
 {
-    // Original sample entry has no engineer-only gate. The local preset writer
-    // requires an explicit authenticated offline identity, separately recorded.
-    // Original presets may be prepared while other instrument work is running.
-    // actionReady is therefore not a gate for these local-only edits.
-    return session.authenticated && session.role >= 1 && session.role <= 5;
+    // 原样本预设无最低角色限制；role0只有已建立有效会话才可编辑，默认Guest仍拒绝。
+    // 原版允许检测时预设其他样本，actionReady不限制本地草稿；已下发孔位另有状态保护。
+    return session.authenticated && session.role >= 0 && session.role <= 5;
 }
 bool SampleStore::check(qint64 request, const QString &operation, bool write)
 {
@@ -658,6 +660,16 @@ void SampleStore::load(qint64 request)
     }
     SampleSnapshot snapshot;
     QString message;
+    if (originalSamples_)
+    {
+        if (originalSamples_->load(&snapshot, &message))
+        {
+            emit originalProjectsReady(originalSamples_->projects());
+            emit snapshotReady(request, snapshot);
+        }
+        else emit error(request, QStringLiteral("load"), message);
+        return;
+    }
     if (!database_.transaction())
     {
         emit error(request, "load", database_.lastError().text());
@@ -773,6 +785,14 @@ bool SampleStore::finish(qint64 request, const QString &operation, qint64 id, bo
 }
 void SampleStore::saveCombination(qint64 request, SampleCombination combination)
 {
+    if (originalSamples_)
+    {
+        if (!check(request, QStringLiteral("saveCombination"), true)) return;
+        QString message; qint64 saved = 0;
+        if (originalSamples_->saveCombination(combination, &saved, &message)) emit succeeded(request, QStringLiteral("saveCombination"), saved);
+        else emit error(request, QStringLiteral("saveCombination"), message);
+        return;
+    }
     if (!check(request, "saveCombination", true))
     {
         return;
@@ -863,6 +883,14 @@ void SampleStore::saveCombination(qint64 request, SampleCombination combination)
 }
 void SampleStore::removeCombination(qint64 request, qint64 id)
 {
+    if (originalSamples_)
+    {
+        if (!check(request, QStringLiteral("removeCombination"), true)) return;
+        QString message;
+        if (originalSamples_->removeCombination(id, &message)) emit succeeded(request, QStringLiteral("removeCombination"), id);
+        else emit error(request, QStringLiteral("removeCombination"), message);
+        return;
+    }
     if (!check(request, "removeCombination", true))
     {
         return;
@@ -887,6 +915,10 @@ void SampleStore::removeCombination(qint64 request, qint64 id)
 }
 void SampleStore::release()
 {
+    if (originalConfigurationTimeout_) originalConfigurationTimeout_->stop();
+    originalDeviceSync_.reset();
+    originalDetection_.reset();
+    originalSamples_.reset();
     if (qualityReplyTimer_) qualityReplyTimer_->stop();
     pendingQuality_ = PendingQualityChange();
     qualityOwnerId_.clear(); qualityTargetId_.clear(); qualityBound_ = false; closeAfterQuality_ = false;

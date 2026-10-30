@@ -10,13 +10,12 @@
 namespace
 {
 // 这里只传已提交项目及其单位快照，不把项目编辑框中的草稿用于质控。
-QcProjectRefs qualityProjects(const ProjectRecords &records, const ProjectUnits &units)
+QcProjectRefs qualityProjects(const ProjectRecords &records, const ProjectUnits &units, bool originalProfile)
 {
     QcProjectRefs choices;
     for (const ProjectRecord &record : records)
     {
-        // 此页的引用仍属于独立catalog；原项目先只由本批项目页直接维护。
-        if (!record.originalFileName.isEmpty()) continue;
+        if ((!record.originalFileName.isEmpty()) != originalProfile) continue;
         QcProjectRef choice;
         choice.id = record.id;
         choice.name = record.name;
@@ -66,10 +65,11 @@ void frmMain::attachQualityControlPage(QualityControlPage *page)
     delete placeholder;
     ui->stkCenterAdptive->insertWidget(4, qualityViewport_);
     ui->stkCenterAdptive->setCurrentIndex(previous);
+    const bool originalProfile = !property("originalDataRoot").toString().isEmpty();
     connect(projects_, &ProjectPage::snapshotChanged, page,
-            [page](ProjectRecords records, ProjectUnits units)
+            [page, originalProfile](ProjectRecords records, ProjectUnits units)
     {
-        page->setProjects(qualityProjects(records, units));
+        page->setProjects(qualityProjects(records, units, originalProfile));
     });
     connect(page, &QualityControlPage::statusChanged, this,
             [this](const QString &message, bool error)
@@ -113,6 +113,7 @@ bool frmMain::requestQualityLeave(const QString &action, bool currentOnly)
 void frmMain::updateQualityStatus()
 {
     if (!qualityControl_ || currentMainPage() != 4) return;
+    if (deviceControl_) { updateDeviceControlActions(); return; }
     const QString state = qualityStatusError_ ? tr("脱机／失败")
         : qualityControl_->isBusy() ? tr("脱机／处理中")
         : qualityControl_->isDirty() ? tr("脱机／未保存")

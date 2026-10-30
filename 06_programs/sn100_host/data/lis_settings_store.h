@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QByteArray>
 #include <QStringList>
+#include <QVariantMap>
 #include <functional>
 
 // 原LIS页面的九个可见键。空端点表示尚未配置，不猜测设备参数。
@@ -18,6 +19,20 @@ struct LisSettings
     bool autoGet = false;
     bool autoSend = false;
     bool link = false;
+    // 原底层配置；原Windows设置页没有这些控件，页面编辑九个可见项时原样保留。
+    QString tcpType, sequenceNumber, serverId, linkIntervalMs;
+    int dataBits = 0;
+    int parity = 0; // 沿Qt原枚举：无0、偶2、奇3、空格4、标记5。
+    int stopBits = 0; // 沿Qt原枚举：1位1、1.5位3、2位2。
+    int flowControl = 0; // 无0、硬件1、软件2。
+    bool serialFramingKnown = false;
+    bool simulation = false;
+    bool uploadForHole = false;
+    bool utf16 = false;
+    bool sampleCodeCanRepeatTest = true;
+    bool originalProfile = false;
+    QString originalRoot, originalFingerprint;
+    QVariantMap originalValues;
     bool operator==(const LisSettings &other) const;
     bool operator!=(const LisSettings &other) const { return !(*this == other); }
 };
@@ -36,6 +51,7 @@ public:
 
 public slots:
     void initialize(QString absoluteDirectory);
+    void initializeOriginal(QString root);
     void load();
     void save(LisSettings settings);
     void close();
@@ -54,10 +70,12 @@ private:
     QByteArray committedBytes_;
     QStringList available_;
     bool ready_ = false;
+    QString originalRoot_;
+    QString originalFingerprint_;
     bool checkThread(const QString &operation);
     bool enumerate(QStringList *names, QString *message);
     bool readBytes(QByteArray *bytes, QString *message);
-    bool readStored(LisSettings *settings, QByteArray *bytes, QString *message);
+    bool readStored(LisSettings *settings, QByteArray *bytes, QString *message, QString *fingerprint = nullptr);
     bool writeStored(const LisSettings &settings, const QByteArray &expected,
                      QByteArray *written, QString *message);
 };

@@ -2,6 +2,7 @@
 #define SN100_REAGENT_HOLE_WIDGET_H
 #include "reagent_types.h"
 #include <QWidget>
+#include <QColor>
 class cusReagentHole : public QWidget
 {
     Q_OBJECT
@@ -9,6 +10,7 @@ public:
     explicit cusReagentHole(QWidget* parent = nullptr);
     void setInformation(const ReagentHole& hole, const ReagentRecord& reagent, const ReagentBottle& bottle);
     void setSelected(bool selected);
+    void setSelectedColour(QColor colour);
     void setDisplayMode(int mode);
 signals:
     void clicked(QString name);
@@ -25,5 +27,6 @@ private:
     ReagentBottle bottle_;
     bool selected_ = false;
     int displayMode_ = 0;
+    QColor selectedColour_ = QColor(42,118,242);
 };
 #endif

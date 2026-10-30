@@ -17,6 +17,7 @@ public:
 
 public slots:
     void initialize(QString absoluteDirectory);
+    void initializeOriginal(QString root);
     void load();
     void save(QString name);
     void close();
@@ -34,9 +35,11 @@ private:
     QByteArray committedBytes_;
     QStringList available_;
     bool ready_ = false;
+    QString originalRoot_;
+    QString originalFingerprint_;
     bool checkThread(const QString &operation);
     bool readBytes(QByteArray *bytes, QString *message);
-    bool readStored(QString *name, QByteArray *bytes, QString *message);
+    bool readStored(QString *name, QByteArray *bytes, QString *message, QString *fingerprint = nullptr);
     bool writeStored(const QString &name, const QByteArray &expected, QByteArray *written, QString *message);
     bool enumerate(QStringList *names, QString *message);
 };

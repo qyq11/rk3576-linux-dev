@@ -22,7 +22,8 @@ if [[ $list_inputs == 0 ]]; then
         echo 'Sample UI ARM64 SVG inputs missing; restore matching archived Qt5.15.13 SVG headers/runtime before building.' >&2; exit 1;
     }
 fi
-include=$sysroot/usr/include/aarch64-linux-gnu/qt5
+# 缓存头文件可能是指向WSL本地的同字节副本，先解析路径，避免每次include穿过Windows盘。
+include=$(readlink -f -- "$sysroot/usr/include/aarch64-linux-gnu/qt5")
 lib=$sysroot/usr/lib/aarch64-linux-gnu
 build_dir=${SN100_ARM64_BUILD_DIR:-$root/temp/sn100_host/integration/arm64_build}
 [[ $build_dir == /* ]] || { echo 'SN100_ARM64_BUILD_DIR must be absolute.' >&2; exit 2; }
@@ -183,6 +184,26 @@ forms+=("$program_dir/ui/frmlanguagesetting.ui" "$program_dir/history/mask_dlg_s
 sources+=("$program_dir/ui/maskdlgshutdown.cpp")
 headers+=("$program_dir/ui/maskdlgshutdown.h")
 forms+=("$program_dir/ui/maskdlgshutdown.ui")
+# 已接原库的存储对象需要完整定义；未接页面的后台能力不代表该页已验收。
+sources+=("$program_dir/original_files/original_business_database.cpp"
+          "$program_dir/original_files/original_ini_write.cpp"
+          "$program_dir/original_files/original_system_profile.cpp"
+          "$program_dir/history/original_history_source.cpp"
+          "$program_dir/alarm_history/original_alarm_events.cpp"
+          "$program_dir/quality_control/qc_original_store.cpp"
+          "$program_dir/calibration/calibration_original_store.cpp"
+          "$program_dir/reagents/original_reagent_repository.cpp"
+          "$program_dir/reagents/original_reagent_editor.cpp"
+          "$program_dir/reagents/original_reagent_store.cpp"
+          "$program_dir/samples/original_sample_store.cpp"
+          "$program_dir/samples/original_sample_repository.cpp"
+          "$program_dir/samples/original_detection_session.cpp"
+          "$program_dir/samples/original_task_codec.cpp"
+          "$program_dir/samples/original_result_codec.cpp"
+          "$program_dir/samples/original_device_sync.cpp"
+          "$program_dir/samples/original_project_device_repository.cpp"
+          "$program_dir/projects/original_project_codec.cpp")
+headers+=("$program_dir/reagents/original_reagent_editor.h")
 # One stable name for each QRC prevents basename collisions with other modules.
 resource_names=(shell_resources account_resources report_resources imagesRpt projects_resources reagents_resources samples_resources instrument_resources qc_history_resources)
 resource_files=("$module_dir/resources.qrc" "$module_dir/account_resources.qrc"

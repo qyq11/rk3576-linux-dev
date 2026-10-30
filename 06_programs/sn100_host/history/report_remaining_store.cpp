@@ -1,5 +1,6 @@
 #include "history_store.h"
 #include "result_project_references.h"
+#include "original_history_source.h"
 
 #include <QFile>
 #include <QJsonArray>
@@ -105,6 +106,11 @@ void HistoryStore::hideReports(qint64 requestId, HistoryIds reportIds)
 bool HistoryStore::displayDefaults(HistoryDisplayColumns *columns, QString *message,
                                    const ProjectCurrentFormatSnapshot *format)
 {
+    if (m_originalHistory)
+    {
+        HistoryDisplayColumns saved;
+        return m_originalHistory->display(m_database,&saved,columns,message);
+    }
     ProjectCurrentFormatSnapshot fresh;
     if (m_resultIngest && !format)
     {
@@ -182,6 +188,7 @@ bool HistoryStore::displayDefaults(HistoryDisplayColumns *columns, QString *mess
 bool HistoryStore::readDisplay(HistoryDisplayColumns *columns, HistoryDisplayColumns *defaults, QString *message,
                                const ProjectCurrentFormatSnapshot *format)
 {
+    if (m_originalHistory) return m_originalHistory->display(m_database,columns,defaults,message);
     if (!displayDefaults(defaults, message, format)) return false;
     *columns = *defaults;
     QSqlQuery exists(m_database);
@@ -223,6 +230,8 @@ void HistoryStore::loadDisplay(qint64 requestId)
     const QString operation = QStringLiteral("loadDisplay");
     if (!checkReady(requestId, operation)) return;
     QString message;
+    if (m_originalHistory && !m_originalHistory->refresh(++m_formatRequestRevision,&message))
+    { emit error(requestId,operation,message); return; }
     HistoryDisplayColumns columns, defaults;
     RemainingTransaction transaction(m_database);
     if (!transaction.begin(&message) || !readDisplay(&columns, &defaults, &message) || !transaction.commit(&message))
@@ -235,6 +244,17 @@ void HistoryStore::saveDisplay(qint64 requestId, HistoryDisplayColumns columns)
     const QString operation = QStringLiteral("saveDisplay");
     if (!canWriteRemaining(requestId, operation)) return;
     QString message;
+    if (m_originalHistory)
+    {
+        if (!m_originalHistory->refresh(++m_formatRequestRevision,&message)
+            || !m_originalHistory->saveDisplay(m_database,columns,&message))
+        { emit error(requestId,operation,message); return; }
+        HistoryDisplayColumns saved, defaults;
+        if (!m_originalHistory->display(m_database,&saved,&defaults,&message))
+        { emit error(requestId,operation,message); return; }
+        emit displaySaved(requestId,saved);
+        return;
+    }
     RemainingTransaction transaction(m_database);
     if (!transaction.begin(&message)) { emit error(requestId, operation, message); return; }
     HistoryDisplayColumns defaults;

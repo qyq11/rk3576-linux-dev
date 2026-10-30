@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPointer>
+#include <QMap>
 #include "data/account_store.h"
 #include "history/report_document.h"
 
@@ -18,6 +19,7 @@ class HistoryReportController;
 class ProjectPage;
 class ReagentsPage;
 class SamplePage;
+class SampleStore;
 class InstrumentPage;
 class MaskDlgLogin;
 class MaskDlgShutDown;
@@ -32,6 +34,7 @@ class LisInboxPageHost;
 class QAction;
 namespace AlarmHistory { class Store; }
 namespace Sn100Protocol { struct ReplayState; struct LoopbackStatusState; }
+namespace OriginalRuntime { struct RuntimeSettings; struct SystemProfile; }
 
 namespace Ui
 {
@@ -86,11 +89,15 @@ public:
     bool requestShutdown();
     bool enableDeviceControl(bool connectAtStartup = true);
     DeviceControl *deviceControl() const { return deviceControl_; }
+    // 在样本/试剂页面挂入后连接实际后台；入口与延迟初始化均可重复调用。
+    void attachDeviceTaskStore();
     int currentMainPage() const;
     int currentUserPage() const;
     bool selectMainPage(int index);
     bool selectUserPage(int index);
     void setDataDirectory(const QString &directory);
+    bool applyOriginalRuntime(const OriginalRuntime::RuntimeSettings &settings,
+                              const OriginalRuntime::SystemProfile &system, QString *message);
     // 只呈现显式离线回放；不改变账户动作条件或启用任何设备按钮。
     void setStatusReplayState(const Sn100Protocol::ReplayState &state);
     // 自建本机peer的只读观测；与文件回放使用不同来源提示，不解禁设备动作。
@@ -174,6 +181,21 @@ private:
     bool connectDeviceAtStartup_ = false;
     void updateDeviceControlActions();
     QString detectionStartBlocker() const;
+    void updateOriginalDeviceSync();
+    void invalidateDeviceTaskContext();
+    void reportDeviceTaskError(const QString &message);
+    QPointer<SampleStore> deviceTaskStore_;
+    bool deviceTaskPreparing_ = false;
+    quint64 deviceTaskRequest_ = 0, deviceTaskConnection_ = 0;
+    quint64 deviceConfigurationConnection_ = 0;
+    bool deviceConfigurationStarted_ = false, deviceConfigurationReady_ = false;
+    QString deviceConfigurationRoot_;
+    QMap<quint64, QByteArray> devicePackets_;
+    quint64 devicePacket_ = 0;
+    qint64 devicePacketBytes_ = 0;
+    QString deviceReagentUpdateHole_;
+    quint64 deviceReagentUpdateRequest_ = 0;
+    bool deviceReagentUpdateUnknown_ = false;
 
     void restoreMainSelection();
     void configureOfflineStatus();

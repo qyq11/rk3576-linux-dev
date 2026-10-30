@@ -13,6 +13,7 @@
 | [alarm_history_formal_20261026/](alarm_history_formal_20261026) | 已有告警历史读取与页面的固定批次材料；按批次记录确认适用范围。 |
 | [calibration_local_20261025/](calibration_local_20261025) | 本地校准记录和引用保护的固定批次材料；按批次记录确认适用范围。 |
 | [catalog_integration_20261024/](catalog_integration_20261024) | 项目、试剂及样本的统一整合的固定批次材料；按批次记录确认适用范围。 |
+| [cleanup_20261030/](cleanup_20261030) | 中间文件删除清单、实际结果、停止交接及未采用候选；不增加运行通过结论。 |
 | [cleanup_20261024/](cleanup_20261024) | 文件清理核对的固定批次材料；按批次记录确认适用范围。 |
 | [clot_endpoint_20261023/](clot_endpoint_20261023) | 凝血点研究原型的固定批次材料；按批次记录确认适用范围。 |
 | [combination_mode_20261027/](combination_mode_20261027) | 普通/多瓶组合模式的固定批次材料；按批次记录确认适用范围。 |
@@ -64,6 +65,10 @@
 | [wsl_ime_20261023/](wsl_ime_20261023) | WSL中文输入的固定批次材料；按批次记录确认适用范围。 |
 
 ## 优先看什么
+
+医院保存6项失败的修复见[hospital_save_fix_20261027/](hospital_save_fix_20261027/README.md)：保留68/6失败及74/0通过、实际退出码、编译与源码身份；仅独立后台，不表示正式主页面接入。该小项完成后原接入窗口按用户要求停止。
+
+Windows与RK逐文件核对见[original_files_rk_checklist_20261027/](original_files_rk_checklist_20261027/README.md)：39份DB、配置及报表模板的完整路径、两次板端指纹和部署版业务接入阶段。文件全部存在且内容一致，不表示对应业务全部接入；可操作的人工核对表见[用户清单](../../01_docs/knowledge/sn100_original_files_rk_checklist.md)。
 
 原文件用途和数据库沿用依据见[original_bin_20261027/](original_bin_20261027/README.md)：包含截图所指305个文件的指纹、29库结构和算法/日志库的对外函数。这里只保存静态依据，不含原库业务记录，也不代表RK已接入原库。
 

@@ -39,6 +39,14 @@ ReadOnlyTcpTransport::~ReadOnlyTcpTransport()
     clearConnection(QString(), false);
 }
 
+bool ReadOnlyTcpTransport::configureMessageQueue(int maximumBytes)
+{
+    // 旧只读接口的构造预算保持原规则；设备派生对象可在空闲时预留完整任务报文空间。
+    if (m_active || !m_frames.isEmpty() || pendingWriteBytes() != 0 || maximumBytes < 1 || maximumBytes > 131072) return false;
+    m_maxQueuedBytes = maximumBytes;
+    return true;
+}
+
 void ReadOnlyTcpTransport::setTimingEnabled(bool enabled)
 {
     m_timingEnabled = enabled;

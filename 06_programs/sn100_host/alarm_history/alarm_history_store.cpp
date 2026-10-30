@@ -1,4 +1,6 @@
 #include "alarm_history_store.h"
+#include "original_files/original_business_database.h"
+#include <QDir>
 #include <QCoreApplication>
 #include <QFileInfo>
 #include <QSqlError>
@@ -74,6 +76,95 @@ void Store::registerTypes()
 }
 bool Store::inOwnerThread() const { return QThread::currentThread() == thread(); }
 bool Store::active() const { return m_phase != Phase::Idle; }
+
+void Store::openOriginal(QString root)
+{
+    if (!inOwnerThread() || (QCoreApplication::instance() && thread() == QCoreApplication::instance()->thread()))
+    { emit openFailed(Error::WrongThread, QStringLiteral("请在历史库工作线程选择原资料。")); return; }
+    if (m_database.isValid())
+    { emit openFailed(Error::Busy, QStringLiteral("已有历史库连接，请先正常关闭。")); return; }
+    QString message;
+    {
+        // 公共原库入口同时检查整条路径，不能让中间分类目录的链接越出资料根。
+        OriginalBusiness::Database validated;
+        if (!validated.open(root, QStringLiteral("db/userSet/abnormal_Log.db"), false, &message))
+        { emit openFailed(Error::OpenFailed, message); return; }
+    }
+    const QString path = QDir(root).filePath(QStringLiteral("db/userSet/abnormal_Log.db"));
+    if (QFileInfo(path).isSymLink())
+    { emit openFailed(Error::OpenFailed, QStringLiteral("原告警历史不能经过符号链接。")); return; }
+    m_original = true;
+    m_originalRoot = QFileInfo(root).canonicalFilePath();
+    m_lastOriginalAppend = 0;
+    openExisting(path);
+}
+
+void Store::appendOriginalEvents(quint64 requestId, QString sourceToken, Rows rows)
+{
+    if (!inOwnerThread() || !m_original || m_originalRoot.isEmpty() || !m_database.isOpen() || sourceToken != m_sourceToken || sourceToken.isEmpty())
+    { emit originalEventsError(requestId, QStringLiteral("新告警来源或线程已失效，未写入历史。")); return; }
+    if (requestId == 0 || requestId <= m_lastOriginalAppend)
+    { emit originalEventsError(requestId, QStringLiteral("重复或迟到的新告警追加请求未执行。")); return; }
+    if (rows.isEmpty() || rows.size() > 1024 || m_originalEvents.size() >= 32 || m_queuedOriginalRows + rows.size() > 4096)
+    { emit originalEventsError(requestId, QStringLiteral("新告警批为空或超出待写队列上限，未截断或假报成功。")); return; }
+    for (const Row &row : rows)
+    {
+        if (row.id != 0 || row.errorCode.isEmpty() || row.errorCode.size() > 64 || row.errorCode != row.errorCode.trimmed() || !canonicalTimeText(row.dateTime) || !row.correctiveAction.isEmpty())
+        { emit originalEventsError(requestId, QStringLiteral("只允许追加有编号和明确接收时间的新告警，不能修改旧记录或处理措施。")); return; }
+        for (const QString &value : {row.errorCode, row.description, row.measure, row.dateTime, row.user})
+            if (value.contains(QChar::Null) || value.toUtf8().size() > maximumCellBytes)
+            { emit originalEventsError(requestId, QStringLiteral("新告警字段含空字符或超出单格上限，未截断写入。")); return; }
+    }
+    qint64 totalBytes = 0;
+    const auto bytesIn = [](const Rows &values)
+    {
+        qint64 bytes = 0;
+        for (const Row &row : values) for (const QString &value : {row.errorCode, row.description, row.measure, row.dateTime, row.user}) bytes += value.toUtf8().size();
+        return bytes;
+    };
+    totalBytes += bytesIn(rows);
+    for (const auto &batch : m_originalEvents) totalBytes += bytesIn(batch.second);
+    if (totalBytes > 2097152)
+    { emit originalEventsError(requestId, QStringLiteral("待写告警文本超过2MiB上限，未丢弃后假报成功。")); return; }
+    m_lastOriginalAppend = requestId;
+    m_queuedOriginalRows += rows.size();
+    m_originalEvents.append(qMakePair(requestId, rows));
+    scheduleOriginalEvents();
+}
+
+void Store::scheduleOriginalEvents()
+{
+    if (active() || m_originalEvents.isEmpty() || m_appendScheduled) return;
+    m_appendScheduled = true;
+    QTimer::singleShot(0, this, [this]() { m_appendScheduled = false; processOriginalEvents(); });
+}
+
+void Store::processOriginalEvents()
+{
+    if (active() || m_originalEvents.isEmpty() || !m_original || m_originalRoot.isEmpty()) return;
+    const auto batch = m_originalEvents.takeFirst();
+    m_queuedOriginalRows -= batch.second.size();
+    QString message;
+    bool success = false;
+    {
+        OriginalBusiness::Database writer;
+        success = writer.open(m_originalRoot, QStringLiteral("db/userSet/abnormal_Log.db"), true, &message) && writer.begin(&message);
+        if (success)
+        {
+            for (const Row &row : batch.second)
+                if (!writer.execute(QStringLiteral("INSERT INTO abnormal_log(error_code,error_describe,measure,date_time,corrective_action,use_user) VALUES(?,?,?,?,?,?)"),
+                    {row.errorCode, row.description.isNull() ? QStringLiteral("") : row.description,
+                     row.measure.isNull() ? QStringLiteral("") : row.measure, row.dateTime, QStringLiteral(""),
+                     row.user.isNull() ? QStringLiteral("") : row.user}, &message, 1))
+                { success = false; break; }
+            if (success) success = writer.commit(&message);
+            if (!success) writer.rollback();
+        }
+    }
+    if (success) emit originalEventsAppended(batch.first, batch.second.size());
+    else emit originalEventsError(batch.first, QStringLiteral("原告警追加未提交：") + message);
+    scheduleOriginalEvents();
+}
 
 void Store::openExisting(QString absolutePath)
 {
@@ -159,6 +250,16 @@ bool Store::compatibleSchema(Error *error, QString *message)
     int count = 0;
     while (columns.next())
     {
+        if (m_original)
+        {
+            const QString name = columns.value(1).toString();
+            int expected = -1;
+            for (int index = 0; index < 7; ++index) if (name == QLatin1String(names[index])) expected = index;
+            if (expected < 0) continue;
+            if (columns.value(2).toString().trimmed().toUpper() != QLatin1String(types[expected]) || columns.value(5).toInt() != (expected == 0 ? 1 : 0))
+            { *error = Error::IncompatibleSchema; *message = QStringLiteral("原告警历史已知字段类型不兼容，未改表。"); return false; }
+            ++count; continue;
+        }
         if (count >= 7 || columns.value(0).toInt() != count ||
             columns.value(1).toString() != QLatin1String(names[count]) ||
             columns.value(2).toString().trimmed().toUpper() != QLatin1String(types[count]) ||
@@ -473,6 +574,7 @@ void Store::clearRequest()
     m_rows.reset();
     m_phase = Phase::Idle;
     m_awaitingStep = 0;
+    scheduleOriginalEvents();
 }
 void Store::fail(Error error, const QString &message)
 {
@@ -516,6 +618,9 @@ void Store::cancel(Key key)
 }
 void Store::release()
 {
+    for (const auto &batch : m_originalEvents) emit originalEventsError(batch.first, QStringLiteral("历史来源已关闭，该批新告警未执行追加。"));
+    m_originalEvents.clear();
+    m_queuedOriginalRows = 0;
     clearRequest();
     if (m_transaction)
     {
@@ -527,6 +632,8 @@ void Store::release()
         m_database.close();
     }
     m_database = QSqlDatabase();
+    m_original = false;
+    m_originalRoot.clear();
     if (!m_connectionName.isEmpty())
     {
         QSqlDatabase::removeDatabase(m_connectionName);

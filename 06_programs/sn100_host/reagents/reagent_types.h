@@ -4,6 +4,8 @@
 #include <QList>
 #include <QMetaType>
 #include <QString>
+#include <QStringList>
+#include <QVariantMap>
 
 // Stable local keys are separate from instrument names and slot numbers.
 struct ReagentRecord
@@ -17,6 +19,8 @@ struct ReagentRecord
     bool valid = true;
     bool checkExpiry = true;
     bool fixed = false;
+    QVariantMap originalValues; // 原表已读字段；保存其他选项时保留未编辑参数。
+    QString originalFingerprint;
 };
 
 struct ReagentBottle
@@ -26,6 +30,8 @@ struct ReagentBottle
     QString area = QStringLiteral("r_area");
     int capacityUl = 0;
     double heightMm = 0;
+    QVariantMap originalValues;
+    QString originalFingerprint;
 };
 
 struct ReagentBatch
@@ -41,6 +47,8 @@ struct ReagentBatch
     QString normalValue;
     // Explicit edit intent keeps old four-field saveBatch callers compatible.
     bool metadataEdited = false;
+    QVariantMap originalValues;
+    QString originalFingerprint;
 };
 
 struct ReagentBatchReference
@@ -58,6 +66,8 @@ struct ReagentBarcode
     qint64 bottleId = 0;
     QString code;
     QString expiry;
+    QVariantMap originalValues;
+    QString originalFingerprint;
 };
 
 struct ReagentHole
@@ -69,10 +79,13 @@ struct ReagentHole
     qint64 bottleId = 0;
     qint64 batchId = 0;
     QString expiry;
-    int amountUl = 0;
-    int remainingUl = 0;
+    double amountUl = 0;
+    double remainingUl = 0; // µL，原used_ul允许小数，不能截成整数。
     int priority = 99;
     QString changedAt;
+    QString originalBatch; // 原孔位存试剂批号文字，不是早期catalog批组外键。
+    QVariantMap originalValues;
+    QString originalFingerprint;
 };
 
 struct ReagentProject
@@ -81,6 +94,7 @@ struct ReagentProject
     QString name;
     QString unit;
     bool enabled = true;
+    QStringList reagentNames; // 原项目实际使用的试剂；孔位批组选项按这个关联筛选。
 };
 using ReagentProjects = QList<ReagentProject>;
 
@@ -91,6 +105,8 @@ struct ReagentSnapshot
     QList<ReagentBatch> batches;
     QList<ReagentBarcode> barcodes;
     QList<ReagentHole> holes;
+    bool originalProfile = false;
+    QString originalRoot;
 };
 
 Q_DECLARE_METATYPE(ReagentRecord)

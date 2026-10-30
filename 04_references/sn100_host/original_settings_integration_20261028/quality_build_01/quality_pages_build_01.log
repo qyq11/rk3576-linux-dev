@@ -1,0 +1,25 @@
+CURRENT_FULL_BUILD_OBJECTS=245
+In file included from /home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/QtCore:4,
+                 from /home/qyq/.cache/sn100-original-db-20261027/qt5/QtTest/QtTestDepends:3,
+                 from /home/qyq/.cache/sn100-original-db-20261027/qt5/QtTest/QtTest:3,
+                 from /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/original_db_20261027/integration/resume_quality_01/original_quality_pages_rk_test_build/test_source.cpp:2:
+/home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qobject.h: In instantiation of ‘static typename std::enable_if<(QtPrivate::FunctionPointer<Func2>::ArgumentCount == -1), QMetaObject::Connection>::type QObject::connect(const typename QtPrivate::FunctionPointer<Func>::Object*, Func1, const QObject*, Func2, Qt::ConnectionType) [with Func1 = void (AccountStore::*)(); Func2 = OriginalQualityPagesRkTest::init()::<lambda(QString)>; typename std::enable_if<(QtPrivate::FunctionPointer<Func2>::ArgumentCount == -1), QMetaObject::Connection>::type = QMetaObject::Connection; typename QtPrivate::FunctionPointer<Func>::Object = AccountStore]’:
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/original_db_20261027/integration/resume_quality_01/original_quality_pages_rk_test_build/test_source.cpp:161:16:   required from here
+/home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qobject.h:328:9: error: static assertion failed: Signal and slot arguments are not compatible.
+  328 |         Q_STATIC_ASSERT_X((FunctorArgumentCount >= 0),
+      |         ^~~~~~~~~~~~~~~~~
+/home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qobject.h:328:9: note: the comparison reduces to ‘(-1 >= 0)’
+In file included from /home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qobjectdefs.h:50,
+                 from /home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qobject.h:46,
+                 from /home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qabstractanimation.h:43,
+                 from /home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/QtCore:6:
+/home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qobjectdefs_impl.h: In instantiation of ‘struct QtPrivate::FunctorReturnType<OriginalQualityPagesRkTest::init()::<lambda(QString)>, QtPrivate::List<> >’:
+/home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qobject.h:331:158:   required from ‘static typename std::enable_if<(QtPrivate::FunctionPointer<Func2>::ArgumentCount == -1), QMetaObject::Connection>::type QObject::connect(const typename QtPrivate::FunctionPointer<Func>::Object*, Func1, const QObject*, Func2, Qt::ConnectionType) [with Func1 = void (AccountStore::*)(); Func2 = OriginalQualityPagesRkTest::init()::<lambda(QString)>; typename std::enable_if<(QtPrivate::FunctionPointer<Func2>::ArgumentCount == -1), QMetaObject::Connection>::type = QMetaObject::Connection; typename QtPrivate::FunctionPointer<Func>::Object = AccountStore]’
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/original_db_20261027/integration/resume_quality_01/original_quality_pages_rk_test_build/test_source.cpp:161:16:   required from here
+/home/qyq/.cache/sn100-original-db-20261027/qt5/QtCore/qobjectdefs_impl.h:371:53: error: no matching function for call to ‘OriginalQualityPagesRkTest::init()::<lambda(QString)>::operator()()’
+  371 |         typedef decltype(dummy<Functor>().operator()((dummy<ArgList>())...)) Value;
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/original_db_20261027/integration/resume_quality_01/original_quality_pages_rk_test_build/test_source.cpp:161:59: note: candidate: ‘OriginalQualityPagesRkTest::init()::<lambda(QString)>’
+  161 |         connect(accounts, &AccountStore::ready, accounts, [this](QString) { accounts->applyOriginalConfiguredSession(0); });
+      |                                                           ^
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/original_db_20261027/integration/resume_quality_01/original_quality_pages_rk_test_build/test_source.cpp:161:59: note:   candidate expects 1 argument, 0 provided

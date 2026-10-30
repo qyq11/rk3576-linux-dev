@@ -31,6 +31,7 @@ public:
     {
         return snapshot_;
     }
+    ReagentStore *taskStore() const { return store_; }
 public slots:
     void setProjects(ReagentProjects projects);
     void setSession(AccountSession session);
@@ -38,6 +39,8 @@ public slots:
     void openHoleEditor();
     void openBatchEditor();
     void openBottleEditor();
+    void reloadOriginal();
+    void setInstrumentBusy(bool busy);
 signals:
     void snapshotChanged(ReagentSnapshot snapshot);
     void readyChanged(bool ready);
@@ -63,6 +66,10 @@ protected:
 
 private:
     Ui::frmReagentMaterial* ui;
+    ReagentStore *store_ = nullptr;
+    bool originalProfile_ = false;
+    bool instrumentBusy_ = false, pendingOriginalReload_ = false;
+    QString pendingSavedOperation_;
     ReagentSnapshot snapshot_;
     ReagentProjects projects_;
     AccountSession session_;

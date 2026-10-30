@@ -1,0 +1,17 @@
+{
+  "scope": "RK EGLFS两场景，首场景PASS后第二场景init创建顶层窗口崩溃",
+  "passed": 2,
+  "failed": 1,
+  "exitCode": 134,
+  "driverSha256": "1b821b9106a4d7e7f5950199fab1dd787effc5220dab0bfc3f794aa8eff2e2a2",
+  "mainSha256": "f5514952a08fd9009e610fb04478c62a58fd88deb83858b805166fee9219990a",
+  "productionChanged": false,
+  "stack": "Thread1 QOpenGLContext::handle→QEglFSIntegration::createPlatformOpenGLContext→QEglFSWindow::create→OriginalMainTaskChainRkTest::init",
+  "diagnosis": "指向测试每场景销毁并重建首个原生顶层窗口；仅测试外层窗口改为跨场景保留，须RK新轮验证",
+  "holeCommitMs": 67,
+  "holeUsObservedMs": 312,
+  "holeUrSavedMs": 333,
+  "sampleCount": 1,
+  "instrumentVerified": false,
+  "visualFinding": "原盘面r_1清孔显示none/0/空日期，r_2保持；页头脱机字样与本机模拟连接不一致，已交整合登记"
+}

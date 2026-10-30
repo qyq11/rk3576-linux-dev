@@ -554,14 +554,17 @@ void SampleStore::startQualityChange(qint64 request, QString operation, SampleRa
 }
 void SampleStore::saveRack(qint64 request, SampleRack rack)
 {
+    if (originalRackChange(request, QStringLiteral("saveRack"), rack, rack.id)) return;
     startQualityChange(request,"saveRack",rack,rack.id);
 }
 void SampleStore::removeRack(qint64 request, qint64 id)
 {
+    if (originalRackChange(request, QStringLiteral("removeRack"), SampleRack(), id)) return;
     startQualityChange(request,"removeRack",SampleRack(),id);
 }
 void SampleStore::clearOrdinaryRacks(qint64 request)
 {
+    if (originalRackChange(request, QStringLiteral("clearOrdinaryRacks"), SampleRack(), 0)) return;
     startQualityChange(request,"clearOrdinaryRacks",SampleRack(),0);
 }
 

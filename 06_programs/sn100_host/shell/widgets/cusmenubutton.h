@@ -3,6 +3,7 @@
 
 #include <QPushButton>
 #include <QLabel>
+#include <QColor>
 
 class CusMenuButton : public QPushButton
 {
@@ -15,6 +16,8 @@ public:
     void setButtonIco(QString);
     void setDisableIco(QString);
     void setBtnDisabled(bool);
+    void setOriginalColours(const QColor &base, const QColor &font, const QColor &active);
+    void setOriginalActionColours(const QColor &base, const QColor &font);
 
 signals:
 
@@ -23,6 +26,7 @@ private:
     QLabel *lblInfo;
     QString disableIco;
     QString normalIco;
+    QColor normalTextColour = Qt::white;
 
 };
 

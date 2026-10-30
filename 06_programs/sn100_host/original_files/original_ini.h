@@ -15,6 +15,9 @@ struct Settings
     int commentLines = 0;
 };
 bool read(const QString &path, Settings *settings, QString *message);
+// 沿原Windows大小写不敏感的查键方式，返回实际键名；未找到时返回空名。
+// 若Linux读到多个仅大小写不同的键，拒绝猜测覆盖，原键名不改写。
+bool resolveKey(const Settings &settings, const QString &key, QString *actualKey, QString *message);
 }
 
 #endif

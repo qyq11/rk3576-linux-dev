@@ -1,4 +1,7 @@
 #include "account_store.h"
+#include "original_files/original_business_database.h"
+#include "original_files/original_system_profile.h"
+#include "original_files/original_ini.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -7,6 +10,7 @@
 #include <QSaveFile>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSet>
 #include <QThread>
 #include <QUuid>
 #include <QVariant>
@@ -123,7 +127,7 @@ bool prepareAccountPath(QString directory, QString *databasePath,
     return true;
 }
 
-bool verifyAccountSchema(QSqlDatabase &database, QString *message)
+bool verifyAccountSchema(QSqlDatabase &database, QString *message, bool original = false)
 {
     const QStringList names = {QStringLiteral("id"), QStringLiteral("name"),
                               QStringLiteral("role"), QStringLiteral("pwd"),
@@ -138,8 +142,18 @@ bool verifyAccountSchema(QSqlDatabase &database, QString *message)
         return false;
     }
     int index = 0;
+    QSet<QString> foundColumns;
     while (query.next())
     {
+        if (original)
+        {
+            const QString name = query.value(1).toString();
+            if (!names.contains(name)) continue;
+            const int expected = names.indexOf(name);
+            if (query.value(2).toString().toUpper() != types[expected] || query.value(5).toInt() != (expected == 0 ? 1 : 0))
+            { *message = QStringLiteral("原账户已知字段类型不符，未改表。"); return false; }
+            foundColumns.insert(name); ++index; continue;
+        }
         if (index >= names.size() || query.value(1).toString() != names.at(index)
                 || query.value(2).toString().toUpper() != types.at(index)
                 || query.value(5).toInt() != (index == 0 ? 1 : 0))
@@ -197,8 +211,7 @@ void AccountStore::registerTypes()
 
 QString AccountStore::roleName(int role)
 {
-    // ID 0 has no source-verified role-table row. Match getRoleById()'s
-    // no-match result rather than inventing a visible Guest translation.
+    // 旧独立模式沿用既有标签；原模式包括角色0在内均读取原user.db，不用此静态表。
     const QStringList names = {QString(), QStringLiteral("送检医师"),
                                QStringLiteral("检验医师"), QStringLiteral("审核医师"),
                                QStringLiteral("工程师"), QStringLiteral("管理员")};
@@ -361,12 +374,59 @@ void AccountStore::initialize(QString absoluteDataDir, QString bootstrapPassword
     emit ready();
 }
 
+bool AccountStore::hasOriginalPower(const AccountSession &session, const QString &powerId)
+{
+    return session.authenticated && !session.originalPolicySource.isEmpty() && session.grantedPowerIds.contains(powerId);
+}
+
+bool AccountStore::refreshOriginalPolicy(QString *message)
+{
+    if (m_originalRoot.isEmpty()) return true;
+    OriginalRuntime::UserDictionary dictionary;
+    if (!OriginalRuntime::loadUserDictionary(m_originalRoot, &dictionary, message)) return false;
+    if (!dictionary.roles.contains(m_session.role))
+    { *message = QStringLiteral("原角色字典没有当前身份，未推定角色或权限。"); return false; }
+    m_originalRoles = dictionary.roles;
+    m_session.roleLabel = dictionary.roles.value(m_session.role);
+    m_session.originalPolicySource = m_originalRoot;
+    m_session.grantedPowerIds = dictionary.grantedPowers(m_session.role);
+    return true;
+}
+
+void AccountStore::initializeOriginal(QString root)
+{
+    const QString operation = QStringLiteral("initializeOriginal");
+    if (!checkThread(operation)) return;
+    if ((QCoreApplication::instance() && QThread::currentThread() == QCoreApplication::instance()->thread()) || m_database.isValid())
+    { emit error(operation, QStringLiteral("请在数据库工作线程且原连接关闭后打开原账户库。")); return; }
+    QString message;
+    std::unique_ptr<OriginalBusiness::Database> database(new OriginalBusiness::Database);
+    if (!database->open(root, QStringLiteral("db/userSet/user_Information.db"), true, &message))
+    { emit error(operation, message); return; }
+    OriginalRuntime::UserDictionary dictionary;
+    if (!verifyAccountSchema(database->db, &message, true) || !OriginalRuntime::loadUserDictionary(root, &dictionary, &message))
+    { emit error(operation, message); return; }
+    m_originalRoot = QFileInfo(root).canonicalFilePath();
+    m_originalRoles = dictionary.roles;
+    m_database = database->db;
+    m_originalDatabase = std::move(database);
+    m_ready = true;
+    clearSession();
+    emit ready();
+}
+
 void AccountStore::clearSession()
 {
     const bool actionReady = m_session.actionReady;
     m_session = AccountSession();
     m_session.actionReady = actionReady;
     m_sessionId = 0;
+    m_configuredRequiresDisabled = false;
+    if (!m_originalRoot.isEmpty())
+    {
+        m_session.originalPolicySource = m_originalRoot;
+        m_session.roleLabel = m_originalRoles.value(0);
+    }
     emit sessionChanged(m_session);
 }
 
@@ -378,6 +438,15 @@ void AccountStore::setSession(QString name, bool actionReady)
         return;
     }
     m_session.actionReady = actionReady;
+    if (!m_originalRoot.isEmpty() && !name.isEmpty())
+    {
+        // 原账户必须经过口令登录；运行状态更新不能变成按用户名提权的入口。
+        if (m_session.authenticated && (m_session.source == AccountSessionSource::Password ||
+                m_session.source == AccountSessionSource::Configured) && name == m_session.name)
+        { emit sessionChanged(m_session); return; }
+        emit error(operation, QStringLiteral("原账户请通过口令登录，不能仅选用户名建立模拟权限。"));
+        return;
+    }
     if (name.isEmpty())
     {
         clearSession();
@@ -426,6 +495,48 @@ bool AccountStore::loginAvailable(QString *message) const
         return false;
     }
     return true;
+}
+
+bool AccountStore::establishConfiguredSession(bool requireLoginDisabled, QString *message)
+{
+    if (m_originalRoot.isEmpty())
+    { *message = QStringLiteral("默认配置身份只用于已打开的原资料根。"); return false; }
+    if (!OriginalBusiness::workingRoot(m_originalRoot, message)) return false;
+    OriginalIni::Settings settings;
+    if (!OriginalIni::read(QDir(m_originalRoot).filePath(QStringLiteral("config_Debug.ini")), &settings, message)) return false;
+    if (requireLoginDisabled && settings.values.value(QStringLiteral("login/open"), true).toBool())
+    { *message = QStringLiteral("原配置开启了登录，不能以关闭登录的入口建立身份。"); return false; }
+    bool validRole = false;
+    const int role = settings.values.value(QStringLiteral("login/defaultPermission"), 0).toInt(&validRole);
+    if (!validRole || role < 0 || role > 5)
+    { *message = QStringLiteral("原配置默认角色无效，未推定权限。"); return false; }
+    OriginalRuntime::UserDictionary dictionary;
+    if (!OriginalRuntime::loadUserDictionary(m_originalRoot, &dictionary, message)) return false;
+    if (!dictionary.roles.contains(role))
+    { *message = QStringLiteral("原角色字典没有配置默认角色，未建立身份。"); return false; }
+    // 对应原frmmain及空口令登录：默认角色配Guest显示名，与默认账户预填无关。
+    const bool actionReady = m_session.actionReady;
+    m_session = AccountSession();
+    m_session.name = QStringLiteral("Guest");
+    m_session.role = role;
+    m_session.actionReady = actionReady;
+    m_session.authenticated = true;
+    m_session.source = AccountSessionSource::Configured;
+    m_session.originalPolicySource = m_originalRoot;
+    m_session.roleLabel = dictionary.roles.value(role);
+    m_session.grantedPowerIds = dictionary.grantedPowers(role);
+    m_originalRoles = dictionary.roles;
+    m_sessionId = 0;
+    m_configuredRequiresDisabled = requireLoginDisabled;
+    return true;
+}
+
+void AccountStore::applyOriginalConfiguredSession(quint64 requestId)
+{
+    QString message;
+    const bool accepted = loginAvailable(&message) && establishConfiguredSession(true, &message);
+    if (accepted) emit sessionChanged(m_session);
+    emit loginFinished(requestId, accepted, false, message, QString());
 }
 
 void AccountStore::loadLoginDefault(quint64 requestId)
@@ -498,8 +609,14 @@ void AccountStore::authenticate(quint64 requestId, QString name, QString passwor
     }
     if (password.isEmpty())
     {
-        // 原登录界面空密码始终回落Guest，忽略所填用户名和默认账户勾选。
-        clearSession();
+        // 原窗口空口令使用配置默认角色和Guest名，忽略用户名及默认账户勾选。
+        if (!m_originalRoot.isEmpty())
+        {
+            if (!establishConfiguredSession(false, &message))
+            { clearSession(); emit loginFinished(requestId, false, false, message, QString()); return; }
+            emit sessionChanged(m_session);
+        }
+        else clearSession();
         emit loginFinished(requestId, true, false, QString(), QString());
         return;
     }
@@ -549,12 +666,18 @@ void AccountStore::authenticate(quint64 requestId, QString name, QString passwor
         return;
     }
     QString warning;
-    const bool defaultSaved = remember && role <= 4 && saveDefaultLoginName(accountName, &warning);
     m_sessionId = id;
     m_session.name = accountName;
     m_session.role = role;
     m_session.authenticated = true;
     m_session.source = AccountSessionSource::Password;
+    if (!refreshOriginalPolicy(&message))
+    {
+        clearSession();
+        emit loginFinished(requestId, false, false, message, QString());
+        return;
+    }
+    const bool defaultSaved = remember && role <= 4 && saveDefaultLoginName(accountName, &warning);
     // 登录只改变身份，不改变设备动作状态；默认账户写失败也不伪装为认证失败。
     emit sessionChanged(m_session);
     emit loginFinished(requestId, true, defaultSaved, QString(), warning);
@@ -562,6 +685,15 @@ void AccountStore::authenticate(quint64 requestId, QString name, QString passwor
 
 bool AccountStore::refreshSession(QString *message)
 {
+    if (!m_originalRoot.isEmpty() && m_session.authenticated && m_session.source == AccountSessionSource::Configured)
+    {
+        const int previousRole = m_session.role;
+        const QStringList previousPowers = m_session.grantedPowerIds;
+        if (!establishConfiguredSession(m_configuredRequiresDisabled, message))
+        { clearSession(); return false; }
+        if (previousRole != m_session.role || previousPowers != m_session.grantedPowerIds) emit sessionChanged(m_session);
+        return true;
+    }
     if (!m_session.authenticated || m_sessionId <= 0)
     {
         *message = QStringLiteral("当前没有有效匿名会话，请先选择实验账户");
@@ -588,11 +720,11 @@ bool AccountStore::refreshSession(QString *message)
         *message = QStringLiteral("当前账户角色无效，已清除匿名会话");
         return false;
     }
-    if (m_session.role != role)
-    {
-        m_session.role = role;
-        emit sessionChanged(m_session);
-    }
+    const bool roleChanged = m_session.role != role;
+    const QStringList previousPowers = m_session.grantedPowerIds;
+    m_session.role = role;
+    if (!refreshOriginalPolicy(message)) { clearSession(); return false; }
+    if (roleChanged || previousPowers != m_session.grantedPowerIds) emit sessionChanged(m_session);
     return true;
 }
 
@@ -602,6 +734,11 @@ void AccountStore::load()
     if (!checkReady(operation))
     {
         return;
+    }
+    if (!m_originalRoot.isEmpty())
+    {
+        QString message;
+        if (!refreshOriginalPolicy(&message)) { emit error(operation, message); return; }
     }
     QSqlQuery query(m_database);
     if (!query.exec(QStringLiteral("SELECT id,name,role,isdefault FROM user_information ORDER BY id")))
@@ -617,6 +754,7 @@ void AccountStore::load()
         row.name = query.value(1).toString();
         row.role = query.value(2).toInt();
         row.isDefault = query.value(3).toInt();
+        row.roleLabel = m_originalRoot.isEmpty() ? roleName(row.role) : m_originalRoles.value(row.role);
         rows.append(row);
     }
     if (query.lastError().isValid())
@@ -659,6 +797,7 @@ bool AccountStore::readAccount(const QString &name, AccountRecord *record, bool 
 
 bool AccountStore::allowedRole(int role, bool update) const
 {
+    if (!m_originalRoot.isEmpty() && !m_originalRoles.contains(role)) return false;
     // Original combos contain IDs 1..min(currentRole,4). For Guest/Admin,
     // the update combo has an empty selection, whose original lookup is ID 0.
     if (update && role == 0 && (m_session.role == 0 || m_session.role == 5))
@@ -950,11 +1089,15 @@ void AccountStore::releaseDatabase()
     m_ready = false;
     m_session = AccountSession();
     m_sessionId = 0;
+    m_configuredRequiresDisabled = false;
     if (m_database.isValid())
     {
         m_database.close();
     }
     m_database = QSqlDatabase();
+    m_originalDatabase.reset();
+    m_originalRoot.clear();
+    m_originalRoles.clear();
     if (!m_connectionName.isEmpty())
     {
         QSqlDatabase::removeDatabase(m_connectionName);

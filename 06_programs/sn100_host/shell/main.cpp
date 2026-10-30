@@ -13,6 +13,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <memory>
 
 #include "frmmain.h"
 #include "sample_qc_shell.h"
@@ -108,7 +109,7 @@ int main(int argc, char *argv[])
     parser.addOption({QStringLiteral("history"), QStringLiteral("O03-3：接入匿名历史查询；使用独立history子目录")});
     parser.addOption({QStringLiteral("local-results"), QStringLiteral("启用空白本地原值结果库；需要--history和--catalog，未接检测调度、单位映射或文件输出")});
     parser.addOption({QStringLiteral("catalog"), QStringLiteral("O07：接入本地项目/单位及试剂基础；使用catalog子目录，需要--accounts")});
-    parser.addOption({QStringLiteral("original-db-root"), QStringLiteral("项目配置直接读写原bin分类的工作副本根；需要--catalog，不转换原项目库"), QStringLiteral("directory")});
+    parser.addOption({QStringLiteral("original-db-root"), QStringLiteral("直接使用原bin分类的工作副本根；项目、医院、账户、历史、样本/试剂、维护和已启用设置沿用原资料，需要--catalog"), QStringLiteral("directory")});
     parser.addOption({QStringLiteral("start-project-page"), QStringLiteral("本次启动就绪后显示分析项目页；需要--catalog")});
     parser.addOption({QStringLiteral("samples"), QStringLiteral("O08：接入本地样本预设/任务；需要--catalog，无真实投递或执行")});
     parser.addOption({QStringLiteral("instrument"), QStringLiteral("仪器操作原版页面及本地维护记录；需要--accounts，设备动作禁用")});
@@ -130,7 +131,7 @@ int main(int argc, char *argv[])
         return 2;
     }
     const bool withAccounts = parser.isSet(QStringLiteral("accounts"));
-    const bool withPasswordLogin = parser.isSet(QStringLiteral("password-login"));
+    bool withPasswordLogin = parser.isSet(QStringLiteral("password-login"));
     const bool withPrinterSettings = parser.isSet(QStringLiteral("printer-settings"));
     const bool withLisSettings = parser.isSet(QStringLiteral("lis-settings"));
     const bool withLisRawInbox = parser.isSet(QStringLiteral("lis-raw-inbox"));
@@ -142,7 +143,7 @@ int main(int argc, char *argv[])
     const bool withQualityControl = parser.isSet(QStringLiteral("quality-control"));
     const bool withCalibration = parser.isSet(QStringLiteral("calibration"));
     const bool withAlarmHistory = parser.isSet(QStringLiteral("alarm-history"));
-    const QString alarmHistoryPath = parser.isSet(QStringLiteral("alarm-history-db"))
+    QString alarmHistoryPath = parser.isSet(QStringLiteral("alarm-history-db"))
         ? parser.value(QStringLiteral("alarm-history-db"))
         : QDir(dataDir).filePath(QStringLiteral("alarm_history/abnormal_log.db"));
     if ((parser.isSet(QStringLiteral("alarm-history-db")) && !withAlarmHistory)
@@ -160,6 +161,15 @@ int main(int argc, char *argv[])
     const QString originalDbRoot = withOriginalProjects
         ? QDir::cleanPath(parser.value(QStringLiteral("original-db-root"))) : QString();
     const bool sharedOriginalRoot = withOriginalProjects && originalDbRoot == dataDir;
+    if (withOriginalProjects && !parser.isSet(QStringLiteral("alarm-history-db")))
+        alarmHistoryPath = QDir(originalDbRoot).filePath(QStringLiteral("db/userSet/abnormal_Log.db"));
+    if (withOriginalProjects && withAccounts) withPasswordLogin = true;
+    if (withOriginalProjects && (parser.isSet(QStringLiteral("test-session")) ||
+        parser.isSet(QStringLiteral("seed-anonymous")) || parser.isSet(QStringLiteral("test-secret-file"))))
+    {
+        qCritical() << "Original accounts use original configuration or password login; simulated sessions and account seeding are unavailable";
+        return 2;
+    }
     if ((withOriginalProjects && (!withCatalog || !QDir::isAbsolutePath(originalDbRoot) ||
          originalDbRoot.contains(QChar::Null) || originalDbRoot.contains(QStringLiteral("sn100_host_reference"), Qt::CaseInsensitive) ||
          (sharedOriginalRoot && !withAccounts && !withHistory) ||
@@ -172,9 +182,9 @@ int main(int argc, char *argv[])
         return 2;
     }
     const bool withLocalResults = parser.isSet(QStringLiteral("local-results"));
-    if (withLocalResults && (!withHistory || !withCatalog))
+    if (withLocalResults && (withOriginalProjects || !withHistory || !withCatalog))
     {
-        qCritical() << "--local-results requires --history and --catalog";
+        qCritical() << "--local-results requires --history and --catalog without --original-db-root";
         return 2;
     }
     const bool withSamples = parser.isSet(QStringLiteral("samples"));
@@ -345,6 +355,7 @@ int main(int argc, char *argv[])
         QObject::connect(&lisThread, &QThread::finished, lis, &QObject::deleteLater);
     }
     auto *shell = new frmMain(store, nullptr, accounts);
+    if (withOriginalProjects) shell->setProperty("originalDataRoot", originalDbRoot);
     shell->attachLanguagePage(new LanguageSettingPage);
     QThread alarmHistoryThread;
     alarmHistoryThread.setObjectName(QStringLiteral("AlarmHistoryReadOnlyDatabase"));
@@ -390,10 +401,10 @@ int main(int argc, char *argv[])
                      &app, [](const QString &message) { qWarning().noquote() << "STATUS_LOOPBACK_ERROR" << message; });
     QObject::connect(&statusLoopback, &Sn100Protocol::StatusLoopbackController::started,
                      &app, []() { qInfo() << "STATUS_LOOPBACK_STARTED self_owned_peer=127.0.0.1 instrument=false"; });
-    // 同一部署根保留原db、project、result及根INI；未接原库的业务仍各用现有子目录。
-    // 医院配置单独放hospital/config.ini，不能覆盖原根config.ini；不转换原DB。
-    const QString hospitalDir = (withAccounts || withHistory || sharedOriginalRoot)
-        ? QDir(dataDir).filePath(QStringLiteral("hospital")) : dataDir;
+    // 原模式的医院、打印和LIS共用原根config.ini；存储层只修改各自拥有的键。
+    const QString hospitalDir = withOriginalProjects ? originalDbRoot
+        : (withAccounts || withHistory || sharedOriginalRoot)
+            ? QDir(dataDir).filePath(QStringLiteral("hospital")) : dataDir;
     shell->setDataDirectory(hospitalDir);
     if (withDeviceControl) shell->enableDeviceControl(true);
     bool hospitalReady = false;
@@ -427,8 +438,10 @@ int main(int argc, char *argv[])
             qInfo() << "SHELL_READY";
             if (withOriginalProjects)
             {
-                qInfo() << "ORIGINAL_PROJECTS_READY direct_original_files=true other_modules=independent_catalog instrument=false";
-                qInfo().noquote() << "ORIGINAL_PROJECTS_SCOPE 本批直接维护原项目配置；其他页面仍使用独立资料，原29库的其他业务尚待接入。";
+                qInfo() << "ORIGINAL_PROJECTS_READY direct_original_files=true instrument=false";
+                qInfo().noquote() << "ORIGINAL_PROJECTS_SCOPE 已启用页面读取原项目、医院、账户、历史、样本/试剂、维护、质控/校准和设置；质控/校准任务、算法及其余配置继续逐项接入。";
+                qInfo() << "ORIGINAL_SETTINGS_READY hospital=true printer=" << withPrinterSettings
+                        << "lis=" << withLisSettings << "network=false";
             }
             if (withLocalResults) qInfo() << "LOCAL_RESULTS_READY empty_profile_allowed=true scheduler=false current_config_format="
                 << !withOriginalProjects << "measurement_unit_snapshot=false file_output=false";
@@ -454,7 +467,8 @@ int main(int argc, char *argv[])
             }
             if (withQualityControl) qInfo() << "QUALITY_CONTROL_READY local_only=true clinical_rules=false";
             if (withCalibration) qInfo() << "CALIBRATION_READY local_only=true fitting=false applied=false";
-            if (withPasswordLogin) qInfo() << "PASSWORD_LOGIN_ENABLED; default Guest; isolated local accounts only";
+            if (withPasswordLogin) qInfo() << "PASSWORD_LOGIN_ENABLED original_profile=" << withOriginalProjects
+                << "configured_or_password_session=true";
             if (withStatusReplay)
             {
                 shell->selectMainPage(7);
@@ -488,16 +502,35 @@ int main(int argc, char *argv[])
         const QString accountDir = QDir(dataDir).filePath(QStringLiteral("account"));
         const QString actor = parser.value(QStringLiteral("test-session"));
         QObject::connect(&accountThread, &QThread::started, accounts,
-                         [accounts, accountDir, bootstrapPassword]()
+                         [accounts, accountDir, bootstrapPassword, withOriginalProjects, originalDbRoot]()
         {
-            accounts->initialize(accountDir, bootstrapPassword);
+            if (withOriginalProjects) accounts->initializeOriginal(originalDbRoot);
+            else accounts->initialize(accountDir, bootstrapPassword);
         });
-        QObject::connect(accounts, &AccountStore::ready, accounts, [accounts, actor, state]()
+        QObject::connect(accounts, &AccountStore::ready, accounts, [&, accounts, actor, state, withOriginalProjects, originalDbRoot]()
         {
-            accounts->setSession(actor, state == QStringLiteral("ready"));
+            if (!withOriginalProjects) { accounts->setSession(actor, state == QStringLiteral("ready")); return; }
+            OriginalIni::Settings debug; QString message;
+            if (!OriginalIni::read(QDir(originalDbRoot).filePath(QStringLiteral("config_Debug.ini")), &debug, &message))
+            {
+                qWarning().noquote() << "ORIGINAL_LOGIN_CONFIGURATION_ERROR" << message;
+                QTimer::singleShot(0, &app, [&app]() { app.exit(3); }); return;
+            }
+            if (!debug.values.value(QStringLiteral("login/open"), true).toBool())
+                accounts->applyOriginalConfiguredSession(0); // 0只用于启动配置身份，弹窗请求号从1开始。
+            else
+                QMetaObject::invokeMethod(&app, [&]() { sessionObserved = true; reportReady(); }, Qt::QueuedConnection);
+        });
+        QObject::connect(accounts, &AccountStore::loginFinished, &app,
+                         [&](quint64 request, bool accepted, bool, const QString &error, const QString &)
+        {
+            if (!withOriginalProjects || request != 0) return;
+            if (!accepted) { qWarning().noquote() << "ORIGINAL_CONFIGURED_SESSION_ERROR" << error; app.exit(3); return; }
+            sessionObserved = true; reportReady();
         });
         QObject::connect(shell, &frmMain::sessionChanged, &app, [&,actor](AccountSession session)
         {
+            if (withOriginalProjects) { reportReady(); return; }
             // initialize() emits Guest before the requested simulated actor is
             // selected. That reset must not acknowledge a missing/invalid actor.
             const bool identityMatches = actor.isEmpty() ? !session.authenticated
@@ -517,7 +550,7 @@ int main(int argc, char *argv[])
         QObject::connect(accounts, &AccountStore::error, &app, [&](const QString &operation, const QString &message)
         {
             qWarning().noquote() << "ACCOUNT_ERROR" << operation << message;
-            if (operation == QStringLiteral("initialize")
+            if (operation == QStringLiteral("initialize") || operation == QStringLiteral("initializeOriginal")
                 || (!readyReported && (operation==QStringLiteral("session") || !accountReady))) app.exit(3);
         });
         QObject::connect(accounts, &AccountStore::closed, accounts, []() { qInfo() << "ACCOUNT_STORE_CLOSED"; });
@@ -526,7 +559,8 @@ int main(int argc, char *argv[])
     if (history)
     {
         auto *page = new HistoryPage(history);
-        const QString historyDir = QDir(dataDir).filePath(QStringLiteral("history"));
+        const QString historyDir = withOriginalProjects ? QDir(originalDbRoot).filePath(QStringLiteral("result"))
+            : QDir(dataDir).filePath(QStringLiteral("history"));
         page->setDataDirectory(historyDir);
         page->setLocalResultsMode(withLocalResults);
         shell->attachHistoryPage(page);
@@ -547,7 +581,12 @@ int main(int argc, char *argv[])
             // embedded report resources are missing during initialization.
             QTimer::singleShot(0, &app, [&app]() { app.exit(3); });
         }
-        if (withLocalResults)
+        if (withOriginalProjects)
+        {
+            QObject::connect(&historyThread, &QThread::started, history,
+                             [history, originalDbRoot]() { history->initializeOriginal(originalDbRoot); });
+        }
+        else if (withLocalResults)
         {
             const QString catalogDir = QDir(dataDir).filePath(QStringLiteral("catalog"));
             // Catalog schema writers finish before this worker opens its own
@@ -656,14 +695,19 @@ int main(int argc, char *argv[])
         {
             auto *page = new QualityControlPage(quality);
             shell->attachQualityControlPage(page);
+            QObject::connect(shell, &frmMain::sessionChanged, quality, &QcStore::setSession, Qt::QueuedConnection);
             const QString qualityDir = QDir(dataDir).filePath(QStringLiteral("quality_control"));
             QObject::connect(projects, &ProjectsStore::ready, quality,
-                             [quality, qualityDir, catalogDir, initialized = false]() mutable
+                             [quality, qualityDir, catalogDir, withOriginalProjects, originalDbRoot, initialized = false]() mutable
             {
                 if (initialized) return;
                 initialized = true;
-                quality->initialize(qualityDir);
-                quality->bindCatalog(catalogDir);
+                if (withOriginalProjects) quality->initializeOriginal(originalDbRoot);
+                else
+                {
+                    quality->initialize(qualityDir);
+                    quality->bindCatalog(catalogDir);
+                }
             }, Qt::QueuedConnection);
             QObject::connect(quality, &QcStore::catalogBound, &app, [&](QString)
             { qualityBound = true; reportReady(); });
@@ -691,7 +735,12 @@ int main(int argc, char *argv[])
             // Schema changes on the shared catalog are serialized: project,
             // reagent, then sample. Each store owns a separate SQL connection.
             QObject::connect(reagents,&ReagentStore::ready,samples,
-                             [samples,catalogDir]() { samples->initialize(catalogDir); },Qt::QueuedConnection);
+                             [samples,catalogDir,withOriginalProjects,originalDbRoot]()
+            {
+                if (withOriginalProjects) samples->initializeOriginal(originalDbRoot);
+                else samples->initialize(catalogDir);
+            },Qt::QueuedConnection);
+            shell->attachDeviceTaskStore();
             QObject::connect(samplePage,&SamplePage::operationFinished,&app,
                              [&,samplePage](const QString &operation,bool success)
             {
@@ -704,7 +753,7 @@ int main(int argc, char *argv[])
                 if (!sampleReady) app.exit(3);
             });
             QObject::connect(samples,&SampleStore::closed,samples,[]() { qInfo()<<"SAMPLE_STORE_CLOSED"; });
-            if (quality && !connectSampleQuality(samples, quality, samplePage, &app))
+            if (quality && !withOriginalProjects && !connectSampleQuality(samples, quality, samplePage, &app))
             {
                 qCritical() << "SAMPLE_QC_BRIDGE_SETUP_FAILED";
                 QTimer::singleShot(0, &app, [&app]() { app.exit(3); });
@@ -716,11 +765,40 @@ int main(int argc, char *argv[])
             shell->attachCalibrationPage(page);
             const QString calibrationDir = QDir(dataDir).filePath(QStringLiteral("calibration"));
             const QString catalogDatabase = QDir(catalogDir).filePath(QStringLiteral("catalog.db"));
-            const auto initializeCalibration = [calibration, calibrationDir, catalogDatabase]()
-            { calibration->initialize(calibrationDir, catalogDatabase); };
-            // 所有共用catalog建表提交后再打开校准引用保护连接，避免并行schema升级。
-            if (samples) QObject::connect(samples, &SampleStore::ready, calibration, initializeCalibration, Qt::QueuedConnection);
-            else QObject::connect(reagents, &ReagentStore::ready, calibration, initializeCalibration, Qt::QueuedConnection);
+            if (withOriginalProjects)
+            {
+                // 校准以原项目编号和单位读历史。先等两个页面取得已提交快照，
+                // 再排队打开原库；不能以Store刚打开的信号代替资料已读完。
+                auto initialized = std::make_shared<bool>(false);
+                const auto synchronize = [calibration, page, projectPage, reagentPage, originalDbRoot, initialized]()
+                {
+                    if (!projectPage->isReady() || projectPage->isBusy() ||
+                        !reagentPage->isReady() || reagentPage->isBusy()) return;
+                    const auto records = projectPage->projects();
+                    const auto units = projectPage->units();
+                    const auto snapshot = reagentPage->snapshot();
+                    const bool first = !*initialized;
+                    *initialized = true;
+                    QMetaObject::invokeMethod(calibration, [calibration, records, units, snapshot, first, originalDbRoot]()
+                    {
+                        if (first) calibration->initializeOriginal(originalDbRoot);
+                        // initialize会释放上次资料；同一工作线程返回事件循环前
+                        // 设置新快照，保证ready引起的首次load不会读到空项目。
+                        calibration->setOriginalCatalog(records, units, snapshot);
+                    }, Qt::QueuedConnection);
+                    if (!first && page->isReady() && !page->isBusy() && !page->hasUnsavedChanges()) page->reload();
+                };
+                QObject::connect(projectPage, &ProjectPage::snapshotChanged, page, synchronize);
+                QObject::connect(reagentPage, &ReagentsPage::snapshotChanged, page, synchronize);
+            }
+            else
+            {
+                const auto initializeCalibration = [calibration, calibrationDir, catalogDatabase]()
+                { calibration->initialize(calibrationDir, catalogDatabase); };
+                // 独立模式仍等共用catalog建表提交后再打开引用保护连接。
+                if (samples) QObject::connect(samples, &SampleStore::ready, calibration, initializeCalibration, Qt::QueuedConnection);
+                else QObject::connect(reagents, &ReagentStore::ready, calibration, initializeCalibration, Qt::QueuedConnection);
+            }
             QObject::connect(page, &CalibrationPage::operationFinished, &app,
                              [&, page](const QString &operation, bool success)
             {
@@ -772,11 +850,12 @@ int main(int argc, char *argv[])
         // All threads run before initialization. The catalog creator commits its
         // schema/marker first, then the reagent worker may open its own connection.
         QObject::connect(projects,&ProjectsStore::ready,reagents,
-                         [reagents,catalogDir,initialized = false](const QString &) mutable
+                         [reagents,catalogDir,withOriginalProjects,originalDbRoot,initialized = false](const QString &) mutable
         {
             if (initialized) return;
             initialized = true;
-            reagents->initialize(catalogDir);
+            if (withOriginalProjects) reagents->initializeOriginal(originalDbRoot);
+            else reagents->initialize(catalogDir);
         },Qt::QueuedConnection);
         QObject::connect(projectPage,&ProjectPage::operationFinished,&app,[&,projectPage](const QString &operation,bool success)
         {
@@ -804,7 +883,11 @@ int main(int argc, char *argv[])
         shell->attachInstrumentPage(page);
         const QString instrumentDir = QDir(dataDir).filePath(QStringLiteral("instrument"));
         QObject::connect(&maintenanceThread,&QThread::started,maintenance,
-                         [maintenance,instrumentDir]() { maintenance->initialize(instrumentDir); });
+                         [maintenance,instrumentDir,withOriginalProjects,originalDbRoot]()
+        {
+            if (withOriginalProjects) maintenance->initializeOriginal(originalDbRoot);
+            else maintenance->initialize(instrumentDir);
+        });
         QObject::connect(page,&InstrumentPage::operationFinished,&app,
                          [&](const QString &operation,bool success)
         {
@@ -834,7 +917,11 @@ int main(int argc, char *argv[])
         shell->attachPrinterPage(page);
         const QString settingsDir = QDir(dataDir).filePath(QStringLiteral("settings"));
         QObject::connect(&printerThread, &QThread::started, printer,
-                         [printer, settingsDir]() { printer->initialize(settingsDir); });
+                         [printer, settingsDir, withOriginalProjects, originalDbRoot]()
+        {
+            if (withOriginalProjects) printer->initializeOriginal(originalDbRoot);
+            else printer->initialize(settingsDir);
+        });
         QObject::connect(page, &frmPrinterSetting::operationFinished, &app,
                          [&](const QString &, bool success)
         {
@@ -864,7 +951,11 @@ int main(int argc, char *argv[])
         shell->attachLisPage(page);
         const QString settingsDir = QDir(dataDir).filePath(QStringLiteral("settings"));
         QObject::connect(&lisThread, &QThread::started, lis,
-                         [lis, settingsDir]() { lis->initialize(settingsDir); });
+                         [lis, settingsDir, withOriginalProjects, originalDbRoot]()
+        {
+            if (withOriginalProjects) lis->initializeOriginal(originalDbRoot);
+            else lis->initialize(settingsDir);
+        });
         QObject::connect(page, &frmLisSetting::operationFinished, &app,
                          [&](const QString &, bool success)
         {
@@ -903,15 +994,16 @@ int main(int argc, char *argv[])
         if (!stepped || state.finished) statusReplayTimer.stop();
     });
     shutdown.setWindow(&viewport);
-    QObject::connect(&databaseThread, &QThread::started, store, [store, hospitalDir]()
+    QObject::connect(&databaseThread, &QThread::started, store, [store, hospitalDir, withOriginalProjects]()
     {
-        store->initialize(QDir(hospitalDir).filePath(QStringLiteral("hospital_Information.db")),
-                          QDir(hospitalDir).filePath(QStringLiteral("config.ini")));
+        if (withOriginalProjects) store->initializeOriginal(hospitalDir);
+        else store->initialize(QDir(hospitalDir).filePath(QStringLiteral("hospital_Information.db")),
+                               QDir(hospitalDir).filePath(QStringLiteral("config.ini")));
     });
     QObject::connect(store, &HospitalStore::error, &app, [&](const QString &operation, const QString &message)
     {
         qWarning().noquote() << "STORAGE_ERROR" << operation << message;
-        if (operation == QStringLiteral("initialize")) app.exit(3);
+        if (operation == QStringLiteral("initialize") || operation == QStringLiteral("initializeOriginal")) app.exit(3);
     });
     QObject::connect(store, &HospitalStore::warning, &app, [](const QString &message)
     {

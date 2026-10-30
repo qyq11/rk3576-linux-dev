@@ -1,0 +1,30 @@
+--- before/hospital_store.cpp
++++ after/hospital_store.cpp
+@@ -1001,10 +1001,12 @@
+     }
+     OriginalIni::Settings before, after;
+     if (!OriginalIni::read(path, &before, message)) return false;
+-    if (!valueFile.open() || !valueFile.resize(0) || valueFile.write(*rewritten) != rewritten->size() || !valueFile.flush())
++    // QSettings可能已替换编码临时文件，另建回读副本，避免复用旧文件句柄。
++    QTemporaryFile verifyFile(QFileInfo(path).absolutePath() + QStringLiteral("/.hospital-verify-XXXXXX.ini"));
++    if (!verifyFile.open() || !verifyFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner) ||
++        verifyFile.write(*rewritten) != rewritten->size() || !verifyFile.flush())
+     { *message = QStringLiteral("医院配置保存前的回读副本准备失败。"); return false; }
+-    valueFile.close();
+-    if (!OriginalIni::read(temporaryPath, &after, message) || after.values.value(QStringLiteral("hospital/name")).toString() != name)
++    if (!OriginalIni::read(verifyFile.fileName(), &after, message) || after.values.value(QStringLiteral("hospital/name")).toString() != name)
+     { *message = QStringLiteral("医院名称保存前回读不一致，未改原配置。"); return false; }
+     before.values.remove(QStringLiteral("hospital/name")); after.values.remove(QStringLiteral("hospital/name"));
+     if (before.values != after.values)
+--- before/original_management_rk_driver.cpp
++++ after/original_management_rk_driver.cpp
+@@ -159,7 +159,8 @@
+     QString hospitalName; HospitalRows hospitalRows; AccountSession session; AccountRows accountRows; MaintenanceRecords maintenanceRows;
+     QString alarmToken;
+     QObject::connect(hospital,&HospitalStore::ready,&app,accepted);
+-    QObject::connect(hospital,&HospitalStore::error,&app,[&](const QString &,const QString &) { rejected(); });
++    QObject::connect(hospital,&HospitalStore::error,&app,[&](const QString &operation,const QString &message)
++    { qWarning().noquote()<<"HOSPITAL_ERROR"<<operation<<message; rejected(); });
+     QObject::connect(hospital,&HospitalStore::loaded,&app,[&](const QString &,const QString &name,const HospitalRows &rows) { hospitalName=name;hospitalRows=rows;accepted(); });
+     QObject::connect(hospital,&HospitalStore::saved,&app,[&](const QString &,const QString &name,const HospitalRows &rows) { hospitalName=name;hospitalRows=rows;accepted(); });
+     QObject::connect(hospital,&HospitalStore::removed,&app,[&](const QString &,qint64) { accepted(); });

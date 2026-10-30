@@ -7,8 +7,11 @@
 #include <QStringList>
 #include <QSqlDatabase>
 #include <QVariant>
+#include <memory>
 #include "qc_history_reply.h"
 #include "../samples/sample_qc_protocol.h"
+#include "../data/account_store.h"
+class QLockFile;
 
 struct QcResultRef
 {
@@ -40,6 +43,8 @@ struct QcRule
     QString sdValue;
     QString target;
     QList<int> strategies = QList<int>({0, 0, 0, 0, 0, 0, 0, 0, 0});
+    QVariantMap originalValues;
+    QString originalRoot, originalFingerprint;
 };
 using QcRules = QList<QcRule>;
 struct QcAssociation
@@ -60,6 +65,7 @@ struct QcBatch
     QString expirationDate; // 原串行化yyyy/MM/dd；可保存已过期的历史批次，不推断临床可用性。
     bool current = false;
     bool previous = false;
+    QString originalRoot, originalFingerprint;
 };
 using QcBatches = QList<QcBatch>;
 struct QcControl
@@ -70,8 +76,14 @@ struct QcControl
     bool used = true; // 原ckxValid只读回显；保存名称不暗改有效状态。
     QcAssociations projects;
     QcBatches batches;
+    QString originalRoot, originalFingerprint;
 };
 using QcControls = QList<QcControl>;
+struct QcRawResult
+{
+    QString controlName, projectName, batchName, resultValue, date, time;
+};
+Q_DECLARE_METATYPE(QcRawResult)
 Q_DECLARE_METATYPE(QcResultRef)
 Q_DECLARE_METATYPE(QcResultRefs)
 Q_DECLARE_METATYPE(QcProjectRef)
@@ -99,6 +111,9 @@ public:
     static QString validateRules(const QcRules &rules);
 public slots:
     void initialize(QString absoluteDirectory);
+    void initializeOriginal(QString root);
+    void setSession(AccountSession session);
+    void recordOriginalResult(qint64 requestId, QcRawResult result);
     void bindCatalog(QString absoluteCatalogDirectory);
     void setCatalog(qint64 requestId, QcProjectRefs projects);
     void load(qint64 requestId);
@@ -119,6 +134,7 @@ public slots:
 signals:
     // 本地SQL初始化完成；依赖项目的业务还须等catalogBound对账门槛。
     void ready(QString databasePath);
+    void originalSourceReady(QString root);
     void snapshotReady(qint64 requestId, QcControls controls);
     void historyReady(qint64 requestId, QcHistoryReply reply);
     void historyError(qint64 requestId, qint64 associationId, QString code, QString message);
@@ -138,6 +154,22 @@ signals:
     void referenceCheckpoint(QString phase, qint64 controlId);
     void closed();
 private:
+    bool originalMode_ = false;
+    QString originalRoot_, originalFingerprint_;
+    qint64 originalLastWrite_ = 0;
+    AccountSession originalSession_;
+    std::unique_ptr<QLockFile> originalProjectLock_;
+    bool originalWrite(qint64 requestId, const QString &operation, QString *message);
+    void originalFinished(qint64 requestId, const QString &operation, qint64 id);
+    void loadOriginal(qint64 requestId);
+    void saveOriginalControl(qint64 requestId, QcControl control);
+    void removeOriginalControl(qint64 requestId, qint64 id);
+    void setOriginalProjects(qint64 requestId, qint64 controlId, QcProjectRefs projects);
+    void saveOriginalRules(qint64 requestId, qint64 associationId, QcRules rules);
+    void saveOriginalBatch(qint64 requestId, QcBatch batch);
+    void removeOriginalBatch(qint64 requestId, qint64 id);
+    void switchOriginalBatch(qint64 requestId, qint64 controlId, qint64 batchId);
+    void loadOriginalHistory(qint64 requestId, qint64 associationId);
     QSqlDatabase database_;
     QString connectionName_;
     QString datasetId_;

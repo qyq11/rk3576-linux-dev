@@ -1,0 +1,11 @@
+{
+  "scope": "旧driver1b在新进程只跑正式Start，未复现顶层重建崩溃；业务未通过",
+  "passed": 2,
+  "failed": 2,
+  "exitCode": 2,
+  "driverSha256": "1b821b9106a4d7e7f5950199fab1dd787effc5220dab0bfc3f794aa8eff2e2a2",
+  "firstFailure": "clickMain的button->isEnabled始终false，尚未发送按钮鼠标事件或进入确认框",
+  "secondaryFailure": "helper返回后仍等Ts造成级联；已在新测试调用后检查首错并停止",
+  "diagnosis": "缺禁用原因日志，不推断为确认框点击几何；新测试记录实际tooltip及页面/任务/连接状态",
+  "instrumentVerified": false
+}

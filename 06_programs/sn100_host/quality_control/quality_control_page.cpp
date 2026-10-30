@@ -580,7 +580,16 @@ void QualityControlPage::renderManager()
             for (QcRule &rule:association.rules)
                 for (const QcAssociation &oldAssociation:oldDraft.projects)
                     for (const QcRule &oldRule:oldAssociation.rules)
-                        if (oldRule.id==rule.id) rule=oldRule;
+                        if (oldRule.id==rule.id)
+                        {
+                            QcRule preserved=oldRule;
+                            // 切批或改关联后，规则原字段未变时接续新版本；保留页面输入。
+                            // 任何原字段变化仍保留旧令牌，由后台拒绝覆盖外部更新。
+                            if(!rule.originalRoot.isEmpty()&&oldRule.originalRoot==rule.originalRoot&&
+                               oldRule.originalValues==rule.originalValues)
+                                preserved.originalFingerprint=rule.originalFingerprint;
+                            rule=preserved;
+                        }
     }
     form->ldtControlName->setText(dialogs_->draft.name);
     form->ldtFactor->setText(dialogs_->draft.manufacturer);
@@ -759,6 +768,8 @@ void QualityControlPage::openBatches(qint64 controlId)
     {
         if (busy_) return;
         QcBatch batch;
+        if(const QcControl *saved=control(dialogs_->batchControlId))
+            for(const QcBatch &existing:saved->batches)if(existing.id==dialogs_->batchEditId)batch=existing;
         batch.id=dialogs_->batchEditId;
         batch.controlId=dialogs_->batchControlId;
         batch.name=form->ldtBatch->text();

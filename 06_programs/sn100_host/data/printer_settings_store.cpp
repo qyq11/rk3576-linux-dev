@@ -1,4 +1,6 @@
 #include "printer_settings_store.h"
+#include "original_files/original_ini_write.h"
+#include "original_files/original_business_database.h"
 
 #include <QDir>
 #include <QFile>
@@ -88,8 +90,21 @@ bool PrinterSettingsStore::readBytes(QByteArray *bytes, QString *message)
     return true;
 }
 
-bool PrinterSettingsStore::readStored(QString *name, QByteArray *bytes, QString *message)
+bool PrinterSettingsStore::readStored(QString *name, QByteArray *bytes, QString *message, QString *fingerprint)
 {
+    if (!originalRoot_.isEmpty())
+    {
+        OriginalIni::Snapshot snapshot;
+        if (!OriginalIni::readVersioned(originalRoot_, QStringLiteral("config.ini"), &snapshot, message)) return false;
+        QString actualKey;
+        if (!OriginalIni::resolveKey(snapshot.parsed, printerKey, &actualKey, message)) return false;
+        *name = snapshot.parsed.values.value(actualKey).toString();
+        if (name->size() > 1024 || name->contains(QChar::Null))
+        { *message = tr("原打印机名称无效，未替换为其他设备。"); return false; }
+        *bytes = snapshot.bytes;
+        if (fingerprint) *fingerprint = snapshot.fingerprint;
+        return true;
+    }
     if (!readBytes(bytes, message)) return false;
     // Qt5目标路径QSettings可能复用相同size/mtime的缓存。解析独一临时
     // 文件中的实际字节，使外部原子替换和同时间戳改动也能被发现。
@@ -120,6 +135,18 @@ bool PrinterSettingsStore::readStored(QString *name, QByteArray *bytes, QString 
 bool PrinterSettingsStore::writeStored(const QString &name, const QByteArray &expected,
                                       QByteArray *written, QString *message)
 {
+    if (!originalRoot_.isEmpty())
+    {
+        OriginalIni::Snapshot before, after;
+        if (!OriginalIni::readVersioned(originalRoot_, QStringLiteral("config.ini"), &before, message)) return false;
+        if (before.bytes != expected)
+        { *message = tr("原打印配置提交前变化，未覆盖。"); return false; }
+        if (!OriginalIni::patch(originalRoot_, QStringLiteral("config.ini"), before.fingerprint,
+            {{printerKey, name}}, {printerKey}, &after, message)) return false;
+        *written = after.bytes;
+        originalFingerprint_ = after.fingerprint;
+        return true;
+    }
     if (containsSymlink(path_))
     {
         *message = tr("打印设置路径包含符号链接，原文件保留。");
@@ -205,6 +232,7 @@ bool PrinterSettingsStore::writeStored(const QString &name, const QByteArray &ex
 void PrinterSettingsStore::initialize(QString directory)
 {
     if (!checkThread(QStringLiteral("initialize"))) return;
+    originalRoot_.clear(); originalFingerprint_.clear();
     ready_ = false;
     directory = QDir::cleanPath(directory);
     if (!QDir::isAbsolutePath(directory) || containsSymlink(directory)
@@ -243,19 +271,40 @@ void PrinterSettingsStore::initialize(QString directory)
     emit loaded(committed_, available_);
 }
 
+void PrinterSettingsStore::initializeOriginal(QString root)
+{
+    const QString operation = QStringLiteral("initialize");
+    if (!checkThread(operation)) return;
+    ready_ = false;
+    QString message;
+    if (!OriginalBusiness::workingRoot(root, &message)) { emit error(operation, message); return; }
+    originalRoot_ = QFileInfo(root).canonicalFilePath();
+    path_ = QDir(originalRoot_).filePath(QStringLiteral("config.ini"));
+    QString name, fingerprint;
+    QByteArray bytes;
+    QStringList printers;
+    if (!readStored(&name, &bytes, &message, &fingerprint) || !enumerate(&printers, &message))
+    { emit error(operation, message); return; }
+    committed_ = name; committedBytes_ = bytes; originalFingerprint_ = fingerprint;
+    available_ = printers; ready_ = true;
+    emit loaded(committed_, available_);
+}
+
 void PrinterSettingsStore::load()
 {
     if (!checkThread(QStringLiteral("load"))) return;
     QString message, name;
     QByteArray bytes;
+    QString fingerprint;
     QStringList printers;
-    if (!ready_ || !readStored(&name, &bytes, &message) || !enumerate(&printers, &message))
+    if (!ready_ || !readStored(&name, &bytes, &message, &fingerprint) || !enumerate(&printers, &message))
     {
         emit error(QStringLiteral("load"), message.isEmpty() ? tr("打印设置尚未就绪。") : message);
         return;
     }
     committed_ = name;
     committedBytes_ = bytes;
+    if (!originalRoot_.isEmpty()) originalFingerprint_ = fingerprint;
     available_ = printers;
     emit loaded(name, printers);
 }
@@ -277,7 +326,7 @@ void PrinterSettingsStore::save(QString name)
         emit error(QStringLiteral("save"), message.isEmpty() ? tr("打印设置未就绪或正由其他进程处理。") : message);
         return;
     }
-    if (stored != committed_ || bytes != committedBytes_)
+    if (stored != committed_ || (originalRoot_.isEmpty() && bytes != committedBytes_))
     {
         emit error(QStringLiteral("save"), tr("打印设置已被其他写入方改变，请重开读取后再修改。"));
         return;
@@ -311,5 +360,6 @@ void PrinterSettingsStore::close()
 {
     if (!checkThread(QStringLiteral("close"))) return;
     ready_ = false;
+    originalRoot_.clear(); originalFingerprint_.clear();
     emit closed();
 }

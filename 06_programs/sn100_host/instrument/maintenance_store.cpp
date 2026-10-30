@@ -1,7 +1,9 @@
 #include "maintenance_store.h"
+#include "original_files/original_business_database.h"
 #include "original_files/original_ini.h"
 
 #include <QDir>
+#include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QFile>
 #include <QFileInfo>
@@ -124,7 +126,7 @@ bool prepareOfflinePath(QString directory, QString *databasePath, bool *exists, 
     return true;
 }
 
-bool verifySchema(QSqlDatabase &database, QString *message)
+bool verifySchema(QSqlDatabase &database, QString *message, bool original = false)
 {
     for (const MaintenanceTable &table : maintenanceTables())
     {
@@ -139,6 +141,16 @@ bool verifySchema(QSqlDatabase &database, QString *message)
         int index = 0;
         while (query.next())
         {
+            if (original)
+            {
+                const QString name = query.value(1).toString();
+                if (!names.contains(name)) continue;
+                const int knownIndex = names.indexOf(name);
+                const QString expectedType = knownIndex == 0 ? QStringLiteral("INTEGER") : knownIndex == 1 ? QStringLiteral("DATE") : table.actionType;
+                if (query.value(2).toString().toUpper() != expectedType || query.value(5).toInt() != (knownIndex == 0 ? 1 : 0))
+                { *message = QStringLiteral("原维护表已知字段不兼容，未改表。"); return false; }
+                ++index; continue;
+            }
             const QString type = index == 0 ? QStringLiteral("INTEGER")
                                : index == 1 ? QStringLiteral("DATE") : table.actionType;
             if (index >= names.size() || query.value(1).toString() != names.at(index)
@@ -295,7 +307,7 @@ void MaintenanceStore::saveConnectionSettings(quint64 requestId, QString configu
             ? QStringLiteral("连接配置已被其他操作修改，请保留草稿并重新读取后再保存。") : message, false);
         return;
     }
-    QLockFile lock(configurationFile + QStringLiteral(".sn100-connection.lock"));
+    QLockFile lock(configurationFile + QStringLiteral(".sn100-original-config.lock"));
     if (!lock.tryLock(0))
     {
         emit connectionSettingsError(requestId, QStringLiteral("另一个连接配置操作正在进行，请稍后重试。"), false);
@@ -499,6 +511,23 @@ void MaintenanceStore::initialize(QString absoluteDataDir)
     emit ready();
 }
 
+void MaintenanceStore::initializeOriginal(QString root)
+{
+    const QString operation = QStringLiteral("initializeOriginal");
+    if (!checkThread(operation)) return;
+    if ((QCoreApplication::instance() && QThread::currentThread() == QCoreApplication::instance()->thread()) || m_database.isValid())
+    { emit error(operation, QStringLiteral("请在维护存储工作线程且原连接关闭时打开原库。")); return; }
+    QString message;
+    std::unique_ptr<OriginalBusiness::Database> database(new OriginalBusiness::Database);
+    if (!database->open(root, QStringLiteral("db/userSet/maintain.db"), true, &message) || !verifySchema(database->db, &message, true))
+    { emit error(operation, message); return; }
+    m_originalRoot = QFileInfo(root).canonicalFilePath();
+    m_database = database->db;
+    m_originalDatabase = std::move(database);
+    m_ready = true;
+    emit ready();
+}
+
 void MaintenanceStore::setSession(AccountSession session)
 {
     if (checkThread(QStringLiteral("setSession")))
@@ -541,22 +570,26 @@ void MaintenanceStore::loadMonth(QDate month)
                 return false;
             }
             int rows = 0;
+            QSet<QString> seenDates;
             while (query.next())
             {
                 const QString date = query.value(0).toString();
                 const QDate parsed = QDate::fromString(date, Qt::ISODate);
-                if (++rows > month.daysInMonth() || !parsed.isValid()
+                if (++rows > (m_originalRoot.isEmpty() ? month.daysInMonth() : 100000) || !parsed.isValid()
                         || parsed.toString(Qt::ISODate) != date || parsed < first || parsed > last)
                 {
                     message = QStringLiteral("维护日期或行数无效，未呈现不完整的记录");
                     return false;
                 }
+                // 原日历同日只取查询到的首行；保留重复原行，但不能合并后伪造完成项。
+                if (!m_originalRoot.isEmpty() && seenDates.contains(date)) continue;
+                seenDates.insert(date);
                 for (int index = 0; index < table.actions.size(); ++index)
                 {
                     const QString value = query.value(index + 1).toString();
-                    if (value == QStringLiteral("1"))
+                    if (m_originalRoot.isEmpty() ? value == QStringLiteral("1") : value.toInt() > 0)
                         records.append({table.dateColumn, date, table.actions.at(index)});
-                    else if (!value.isEmpty())
+                    else if (!value.isEmpty() && m_originalRoot.isEmpty())
                     {
                         message = QStringLiteral("维护完成标记无效，未呈现不完整的记录");
                         return false;
@@ -592,11 +625,13 @@ void MaintenanceStore::record(QString action, QDate date)
     const QString operation = QStringLiteral("record");
     if (!checkReady(operation))
         return;
-    if (!m_session.authenticated || m_session.role < 1 || m_session.role > 5)
+    if (!m_session.authenticated || m_session.role < (m_originalRoot.isEmpty() ? 1 : 0) || m_session.role > 5)
     {
-        emit error(operation, QStringLiteral("请先选择有效的脱机操作员身份，再登记人工维护记录"));
+        emit error(operation, QStringLiteral("请先建立有效操作员会话，再登记人工维护记录"));
         return;
     }
+    if (!m_originalRoot.isEmpty() && m_session.originalPolicySource != m_originalRoot)
+    { emit error(operation, QStringLiteral("当前身份不属于此原资料根，请重新登录。")); return; }
     // The supplier records today's date even while the calendar browses another
     // month. Do not let an offline completion fabricate past/future maintenance.
     if (!date.isValid() || date != QDate::currentDate())
@@ -628,21 +663,48 @@ void MaintenanceStore::record(QString action, QDate date)
             message = QStringLiteral("维护数据库正忙或无法开始事务: ") + query.lastError().text();
         else
         {
-            // Only whitelisted identifiers enter SQL; dates/values are bound.
-            // The date is unique, so repeating an action remains one completion.
-            query.prepare(QStringLiteral("INSERT OR IGNORE INTO %1 (%2) VALUES (?)")
-                          .arg(selected.table, selected.dateColumn));
-            query.addBindValue(date.toString(Qt::ISODate));
-            success = query.exec();
-            if (success)
+            if (!m_originalRoot.isEmpty())
             {
-                query.prepare(QStringLiteral("UPDATE %1 SET %2=? WHERE %3=?")
-                              .arg(selected.table, action, selected.dateColumn));
-                query.addBindValue(QStringLiteral("1"));
+                // 原表没有日期唯一约束；先按原规则查当天，不能靠INSERT OR IGNORE去重。
+                query.prepare(QStringLiteral("SELECT id,%1 FROM %2 WHERE %3=? ORDER BY id").arg(action, selected.table, selected.dateColumn));
                 query.addBindValue(date.toString(Qt::ISODate));
                 success = query.exec();
+                bool exists = false; qint64 rowId = 0; QString previous;
+                if (success && query.next()) { exists = true; rowId = query.value(0).toLongLong(); previous = query.value(1).toString(); }
+                if (success && query.next())
+                { success = false; message = QStringLiteral("原维护库同一天有多条记录，未猜测覆盖哪一条，请核对原资料。"); }
+                if (query.lastError().isValid()) success = false;
+                query.finish();
+                if (success && exists && previous != QStringLiteral("1"))
+                {
+                    query.prepare(QStringLiteral("UPDATE %1 SET %2=? WHERE id=?").arg(selected.table, action));
+                    query.addBindValue(QStringLiteral("1")); query.addBindValue(rowId);
+                    success = query.exec() && query.numRowsAffected() == 1;
+                }
+                else if (success && !exists)
+                {
+                    // 原DAL给同表其他维护项绑定空文本；省略列会变NULL，不能改变原记录含义。
+                    QStringList placeholders;
+                    for (int column = 0; column <= selected.actions.size(); ++column) placeholders.append(QStringLiteral("?"));
+                    query.prepare(QStringLiteral("INSERT INTO %1(%2,%3) VALUES(%4)").arg(selected.table,
+                        selected.dateColumn, selected.actions.join(QLatin1Char(',')), placeholders.join(QLatin1Char(','))));
+                    query.addBindValue(date.toString(Qt::ISODate));
+                    for (const QString &knownAction : selected.actions)
+                        query.addBindValue(knownAction == action ? QStringLiteral("1") : QStringLiteral(""));
+                    success = query.exec() && query.numRowsAffected() == 1;
+                }
             }
-            if (!success)
+            else
+            {
+                query.prepare(QStringLiteral("INSERT OR IGNORE INTO %1 (%2) VALUES (?)").arg(selected.table, selected.dateColumn));
+                query.addBindValue(date.toString(Qt::ISODate)); success = query.exec();
+                if (success)
+                {
+                    query.prepare(QStringLiteral("UPDATE %1 SET %2=? WHERE %3=?").arg(selected.table, action, selected.dateColumn));
+                    query.addBindValue(QStringLiteral("1")); query.addBindValue(date.toString(Qt::ISODate)); success = query.exec();
+                }
+            }
+            if (!success && message.isEmpty())
                 message = QStringLiteral("保存维护记录失败: ") + query.lastError().text();
             else if (!m_database.commit())
             {
@@ -665,6 +727,8 @@ void MaintenanceStore::releaseDatabase()
     if (m_database.isValid())
         m_database.close();
     m_database = QSqlDatabase();
+    m_originalDatabase.reset();
+    m_originalRoot.clear();
     if (!m_connectionName.isEmpty())
         QSqlDatabase::removeDatabase(m_connectionName);
     m_connectionName.clear();

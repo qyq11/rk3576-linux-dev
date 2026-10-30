@@ -82,6 +82,9 @@ struct HistoryResultValue
     bool display = false;
     bool mainResult = false;
     HistoryCurrentFormatSource currentSource;
+    bool originalReferenceKnown = false;
+    double originalReferenceLow = 0, originalReferenceHigh = 0;
+    double originalPrintFactor = 1; // 原QtReport仅对结果类型2/3按原单位字符串toInt换算。
 };
 using HistoryResultValues = QList<HistoryResultValue>;
 
@@ -97,6 +100,10 @@ struct HistoryResult
     HistoryResultValues storedValues;
     qint64 projectId = 0;
     QString instrumentProjectId;
+    bool originalProfile = false, originalProjectEnabled = false;
+    int originalProjectOrder = -1;
+    QString originalProjectFullName;
+    QByteArray originalTemplateXml; // 与本次原项目快照同属后台读取，不让报告线程再打开活动原库。
 };
 using HistoryResults = QList<HistoryResult>;
 
@@ -192,6 +199,7 @@ Q_DECLARE_METATYPE(HistoryReservationBatch)
 Q_DECLARE_METATYPE(HistoryComputedResult)
 
 class ResultProjectReferences;
+class OriginalHistorySource;
 
 // Construct without a parent, move to a QThread, and call through queued
 // connections. initialize/use/close SQL all execute on that worker thread.
@@ -211,6 +219,8 @@ public slots:
     // nonempty unmarked directories and databases without this schema marker.
     // New data are seeded only from :/fixtures/history_reports.json.
     void initialize(QString directory);
+    // 原结果库按原路径和表直接使用；不创建匿名数据、元表或报告数值。
+    void initializeOriginal(QString root);
     // Empty local-result profile, separate from the legacy anonymous fixture.
     // Explicit absolute sibling directories under an existing canonical parent;
     // catalog must already be marked/valid. No fixture seed, path discovery or
@@ -293,6 +303,7 @@ private:
     QString m_resultStoreId;
     QString m_resultCatalogDirectory;
     std::unique_ptr<ResultProjectReferences> m_resultProjects;
+    std::unique_ptr<OriginalHistorySource> m_originalHistory;
     quint64 m_formatRequestRevision = 0;
 };
 

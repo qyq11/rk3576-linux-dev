@@ -49,6 +49,8 @@ DeviceControl::DeviceControl(QObject *parent) : QObject(parent), transport_(this
     });
     connect(&transport_, &DeviceTransport::disconnected, this, [this](quint64)
     {
+        // 断线后不再查询旧连接；释放“连接已启动”标记，允许用户重连同一端点。
+        timer_.stop();
         state_.connected = false;
         state_.fresh = false;
         if (!state_.pending.isEmpty())
@@ -208,6 +210,24 @@ bool DeviceControl::pause()
     const QString reason = pauseBlocker();
     if (!reason.isEmpty()) return reject(reason);
     return send(pausePayload(), QStringLiteral("pause"));
+}
+
+bool DeviceControl::sendTaskReply(const QByteArray &payload)
+{
+    if (!payload.startsWith("Tt[")) return reject(tr("不是已经准备完成的原任务回应。"));
+    return send(payload);
+}
+
+bool DeviceControl::sendOriginalConfiguration(const QByteArray &payload)
+{
+    const bool query=payload=="Ur" || (payload.startsWith("UP[") && payload.endsWith(']'));
+    const bool taskReply=payload.startsWith("Tu[");
+    const bool update=payload.startsWith("Up[") || payload.startsWith("Us[");
+    if (!query && !taskReply && !update) return reject(tr("不是已接入的原配置命令。"));
+    if (payload.size()>Sn100Protocol::kMaxMessageBytes) return reject(tr("原配置命令超过长度上限，未截断。"));
+    if (update && (!state_.fresh || state_.outcomeUnknown || !state_.pending.isEmpty() || state_.status.mainStatus>2))
+        return reject(tr("设备尚未就绪或有执行结果待核对，未修改设备配置。"));
+    return send(payload);
 }
 
 bool DeviceControl::silenceAlarm()

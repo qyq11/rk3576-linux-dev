@@ -1,6 +1,7 @@
 #include "instrument_page.h"
 #include "device_control.h"
 #include "original_device_commands.h"
+#include "original_files/original_runtime_settings.h"
 #include "ui_frmdriverset.h"
 #include "ui/cusmessagebox.h"
 #include "samples/material/qtmaterialscrollbar.h"
@@ -9,6 +10,7 @@
 #include <QAtomicInteger>
 #include <QComboBox>
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QHeaderView>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -33,6 +35,14 @@ const QString buttonStyle = QStringLiteral(
 QString stateName(const QStringList &names, int value)
 {
     return value >= 0 && value < names.size() ? names.at(value) : QStringLiteral("未知");
+}
+
+bool mayRecordManualMaintenance(const AccountSession &session)
+{
+    if (!session.authenticated || session.role < 0 || session.role > 5) return false;
+    if (session.originalPolicySource.isEmpty()) return session.role >= 1;
+    // 原维护页没有排除角色0；但必须来自口令或明确的原配置，未登录不能登记。
+    return session.source == AccountSessionSource::Password || session.source == AccountSessionSource::Configured;
 }
 
 quint64 nextConnectionRequest()
@@ -103,6 +113,13 @@ InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
         ui->textBrowser_SendData->clear();ui->textBrowser_ReceiveData->clear();
         ui->label_SendCount->setText(QStringLiteral("0"));
         ui->label_ReceiveCount->setText(QStringLiteral("0"));
+        sentCommunication_=0;receivedCommunication_=0;
+    });
+    connect(ui->pushButton_ShowSwitch,&QPushButton::clicked,this,[this]()
+    {
+        if (!originalCommunicationConfigured_) return;
+        showCommunication_=!showCommunication_;
+        ui->pushButton_ShowSwitch->setText(showCommunication_ ? tr("显示开关：开") : tr("显示开关：关"));
     });
     for (QLineEdit *edit : {ui->lblTcpIp, ui->lblTcpPort})
         connect(edit, &QLineEdit::textChanged, this, [this]()
@@ -439,7 +456,7 @@ void InstrumentPage::setSession(AccountSession session)
 
 void InstrumentPage::updatePermissions()
 {
-    const bool authenticated=session_.authenticated && session_.role>=1 && session_.role<=5;
+    const bool authenticated=mayRecordManualMaintenance(session_);
     const bool administrator=authenticated && session_.role>=5;
     ui->btnPort->setVisible(administrator);
     ui->btnFunTest->setVisible(administrator);
@@ -454,7 +471,7 @@ void InstrumentPage::updatePermissions()
         button->setEnabled(authenticated && ready_ && !isBusy());
         button->setToolTip(authenticated
             ? tr("确认人工已完成后，登记今天的本地维护记录；不会驱动仪器。")
-            : tr("请先选择有效账户；Guest只能查看维护记录。"));
+            : tr("请先登录或按原配置建立操作员会话，再登记维护记录。"));
     }
     ui->dateSelect->setEnabled(ready_ && !isBusy());
     ui->btnPrvMonth->setEnabled(ready_ && !isBusy());
@@ -478,6 +495,11 @@ void InstrumentPage::attachDeviceControl(DeviceControl *control, bool connectAtS
     autoConnectDevice_ = connectAtStartup;
     connect(control, &DeviceControl::changed, this, [this](const DeviceControlState &state)
     {
+        if (deviceControl_ && communicationGeneration_ != deviceControl_->connectionGeneration())
+        {
+            communicationGeneration_=deviceControl_->connectionGeneration();
+            sentDecoder_.reset();
+        }
         setReadOnlyStatus(state.status, state.connected && state.fresh, tr("设备"), state.message);
         updateDeviceButtons();
         report(state.message);
@@ -485,11 +507,26 @@ void InstrumentPage::attachDeviceControl(DeviceControl *control, bool connectAtS
     connect(control, &DeviceControl::wireActivity, this,
         [this](const QString &direction, const QByteArray &bytes)
     {
+        if (originalCommunicationConfigured_)
+        {
+            // 实际发送事件是带封包的字节；只有完整解码后才能按原业务命令显示。
+            if (direction.startsWith(QStringLiteral("TX")))
+            {
+                if (!communicationClock_.isValid()) communicationClock_.start();
+                const auto batch=sentDecoder_.feed(bytes,communicationClock_.elapsed());
+                for (const QByteArray &payload : batch.messages) appendOriginalCommunication(true,payload);
+            }
+            return;
+        }
         // 使用原通信收发区域，限制界面保留量，避免长时间接收无限增长。
         QTextBrowser *view = direction.startsWith(QStringLiteral("TX"))
                                  ? ui->textBrowser_SendData : ui->textBrowser_ReceiveData;
         if (view->document()->blockCount() > 500) view->clear();
         view->append(direction + QStringLiteral(" hex=") + QString::fromLatin1(bytes.toHex(' ')));
+    });
+    connect(control,&DeviceControl::payloadReceived,this,[this](const QByteArray &payload)
+    {
+        if (originalCommunicationConfigured_) appendOriginalCommunication(false,payload);
     });
     const auto toggleConnection = [this]()
     {
@@ -683,11 +720,11 @@ void InstrumentPage::showMaintenanceRecords(const MaintenanceRecords &records)
 
 void InstrumentPage::recordManualMaintenance(QString action, QString text)
 {
-    if (!store_ || !ready_ || busy_ || !session_.authenticated || session_.role<1 || session_.role>5) return;
+    if (!store_ || !ready_ || busy_ || !mayRecordManualMaintenance(session_)) return;
     setBusy(true);
     CusMessageBox question(this);
     question.showQuestionBox(tr("是否添加%1记录？").arg(text));
-    if (question.getClickButton()!=QMessageBox::Yes || !session_.authenticated || session_.role<1 || session_.role>5)
+    if (question.getClickButton()!=QMessageBox::Yes || !mayRecordManualMaintenance(session_))
     {
         setBusy(false);return;
     }
@@ -739,4 +776,63 @@ void InstrumentPage::report(QString message)
 {
     setProperty("instrumentStatus",message);
     emit statusChanged(message);
+}
+
+bool InstrumentPage::applyOriginalRuntime(const OriginalRuntime::RuntimeSettings &settings, QString *message)
+{
+    if (message) message->clear();
+    showCommunication_=settings.debug.showCommandsInitially;
+    showOnlyCommunication_=settings.debug.showCommandFilter;
+    maskCommunication_=settings.debug.maskCommandFilter;
+    const auto debug=settings.originalIniFiles.constFind(QStringLiteral("config_Debug.ini"));
+    if (debug != settings.originalIniFiles.cend())
+    {
+        // 原split保留空项；contains(空串)的原行为也须保留，不把空名单另解释成禁用。
+        shownCommunication_=debug->values.value(QStringLiteral("TCPTest/ShowCommand"),QString()).toString().split('|');
+        maskedCommunication_=debug->values.value(QStringLiteral("TCPTest/MaskCommand"),QString()).toString().split('|');
+    }
+    else
+    {
+        shownCommunication_=settings.debug.shownCommands;
+        maskedCommunication_=settings.debug.maskedCommands;
+    }
+    originalCommunicationConfigured_=true;
+    ui->pushButton_ShowSwitch->setProperty("requiresInstrument",false);
+    ui->pushButton_ShowSwitch->setEnabled(true);
+    ui->pushButton_ShowSwitch->setToolTip(tr("只改变通信文本显示，不发送仪器命令，也不修改原配置文件。"));
+    ui->pushButton_ShowSwitch->setText(showCommunication_ ? tr("显示开关：开") : tr("显示开关：关"));
+    ui->textBrowser_SendData->document()->setMaximumBlockCount(500);
+    ui->textBrowser_ReceiveData->document()->setMaximumBlockCount(500);
+    ui->lbl10_20->setText(settings.theme.company);
+    ui->lblDriverModel->setText(settings.theme.driverModel);
+    ui->lblDriverModel->setToolTip(tr("原主题配置中的机型名称；实际设备状态以收到的有效报文为准。"));
+    return true;
+}
+
+void InstrumentPage::appendOriginalCommunication(bool transmitted, const QByteArray &payload)
+{
+    if (!showCommunication_) return;
+    const QString text=QString::fromUtf8(payload);
+    if (!transmitted)
+    {
+        // 原接收窗口先执行显示名单，只有未启用它时才执行屏蔽名单；发送窗口不筛名单。
+        if (showOnlyCommunication_)
+        {
+            bool found=false;
+            for (const QString &command : shownCommunication_) if (text.contains(command)) {found=true;break;}
+            if (!found) return;
+        }
+        else if (maskCommunication_)
+        {
+            for (const QString &command : maskedCommunication_) if (text.contains(command)) return;
+        }
+    }
+    QTextBrowser *view=transmitted ? ui->textBrowser_SendData : ui->textBrowser_ReceiveData;
+    const QString line=QDateTime::currentDateTime().toString(QStringLiteral("HH:mm:ss:zzz")) +
+        (transmitted ? QStringLiteral(" TX ") : QStringLiteral(" RX ")) + text +
+        QStringLiteral(" hex=") + QString::fromLatin1(payload.toHex(' '));
+    // 当作纯文本追加，设备字段中的尖括号不会成为页面HTML；十六进制仍保留实际字节。
+    view->append(line.toHtmlEscaped());
+    if (transmitted) ui->label_SendCount->setText(QString::number(++sentCommunication_));
+    else ui->label_ReceiveCount->setText(QString::number(++receivedCommunication_));
 }

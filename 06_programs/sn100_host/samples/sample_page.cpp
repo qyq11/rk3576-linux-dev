@@ -271,6 +271,19 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
                 QSignalBlocker blocker(setting_->repeatComb);
                 setting_->repeatComb->setCurrentIndex(0);
             });
+    connect(store, &SampleStore::originalProfileReady, this, [this](const QString &root, int ordinary, int emergency)
+    {
+        originalProfile_ = true;
+        ordinaryHoles_ = ordinary; emergencyHoles_ = emergency;
+        setProperty("originalProfile", true);
+        setProperty("originalRoot", root);
+    });
+    connect(store, &SampleStore::originalProjectsReady, this, &SamplePage::setProjects);
+    connect(store, &SampleStore::deviceTaskStateChanged, this, [this]()
+    {
+        if (busy_ || dirty_ || dialogDirty_) { pendingDeviceReload_ = true; return; }
+        reload();
+    });
     connect(store, &SampleStore::ready, this,
             [this](const QString &)
             {
@@ -314,7 +327,12 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
                     }
                 }
                 setBusy(false);
-                report(tr("本地预设已读取；未下发，真实状态和足料校验待验。")+qualityWarning_);
+                report((originalProfile_ ? tr("已读取当前原项目、原组合及样本任务状态。") : tr("本地预设已读取；未下发，真实状态和足料校验待验。"))+qualityWarning_);
+                if (pendingDeviceReload_ && !dirty_ && !dialogDirty_)
+                {
+                    pendingDeviceReload_ = false;
+                    QTimer::singleShot(0, this, &SamplePage::reload);
+                }
                 emit snapshotChanged(snapshot_);
                 emit operationFinished("load", true);
             });
@@ -1059,7 +1077,7 @@ void SamplePage::addRack()
         report(tr("普通架已达98个本地预算。"));
         return;
     }
-    for (int hole = 1; hole <= 8; ++hole)
+    for (int hole = 1; hole <= ordinaryHoles_; ++hole)
     {
         SampleHole value;
         value.number = hole;

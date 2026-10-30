@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QSet>
 #include <cmath>
+#include <algorithm>
 
 namespace
 {
@@ -65,12 +66,22 @@ bool HistoryReportDocument::anonymousOptions(HistoryPrintOptions *options, QStri
 bool HistoryReportDocument::build(const HistoryReport &report, const HistoryPrintOptions &options,
                                  HistoryPrintDocument *document, QString *error)
 {
-    if (report.id <= 0 || report.results.isEmpty() || report.results.size() > 64 || options.hospitalName.isEmpty())
+    if (report.id <= 0 || report.results.isEmpty() || report.results.size() > 64 ||
+        (!options.originalProfile && options.hospitalName.isEmpty()))
     {
         *error = QStringLiteral("所选匿名报告为空、标识无效或超过64任务容量。");
         return false;
     }
     HistoryPrintDocument result;
+    if (options.originalProfile)
+    {
+        result.originalTemplateXml = report.results.first().originalTemplateXml;
+        if (result.originalTemplateXml.isEmpty())
+        { *error = QStringLiteral("原resource/report_template/report.xml缺失，未使用匿名模板。 "); return false; }
+        for (const auto &task : report.results)
+            if (task.originalTemplateXml != result.originalTemplateXml)
+            { *error = QStringLiteral("原报告任务的模板快照不一致，请重新读取。 "); return false; }
+    }
     const HistoryPatient &patient = report.patient;
     result.headers = {{QStringLiteral("hospital_name"), options.hospitalName},
         {QStringLiteral("name"), patient.name},
@@ -78,7 +89,7 @@ bool HistoryReportDocument::build(const HistoryReport &report, const HistoryPrin
             ? HistoryStore::sexText(patient.sex) : QStringLiteral("Unknown")},
         {QStringLiteral("age"), QString::number(patient.age)}, {QStringLiteral("bed_number"), patient.bedNumber},
         {QStringLiteral("department"), patient.department}, {QStringLiteral("sample_provider"), patient.sender},
-        {QStringLiteral("sample_sn"), QString::number(report.sampleNumber)},
+        {QStringLiteral("sample_sn"), options.originalProfile ? report.barcode : QString::number(report.sampleNumber)},
         {QStringLiteral("patient_type"), patient.patientType},
         {QStringLiteral("report_date"), report.dateTime.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss"))},
         {QStringLiteral("mark"), patient.remark}, {QStringLiteral("checker"), patient.examiner},
@@ -103,7 +114,8 @@ bool HistoryReportDocument::build(const HistoryReport &report, const HistoryPrin
         for (const HistoryResult &task : report.results)
         {
             if (task.project != project) continue;
-            for (const HistoryResultValue &value : task.values)
+            const auto &values = options.originalProfile ? task.storedValues : task.values;
+            for (const HistoryResultValue &value : values)
             {
                 const HistoryPrintColumn *configuration = nullptr;
                 for (const HistoryPrintColumn &candidate : options.columns)
@@ -138,7 +150,23 @@ bool HistoryReportDocument::build(const HistoryReport &report, const HistoryPrin
                         else if (raw > column.upper) arrow = QStringLiteral(" ↑");
                     }
                 }
-                const QString formatted = HistoryStore::displayValue(value);
+                QString formatted = HistoryStore::displayValue(value);
+                if (options.originalProfile)
+                {
+                    bool originalNumeric = false;
+                    const float original = value.rawValue.toFloat(&originalNumeric);
+                    const double scaled = value.rawValue.toDouble() * value.originalPrintFactor;
+                    formatted = originalNumeric && std::isfinite(original) && std::isfinite(scaled)
+                        ? QString::number(scaled, 'f', value.decimals) : QStringLiteral("****");
+                    // 原QtReport比较toFloat原值，再显示单位换算值；无箭头也保留末尾空格。
+                    arrow = QString();
+                    if (formatted != QStringLiteral("****"))
+                    {
+                        if (original < column.lower) arrow = QStringLiteral("↓");
+                        else if (original > column.upper) arrow = QStringLiteral("↑");
+                    }
+                    formatted += QLatin1Char(' ');
+                }
                 if (formatted == QStringLiteral("****")) arrow.clear();
                 result.rows.append({{QStringLiteral("project"), task.project},
                     {QStringLiteral("project_name"), column.description},
@@ -157,6 +185,7 @@ bool HistoryReportDocument::build(const HistoryReport &report, const HistoryPrin
     for (const HistoryResult &task : report.results)
         for (const HistoryResultValue &value : task.values)
         {
+            if (options.originalProfile) continue; // 原QtReport跳过没有项目参数的旧结果，数据库原串仍保留。
             bool configured = false;
             for (const HistoryPrintColumn &column : options.columns)
                 if (column.project == task.project && column.resultType == value.resultType) configured = true;
@@ -175,6 +204,39 @@ bool HistoryReportDocument::build(const HistoryReport &report, const HistoryPrin
     return true;
 }
 
+bool HistoryReportDocument::originalOptions(const HistoryReport &report, HistoryPrintOptions *options, QString *error)
+{
+    HistoryPrintOptions result;
+    result.originalProfile = true;
+    // 原QtReport::setValue没有yiyuanmingcheng分支：模板的此占位实际为空，先保持原行为。
+    // 医院页及主窗仍按原INI显示名称；更改报告标题需要后续明确业务要求。
+    QSet<QString> known;
+    HistoryResults ordered = report.results;
+    std::stable_sort(ordered.begin(), ordered.end(), [](const HistoryResult &left, const HistoryResult &right)
+    { return left.originalProjectOrder < right.originalProjectOrder; });
+    for (const auto &task : ordered)
+    {
+        if (!task.originalProfile) { *error = QStringLiteral("原报告混入了其他来源的结果，请重新读取。 "); return false; }
+        if (!task.originalProjectEnabled) continue;
+        for (const auto &value : task.storedValues)
+        {
+            const QString key = task.project + QChar(0x1f) + QString::number(value.resultType);
+            if (known.contains(key) || !value.selectionKnown) continue;
+            known.insert(key);
+            HistoryPrintColumn column;
+            column.project = task.project; column.resultType = value.resultType;
+            column.description = task.originalProjectFullName;
+            column.enabled = value.used; column.mainResult = value.mainResult;
+            column.hasReference = value.originalReferenceKnown;
+            column.lower = value.originalReferenceLow; column.upper = value.originalReferenceHigh;
+            result.columns.append(column);
+        }
+    }
+    if (result.columns.isEmpty()) { *error = QStringLiteral("原报告没有可对应的原项目打印参数，未套用匿名项目。 "); return false; }
+    *options = result;
+    return true;
+}
+
 QJsonObject HistoryReportDocument::toJson(const HistoryPrintDocument &document)
 {
     QJsonObject headers;
@@ -186,8 +248,11 @@ QJsonObject HistoryReportDocument::toJson(const HistoryPrintDocument &document)
         for (auto it = row.cbegin(); it != row.cend(); ++it) item.insert(it.key(), it.value());
         rows.append(item);
     }
-    return {{QStringLiteral("schema"), QStringLiteral("sn100-render-snapshot-v1")},
+    QJsonObject result{{QStringLiteral("schema"), QStringLiteral("sn100-render-snapshot-v1")},
         {QStringLiteral("headers"), headers}, {QStringLiteral("rows"), rows}};
+    if (!document.originalTemplateXml.isEmpty())
+        result.insert(QStringLiteral("original_template_xml"), QString::fromLatin1(document.originalTemplateXml.toBase64()));
+    return result;
 }
 
 bool HistoryReportDocument::fromJson(const QJsonObject &json, HistoryPrintDocument *document, QString *error)
@@ -198,6 +263,14 @@ bool HistoryReportDocument::fromJson(const QJsonObject &json, HistoryPrintDocume
         return false;
     }
     HistoryPrintDocument result;
+    if (json.contains(QStringLiteral("original_template_xml")))
+    {
+        const auto encoded = json.value(QStringLiteral("original_template_xml")).toString().toLatin1();
+        result.originalTemplateXml = QByteArray::fromBase64(encoded);
+        if (result.originalTemplateXml.isEmpty() || result.originalTemplateXml.size() > 256 * 1024 ||
+            result.originalTemplateXml.toBase64() != encoded)
+        { *error = QStringLiteral("原报表模板快照无效或超过256KiB，未猜测替代。 "); return false; }
+    }
     const QJsonObject headers = json.value(QStringLiteral("headers")).toObject();
     for (const QString &key : kHeaderKeys)
     {

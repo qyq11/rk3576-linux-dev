@@ -56,7 +56,7 @@ struct Row
 using Rows = QList<Row>;
 
 // Move a parentless instance to its SQL thread before calling any slot.
-// No write/DDL/migration, live-alarm state or device command API exists here.
+// 历史查询连接只读；原模式的新告警另用短事务追加，不提供历史修改/删除或设备命令。
 class Store : public QObject
 {
     Q_OBJECT
@@ -67,6 +67,9 @@ public:
 
 public slots:
     void openExisting(QString absolutePath);
+    void openOriginal(QString root);
+    // 仅接已解析的新事件，绑定本次opened来源；当前告警查询回复不得调用本入口。
+    void appendOriginalEvents(quint64 requestId, QString sourceToken, AlarmHistory::Rows rows);
     void begin(AlarmHistory::Request request);
     void advance(AlarmHistory::Key key, quint64 continuationStep);
     void cancel(AlarmHistory::Key key);
@@ -84,6 +87,8 @@ signals:
     void cancelled(AlarmHistory::Request request, qint64 deliveredRows);
     void requestRejected(AlarmHistory::Key key, AlarmHistory::Error error, QString message);
     void closed();
+    void originalEventsAppended(quint64 requestId, qint64 rows);
+    void originalEventsError(quint64 requestId, QString message);
 
 private:
     enum class Phase { Idle, Validating, Reading };
@@ -100,6 +105,8 @@ private:
     void fail(Error error, const QString &message);
     void clearRequest();
     void release();
+    void processOriginalEvents();
+    void scheduleOriginalEvents();
     QSqlDatabase m_database;
     std::unique_ptr<QSqlQuery> m_scan;
     std::unique_ptr<QSqlQuery> m_rows;
@@ -117,6 +124,12 @@ private:
     qint64 m_expected = 0;
     qint64 m_delivered = 0;
     bool m_transaction = false;
+    bool m_original = false;
+    QString m_originalRoot;
+    QList<QPair<quint64, Rows>> m_originalEvents;
+    qint64 m_queuedOriginalRows = 0;
+    quint64 m_lastOriginalAppend = 0;
+    bool m_appendScheduled = false;
 };
 }
 

@@ -1,0 +1,488 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-28T09:58:09.028298+08:00",
+  "scope": "只读审计新收回RK结果及匹配的测试源；未重新运行产品、旧扫描或旧脚本，没有全面重写业务。",
+  "baseline_inventory": "04_references/sn100_host/button_audit_20261027/rk_f8c6e73f/button_review.json",
+  "inventory_counts_unchanged": true,
+  "candidate_main_sha256": "f5514952a08fd9009e610fb04478c62a58fd88deb83858b805166fee9219990a",
+  "formal_current": "09:53:48只读实查仍为f8c，主SHA07ae71ce…；下面新候选在匿名目录检查，未替换current。",
+  "new_display_arrangement_for_this_audit": null,
+  "settings_page_run": {
+    "path": "04_references/sn100_host/original_settings_integration_20261028/settings_03",
+    "driver_sha256": "5b9ebf37b394bff8e8ab95e8fce0b16b9ad01b04412c932d67b4f4a8f722f839",
+    "main_sha256_if_present": "f5514952a08fd9009e610fb04478c62a58fd88deb83858b805166fee9219990a",
+    "passed": 11,
+    "failed": 0,
+    "milliseconds": 9249,
+    "actual_exit_code": 0,
+    "passed_cases": [
+      "initTestCase",
+      "readsOriginalValuesAndQtSerialEnums",
+      "cancelDraftsDoesNotWrite",
+      "interleavedPagesPreserveEachOthersKeys",
+      "sameHospitalNameConflictKeepsDraftAndRecovers",
+      "sharedWriteLockFailsWithoutLossThenRetries",
+      "onlyCurrentLisModeIsSaved",
+      "closeAndReopenReadsCommittedOriginalFiles",
+      "conflictingLisWriterKeepsDraft",
+      "formalMainOpensOriginalSettingsAndRestarts",
+      "cleanupTestCase"
+    ],
+    "failed_cases": [],
+    "artifact_hashes": [
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/settings_03/app.log",
+        "sha256": "015a4d0e419f9971f90f5999443849ef83ee601f74b0eb17ddc59cc2f6585fa8"
+      },
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/settings_03/runtime.txt",
+        "sha256": "4f6f0070e572572384410d637a007f5cfc17919a24d4e8787f4778c5d97c23d6"
+      },
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/settings_03/exit_code",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      }
+    ],
+    "contains_initialization_cleanup": true,
+    "matching_test_source": {
+      "path": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+      "sha256": "bca28ba56ff4d6ef0fab8127087f4e8ac4c45e69ce2dfcc667596dff7c276c19"
+    }
+  },
+  "settings_case_review": [
+    {
+      "id": "read-original",
+      "title": "读原设置和串口枚举",
+      "test_method": "readsOriginalValuesAndQtSerialEnums",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 142
+      },
+      "inventory_refs": [],
+      "observed_assertions": [
+        "医院和打印机显示原值；串口数据位/校验/停止位/流控及05000、0007前导零读取一致。",
+        "未生成独立settings替代目录。"
+      ],
+      "remaining_scope": [
+        "读取不是点击或设置已应用到通信；三页在独立测试宿主中初始化。"
+      ],
+      "evidence_layer": "RK独立页面和后台",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "cancel",
+      "title": "取消草稿不改配置",
+      "test_method": "cancelDraftsDoesNotWrite",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 152
+      },
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnCancel"
+        }
+      ],
+      "observed_assertions": [
+        "医院名称改为未存医院，点击取消并确认丢弃；LIS端口改为6001后调用requestLeave并确认丢弃。",
+        "两者完成后整份匿名config.ini字节与原值相同。"
+      ],
+      "remaining_scope": [
+        "只覆盖确认丢弃分支；未覆盖拒绝丢弃继续编辑。LIS离页为直接方法调用，不能算点击某个导航按钮。"
+      ],
+      "evidence_layer": "RK独立页面和后台",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "interleaved-save",
+      "title": "三页交错保存不丢别页数据",
+      "test_method": "interleavedPagesPreserveEachOthersKeys",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 162
+      },
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmprintersetting.ui",
+          "object": "btnApply"
+        }
+      ],
+      "observed_assertions": [
+        "先保存LIS端口6001，再选择ANON_PRINTER_B并应用，最后保存医院名称已存医院。",
+        "直接读INI核三个新值均存在，UTF8字节标记及未知厂家行unknown=KEEP  spaces和换行保留。"
+      ],
+      "remaining_scope": [
+        "只改医院名称，不覆盖五类字典增删。打印为模拟候选列表，仅验证设置保存；无实际出纸或LIS连接。"
+      ],
+      "evidence_layer": "RK独立页面和后台",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "hospital-conflict",
+      "title": "医院同字段冲突、重读和恢复保存",
+      "test_method": "sameHospitalNameConflictKeepsDraftAndRecovers",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 178
+      },
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnSave"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnReload"
+        }
+      ],
+      "observed_assertions": [
+        "外部先写医院名称后，本页草稿保存被拒绝，外部名称保留、草稿仍存在；确认重读后再保存成功。"
+      ],
+      "remaining_scope": [
+        "未覆盖用户拒绝重读或所有保存错误类型；不能将冲突恢复扩展到全部页面。"
+      ],
+      "evidence_layer": "RK独立页面和后台",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "write-lock",
+      "title": "LIS写锁失败后重试",
+      "test_method": "sharedWriteLockFailsWithoutLossThenRetries",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 191
+      },
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "btnSave"
+        }
+      ],
+      "observed_assertions": [
+        "持config.ini写锁点击保存，文件字节不变、草稿保持；释放锁再保存端口6002成功。"
+      ],
+      "remaining_scope": [
+        "写锁场景不代表磁盘满、目录只读、损坏文件等其他错误已验。"
+      ],
+      "evidence_layer": "RK独立页面和后台",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "lis-current-mode",
+      "title": "只保存当前通信方式",
+      "test_method": "onlyCurrentLisModeIsSaved",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 201
+      },
+      "inventory_refs": [],
+      "observed_assertions": [
+        "直接调用LisSettingsStore保存serial/ANON_COM_B/19200，TCP地址和端口仍为127.0.0.1/05000，底层枚举及序号原字节保持。"
+      ],
+      "remaining_scope": [
+        "这是后台save调用；没有点击TCP/串口单选、自动选项或界面保存按钮，不能补这些按钮事件。"
+      ],
+      "evidence_layer": "RK独立页面和后台",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "hospital-store-reopen",
+      "title": "医院存储关闭后重开读回",
+      "test_method": "closeAndReopenReadsCommittedOriginalFiles",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 216
+      },
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmhospinfosetting.ui",
+          "object": "btnSave"
+        }
+      ],
+      "observed_assertions": [
+        "医院名称重开医院保存后，关闭并重新初始化HospitalStore，再读原库回报名称一致；没有创建独立hospital替代库。"
+      ],
+      "remaining_scope": [
+        "仅重开医院存储对象，没有关闭页面、关闭整个程序或核三个设置页的修改值整进程重开。"
+      ],
+      "evidence_layer": "RK独立页面和后台",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "lis-conflict",
+      "title": "LIS同字段冲突保留外部值和草稿",
+      "test_method": "conflictingLisWriterKeepsDraft",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 230
+      },
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/ui/frmlissetting.ui",
+          "object": "btnSave"
+        }
+      ],
+      "observed_assertions": [
+        "外部端口7001保留，本页草稿6003仍可编辑，保存没有覆盖外部值。"
+      ],
+      "remaining_scope": [
+        "此场景没有随后重读/再保存，不能把拒绝覆盖称为已验证完整恢复。"
+      ],
+      "evidence_layer": "RK独立页面和后台",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "actual-main-settings",
+      "title": "实际主程序在原设置环境启动关闭两次",
+      "test_method": "formalMainOpensOriginalSettingsAndRestarts",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/settings_test_source.cpp",
+        "line": 240
+      },
+      "inventory_refs": [],
+      "observed_assertions": [
+        "独立新匿名根，两次QProcess真正启动同批f551主程序，传原库/data根及accounts/catalog/samples/printer-settings/lis-settings。",
+        "两次SHELL_READY、原医院/打印/LIS准备日志、线程结束和正常退出0均存在，根config.ini字节不变且未建三个替代存储文件。"
+      ],
+      "remaining_scope": [
+        "两次启动中没有操作子主程序的业务按钮，也没有在子主程序保存后重开核修改值；前八场景与此场景各自使用新匿名根。",
+        "关闭经进程SIGTERM，不能借作红色退出按钮本版本复测或物理点击。"
+      ],
+      "evidence_layer": "RK实际主程序启动/关闭及重开",
+      "does_not_change_f8c_inventory_status": true
+    }
+  ],
+  "main_task_run": {
+    "path": "04_references/sn100_host/original_settings_integration_20261028/task_chain_02",
+    "driver_sha256": "3a65583615efbdc2490d7190c9678a43f6fc4afe8f25bed1ef85dcad33ff1588",
+    "main_sha256_if_present": "f5514952a08fd9009e610fb04478c62a58fd88deb83858b805166fee9219990a",
+    "passed": 5,
+    "failed": 0,
+    "milliseconds": 20796,
+    "actual_exit_code": 0,
+    "passed_cases": [
+      "initTestCase",
+      "formalHolePageSaveWaitsForMatchingDeviceReadback",
+      "formalStartPauseResumeTasksAndRawResult",
+      "actualMainSelectsOriginalSampleAndReagentStoresAndRestarts",
+      "cleanupTestCase"
+    ],
+    "failed_cases": [],
+    "artifact_hashes": [
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/task_chain_02/app.log",
+        "sha256": "308509a6da242acdb5db9d79a996f2dc72d40a70ce1d097e8211b489aac32ed5"
+      },
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/task_chain_02/runtime.txt",
+        "sha256": "40d8f8030dae521f7a62b0dcf5fdc4932518ed9173db3af21830dcbf1874c09a"
+      },
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/task_chain_02/exit_code",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      }
+    ],
+    "contains_initialization_cleanup": true,
+    "matching_test_source": {
+      "path": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/task_test_source.cpp",
+      "sha256": "6ee0ed0283dae50ffaf8df9af2e9bcab6513f16413377546b63c6cb2367dd34f"
+    }
+  },
+  "main_task_case_review": [
+    {
+      "id": "clear-hole",
+      "title": "正式孔位页清孔、Us及对应Ur",
+      "test_method": "formalHolePageSaveWaitsForMatchingDeviceReadback",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/task_test_source.cpp",
+        "line": 187
+      },
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+          "object": "btnReagentInfoSet"
+        },
+        {
+          "form": "06_programs/sn100_host/reagents/maskdlgreagentsetting.ui",
+          "object": "btnSave"
+        }
+      ],
+      "observed_assertions": [
+        "通过正式页面打开孔位设置，名称选择空项后点击保存。模拟TCP端收到指定Us15字段，随后返回同孔Ur。",
+        "保存结果核priority=99、页面孔位reagentId=0及unknown_vendor_column=KEEP；界面不再忙碌，显示已收到回读。"
+      ],
+      "remaining_scope": [
+        "只覆盖R_1清孔正向，不覆盖普通非空保存、取消、拒绝确认、双击入口及其他孔位。",
+        "模拟端立即回复正确孔位；此页面场景没覆盖错误孔、旧连接、延迟/超时、断线和乱序。",
+        "主窗为驱动构造的正式frmMain及页面/工作线程；不是子进程actual main内的按钮操作。"
+      ],
+      "evidence_layer": "RK正式页面/主窗对象＋匿名TCP模拟端",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "start-pause-resume",
+      "title": "开始、暂停、恢复和原曲线落盘",
+      "test_method": "formalStartPauseResumeTasksAndRawResult",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/task_test_source.cpp",
+        "line": 204
+      },
+      "inventory_refs": [
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnStart"
+        },
+        {
+          "form": "06_programs/sn100_host/shell/frmmain.ui",
+          "object": "btnPause"
+        },
+        {
+          "form": "06_programs/sn100_host/ui/cusmessagebox.ui",
+          "object": "btnSure"
+        }
+      ],
+      "observed_assertions": [
+        "样本通过后台saveRack预置，架S01、孔1、样本17、原项目7、稀释1/2、次数1；并未点击样本编辑页录入。",
+        "主窗点击开始/暂停/再开始，模拟端收到Ts/Tp[0]/Ts，状态按Qj回复切到5/6/5。",
+        "模拟请求产生task41的Tt命令，TD/Tr后原数据库状态为已收到曲线，待计算，original_value为空、总编号42。重复请求返回Tt[S01][0]。"
+      ],
+      "remaining_scope": [
+        "只有一个普通样本、一个项目、一次任务；未覆盖组合、急诊、质控/校准、重复次数列表或其他稀释。",
+        "确认窗只自动点确定；取消/拒绝开始和暂停、保护状态及其他通信错误仍待验。",
+        "不包含实体仪器、计算结果、跨日期、重启恢复在途任务、未知任务结果或完整错误恢复。"
+      ],
+      "evidence_layer": "RK正式页面/主窗对象＋匿名TCP模拟端",
+      "does_not_change_f8c_inventory_status": true
+    },
+    {
+      "id": "actual-main-stores",
+      "title": "实际主程序在原样本试剂环境重开",
+      "test_method": "actualMainSelectsOriginalSampleAndReagentStoresAndRestarts",
+      "source_anchor": {
+        "file": "04_references/sn100_host/button_audit_20261027/received_flow_20261028/task_test_source.cpp",
+        "line": 225
+      },
+      "inventory_refs": [],
+      "observed_assertions": [
+        "另建匿名原根，真正启动f551主程序两次，明确原库/data根、accounts/catalog/samples；SHELL_READY、SAMPLE_STORE_CLOSED、THREADS_STOPPED及正常退出0均核。"
+      ],
+      "remaining_scope": [
+        "子主程序没有连接上述模拟端，也没有点击开始/暂停或保存样本；不能把此启动场景和驱动主窗场景拼成真正main完整贯通。",
+        "未在检测进行中退出重开，不能声称恢复在途任务。"
+      ],
+      "evidence_layer": "RK实际主程序启动/关闭及重开",
+      "does_not_change_f8c_inventory_status": true
+    }
+  ],
+  "store_task_run": {
+    "path": "04_references/sn100_host/original_flow_20261027/store_task_chain_01",
+    "driver_sha256": "10c18aeae91299d45e7eee6311945ff4b7ee9b4ed46bfaad1cf02791ded39fc0",
+    "main_sha256_if_present": null,
+    "passed": 6,
+    "failed": 0,
+    "milliseconds": 4658,
+    "actual_exit_code": 0,
+    "passed_cases": [
+      "initTestCase",
+      "establishedRoleZeroSavesOriginalSampleWithOriginalProjectNumber",
+      "singleHoleUsesNewProtocolButtonPriorityAndRejectsStaleConnection",
+      "preparationRackRequestProgressAndCurveKeepTheSameTaskIdentity",
+      "staleReagentPacketDoesNotWriteTheOriginalDatabase",
+      "cleanupTestCase"
+    ],
+    "failed_cases": [],
+    "artifact_hashes": [
+      {
+        "path": "04_references/sn100_host/original_flow_20261027/store_task_chain_01/app.log",
+        "sha256": "35e2a865d6d00a3ec156c2f11f52553ef9b9e95bf2d6010bcee22e6b86e0287f"
+      },
+      {
+        "path": "04_references/sn100_host/original_flow_20261027/store_task_chain_01/runtime.txt",
+        "sha256": "d50e12d5480914d9e66df9580ff53739fbc74a97a0c9d5836cce5bb720ef004a"
+      },
+      {
+        "path": "04_references/sn100_host/original_flow_20261027/store_task_chain_01/exit_code",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      }
+    ],
+    "contains_initialization_cleanup": true
+  },
+  "store_task_scope": "6/0含4业务和初始化/收尾。通过直接Store调用核原项目7、样本role0快照、Us99新旧连接/协议、Tt41/TD/Tr原库待计算及重复不占号；没有GUI或TCP、没有实际账户登录。",
+  "runtime_filter": {
+    "path": "04_references/sn100_host/original_settings_integration_20261028/runtime_filter",
+    "passed": 49,
+    "failed": 0,
+    "exit_code": 0,
+    "driver_sha256": "150723c6e1bc40f7fc5a55f53ad2f1b50c006da8b01db977ba5fe628b48d4a92",
+    "scope": "原配置、发送/接收显示过滤等独立驱动；名单优先、空项和开关有新输入检查。",
+    "limit": "不表示正式通信窗口接收真实报文后的显示过滤、清屏、主题/日志/容量全部接入主程序。",
+    "artifact_hashes": [
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/runtime_filter/runtime_result.json",
+        "sha256": "495a527b9d421bcc9a1446e3cb0904c6c367ee7b200c90d64828466805ceb84b"
+      },
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/runtime_filter/app.log",
+        "sha256": "00ec2ac4acec28fb75ddb869fae6ab3c8be43c16b4d06e0c9ba81073ef6048c5"
+      },
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/runtime_filter/runtime.txt",
+        "sha256": "9acdff8c6001527c0ad77a83778522daec4bbbf1d1546aea5a68898bc934699a"
+      },
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/runtime_filter/exit_code",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "path": "04_references/sn100_host/original_settings_integration_20261028/runtime_filter/inputs.SHA256SUMS",
+        "sha256": "6def434d61cafdf7e87232a627871561b44bc3c0e3c982b26e57048620a10d8e"
+      }
+    ]
+  },
+  "retained_failures": [
+    {
+      "path": "04_references/sn100_host/original_settings_integration_20261028/settings_01_runner_failure",
+      "result": "缺/usr/bin/time退出127，业务未运行。"
+    },
+    {
+      "path": "04_references/sn100_host/original_settings_integration_20261028/settings_02_initial_failure",
+      "result": "10/1、驱动exit1；子主程序旧账户初始化拒绝exit3，本轮新主程序两次启动另获通过。"
+    },
+    {
+      "path": "04_references/sn100_host/original_flow_20261027/store_task_chain_01/first_test_failure",
+      "result": "4/2、exit2；执行方说明Ur后未重读及匿名清洗液引用无效，修测试准备后另轮通过。"
+    }
+  ],
+  "remaining_by_owner": [
+    {
+      "owner": "整合",
+      "items": [
+        "本审计的新发布及显示时段；主入口页面修改→保存→取消不写→整进程关闭重开核原值。",
+        "打印/LIS实际通信、报告列原配置、外部XML和文件导出；不能以文件框或启动通过代替。"
+      ]
+    },
+    {
+      "owner": "样本试剂/任务接线",
+      "items": [
+        "普通样本的实际编辑、动态次数/稀释/组合及孔位入口分支。",
+        "单孔普通保存/取消及错误Ur/连接/超时等缺失页面分支，重启和跨日期结果等原未完成项。"
+      ]
+    },
+    {
+      "owner": "本审计",
+      "items": [
+        "新安排后只补未验/受影响分支，保留旧367项统计与固定证据。",
+        "物理键鼠、屏幕布局与真实仪器分别取证，不借Qt事件和模拟TCP通过。"
+      ]
+    }
+  ],
+  "source_binding": "两份测试源在其指纹仍匹配时按原字节另存，防止后续截图/计时补丁覆盖旧运行依据。原运行日志直接引用整合固定归档，不重复复制数据库或运行目录。"
+}

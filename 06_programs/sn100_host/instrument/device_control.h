@@ -24,7 +24,13 @@ Q_DECLARE_METATYPE(DeviceControlState)
 class DeviceTransport : public Sn100Protocol::ReadOnlyTcpTransport
 {
 public:
-    explicit DeviceTransport(QObject *parent) : ReadOnlyTcpTransport(parent) {}
+    explicit DeviceTransport(QObject *parent) : ReadOnlyTcpTransport(parent)
+    {
+        // 一条原任务报文最多128000字节，另留分片封包开销；预算只在连接启动前设置。
+        const bool configured = configureMessageQueue(131072);
+        Q_ASSERT(configured);
+        Q_UNUSED(configured);
+    }
     bool open(const QString &address, quint16 port, QString *error)
     { return connectNumericAddress(address, port, error); }
     bool send(const QByteArray &payload, QString *error)
@@ -38,12 +44,15 @@ class DeviceControl : public QObject
 public:
     explicit DeviceControl(QObject *parent = nullptr);
     const DeviceControlState &state() const { return state_; }
+    quint64 connectionGeneration() const { return transport_.generation(); }
     bool open(const QString &address, quint16 port);
     void close();
     bool query(Sn100Protocol::ReadOnlyQuery query);
     bool start(const QString &businessBlocker = QString());
     bool pause();
     bool silenceAlarm();
+    bool sendTaskReply(const QByteArray &payload);
+    bool sendOriginalConfiguration(const QByteArray &payload);
     bool maintenanceCommand(const QByteArray &payload);
     bool updateDeviceTime();
     bool confirmObservedState();

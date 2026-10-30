@@ -6,26 +6,32 @@
 class LocalSampleHoleView : public QWidget
 {
   public:
-    LocalSampleHoleView(bool configured, QWidget *parent) : QWidget(parent), configured_(configured) {}
+    LocalSampleHoleView(SampleHoleState state, QWidget *parent) : QWidget(parent), state_(state) {}
 
   protected:
     void paintEvent(QPaintEvent *) override
     {
         QPainter painter(this);
-        painter.drawPixmap(0, 0, QPixmap(configured_ ? ":/samples/s_setted.png" : ":/samples/s_none.png"));
+        // 原CusSampleHole::drawBg：准备、检测中、结束/错误各用对应状态图。
+        QString image=QStringLiteral(":/samples/s_none.png");
+        if (state_==SampleHoleState::Ready) image=QStringLiteral(":/samples/s_setted.png");
+        else if (state_==SampleHoleState::Testing) image=QStringLiteral(":/samples/s_testting.png");
+        else if (state_==SampleHoleState::Finished || state_==SampleHoleState::Error)
+            image=QStringLiteral(":/samples/s_finished.png");
+        painter.drawPixmap(0, 0, QPixmap(image));
     }
 
   private:
-    bool configured_;
+    SampleHoleState state_;
 };
 SampleRackView::SampleRackView(const SampleRack &rack, int index, bool selected, QWidget *parent)
-    : QWidget(parent), ui(new Ui::CusSampleRack), id_(rack.id)
+    : QWidget(parent), ui(new Ui::CusSampleRack), id_(rack.id), selected_(selected)
 {
     ui->setupUi(this);
     setFixedSize(1341, 116);
     ui->wgtRack->setRadius(60);
     ui->wgtRackInfo->setRadius(10);
-    ui->wgtRack->setBackgroundColor(selected ? QColor("#B7D7FF") : QColor(Qt::white));
+    ui->wgtRack->setBackgroundColor(selected_ ? selectedColour_ : QColor(Qt::white));
     ui->wgtRackInfo->setBackgroundColor(Qt::white);
     ui->lblRackId->setText(rack.emergency ? QStringLiteral("急诊")
                                           : QStringLiteral("预设%1:%2").arg(index).arg(rack.name));
@@ -35,21 +41,19 @@ SampleRackView::SampleRackView(const SampleRack &rack, int index, bool selected,
     int x = 20;
     for (const SampleHole &hole : rack.holes)
     {
-        bool configured = false;
-        for (const SampleTask &task : hole.tasks)
-        {
-            if (task.repeats > 0)
-            {
-                configured = true;
-            }
-        }
-        auto *view = new LocalSampleHoleView(configured, ui->wgtRack);
+        auto *view = new LocalSampleHoleView(sampleHoleState(sampleHoleTaskStates(hole)), ui->wgtRack);
         view->setGeometry(x, 20, 68, 68);
         x += 105;
-        view->setToolTip(QStringLiteral("孔%1 / 本地预设；未下发").arg(hole.number));
+        view->setToolTip(QStringLiteral("孔%1").arg(hole.number));
     }
     ui->wgtRack->setFixedWidth(x);
-    setToolTip(QStringLiteral("仅本地预设，真实执行状态未知；双击编辑"));
+    setToolTip(QStringLiteral("样本架%1；双击编辑").arg(rack.name));
+}
+void SampleRackView::setSelectedColour(QColor colour)
+{
+    if (!colour.isValid()) return;
+    selectedColour_=colour;
+    ui->wgtRack->setBackgroundColor(selected_ ? selectedColour_ : QColor(Qt::white));
 }
 SampleRackView::~SampleRackView()
 {
@@ -86,7 +90,7 @@ void SampleTaskView::paintEvent(QPaintEvent *)
     const int perRow = qMax(1, (width() - 3) / 75);
     for (int i = 0; i < names_.size(); ++i)
     {
-        // 沿用原CusSampleTaskView的四种状态图片；这里只显示已保存的本地草稿状态。
+        // 状态图沿用原CusSampleTaskView；状态来自存储快照，设备进度保存后再刷新。
         const SampleTaskState state = i < states_.size() ? states_[i] : SampleTaskState::Idle;
         QString image = QStringLiteral(":/samples/t_set.png");
         if (state == SampleTaskState::Finished)

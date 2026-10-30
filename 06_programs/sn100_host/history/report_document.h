@@ -21,6 +21,7 @@ struct HistoryPrintOptions
 {
     QString hospitalName;
     QList<HistoryPrintColumn> columns;
+    bool originalProfile = false;
 };
 
 // Immutable render input. No SQL, QWidget, account or device object crosses
@@ -29,12 +30,14 @@ struct HistoryPrintDocument
 {
     QMap<QString, QString> headers;
     QList<QMap<QString, QString>> rows;
+    QByteArray originalTemplateXml;
 };
 
 class HistoryReportDocument
 {
 public:
     static bool anonymousOptions(HistoryPrintOptions *options, QString *error);
+    static bool originalOptions(const HistoryReport &report, HistoryPrintOptions *options, QString *error);
     static bool build(const HistoryReport &report, const HistoryPrintOptions &options,
                       HistoryPrintDocument *document, QString *error);
     static QJsonObject toJson(const HistoryPrintDocument &document);

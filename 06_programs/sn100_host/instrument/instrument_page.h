@@ -7,6 +7,8 @@
 #include "data/account_store.h"
 #include "maintenance_store.h"
 #include "protocol/status_replay.h"
+#include <QElapsedTimer>
+namespace OriginalRuntime { struct RuntimeSettings; }
 
 class QPushButton;
 class QTableWidget;
@@ -29,6 +31,7 @@ public:
     void setReplayState(const Sn100Protocol::ReplayState &state);
     void setReadOnlyStatus(const Sn100Protocol::StatusSnapshot &snapshot, bool fresh,
                            const QString &prefix, const QString &sourceDetail);
+    bool applyOriginalRuntime(const OriginalRuntime::RuntimeSettings &settings, QString *message);
 
 signals:
     void statusChanged(QString message);
@@ -52,6 +55,12 @@ private:
     bool autoConnectDevice_ = false;
     QStringList blockingAlarmCodes_;
     bool alarmPolicyAvailable_ = false;
+    bool originalCommunicationConfigured_ = false;
+    bool showCommunication_ = true, showOnlyCommunication_ = false, maskCommunication_ = false;
+    QStringList shownCommunication_, maskedCommunication_;
+    quint64 sentCommunication_ = 0, receivedCommunication_ = 0, communicationGeneration_ = 0;
+    QElapsedTimer communicationClock_;
+    Sn100Protocol::FrameDecoder sentDecoder_{Sn100Protocol::Direction::HostToDevice};
 
     void applyOriginalStyle();
     void disableDeviceActions();
@@ -70,6 +79,7 @@ private:
     void setConnectionBusy(bool busy);
     void restoreConnectionDraft();
     void updateDeviceButtons();
+    void appendOriginalCommunication(bool transmitted, const QByteArray &payload);
 };
 
 #endif

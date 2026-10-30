@@ -1,0 +1,56 @@
+********* Start testing of OriginalSettingsPagesRkTest *********
+Config: Using QtTest library 5.15.13, Qt 5.15.13 (arm64-little_endian-lp64 shared (dynamic) release build; by GCC 13.2.0), ubuntu 24.04
+INFO   : OriginalSettingsPagesRkTest::initTestCase() entering
+PASS   : OriginalSettingsPagesRkTest::initTestCase()
+INFO   : OriginalSettingsPagesRkTest::readsOriginalValuesAndQtSerialEnums() entering
+PASS   : OriginalSettingsPagesRkTest::readsOriginalValuesAndQtSerialEnums()
+INFO   : OriginalSettingsPagesRkTest::cancelDraftsDoesNotWrite() entering
+QWARN  : OriginalSettingsPagesRkTest::cancelDraftsDoesNotWrite() This plugin does not support propagateSizeHints()
+QWARN  : OriginalSettingsPagesRkTest::cancelDraftsDoesNotWrite() This plugin does not support propagateSizeHints()
+PASS   : OriginalSettingsPagesRkTest::cancelDraftsDoesNotWrite()
+INFO   : OriginalSettingsPagesRkTest::interleavedPagesPreserveEachOthersKeys() entering
+PASS   : OriginalSettingsPagesRkTest::interleavedPagesPreserveEachOthersKeys()
+INFO   : OriginalSettingsPagesRkTest::sameHospitalNameConflictKeepsDraftAndRecovers() entering
+QWARN  : OriginalSettingsPagesRkTest::sameHospitalNameConflictKeepsDraftAndRecovers() This plugin does not support propagateSizeHints()
+PASS   : OriginalSettingsPagesRkTest::sameHospitalNameConflictKeepsDraftAndRecovers()
+INFO   : OriginalSettingsPagesRkTest::sharedWriteLockFailsWithoutLossThenRetries() entering
+PASS   : OriginalSettingsPagesRkTest::sharedWriteLockFailsWithoutLossThenRetries()
+INFO   : OriginalSettingsPagesRkTest::onlyCurrentLisModeIsSaved() entering
+PASS   : OriginalSettingsPagesRkTest::onlyCurrentLisModeIsSaved()
+INFO   : OriginalSettingsPagesRkTest::closeAndReopenReadsCommittedOriginalFiles() entering
+PASS   : OriginalSettingsPagesRkTest::closeAndReopenReadsCommittedOriginalFiles()
+INFO   : OriginalSettingsPagesRkTest::conflictingLisWriterKeepsDraft() entering
+PASS   : OriginalSettingsPagesRkTest::conflictingLisWriterKeepsDraft()
+INFO   : OriginalSettingsPagesRkTest::formalMainOpensOriginalSettingsAndRestarts() entering
+QINFO  : OriginalSettingsPagesRkTest::formalMainOpensOriginalSettingsAndRestarts() FORMAL_MAIN_RESTART 0 START mode=offline module= O08 Qt= 5.15.13 platform= offscreen logical_canvas=1920x1080 viewport= QSize(1600, 900) data_dir= /tmp/sn100-settings-resume.TgZ8iB/data/settings_irKeZt/formal_main
+ORIGINAL_INI_READ_OK files= 3 keys= 21 compatible_comment_lines= 1 connection_settings_applied=false
+ACCOUNT_ERROR initialize 首次新建账户实验库需要显式传入临时实验密码
+LIS_SETTINGS_CLOSED
+PRINTER_SETTINGS_CLOSED
+SAMPLE_STORE_CLOSED
+REAGENT_STORE_CLOSED
+PROJECT_STORE_CLOSED
+HOSPITAL_STORE_CLOSED
+ACCOUNT_STORE_CLOSED
+THREADS_STOPPED true
+EXIT code= 3
+
+FAIL!  : OriginalSettingsPagesRkTest::formalMainOpensOriginalSettingsAndRestarts() 'ready' returned FALSE. (START mode=offline module= O08 Qt= 5.15.13 platform= offscreen logical_canvas=1920x1080 viewport= QSize(1600, 900) data_dir= /tmp/sn100-settings-resume.TgZ8iB/data/settings_irKeZt/formal_main
+ORIGINAL_INI_READ_OK files= 3 keys= 21 compatible_comment_lines= 1 connection_settings_applied=false
+ACCOUNT_ERROR initialize 首次新建账户实验库需要显式传入临时实验密码
+LIS_SETTINGS_CLOSED
+PRINTER_SETTINGS_CLOSED
+SAMPLE_STORE_CLOSED
+REAGENT_STORE_CLOSED
+PROJECT_STORE_CLOSED
+HOSPITAL_STORE_CLOSED
+ACCOUNT_STORE_CLOSED
+THREADS_STOPPED true
+EXIT code= 3
+)
+   Loc: [/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/original_db_20261027/integration/resume_settings_01/original_settings_pages_rk_test_build/test_source.cpp(284)]
+INFO   : OriginalSettingsPagesRkTest::cleanupTestCase() entering
+PASS   : OriginalSettingsPagesRkTest::cleanupTestCase()
+Totals: 10 passed, 1 failed, 0 skipped, 0 blacklisted, 6916ms
+********* Finished testing of OriginalSettingsPagesRkTest *********
+RK_DRIVER_TIME real=7.043 user=4.121 system=1.127

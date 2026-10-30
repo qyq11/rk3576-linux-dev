@@ -13,11 +13,13 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLabel>
+#include <QHash>
 #include <QMenu>
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QPointer>
 #include <QScrollArea>
+#include <QStackedWidget>
 #include <QSet>
 #include <QTabBar>
 #include <QTabWidget>
@@ -36,6 +38,8 @@ QString objectPath(QObject *object)
 bool buttonLike(QWidget *widget)
 {
     return qobject_cast<QAbstractButton *>(widget) ||
+           QString::fromLatin1(widget->metaObject()->className())==QStringLiteral("cusReagentHole") ||
+           QString::fromLatin1(widget->metaObject()->className())==QStringLiteral("SampleRackView") ||
            widget->metaObject()->indexOfSignal("clicked()") >= 0 || widget->metaObject()->indexOfSignal("signalClicked(bool)") >= 0;
 }
 QString buttonText(QWidget *widget)
@@ -65,11 +69,13 @@ class Audit : public QObject
     QSet<QString> dialogClicks;
     QSet<QString> menuChoices;
     QSet<QString> finishedMenus;
+    QSet<QWidget *> closePending;
+    QHash<QWidget *,qint64> dialogActionAt;
     QStringList menus{QStringLiteral("btnReagentAdptive"), QStringLiteral("btnSampleAdptive"),
         QStringLiteral("btnReportAdptive"), QStringLiteral("btnCalibrateAdptive"),
         QStringLiteral("btnQualityAdptive"), QStringLiteral("btnSystemAdptive"),
         QStringLiteral("btnUserSettingAdptive"), QStringLiteral("btnDivStatusAdptive")};
-    int page = -1, steps = 0;
+    int page = -1, steps = 0, navigationRetries = 0;
     bool performing = false;
     bool finishing = false;
     bool confirmExit = false;
@@ -116,7 +122,7 @@ class Audit : public QObject
     }
     void dismissDialogs()
     {
-        for (auto *window : QApplication::topLevelWidgets())
+        for (auto *window : QApplication::allWidgets())
         {
             if (!window->isVisible() || window == shell || window->objectName()==QStringLiteral("shellViewport")) continue;
             if (auto *menu=qobject_cast<QMenu *>(window))
@@ -149,7 +155,8 @@ class Audit : public QObject
             }
             auto *dialog=qobject_cast<QDialog *>(window);
             if (!dialog) continue;
-            if (auto *active=QApplication::activeModalWidget()) if (active!=dialog) continue;
+            if (auto *active=QApplication::activeModalWidget())
+                if (qobject_cast<QDialog *>(active) && active!=dialog) continue;
             if(!observedDialogs.contains(dialog))
             {
                 observedDialogs.insert(dialog);
@@ -158,6 +165,8 @@ class Audit : public QObject
                 snapshot(dialog,QStringLiteral("dialog:")+activeAction);
             }
             const bool customQuestion=QString::fromLatin1(dialog->metaObject()->className())==QStringLiteral("CusMessageBox");
+            if(closePending.contains(dialog))continue;
+            if(clock.elapsed()-dialogActionAt.value(dialog,-1000)<450)continue;
             if(!qobject_cast<QMessageBox *>(dialog) && !qobject_cast<QFileDialog *>(dialog) && !customQuestion)
             {
                 for(auto *button:dialog->findChildren<QAbstractButton *>())
@@ -168,6 +177,7 @@ class Audit : public QObject
                        name.contains(QStringLiteral("Close"),Qt::CaseInsensitive) || name.contains(QStringLiteral("Cancel"),Qt::CaseInsensitive) ||
                        name==QStringLiteral("btnShutDown") || dialogClicks.contains(key))continue;
                     dialogClicks.insert(key);
+                    dialogActionAt.insert(dialog,clock.elapsed());
                     QPointer<QAbstractButton> actionButton(button);
                     QTimer::singleShot(0,this,[this,actionButton,key]()
                     {
@@ -180,9 +190,24 @@ class Audit : public QObject
                 }
             }
             QPointer<QDialog> safe(dialog);
+            closePending.insert(dialog);
             QTimer::singleShot(650,this,[this,safe]()
             {
-                if (!safe || !safe->isVisible()) return;
+                if (!safe) return;
+                closePending.remove(safe);
+                if (!safe->isVisible()) return;
+                snapshot(safe,QStringLiteral("dialog_ready:")+activeAction);
+                if(QString::fromLatin1(safe->metaObject()->className())==QStringLiteral("CusMessageBox"))
+                {
+                    QString message;
+                    if(auto *label=safe->findChild<QLabel *>(QStringLiteral("lblInfo")))message=label->text();
+                    emitJson({{"type","message"},{"action",activeAction},{"text",message}});
+                    const QString preferred=message.contains(QStringLiteral("放弃")) ? QStringLiteral("btnSure") : QStringLiteral("btnCancel");
+                    auto *button=safe->findChild<QAbstractButton *>(preferred);
+                    if(!button || !button->isVisible())button=safe->findChild<QAbstractButton *>(QStringLiteral("btnSure"));
+                    if(button && button->isVisible() && button->isEnabled())mouse(button);
+                    return; // 动画尚未结束时等下一轮，不能绕过正式关闭处理强制隐藏。
+                }
                 if(confirmExit && QString::fromLatin1(safe->metaObject()->className())==QStringLiteral("MaskDlgShutDown"))
                 {
                     auto *button=safe->findChild<QAbstractButton *>(QStringLiteral("btnShutDown"));
@@ -196,7 +221,8 @@ class Audit : public QObject
                 {
                     const bool discard=box->objectName().contains(QStringLiteral("discard"),Qt::CaseInsensitive) ||
                         box->text().contains(QStringLiteral("放弃"));
-                    auto *button=box->button(discard ? QMessageBox::Yes : QMessageBox::No);
+                    auto *button=box->button(discard ? QMessageBox::Discard : QMessageBox::No);
+                    if(!button && discard)button=box->button(QMessageBox::Yes);
                     if (!button) button=box->button(QMessageBox::Cancel);
                     if (!button) button=box->button(QMessageBox::Ok);
                     if (button) { mouse(button); return; }
@@ -207,7 +233,7 @@ class Audit : public QObject
                     auto *button=safe->findChild<QAbstractButton *>(name);
                     if (button && button->isVisible() && button->isEnabled()) { mouse(button); return; }
                 }
-                safe->QDialog::reject();
+                safe->reject();
             });
         }
     }
@@ -215,8 +241,9 @@ class Audit : public QObject
     {
         const QString name=widget->objectName();
         return menus.contains(name) || name==QStringLiteral("btnLoginOut") || name==QStringLiteral("btnUser") ||
+            name==QStringLiteral("btnAbnormal") || name==QStringLiteral("btnLis") || name==QStringLiteral("btnCloseBeep") ||
             name==QStringLiteral("btnShutDown") || name==QStringLiteral("btnStart") || name==QStringLiteral("btnPause") ||
-            name.isEmpty() || name.startsWith(QStringLiteral("qt_"));
+            (name.isEmpty() && QString::fromLatin1(widget->metaObject()->className())!=QStringLiteral("SampleRackView")) || name.startsWith(QStringLiteral("qt_"));
     }
     void next()
     {
@@ -266,7 +293,7 @@ class Audit : public QObject
                 QTimer::singleShot(250,this,[this](){next();}); return;
             }
         }
-        ++page;selectPage();
+        ++page;navigationRetries=0;selectPage();
     }
     void selectPage()
     {
@@ -275,6 +302,15 @@ class Audit : public QObject
         emitJson({{"type","navigation"},{"context",menus[page]},{"enabled",button && button->isEnabled()}});
         if(button && button->isEnabled())mouse(button);
         QTimer::singleShot(1000,this,[this](){
+            auto *stack=shell->findChild<QStackedWidget *>(QStringLiteral("stkCenterAdptive"));
+            const int actual=stack ? stack->currentIndex() : -1;
+            emitJson({{"type","navigation_result"},{"requested",page},{"actual",actual}});
+            if(actual!=page)
+            {
+                if(++navigationRetries<5){QTimer::singleShot(700,this,[this](){selectPage();});return;}
+                emitJson({{"type","navigation_blocked"},{"requested",page},{"actual",actual}});
+                ++page;navigationRetries=0;selectPage();return;
+            }
             shell->grab().save(QFileInfo(output.fileName()).dir().filePath(QStringLiteral("page_%1.png").arg(page)));
             snapshot(shell,menus[page]);next();});
     }
@@ -305,6 +341,8 @@ public:
     explicit Audit(QObject *parent):QObject(parent)
     {
         clock.start();
+        // 报告辅助程序须按自己的正常环境运行，不能继承主程序的审计注入。
+        qunsetenv("LD_PRELOAD");
         output.setFileName(qEnvironmentVariable("SN100_BUTTON_AUDIT_OUTPUT"));
         if(!output.open(QIODevice::WriteOnly|QIODevice::NewOnly))return;
         for(auto *widget:QApplication::allWidgets())
@@ -312,6 +350,16 @@ public:
         emitJson({{"type","start"},{"shell_found",!shell.isNull()},{"platform",QGuiApplication::platformName()},{"qt",QString::fromLatin1(qVersion())}});
         if(!shell){QCoreApplication::exit(92);return;}
         connect(&modalTimer,&QTimer::timeout,this,[this](){dismissDialogs();});modalTimer.start(80);
+        auto *heartbeat=new QTimer(this);
+        connect(heartbeat,&QTimer::timeout,this,[this]()
+        {
+            QJsonArray windows;
+            for(auto *w:QApplication::allWidgets())if(w->isVisible() && qobject_cast<QDialog *>(w))
+                windows.append(QJsonObject{{"path",objectPath(w)},{"window",w->isWindow()}});
+            auto *active=QApplication::activeModalWidget();
+            emitJson({{"type","driver_heartbeat"},{"page",page},{"active_modal",active ? objectPath(active) : QString()},{"dialogs",windows}});
+        });heartbeat->start(2000);
+        QTimer::singleShot(480000,this,[this](){emitJson({{"type","driver_timeout"},{"scope","测试驱动超时，不作为产品功能通过"}});QCoreApplication::exit(95);});
         snapshot(shell,QStringLiteral("startup_all_pages"));
         QTimer::singleShot(1000,this,[this](){next();});
     }

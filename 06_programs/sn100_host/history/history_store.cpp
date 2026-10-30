@@ -1,5 +1,7 @@
 #include "history_store.h"
 #include "result_project_references.h"
+#include "original_history_source.h"
+#include "../original_files/original_business_database.h"
 
 #include <QDir>
 #include <QFile>
@@ -19,6 +21,7 @@
 #include <QTextCodec>
 #include <QThread>
 #include <QUuid>
+#include <QUrl>
 #include <QVariant>
 #include <cmath>
 #include <limits>
@@ -458,6 +461,39 @@ void HistoryStore::initialize(QString directory)
     emit ready(0, path);
 }
 
+void HistoryStore::initializeOriginal(QString root)
+{
+    if (!checkThread(0, QStringLiteral("initializeOriginal"))) return;
+    releaseDatabase(QStringLiteral("正在打开原历史结果，旧来源失效。"));
+    QString message;
+    auto original = std::unique_ptr<OriginalHistorySource>(new OriginalHistorySource);
+    if (!original->initialize(root, &message))
+    { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+    m_connectionName = QStringLiteral("sn100-original-history-") + QUuid::createUuid().toString(QUuid::WithoutBraces);
+    m_database = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"),m_connectionName);
+    // mode=rw保证检查之后文件被移走时也不会创建空库。
+    m_database.setDatabaseName(QUrl::fromLocalFile(original->databasePath()).toString(QUrl::FullyEncoded) + QStringLiteral("?mode=rw"));
+    m_database.setConnectOptions(QStringLiteral("QSQLITE_OPEN_URI;QSQLITE_BUSY_TIMEOUT=200"));
+    bool ok = m_database.open();
+    if (!ok) message = m_database.lastError().text();
+    const QStringList required{
+        QStringLiteral("SELECT ") + kReportFields + QStringLiteral(",visible FROM report_data LIMIT 0"),
+        QStringLiteral("SELECT task_id,fid,project_name,data_time,abnormal_type,original_value,calibration_value,rate_value,inr_value,mda_value,formula_value FROM report_results LIMIT 0"),
+        QStringLiteral("SELECT id,project_name,table_type,display,result_type,column_index,display_name FROM report_column_header LIMIT 0")};
+    for (const auto &sql : required) if (ok) ok = execSql(m_database,sql,&message);
+    QSqlQuery check(m_database);
+    if (ok && (!check.exec(QStringLiteral("PRAGMA quick_check")) || !check.next() || check.value(0).toString()!=QStringLiteral("ok")))
+    { ok=false; message=QStringLiteral("原结果库完整性核对未通过。 ") + check.lastError().text(); }
+    check.finish();
+    if (!ok)
+    { releaseDatabase(); emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+    m_directory = QDir(original->root()).filePath(QStringLiteral("result"));
+    const QString databasePath = original->databasePath();
+    m_originalHistory = std::move(original);
+    m_ready = true;
+    emit ready(0,databasePath);
+}
+
 bool HistoryStore::createAndSeed(QString *message)
 {
     QFile fixture(QStringLiteral(":/fixtures/history_reports.json"));
@@ -659,6 +695,7 @@ bool HistoryStore::validateDatabase(QString *message)
 bool HistoryStore::readResults(qint64 rowId, HistoryResults *results, QString *message,
                                const ProjectCurrentFormatSnapshot *format)
 {
+    if (m_originalHistory) return m_originalHistory->readResults(m_database,rowId,results,message);
     if (m_resultIngest)
     {
         if (!format || !format->valid())
@@ -743,9 +780,11 @@ void HistoryStore::query(qint64 requestId, HistoryFilter filter)
     const QString operation = QStringLiteral("query");
     if (!checkReady(requestId, operation))
         return;
-    if (m_resultIngest)
+    if (m_resultIngest || m_originalHistory)
         emit currentFormatInvalidated(requestId, ++m_formatRequestRevision, QStringLiteral("正在读取本次已提交配置；旧格式缓存失效。"));
     QString message;
+    if (m_originalHistory && !m_originalHistory->refresh(m_formatRequestRevision,&message))
+    { emit error(requestId,operation,message); return; }
     if (!validateFilter(filter, &message))
     {
         emit error(requestId, operation, message);
@@ -811,6 +850,7 @@ void HistoryStore::query(qint64 requestId, HistoryFilter filter)
     }
     emit displayLoaded(requestId, displayColumns, displayDefaults);
     if (m_resultIngest) emit currentFormatRead(requestId, currentFormatSource(format));
+    else if (m_originalHistory) emit currentFormatRead(requestId,m_originalHistory->source());
     emit queryReady(requestId, filter, reports, totalCount);
 }
 
@@ -819,9 +859,11 @@ void HistoryStore::detail(qint64 requestId, qint64 reportId)
     const QString operation = QStringLiteral("detail");
     if (!checkReady(requestId, operation))
         return;
-    if (m_resultIngest)
+    if (m_resultIngest || m_originalHistory)
         emit currentFormatInvalidated(requestId, ++m_formatRequestRevision, QStringLiteral("正在读取本次明细格式；旧格式缓存失效。"));
     QString message;
+    if (m_originalHistory && !m_originalHistory->refresh(m_formatRequestRevision,&message))
+    { emit error(requestId,operation,message); return; }
     HistoryReport report;
     ProjectCurrentFormatSnapshot format;
     Transaction transaction(m_database);
@@ -833,6 +875,7 @@ void HistoryStore::detail(qint64 requestId, qint64 reportId)
         return;
     }
     if (m_resultIngest) emit currentFormatRead(requestId, currentFormatSource(format));
+    else if (m_originalHistory) emit currentFormatRead(requestId,m_originalHistory->source());
     emit detailReady(requestId, report);
 }
 
@@ -842,6 +885,8 @@ void HistoryStore::savePatient(qint64 requestId, HistoryPatient patient)
     if (!checkReady(requestId, operation))
         return;
     QString message;
+    if (m_originalHistory && !m_originalHistory->refresh(++m_formatRequestRevision,&message))
+    { emit error(requestId,operation,message); return; }
     if (!validatePatient(patient, &message))
     {
         emit error(requestId, operation, message);
@@ -913,6 +958,9 @@ void HistoryStore::exportCsv(qint64 requestId, HistoryFilter filter,
         uniqueIds.insert(id);
     }
     const QString exportDirectory = QDir(m_directory).filePath(QStringLiteral("exports"));
+    if (m_originalHistory && (!m_originalHistory->refresh(++m_formatRequestRevision,&message)
+        || !QDir().mkpath(exportDirectory)))
+    { emit error(requestId,operation,message.isEmpty()?QStringLiteral("原结果导出目录无法创建。 "):message); return; }
     const QFileInfo output(path);
     if (!QDir::isAbsolutePath(path) || hasReferenceComponent(path) || hasSymlinkComponent(path)
         || output.dir().canonicalPath() != QFileInfo(exportDirectory).canonicalFilePath()
@@ -961,17 +1009,29 @@ void HistoryStore::exportCsv(qint64 requestId, HistoryFilter filter,
         emit error(requestId, operation, QStringLiteral("导出为空、超过100万报告容量，或选中报告已不符合筛选；请重新查询。"));
         return;
     }
-    struct CsvColumn { QString project; int type; QString title; };
+    struct CsvColumn { QString project; int type; QString title; bool raw = false; };
     QList<CsvColumn> columns;
     QStringList header = {QStringLiteral("样本号"), QStringLiteral("样本条码"), QStringLiteral("报告日期"),
         QStringLiteral("姓名"), QStringLiteral("年龄"), QStringLiteral("性别")};
     QSqlQuery columnQuery(m_database);
-    if (!columnQuery.exec(QStringLiteral("SELECT project,result_type,label,unit FROM report_columns ORDER BY position LIMIT 65")))
+    if (m_originalHistory)
+    {
+        HistoryDisplayColumns selected, defaults;
+        if (!m_originalHistory->display(m_database,&selected,&defaults,&message))
+        { emit error(requestId,operation,message); return; }
+        for (const auto &entry : selected) if (entry.group==2 && entry.visible)
+        {
+            const QString identity=entry.key.mid(7);
+            columns.append({identity.section(QChar(0x1f),0,0),identity.section(QChar(0x1f),1).toInt(),entry.title});
+            header.append(entry.title);
+        }
+    }
+    else if (!columnQuery.exec(QStringLiteral("SELECT project,result_type,label,unit FROM report_columns ORDER BY position LIMIT 65")))
     {
         emit error(requestId, operation, columnQuery.lastError().text());
         return;
     }
-    while (columnQuery.next())
+    while (!m_originalHistory && columnQuery.next())
     {
         if (columns.size() == kMaximumColumns)
         {
@@ -986,6 +1046,29 @@ void HistoryStore::exportCsv(qint64 requestId, HistoryFilter filter,
         header.append(column.title);
     }
     columnQuery.finish();
+    if (m_originalHistory)
+    {
+        // 原库可能仍有已删除项目或第六类公式结果；导出补明确的原值列，不推定单位或丢弃这些值。
+        QSqlQuery originalProjects(m_database);
+        if (!runPrepared(originalProjects,QStringLiteral("SELECT DISTINCT project_name FROM report_results WHERE fid IN (SELECT row_id FROM report_data WHERE ")
+            +where+QStringLiteral(") ORDER BY project_name LIMIT 65"),bindings,&message))
+        { emit error(requestId,operation,message); return; }
+        const QStringList types{QStringLiteral("Original"),QStringLiteral("Calibration"),QStringLiteral("Rate"),
+            QStringLiteral("INR"),QStringLiteral("MDA"),QStringLiteral("Formula")};
+        while (originalProjects.next()) for (int type=1;type<=6;++type)
+        {
+            const QString project = originalProjects.value(0).toString();
+            bool present=false;
+            for (const auto &column : columns) if (column.project==project && column.type==type) { present=true;break; }
+            if (present) continue;
+            if (columns.size()>=kMaximumColumns)
+            { emit error(requestId,operation,QStringLiteral("原结果导出超过64列，请缩小筛选范围；未截断原值。")); return; }
+            const QString title=project+QStringLiteral(" / ")+types[type-1]+QStringLiteral("（原值）");
+            columns.append({project,type,title,true});header.append(title);
+        }
+        if (originalProjects.lastError().isValid())
+        { emit error(requestId,operation,originalProjects.lastError().text()); return; }
+    }
     QTemporaryFile file(QDir(exportDirectory).filePath(QStringLiteral(".history-XXXXXX.tmp")));
     if (!file.open())
     {
@@ -1056,10 +1139,12 @@ void HistoryStore::exportCsv(qint64 requestId, HistoryFilter filter,
                 const auto project = byProject.constFind(column.project);
                 if (project != byProject.constEnd() && occurrence < project.value().size())
                 {
-                    for (const HistoryResultValue &value : project.value().at(occurrence).values)
+                    const auto &task=project.value().at(occurrence);
+                    const auto &values=column.raw ? task.storedValues : task.values;
+                    for (const HistoryResultValue &value : values)
                     {
                         if (value.resultType == column.type)
-                            cell = displayValue(value);
+                            cell = column.raw ? value.rawValue : displayValue(value);
                     }
                 }
                 cells.append(cell);
@@ -1111,6 +1196,7 @@ void HistoryStore::releaseDatabase(QString reason)
             ? QStringLiteral("结果存储对象释放；旧当前格式来源失效。") : reason);
     m_ready = false;
     m_resultProjects.reset(); // Close the owned real catalog connection in this worker.
+    m_originalHistory.reset();
     m_resultIngest = false;
     m_resultStoreId.clear();
     m_resultCatalogDirectory.clear();

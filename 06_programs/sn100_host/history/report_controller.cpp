@@ -2,6 +2,7 @@
 #include "report_render.h"
 #include "qtrpt.h"
 #include "report_remaining_html.h"
+#include "original_files/original_business_database.h"
 #include <QAction>
 #include <QCoreApplication>
 #include <QGuiApplication>
@@ -181,13 +182,19 @@ bool HistoryReportController::documentFor(const HistoryReport &report, HistoryPr
 {
     HistoryPrintOptions options;
     QString error;
-    if (m_hasOptions) options = m_options;
+    const bool originalProfile = !report.results.isEmpty() && report.results.first().originalProfile;
+    if (originalProfile)
+    {
+        if (!HistoryReportDocument::originalOptions(report, &options, &error))
+        { emit failed(QStringLiteral("report"), error); return false; }
+    }
+    else if (m_hasOptions) options = m_options;
     else if (!HistoryReportDocument::anonymousOptions(&options, &error))
     {
         emit failed(QStringLiteral("report"), error);
         return false;
     }
-    if (options.hospitalName.trimmed().isEmpty())
+    if (!originalProfile && options.hospitalName.trimmed().isEmpty())
     {
         emit failed(QStringLiteral("report"), tr("请先在医院信息设置中保存医院名称，再预览报告。"));
         return false;
@@ -196,6 +203,12 @@ bool HistoryReportController::documentFor(const HistoryReport &report, HistoryPr
     {
         emit failed(QStringLiteral("report"), error);
         return false;
+    }
+    if (originalProfile)
+    {
+        document->originalTemplateXml = report.results.first().originalTemplateXml;
+        if (document->originalTemplateXml.isEmpty())
+        { emit failed(QStringLiteral("report"), tr("原resource/report_template/report.xml缺失，未换成内嵌模板。")); return false; }
     }
     return true;
 }
@@ -206,10 +219,16 @@ bool HistoryReportController::validateDestination(const QString &path, QString *
     QFile marker(directory.filePath(QStringLiteral(".sn100-history-offline")));
     const QString exportPath = directory.filePath(QStringLiteral("exports"));
     const QFileInfo output(path);
+    bool approved = marker.open(QIODevice::ReadOnly) && !QFileInfo(marker.fileName()).isSymLink()
+        && marker.readAll() == "SN100 O04 ANONYMOUS OFFLINE DATA v1\n";
+    if (!approved && directory.dirName() == QStringLiteral("result"))
+    {
+        QDir originalRoot = directory;
+        if (originalRoot.cdUp()) approved = OriginalBusiness::workingRoot(originalRoot.absolutePath(), error);
+    }
     if (!QDir::isAbsolutePath(m_directory) || hasUnsafeComponent(m_directory)
-        || !marker.open(QIODevice::ReadOnly) || marker.readAll() != "SN100 O04 ANONYMOUS OFFLINE DATA v1\n"
-        || QFileInfo(marker.fileName()).isSymLink() || hasUnsafeComponent(exportPath)
-        || !QFileInfo(exportPath).isDir() || !QDir::isAbsolutePath(path) || hasUnsafeComponent(path)
+        || !approved || hasUnsafeComponent(exportPath)
+        || !QDir(m_directory).mkpath(QStringLiteral("exports")) || !QDir::isAbsolutePath(path) || hasUnsafeComponent(path)
         || output.dir().canonicalPath() != QFileInfo(exportPath).canonicalFilePath()
         || (format != QStringLiteral("pdf") && format != QStringLiteral("html"))
         || output.suffix().compare(format, Qt::CaseInsensitive) != 0

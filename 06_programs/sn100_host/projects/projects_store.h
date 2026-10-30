@@ -18,6 +18,7 @@ struct ProjectUnit
     double ratio = 1.0; // 原option_unit.ratio；这里只保存倍率，不执行临床计算。
     QString originalType; // 原单位类型原样保留；新库模式不使用此字段。
     QString originalFingerprint; // 读入单位库时的指纹，防止旧页面覆盖外部修改。
+    QString originalRatio; // 原报告按QString::toInt换算；保留原字符串，不能用格式化double猜它。
 };
 using ProjectUnits = QList<ProjectUnit>;
 

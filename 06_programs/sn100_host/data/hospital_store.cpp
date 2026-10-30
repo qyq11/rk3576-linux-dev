@@ -1,4 +1,8 @@
 #include "hospital_store.h"
+#include "original_files/original_business_database.h"
+#include "original_files/original_ini.h"
+#include <QCryptographicHash>
+#include <QLockFile>
 
 #include <QCoreApplication>
 #include <QDir>
@@ -119,7 +123,7 @@ bool prepareOfflineDirectory(const QFileInfo &databaseInfo, const QFileInfo &ini
     return true;
 }
 
-bool verifyHospitalSchema(QSqlDatabase &database, QString *message)
+bool verifyHospitalSchema(QSqlDatabase &database, QString *message, bool original = false)
 {
     const QStringList names = {QStringLiteral("id"), QStringLiteral("column_one"),
                                QStringLiteral("column_two"), QStringLiteral("column_three"),
@@ -133,6 +137,16 @@ bool verifyHospitalSchema(QSqlDatabase &database, QString *message)
     int column = 0;
     while (query.next())
     {
+        if (original)
+        {
+            const QString name = query.value(1).toString();
+            if (!names.contains(name)) continue;
+            const int expected = names.indexOf(name);
+            const QString type = expected == 0 ? QStringLiteral("INTEGER") : QStringLiteral("VARCHAR");
+            if (query.value(2).toString().toUpper() != type || query.value(5).toInt() != (expected == 0 ? 1 : 0))
+            { *message = QStringLiteral("原医院表已知字段类型不符，未改表。"); return false; }
+            ++column; continue;
+        }
         const QString expectedType = column == 0 ? QStringLiteral("INTEGER") : QStringLiteral("VARCHAR");
         if (column >= names.size() || query.value(1).toString() != names.at(column)
                 || query.value(2).toString().toUpper() != expectedType
@@ -340,21 +354,26 @@ void HospitalStore::initialize(QString databasePath, QString iniPath)
 bool HospitalStore::readSnapshot(const QString &type, QString *hospitalName,
                                  HospitalRows *rows, QString *message)
 {
-    QSqlQuery settingsQuery(m_database);
-    settingsQuery.prepare(QStringLiteral("SELECT value FROM app_settings WHERE key=:key"));
-    settingsQuery.bindValue(QStringLiteral(":key"), QStringLiteral("hospital/name"));
-    if (!settingsQuery.exec())
+    if (!m_originalRoot.isEmpty())
+        *hospitalName = m_originalHospitalName;
+    else
     {
-        *message = sqlFailure(QStringLiteral("读取医院名称失败"), settingsQuery);
-        return false;
+        QSqlQuery settingsQuery(m_database);
+        settingsQuery.prepare(QStringLiteral("SELECT value FROM app_settings WHERE key=:key"));
+        settingsQuery.bindValue(QStringLiteral(":key"), QStringLiteral("hospital/name"));
+        if (!settingsQuery.exec())
+        {
+            *message = sqlFailure(QStringLiteral("读取医院名称失败"), settingsQuery);
+            return false;
+        }
+        if (!settingsQuery.next())
+        {
+            *message = QStringLiteral("SQLite 权威设置中缺少 hospital/name");
+            return false;
+        }
+        *hospitalName = settingsQuery.value(0).toString();
+        settingsQuery.finish();
     }
-    if (!settingsQuery.next())
-    {
-        *message = QStringLiteral("SQLite 权威设置中缺少 hospital/name");
-        return false;
-    }
-    *hospitalName = settingsQuery.value(0).toString();
-    settingsQuery.finish();
     QSqlQuery query(m_database);
     QString sql = QStringLiteral("SELECT id,column_one,column_two,column_three,type FROM hospital_information");
     if (!type.isEmpty())
@@ -481,6 +500,11 @@ void HospitalStore::load(QString type)
         emit error(operation, QStringLiteral("不支持的医院信息类别: ") + type);
         return;
     }
+    if (!m_originalRoot.isEmpty())
+    {
+        QString message;
+        if (!refreshOriginalHospitalName(&message)) { emit error(operation, message); return; }
+    }
     QString hospitalName;
     HospitalRows rows;
     QString message;
@@ -511,6 +535,11 @@ void HospitalStore::readAll()
     if (!checkReady(operation))
     {
         return;
+    }
+    if (!m_originalRoot.isEmpty())
+    {
+        QString message;
+        if (!refreshOriginalHospitalName(&message)) { emit error(operation, message); return; }
     }
     QString hospitalName;
     HospitalRows rows;
@@ -600,6 +629,7 @@ void HospitalStore::save(QString type, QString hospitalName, HospitalRows rows)
     {
         return;
     }
+    if (!m_originalRoot.isEmpty()) { saveOriginal(type, hospitalName, rows); return; }
     QString message;
     if (!validateSave(type, hospitalName, rows, &message))
     {
@@ -844,6 +874,10 @@ void HospitalStore::releaseDatabase()
         m_database.close();
     }
     m_database = QSqlDatabase();
+    m_originalDatabase.reset();
+    m_originalRoot.clear();
+    m_originalHospitalName.clear();
+    m_originalIniFingerprint.clear();
     if (!m_connectionName.isEmpty())
     {
         QSqlDatabase::removeDatabase(m_connectionName);
@@ -860,4 +894,252 @@ void HospitalStore::close()
     }
     releaseDatabase();
     emit closed();
+}
+
+namespace
+{
+QString hospitalIniFingerprint(const QByteArray &bytes)
+{
+    return QString::fromLatin1(QCryptographicHash::hash(bytes, QCryptographicHash::Sha256).toHex());
+}
+
+bool readHospitalIniBytes(const QString &path, QByteArray *bytes, QString *message)
+{
+    const QFileInfo info(path);
+    if (!info.isFile() || info.isSymLink() || info.size() > 262144)
+    { *message = QStringLiteral("原医院配置须为不超过256KiB的现有普通文件。"); return false; }
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) { *message = QStringLiteral("原医院配置无法读取。"); return false; }
+    *bytes = file.readAll();
+    if (file.error() != QFile::NoError) { *message = QStringLiteral("原医院配置读取未完成。"); return false; }
+    return true;
+}
+
+bool publishHospitalIniBytes(const QString &path, const QByteArray &bytes, QString *message)
+{
+    QSaveFile output(path);
+    output.setDirectWriteFallback(false);
+    if (!output.open(QIODevice::WriteOnly) || !output.setPermissions(QFileInfo(path).permissions()) ||
+        output.write(bytes) != bytes.size() || !output.commit())
+    { *message = QStringLiteral("原医院名称配置未能完整提交，请检查目录权限或空间。"); return false; }
+    return true;
+}
+
+bool hospitalNameBytes(const QString &path, const QByteArray &original, const QString &name,
+                       QByteArray *rewritten, QString *message)
+{
+    // 让Qt只序列化医院名称本值；原配置本身不经QSettings重写，避免丢掉注释和未知键。
+    QTemporaryFile valueFile(QFileInfo(path).absolutePath() + QStringLiteral("/.hospital-value-XXXXXX.ini"));
+    if (!valueFile.open()) { *message = QStringLiteral("无法准备医院名称读取/保存副本。"); return false; }
+    valueFile.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
+    const QString temporaryPath = valueFile.fileName();
+    valueFile.close();
+    {
+        QSettings settings(temporaryPath, QSettings::IniFormat);
+        settings.setIniCodec("UTF-8");
+        settings.setValue(QStringLiteral("hospital/name"), name);
+        settings.sync();
+        if (settings.status() != QSettings::NoError) { *message = QStringLiteral("医院名称无法按原INI格式序列化。"); return false; }
+    }
+    QFile encoded(temporaryPath);
+    if (!encoded.open(QIODevice::ReadOnly)) { *message = QStringLiteral("无法读取医院名称序列化副本。"); return false; }
+    QByteArray encodedValue;
+    bool foundEncoded = false;
+    for (const QByteArray &line : encoded.readAll().split('\n'))
+    {
+        const QByteArray trimmed = line.trimmed();
+        if (trimmed.startsWith("name=")) { encodedValue = trimmed.mid(5); foundEncoded = true; }
+    }
+    encoded.close();
+    if (!foundEncoded) { *message = QStringLiteral("医院名称序列化结果缺少本键。"); return false; }
+    QList<QByteArray> lines = original.split('\n');
+    int nameIndex = -1, hospitalHeader = -1, groupEnd = lines.size();
+    QByteArray group;
+    for (int index = 0; index < lines.size(); ++index)
+    {
+        QByteArray trimmed = lines[index].trimmed();
+        if (index == 0 && trimmed.startsWith("\xef\xbb\xbf")) trimmed.remove(0, 3);
+        if (trimmed.isEmpty() || trimmed.startsWith('#') || trimmed.startsWith(';')) continue;
+        if (trimmed.startsWith('[') && trimmed.endsWith(']'))
+        {
+            const QByteArray next = trimmed.mid(1, trimmed.size() - 2).trimmed();
+            if (group == "hospital" && next != "hospital" && groupEnd == lines.size()) groupEnd = index;
+            group = next;
+            if (group == "hospital")
+            {
+                if (hospitalHeader >= 0) { *message = QStringLiteral("医院配置含重复分组，未猜测改写位置。"); return false; }
+                hospitalHeader = index;
+            }
+            continue;
+        }
+        const int equal = lines[index].indexOf('=');
+        if (group == "hospital" && equal >= 0 && lines[index].left(equal).trimmed() == "name")
+        {
+            if (nameIndex >= 0) { *message = QStringLiteral("医院名称键重复，未选择其中一份覆盖。"); return false; }
+            nameIndex = index;
+        }
+    }
+    const bool crlf = original.contains("\r\n");
+    if (nameIndex >= 0)
+    {
+        const QByteArray oldLine = lines[nameIndex];
+        lines[nameIndex] = oldLine.left(oldLine.indexOf('=') + 1) + encodedValue + (oldLine.endsWith('\r') ? "\r" : "");
+        *rewritten = lines.join('\n');
+    }
+    else if (hospitalHeader >= 0)
+    {
+        if (groupEnd == lines.size() && !lines.isEmpty() && lines.last().isEmpty()) --groupEnd;
+        lines.insert(groupEnd, QByteArray("name=") + encodedValue + (crlf ? "\r" : ""));
+        *rewritten = lines.join('\n');
+    }
+    else
+    {
+        const QByteArray newline = crlf ? QByteArray("\r\n") : QByteArray("\n");
+        *rewritten = original;
+        if (!rewritten->isEmpty() && !rewritten->endsWith('\n')) rewritten->append(newline);
+        rewritten->append(QByteArray("[hospital]") + newline + "name=" + encodedValue + newline);
+    }
+    OriginalIni::Settings before, after;
+    if (!OriginalIni::read(path, &before, message)) return false;
+    // QSettings可能已替换编码临时文件，另建回读副本，避免复用旧文件句柄。
+    QTemporaryFile verifyFile(QFileInfo(path).absolutePath() + QStringLiteral("/.hospital-verify-XXXXXX.ini"));
+    if (!verifyFile.open() || !verifyFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner) ||
+        verifyFile.write(*rewritten) != rewritten->size() || !verifyFile.flush())
+    { *message = QStringLiteral("医院配置保存前的回读副本准备失败。"); return false; }
+    if (!OriginalIni::read(verifyFile.fileName(), &after, message) || after.values.value(QStringLiteral("hospital/name")).toString() != name)
+    { *message = QStringLiteral("医院名称保存前回读不一致，未改原配置。"); return false; }
+    before.values.remove(QStringLiteral("hospital/name")); after.values.remove(QStringLiteral("hospital/name"));
+    if (before.values != after.values)
+    { *message = QStringLiteral("医院名称以外的原配置会发生变化，未保存。"); return false; }
+    return true;
+}
+}
+
+bool HospitalStore::refreshOriginalHospitalName(QString *message)
+{
+    QByteArray before, after;
+    if (!readHospitalIniBytes(m_iniPath, &before, message)) return false;
+    OriginalIni::Settings configuration;
+    if (!OriginalIni::read(m_iniPath, &configuration, message)) return false;
+    QString name;
+    if (configuration.values.contains(QStringLiteral("hospital/name")))
+        name = configuration.values.value(QStringLiteral("hospital/name")).toString();
+    else
+    {
+        OriginalIni::Settings theme;
+        const QString themePath = QDir(m_originalRoot).filePath(QStringLiteral("theme_config.ini"));
+        QByteArray themeBefore, themeAfter;
+        if (!readHospitalIniBytes(themePath, &themeBefore, message) || !OriginalIni::read(themePath, &theme, message) ||
+            !readHospitalIniBytes(themePath, &themeAfter, message) || themeBefore != themeAfter)
+        { if (message->isEmpty()) *message = QStringLiteral("读取时原主题配置变化，请重新读取。"); return false; }
+        name = theme.values.value(QStringLiteral("hospital/name")).toString();
+    }
+    if (!readHospitalIniBytes(m_iniPath, &after, message) || before != after)
+    { *message = QStringLiteral("读取时原全局配置变化，请重新读取。"); return false; }
+    m_originalHospitalName = name;
+    m_originalIniFingerprint = hospitalIniFingerprint(after);
+    return true;
+}
+
+void HospitalStore::initializeOriginal(QString root)
+{
+    const QString operation = QStringLiteral("initializeOriginal");
+    if (!checkThread(operation)) return;
+    if ((QCoreApplication::instance() && QThread::currentThread() == QCoreApplication::instance()->thread()) || m_database.isValid())
+    { emit error(operation, QStringLiteral("请在医院存储工作线程且旧连接关闭时接入原库。")); return; }
+    QString message;
+    std::unique_ptr<OriginalBusiness::Database> database(new OriginalBusiness::Database);
+    if (!database->open(root, QStringLiteral("db/userSet/hospital_Information.db"), true, &message) ||
+        !verifyHospitalSchema(database->db, &message, true))
+    { emit error(operation, message); return; }
+    m_originalRoot = QFileInfo(root).canonicalFilePath();
+    m_iniPath = QDir(m_originalRoot).filePath(QStringLiteral("config.ini"));
+    if (!refreshOriginalHospitalName(&message))
+    { m_originalRoot.clear(); m_iniPath.clear(); emit error(operation, message); return; }
+    m_database = database->db;
+    m_originalDatabase = std::move(database);
+    m_ready = true;
+    emit ready();
+}
+
+void HospitalStore::saveOriginal(QString type, QString hospitalName, HospitalRows rows)
+{
+    const QString operation = QStringLiteral("save");
+    QString message;
+    if (!OriginalBusiness::workingRoot(m_originalRoot, &message) || !validateSave(type, hospitalName, rows, &message))
+    { emit error(operation, message); return; }
+    QLockFile lock(m_iniPath + QStringLiteral(".sn100-original-config.lock"));
+    if (!lock.tryLock(0)) { emit error(operation, QStringLiteral("原配置正在由另一操作维护，请稍后再试。")); return; }
+    QByteArray originalIni, changedIni;
+    if (!readHospitalIniBytes(m_iniPath, &originalIni, &message)) { emit error(operation, message); return; }
+    if (hospitalIniFingerprint(originalIni) != m_originalIniFingerprint)
+    {
+        // 打印、LIS等页面也写同一文件。只要医院名称未被别处改动，就以最新
+        // 字节为底稿保存；其他页面的键继续保留。锁内回读避免覆盖同名修改。
+        const QString expectedName = m_originalHospitalName;
+        if (!refreshOriginalHospitalName(&message)) { emit error(operation, message); return; }
+        if (m_originalHospitalName != expectedName)
+        {
+            m_originalHospitalName = expectedName;
+            m_originalIniFingerprint.clear();
+            emit error(operation, QStringLiteral("原医院名称已被其他操作改变，请保留输入并重新读取后保存。"));
+            return;
+        }
+    }
+    const bool nameChanged = hospitalName != m_originalHospitalName;
+    if (nameChanged && !hospitalNameBytes(m_iniPath, originalIni, hospitalName, &changedIni, &message))
+    { emit error(operation, message); return; }
+    if (!beginWriteTransaction(m_database, &message)) { emit error(operation, message); return; }
+    HospitalRows savedRows; QString previousName;
+    const bool written = [&]()
+    {
+        for (const HospitalRow &row : rows)
+        {
+            if (row.id > 0)
+            {
+                QSqlQuery existing(m_database);
+                existing.prepare(QStringLiteral("SELECT column_one,column_two,column_three,type FROM hospital_information WHERE id=?")); existing.addBindValue(row.id);
+                if (!existing.exec() || !existing.next() || existing.value(3).toString() != type)
+                { message = QStringLiteral("原医院字典行已不存在或类别变化，未覆盖其他记录。"); return false; }
+                if (existing.value(0).toString() == row.columnOne && existing.value(1).toString() == row.columnTwo && existing.value(2).toString() == row.columnThree) continue;
+            }
+            QSqlQuery query(m_database);
+            query.prepare(row.id == 0 ? QStringLiteral("INSERT INTO hospital_information(column_one,column_two,column_three,type) VALUES(?,?,?,?)") :
+                QStringLiteral("UPDATE hospital_information SET column_one=?,column_two=?,column_three=? WHERE type=? AND id=?"));
+            query.addBindValue(row.columnOne);
+            query.addBindValue(row.columnTwo.isNull() ? QStringLiteral("") : row.columnTwo);
+            query.addBindValue(row.columnThree.isNull() ? QStringLiteral("") : row.columnThree);
+            query.addBindValue(type);
+            if (row.id > 0) query.addBindValue(row.id);
+            if (!query.exec() || query.numRowsAffected() != 1) { message = QStringLiteral("原医院字典保存失败。"); return false; }
+        }
+        return readSnapshot(type, &previousName, &savedRows, &message);
+    }();
+    if (!written) { m_database.rollback(); emit error(operation, message); return; }
+    if (nameChanged)
+    {
+        QByteArray stillCurrent;
+        if (!readHospitalIniBytes(m_iniPath, &stillCurrent, &message) || stillCurrent != originalIni || !publishHospitalIniBytes(m_iniPath, changedIni, &message))
+        { m_database.rollback(); emit error(operation, message.isEmpty() ? QStringLiteral("保存前配置再次变化，未覆盖。") : message); return; }
+    }
+    if (!m_database.commit())
+    {
+        const bool rolledBack = m_database.rollback();
+        bool restored = true;
+        if (nameChanged)
+        {
+            QByteArray current;
+            restored = readHospitalIniBytes(m_iniPath, &current, &message) && current == changedIni && publishHospitalIniBytes(m_iniPath, originalIni, &message);
+        }
+        if (!rolledBack || !restored) m_ready = false;
+        emit error(operation, rolledBack && restored ? QStringLiteral("原医院保存提交失败，字典和名称已回退，请重试。") :
+            QStringLiteral("原医院保存失败且回退未得到完整确认，已停止写入；请关闭后重新打开核对。"));
+        return;
+    }
+    if (nameChanged)
+    {
+        m_originalHospitalName = hospitalName;
+        m_originalIniFingerprint = hospitalIniFingerprint(changedIni);
+    }
+    emit saved(type, m_originalHospitalName, savedRows);
 }

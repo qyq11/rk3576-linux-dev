@@ -80,6 +80,8 @@ CalibrationStore::~CalibrationStore()
 
 void CalibrationStore::registerTypes()
 {
+    qRegisterMetaType<CalibrationIsiRecord>();
+    qRegisterMetaType<CalibrationIsiRecords>();
     qRegisterMetaType<AccountSession>();
     qRegisterMetaType<CalibrationPoint>();
     qRegisterMetaType<CalibrationRecord>();
@@ -91,11 +93,19 @@ void CalibrationStore::registerTypes()
 
 bool CalibrationStore::canEdit(const AccountSession &session)
 {
+    if(!session.originalPolicySource.isEmpty())
+        return session.authenticated&&session.actionReady&&session.grantedPowerIds.contains(QStringLiteral("1"));
     return session.authenticated && session.actionReady && session.role >= 1 && session.role <= 5;
 }
 
 QString CalibrationStore::validate(const CalibrationRecord &record)
 {
+    if (record.originalProfile)
+    {
+        if (record.projectName.isEmpty() || record.projectName.contains(QChar::Null) || record.points.size()>32)
+            return QStringLiteral("原校准项目身份或点数量无效。");
+        return QString(); // 原始标志/空值/精度由原库保存入口逐项比较，不能用新库规则改写。
+    }
     if (record.projectId <= 0 || !boundedText(record.projectName, 64))
     {
         return QStringLiteral("请选择有稳定编号的本地项目。");
@@ -166,7 +176,7 @@ bool CalibrationStore::check(qint64 requestId, const QString &operation, bool wr
         fail(requestId, operation, QStringLiteral("校准数据库必须在所属工作线程访问。"));
         return false;
     }
-    if (!m_ready || !m_database.isOpen() || !m_catalog.isOpen())
+    if (!m_ready || !m_database.isOpen() || (!m_originalMode && !m_catalog.isOpen()))
     {
         fail(requestId, operation, QStringLiteral("校准库或只读项目库尚未就绪。"));
         return false;
@@ -694,6 +704,7 @@ bool CalibrationStore::read(CalibrationRecords *records, QString *message, bool 
 
 void CalibrationStore::load(qint64 requestId)
 {
+    if (m_originalMode) { loadOriginal(requestId); return; }
     const QString operation = QStringLiteral("load");
     if (!check(requestId, operation)) return;
     CalibrationRecords records;
@@ -716,6 +727,8 @@ void CalibrationStore::load(qint64 requestId)
 
 void CalibrationStore::loadCatalog(qint64 requestId)
 {
+    if (m_originalMode)
+    { if (check(requestId, "loadCatalog")) emit catalogReady(requestId,m_originalProjects,m_originalUnits,m_originalReagents); return; }
     const QString operation = QStringLiteral("catalog");
     if (!check(requestId, operation)) return;
     ProjectRecords projects;
@@ -1024,6 +1037,7 @@ bool CalibrationStore::writeRecord(CalibrationRecord record, qint64 *id, QString
 
 void CalibrationStore::save(qint64 requestId, CalibrationRecord record)
 {
+    if (m_originalMode) { saveOriginal(requestId, record); return; }
     const QString operation = QStringLiteral("save");
     if (!check(requestId, operation, true)) return;
     QString message = validate(record);
@@ -1069,6 +1083,7 @@ void CalibrationStore::save(qint64 requestId, CalibrationRecord record)
 
 void CalibrationStore::copy(qint64 requestId, qint64 sourceId, qint64 sourceRevision)
 {
+    if (m_originalMode) { copyOriginal(requestId,sourceId,sourceRevision); return; }
     const QString operation = QStringLiteral("copy");
     if (!check(requestId, operation, true)) return;
     QString message;
@@ -1126,6 +1141,7 @@ void CalibrationStore::copy(qint64 requestId, qint64 sourceId, qint64 sourceRevi
 
 void CalibrationStore::remove(qint64 requestId, qint64 id, qint64 revision)
 {
+    if (m_originalMode) { removeOriginal(requestId,id,revision); return; }
     const QString operation = QStringLiteral("remove");
     if (!check(requestId, operation, true)) return;
     QString message;
@@ -1182,6 +1198,9 @@ void CalibrationStore::remove(qint64 requestId, qint64 id, qint64 revision)
 
 void CalibrationStore::release()
 {
+    m_originalMode=false;m_originalRoot.clear();m_originalFingerprint.clear();m_originalLastWrite=0;
+    m_originalProjects.clear();m_originalUnits.clear();m_originalReagents=ReagentSnapshot();
+    m_originalProjectLock.reset();m_originalReagentLock.reset();
     m_ready = false;
     m_datasetId.clear();
     m_datasetPath.clear();

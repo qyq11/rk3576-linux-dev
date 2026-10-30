@@ -9,6 +9,7 @@
 #include <QSqlQuery>
 #include <QThread>
 #include <QUuid>
+#include <QLockFile>
 #include <cmath>
 
 namespace
@@ -102,6 +103,7 @@ QString QcStore::referenceKey(qint64 controlId, qint64 projectId) const
 }
 void QcStore::registerTypes()
 {
+    qRegisterMetaType<QcRawResult>();
     qRegisterMetaType<QcResultRef>(); qRegisterMetaType<QcResultRefs>();
     qRegisterMetaType<QcProjectRef>(); qRegisterMetaType<QcProjectRefs>();
     qRegisterMetaType<QcRule>(); qRegisterMetaType<QcRules>();
@@ -160,6 +162,7 @@ QString QcStore::validateRules(const QcRules &rules)
 }
 void QcStore::fail(qint64 requestId, const QString &operation, const QString &message)
 {
+    if(originalMode_&&QThread::currentThread()==thread())originalProjectLock_.reset();
     emit error(requestId, operation, message);
 }
 bool QcStore::check(qint64 requestId, const QString &operation)
@@ -179,6 +182,7 @@ bool QcStore::check(qint64 requestId, const QString &operation)
 bool QcStore::checkReferences(qint64 requestId, const QString &operation)
 {
     if (!check(requestId, operation)) return false;
+    if (originalMode_) return true;
     if (referencesReady_) return true;
     if (bindingAttempted_)
     {
@@ -298,6 +302,8 @@ void QcStore::initialize(QString directory)
 }
 void QcStore::bindCatalog(QString directory)
 {
+    if (originalMode_)
+    { if (check(0, "bindCatalog")) emit catalogBound(QDir(originalRoot_).filePath(QStringLiteral("project"))); return; }
     if (!check(0, "bindCatalog")) return;
     bindingAttempted_ = true;
     referencesReady_ = false;
@@ -459,6 +465,8 @@ bool QcStore::reconcileReferences(QString *message)
 void QcStore::setCatalog(qint64 requestId, QcProjectRefs projects)
 {
     if (!check(requestId, "catalog")) return;
+    if (originalMode_)
+    { catalog_ = projects; emit catalogReady(requestId, catalog_); return; }
     const QString message = validateCatalog(projects);
     if (!message.isEmpty()) { fail(requestId, "catalog", message); return; }
     catalog_ = projects;
@@ -466,6 +474,7 @@ void QcStore::setCatalog(qint64 requestId, QcProjectRefs projects)
 }
 void QcStore::load(qint64 requestId)
 {
+    if (originalMode_) { loadOriginal(requestId); return; }
     if (!checkReferences(requestId, "load")) return;
     QString message;
     if (!database_.transaction()) { fail(requestId, "load", database_.lastError().text()); return; }
@@ -521,6 +530,7 @@ void QcStore::load(qint64 requestId)
 }
 void QcStore::saveControl(qint64 requestId, QcControl control)
 {
+    if (originalMode_) { saveOriginalControl(requestId, control); return; }
     const QString operation = "saveControl";
     if (!checkReferences(requestId, operation)) return;
     QString message = validateControl(control);
@@ -563,6 +573,7 @@ void QcStore::saveControl(qint64 requestId, QcControl control)
 }
 void QcStore::removeControl(qint64 requestId, qint64 controlId)
 {
+    if (originalMode_) { removeOriginalControl(requestId, controlId); return; }
     const QString operation = "removeControl";
     if (!checkReferences(requestId, operation)) return;
     QString message, name; bool referenced = false;
@@ -664,6 +675,7 @@ bool QcStore::releaseReferences(const QStringList &keys, QString *message)
 }
 void QcStore::setProjects(qint64 requestId, qint64 controlId, QcProjectRefs projects)
 {
+    if (originalMode_) { setOriginalProjects(requestId, controlId, projects); return; }
     const QString operation = "setProjects";
     if (!checkReferences(requestId, operation)) return;
     if (!referencesReady_) { fail(requestId, operation, QStringLiteral("项目引用尚未完成绑定对账，不能保存关联。")); return; }
@@ -738,6 +750,7 @@ void QcStore::setProjects(qint64 requestId, qint64 controlId, QcProjectRefs proj
 }
 void QcStore::saveRules(qint64 requestId, qint64 associationId, QcRules rules)
 {
+    if (originalMode_) { saveOriginalRules(requestId, associationId, rules); return; }
     const QString operation = "saveRules";
     if (!checkReferences(requestId, operation)) return;
     QString message = validateRules(rules);
@@ -756,6 +769,7 @@ void QcStore::saveRules(qint64 requestId, qint64 associationId, QcRules rules)
 }
 void QcStore::saveBatch(qint64 requestId, QcBatch batch)
 {
+    if (originalMode_) { saveOriginalBatch(requestId, batch); return; }
     const QString operation = "saveBatch";
     if (!checkReferences(requestId, operation)) return;
     QString message = validateBatch(batch);
@@ -786,6 +800,7 @@ void QcStore::saveBatch(qint64 requestId, QcBatch batch)
 }
 void QcStore::removeBatch(qint64 requestId, qint64 batchId)
 {
+    if (originalMode_) { removeOriginalBatch(requestId, batchId); return; }
     const QString operation = "removeBatch";
     if (!checkReferences(requestId, operation)) return;
     QString message;
@@ -805,6 +820,7 @@ void QcStore::removeBatch(qint64 requestId, qint64 batchId)
 }
 void QcStore::switchBatch(qint64 requestId, qint64 controlId, qint64 batchId)
 {
+    if (originalMode_) { switchOriginalBatch(requestId, controlId, batchId); return; }
     const QString operation = "switchBatch";
     if (!checkReferences(requestId, operation)) return;
     QString message;
@@ -834,6 +850,15 @@ void QcStore::switchBatch(qint64 requestId, qint64 controlId, qint64 batchId)
 }
 void QcStore::inspectProjectReference(qint64 requestId, qint64 projectId)
 {
+    if (originalMode_)
+    {
+        if (!check(requestId, "inspectProjectReference")) return;
+        QString name; for (const QcProjectRef &project : catalog_) if (project.id == projectId) name = project.name;
+        QSqlQuery q(database_); QString message;
+        if (name.isEmpty() || !run(&q, "SELECT 1 FROM quality_item_proj WHERE proj_name=? LIMIT 1", {name}, &message))
+        { fail(requestId, "inspectProjectReference", message.isEmpty() ? QStringLiteral("原项目身份没有匹配，未猜测关联。") : message); return; }
+        emit projectReferenceFound(requestId, projectId, q.next()); return;
+    }
     if (!check(requestId, "inspectProjectReference")) return;
     QString message; QSqlQuery query(database_);
     if (!run(&query, "SELECT 1 FROM quality_item_proj WHERE project_id=? LIMIT 1", {projectId}, &message)) { fail(requestId, "inspectProjectReference", message); return; }
@@ -841,6 +866,8 @@ void QcStore::inspectProjectReference(qint64 requestId, qint64 projectId)
 }
 void QcStore::release()
 {
+    originalProjectLock_.reset();
+    originalMode_ = false; originalRoot_.clear(); originalFingerprint_.clear(); originalLastWrite_ = 0;
     ready_ = false; referencesReady_ = false; bindingAttempted_ = false; catalog_.clear(); datasetId_.clear();
     if (catalogDatabase_.isValid()) { catalogDatabase_.close(); catalogDatabase_ = QSqlDatabase(); }
     if (!catalogConnectionName_.isEmpty()) { QSqlDatabase::removeDatabase(catalogConnectionName_); catalogConnectionName_.clear(); }
@@ -857,6 +884,7 @@ void QcStore::close()
 // 仅SELECT/BEGIN/COMMIT/ROLLBACK；不能调用reconcileReferences来悄悄补写预约。
 void QcStore::loadHistory(qint64 requestId, qint64 associationId)
 {
+    if (originalMode_) { loadOriginalHistory(requestId, associationId); return; }
     bool localTransaction = false, catalogTransaction = false;
     const auto reject = [&](const QString &code, const QString &message)
     {

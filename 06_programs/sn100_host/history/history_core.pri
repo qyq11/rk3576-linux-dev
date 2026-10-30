@@ -4,6 +4,8 @@ QT += core gui widgets sql
 INCLUDEPATH += $$PWD
 include($$PWD/../projects/projects_store_support.pri)
 SOURCES += $$PWD/history_store.cpp $$PWD/history_page.cpp $$PWD/result_statistics.cpp
+SOURCES += $$PWD/original_history_source.cpp
+HEADERS += $$PWD/original_history_source.h
 SOURCES += $$PWD/history_value_text.cpp $$PWD/result_ingest_store.cpp $$PWD/result_project_references.cpp
 HEADERS += $$PWD/result_project_references.h
 SOURCES += $$PWD/report_remaining_store.cpp $$PWD/report_remaining_display_dialog.cpp

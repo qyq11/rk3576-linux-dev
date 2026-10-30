@@ -1,0 +1,73 @@
+{
+  "format": "sn100-original-db-final-archive-v1",
+  "releaseId": "f8c6e73f59f458981e243af5dd00999c12a671f449f0daaf3f4ff70e82d8a11f",
+  "binaryVerified": true,
+  "packageSha256": "92276a10691770e51414cc711e4f6af3316b42d37e0c06e5866e04288981ac67",
+  "mainSha256": "07ae71ce7dc2d484f9eba8c4a993c5c8768c6a232fbbbd0c0bc0b286464582c2",
+  "rendererSha256": "2a054d8caf9bd76bea4fff5eac45d5611579f4df79ab76adc2981a89af6bedcc",
+  "originalFiles": {
+    "copied": 141,
+    "existingFilesOverwritten": 0,
+    "allOriginalBytesPreserved": true,
+    "otherPreexistingFilesByteIdentical": 15
+  },
+  "catalogPreservationScope": "只读核对正式首次启动后的两次快照：结构和业务行一致，sample_local_rack自动编号计数6→7；没有首次启动前的逻辑逐行对照结论。",
+  "rkChecks": {
+    "page11DeviceControl": {
+      "passed": 8,
+      "failed": 0
+    },
+    "page12ConnectionCases": {
+      "cases": 5,
+      "separateProcessPerCase": true,
+      "allExitCodes": 0
+    },
+    "page13ShutdownCases": {
+      "cases": 4,
+      "separateProcessPerCase": true,
+      "allExitCodes": 0
+    },
+    "page10AdvancedWindowReuseGuard": {
+      "passed": 31,
+      "failed": 0,
+      "scope": "只有同来源、同项目、同参数且无高级草稿才复用；取消编辑、换项目或换根需重建，不是原DB防重复写入检查。"
+    },
+    "page04OptimizedPage": {
+      "passed": 114,
+      "failed": 0
+    },
+    "page05OptimizedParameters": {
+      "passed": 23,
+      "failed": 0
+    }
+  },
+  "retainedFailure": {
+    "path": "page_08/app.log",
+    "exitCode": 134,
+    "causeScope": "同一EGLFS进程反复创建窗口到第二场景SIG11；原断言保留，最终以每场景独立进程执行通过，未据此声称该重复上下文问题已修。"
+  },
+  "physicalInstrumentVerified": false,
+  "originalRecordsOrCredentialsArchived": false,
+  "temporaryStageCleanup": {
+    "scope": "/home/rkshare/programs/sn100_original/20261027_01",
+    "ownedTemporaryStageRemoved": true,
+    "downloadedLogResultExitFilesIdentical": 57,
+    "formalApplicationAndRuntimeDataPreserved": true,
+    "evidence": "formal_deployment/staging_cleanup.log"
+  },
+  "shortIdleObservation": {
+    "seconds": 15.23,
+    "rssKiB": 299104,
+    "pssKiB": [
+      294631,
+      294632
+    ],
+    "threads": 15,
+    "openResources": 49,
+    "cpuTicks": 127,
+    "clockTicksPerSecond": 100,
+    "oneCoreCpuPercent": 8.338804990151019,
+    "userActions": false,
+    "scope": "短时静置观察；资源门槛、长稳和同板控制尚未验收。"
+  }
+}

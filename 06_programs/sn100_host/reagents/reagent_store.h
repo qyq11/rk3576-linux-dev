@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QSqlDatabase>
 #include <QVariant>
+#include <memory>
+class OriginalReagentEditor;
 
 // Move this object to the storage thread before initialize(). No SQL work is
 // performed in the constructor or on the widget thread.
@@ -18,6 +20,8 @@ public:
     static QString validateBatchMetadata(QString isiValue, QString normalValue);
 public slots:
     void initialize(QString absoluteCatalogDir);
+    void initializeOriginal(QString root);
+    void setInstrumentBusy(bool busy);
     void setSession(AccountSession session);
     void load();
     void saveReagent(ReagentRecord reagent);
@@ -38,6 +42,8 @@ public slots:
     void close();
 signals:
     void ready();
+    void originalProfileReady(QString root, ReagentProjects projects);
+    void originalHoleSaved(QString holeName); // 提交成功后，新协议由主入口接Us，旧协议保持原本地保存。
     void loaded(ReagentSnapshot snapshot);
     void succeeded(QString operation);
     void error(QString operation, QString message);
@@ -51,6 +57,11 @@ private:
     QString connectionName_;
     AccountSession session_;
     bool ready_ = false;
+    std::unique_ptr<OriginalReagentEditor> originalEditor_;
+    bool instrumentBusy_ = false;
+    bool originalMayEdit(const QString &operation);
+    void finishOriginal(const QString &operation, bool success, const QString &message);
+    void loadOriginal();
     bool onWorker(const QString& operation);
     bool begin(const QString& operation);
     bool run(const QString& sql, const QVariantList& values, QString* message);

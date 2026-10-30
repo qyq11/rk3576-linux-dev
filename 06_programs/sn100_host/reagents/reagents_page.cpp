@@ -67,6 +67,7 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::frmReagentMaterial)
 {
+    store_=store;
     ui->setupUi(this);
     ui->reagentPanel->setGeometry(70, 39, 984, 843); // Original SN10020 branch.
     ui->reagentInfo->setRadius(10);
@@ -136,6 +137,11 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
     connect(this, &ReagentsPage::requestLoad, store, &ReagentStore::load, Qt::QueuedConnection);
     connect(this, &ReagentsPage::requestSession, store, &ReagentStore::setSession, Qt::QueuedConnection);
     connect(store, &ReagentStore::ready, this, [this]() { emit requestLoad(); });
+    connect(store, &ReagentStore::originalProfileReady, this, [this](const QString &root, const ReagentProjects &projects)
+    {
+        originalProfile_=true; projects_=projects;
+        setProperty("originalProfile",true); setProperty("originalRoot",root);
+    });
     connect(store,&ReagentStore::closed,this,[this]()
     {
         ready_=false;
@@ -160,23 +166,33 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
         {
             snapshot_ = snapshot;
             ready_ = true;
+            setBusy(false);
             applyPermissions();
             ui->reagentPanel->setSnapshot(snapshot_);
             selectHole(selectedHole_);
             emit readyChanged(true);
             emit snapshotChanged(snapshot_);
+            if (!pendingSavedOperation_.isEmpty())
+            {
+                const QString operation=pendingSavedOperation_; pendingSavedOperation_.clear();
+                emit operationMessage(operation,originalProfile_ ? QStringLiteral("原数据库保存并重新读取完成；设备同步状态另行核对") : QStringLiteral("本地保存并重新读取完成；未同步仪器"));
+                emit operationFinished(operation,true);
+            }
         });
     connect(store, &ReagentStore::succeeded, this,
         [this](QString op)
         {
-            setBusy(false);
             dirty_ = false;
-            emit operationMessage(op, QStringLiteral("本地保存完成；未同步仪器"));
-            emit operationFinished(op, true);
+            pendingSavedOperation_=op;
         });
     connect(store, &ReagentStore::error, this,
         [this](QString op, QString message)
         {
+            if (!pendingSavedOperation_.isEmpty())
+            {
+                message=QStringLiteral("数据库已保存，但重新读取失败：")+message;
+                pendingSavedOperation_.clear();
+            }
             setBusy(false);
             emit operationMessage(op, message);
             emit operationFinished(op, false);
@@ -192,11 +208,12 @@ ReagentsPage::~ReagentsPage()
 }
 void ReagentsPage::setProjects(ReagentProjects projects)
 {
+    if (originalProfile_) return; // 原项目由同一原库读取，不接受早期catalog编号覆盖。
     projects_ = projects;
 }
 bool ReagentsPage::canEdit() const
 {
-    return ready_ && session_.authenticated && session_.actionReady && session_.role >= 1
+    return ready_ && !instrumentBusy_ && session_.authenticated && session_.actionReady && session_.role >= 0
         && session_.role <= 5;
 }
 void ReagentsPage::setSession(AccountSession session)
@@ -236,6 +253,8 @@ void ReagentsPage::setBusy(bool busy)
         dialog_->setEnabled(!busy);
     applyPermissions();
     emit busyChanged(busy);
+    if (!busy_ && !dirty_ && pendingOriginalReload_)
+        QTimer::singleShot(0,this,&ReagentsPage::reloadOriginal);
 }
 void ReagentsPage::showOffline(QString action)
 {
@@ -261,6 +280,7 @@ bool ReagentsPage::prepareToLeave()
     dirty_ = false;
     if (dialog_)
         dialog_->close();
+    if (pendingOriginalReload_) QTimer::singleShot(0,this,&ReagentsPage::reloadOriginal);
     return true;
 }
 void ReagentsPage::closeEvent(QCloseEvent* event)
@@ -376,7 +396,7 @@ void ReagentsPage::selectHole(QString name)
     ui->lblHoleinfo->setText(name + QStringLiteral("试剂信息"));
     ui->lblName->setText(reagent.id ? reagent.name : QStringLiteral("none"));
     ui->lblBottleName->setText(bottle.id ? bottle.name : QStringLiteral("-"));
-    ui->lblBatch->setText(batch.id ? batch.batchGroup : QStringLiteral("-"));
+    ui->lblBatch->setText(snapshot_.originalProfile ? hole.originalBatch : batch.id ? batch.batchGroup : QStringLiteral("-"));
     ui->lblAmount->setText(hole.id ? QString::number(hole.remainingUl) : QStringLiteral("-"));
     ui->lblOutDate->setText(hole.expiry);
     ui->lblKeepTime->setText("-");
@@ -394,20 +414,22 @@ void ReagentsPage::openReagentEditor()
     auto current = std::make_shared<ReagentRecord>();
     form->ckxValid->setText(QStringLiteral("是否有效"));
     form->ckxCheckDate->setText(QStringLiteral("检查有效期"));
-    form->ckxClean->hide();
-    form->widget_3->hide();
-    form->cbxNeedle->hide();
-    form->label_3->hide();
-    form->ldtFactor->hide();
-    form->label_2->hide();
+    form->ckxClean->setVisible(originalProfile_);
+    form->widget_3->setVisible(originalProfile_);
+    form->cbxNeedle->setVisible(originalProfile_);
+    form->label_3->setVisible(originalProfile_);
+    form->ldtFactor->setVisible(originalProfile_);
+    form->label_2->setVisible(originalProfile_);
+    if (originalProfile_)
+        for (const auto &reagent : snapshot_.reagents)
+            if (reagent.type==QStringLiteral("清洗液")) form->cbxCleanReagent->addItem(reagent.name);
     form->ldtReagentName->setMaxLength(16);
     form->ldtWarningAmount->setValidator(new QIntValidator(0, 9999, dialog));
     form->ldtLackAmount->setValidator(new QIntValidator(0, 9999, dialog));
     auto populate = [this, form, current]()
     {
-        if (!current->id)
-            for (const auto& r : snapshot_.reagents)
-                if (r.name == current->name)
+        for (const auto& r : snapshot_.reagents)
+                if ((current->id && r.id == current->id) || (!current->id && r.name == current->name))
                 {
                     *current = r;
                     break;
@@ -432,6 +454,12 @@ void ReagentsPage::openReagentEditor()
         form->ldtLackAmount->setText(QString::number(current->outUl));
         form->ckxValid->setCheckState(current->valid ? Qt::Checked : Qt::Unchecked);
         form->ckxCheckDate->setCheckState(current->checkExpiry ? Qt::Checked : Qt::Unchecked);
+        if (originalProfile_)
+        {
+            form->cbxNeedle->setCurrentIndex(current->originalValues.value("banding_needle").toInt());
+            form->ckxClean->setCheckState(current->originalValues.value("dect_clean").toBool() ? Qt::Checked : Qt::Unchecked);
+            form->cbxCleanReagent->setCurrentText(current->originalValues.value("cleaner_name").toString());
+        }
         form->listReagentCode->clear();
         for (const auto& b : snapshot_.barcodes)
             if (b.reagentId == current->id)
@@ -492,6 +520,12 @@ void ReagentsPage::openReagentEditor()
             current->outUl = form->ldtLackAmount->text().toInt();
             current->valid = form->ckxValid->isChecked();
             current->checkExpiry = form->ckxCheckDate->isChecked();
+            if (originalProfile_)
+            {
+                current->originalValues.insert("banding_needle",QString::number(form->cbxNeedle->currentIndex()));
+                current->originalValues.insert("dect_clean",form->ckxClean->isChecked() ? "1" : "0");
+                current->originalValues.insert("cleaner_name",form->cbxCleanReagent->currentText());
+            }
             if (!form->ldtWarningAmount->hasAcceptableInput() || !form->ldtLackAmount->hasAcceptableInput())
             {
                 emit operationMessage("保存试剂资料", QStringLiteral("警告量和缺少量须为整数"));
@@ -569,6 +603,9 @@ void ReagentsPage::openReagentEditor()
     connect(
         form->cbxReagentType, QOverload<int>::of(&QComboBox::activated), dialog, [this]() { markDirty(); });
     connect(form->ckxValid, QOverload<>::of(&CusCheckBox::signalClicked), dialog, [this]() { markDirty(); });
+    connect(form->ckxClean,QOverload<>::of(&CusCheckBox::signalClicked),dialog,[this](){ markDirty(); });
+    connect(form->cbxNeedle,QOverload<int>::of(&QComboBox::activated),dialog,[this](){ markDirty(); });
+    connect(form->cbxCleanReagent,QOverload<int>::of(&QComboBox::activated),dialog,[this](){ markDirty(); });
     connect(
         form->ckxCheckDate, QOverload<>::of(&CusCheckBox::signalClicked), dialog, [this]() { markDirty(); });
     populate();
@@ -599,12 +636,45 @@ void ReagentsPage::openHoleEditor()
     for (const auto& b : snapshot_.bottles)
         if (b.area == current->area)
             form->cbxBottleName->addItem(b.name, b.id);
-    form->cbxBatch->addItem("Default", 0);
-    for (const auto& b : snapshot_.batches)
-        form->cbxBatch->addItem(b.batchGroup, b.id);
+    form->cbxBatch->setEditable(false);
+    if (!originalProfile_)
+    {
+        form->cbxBatch->addItem("Default", 0);
+        for (const auto& b : snapshot_.batches) form->cbxBatch->addItem(b.batchGroup, b.id);
+    }
     form->cbxName->setCurrentIndex(qMax(0, form->cbxName->findData(current->reagentId)));
     form->cbxBottleName->setCurrentIndex(qMax(0, form->cbxBottleName->findData(current->bottleId)));
     form->cbxBatch->setCurrentIndex(qMax(0, form->cbxBatch->findData(current->batchId)));
+    if (originalProfile_)
+    {
+        // 原Windows只允许选择使用该试剂的项目批组。条码不是这里的候选来源；
+        // 一个批组可用|包含多个批号，PTFbg为原版排除项，不自行补可输入批号。
+        const auto refreshChoices=[this,form,current]()
+        {
+            const QSignalBlocker bottleSignals(form->cbxBottleName), batchSignals(form->cbxBatch);
+            form->cbxBottleName->clear(); form->cbxBatch->clear();
+            const qint64 reagentId=form->cbxName->currentData().toLongLong();
+            if (!reagentId) return;
+            for (const auto &bottle : snapshot_.bottles)
+                if (bottle.area==current->area) form->cbxBottleName->addItem(bottle.name,bottle.id);
+            form->cbxBottleName->setCurrentIndex(qMax(0,form->cbxBottleName->findData(current->bottleId)));
+            const QString reagentName=form->cbxName->currentText();
+            for (const auto &project : projects_)
+            {
+                if (!project.reagentNames.contains(reagentName)) continue;
+                for (const auto &batch : snapshot_.batches)
+                {
+                    if (batch.projectId!=project.id || batch.batchGroup==QStringLiteral("PTFbg")) continue;
+                    for (const auto &name : batch.batchGroup.split('|'))
+                        if (form->cbxBatch->findText(name)<0) form->cbxBatch->addItem(name);
+                }
+            }
+            const int selected=form->cbxBatch->findText(current->originalBatch);
+            if (selected>=0) form->cbxBatch->setCurrentIndex(selected);
+        };
+        refreshChoices();
+        connect(form->cbxName,QOverload<int>::of(&QComboBox::currentIndexChanged),dialog,refreshChoices);
+    }
     form->ldtOutDate->setReadOnly(false);
     form->ldtOutDate->setText(current->expiry.isEmpty()
             ? QDate::currentDate().addYears(1).toString("yyyy-MM-dd")
@@ -637,7 +707,9 @@ void ReagentsPage::openHoleEditor()
                 if (b.id == bottle)
                     current->amountUl = current->remainingUl = b.capacityUl;
             current->bottleId = bottle;
+            current->priority = 99; // 原单孔设置保存会把该瓶优先级置99。
             current->batchId = form->cbxBatch->currentData().toLongLong();
+            if (originalProfile_) current->originalBatch=form->cbxBatch->currentText();
             current->expiry = form->ldtOutDate->text();
             setBusy(true);
             emit requestSaveHole(*current);
@@ -1009,6 +1081,7 @@ void ReagentsPage::openBottleEditor()
                 return;
             ReagentBottle b;
             b.id = select->currentData().toLongLong();
+            for (const auto &existing : snapshot_.bottles) if (existing.id==b.id) b=existing;
             b.name = name->text();
             b.area = area->currentData().toString();
             b.capacityUl = capacity->value();
@@ -1043,6 +1116,23 @@ void ReagentsPage::openBottleEditor()
     initializeDialog(dialog);
     connect(area, QOverload<int>::of(&QComboBox::activated), dialog, [this]() { markDirty(); });
 }
+void ReagentsPage::reloadOriginal()
+{
+    if (!originalProfile_) return;
+    if (busy_ || dirty_) { pendingOriginalReload_=true; return; }
+    pendingOriginalReload_=false;
+    setBusy(true);
+    emit requestLoad();
+}
+
+void ReagentsPage::setInstrumentBusy(bool busy)
+{
+    if (instrumentBusy_==busy) return;
+    instrumentBusy_=busy;
+    QMetaObject::invokeMethod(store_,"setInstrumentBusy",Qt::QueuedConnection,Q_ARG(bool,busy));
+    applyPermissions();
+}
+
 bool ReagentsPage::eventFilter(QObject* watched, QEvent* event)
 {
     if (event->type() == QEvent::MouseButtonDblClick && watched == ui->lblBottleName)
@@ -1060,17 +1150,17 @@ bool ReagentsPage::eventFilter(QObject* watched, QEvent* event)
                 h = hole;
         if (!h.id)
             return true;
-        int capacity = h.amountUl;
+        double capacity = h.amountUl;
         for (const auto& b : snapshot_.bottles)
             if (b.id == h.bottleId)
                 capacity = b.capacityUl;
         bool accepted = false;
-        int amount = QInputDialog::getInt(this, QStringLiteral("本地装载量"),
-            QStringLiteral("本地装载量 µL（非液面测量）"), h.amountUl, 0, capacity, 1, &accepted);
+        double amount = QInputDialog::getDouble(this, QStringLiteral("已知装载量"),
+            QStringLiteral("装载量 µL（非液面测量）"), h.amountUl, 0, capacity, 4, &accepted);
         if (!accepted)
             return true;
-        int remaining = QInputDialog::getInt(this, QStringLiteral("本地余量"),
-            QStringLiteral("本地余量 µL（非液面测量）"), qMin(h.remainingUl, amount), 0, amount, 1,
+        double remaining = QInputDialog::getDouble(this, QStringLiteral("已知余量"),
+            QStringLiteral("余量 µL（非液面测量）"), qMin(h.remainingUl, amount), 0, amount, 4,
             &accepted);
         if (!accepted)
             return true;

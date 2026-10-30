@@ -22,11 +22,14 @@ HistoryCurrentDisplayState::HistoryCurrentDisplayState(HistoryStore *store, QObj
         [this](qint64 request, const HistoryCurrentFormatSource &source)
         {
             if (request != activeRequest_) return;
+            const bool local = source.catalogVersion == QStringLiteral("sn100-catalog-offline-v1")
+                && source.formatVersion == QStringLiteral("sn100-current-result-format-source-v1");
+            const bool original = source.catalogVersion == QStringLiteral("sn100-original-projects-v1")
+                && source.formatVersion == QStringLiteral("sn100-original-project-result-format-v1");
             if (revision_ == 0 || source.requestRevision != revision_ || source.sourceGeneration == 0
                     || source.historyDatasetUuid.isEmpty() || source.catalogDatabasePath.isEmpty()
                     || source.catalogDirectory.isEmpty() || source.fingerprint.size() != 64
-                    || source.catalogVersion != QStringLiteral("sn100-catalog-offline-v1")
-                    || source.formatVersion != QStringLiteral("sn100-current-result-format-source-v1")
+                    || (!local && !original)
                     || !source.capturedAtUtc.isValid())
             {
                 clear(QStringLiteral("当前格式来源回执不完整。 "));
@@ -119,7 +122,8 @@ bool HistoryCurrentDisplayState::checkReports(const HistoryReports &reports) con
 {
     for (const auto &report : reports) for (const auto &task : report.results)
     {
-        if (task.projectId <= 0) return false;
+        if (task.projectId <= 0 && (source_.catalogVersion != QStringLiteral("sn100-original-projects-v1")
+            || task.project.isEmpty())) return false;
         for (const auto &value : task.storedValues)
             if (value.formatOrigin == HistoryValueFormatOrigin::AnonymousFixture || !sameSource(value.currentSource)) return false;
         for (const auto &value : task.values)

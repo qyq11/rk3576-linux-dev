@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QSqlDatabase>
 #include <QStringList>
+#include <memory>
+namespace OriginalBusiness { class Database; }
 
 struct MaintenanceRecord
 {
@@ -34,6 +36,7 @@ public:
 public slots:
     // Uses only <absoluteDataDir>/maintenance.db, never a reference database.
     void initialize(QString absoluteDataDir);
+    void initializeOriginal(QString root);
     void setSession(AccountSession session);
     void loadMonth(QDate month);
     // Manual completion records only. Device washing/shutdown cannot be forged.
@@ -63,6 +66,8 @@ private:
     QString m_connectionName;
     AccountSession m_session;
     bool m_ready = false;
+    QString m_originalRoot;
+    std::unique_ptr<OriginalBusiness::Database> m_originalDatabase;
     quint64 m_lastConnectionRequest = 0;
 };
 
