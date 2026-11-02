@@ -119,9 +119,41 @@ class OriginalQualityPagesRkTest : public QObject
         calibration = nullptr; quality = nullptr; reagents = nullptr; projects = nullptr; accounts = nullptr; hospital = nullptr;
         qualityPage = nullptr; calibrationPage = nullptr;
     }
+    void startPages()
+    {
+        InitFailureCleanup failed{[this]() { closeWorkers(); }};
+        hospital = new HospitalStore; accounts = new AccountStore; projects = new ProjectsStore;
+        reagents = new ReagentStore; quality = new QcStore; calibration = new CalibrationStore;
+        for (QObject *object : {static_cast<QObject *>(hospital), static_cast<QObject *>(accounts), static_cast<QObject *>(projects),
+             static_cast<QObject *>(reagents), static_cast<QObject *>(quality), static_cast<QObject *>(calibration)})
+        { object->moveToThread(&worker); connect(&worker, &QThread::finished, object, &QObject::deleteLater); }
+        shell = new frmMain(hospital, nullptr, accounts); shell->setProperty("originalDataRoot", fixture.root);
+        shell->attachCatalogPages(new ProjectPage(projects), new ReagentsPage(reagents));
+        qualityPage = new QualityControlPage(quality); shell->attachQualityControlPage(qualityPage);
+        calibrationPage = new CalibrationPage(calibration); shell->attachCalibrationPage(calibrationPage);
+        connect(shell, &frmMain::sessionChanged, quality, &QcStore::setSession, Qt::QueuedConnection);
+        connect(accounts, &AccountStore::ready, accounts, [this]() { accounts->applyOriginalConfiguredSession(0); });
+        host->setWidget(shell); host->show();
+        worker.start();
+        QMetaObject::invokeMethod(hospital, [this]() { hospital->initializeOriginal(fixture.root); accounts->initializeOriginal(fixture.root); quality->initializeOriginal(fixture.root); projects->initializeOriginal(fixture.root, fixture.root + "/catalog"); }, Qt::QueuedConnection);
+        QTRY_VERIFY_WITH_TIMEOUT(shell->projectPage()->isReady() && !shell->projectPage()->isBusy(), 15000);
+        QMetaObject::invokeMethod(reagents, [this]() { reagents->initializeOriginal(fixture.root); }, Qt::QueuedConnection);
+        QTRY_VERIFY_WITH_TIMEOUT(shell->reagentPage()->isReady() && !shell->reagentPage()->isBusy() && qualityPage->isReady() && !qualityPage->isBusy(), 15000);
+        const auto records = shell->projectPage()->projects(); const auto units = shell->projectPage()->units();
+        const auto snapshot = shell->reagentPage()->snapshot();
+        QMetaObject::invokeMethod(calibration, [this, records, units, snapshot]()
+        { calibration->initializeOriginal(fixture.root); calibration->setOriginalCatalog(records, units, snapshot); }, Qt::QueuedConnection);
+        QTRY_VERIFY_WITH_TIMEOUT(calibrationPage->isReady() && !calibrationPage->isBusy(), 15000);
+        QTRY_VERIFY(shell->accountSession().authenticated);
+        QCOMPARE(shell->accountSession().originalPolicySource, fixture.root);
+    }
     QByteArray runMain()
     {
         QProcess process;
+        auto environment = QProcessEnvironment::systemEnvironment();
+        // 页面实屏检查期间，重开子程序只核资料和退出，避免争用同一显示设备。
+        environment.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("offscreen"));
+        process.setProcessEnvironment(environment);
         process.start(qEnvironmentVariable("SN100_FORMAL_MAIN_BINARY"), {
             "--offline", "--accounts", "--catalog", "--quality-control", "--calibration", "--password-login",
             "--original-db-root", fixture.root, "--data-dir", fixture.root, "--viewport", "1600x900"});
@@ -154,30 +186,7 @@ private slots:
         directory.reset(new QTemporaryDir(qEnvironmentVariable("SN100_BUTTON_TEST_ROOT") + "/quality_pages_XXXXXX"));
         QVERIFY(directory->isValid()); fixture.create(directory->path()); QVERIFY(!QTest::currentTestFailed());
         createQualityData(); QVERIFY(!QTest::currentTestFailed());
-        hospital = new HospitalStore; accounts = new AccountStore; projects = new ProjectsStore;
-        reagents = new ReagentStore; quality = new QcStore; calibration = new CalibrationStore;
-        for (QObject *object : {static_cast<QObject *>(hospital), static_cast<QObject *>(accounts), static_cast<QObject *>(projects),
-             static_cast<QObject *>(reagents), static_cast<QObject *>(quality), static_cast<QObject *>(calibration)})
-        { object->moveToThread(&worker); connect(&worker, &QThread::finished, object, &QObject::deleteLater); }
-        shell = new frmMain(hospital, nullptr, accounts); shell->setProperty("originalDataRoot", fixture.root);
-        shell->attachCatalogPages(new ProjectPage(projects), new ReagentsPage(reagents));
-        qualityPage = new QualityControlPage(quality); shell->attachQualityControlPage(qualityPage);
-        calibrationPage = new CalibrationPage(calibration); shell->attachCalibrationPage(calibrationPage);
-        connect(shell, &frmMain::sessionChanged, quality, &QcStore::setSession, Qt::QueuedConnection);
-        connect(accounts, &AccountStore::ready, accounts, [this]() { accounts->applyOriginalConfiguredSession(0); });
-        host->setWidget(shell); host->show();
-        worker.start();
-        QMetaObject::invokeMethod(hospital, [this]() { hospital->initializeOriginal(fixture.root); accounts->initializeOriginal(fixture.root); quality->initializeOriginal(fixture.root); projects->initializeOriginal(fixture.root, fixture.root + "/catalog"); }, Qt::QueuedConnection);
-        QTRY_VERIFY_WITH_TIMEOUT(shell->projectPage()->isReady() && !shell->projectPage()->isBusy(), 15000);
-        QMetaObject::invokeMethod(reagents, [this]() { reagents->initializeOriginal(fixture.root); }, Qt::QueuedConnection);
-        QTRY_VERIFY_WITH_TIMEOUT(shell->reagentPage()->isReady() && !shell->reagentPage()->isBusy() && qualityPage->isReady() && !qualityPage->isBusy(), 15000);
-        const auto records = shell->projectPage()->projects(); const auto units = shell->projectPage()->units();
-        const auto snapshot = shell->reagentPage()->snapshot();
-        QMetaObject::invokeMethod(calibration, [this, records, units, snapshot]()
-        { calibration->initializeOriginal(fixture.root); calibration->setOriginalCatalog(records, units, snapshot); }, Qt::QueuedConnection);
-        QTRY_VERIFY_WITH_TIMEOUT(calibrationPage->isReady() && !calibrationPage->isBusy(), 15000);
-        QTRY_VERIFY(shell->accountSession().authenticated);
-        QCOMPARE(shell->accountSession().originalPolicySource, fixture.root);
+        startPages(); QVERIFY(!QTest::currentTestFailed());
     }
     void cleanup() { closeWorkers(); directory.reset(); }
     void cleanupTestCase() { host.reset(); }
@@ -204,6 +213,14 @@ private slots:
         // 旧项目接口仍建立空的兼容目录；原项目没有转换进它，页面使用原编号7。
         QCOMPARE(fixture.value("catalog/catalog.db", "SELECT COUNT(*) FROM project_base").toInt(), 0);
         if (QDir::isAbsolutePath(output)) QVERIFY(shell->grab().save(output + "/original_calibration_page.png"));
+        if (qEnvironmentVariableIsSet("SN100_KEEP_ANONYMOUS_FIXTURE"))
+        {
+            // 留下本例自行建立的空账户匿名资料，供安装后的正式程序独立实屏重开。
+            QVERIFY(QDir::isAbsolutePath(output));
+            QFile path(output + "/anonymous_fixture_root.txt"); QVERIFY(path.open(QIODevice::WriteOnly));
+            QVERIFY(path.write(fixture.root.toUtf8() + '\n') > 0);
+            directory->setAutoRemove(false);
+        }
     }
     void qualityCancelSaveAndWriteLockRecovery()
     {
@@ -229,6 +246,34 @@ private slots:
         click(qualityPage, "btnAddControl"); QTRY_VERIFY(manager());
         QCOMPARE(manager()->findChild<QLineEdit *>("ldtFactor")->text(), QStringLiteral("RK_FACTORY"));
         click(manager(), "btnClose"); QTRY_VERIFY(!qualityPage->findChild<QDialog *>("QcControlManager"));
+        closeWorkers();
+        const auto output = runMain();
+        QVERIFY(output.contains("SHELL_READY")); QVERIFY(output.contains("THREADS_STOPPED true"));
+        QVERIFY(output.contains("ACTUAL_EXIT=0"));
+        QCOMPARE(fixture.value("result/quality.db", "SELECT factor_name FROM quality_control_list WHERE id=10").toString(), QStringLiteral("RK_FACTORY"));
+        QCOMPARE(fixture.value("result/quality_Data.db", "SELECT result_val FROM quality_data WHERE id=1").toString(), QStringLiteral("[PT||=Original-10.25:1-41]"));
+    }
+    void qualityExternalConflictKeepsDraftAndRecovers()
+    {
+        QVERIFY(shell->selectMainPage(4)); click(qualityPage, "btnAddControl"); QTRY_VERIFY(manager());
+        auto *field = manager()->findChild<QLineEdit *>("ldtFactor"); QVERIFY(field); field->setText("RK_RECOVERED");
+        QVERIFY(fixture.database("result/quality.db", {"UPDATE quality_control_list SET vendor_extra='EXTERNAL' WHERE id=10"}));
+        const auto external = digest("result/quality.db");
+        click(manager(), "btn_save");
+        QTRY_VERIFY(qualityPage->findChild<CusMessageBox *>("QcWarningMessage"));
+        auto *warning = qualityPage->findChild<CusMessageBox *>("QcWarningMessage");
+        QTRY_VERIFY(warning->isReadyForInput()); click(warning, "btnSure"); QTRY_VERIFY(!qualityPage->hasWarning());
+        QCOMPARE(digest("result/quality.db"), external); QCOMPARE(field->text(), QStringLiteral("RK_RECOVERED"));
+        withAnswer(QMessageBox::Discard, [this]() { click(manager(), "btn_cancel"); });
+        QTRY_VERIFY(!qualityPage->findChild<QDialog *>("QcControlManager"));
+        // 原页没有刷新按钮；按使用者关闭并重开的流程重新取得外部改动。
+        closeWorkers(); startPages(); QVERIFY(!QTest::currentTestFailed());
+        QVERIFY(shell->selectMainPage(4));
+        click(qualityPage, "btnAddControl"); QTRY_VERIFY(manager());
+        field = manager()->findChild<QLineEdit *>("ldtFactor"); QVERIFY(field); field->setText("RK_RECOVERED");
+        click(manager(), "btn_save"); QTRY_VERIFY(!qualityPage->isBusy());
+        QTRY_COMPARE(fixture.value("result/quality.db", "SELECT factor_name FROM quality_control_list WHERE id=10").toString(), QStringLiteral("RK_RECOVERED"));
+        QCOMPARE(fixture.value("result/quality.db", "SELECT vendor_extra FROM quality_control_list WHERE id=10").toString(), QStringLiteral("EXTERNAL"));
     }
     void calibrationCancelSaveAndExternalConflict()
     {
@@ -244,6 +289,12 @@ private slots:
         QCOMPARE(fixture.value("result/calibration.db", "SELECT concentration FROM calibration_data WHERE id=1").toString(), QStringLiteral("100.000000123456"));
         click(calibrationPage, "btnCancel"); calibrationPage->reload(); QTRY_VERIFY(!calibrationPage->isBusy());
         table->item(0, 2)->setText("125.5");
+        QLockFile lock(fixture.root + "/.sn100-original-project-write.lock"); QVERIFY(lock.tryLock());
+        withAnswer(QMessageBox::Save, [this]() { click(calibrationPage, "btnSave"); });
+        QTRY_VERIFY(!calibrationPage->isBusy()); QVERIFY(calibrationPage->hasUnsavedChanges());
+        QCOMPARE(fixture.value("result/calibration.db", "SELECT concentration FROM calibration_data WHERE id=1").toString(), QStringLiteral("100.000000123456"));
+        QCOMPARE(table->item(0, 2)->text(), QStringLiteral("125.5"));
+        lock.unlock();
         withAnswer(QMessageBox::Save, [this]() { click(calibrationPage, "btnSave"); });
         QTRY_VERIFY(!calibrationPage->isBusy() && !calibrationPage->hasUnsavedChanges());
         QCOMPARE(fixture.value("result/calibration.db", "SELECT concentration FROM calibration_data WHERE id=1").toString(), QStringLiteral("125.5"));
@@ -251,6 +302,14 @@ private slots:
         QCOMPARE(fixture.value("result/calibration.db", "SELECT only_count FROM calibration_data WHERE id=1").toString(), QStringLiteral("91|92"));
         QCOMPARE(fixture.value("result/calibration.db", "SELECT vendor_extra FROM calibration_base WHERE id=1").toString(), QStringLiteral("EXTERNAL"));
         QCOMPARE(fixture.value("result/calibration.db", "SELECT is_checked FROM calibration_base WHERE id=1").toInt(), 0);
+        calibrationPage->reload(); QTRY_VERIFY(!calibrationPage->isBusy());
+        QCOMPARE(table->item(0, 2)->text(), QStringLiteral("125.5"));
+        closeWorkers();
+        const auto output = runMain();
+        QVERIFY(output.contains("SHELL_READY")); QVERIFY(output.contains("THREADS_STOPPED true"));
+        QVERIFY(output.contains("ACTUAL_EXIT=0"));
+        QCOMPARE(fixture.value("result/calibration.db", "SELECT concentration FROM calibration_data WHERE id=1").toString(), QStringLiteral("125.5"));
+        QCOMPARE(fixture.value("result/calibration.db", "SELECT result_value FROM calibration_data WHERE id=1").toString(), QStringLiteral("12.3456789012345|****"));
     }
     void actualMainOriginalQualityAndCalibrationRestart()
     {

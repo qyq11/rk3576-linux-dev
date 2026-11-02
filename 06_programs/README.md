@@ -10,6 +10,7 @@
 | --- | --- |
 | [rk.sh](rk.sh) | 通用WSL→ARM64编译、上传、校验和运行入口；build只本地编译，deploy/all会访问RK。 |
 | [.gitignore](.gitignore) | 排除误生成的构建目录、对象、Qt Creator个人配置及只读参考包。 |
+| [rk3576_system/](rk3576_system/README.md) | Ubuntu 24.04 Server与实时内核完整系统的实际源码、配置和编译入口；完整镜像已编译归档，板端启动与服务待验。 |
 | [workflow_demo/](workflow_demo/README.md) | 最小C示例，验证自动构建/部署/执行链路。 |
 | [sn100_host/](sn100_host/README.md) | 正式SN100移植工程；完整界面入口在shell目录。 |
 | [sn100_host_reference/](sn100_host_reference) | 老板提供的Windows原工程与压缩原件，只读参考、本地保留；不在此修改、构建或用旧配置连接仪器。 |

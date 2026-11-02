@@ -8,6 +8,7 @@
 
 | 文件或目录 | 用途 |
 | --- | --- |
+| [system_image/](system_image/README.md) | 新板Ubuntu Server与实时内核整机镜像、匹配模块和配置、官方源码9卷及编译环境安装输入；编译和文件核对通过，板端待验。 |
 | [preempt_rt/](preempt_rt/README.md) | 实时内核镜像、匹配模块、烧录配置和既有回退输入。 |
 | [qt_environment/](qt_environment/README.md) | Qt开发/运行依赖、调试工具及必要配置。 |
 | [sn100_host/](sn100_host/README.md) | SN100匹配应用/源码发布包和受影响文件修改前副本。 |

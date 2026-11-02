@@ -7,6 +7,10 @@
 #include "samples/sample_page.h"
 #include "instrument/device_control.h"
 #include "ui/cusmessagebox.h"
+#include "alarm_history/calendar/cuscalendar.h"
+#include "ui/cusdialogmask.h"
+#include "reagents/cusreagenthole.h"
+#include <QLabel>
 #include <QApplication>
 #include <QComboBox>
 #include <QPushButton>
@@ -246,6 +250,40 @@ class OriginalMainTaskChainRkTest : public QObject
         auto *back=page->findChild<QPushButton*>("btnMenuReturn"); QVERIFY(back && back->isEnabled());
         QTest::mouseClick(back,Qt::LeftButton); QTRY_VERIFY(!back->isVisible());
     }
+    void chooseHoleDate(QDialog *hole, const QDate &date, bool cancel)
+    {
+        auto *button=hole->findChild<QPushButton*>("btnCalendarSet"); QVERIFY(button && button->isEnabled());
+        QTest::mouseClick(button,Qt::LeftButton);
+        QPointer<QDialog> popup;
+        QTRY_VERIFY(([&](){ for(auto *candidate:hole->findChildren<QDialog*>("reagentExpiryCalendar"))
+            if(candidate->isVisible()) { popup=candidate; return true; } return false; })());
+        auto *mask=popup->findChild<CusDialogMask*>("mask"); QVERIFY(mask); QTRY_VERIFY(mask->isReadyForInput());
+        auto *calendar=popup->findChild<CusCalendar*>(); QVERIFY(calendar);
+        if(cancel)
+        {
+            auto *close=calendar->findChild<QPushButton*>("btnClose"); QVERIFY(close);
+            QTest::mouseClick(close,Qt::LeftButton); QTRY_VERIFY(!popup || !popup->isVisible()); return;
+        }
+        auto *year=calendar->findChild<QLabel*>("lblYear"), *month=calendar->findChild<QLabel*>("lblMonth");
+        QVERIFY(year && month && date.isValid());
+        const int shownMonth=month->text().remove(QStringLiteral("月")).toInt();
+        const int delta=(date.year()-year->text().toInt())*12+date.month()-shownMonth;
+        QVERIFY(qAbs(delta)<=24); // 本组固定原始日期至目标日期最多两年，只走真实翻月按钮。
+        auto *arrow=calendar->findChild<QPushButton*>(delta<0 ? "btnLeft" : "btnRight"); QVERIFY(arrow);
+        for(int step=0;step<qAbs(delta);++step) QTest::mouseClick(arrow,Qt::LeftButton);
+        QTRY_COMPARE(year->text(),QString::number(date.year()));
+        QTRY_COMPARE(month->text(),QString::number(date.month())+QStringLiteral("月"));
+        const QString folder=qEnvironmentVariable("SN100_GUI_EVIDENCE_DIR");
+        if (QDir::isAbsolutePath(folder))
+            QVERIFY(popup->grab().save(QDir(folder).filePath(QStringLiteral("calendar_%1.png").arg(date.toString("yyyyMMdd")))));
+        // 原CusCalendar固定450×376，顶部113像素，星期行后为六周；取原绘制格子中心。
+        const int cell=QDate(date.year(),date.month(),1).dayOfWeek()-1+date.day()-1;
+        const QPoint point(qRound((cell%7+0.5)*450.0/7.0),qRound(113+(cell/7+1.5)*(376-113)/7.0));
+        QTest::qWait(30); QSignalSpy selected(calendar,&CusCalendar::signalSelectDateChanged);
+        QTest::mouseClick(calendar,Qt::LeftButton,Qt::NoModifier,point);
+        QTRY_COMPARE(selected.size(),1); QCOMPARE(selected.first().first().toString(),date.toString("yyyy/MM/dd"));
+        QTRY_VERIFY(!popup || !popup->isVisible());
+    }
 private slots:
     void initTestCase()
     {
@@ -279,6 +317,7 @@ private slots:
                 "UPDATE project_reagent SET reagent_name='Cleaner'"}));
             QVERIFY(fixture.database("db/userSet/reagent_Information.db",{
                 "INSERT INTO reagent_batch_group VALUES(2,'PT','LOT-A|LOT-B'),(3,'PT','LOT-A'),(4,'PT','PTFbg'),(5,'OTHER','UNRELATED')",
+                "INSERT INTO reagent_list(id,reagent_name,reagent_type,valid,out_ul,warning_ul,check_limit) VALUES(4,'UNUSED','r_reagent','1','100','500','0')",
                 "INSERT INTO reagent_barcode VALUES(1,'R1','BARCODE-ONLY','2032/01/01','B1','1')"}));
         }
         QVERIFY(fixture.database("db/systemInfo/user.db",{
@@ -291,6 +330,9 @@ private slots:
         { QFile debug(fixture.root+"/config_Debug.ini"); QVERIFY(debug.open(QIODevice::Append));
           QVERIFY(debug.write("\n[login]\nopen=false\ndefaultPermission=0\n")>0); }
         hospital=new HospitalStore; accounts=new AccountStore; projects=new ProjectsStore;
+        if (QByteArray(QTest::currentTestFunction())=="formalHoleReagentChoicesFollowOriginalAreas")
+            QVERIFY(fixture.database("db/userSet/reagent_Information.db",{
+                "INSERT INTO reagent_list(id,reagent_name,reagent_type,valid,out_ul,warning_ul,check_limit) VALUES(4,'R2','r_reagent','1','100','500','0'),(5,'Cleaner2','cleaner','1','100','500','0'),(6,'IBS2','s_ibs','1','100','500','0'),(7,'INVALID','r_reagent','0','100','500','0'),(8,'INVALID_CLEANER','cleaner','0','100','500','0')"}));
         reagents=new ReagentStore; samples=new SampleStore;
         for (QObject *object : {static_cast<QObject*>(hospital),static_cast<QObject*>(accounts),static_cast<QObject*>(projects),static_cast<QObject*>(reagents),static_cast<QObject*>(samples)})
         { object->moveToThread(&worker); connect(&worker,&QThread::finished,object,&QObject::deleteLater); }
@@ -363,6 +405,15 @@ private slots:
         QTRY_VERIFY(!page->isBusy());
         QCOMPARE(page->snapshot().holes.first().reagentId,qint64(0));
         QCOMPARE(fixture.value("db/userSet/reagent_Setting.db","SELECT unknown_vendor_column FROM reagent_setting WHERE id=1").toString(),QStringLiteral("KEEP"));
+        QTRY_VERIFY(open->isEnabled()); QTest::mouseClick(open,Qt::LeftButton); dialog=nullptr;
+        QTRY_VERIFY(([&](){ for(auto *candidate:page->findChildren<QDialog*>()) if(candidate->isVisible()) { dialog=candidate; return true; } return false; })());
+        auto *expiry=dialog->findChild<QLineEdit*>("ldtOutDate"); QVERIFY(expiry && expiry->isReadOnly());
+        QVERIFY(expiry->text().isEmpty());
+        chooseHoleDate(dialog,QDate(),true); if(QTest::currentTestFailed()) return;
+        QVERIFY(expiry->text().isEmpty()); QVERIFY(!page->hasUnsavedChanges());
+        auto *cancel=dialog->findChild<QPushButton*>("btnCancel"); QVERIFY(cancel);
+        QTest::mouseClick(cancel,Qt::LeftButton);
+        QCOMPARE(received.count(clear),1);
         QVERIFY(measurementTimes.contains("local_hole_commit_reported"));
         QVERIFY(measurementTimes.contains("single_hole_command_observed"));
         QVERIFY(measurementTimes.contains("device_reagent_readback_saved"));
@@ -411,7 +462,11 @@ private slots:
         auto *dialog=visibleDialog(); auto *batch=dialog->findChild<QComboBox*>("cbxBatch"); QVERIFY(batch);
         auto *expiry=dialog->findChild<QLineEdit*>("ldtOutDate"); QVERIFY(expiry);
         const QString previousExpiry=expiry->text();
-        QTest::keyClick(expiry,Qt::Key_A,Qt::ControlModifier); QTest::keyClicks(expiry,"2030-01-02");
+        QVERIFY(expiry->isReadOnly());
+        chooseHoleDate(dialog,QDate(),true); if(QTest::currentTestFailed()) return;
+        QCOMPARE(expiry->text(),previousExpiry); QVERIFY(!page->hasUnsavedChanges());
+        chooseHoleDate(dialog,QDate(2030,1,2),false); if(QTest::currentTestFailed()) return;
+        QCOMPARE(expiry->text(),QStringLiteral("2030/01/02"));
         QTRY_VERIFY(page->hasUnsavedChanges());
         auto *cancel=dialog->findChild<QPushButton*>("btnCancel"); QVERIFY(cancel);
         QTest::mouseClick(cancel,Qt::LeftButton); QTRY_VERIFY(!visibleDialog());
@@ -423,7 +478,8 @@ private slots:
         batch=dialog->findChild<QComboBox*>("cbxBatch"); QVERIFY(batch);
         QCOMPARE(batch->currentText(),QStringLiteral("Default"));
         expiry=dialog->findChild<QLineEdit*>("ldtOutDate"); QVERIFY(expiry); QCOMPARE(expiry->text(),previousExpiry);
-        QTest::keyClick(expiry,Qt::Key_A,Qt::ControlModifier); QTest::keyClicks(expiry,"2032-02-03");
+        QVERIFY(expiry->isReadOnly());
+        chooseHoleDate(dialog,QDate(2032,2,3),false); if(QTest::currentTestFailed()) return;
         auto *save=dialog->findChild<QPushButton*>("btnSave"); QVERIFY(save && save->isEnabled());
         beginMeasurement(QStringLiteral("normal_hole_save")); QTest::mouseClick(save,Qt::LeftButton);
         QTRY_COMPARE(saves.size(),1);
@@ -431,7 +487,7 @@ private slots:
         QTRY_VERIFY(!page->isBusy() && !page->hasUnsavedChanges() && !visibleDialog());
         const QString stamp=fixture.value("db/userSet/reagent_Setting.db","SELECT datetime FROM reagent_setting WHERE id=1").toString();
         QVERIFY(QDateTime::fromString(stamp,"yyyy/MM/dd HH:mm:ss").isValid());
-        const QByteArray expected="Us[r_1][r_reagent][R1][Default][B1][5000][99][1]["+stamp.toUtf8()+"][2032-02-03][500][100][5000][5000][1]";
+        const QByteArray expected="Us[r_1][r_reagent][R1][Default][B1][5000][99][1]["+stamp.toUtf8()+"][2032/02/03][500][100][5000][5000][1]";
         QTRY_VERIFY(received.contains(expected));
         QCOMPARE(fixture.value("db/userSet/reagent_Setting.db","SELECT used_ul FROM reagent_setting WHERE id=1").toDouble(),5000.0);
         QCOMPARE(fixture.value("db/userSet/reagent_Setting.db","SELECT unknown_vendor_column FROM reagent_setting WHERE id=1").toString(),QStringLiteral("KEEP"));
@@ -440,9 +496,9 @@ private slots:
         batch=dialog->findChild<QComboBox*>("cbxBatch"); expiry=dialog->findChild<QLineEdit*>("ldtOutDate");
         cancel=dialog->findChild<QPushButton*>("btnCancel"); QVERIFY(batch && expiry && cancel);
         QCOMPARE(batch->currentText(),QStringLiteral("Default"));
-        QCOMPARE(expiry->text(),QStringLiteral("2032-02-03"));
+        QCOMPARE(expiry->text(),QStringLiteral("2032/02/03"));
         QTest::mouseClick(cancel,Qt::LeftButton); QTRY_VERIFY(!visibleDialog());
-        saveEvidence(QStringLiteral("normal_reagent_after_save_cancel_reopen"),QStringLiteral("正式R_1孔页改有效期后取消不提交、不发Us；保留Default批组正常保存新有效期，按原瓶容量5000和优先级99提交，精确Us十五字段和对应Ur保存，关闭重开编辑器读回。不覆盖批组候选/选择，非程序重启、物理输入或真实仪器。"));
+        saveEvidence(QStringLiteral("normal_reagent_after_save_cancel_reopen"),QStringLiteral("正式R_1孔页以只读日期和真实日历按钮进入：取消日历不改，选2030/01/02再取消孔页不写/不发，重开选择2032/02/03保存，核原日期格式、Us十五字段/对应Ur/编辑器重开。不覆盖程序重启、物理输入或真实仪器。"));
     }
     void formalHoleBatchChoicesFollowOriginalProjects()
     {
@@ -455,11 +511,20 @@ private slots:
         const QSet<QString> expected{QStringLiteral("Default"),QStringLiteral("LOT-A"),QStringLiteral("LOT-B")};
         const QString query="SELECT reagent_batch FROM reagent_setting WHERE id=1";
         const QString before=fixture.value("db/userSet/reagent_Setting.db",query).toString();
+        const auto settingFingerprint=[&]()
+        { return OriginalProjectRepository::databaseFingerprint(fixture.root+"/db/userSet/reagent_Setting.db",nullptr); };
+        const auto updateCount=[&]()
+        { int count=0; for(const auto &packet:received) if(packet.startsWith("Us[")) ++count; return count; };
+        const QString beforeFingerprint=settingFingerprint(); QVERIFY(!beforeFingerprint.isEmpty());
         QSignalSpy saves(page,&ReagentsPage::requestSaveHole);
         QTest::mouseClick(open,Qt::LeftButton); QTRY_VERIFY(visibleDialog()); auto *dialog=visibleDialog();
         auto *batch=dialog->findChild<QComboBox*>("cbxBatch"); QVERIFY(batch);
         QVERIFY(!batch->isEditable()); QVERIFY(!batch->lineEdit());
         QCOMPARE(choices(batch),expected); QCOMPARE(batch->count(),3); QCOMPARE(batch->currentText(),before);
+        qInfo()<<"RK_BATCH_CHOICES reagent=R1 count=3 readonly=true"<<choices(batch);
+        QVERIFY(shell->accountSession().authenticated); QCOMPARE(shell->accountSession().role,0);
+        for(const char *control:{"btn_restore","btn_clearPanel","btn_calibrationmode","btnChangeHole"})
+        { auto *button=page->findChild<QPushButton*>(control); QVERIFY(button); QVERIFY(!button->isVisible()); }
         const auto selectText=[](QComboBox *box,const QString &text)
         {
             const int index=box->findText(text); QVERIFY(index>=0); box->setFocus();
@@ -472,7 +537,8 @@ private slots:
         auto *cancel=dialog->findChild<QPushButton*>("btnCancel"); QVERIFY(cancel);
         QTest::mouseClick(cancel,Qt::LeftButton); QTRY_VERIFY(!visibleDialog());
         QCOMPARE(saves.size(),0); QCOMPARE(fixture.value("db/userSet/reagent_Setting.db",query).toString(),before);
-        for(const auto &packet:received) QVERIFY(!packet.startsWith("Us["));
+        QCOMPARE(settingFingerprint(),beforeFingerprint); QCOMPARE(updateCount(),0);
+        qInfo()<<"RK_BATCH_CANCEL database_unchanged=true updates=0 batch="<<before;
 
         QTest::mouseClick(open,Qt::LeftButton); QTRY_VERIFY(visibleDialog()); dialog=visibleDialog();
         batch=dialog->findChild<QComboBox*>("cbxBatch"); QVERIFY(batch); QCOMPARE(batch->currentText(),before);
@@ -485,19 +551,78 @@ private slots:
         const QByteArray stamp=fixture.value("db/userSet/reagent_Setting.db","SELECT datetime FROM reagent_setting WHERE id=1").toString().toUtf8();
         const QByteArray expectedPacket="Us[r_1][r_reagent][R1][LOT-B][B1][5000][99][1]["+stamp+"][2031/01/01][500][100][5000][5000][1]";
         QTRY_VERIFY(received.contains(expectedPacket));
+        QCOMPARE(updateCount(),1);
+        const QString savedRow=fixture.value("db/userSet/reagent_Setting.db",
+            "SELECT reagent_name||'|'||reagent_batch||'|'||bottle_type||'|'||amount_uL||'|'||priority||'|'||state||'|'||out_date||'|'||warning_ul||'|'||out_ul||'|'||max_ul||'|'||used_ul FROM reagent_setting WHERE id=1").toString();
+        QCOMPARE(savedRow,QStringLiteral("R1|LOT-B|B1|5000|99|r_normal|2031/01/01|500|100|5000|5000"));
+        const QString savedFingerprint=settingFingerprint(); QVERIFY(!savedFingerprint.isEmpty());
+        qInfo().noquote()<<"RK_BATCH_SAVED_AFTER_UR"<<savedRow<<"updates="<<updateCount();
         QTest::mouseClick(open,Qt::LeftButton); QTRY_VERIFY(visibleDialog()); dialog=visibleDialog();
         batch=dialog->findChild<QComboBox*>("cbxBatch"); auto *name=dialog->findChild<QComboBox*>("cbxName");
         auto *bottle=dialog->findChild<QComboBox*>("cbxBottleName"); QVERIFY(batch && name && bottle);
         QCOMPARE(batch->currentText(),QStringLiteral("LOT-B"));
+        qInfo()<<"RK_BATCH_REOPEN batch="<<batch->currentText();
         selectText(name,QStringLiteral("Cleaner")); if(QTest::currentTestFailed()) return;
         const QSet<QString> cleanerBatch{QStringLiteral("UNRELATED")}; QCOMPARE(choices(batch),cleanerBatch);
+        qInfo()<<"RK_BATCH_CHOICES reagent=Cleaner"<<choices(batch);
+        // 有效试剂没有项目关联时保持空候选，不从条码或原孔位补批号。
+        selectText(name,QStringLiteral("UNUSED")); if(QTest::currentTestFailed()) return;
+        QCOMPARE(batch->count(),0); QVERIFY(bottle->count()>0);
+        qInfo()<<"RK_BATCH_CHOICES reagent=UNUSED count=0 bottles="<<bottle->count();
         selectText(name,QStringLiteral("none")); if(QTest::currentTestFailed()) return;
         QCOMPARE(batch->count(),0); QCOMPARE(bottle->count(),0);
         cancel=dialog->findChild<QPushButton*>("btnCancel"); QVERIFY(cancel);
         QTest::mouseClick(cancel,Qt::LeftButton); QTRY_VERIFY(!visibleDialog()); QCOMPARE(saves.size(),1);
         QCOMPARE(fixture.value("db/userSet/reagent_Setting.db",query).toString(),QStringLiteral("LOT-B"));
         QCOMPARE(fixture.value("db/userSet/reagent_Setting.db","SELECT unknown_vendor_column FROM reagent_setting WHERE id=1").toString(),QStringLiteral("KEEP"));
-        saveEvidence(QStringLiteral("original_batch_choice_saved"),QStringLiteral("正式孔页按实际项目试剂关联给出只读批组，拆|去重并排PTFbg/其他试剂项目/条码；键盘选择LOT-B后取消不写/不发，再保存精确Us并等Ur落盘；重开和切换Cleaner/none刷新候选后取消。软件事件和TCP模拟，未接仪器。"));
+        QCOMPARE(settingFingerprint(),savedFingerprint); QCOMPARE(updateCount(),1);
+        saveEvidence(QStringLiteral("original_batch_choice_saved"),QStringLiteral("正式孔页按实际项目试剂关联给出只读批组，拆|去重并排PTFbg/其他试剂项目/条码；键盘选择LOT-B后取消不写/不发，再保存精确Us并等Ur落盘；重开和切换Cleaner/无关联UNUSED/none刷新候选后取消。有效配置role0可编辑，高级维护仍隐藏；随后正常注销核未认证会话不能打开孔页。软件事件和TCP模拟，未接仪器。"));
+        // 通过正式注销链清除后台身份，不直接伪造页面权限或强制禁用按钮。
+        QTRY_VERIFY(!page->isBusy()); QVERIFY(shell->requestLogout());
+        QTRY_VERIFY(!shell->accountSession().authenticated); QTRY_VERIFY(!open->isEnabled());
+        QTest::mouseClick(open,Qt::LeftButton); QVERIFY(!visibleDialog());
+        QCOMPARE(saves.size(),1); QCOMPARE(updateCount(),1); QCOMPARE(settingFingerprint(),savedFingerprint);
+        qInfo()<<"RK_BATCH_PERMISSIONS configured_role0_edit=true guest_edit=false advanced_hidden=true";
+    }
+    void formalHoleReagentChoicesFollowOriginalAreas()
+    {
+        QVERIFY(shell->selectMainPage(0)); auto *page=shell->reagentPage();
+        auto *open=page->findChild<QPushButton*>("btnReagentInfoSet"); QVERIFY(open && open->isEnabled());
+        const auto fingerprint=[&]()
+        { return OriginalProjectRepository::databaseFingerprint(fixture.root+"/db/userSet/reagent_Setting.db",nullptr); };
+        const QString before=fingerprint(); QVERIFY(!before.isEmpty());
+        const auto session=shell->accountSession();
+        for(const QString &holeName : {QStringLiteral("R_1"),QStringLiteral("SD_1")})
+        {
+            auto *hole=page->findChild<cusReagentHole*>(holeName); QVERIFY(hole);
+            QTest::mouseClick(hole,Qt::LeftButton); QTest::mouseClick(open,Qt::LeftButton);
+            QPointer<QDialog> dialog;
+            QTRY_VERIFY(([&](){ for(auto *candidate:page->findChildren<QDialog*>())
+                if(candidate->isVisible()) {dialog=candidate;return true;} return false;})());
+            auto *names=dialog->findChild<QComboBox*>("cbxName"); QVERIFY(names);
+            QStringList actual; for(int i=0;i<names->count();++i) actual.append(names->itemText(i));
+            const QStringList expected=holeName=="R_1"
+                ? QStringList{"none","Cleaner","Cleaner2","R1","R2"}
+                : QStringList{"none","Cleaner","Cleaner2","IBS","IBS2"};
+            qInfo()<<"RK_REAGENT_ORDER"<<holeName<<actual; QCOMPARE(actual,expected);
+            auto *expiry=dialog->findChild<QLineEdit*>("ldtOutDate"); QVERIFY(expiry && expiry->isReadOnly());
+            const QString initial=expiry->text();
+            auto *button=dialog->findChild<QPushButton*>("btnCalendarSet"); QVERIFY(button);
+            QTest::mouseClick(button,Qt::LeftButton); QPointer<QDialog> popup;
+            QTRY_VERIFY(([&](){ popup=dialog->findChild<QDialog*>("reagentExpiryCalendar");return popup && popup->isVisible();})());
+            auto *calendar=popup->findChild<CusCalendar*>(); QVERIFY(calendar);
+            auto *mask=popup->findChild<CusDialogMask*>("mask"); QVERIFY(mask); QTRY_VERIFY(mask->isReadyForInput());
+            auto *left=calendar->findChild<QPushButton*>("btnLeft"); QVERIFY(left && left->isEnabled());
+            page->setSession(AccountSession()); QVERIFY(!left->isEnabled());
+            page->setSession(session); QVERIFY(left->isEnabled());
+            auto *close=calendar->findChild<QPushButton*>("btnClose"); QVERIFY(close);
+            QTest::mouseClick(close,Qt::LeftButton); QTRY_VERIFY(!popup);
+            QCOMPARE(expiry->text(),initial); QVERIFY(!page->hasUnsavedChanges());
+            auto *cancel=dialog->findChild<QPushButton*>("btnCancel"); QVERIFY(cancel);
+            QTest::mouseClick(cancel,Qt::LeftButton); QTRY_VERIFY(!dialog);
+        }
+        QCOMPARE(fingerprint(),before);
+        for(const auto &packet:received) QVERIFY(!packet.startsWith("Us["));
     }
     void actualMainSelectsOriginalSampleAndReagentStoresAndRestarts()
     {

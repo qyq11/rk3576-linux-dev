@@ -8,4 +8,4 @@ HEADERS += $$PWD/quality_control_page.h $$PWD/cus_quality_chart.h \
 FORMS += $$PWD/frm_quality.ui $$PWD/mask_dlg_add_control.ui \
          $$PWD/mask_dlg_control_batch_setting.ui $$PWD/quality_control_add_wgt.ui \
          $$PWD/quality_control_item_add_project_wgt.ui $$PWD/cus_quality_chart.ui
-RESOURCES += $$PWD/qc_history_resources.qrc
+RESOURCES *= $$clean_path($$PWD/qc_history_resources.qrc)

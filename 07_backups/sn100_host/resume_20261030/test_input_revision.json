@@ -1,0 +1,12 @@
+{
+  "reason": "仅增加匿名夹具保留开关，便于正式安装后实屏检查，不读取现场数据；生产源码和对象不受影响。",
+  "original_frozen_test": "51567a7c6ea61af8d89dece24fc09f34ec644b7152c33ab2176c285415fec0df",
+  "current_test": "bf7ed100054ec24d40edef4cffa01a22d8bef7fefc36376a018de9f62d2af497",
+  "affected_product": "original_quality_pages_rk_test 必须从此源首次编译；正式主程序不受影响",
+  "updated_at": "2026-10-30T12:01:40.4416757+08:00",
+  "compile_failure_revision": {
+    "source": "c04d90907ce3810fd27355576be17879cfdc90258a5d1d52fd696e3f1fc84cd5",
+    "log": "quality_failure_01_build.log",
+    "reason": "测试直接调用私有reload，未通过编译；改按正常关闭页面及后台后重开恢复，不开放生产接口。"
+  }
+}

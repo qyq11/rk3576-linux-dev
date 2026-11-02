@@ -1,0 +1,13 @@
+[Unit]
+Description=为新板生成SSH主机密钥
+After=local-fs.target
+Before=ssh.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ssh-keygen -A
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+RequiredBy=ssh.service

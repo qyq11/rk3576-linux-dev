@@ -1,0 +1,25 @@
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/reagents/main.cpp: In lambda function:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/reagents/main.cpp:66:30: warning: missing initializer for member ‘ReagentProject::reagentNames’ [-Wmissing-field-initializers]
+   66 |                 result.append({ p.id, p.name, p.results.isEmpty() ? QString() : p.results.first().unit });
+      |                 ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp: In member function ‘bool ProjectsStore::read(ProjectRecords*, ProjectUnits*, QString*)’:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:786:22: warning: missing initializer for member ‘ProjectUnit::originalType’ [-Wmissing-field-initializers]
+  786 |         units->append({query.value(0).toString(), query.value(1).toDouble()});
+      |         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:786:22: warning: missing initializer for member ‘ProjectUnit::originalFingerprint’ [-Wmissing-field-initializers]
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:786:22: warning: missing initializer for member ‘ProjectUnit::originalRatio’ [-Wmissing-field-initializers]
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp: In member function ‘void ProjectsStore::importFile(qint64, QString)’:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:1182:147: warning: missing initializer for member ‘ProjectUnit::originalType’ [-Wmissing-field-initializers]
+ 1182 |         const ProjectUnit unit{item.toObject().value(QStringLiteral("name")).toString(), item.toObject().value(QStringLiteral("ratio")).toDouble()};
+      |                                                                                                                                                   ^
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:1182:147: warning: missing initializer for member ‘ProjectUnit::originalFingerprint’ [-Wmissing-field-initializers]
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:1182:147: warning: missing initializer for member ‘ProjectUnit::originalRatio’ [-Wmissing-field-initializers]
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/project_page.cpp: In lambda function:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/project_page.cpp:1344:123: warning: missing initializer for member ‘ProjectUnit::originalRatio’ [-Wmissing-field-initializers]
+ 1344 |         const ProjectUnit unit{name->text(), value, m_originalProfile ? originalType->currentText() : QString(), QString()};
+      |                                                                                                                           ^
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/project_page.cpp: In lambda function:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/project_page.cpp:1356:117: warning: missing initializer for member ‘ProjectUnit::originalRatio’ [-Wmissing-field-initializers]
+ 1356 |         ProjectUnit unit{name->text(), value, m_originalProfile ? originalType->currentText() : QString(), QString()};
+      |                                                                                                                     ^
+ba4a9068e73825da168f7250ae939eae15f24fc5ae59dc1d5143355d6506e56a  /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/reagent_calendar_20261030/build/sn100_reagents

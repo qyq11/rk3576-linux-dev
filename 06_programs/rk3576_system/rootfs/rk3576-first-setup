@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ $EUID != 0 ]]; then
+    exec sudo -- "$0" "$@"
+fi
+printf '为lckfb设置Samba共享密码。密码只保存在这块板子上，不写入通用镜像。\n'
+smbpasswd -a lckfb
+systemctl enable --now smbd.service nmbd.service
+printf '\n共享账号已设置。Windows资源管理器中打开：\\\\192.168.100.123\\rkshare\n'
+printf '当前用户主目录：/home/rkshare/lckfb\n'

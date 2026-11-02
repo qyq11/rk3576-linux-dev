@@ -1,0 +1,27 @@
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/reagents/main.cpp: In lambda function:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/reagents/main.cpp:66:30: warning: missing initializer for member ‘ReagentProject::reagentNames’ [-Wmissing-field-initializers]
+   66 |                 result.append({ p.id, p.name, p.results.isEmpty() ? QString() : p.results.first().unit });
+      |                 ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp: In member function ‘bool ProjectsStore::read(ProjectRecords*, ProjectUnits*, QString*)’:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:786:22: warning: missing initializer for member ‘ProjectUnit::originalType’ [-Wmissing-field-initializers]
+  786 |         units->append({query.value(0).toString(), query.value(1).toDouble()});
+      |         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:786:22: warning: missing initializer for member ‘ProjectUnit::originalFingerprint’ [-Wmissing-field-initializers]
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:786:22: warning: missing initializer for member ‘ProjectUnit::originalRatio’ [-Wmissing-field-initializers]
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp: In member function ‘void ProjectsStore::importFile(qint64, QString)’:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:1182:147: warning: missing initializer for member ‘ProjectUnit::originalType’ [-Wmissing-field-initializers]
+ 1182 |         const ProjectUnit unit{item.toObject().value(QStringLiteral("name")).toString(), item.toObject().value(QStringLiteral("ratio")).toDouble()};
+      |                                                                                                                                                   ^
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:1182:147: warning: missing initializer for member ‘ProjectUnit::originalFingerprint’ [-Wmissing-field-initializers]
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/projects_store.cpp:1182:147: warning: missing initializer for member ‘ProjectUnit::originalRatio’ [-Wmissing-field-initializers]
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/project_page.cpp: In lambda function:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/project_page.cpp:1344:123: warning: missing initializer for member ‘ProjectUnit::originalRatio’ [-Wmissing-field-initializers]
+ 1344 |         const ProjectUnit unit{name->text(), value, m_originalProfile ? originalType->currentText() : QString(), QString()};
+      |                                                                                                                           ^
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/project_page.cpp: In lambda function:
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/projects/project_page.cpp:1356:117: warning: missing initializer for member ‘ProjectUnit::originalRatio’ [-Wmissing-field-initializers]
+ 1356 |         ProjectUnit unit{name->text(), value, m_originalProfile ? originalType->currentText() : QString(), QString()};
+      |                                                                                                                     ^
+/usr/lib/gcc-cross/aarch64-linux-gnu/13/../../../../aarch64-linux-gnu/bin/ld: /mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/reagent_calendar_20261030/standalone_arm64_build/obj_23.o: in function `OriginalReagentRepository::initialize(QString const&, QString*)':
+/home/qyq/.cache/sn100-reagent-calendar-20261030-01/06_programs/sn100_host/reagents/original_reagent_repository.cpp:76:(.text+0x76e0): undefined reference to `OriginalIni::read(QString const&, OriginalIni::Settings*, QString*)'
+collect2: error: ld returned 1 exit status

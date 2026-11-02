@@ -8,6 +8,8 @@
 #include "ui_maskdlgreagentcode.h"
 #include "ui_maskdlgreagentlistsetting.h"
 #include "ui_maskdlgreagentsetting.h"
+#include "ui_cusmaskcalendar.h"
+#include "alarm_history/calendar/cuscalendar.h"
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDate>
@@ -41,6 +43,52 @@ public:
         if (!mayClose || mayClose())
             QDialog::reject();
     }
+};
+
+// 复用原日历和遮罩；不阻塞主线程，关闭孔位页时由父子关系一起释放。
+class ReagentCalendarPopup : public QDialog
+{
+public:
+    explicit ReagentCalendarPopup(QWidget *parent, const QDate &selected)
+        : QDialog(parent), form_(new Ui::CusMaskCalendar)
+    {
+        form_->setupUi(this);
+        setObjectName(QStringLiteral("reagentExpiryCalendar"));
+        setAttribute(Qt::WA_DeleteOnClose);
+        for (auto *widget : findChildren<QWidget*>())
+        {
+            // 日历晚于孔位页创建，登记初始状态，供注销后禁用与重新登录恢复。
+            widget->setProperty("reagentBaseEnabled", widget->isEnabled());
+            QFont font=widget->font();
+            if (font.family().contains(QStringLiteral("苹方")))
+            { font.setFamily(QStringLiteral("Noto Sans CJK SC")); widget->setFont(font); }
+            QString style=widget->styleSheet();
+            style.replace(QStringLiteral("苹方 粗体"),QStringLiteral("Noto Sans CJK SC"));
+            widget->setStyleSheet(style);
+        }
+        form_->widget->updateCalendar(selected);
+        connect(form_->widget,&CusCalendar::signalCloseDialog,this,&ReagentCalendarPopup::reject);
+        connect(form_->mask,&CusDialogMask::closeFinished,this,[this]()
+        { closingFinished_=true; QDialog::reject(); });
+        form_->mask->setupForm();
+    }
+    ~ReagentCalendarPopup() override { delete form_; }
+    CusCalendar *calendar() const { return form_->widget; }
+    void openAsync() { show(); form_->mask->showAnimation(); }
+    void reject() override
+    {
+        if (closingFinished_) QDialog::reject();
+        else form_->mask->closeAnimation();
+    }
+protected:
+    void closeEvent(QCloseEvent *event) override
+    {
+        if (closingFinished_) QDialog::closeEvent(event);
+        else { event->ignore(); reject(); }
+    }
+private:
+    Ui::CusMaskCalendar *form_;
+    bool closingFinished_=false;
 };
 
 static QString editorStyle()
@@ -628,11 +676,24 @@ void ReagentsPage::openHoleEditor()
         if (h.name == selectedHole_)
             *current = h;
     form->cbxName->addItem("none", 0);
+    if (originalProfile_)
+    {
+        // 原版分两次读取：先清洗液，再本区域试剂；各类内部保持原表顺序。
+        const QString areaType = current->area == "r_area" ? QStringLiteral("试剂")
+                                                          : QStringLiteral("缓冲稀释液");
+        for (const auto& type : { QStringLiteral("清洗液"), areaType })
+            for (const auto& reagent : snapshot_.reagents)
+                if (reagent.valid && reagent.type == type)
+                    form->cbxName->addItem(reagent.name, reagent.id);
+    }
+    else
+    {
     for (const auto& r : snapshot_.reagents)
         if (r.valid
             && (r.type == "清洗液"
                 || (current->area == "r_area" ? r.type == "试剂" : r.type == "缓冲稀释液")))
             form->cbxName->addItem(r.name, r.id);
+    }
     for (const auto& b : snapshot_.bottles)
         if (b.area == current->area)
             form->cbxBottleName->addItem(b.name, b.id);
@@ -675,15 +736,33 @@ void ReagentsPage::openHoleEditor()
         refreshChoices();
         connect(form->cbxName,QOverload<int>::of(&QComboBox::currentIndexChanged),dialog,refreshChoices);
     }
-    form->ldtOutDate->setReadOnly(false);
-    form->ldtOutDate->setText(current->expiry.isEmpty()
+    form->ldtOutDate->setReadOnly(originalProfile_);
+    form->ldtOutDate->setText(!originalProfile_ && current->expiry.isEmpty()
             ? QDate::currentDate().addYears(1).toString("yyyy-MM-dd")
             : current->expiry);
+    auto calendar=std::make_shared<QPointer<ReagentCalendarPopup>>();
     connect(form->btnCalendarSet, &QPushButton::clicked, dialog,
-        [form]()
+        [this,form,dialog,calendar]()
         {
-            form->ldtOutDate->setFocus();
-            form->ldtOutDate->selectAll();
+            if (!originalProfile_)
+            { form->ldtOutDate->setFocus(); form->ldtOutDate->selectAll(); return; }
+            if (!canEdit() || busy_) return;
+            if (*calendar) { (*calendar)->raise(); return; }
+            QDate selected=QDate::fromString(form->ldtOutDate->text(),QStringLiteral("yyyy/MM/dd"));
+            if (!selected.isValid()) selected=QDate::currentDate();
+            auto *popup=new ReagentCalendarPopup(dialog,selected);
+            *calendar=popup;
+            connect(popup->calendar(),&CusCalendar::signalSelectDateChanged,this,
+                [this,form,popup](const QString &text)
+                {
+                    if (canEdit() && !busy_ && form->ldtOutDate->text()!=text)
+                    {
+                        form->ldtOutDate->setText(text);
+                        markDirty(); // 日历赋值不会触发textEdited，必须明确保留未保存草稿。
+                    }
+                    popup->reject();
+                });
+            popup->openAsync();
         });
     connect(form->btnEditBatch, &QPushButton::clicked, dialog, [this]()
         { emit operationMessage("批号", QStringLiteral("请先保存/取消孔位，再从试剂组设置编辑批号")); });

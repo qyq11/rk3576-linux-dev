@@ -1,0 +1,484 @@
+{
+  "scope": "Generated filesystem content only; board unavailable; no services started and no hardware acceptance",
+  "passed": 46,
+  "failed": 4,
+  "checks": [
+    {
+      "name": "ubuntu_version",
+      "passed": true,
+      "actual": {
+        "PRETTY_NAME": "\"Ubuntu 24.04.5 LTS\"",
+        "NAME": "\"Ubuntu\"",
+        "VERSION_ID": "\"24.04\"",
+        "VERSION": "\"24.04.5 LTS (Noble Numbat)\"",
+        "VERSION_CODENAME": "noble",
+        "ID": "ubuntu",
+        "HOME_URL": "\"https://www.ubuntu.com/\"",
+        "SUPPORT_URL": "\"https://help.ubuntu.com/\"",
+        "BUG_REPORT_URL": "\"https://bugs.launchpad.net/ubuntu/\"",
+        "PRIVACY_POLICY_URL": "\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"",
+        "UBUNTU_CODENAME": "noble",
+        "LOGO": "ubuntu-logo",
+        "BUILD_INFO": "\"root@qyq Fri Oct 30 21:53:09 CST 2026\"",
+        "ID_LIKE": "\"ubuntu\"",
+        "RK_BUILD_INFO": "\"root@qyq Fri Oct 30 21:53:23 CST 2026\""
+      }
+    },
+    {
+      "name": "package_configuration_complete",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "name": "package:samba",
+      "passed": true,
+      "actual": {
+        "version": "2:4.19.5+dfsg-4ubuntu9.8",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:openssh-server",
+      "passed": true,
+      "actual": {
+        "version": "1:9.6p1-3ubuntu13.20",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:network-manager",
+      "passed": true,
+      "actual": {
+        "version": "1.46.0-1ubuntu2.8",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:chrony",
+      "passed": true,
+      "actual": {
+        "version": "4.5-1ubuntu4.2",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:rt-tests",
+      "passed": true,
+      "actual": {
+        "version": "2.5-1",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:stress-ng",
+      "passed": true,
+      "actual": {
+        "version": "0.17.06-1build1",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:iproute2",
+      "passed": true,
+      "actual": {
+        "version": "6.1.0-1ubuntu6.4",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:iputils-ping",
+      "passed": true,
+      "actual": {
+        "version": "3:20240117-1ubuntu0.1",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:ethtool",
+      "passed": true,
+      "actual": {
+        "version": "1:6.7-1build1",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:lsof",
+      "passed": true,
+      "actual": {
+        "version": "4.95.0-1build3",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:procps",
+      "passed": true,
+      "actual": {
+        "version": "2:4.0.4-4ubuntu3.3",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "package:gpiod",
+      "passed": true,
+      "actual": {
+        "version": "1.6.3-1.1build1",
+        "architecture": "arm64"
+      }
+    },
+    {
+      "name": "home_registration",
+      "passed": true,
+      "actual": "/home/rkshare/lckfb"
+    },
+    {
+      "name": "directory:home/rkshare",
+      "passed": false,
+      "actual": {
+        "uid": 0,
+        "mode": "0o700"
+      }
+    },
+    {
+      "name": "directory:home/rkshare/lckfb",
+      "passed": false,
+      "actual": {
+        "uid": 0,
+        "mode": "0o750"
+      }
+    },
+    {
+      "name": "directory:home/rkshare/programs",
+      "passed": false,
+      "actual": {
+        "uid": 0,
+        "mode": "0o750"
+      }
+    },
+    {
+      "name": "old_home_absent",
+      "passed": true,
+      "actual": false
+    },
+    {
+      "name": "samba:path",
+      "passed": true,
+      "actual": "/home/rkshare"
+    },
+    {
+      "name": "samba:read only",
+      "passed": true,
+      "actual": "no"
+    },
+    {
+      "name": "samba:guest ok",
+      "passed": true,
+      "actual": "no"
+    },
+    {
+      "name": "samba:valid users",
+      "passed": true,
+      "actual": "lckfb"
+    },
+    {
+      "name": "samba:create mask",
+      "passed": true,
+      "actual": "0600"
+    },
+    {
+      "name": "samba:directory mask",
+      "passed": true,
+      "actual": "0700"
+    },
+    {
+      "name": "network:interface-name",
+      "passed": true,
+      "actual": "end0"
+    },
+    {
+      "name": "network:autoconnect",
+      "passed": true,
+      "actual": "true"
+    },
+    {
+      "name": "network:method",
+      "passed": true,
+      "actual": "manual"
+    },
+    {
+      "name": "network:address1",
+      "passed": true,
+      "actual": "192.168.100.123/24"
+    },
+    {
+      "name": "network:never-default",
+      "passed": true,
+      "actual": "true"
+    },
+    {
+      "name": "network_permissions",
+      "passed": true,
+      "actual": "0o600"
+    },
+    {
+      "name": "enabled:ssh",
+      "passed": true,
+      "actual": "/usr/lib/systemd/system/ssh.service"
+    },
+    {
+      "name": "enabled:smbd",
+      "passed": true,
+      "actual": "/usr/lib/systemd/system/smbd.service"
+    },
+    {
+      "name": "enabled:nmbd",
+      "passed": true,
+      "actual": "/usr/lib/systemd/system/nmbd.service"
+    },
+    {
+      "name": "enabled:NetworkManager",
+      "passed": true,
+      "actual": "/usr/lib/systemd/system/NetworkManager.service"
+    },
+    {
+      "name": "enabled:chrony",
+      "passed": true,
+      "actual": "/usr/lib/systemd/system/chrony.service"
+    },
+    {
+      "name": "enabled:ssh-keygen-firstboot",
+      "passed": true,
+      "actual": "/etc/systemd/system/ssh-keygen-firstboot.service"
+    },
+    {
+      "name": "ssh_key_generation",
+      "passed": true,
+      "actual": "[Unit]\nDescription=为新板生成SSH主机密钥\nAfter=local-fs.target\nBefore=ssh.service\n\n[Service]\nType=oneshot\nExecStart=/usr/bin/ssh-keygen -A\nRemainAfterExit=yes\n\n[Install]\nWantedBy=multi-user.target\nRequiredBy=ssh.service\n"
+    },
+    {
+      "name": "ssh_key_dependency",
+      "passed": true,
+      "actual": "/etc/systemd/system/ssh-keygen-firstboot.service"
+    },
+    {
+      "name": "ssh_keys_absent",
+      "passed": true,
+      "actual": "filenames_only"
+    },
+    {
+      "name": "credentials_absent:var/lib/samba/private/passdb.tdb",
+      "passed": true,
+      "actual": false
+    },
+    {
+      "name": "credentials_absent:var/lib/samba/private/secrets.tdb",
+      "passed": true,
+      "actual": false
+    },
+    {
+      "name": "machine_id_empty",
+      "passed": true,
+      "actual": 0
+    },
+    {
+      "name": "rt_modules",
+      "passed": true,
+      "actual": "6.1.99-rt36-tspi"
+    },
+    {
+      "name": "rt_module_hashes",
+      "passed": false,
+      "actual": {
+        "compiled_count": 155,
+        "image_count": 155,
+        "differences": [
+          "kernel/drivers/media/dvb-frontends/a8293.ko",
+          "kernel/drivers/media/dvb-frontends/af9013.ko",
+          "kernel/drivers/media/dvb-frontends/af9033.ko",
+          "kernel/drivers/media/dvb-frontends/ascot2e.ko",
+          "kernel/drivers/media/dvb-frontends/atbm8830.ko",
+          "kernel/drivers/media/dvb-frontends/au8522_common.ko",
+          "kernel/drivers/media/dvb-frontends/au8522_decoder.ko",
+          "kernel/drivers/media/dvb-frontends/au8522_dig.ko",
+          "kernel/drivers/media/dvb-frontends/bcm3510.ko",
+          "kernel/drivers/media/dvb-frontends/cx22700.ko",
+          "kernel/drivers/media/dvb-frontends/cx22702.ko",
+          "kernel/drivers/media/dvb-frontends/cx24110.ko",
+          "kernel/drivers/media/dvb-frontends/cx24113.ko",
+          "kernel/drivers/media/dvb-frontends/cx24116.ko",
+          "kernel/drivers/media/dvb-frontends/cx24117.ko",
+          "kernel/drivers/media/dvb-frontends/cx24120.ko",
+          "kernel/drivers/media/dvb-frontends/cx24123.ko",
+          "kernel/drivers/media/dvb-frontends/cxd2099.ko",
+          "kernel/drivers/media/dvb-frontends/cxd2820r.ko",
+          "kernel/drivers/media/dvb-frontends/cxd2841er.ko",
+          "kernel/drivers/media/dvb-frontends/cxd2880/cxd2880.ko",
+          "kernel/drivers/media/dvb-frontends/dib0070.ko",
+          "kernel/drivers/media/dvb-frontends/dib0090.ko",
+          "kernel/drivers/media/dvb-frontends/dib3000mb.ko",
+          "kernel/drivers/media/dvb-frontends/dib3000mc.ko",
+          "kernel/drivers/media/dvb-frontends/dib7000m.ko",
+          "kernel/drivers/media/dvb-frontends/dib7000p.ko",
+          "kernel/drivers/media/dvb-frontends/dib8000.ko",
+          "kernel/drivers/media/dvb-frontends/dib9000.ko",
+          "kernel/drivers/media/dvb-frontends/dibx000_common.ko",
+          "kernel/drivers/media/dvb-frontends/drx39xyj/drx39xyj.ko",
+          "kernel/drivers/media/dvb-frontends/drxd.ko",
+          "kernel/drivers/media/dvb-frontends/drxk.ko",
+          "kernel/drivers/media/dvb-frontends/ds3000.ko",
+          "kernel/drivers/media/dvb-frontends/dvb-pll.ko",
+          "kernel/drivers/media/dvb-frontends/ec100.ko",
+          "kernel/drivers/media/dvb-frontends/helene.ko",
+          "kernel/drivers/media/dvb-frontends/horus3a.ko",
+          "kernel/drivers/media/dvb-frontends/isl6405.ko",
+          "kernel/drivers/media/dvb-frontends/isl6421.ko",
+          "kernel/drivers/media/dvb-frontends/isl6423.ko",
+          "kernel/drivers/media/dvb-frontends/itd1000.ko",
+          "kernel/drivers/media/dvb-frontends/ix2505v.ko",
+          "kernel/drivers/media/dvb-frontends/l64781.ko",
+          "kernel/drivers/media/dvb-frontends/lg2160.ko",
+          "kernel/drivers/media/dvb-frontends/lgdt3305.ko",
+          "kernel/drivers/media/dvb-frontends/lgdt3306a.ko",
+          "kernel/drivers/media/dvb-frontends/lgdt330x.ko",
+          "kernel/drivers/media/dvb-frontends/lgs8gl5.ko",
+          "kernel/drivers/media/dvb-frontends/lgs8gxx.ko",
+          "kernel/drivers/media/dvb-frontends/lnbh25.ko",
+          "kernel/drivers/media/dvb-frontends/lnbh29.ko",
+          "kernel/drivers/media/dvb-frontends/lnbp21.ko",
+          "kernel/drivers/media/dvb-frontends/lnbp22.ko",
+          "kernel/drivers/media/dvb-frontends/m88ds3103.ko",
+          "kernel/drivers/media/dvb-frontends/m88rs2000.ko",
+          "kernel/drivers/media/dvb-frontends/mb86a16.ko",
+          "kernel/drivers/media/dvb-frontends/mb86a20s.ko",
+          "kernel/drivers/media/dvb-frontends/mn88443x.ko",
+          "kernel/drivers/media/dvb-frontends/mn88472.ko",
+          "kernel/drivers/media/dvb-frontends/mn88473.ko",
+          "kernel/drivers/media/dvb-frontends/mt312.ko",
+          "kernel/drivers/media/dvb-frontends/mt352.ko",
+          "kernel/drivers/media/dvb-frontends/mxl5xx.ko",
+          "kernel/drivers/media/dvb-frontends/mxl692.ko",
+          "kernel/drivers/media/dvb-frontends/nxt200x.ko",
+          "kernel/drivers/media/dvb-frontends/nxt6000.ko",
+          "kernel/drivers/media/dvb-frontends/or51132.ko",
+          "kernel/drivers/media/dvb-frontends/or51211.ko",
+          "kernel/drivers/media/dvb-frontends/rtl2830.ko",
+          "kernel/drivers/media/dvb-frontends/rtl2832.ko",
+          "kernel/drivers/media/dvb-frontends/rtl2832_sdr.ko",
+          "kernel/drivers/media/dvb-frontends/s5h1409.ko",
+          "kernel/drivers/media/dvb-frontends/s5h1411.ko",
+          "kernel/drivers/media/dvb-frontends/s5h1420.ko",
+          "kernel/drivers/media/dvb-frontends/s5h1432.ko",
+          "kernel/drivers/media/dvb-frontends/s921.ko",
+          "kernel/drivers/media/dvb-frontends/si2165.ko",
+          "kernel/drivers/media/dvb-frontends/si2168.ko",
+          "kernel/drivers/media/dvb-frontends/si21xx.ko",
+          "kernel/drivers/media/dvb-frontends/sp2.ko",
+          "kernel/drivers/media/dvb-frontends/sp887x.ko",
+          "kernel/drivers/media/dvb-frontends/stb0899.ko",
+          "kernel/drivers/media/dvb-frontends/stb6000.ko",
+          "kernel/drivers/media/dvb-frontends/stb6100.ko",
+          "kernel/drivers/media/dvb-frontends/stv0288.ko",
+          "kernel/drivers/media/dvb-frontends/stv0297.ko",
+          "kernel/drivers/media/dvb-frontends/stv0299.ko",
+          "kernel/drivers/media/dvb-frontends/stv0367.ko",
+          "kernel/drivers/media/dvb-frontends/stv0900.ko",
+          "kernel/drivers/media/dvb-frontends/stv090x.ko",
+          "kernel/drivers/media/dvb-frontends/stv0910.ko",
+          "kernel/drivers/media/dvb-frontends/stv6110.ko",
+          "kernel/drivers/media/dvb-frontends/stv6110x.ko",
+          "kernel/drivers/media/dvb-frontends/stv6111.ko",
+          "kernel/drivers/media/dvb-frontends/tc90522.ko",
+          "kernel/drivers/media/dvb-frontends/tda10021.ko",
+          "kernel/drivers/media/dvb-frontends/tda10023.ko",
+          "kernel/drivers/media/dvb-frontends/tda10048.ko",
+          "kernel/drivers/media/dvb-frontends/tda1004x.ko",
+          "kernel/drivers/media/dvb-frontends/tda10071.ko",
+          "kernel/drivers/media/dvb-frontends/tda10086.ko",
+          "kernel/drivers/media/dvb-frontends/tda18271c2dd.ko",
+          "kernel/drivers/media/dvb-frontends/tda665x.ko",
+          "kernel/drivers/media/dvb-frontends/tda8083.ko",
+          "kernel/drivers/media/dvb-frontends/tda8261.ko",
+          "kernel/drivers/media/dvb-frontends/tda826x.ko",
+          "kernel/drivers/media/dvb-frontends/ts2020.ko",
+          "kernel/drivers/media/dvb-frontends/tua6100.ko",
+          "kernel/drivers/media/dvb-frontends/ves1820.ko",
+          "kernel/drivers/media/dvb-frontends/ves1x93.ko",
+          "kernel/drivers/media/dvb-frontends/zd1301_demod.ko",
+          "kernel/drivers/media/dvb-frontends/zl10036.ko",
+          "kernel/drivers/media/dvb-frontends/zl10039.ko",
+          "kernel/drivers/media/dvb-frontends/zl10353.ko",
+          "kernel/drivers/media/spi/cxd2880-spi.ko",
+          "kernel/drivers/media/tuners/e4000.ko",
+          "kernel/drivers/media/tuners/fc0011.ko",
+          "kernel/drivers/media/tuners/fc0012.ko",
+          "kernel/drivers/media/tuners/fc0013.ko",
+          "kernel/drivers/media/tuners/fc2580.ko",
+          "kernel/drivers/media/tuners/it913x.ko",
+          "kernel/drivers/media/tuners/m88rs6000t.ko",
+          "kernel/drivers/media/tuners/max2165.ko",
+          "kernel/drivers/media/tuners/mc44s803.ko",
+          "kernel/drivers/media/tuners/msi001.ko",
+          "kernel/drivers/media/tuners/mt2060.ko",
+          "kernel/drivers/media/tuners/mt2063.ko",
+          "kernel/drivers/media/tuners/mt20xx.ko",
+          "kernel/drivers/media/tuners/mt2131.ko",
+          "kernel/drivers/media/tuners/mt2266.ko",
+          "kernel/drivers/media/tuners/mxl301rf.ko",
+          "kernel/drivers/media/tuners/mxl5005s.ko",
+          "kernel/drivers/media/tuners/mxl5007t.ko",
+          "kernel/drivers/media/tuners/qm1d1b0004.ko",
+          "kernel/drivers/media/tuners/qm1d1c0042.ko",
+          "kernel/drivers/media/tuners/qt1010.ko",
+          "kernel/drivers/media/tuners/r820t.ko",
+          "kernel/drivers/media/tuners/si2157.ko",
+          "kernel/drivers/media/tuners/tda18212.ko",
+          "kernel/drivers/media/tuners/tda18218.ko",
+          "kernel/drivers/media/tuners/tda18250.ko",
+          "kernel/drivers/media/tuners/tda18271.ko",
+          "kernel/drivers/media/tuners/tda827x.ko",
+          "kernel/drivers/media/tuners/tda8290.ko",
+          "kernel/drivers/media/tuners/tda9887.ko",
+          "kernel/drivers/media/tuners/tea5761.ko",
+          "kernel/drivers/media/tuners/tea5767.ko",
+          "kernel/drivers/media/tuners/tua9001.ko",
+          "kernel/drivers/media/tuners/tuner-simple.ko",
+          "kernel/drivers/media/tuners/tuner-types.ko",
+          "kernel/drivers/media/tuners/xc2028.ko",
+          "kernel/drivers/media/tuners/xc4000.ko",
+          "kernel/drivers/media/tuners/xc5000.ko",
+          "kernel/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/bcmdhd.ko"
+        ],
+        "additional_drivers": []
+      }
+    },
+    {
+      "name": "all_modules_match_rt_kernel",
+      "passed": true,
+      "actual": {
+        "vermagics": [
+          "6.1.99-rt36-tspi SMP preempt_rt mod_unload aarch64"
+        ],
+        "wrong_modules": []
+      }
+    },
+    {
+      "name": "arm64:usr/sbin/sshd",
+      "passed": true,
+      "actual": "7f454c460201010000000000000000000300b700"
+    },
+    {
+      "name": "arm64:usr/sbin/smbd",
+      "passed": true,
+      "actual": "7f454c460201010000000000000000000300b700"
+    },
+    {
+      "name": "arm64:usr/bin/cyclictest",
+      "passed": true,
+      "actual": "7f454c460201010000000000000000000300b700"
+    },
+    {
+      "name": "first_setup_helper",
+      "passed": true,
+      "actual": "f99c2dca845d23e5142faecd43c64672b3a0dddf2fa0d4917d6cb7b49388615b"
+    }
+  ]
+}

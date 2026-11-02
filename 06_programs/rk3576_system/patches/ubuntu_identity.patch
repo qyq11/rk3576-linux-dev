@@ -1,0 +1,31 @@
+diff --git a/chroot-script.sh b/chroot-script.sh
+index eff9a25..0048fa8 100644
+--- a/chroot-script.sh
++++ b/chroot-script.sh
+@@ -731,3 +731,26 @@ rm -rf /config/
+ timedatectl set-ntp true || true
+ 
+ echo -e "\033[36m Ubuntu Noble rootfs build complete! \033[0m"
++
++
++# RK3576: prepare unique identity for each new board
++# 原脚本已完成用户配置后，再统一主目录，避免旧绝对路径被重新创建。
++test -d /home/rkshare
++if [ "$(getent passwd lckfb | cut -d: -f6)" != /home/rkshare/lckfb ]; then
++    test ! -e /home/rkshare/lckfb
++    usermod -d /home/rkshare/lckfb -m lckfb
++fi
++chmod 0750 /home/rkshare/lckfb
++test ! -e /home/lckfb
++test -d /lib/modules/6.1.99-rt36-tspi
++test -x /usr/local/sbin/rk3576-first-setup
++testparm -s >/usr/share/rk3576-image/samba-config-check.txt
++dpkg-query -W -f='${binary:Package}\t${Version}\n' > /usr/share/rk3576-image/installed-packages.tsv
++# 清除编译期间产生的主机密钥和机器标识；新板首次启动时分别生成。
++rm -f /etc/ssh/ssh_host_*
++rm -f /var/lib/samba/private/passdb.tdb /var/lib/samba/private/secrets.tdb
++: > /etc/machine-id
++rm -f /var/lib/dbus/machine-id
++ln -s /etc/machine-id /var/lib/dbus/machine-id
++rm -f /var/lib/systemd/random-seed
++echo 'New-board identity preparation complete'

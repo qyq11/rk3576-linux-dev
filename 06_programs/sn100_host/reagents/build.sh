@@ -7,11 +7,11 @@ export PATH=/usr/local/bin:/usr/bin:/bin
 module_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 program_dir=$(cd -- "$module_dir/.." && pwd)
 root=$(cd -- "$module_dir/../../.." && pwd)
-sysroot=$root/temp/sn100_host/arm64_sysroot
+sysroot=${SN100_ARM64_SYSROOT:-$root/temp/sn100_host/arm64_sysroot}
 [[ -f $sysroot/usr/lib/aarch64-linux-gnu/libQt5Sql.so.5.15.13 ]] || {
     echo 'Existing archived ARM64 Qt5/SQL sysroot required.' >&2; exit 1;
 }
-build_dir=$root/temp/sn100_host/reagents/arm64_release
+build_dir=${SN100_ARM64_BUILD_DIR:-$root/temp/sn100_host/reagents/arm64_release}
 mkdir -p "$build_dir" "$(dirname -- "$1")"
 exec 9>"$build_dir/build.lock"
 flock -n 9 || { echo 'This reagent build is already running.' >&2; exit 1; }
@@ -38,6 +38,15 @@ headers+=("$program_dir/projects/project_current_format.h" "$program_dir/project
 sources+=("$program_dir/projects/project_format_dialog.cpp")
 headers+=("$program_dir/projects/project_format_dialog.h")
 
+# 有效期使用同一日历和箭头资源；原库适配由页面和存储实际调用。
+sources+=("$module_dir/original_reagent_repository.cpp" "$module_dir/original_reagent_editor.cpp" "$module_dir/original_reagent_store.cpp"
+    "$program_dir/original_files/original_business_database.cpp" "$program_dir/original_files/original_ini.cpp" "$program_dir/alarm_history/calendar/cuscalendar.cpp")
+headers+=("$module_dir/original_reagent_repository.h" "$module_dir/original_reagent_editor.h"
+    "$program_dir/original_files/original_business_database.h" "$program_dir/original_files/original_ini.h" "$program_dir/alarm_history/calendar/cuscalendar.h")
+flags+=(-I"$program_dir/alarm_history/calendar")
+for form in "$program_dir/alarm_history/cusmaskcalendar.ui" "$program_dir/alarm_history/calendar/cuscalendar.ui"; do
+    /usr/lib/qt5/bin/uic "$form" -o "$build_dir/ui_$(basename -- "${form%.ui}").h"
+done
 for header in "${headers[@]}"; do
     if grep -q Q_OBJECT "$header"; then
         generated=$build_dir/moc_$(basename -- "${header%.h}").cpp
@@ -45,7 +54,7 @@ for header in "${headers[@]}"; do
         sources+=("$generated")
     fi
 done
-for resource in "$module_dir/reagents_resources.qrc" "$program_dir/projects/projects_resources.qrc" "$program_dir/shell/account_resources.qrc"; do
+for resource in "$module_dir/reagents_resources.qrc" "$program_dir/projects/projects_resources.qrc" "$program_dir/shell/account_resources.qrc" "$program_dir/quality_control/qc_history_resources.qrc"; do
     name=$(basename -- "${resource%.qrc}")
     /usr/lib/qt5/bin/rcc -name "$name" "$resource" -o "$build_dir/qrc_$name.cpp"
     sources+=("$build_dir/qrc_$name.cpp")

@@ -1,0 +1,25 @@
+{
+  "scope": "试剂孔位的有效期日历和名称列表顺序；不改变算法、任务规则、通信字段或现场配置",
+  "original_entries": [
+    "frmreagent/maskdlgreagentsetting.cpp::refreshCurrentHole",
+    "frmreagent/maskdlgreagentsetting.cpp::on_btnCalendarSet_clicked",
+    "tool/database/reagent/reagent_list_table.cpp::getReagentNameListByType"
+  ],
+  "rules": [
+    "原有效期只读，原空值保持",
+    "日历按yyyy/MM/dd解析，无法解析只影响打开时显示的月份，不改原文本",
+    "日历输出yyyy/MM/dd，关闭不改值",
+    "选择标记孔位草稿，取消孔位不写库不发Us",
+    "none→有效清洗液→有效本区域试剂，分类内保持原表顺序"
+  ],
+  "visual_scope": "复用既有CusCalendar及cusmaskcalendar.ui、遮罩和箭头；保持布局/绘制。Linux字体沿用现有Noto替代；完整Windows视觉与物理输入另验。",
+  "rk_load": "Release/AArch64/Qt5.15.13；独立新匿名根，同进程127.0.0.1:随机端口模拟器；不连接真实仪器",
+  "resource_contract": "包含初始化、日历翻月/选择、保存/读取、相关任务链与关闭的短时驱动进程基线；采样约250ms，CPU按RK实际CLK_TCK口径，RSS/PSS/线程/FD/温度及目录增长；预算未确认，不作达标判断",
+  "sha256": {
+    "06_programs/sn100_host_reference/Seerain450_PC/frmreagent/maskdlgreagentsetting.cpp": "f2124805cbc44386cc3b731cd523367b0820ea5938e8e96fe40cd1da365cbfb4",
+    "06_programs/sn100_host_reference/Seerain450_PC/tool/database/reagent/reagent_list_table.cpp": "a58a208da42c7bec7d7c87a0f8f40adf02ecc610c1c3e3e7d732669594015143",
+    "06_programs/sn100_host/reagents/maskdlgreagentsetting.ui": "18bee5e6b3bf690c318bd81e7c92b8a117684a51568a88b38ebf80a43c00926e",
+    "06_programs/sn100_host/alarm_history/cusmaskcalendar.ui": "49c929e011eae76e99b810a9b693a04ec37b0b160765f4c9b384f22160240676",
+    "06_programs/sn100_host/alarm_history/calendar/cuscalendar.cpp": "d55ecaaa8f91886445cd1bd630faee67225017037ae1774e4e9cafa7b80be349"
+  }
+}

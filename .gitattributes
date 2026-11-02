@@ -8,6 +8,14 @@
 04_references/uart/** -text
 04_references/samba/** -text
 04_references/workspace_setup/** -text
+04_references/system_image/** -text
+# 系统构建脚本及首次启动入口须能在WSL/Linux直接执行；配置和补丁保留归档字节。
+06_programs/rk3576_system/*.py text eol=lf
+06_programs/rk3576_system/rootfs/rk3576-first-setup text eol=lf
+06_programs/rk3576_system/rootfs/*.service text eol=lf
+06_programs/rk3576_system/configs/** -text
+06_programs/rk3576_system/patches/** -text
+06_programs/rk3576_system/open_system_sources.lnk -text
 03_photos/**/*.svg -text
 03_photos/**/*.json -text
 # Preserve extracted vendor bytes and their source SHA-256 records.
@@ -38,6 +46,9 @@
 07_backups/** -text
 # Store immutable image and compressed backup payloads in Git LFS.
 07_backups/**/*.img filter=lfs diff=lfs merge=lfs -text
+07_backups/**/*.wsl filter=lfs diff=lfs merge=lfs -text
+07_backups/system_image/**/*.bin filter=lfs diff=lfs merge=lfs -text
+07_backups/system_image/**/*.part[0-9][0-9][0-9] filter=lfs diff=lfs merge=lfs -text
 07_backups/**/Image filter=lfs diff=lfs merge=lfs -text
 07_backups/**/*.dtb filter=lfs diff=lfs merge=lfs -text
 07_backups/**/*.gz filter=lfs diff=lfs merge=lfs -text
