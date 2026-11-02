@@ -117,7 +117,7 @@ wsl.exe -d RK3576-Build-22.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internsh
 
 | 内容 | 实际保存位置与结果 |
 | --- | --- |
-| 可直接烧录的整机镜像 | [update.img](../07_backups/system_image/ubuntu24_server/update.img)，3,032,177,283字节，约3.03 GB。 |
+| 可直接烧录的整机镜像 | 本地`update.img`，3,032,177,283字节，约3.03 GB；Git保存同内容压缩包，见[镜像与恢复方法](../07_backups/system_image/ubuntu24_server/README.md)。 |
 | 同内容长期归档 | `07_backups/system_image/ubuntu24_server/update.img.gz`，709,013,848字节；压缩完整性检查通过，实际恢复后的指纹与编译输出一致。 |
 | 匹配的恢复输入 | 同目录保存启动文件、ARM64内核、设备树、157个模块的压缩包、系统/内核配置、源码版本清单及环境说明。具体恢复范围见[目录说明](../07_backups/system_image/ubuntu24_server/README.md)。 |
 | 文件指纹和版本 | 同目录`SHA256SUMS`和`image_manifest.json`；[编译输出原始指纹](../04_references/system_image/20261030/compiled_image_source.json)另存证据。 |
@@ -161,4 +161,8 @@ cd680eda3a96ff9dc6dbb4e3ceea6924474e68ce8b39702b4a78b4d662375a4c
 
 补齐系统镜像证据、配置与补丁的字节保留规则，以及Linux首次启动入口的换行规则，避免Windows检出后改写原件或导致脚本无法启动。源码和维护说明的空白检查通过；原始日志、清单及配置保持原字节，不按格式警告重写。
 
-提交范围包括新板镜像、官方源码归档、构建输入、对应记录，以及此前已完成RK软件验证但尚未提交的SN100更新及配套证据。临时目录、运行数据、WSL工作盘及重复展开镜像不进入Git；压缩归档和匹配二进制按LFS规则保存。提交与推送的最终结果在完成后记录。
+提交范围包括新板镜像、官方源码归档、构建输入、对应记录，以及此前已完成RK软件验证但尚未提交的SN100更新及配套证据。临时目录、运行数据、WSL工作盘及重复展开镜像不进入Git；压缩归档和匹配二进制按LFS规则保存。
+
+**Git结果已核对：**主体成果提交为[`a059b57`](https://github.com/qyq11/rk3576-linux-dev/commit/a059b5789d4496a6f4ff582e51913c7ce56f3f43)，已推送到`origin/main`，命令退出0。22个需要上传的LFS对象全部完成；随后直接查询远端，完整提交号与本地一致。本地新增23个LFS对象也重新读取计算指纹，全部正确，没有损坏；其中已有对象由远端复用。[Git核对结果](../04_references/workspace_setup/cleanup_20261102/git_delivery.json)和[推送完成输出](../04_references/workspace_setup/cleanup_20261102/push_work_commit.txt)保留。
+
+上传期间其他窗口新增了CAN与板B串口工作。本次补记只提交清理和交付结果，不将这些新的进行中改动混入，也没有覆盖或清理它们；工作区可能因此继续显示未提交内容。该补记随后单独提交并推送，不增加功能或硬件通过结论。

@@ -19,3 +19,5 @@
 Git不保存临时目录、WSL工作盘、可变运行库或重复展开镜像。正式压缩归档和二进制使用Git LFS；源码和维护说明的空白检查通过。原始日志与清单保持原字节，不为消除格式提示重写历史证据。
 
 实际Git结果维护在[镜像记录](../../../02_records/20261030_system_image.md#cleanup-and-push-20261102)，SN100范围维护在[移植记录](../../../02_records/20261022_sn100_host_migration.md#cleanup-and-push-20261102)。
+
+主体提交`a059b57`已推送到`origin/main`，22个LFS对象上传完成，远端完整提交号已核对一致。`git_delivery.json`、`push_work_commit.txt`保存结果，`lfs_objects_checked.json`保存本地新增23个对象的实际指纹核对。推送期间其他窗口新增的CAN/板B串口进行中改动保持原状，本次补记不包含它们。
