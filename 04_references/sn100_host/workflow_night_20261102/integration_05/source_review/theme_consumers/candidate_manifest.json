@@ -1,0 +1,35 @@
+{
+  "scope": "仅temp，复用样本架已有颜色入口，补报告患者表字段对应；正式04输入未改",
+  "files": {
+    "06_programs/sn100_host/samples/sample_page.h": {
+      "baseline_sha256": "d43c536ae7b740be615f66d4277773cbb0853928061c0725bea55f71d82e066a",
+      "candidate_sha256": "aa32627702b283d097bfb23b8d7b087fcf6da3b0f76bbcac114b2ca7429ce12f"
+    },
+    "06_programs/sn100_host/samples/sample_page.cpp": {
+      "baseline_sha256": "b7fc3c988a440441963f3008d62a3cacb05680edc89bbebd47d7d5c2c7ad1bf4",
+      "candidate_sha256": "cd33f3bd40a48895f9b7ed4a859bf82b4e7e1b654aadf5c14ffb5e03ffe22c57"
+    },
+    "06_programs/sn100_host/shell/frmmain.cpp": {
+      "baseline_sha256": "e7a1a4bfbc28c02923ca80c1465460b778945d9279797094858f1bcca0ce0cce",
+      "candidate_sha256": "73e869b7035025843455bf6becc2321ea749572de998bcbf5ed8372dbf76757a"
+    }
+  },
+  "patch_sha256": "be48e2e9531f1e9adbeec6fa6b5eec44c30eb9046e4fb294efce9c8109a69fcd",
+  "approved_theme_sha256": "029605f35924de646b5402f1e377c93cb26e01952e0daa5fda300fe47f7feed7",
+  "compile_verified": true,
+  "compile_scope": "3个cpp对象含当前正式main支持对象，1个moc；C++14/Qt5/-O0/-g0；不链接不运行",
+  "compiler_inputs_unchanged": true,
+  "compiler_input_count": 688,
+  "compiler_input_manifest_sha256": "7113900e1597900d31f2e42ef730853494cbe70f038a298e3afe1118dd90d634",
+  "candidate_header_verified_in_all_four_objects": true,
+  "objects": {
+    "sample_page.o": "d6021d03638eea50fec1d0c9a0eda72f167e4ccdc4de472cded8e1528de34d0b",
+    "frmmain.o": "09fcec8c27bccfbd1bd3ce4d443ff15c8cb3a6fab4578949dd667357fff67f2d",
+    "moc_sample_page.o": "e74d8ab5ffb606b888f047084c45fc3b31e5e9d6c117f886660c588322453659",
+    "main_support.o": "b3778e89e826c3b760821e76bb482eea9b4f40d933acb4edb1bcc33f7247f5e9"
+  },
+  "formal_files_unchanged": true,
+  "support_main_sha256": "52335c8d9f5048c91a48db71d63c634698114446fed82a6f93f3722189ba759f",
+  "independent_review": "三文件窄差异只读复核，未发现确定阻断；不替代RK视觉和实际操作验证",
+  "compile_warnings": "保留未修改代码中的SampleTask聚合初始化警告；未扩修主题之外的任务代码"
+}

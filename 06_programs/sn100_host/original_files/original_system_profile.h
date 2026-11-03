@@ -5,6 +5,8 @@
 #include <QSet>
 #include <QStringList>
 #include <QVector>
+#include <atomic>
+#include <memory>
 
 namespace OriginalRuntime
 {
@@ -73,6 +75,57 @@ bool loadSystemProfile(const QString &root, SystemProfile *result, QString *mess
 // 原Windows只开放test_channel的is_open修改；其他通道字段与字典保持只读。
 bool setTestChannelEnabled(const QString &root, const QString &number, bool enabled,
                            const QString &expectedFingerprint, QString *message);
+
+// Uh回读保留出现顺序；重复名称逐条处理，不插入未知通道，不关闭未列通道。
+struct ChannelSwitchUpdate
+{
+    QString number;
+    bool enabled = false;
+};
+enum class ChannelApplyOutcome
+{
+    Committed,
+    Cancelled,
+    Failed,
+    CommittedReloadFailed
+};
+struct ChannelApplyResult
+{
+    ChannelApplyOutcome outcome = ChannelApplyOutcome::Failed;
+    Channels channels;
+    QString message;
+    // 仅成功COMMIT后统计；重复项的每次实际改变各计1，不是最终不同通道数。
+    int changedRows = 0;
+    int unknownRows = 0;
+};
+class ChannelCommitPermit;
+using ChannelCommitPermitPtr = std::shared_ptr<ChannelCommitPermit>;
+
+// GUI只做原子撤销，不等SQLite。提交票先取得时，后续撤销不能抹去提交事实。
+class ChannelCommitPermit
+{
+public:
+    enum class State { Active, Revoked, Committing, Committed };
+    ChannelCommitPermit() = default;
+    ChannelCommitPermit(const ChannelCommitPermit &) = delete;
+    ChannelCommitPermit &operator=(const ChannelCommitPermit &) = delete;
+    void revoke() noexcept;
+    bool tryBeginCommit() noexcept;
+    State state() const noexcept;
+
+private:
+    void markCommitted() noexcept;
+    std::atomic<State> state_{State::Active};
+    friend ChannelApplyResult applyTestChannelReadback(const QString &, const QVector<ChannelSwitchUpdate> &,
+                                                      const QString &, const ChannelCommitPermitPtr &);
+};
+
+// 同步数据库接口，仅由worker调用。新接口限16MiB、每表1024行、每包1024项。
+// 只支持DELETE回滚日志；拒绝WAL/遗留日志，不改变原数据库PRAGMA或旧接口行为。
+// 新写入拒绝检测表触发器及启用外键联动的连接，防止is_open改变其他字段/表。
+bool readChannelsSnapshot(const QString &root, Channels *result, QString *message);
+ChannelApplyResult applyTestChannelReadback(const QString &root, const QVector<ChannelSwitchUpdate> &updates,
+                                           const QString &expectedFingerprint, const ChannelCommitPermitPtr &permit);
 }
 
 #endif

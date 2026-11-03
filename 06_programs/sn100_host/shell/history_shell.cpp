@@ -46,6 +46,7 @@ void frmMain::attachHistoryPage(HistoryPage *page)
         updateHistoryStatus();
         updateAccountStatus();
     });
+    connect(page, &HistoryPage::busyChanged, this, [this](bool) { updateAccountStatus(); });
     connect(page, &HistoryPage::operationFinished, this, [this](const QString &, bool success)
     {
         historyStatusError_ = !success;
@@ -200,6 +201,8 @@ void frmMain::restoreHistoryFocus()
 void frmMain::updateHistoryStatus()
 {
     if (!history_ || currentMainPage() != 2) return;
+    // 联机时这里固定显示仪器状态，查询结果仍由报告页自身反馈。
+    if (deviceControl_) { updateDeviceStatusDisplay(); return; }
     const QString state = historyStatusError_ ? tr("脱机／失败")
         : (history_->isBusy() ? tr("脱机／处理中")
            : (history_->hasUnsavedChanges() ? tr("脱机／未保存")

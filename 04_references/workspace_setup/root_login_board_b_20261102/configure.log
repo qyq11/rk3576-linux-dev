@@ -1,0 +1,12 @@
+root P 2026-11-02 0 99999 7 -1
+getty@tty1.service
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --noclear - $TERM ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+serial-getty@ttyFIQ0.service
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+51865bcf86198e56796aa56a207420b1e1b6cde90829bb83294ffb70ab4decb5  /etc/systemd/system/getty@tty1.service.d/zz-board-b-password-login.conf
+d5f765189c4a84515c1fe3e449519f4a23cc7224400d4a7ab4dc1d610e0f7aac  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-b-password-login.conf
+2b63d1e538f3209fae481e1f7aa3d248ccc90c8e4e53a1bd8b29ceea23908792  /etc/ssh/sshd_config.d/20-board-b-root-password.conf
+BOARD=board_b
+KEYS_PRESERVED=1
+ORIGINAL_SERIAL_CONFIG_PRESERVED=1
+LOGIN_CONFIGURATION_OK=1

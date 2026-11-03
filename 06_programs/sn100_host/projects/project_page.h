@@ -17,6 +17,7 @@ class ProjectPage : public QWidget
   public:
     explicit ProjectPage(ProjectsStore *store, QWidget *parent = nullptr);
     ~ProjectPage() override;
+    ProjectsStore *taskStore() const { return m_store; }
     bool isReady() const
     {
         return m_ready;
@@ -100,6 +101,7 @@ class ProjectPage : public QWidget
     bool m_refreshRequired = false;
     bool m_promptOpen = false;
     bool m_originalProfile = false;
+    bool m_copyRecoveryPending = false;
     bool m_advancedEdited = false;
     QString m_originalRoot;
 };

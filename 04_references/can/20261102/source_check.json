@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-02",
+  "scope": "源码、配置文件与ARM64交叉编译检查，未运行电脑本机版本，未上传新板",
+  "pin_assignment": [
+    {
+      "physical_pin": 7,
+      "gpio": "GPIO4_A6",
+      "function": "CAN0_RX_M2"
+    },
+    {
+      "physical_pin": 9,
+      "function": "GND"
+    },
+    {
+      "physical_pin": 11,
+      "gpio": "GPIO4_A4",
+      "function": "CAN0_TX_M2"
+    }
+  ],
+  "archived_kernel_config": [
+    "CONFIG_CAN=y",
+    "CONFIG_CAN_RAW=y",
+    "CONFIG_CAN_DEV=y",
+    "CONFIG_CANFD_RK3576=y"
+  ],
+  "dtc_exit": 0,
+  "fdtoverlay_exit": 0,
+  "baseline_can0_status": "disabled",
+  "candidate_can0_status": "okay",
+  "comparison": "合并前后可读设备树唯一变化为/can@2ac00000的status由disabled变为okay",
+  "compiler": "aarch64-linux-gnu-gcc -std=c11 -D_DEFAULT_SOURCE -O2 -Wall -Wextra -Werror",
+  "compiler_exit": 0,
+  "executable_machine": "AArch64",
+  "board_access": "新板账号lckfb，SSH服务可达；电脑密钥登录被拒，等待用户在已有终端追加公钥",
+  "board_configuration": "未部署",
+  "rk_loopback": "未执行",
+  "real_can_hardware": "用户确认尚未连接",
+  "files": [
+    {
+      "path": "06_programs/rk3576_system/configs/can0_m2.dts",
+      "sha256": "bfb846e0434d49d72c3c16389a28e7acdc5e87a88f98c51c23776ba6cdf69146"
+    },
+    {
+      "path": "05_tools/tests/can/can_loopback.c",
+      "sha256": "7ef8cb3afbbf250775dfa4c87fab978430336e6297613476a4882d3b69248685"
+    },
+    {
+      "path": "05_tools/tests/can/build.sh",
+      "sha256": "b3bcb2d1e70a8e80fd7ac4bb91b994636f52ea0e24d35f28fad7e6b9f34ae025"
+    },
+    {
+      "path": "07_backups/system_image/ubuntu24_server/kernel.config",
+      "sha256": "96464f3467a506e86d9c6da8e6dbfc05e8b14d749be85bcaf1d6f68f92c9ceda"
+    },
+    {
+      "path": "07_backups/system_image/ubuntu24_server/tspi-3m-rk3576-panfrost.dtb",
+      "sha256": "30e1ea40aec07c164953acd5cfbcac7b3ff209f1d6f07da5bd53bcb8eacdaab8"
+    }
+  ]
+}

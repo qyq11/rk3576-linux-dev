@@ -1,0 +1,17 @@
+SN100已正常关闭，已保存数据保留。
+日志：/home/rkshare/programs/sn100_shell/control_logs/stop_20261102_170104.awkhs1uQ.log
+2026-11-02T17:01:05+08:00
+a97faffb-7dca-4520-b226-84bcbde03700
+64325541513d33ea1d2ccd19c77750d458e67e7967fd2e7ef81d92f0aa2ffe21  /etc/ssh/sshd_config
+818db299ff603ab1039751aed846fd85443bd56e585ed02a4321a8c26d331327  /etc/samba/smb.conf
+fbda3263837bcfbe1c2b12e9111a100c47f373c6f2b33b61f0b2e89a40dcff79  /boot/overlays/overlays.ini
+0a3a28657c9c3f01c60e37a0ee5dc07b09ac9abfea743dd30a2e314a684c0f44  /boot/overlays/.ubootenv
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty -o -p -- \u --noclear - $TERM ; ignore_errors=yes ; start_time=[Mon 2026-10-12 15:36:22 CST] ; stop_time=[n/a] ; pid=1929 ; code=(null) ; status=0/0 }
+Id=getty@tty1.service
+DropInPaths=
+
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin lckfb --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[Mon 2026-10-12 15:36:22 CST] ; stop_time=[n/a] ; pid=1923 ; code=(null) ; status=0/0 }
+Id=serial-getty@ttyFIQ0.service
+DropInPaths=/etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+root:x:0:0:root:/root:/bin/bash
+lckfb:x:1000:1000:lckfb,,,:/home/rkshare/lckfb:/bin/bash

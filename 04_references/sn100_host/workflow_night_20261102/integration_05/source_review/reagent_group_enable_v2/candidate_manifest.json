@@ -1,0 +1,118 @@
+{
+  "scope": "v2仅修目标事务内版本、失败草稿保护、可变xuhao重读；不发设备命令。",
+  "previous_patch_sha256": "210dd7deca9c75c5020df485d6fd68e60dd592fdd3317a0afedf769febb8ce85",
+  "previous_manifest_sha256": "ef21e33c48b608181478de42f9fae2106b25ee94f945380ac792e2cdd793e0ca",
+  "changed_from_v1": [
+    "06_programs/sn100_host/reagents/original_reagent_editor.cpp",
+    "06_programs/sn100_host/reagents/reagents_page.cpp"
+  ],
+  "files": [
+    {
+      "path": "06_programs/sn100_host/reagents/reagent_types.h",
+      "baseline_sha256": "8001a299a0c966e55e71151f7d2033f022f0d2c4c744f5348a42b1fd9cf3d0b1",
+      "v1_sha256": "9dfca4a09cf3521ebf238c8096f1b31214102e83b7c0f275c233812caed00240",
+      "candidate_sha256": "9dfca4a09cf3521ebf238c8096f1b31214102e83b7c0f275c233812caed00240"
+    },
+    {
+      "path": "06_programs/sn100_host/reagents/original_reagent_editor.h",
+      "baseline_sha256": "5e65e1c4f87e1d798f8d5e6534741d6487dd9193ea5bf47de5eaf3012c62ab74",
+      "v1_sha256": "f3dde610ba19c0e127843e4d47dc327f3c37345f096d2a473763ad8180641ecc",
+      "candidate_sha256": "f3dde610ba19c0e127843e4d47dc327f3c37345f096d2a473763ad8180641ecc"
+    },
+    {
+      "path": "06_programs/sn100_host/reagents/original_reagent_editor.cpp",
+      "baseline_sha256": "0ddfe3b384797febcf2e2eed95458f3e4dbd0841fd52d7939935cd247cf0cbe4",
+      "v1_sha256": "a152917a8941023ed6c0758eee8c91e5190f2540cca727fdf6e2a55424eff742",
+      "candidate_sha256": "5e72faec1683a06d027dfdfb68b2dd34fe2d7183157fb884e902a0f3bd4986c7"
+    },
+    {
+      "path": "06_programs/sn100_host/reagents/reagent_store.h",
+      "baseline_sha256": "4fc26b60c29b684af207a51b20e18a21aac8f0198eb67e2bec23cec51d1df5bb",
+      "v1_sha256": "b384b21672886934e63c7279f9229f1cd066c61531ff108bb399927a297e9dc7",
+      "candidate_sha256": "b384b21672886934e63c7279f9229f1cd066c61531ff108bb399927a297e9dc7"
+    },
+    {
+      "path": "06_programs/sn100_host/reagents/original_reagent_store.cpp",
+      "baseline_sha256": "b2e93679af7daa52aacd6f4fa486ce7aac1407daa8958c000754d2238f78a0fc",
+      "v1_sha256": "d30ef2e72903697574ed7220d4592c51db21f567d9186606e67ddb7115849a94",
+      "candidate_sha256": "d30ef2e72903697574ed7220d4592c51db21f567d9186606e67ddb7115849a94"
+    },
+    {
+      "path": "06_programs/sn100_host/reagents/reagents_page.h",
+      "baseline_sha256": "5278e30bdb01a28c7d2e7275e92b0398f29958a15894e6d4bfe04c702ab5290a",
+      "v1_sha256": "8f79f3a911e1c67485ff5942f11730f4d46af18decfa7b1bd42f8a7828db682d",
+      "candidate_sha256": "8f79f3a911e1c67485ff5942f11730f4d46af18decfa7b1bd42f8a7828db682d"
+    },
+    {
+      "path": "06_programs/sn100_host/reagents/reagents_page.cpp",
+      "baseline_sha256": "0154a6f91e33df81d176bef7aa14017bd9f575b9ac1d067cd1eaa8b8fce84869",
+      "v1_sha256": "ef89500c0c58590ae71a7e59be8864bb8708e87cb40c44f3e829c0f806020a6e",
+      "candidate_sha256": "d3982c14f8aa312da340bf845f7a3bc208a1d1e3c8c3b7e3fb9a410efb8e08e1"
+    },
+    {
+      "path": "06_programs/sn100_host/shell/catalog_shell.cpp",
+      "baseline_sha256": "79be367d739cae3aecb4b6509866babe44633978916d292aa5b7392a4e5925ac",
+      "v1_sha256": "4e7a0480f366562f68226ddae71a731b55c78dd1f939cbff7ada0d8fad03c183",
+      "candidate_sha256": "4e7a0480f366562f68226ddae71a731b55c78dd1f939cbff7ada0d8fad03c183"
+    }
+  ],
+  "reagent_group_enable_v2.patch_sha256": "775d4cf0bdd679af087ab40210852d3a5971b26bbe7c9dfa668877a9e0d5569a",
+  "v1_to_v2.patch_sha256": "8c08e93d4d4c1545f7af79dc436af86a2b771e114613e7162b4c191472e82e32",
+  "compile_verified": true,
+  "compile_scope": "只重编Editor/Page两个变动cpp，v1其余六对象及全部头文件未变；无链接或运行。",
+  "compile_log": "compile_delta_arm64.log",
+  "inputs_equal": true,
+  "input_count": 693,
+  "formal_input_count": 680,
+  "inputs_sha256": "292ec1868ef690e677145f488a241a312ee870ce3e43762c090ca54d44a0d89f",
+  "formal_inputs_still_unchanged": true,
+  "objects_sha256": {
+    "original_reagent_editor.o": "7d820c95a2bff936f72ba7dce9539376445bd4f9805ce251994f8cf3a20fd58c",
+    "reagents_page.o": "dec5f07d1e5bc3111fe457b4ee50b16938fb0ab6096dafd8fdeac7b5e88fcded"
+  },
+  "inherited_unchanged_objects": {
+    "catalog_shell.o": {
+      "path": "temp/sn100_host/workflow_night_20261102/reagent_group_enable/arm64_objects/catalog_shell.o",
+      "sha256": "38161e5266d2f0e56ffeca9bcefbf6c5aaa0bf87ceec94fddebda15378688f7c"
+    },
+    "main_support.o": {
+      "path": "temp/sn100_host/workflow_night_20261102/reagent_group_enable/arm64_objects/main_support.o",
+      "sha256": "d0498f73e0f275f674b4a47a5d81adaff42b69ed46dafbce8fed17e33cc55e53"
+    },
+    "moc_reagent_store.o": {
+      "path": "temp/sn100_host/workflow_night_20261102/reagent_group_enable/arm64_objects/moc_reagent_store.o",
+      "sha256": "e6561f2bc8ff3a3a43cb7b46f72260c7ac3f2a152a0ba710023a7a9c7053371e"
+    },
+    "moc_reagents_page.o": {
+      "path": "temp/sn100_host/workflow_night_20261102/reagent_group_enable/arm64_objects/moc_reagents_page.o",
+      "sha256": "67f247fe58fd166e5dc8409d8cb761c1eacfcc27fcb399f2ef6b4262d93a2397"
+    },
+    "original_reagent_store.o": {
+      "path": "temp/sn100_host/workflow_night_20261102/reagent_group_enable/arm64_objects/original_reagent_store.o",
+      "sha256": "0fe234d5743bb61c46b34ba7f2297191b322c80c63783a849b51361f9db679f9"
+    },
+    "reagent_store_support.o": {
+      "path": "temp/sn100_host/workflow_night_20261102/reagent_group_enable/arm64_objects/reagent_store_support.o",
+      "sha256": "bb5e508a0ec01a70e68d7a7e78c387f133b9ebe93f7c6498a96a212a1039c3f8"
+    }
+  },
+  "candidate_header_dependencies": {
+    "original_reagent_editor": [
+      "temp/sn100_host/workflow_night_20261102/reagent_group_enable_v2/candidate/06_programs/sn100_host/reagents/original_reagent_editor.h",
+      "temp/sn100_host/workflow_night_20261102/reagent_group_enable_v2/candidate/06_programs/sn100_host/reagents/reagent_types.h"
+    ],
+    "reagents_page": [
+      "temp/sn100_host/workflow_night_20261102/reagent_group_enable_v2/candidate/06_programs/sn100_host/reagents/reagents_page.h",
+      "temp/sn100_host/workflow_night_20261102/reagent_group_enable_v2/candidate/06_programs/sn100_host/reagents/reagent_store.h",
+      "temp/sn100_host/workflow_night_20261102/reagent_group_enable_v2/candidate/06_programs/sn100_host/reagents/reagent_types.h"
+    ]
+  },
+  "all_headers_byte_equal_to_v1": true,
+  "full_private_apply_files_equal": "8/8，Windows Git实际应用，字节相同。",
+  "delta_private_apply_files_equal": "8/8，Windows Git实际应用，字节相同。",
+  "windows_full_apply_check_exit": 0,
+  "v1_original_patch_sha256": "210dd7deca9c75c5020df485d6fd68e60dd592fdd3317a0afedf769febb8ce85",
+  "v1_original_manifest_sha256": "ef21e33c48b608181478de42f9fae2106b25ee94f945380ac792e2cdd793e0ca",
+  "product_executed": false,
+  "network_or_board_access": false
+}

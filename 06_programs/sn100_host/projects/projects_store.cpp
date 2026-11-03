@@ -1,4 +1,5 @@
 #include "projects_store.h"
+#include <QTimer>
 #include "original_project_repository.h"
 #include <QCoreApplication>
 #include <QDateTime>
@@ -298,7 +299,7 @@ bool writeActionReferences(QSqlDatabase database, qint64 projectId, const Projec
 }
 } // namespace
 
-ProjectsStore::ProjectsStore(QObject *parent) : QObject(parent) {}
+ProjectsStore::ProjectsStore(QObject *parent) : QObject(parent) { registerTypes(); }
 ProjectsStore::~ProjectsStore()
 {
     release();
@@ -306,6 +307,8 @@ ProjectsStore::~ProjectsStore()
 void ProjectsStore::registerTypes()
 {
     qRegisterMetaType<AccountSession>();
+    qRegisterMetaType<OriginalProjectSaveNotice>();
+    qRegisterMetaType<OriginalProjectSaveAdmission>();
     qRegisterMetaType<ProjectUnit>();
     qRegisterMetaType<ProjectUnits>();
     qRegisterMetaType<ProjectResult>();
@@ -321,7 +324,9 @@ void ProjectsStore::registerTypes()
 }
 bool ProjectsStore::canEdit(const AccountSession &session)
 {
-    return session.authenticated && session.actionReady && (session.role == 4 || session.role == 5);
+    if (!session.authenticated || (session.role != 4 && session.role != 5)) return false;
+    // 原项目页按工程师/管理员开放配置编辑；旧独立模式仍保留原就绪限制。
+    return !session.originalPolicySource.isEmpty() || session.actionReady;
 }
 QString ProjectsStore::validate(const ProjectRecord &project, const ProjectUnits &units)
 {
@@ -443,7 +448,9 @@ bool ProjectsStore::check(qint64 requestId, const QString &operation, bool write
     }
     if (write && !canEdit(m_session))
     {
-        fail(requestId, operation, QStringLiteral("仅工程师/管理员可在就绪状态修改项目。"));
+        fail(requestId, operation, m_session.originalPolicySource.isEmpty() ?
+            QStringLiteral("仅工程师/管理员可在就绪状态修改项目。") :
+            QStringLiteral("仅已认证的工程师/管理员可修改原项目配置。"));
         return false;
     }
     return true;
@@ -682,6 +689,7 @@ bool ProjectsStore::openOriginal(QString root, QString referenceCatalogDirectory
             return false;
         }
     }
+    cancelPendingOriginalSave(QStringLiteral("原项目资料已重新打开，旧预检尚未写库，草稿保留。"));
     m_original.swap(candidate);
     m_referenceCatalogDirectory = referenceCatalogDirectory;
     m_ready = true;
@@ -726,6 +734,8 @@ bool ProjectsStore::checkOriginalRequest(qint64 requestId, const QString &operat
     { fail(requestId, operation, QStringLiteral("原库操作需要已接入的原工作目录和有效请求号。")); return false; }
     if (write)
     {
+        QString pending;
+        if (!m_original->writesAllowed(&pending)) { fail(requestId,operation,pending);return false; }
         if (requestId <= m_lastOriginalWriteRequest)
         { fail(requestId, operation, QStringLiteral("重复或迟到的原库写入请求未执行，请重新读取后操作。")); return false; }
         m_lastOriginalWriteRequest = requestId;
@@ -753,6 +763,8 @@ void ProjectsStore::setSession(AccountSession session)
 {
     if (QThread::currentThread() == thread())
     {
+        if (!sameOriginalProjectSaveActor(m_session,session))
+            cancelPendingOriginalSave(QStringLiteral("账户身份已改变，本次尚未开始写库，草稿保留。"));
         m_session = session;
     }
 }
@@ -925,8 +937,9 @@ void ProjectsStore::load(qint64 requestId)
     QStringList reagentNames, cleanerNames, diluentNames;
     if (m_original)
     {
-        if (!m_original->load(&projects, &units, &reagentNames, &cleanerNames, &diluentNames, &message))
+        if (!m_original->load(&projects, &units, &reagentNames, &cleanerNames, &diluentNames, &message,true))
         { fail(requestId, QStringLiteral("load"), message); return; }
+        emit originalCopyRecoveryPending(requestId,m_original->copyRecoveryPending());
         emit reagentOptionsReady(reagentNames, cleanerNames);
         emit diluentOptionsReady(diluentNames);
         emit snapshotReady(requestId, projects, units);
@@ -1225,19 +1238,111 @@ void ProjectsStore::importFile(qint64 requestId, QString filePath)
     if (!m_database.commit()) { rollbackWrite(requestId, operation, m_database.lastError().text()); return; }
     emit succeeded(requestId, operation, lastId);
 }
+void ProjectsStore::setOriginalProjectSaveAdmissionEnabled(bool enabled)
+{
+    if (QThread::currentThread()!=thread()) return;
+    m_projectSaveAdmissionEnabled=enabled;
+    if (!enabled) cancelPendingOriginalSave(QStringLiteral("项目保存登记消费者已关闭，尚未写库，草稿保留。"));
+}
+
+void ProjectsStore::cancelPendingOriginalSave(QString message)
+{
+    if (!m_pendingOriginalSave.ticket) return;
+    const auto pending=m_pendingOriginalSave; m_pendingOriginalSave=PendingOriginalSave();
+    if (m_projectSaveAdmissionTimer) m_projectSaveAdmissionTimer->stop();
+    emit originalProjectSaveAdmissionCancelled(pending.ticket,QStringLiteral("projectSave"));
+    fail(pending.request,QStringLiteral("save"),message);
+}
+
+void ProjectsStore::finishOriginalProjectSaveAdmission(OriginalProjectSaveAdmission admission)
+{
+    if (QThread::currentThread()!=thread() || admission.proposal.source!=QStringLiteral("projectSave")) return;
+    if (!m_pendingOriginalSave.ticket || admission.ticket!=m_pendingOriginalSave.ticket)
+    {
+        if (admission.permit) admission.permit->revoke();
+        emit originalProjectSaveAdmissionCancelled(admission.ticket,QStringLiteral("projectSave"));
+        return;
+    }
+    const auto pending=m_pendingOriginalSave; m_pendingOriginalSave=PendingOriginalSave();
+    if (m_projectSaveAdmissionTimer) m_projectSaveAdmissionTimer->stop();
+    QString reason;
+    if (!admission.allowed || !admission.permit) reason=admission.message;
+    else if (!m_projectSaveAdmissionEnabled || !m_ready || !m_original || !canEdit(m_session) ||
+        !sameOriginalProjectSaveActor(pending.actor,m_session) || pending.deadline<=originalProjectSaveMonotonicNow() ||
+        admission.sourceDeadline!=pending.deadline || admission.permit->sourceDeadline!=pending.deadline || admission.permit->expired() ||
+        pending.project.originalRoot!=m_original->root() || admission.permit->ticket!=admission.ticket ||
+        !sameOriginalProjectSave(admission.proposal,admission.permit->proposal) ||
+        admission.proposal.writeRequest!=pending.request || admission.proposal.root!=pending.project.originalRoot ||
+        admission.proposal.originalFileName!=pending.project.originalFileName || admission.proposal.projectId!=pending.project.id ||
+        admission.proposal.beforeFingerprint!=pending.project.originalFingerprint)
+        reason=QStringLiteral("保存预检已过期或账户、文件、版本已变化，尚未写库，草稿保留。");
+    if (!reason.isEmpty() || !admission.allowed || !admission.permit)
+    {
+        if (admission.permit) admission.permit->revoke();
+        emit originalProjectSaveAdmissionCancelled(admission.ticket,QStringLiteral("projectSave"));
+        fail(pending.request,QStringLiteral("save"),reason.isEmpty() ? QStringLiteral("保存未获预留，尚未提交。") : reason);
+        return;
+    }
+    commitOriginalSave(pending.request,pending.project,admission.permit);
+}
+
+void ProjectsStore::commitOriginalSave(qint64 request,const ProjectRecord &project,
+    const std::shared_ptr<OriginalProjectSavePermit> &permit)
+{
+    QString message; qint64 id=0; bool changed=false; OriginalProjectSaveNotice result;
+    const auto claim=[permit]() { return permit->claim(permit->proposal); };
+    const auto post=[this,permit](OriginalProjectSaveNotice notice)
+    {
+        notice.source=QStringLiteral("projectSave"); notice.writeRequest=permit->proposal.writeRequest;
+        permit->committed(notice);
+        emit originalProjectSaveCommitted(notice); // 仍在原项目锁内，只排值对象，不回调SQL。
+    };
+    const bool ok=m_original->save(project,&id,&changed,&message,permit ? &result : nullptr,
+        permit ? permit->proposal.originalFileName : QString(),
+        permit ? std::function<bool()>(claim) : std::function<bool()>(),
+        permit ? std::function<void(const OriginalProjectSaveNotice &)>(post) : std::function<void(const OriginalProjectSaveNotice &)>());
+    if (permit && !result.commitSeen)
+    {
+        permit->releaseUncommitted();
+        emit originalProjectSaveAdmissionCancelled(permit->ticket,QStringLiteral("projectSave"));
+    }
+    if (!ok)
+    {
+        if (result.commitSeen) message=QStringLiteral("项目已经提交，但提交后快照未核实；设备参数尚未确认：")+message;
+        fail(request,QStringLiteral("save"),message); return;
+    }
+    emit succeeded(request,QStringLiteral("save"),id);
+}
+
 void ProjectsStore::save(qint64 requestId, ProjectRecord project)
 {
     if (m_original)
     {
+        // 从原库保存槽开始处理时取点；不包含此前GUI到存储线程的排队时间。
+        const qint64 sourceDeadline=originalProjectSaveMonotonicNow()+10000;
         const QString operation = QStringLiteral("save");
         if (!checkOriginalRequest(requestId, operation, true)) return;
         if (project.originalRoot != m_original->root())
         { fail(requestId, operation, QStringLiteral("草稿所属原目录已变化，未把旧输入写入新目录，请重新读取。")); return; }
-        QString message;
-        qint64 id = 0;
-        bool changed = false;
-        if (!m_original->save(project, &id, &changed, &message)) { fail(requestId, operation, message); return; }
-        emit succeeded(requestId, operation, id);
+        if (m_pendingOriginalSave.ticket)
+        { fail(requestId,operation,QStringLiteral("另一项项目保存仍在预检，本次尚未提交，草稿保留。")); return; }
+        if (!m_projectSaveAdmissionEnabled) { commitOriginalSave(requestId,project); return; }
+        m_pendingOriginalSave.ticket=nextOriginalProjectSaveTicket();
+        m_pendingOriginalSave.request=requestId; m_pendingOriginalSave.project=project;
+        m_pendingOriginalSave.actor=m_session; m_pendingOriginalSave.deadline=sourceDeadline;
+        if (!m_projectSaveAdmissionTimer)
+        {
+            m_projectSaveAdmissionTimer=new QTimer(this); m_projectSaveAdmissionTimer->setSingleShot(true);
+            connect(m_projectSaveAdmissionTimer,&QTimer::timeout,this,[this]()
+            { cancelPendingOriginalSave(QStringLiteral("项目保存预检10秒未完成，尚未写库，草稿保留。")); });
+        }
+        m_projectSaveAdmissionTimer->start(static_cast<int>(qMax<qint64>(1,sourceDeadline-originalProjectSaveMonotonicNow())));
+        OriginalProjectSaveNotice proposal;
+        proposal.source=QStringLiteral("projectSave"); proposal.writeRequest=requestId;
+        proposal.root=project.originalRoot; proposal.originalFileName=project.originalFileName;
+        proposal.projectId=project.id; proposal.projectName=project.originalBaseValues.value(QStringLiteral("project_en_name"));
+        proposal.beforeFingerprint=project.originalFingerprint;
+        emit originalProjectSaveAdmissionRequested(m_pendingOriginalSave.ticket,proposal,sourceDeadline);
         return;
     }
     // 身份、单位和引用在同一次写事务中检查，避免另一写者在核对后改动。
@@ -1325,7 +1430,12 @@ void ProjectsStore::copy(qint64 requestId, qint64 sourceId, QString newName)
         if (!checkOriginalRequest(requestId, operation, true)) return;
         qint64 id = 0;
         QString message;
-        if (!m_original->copy(sourceId, newName, &id, &message)) { fail(requestId, operation, message); return; }
+        if (!m_original->copy(sourceId, newName, &id, &message))
+        {
+            QString pending;
+            emit originalCopyRecoveryPending(requestId,!m_original->writesAllowed(&pending));
+            fail(requestId, operation, message);return;
+        }
         emit succeeded(requestId, operation, id);
         return;
     }
@@ -1519,6 +1629,7 @@ void ProjectsStore::removeOriginalUnit(qint64 requestId, QString name, QString e
 }
 void ProjectsStore::release()
 {
+    cancelPendingOriginalSave(QStringLiteral("原项目资料已关闭或切换，本次尚未开始写库，草稿保留。"));
     m_ready = false;
     m_original.reset();
     m_referenceCatalogDirectory.clear();

@@ -1,0 +1,171 @@
+{
+  "scope": "仅temp重连P2；原686f目录和正式4e不改；无产品/DB/网络/RK/模拟运行",
+  "parent_patch": {
+    "sha256": "686f73c5164ab90fc8cd024f7d37aad02d5ce2b52b00ba417c92383651180d86",
+    "bytes": 33055
+  },
+  "parent_manifest": {
+    "sha256": "67eb20eb2c55a3deeb83f18718c56c7b481a6f7b9d56dcc0000a82b64d37c8db",
+    "bytes": 7044
+  },
+  "patches": [
+    {
+      "path": "device_reconnect_v2.patch",
+      "sha256": "99dd8eda52f99e7e533e4fe5b3b0a95004c01dc703a68474bee16e228fef97c6",
+      "bytes": 33610
+    },
+    {
+      "path": "delta_from_686f.patch",
+      "sha256": "3ee3bfd51f8073ef485a12b08d9c378c2a5e9f6febc40956e715e8e97027a79d",
+      "bytes": 5709
+    }
+  ],
+  "targets": [
+    {
+      "path": "instrument/device_control.cpp",
+      "formal_base": {
+        "sha256": "dd87f446a9f9cbc1c11c56b91a99a5884e37980013043983d523a0a853e74921",
+        "bytes": 16793
+      },
+      "previous_686f": {
+        "sha256": "91e465270851b62ccca47f1491e0026622a585922d05332be42e92505f7b4bc4",
+        "bytes": 21480
+      },
+      "candidate": {
+        "sha256": "91e465270851b62ccca47f1491e0026622a585922d05332be42e92505f7b4bc4",
+        "bytes": 21480
+      }
+    },
+    {
+      "path": "instrument/device_control.h",
+      "formal_base": {
+        "sha256": "ebefc179ba68ed3bca2a5713c4ffdcb990bf76692c51b624ba622526913a31af",
+        "bytes": 3522
+      },
+      "previous_686f": {
+        "sha256": "346b525c95f1100eef9917607fa65f0eecb70f81ccb5e8e4de1e28a2708d7c6c",
+        "bytes": 4300
+      },
+      "candidate": {
+        "sha256": "346b525c95f1100eef9917607fa65f0eecb70f81ccb5e8e4de1e28a2708d7c6c",
+        "bytes": 4300
+      }
+    },
+    {
+      "path": "instrument/instrument_page.cpp",
+      "formal_base": {
+        "sha256": "0c87f376b2bbf4d37533942db900512c1df3198552b6e9f86631ffeefb28effa",
+        "bytes": 55223
+      },
+      "previous_686f": {
+        "sha256": "38430397b02a745eb02a4e61b88c3030d923f7af401f39b530081b917d3925b6",
+        "bytes": 55273
+      },
+      "candidate": {
+        "sha256": "38430397b02a745eb02a4e61b88c3030d923f7af401f39b530081b917d3925b6",
+        "bytes": 55273
+      }
+    },
+    {
+      "path": "shell/device_control_shell.cpp",
+      "formal_base": {
+        "sha256": "67ac7ef37103477632ae17e72645ba85b3dd0308266093846ef4af7b451b76d2",
+        "bytes": 42358
+      },
+      "previous_686f": {
+        "sha256": "266e70546abf3742dfcd1f5c409232e914777b9e58be329263d172e2fc4954c5",
+        "bytes": 48731
+      },
+      "candidate": {
+        "sha256": "a6e419fb0cb7953ddb5e54c09caf2e5f58d86ab4a2b0ceb0242ab858d35aacda",
+        "bytes": 48497
+      }
+    },
+    {
+      "path": "shell/frmmain.h",
+      "formal_base": {
+        "sha256": "9667d97f1ab38672248e4cbc08759c853f65f5c53572d0d6234ea6ef060ed48c",
+        "bytes": 12157
+      },
+      "previous_686f": {
+        "sha256": "33a04baf1a417976c599885ededf403c146593f7a32ffd9c242a9a451900402e",
+        "bytes": 12586
+      },
+      "candidate": {
+        "sha256": "cd89296a17aded157ff6d70113d483d24ea346d139e223e49d8884e5223ae216",
+        "bytes": 12630
+      }
+    },
+    {
+      "path": "shell/main.cpp",
+      "formal_base": {
+        "sha256": "52335c8d9f5048c91a48db71d63c634698114446fed82a6f93f3722189ba759f",
+        "bytes": 85211
+      },
+      "previous_686f": {
+        "sha256": "a98ee2bb148635058bf8423b397881b98a53d07477bf0d1a5d8d6f39431d06fd",
+        "bytes": 85734
+      },
+      "candidate": {
+        "sha256": "a98ee2bb148635058bf8423b397881b98a53d07477bf0d1a5d8d6f39431d06fd",
+        "bytes": 85734
+      }
+    },
+    {
+      "path": "samples/sample_store.h",
+      "formal_base": {
+        "sha256": "1c4929f5df048c43712acb599706ecf801bdee25c845ac895c62c8b97f7e234e",
+        "bytes": 7215
+      },
+      "previous_686f": {
+        "sha256": "909855101fb88291e98285e08222407b6d859e6dd3ba40358294918fd5660387",
+        "bytes": 7460
+      },
+      "candidate": {
+        "sha256": "909855101fb88291e98285e08222407b6d859e6dd3ba40358294918fd5660387",
+        "bytes": 7460
+      }
+    },
+    {
+      "path": "samples/original_sample_store.cpp",
+      "formal_base": {
+        "sha256": "ef77024472ed73f726282277e9fc698cbc453b521723b59571b3a1cfcf08878e",
+        "bytes": 13064
+      },
+      "previous_686f": {
+        "sha256": "612e3c54f4202c281f9d7f181926d2208f0ede2de723cf1cffa27aef4f64fd66",
+        "bytes": 14038
+      },
+      "candidate": {
+        "sha256": "612e3c54f4202c281f9d7f181926d2208f0ede2de723cf1cffa27aef4f64fd66",
+        "bytes": 14038
+      }
+    },
+    {
+      "path": "samples/original_detection_session.h",
+      "formal_base": {
+        "sha256": "d52309f3b95f29ffede6d7b753258481c634d37352fc25f0b0d4f92ef0904baa",
+        "bytes": 2577
+      },
+      "previous_686f": {
+        "sha256": "27288e1ad86e5c1310a7702b8204d92630b769c8b5bf4be5c78038909c82cb53",
+        "bytes": 2856
+      },
+      "candidate": {
+        "sha256": "27288e1ad86e5c1310a7702b8204d92630b769c8b5bf4be5c78038909c82cb53",
+        "bytes": 2856
+      }
+    }
+  ],
+  "formal_bases_unchanged": true,
+  "compile": {
+    "exit": 0,
+    "kind": "仅shell/device_control_shell.cpp ARM64对象；新增普通私有方法不改变类布局或Qt元对象接口",
+    "input_fingerprints_unchanged": true,
+    "object": {
+      "sha256": "87bd1ecf92824a2641e872966ede49ed3dff1b2d5fad948117fda62086d735f2",
+      "bytes": 4129808
+    }
+  },
+  "functional_or_device_validation": false
+}

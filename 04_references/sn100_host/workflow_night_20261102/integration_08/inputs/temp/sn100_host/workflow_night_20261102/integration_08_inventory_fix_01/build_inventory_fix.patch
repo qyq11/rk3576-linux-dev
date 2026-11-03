@@ -1,0 +1,30 @@
+diff --git a/06_programs/sn100_host/shell/build.sh b/06_programs/sn100_host/shell/build.sh
+--- a/06_programs/sn100_host/shell/build.sh
++++ b/06_programs/sn100_host/shell/build.sh
+@@ -242,6 +242,15 @@
+ # 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
+ sources+=("$program_dir/reagents/original_reagent_level_packet.cpp" "$program_dir/reagents/original_reagent_level_model.cpp" "$program_dir/reagents/original_reagent_level_projects.cpp" "$program_dir/reagents/original_reagent_level_repository.cpp" "$program_dir/reagents/original_reagent_level_runtime.cpp" "$program_dir/reagents/original_reagent_level_worker.cpp" "$program_dir/reagents/reagents_page_level.cpp" "$program_dir/original_files/original_reagent_capacity.cpp" "$module_dir/reagent_level_shell.cpp")
+ headers+=("$program_dir/reagents/original_reagent_level.h" "$program_dir/reagents/original_reagent_level_runtime.h" "$program_dir/reagents/original_reagent_level_worker.h" "$program_dir/original_files/original_reagent_capacity.h")
++# 任务剩余量走专用重读和运行采用，不发送设备命令。
++sources+=("$program_dir/reagents/original_task_reagent_display.cpp" "$program_dir/reagents/original_reagent_level_task.cpp" "$program_dir/reagents/original_task_reagent_readback.cpp" "$program_dir/reagents/reagents_page_task.cpp")
++# 任务提交后的主窗口接续；仅接原动作，不增加设备命令。
++sources+=("$module_dir/task_reagent_shell.cpp" "$module_dir/task_reagent_source.cpp" "$program_dir/samples/original_task_reagent_receipt_writer.cpp")
++# 显式登记配套头文件，使只读清单与实际构建输入一致。
++headers+=("$program_dir/reagents/original_task_reagent_display.h"
++          "$program_dir/samples/original_task_reagent_receipt.h"
++          "$program_dir/samples/original_task_reagent_receipt_writer.h"
++          "$module_dir/task_reagent_context.h")
+ for input in "${sources[@]}" "${forms[@]}" "${headers[@]}" "${resource_files[@]}" "${helper_sources[@]}"; do
+     [[ -f $input ]] || { echo "Required ARM64 build input missing: $input" >&2; exit 1; }
+ done
+@@ -261,10 +270,6 @@
+     name=$(basename -- "${form%.ui}")
+     "$qt_tools/uic" "$form" -o "$build_dir/ui_$name.h"
+ done
+-# 任务剩余量走专用重读和运行采用，不发送设备命令。
+-sources+=("$program_dir/reagents/original_task_reagent_display.cpp" "$program_dir/reagents/original_reagent_level_task.cpp" "$program_dir/reagents/original_task_reagent_readback.cpp" "$program_dir/reagents/reagents_page_task.cpp")
+-# 任务提交后的主窗口接续；仅接原动作，不增加设备命令。
+-sources+=("$module_dir/task_reagent_shell.cpp" "$module_dir/task_reagent_source.cpp" "$program_dir/samples/original_task_reagent_receipt_writer.cpp")
+ for header in "${headers[@]}"; do
+     if grep -q 'Q_OBJECT' "$header"; then
+         name=$(basename -- "${header%.h}")

@@ -2,6 +2,7 @@
 #define SN100_ORIGINAL_TASK_CODEC_H
 
 #include "projects/projects_store.h"
+#include "samples/sample_types.h"
 #include <QMap>
 #include <QSet>
 
@@ -32,6 +33,15 @@ struct Task
     QString batchGroup;
     ProjectRecord project;
     QMap<QString, QString> unitRatios; // 检测准备时的原单位倍率，后续修改单位不能改变这次任务。
+    // 只记录既有assignTask分配前后的差值（微升），不另算或再次扣量。
+    QMap<qint64, double> reservedReagentVolumes;
+    SampleQcPreset::Selection quality;
+    qint64 qualityAssociationId = 0;
+    SampleCalibrationPreset calibration;
+    qint64 calibrationId = 0;
+    int calibrationPoint = 0;
+    QString calibrationConcentration;
+    QString issuedDay; // 占号日期的追查资料；不据此改变原始曲线目录规则。
     // 每个试剂步骤各自对应孔名和发送编号，不能按名称去重后破坏原顺序。
     QList<QPair<QString, QString>> reagentSlots;
     QMap<QString, QPair<QString, QString>> sampleAreaSlots;

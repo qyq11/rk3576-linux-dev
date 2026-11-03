@@ -6,6 +6,7 @@
 #include "qtmaterialradiobutton.h"
 #include "qtmaterialscrollbar.h"
 #include "sample_widgets.h"
+#include "original_calibration_preset.h"
 #include "ui_frmsamplematerial.h"
 #include "ui_frmsamplesettingmaterial.h"
 #include "ui_maskdlgcombasetting.h"
@@ -127,6 +128,10 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
     setting_->stkProjButton->setCurrentIndex(0);
     setting_->btnCalProj->setEnabled(false);
     setting_->btnCalProj->setToolTip(tr("校准流程尚未移植。"));
+    connect(setting_->btnCalProj, &QPushButton::clicked, this, [this]()
+    { refreshCalibrationButtons(); setting_->stkProjButton->setCurrentIndex(1); });
+    connect(setting_->btnCombProj, &QPushButton::clicked, this,
+            [this]() { setting_->stkProjButton->setCurrentIndex(0); });
     setting_->wgtSetTableBg->setRadius(15);
     setting_->wgtProjTableBg->setRadius(15);
     auto *header = new CusCheckHeader(0, Qt::Horizontal, setting_->tblSetting);
@@ -277,7 +282,25 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
         ordinaryHoles_ = ordinary; emergencyHoles_ = emergency;
         setProperty("originalProfile", true);
         setProperty("originalRoot", root);
+        // 原模式由同一个样本工作线程在保存/下发时重核原控制品身份，
+        // 不启动早期本地catalog的跨库预约协议。
+        qualityProtectionBound_ = true;
+        setting_->btnCalProj->setToolTip(tr("按原校准项目设置样本任务；收到曲线后仍待计算。"));
+        ++qualityChoicesRequest_;
+        emit requestQualityChoices(qualityChoicesRequest_);
     });
+    connect(this, &SamplePage::requestQualityChoices, this, [this](qint64 request)
+    {
+        // 此连接只服务原资料；本地模式继续使用既有质控保护桥接。
+        if (originalProfile_) QMetaObject::invokeMethod(store_, "loadOriginalQualityChoices", Qt::QueuedConnection, Q_ARG(qint64, request));
+    });
+    connect(store, &SampleStore::originalQualityChoicesReady, this,
+            [this](qint64 request, SampleQcPreset::Snapshot choices)
+    { if (originalProfile_) setQualityChoices(request, choices, QString()); });
+    connect(store, &SampleStore::originalQualityChoicesError, this,
+            [this](qint64 request, const QString &message)
+    { if (originalProfile_) setQualityChoices(request, SampleQcPreset::Snapshot(), message); });
+    connect(store, &SampleStore::originalUnitsReady, this, [this](ProjectUnits units) { originalUnits_ = units; });
     connect(store, &SampleStore::originalProjectsReady, this, &SamplePage::setProjects);
     connect(store, &SampleStore::deviceTaskStateChanged, this, [this]()
     {
@@ -438,6 +461,13 @@ void SamplePage::style()
         "SC';height:60px;background:transparent;border:1px solid "
         "#DDDDDD;border-left:none;border-right:none;border-top:none;}");
 }
+void SamplePage::setRackSelectedColour(QColor colour)
+{
+    if (!colour.isValid()) return;
+    // 原kSampleSetWidget只改变选中架；保留白色未选中架，并供后续新建的架复用。
+    rackSelectedColour_ = colour;
+    for (auto *view : findChildren<SampleRackView *>()) view->setSelectedColour(colour);
+}
 void SamplePage::report(const QString &message)
 {
     setProperty("lastStatus", message);
@@ -464,6 +494,8 @@ void SamplePage::actions()
     ui->btnAdd->setEnabled(edit);
     setting_->tblSetting->setEnabled(edit);
     const bool ordinary = row_>=0 && row_<editing_.holes.size() && editing_.holes[row_].sampleType==0;
+    setting_->btnCalProj->setEnabled(edit && originalProfile_);
+    setting_->calProjButtonList->setEnabled(edit && originalProfile_ && canEditHole(row_));
     setting_->projButtonList->setEnabled(canEditHole(row_) && ordinary);
     setting_->repeatComb->setEnabled(canEditHole(row_) && ordinary);
     ui->btnHoleDetail->setEnabled(canEditHole(row_));
@@ -528,6 +560,7 @@ void SamplePage::setProjects(ProjectRecords projects)
     {
         report(tr("项目快照已更新，编辑草稿保留；保存时重新核对引用和稀释候选。"));
     }
+    if (!dialog_) refreshCalibrationButtons();
 }
 void SamplePage::setReagents(ReagentSnapshot reagents)
 {
@@ -732,6 +765,7 @@ void SamplePage::refreshRackList()
             currentItem = item;
         }
         auto *view = new SampleRackView(rack, index, current, ui->rackList);
+        view->setSelectedColour(rackSelectedColour_);
         view->setProperty("localDraft", localDraft && current);
         if (localDraft && current)
         {
@@ -884,6 +918,7 @@ void SamplePage::selectHole(int row)
     }
     row_ = row;
     refreshProjectButtons();
+    refreshCalibrationButtons();
 }
 void SamplePage::refreshProjects()
 {
@@ -1081,6 +1116,8 @@ void SamplePage::addRack()
     {
         SampleHole value;
         value.number = hole;
+        // 仅原资料模式真正新孔应用默认，重读、复制及CAL/QC转换保留自身容器。
+        if (originalProfile_) value.container = originalDefaultContainerIsTube_ ? 0 : 1;
         rack.holes.append(value);
     }
     editing_ = rack;
@@ -1178,8 +1215,8 @@ void SamplePage::clearHole()
     for (int row : selected)
     {
         editing_.holes[row].tasks.clear();
-        if (editing_.holes[row].sampleType==2)
-        { editing_.holes[row].sampleType=0;editing_.holes[row].quality=SampleQcIdentity();editing_.holes[row].sampleId.clear(); }
+        if (editing_.holes[row].sampleType!=0)
+        { editing_.holes[row].sampleType=0;editing_.holes[row].quality=SampleQcIdentity();editing_.holes[row].calibration=SampleCalibrationPreset();editing_.holes[row].sampleId.clear(); }
     }
     markDirty();
     refreshTable();
@@ -1265,8 +1302,8 @@ void SamplePage::applyCombination(const SampleCombination &combination)
         report(tr("组合模式未知，不能应用，样本架草稿未改动。"));
         return;
     }
-    if (editing_.holes[row_].sampleType==2)
-    { report(tr("质控与其关联项目绑定，请在明细修改或先删除任务。")); return; }
+    if (editing_.holes[row_].sampleType!=0)
+    { report(tr("校准或质控已绑定自己的项目，请先删除任务后再应用普通组合。")); return; }
     QList<SampleTask> tasks;
     for (qint64 id : combination.orderedProjectIds)
     {
@@ -1310,6 +1347,11 @@ void SamplePage::detail()
     {
         return;
     }
+    if (editing_.holes[row_].sampleType == 1)
+    {
+        report(tr("校准样本请从校准项目按钮查看；重新设置前先删除该组任务，避免改成普通样本。"));
+        return;
+    }
     auto *dialog = new SampleEditor(this);
     dialog->setObjectName("sampleDetailDialog");
     dialog_ = dialog;
@@ -1323,7 +1365,7 @@ void SamplePage::detail()
     form->radioBoxQC->setText(tr("质控测试"));
     form->radioBoxQC->setChecked(hole->sampleType==2);
     form->radioBoxQC->setEnabled(qualityProtectionBound_ && qualityChoices_.ready);
-    form->radioBoxQC->setToolTip(tr("仅准备本地质控预设；未下发或判断临床可用性。"));
+    form->radioBoxQC->setToolTip(originalProfile_ ? tr("按原控制品和批次准备质控任务；保存不代表已下发或完成质控判定。") : tr("仅准备本地质控预设；未下发或判断临床可用性。"));
     form->widget->setEnabled(hole->sampleType==0);
     form->widget_2->setEnabled(hole->sampleType==2 && qualityProtectionBound_ && qualityChoices_.ready);
     form->btnClose->hide();

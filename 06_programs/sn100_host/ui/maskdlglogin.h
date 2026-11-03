@@ -23,6 +23,7 @@ public:
     explicit MaskDlgLogin(AccountStore *store, QWidget *parent = nullptr);
     ~MaskDlgLogin() override;
     bool isBusy() const;
+    void setCompanyName(const QString &name);
 
 public slots:
     void showDialog();

@@ -1,0 +1,690 @@
+{
+  "mode": "auto",
+  "release_id": "14ce9714aaa0017c7ad78ff3f551d978672e5def79b96e817605295d7e59020c",
+  "wrapper_exit": 0,
+  "application_wait_exit": 0,
+  "automatic_check_exit": 0,
+  "application_exit_lines": [
+    "EXIT code= 0"
+  ],
+  "software_checks_passed": true,
+  "complete_startup_to_exit_tx": [
+    {
+      "line": 997,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1018,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1028,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1033,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1049,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1061,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1065,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    }
+  ],
+  "observed_complete_message_commands": [
+    "Qj"
+  ],
+  "scope_errors": [],
+  "original_login_sync_authorized": false,
+  "shutdown_markers": {
+    "SHELL_READY": true,
+    "ALARM_HISTORY_SOURCE_CLOSED": true,
+    "ACCOUNT_STORE_CLOSED": true,
+    "HISTORY_STORE_CLOSED": true,
+    "QUALITY_CONTROL_STORE_CLOSED": true,
+    "SAMPLE_STORE_CLOSED": true,
+    "CALIBRATION_STORE_CLOSED": true,
+    "PROJECT_STORE_CLOSED": true,
+    "REAGENT_STORE_CLOSED": true,
+    "MAINTENANCE_STORE_CLOSED": true,
+    "PRINTER_SETTINGS_CLOSED": true,
+    "LIS_SETTINGS_CLOSED": true,
+    "HOSPITAL_STORE_CLOSED": true,
+    "ORIGINAL_CHANNEL_WORKER_STOPPED true": true,
+    "ALARM_HISTORY_WORKER_STOPPED true": true,
+    "ORIGINAL_ALARM_WORKER_STOPPED true": true,
+    "THREADS_STOPPED true": true
+  },
+  "shutdown_contract_release": "14ce9714aaa0017c7ad78ff3f551d978672e5def79b96e817605295d7e59020c",
+  "current_shutdown_failures": [],
+  "ini_hashes_unchanged": true,
+  "original_alarm_shutdown_unconfirmed": false,
+  "review_window_close_unconfirmed": false,
+  "same_controller_alive": true,
+  "resource_scope": "limited_window_no_pass_budget_or_control_deadline_claim",
+  "resources": {
+    "samples": 4,
+    "cpu_percent_one_core_mean": 101.8536303410289,
+    "cpu_percent_one_core_max": 145.42483660124495,
+    "rss_kib_max": 442560,
+    "pss_kib_max": 439910
+  },
+  "physical_input_screen_verified": false,
+  "administrator_credentials_verified": false,
+  "normal_ui_close_reopen_verified": false,
+  "real_testing_green_verified": false,
+  "mechanical_or_detection_functions_verified": false,
+  "probe_result": {
+    "actual_status_text": "异常状态",
+    "administrator_password_login": "pending_user_real_credentials",
+    "board": "board_b",
+    "checks": [
+      {
+        "name": "原配置启动后自动打开可输入的登录卡，并收到实际主控状态",
+        "passed": true
+      },
+      {
+        "name": "当前实际连接为SN500",
+        "passed": true
+      },
+      {
+        "name": "RK的GIF解码组件可用",
+        "passed": true
+      },
+      {
+        "name": "原启动GIF已成功读取，数据就绪后结束",
+        "passed": true
+      },
+      {
+        "name": "机型下方状态有文字，控件高度容纳Linux中文字体",
+        "passed": true
+      },
+      {
+        "name": "登录卡完整位于当前窗口对象范围内",
+        "passed": true
+      },
+      {
+        "name": "程序内取消后登录卡关闭",
+        "passed": true
+      },
+      {
+        "name": "取消后继续处理页面通知1.2秒，没有旧启动意图重新弹卡",
+        "passed": true
+      },
+      {
+        "name": "实际断开后显示等待连接，灰灯两次控件渲染不同；完整明暗周期和实屏仍需人工核对",
+        "passed": true
+      },
+      {
+        "name": "取消后可程序内触发控件头像重新打开登录卡",
+        "passed": true
+      },
+      {
+        "name": "原窗口空口令建立配置默认Guest会话，未创建或修改账户，权限保持0",
+        "passed": true
+      },
+      {
+        "name": "程序内触发控件注销后账户回读完成，自动重开可输入的登录卡",
+        "passed": true
+      },
+      {
+        "name": "注销已清除实际身份",
+        "passed": true
+      },
+      {
+        "name": "访客可进入原仪器状态页",
+        "passed": true
+      },
+      {
+        "name": "访客未显示管理员端口、功能、通信及板卡专属入口",
+        "passed": true
+      },
+      {
+        "name": "旧连接失效后AD数值列为缺值且本次上报标记已清除",
+        "passed": true
+      },
+      {
+        "name": "恢复原INI中的实际主控连接，收到新状态",
+        "passed": true
+      },
+      {
+        "name": "本次新连接实际Qq的1至24通道四项原文字与96个本次上报单元格一致",
+        "passed": true
+      },
+      {
+        "name": "保留真实Qj触发的405/450表头与24通道空白末列表头，仍核第四个原值",
+        "passed": true
+      },
+      {
+        "name": "未认证角色仍隐藏Base且通道开关不可操作；不要求HIL库行",
+        "passed": true
+      },
+      {
+        "name": "切换八个主页后仪器状态仍显示，未被本地业务提示覆盖",
+        "passed": true
+      },
+      {
+        "name": "仪器页面的机型、子系统数、主控周期与实际Qj字段相同",
+        "passed": true
+      },
+      {
+        "name": "当前主控未发子系统时，环境温度明确显示未上报",
+        "passed": true
+      },
+      {
+        "name": "就绪后观察区间发送字节均为Qj；完整启动起TX另由日志审核",
+        "passed": true
+      }
+    ],
+    "completed": true,
+    "event_loop_probe": {
+      "interval_max_ms": 515,
+      "interval_p95_ms": 269,
+      "period_ms": 20,
+      "samples": 118
+    },
+    "evidence_scope": "production_objects_programmatic_widget_events_and_widget_grab",
+    "failed": 0,
+    "independent_ad": {
+      "channel_switches_protected": true,
+      "cleared_before_new_connection": {
+        "checked_cells": 96,
+        "checked_rows": 24,
+        "current_qq_received": false,
+        "generation": "0",
+        "kind": "all_value_cells_cleared",
+        "mismatches": [],
+        "ok": true,
+        "physical_value_validity_checked": false,
+        "reason": "",
+        "status": "pass",
+        "valid_qq_count": 0
+      },
+      "current_qq_coverage": {
+        "missing_or_short_keys": [],
+        "ok": true,
+        "supplied_cells": 96
+      },
+      "display_comparison": {
+        "checked_cells": 96,
+        "checked_rows": 24,
+        "current_qq_received": true,
+        "generation": "5",
+        "kind": "qq_text_and_reported",
+        "mismatches": [],
+        "ok": true,
+        "physical_value_validity_checked": false,
+        "reason": "",
+        "status": "pass",
+        "valid_qq_count": 1
+      },
+      "guest_base_hidden": true,
+      "new_generation": "5",
+      "observed_headers": [
+        "通道号",
+        "开启状态",
+        "450nm",
+        "570nm",
+        "660nm",
+        "   "
+      ],
+      "old_generation": "3",
+      "passed": true,
+      "physical_ad_validity_verified": false,
+      "raw_observation": {
+        "assembly_bytes": 0,
+        "buffered_bytes": 0,
+        "channels_first_declared_pairs": {
+          "1": "65535 65535 65535 65535 ",
+          "10": "65535 65535 65535 65535 ",
+          "11": "65535 65535 65535 65535 ",
+          "12": "65535 65535 65535 65535 ",
+          "13": "65535 65535 65535 65535 ",
+          "14": "65535 65535 65535 65535 ",
+          "15": "65535 65535 65535 65535 ",
+          "16": "65535 65535 65535 65535 ",
+          "17": "65535 65535 65535 65535 ",
+          "18": "65535 65535 65535 65535 ",
+          "19": "65535 65535 65535 65535 ",
+          "2": "65535 65535 65535 65535 ",
+          "20": "65535 65535 65535 65535 ",
+          "21": "65535 65535 65535 65535 ",
+          "22": "65535 65535 65535 65535 ",
+          "23": "65535 65535 65535 65535 ",
+          "24": "65535 65535 65535 65535 ",
+          "3": "65535 65535 65535 65535 ",
+          "4": "65535 65535 65535 65535 ",
+          "5": "65535 65535 65535 65535 ",
+          "6": "65535 65535 65535 65535 ",
+          "7": "65535 65535 65535 65535 ",
+          "8": "65535 65535 65535 65535 ",
+          "9": "65535 65535 65535 65535 ",
+          "HIL": "65535 65535 65535 65535 "
+        },
+        "complete_messages": 5,
+        "current_qq_received": true,
+        "declared_count": 25,
+        "duplicate_channel_keys": 0,
+        "error": "",
+        "error_count": 0,
+        "fragmented_messages": 0,
+        "generation": "5",
+        "history_truncated": false,
+        "ignored_tail_fields": [
+          "Base",
+          "65535 65535 65535 65535 "
+        ],
+        "next_fragment": 0,
+        "raw_qq": "Qq[25][1][65535 65535 65535 65535 ][2][65535 65535 65535 65535 ][3][65535 65535 65535 65535 ][4][65535 65535 65535 65535 ][5][65535 65535 65535 65535 ][6][65535 65535 65535 65535 ][7][65535 65535 65535 65535 ][8][65535 65535 65535 65535 ][9][65535 65535 65535 65535 ][10][65535 65535 65535 65535 ][11][65535 65535 65535 65535 ][12][65535 65535 65535 65535 ][13][65535 65535 65535 65535 ][14][65535 65535 65535 65535 ][15][65535 65535 65535 65535 ][16][65535 65535 65535 65535 ][17][65535 65535 65535 65535 ][18][65535 65535 65535 65535 ][19][65535 65535 65535 65535 ][20][65535 65535 65535 65535 ][21][65535 65535 65535 65535 ][22][65535 65535 65535 65535 ][23][65535 65535 65535 65535 ][24][65535 65535 65535 65535 ][HIL][65535 65535 65535 65535 ][Base][65535 65535 65535 65535 ]",
+        "raw_qq_hex": "51 71 5b 32 35 5d 5b 31 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 32 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 33 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 34 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 35 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 36 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 37 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 38 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 39 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 30 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 31 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 32 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 33 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 34 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 35 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 36 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 37 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 38 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 31 39 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 32 30 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 32 31 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 32 32 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 32 33 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 32 34 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 48 49 4c 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d 5b 42 61 73 65 5d 5b 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 36 35 35 33 35 20 5d",
+        "raw_qq_history": [
+          "Qq[25][1][65535 65535 65535 65535 ][2][65535 65535 65535 65535 ][3][65535 65535 65535 65535 ][4][65535 65535 65535 65535 ][5][65535 65535 65535 65535 ][6][65535 65535 65535 65535 ][7][65535 65535 65535 65535 ][8][65535 65535 65535 65535 ][9][65535 65535 65535 65535 ][10][65535 65535 65535 65535 ][11][65535 65535 65535 65535 ][12][65535 65535 65535 65535 ][13][65535 65535 65535 65535 ][14][65535 65535 65535 65535 ][15][65535 65535 65535 65535 ][16][65535 65535 65535 65535 ][17][65535 65535 65535 65535 ][18][65535 65535 65535 65535 ][19][65535 65535 65535 65535 ][20][65535 65535 65535 65535 ][21][65535 65535 65535 65535 ][22][65535 65535 65535 65535 ][23][65535 65535 65535 65535 ][24][65535 65535 65535 65535 ][HIL][65535 65535 65535 65535 ][Base][65535 65535 65535 65535 ]"
+        ],
+        "rejected_generation_feeds": 0,
+        "seen_qq_count": 1,
+        "total_fragments": 0,
+        "valid_frames": 5,
+        "valid_qq_count": 1
+      },
+      "same_new_connection": true,
+      "status": "pass",
+      "table_rows_at_comparison": [
+        {
+          "key": "1",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "2",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "3",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "4",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "5",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "6",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "7",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "8",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "9",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "10",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "11",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "12",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "13",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "14",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "15",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "16",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "17",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "18",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "19",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "20",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "21",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "22",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "23",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        },
+        {
+          "key": "24",
+          "reported": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "values": [
+            "65535",
+            "65535",
+            "65535",
+            "65535"
+          ]
+        }
+      ]
+    },
+    "led_status": 3,
+    "main_status": 0,
+    "normal_window_close_reopen_verified": false,
+    "operation_response_ms": [
+      {
+        "action": "avatar_click_to_login_input_ready",
+        "ms": 448
+      },
+      {
+        "action": "configured_guest_login_to_dialog_closed",
+        "ms": 503
+      },
+      {
+        "action": "logout_click_to_login_input_ready",
+        "ms": 932
+      }
+    ],
+    "physical_mouse_keyboard_verified": false,
+    "physical_screen_verified": false,
+    "platform": "eglfs",
+    "qt": "5.15.13",
+    "release_id": "14ce9714aaa0017c7ad78ff3f551d978672e5def79b96e817605295d7e59020c",
+    "status_font_height": 20,
+    "status_label_height": 22,
+    "subsystems": 0,
+    "testing_green_animation": "pending_actual_testing_state",
+    "window_height": 1080,
+    "window_width": 1920
+  }
+}

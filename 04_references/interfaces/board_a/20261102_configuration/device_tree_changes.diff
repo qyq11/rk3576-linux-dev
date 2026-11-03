@@ -1,0 +1,82 @@
+--- board_before.dts	2026-11-02 11:15:04.990351400 +0800
++++ board_candidate.dts	2026-11-02 11:15:05.095637000 +0800
+@@ -5778,7 +5778,7 @@
+ 		reset-names = "can\0can-apb";
+ 		dmas = <0x7d 0x14>;
+ 		dma-names = "rx";
+-		status = "disabled";
++		status = "okay";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <0x14a>;
+ 		phandle = <0x2b5>;
+@@ -6629,7 +6629,7 @@
+ 		reset-names = "i2c\0apb";
+ 		#address-cells = <0x01>;
+ 		#size-cells = <0x00>;
+-		status = "okay";
++		status = "disabled";
+ 		clock-frequency = <0x61a80>;
+ 		phandle = <0x2df>;
+ 	};
+@@ -6646,7 +6646,7 @@
+ 		reset-names = "i2c\0apb";
+ 		#address-cells = <0x01>;
+ 		#size-cells = <0x00>;
+-		status = "okay";
++		status = "disabled";
+ 		clock-frequency = <0x61a80>;
+ 		phandle = <0x2e0>;
+ 	};
+@@ -6698,7 +6698,7 @@
+ 		dmas = <0x7d 0x10 0x7d 0x11>;
+ 		dma-names = "tx\0rx";
+ 		pinctrl-names = "default";
+-		pinctrl-0 = <0x17d 0x17e 0x17f>;
++		pinctrl-0 = <0x17d 0x17f>;
+ 		num-cs = <0x02>;
+ 		status = "okay";
+ 		max-freq = <0x2faf080>;
+@@ -6711,6 +6711,7 @@
+ 		};
+ 
+ 		spidev@1 {
++			status = "disabled";
+ 			compatible = "rockchip,spidev";
+ 			reg = <0x01>;
+ 			spi-max-frequency = <0x989680>;
+@@ -6816,7 +6817,7 @@
+ 		dmas = <0x7d 0x0c 0x7d 0x0d>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <0x18a>;
+-		status = "disabled";
++		status = "okay";
+ 		phandle = <0x2ea>;
+ 	};
+ 
+@@ -6876,7 +6877,7 @@
+ 		dmas = <0xe2 0x06 0xe2 0x07>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <0x18f>;
+-		status = "disabled";
++		status = "okay";
+ 		phandle = <0x2ee>;
+ 	};
+ 
+@@ -6891,7 +6892,7 @@
+ 		dmas = <0xe2 0x08 0xe2 0x09>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <0x190>;
+-		status = "disabled";
++		status = "okay";
+ 		phandle = <0x2ef>;
+ 	};
+ 
+@@ -6906,7 +6907,7 @@
+ 		dmas = <0xe2 0x0a 0xe2 0x0b>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <0x191>;
+-		status = "disabled";
++		status = "okay";
+ 		phandle = <0x2f0>;
+ 	};
+ 

@@ -1,0 +1,89 @@
+{
+  "date": "2026-11-02",
+  "record": "02_records/20261102_can.md",
+  "board": "用户本轮确认更换的新板B：LCKFB TaishanPi 3M RK3576",
+  "account": "lckfb，系统操作单独sudo",
+  "kernel": "6.1.99-rt36-tspi #2",
+  "realtime": 1,
+  "reboot": {
+    "before": "001d3663-830d-476c-b124-21b8e01bda6f",
+    "after": "72b43693-95d9-4b7e-8620-63f56dfacbc4"
+  },
+  "configuration": {
+    "result": "CAN0及7/11脚启用、重启核对通过",
+    "dtbo_sha256": "92c1bdcfecb719bd1e9e04d75cee90dbb994a735fbf8e691ecc3259f4e1d7280",
+    "device_tree_status": "okay",
+    "pinmux": "GPIO4_A4和GPIO4_A6均归2ac00000.can，group can0m2-pins",
+    "partition_flash": false,
+    "first_attempt": "状态查询缺sudo导致退出1，自动回退，第二轮确认原配置恢复后成功"
+  },
+  "checks": [
+    {
+      "name": "初版3帧检查",
+      "sent": 3,
+      "returned": 3,
+      "exit": 0,
+      "scope": "仅比较内容，后续确认其不能证明硬件接收",
+      "binary_sha256": "8fa769d1505b2692e0bdabe4075748d5dfef0be7ff2d93fe282eaaf3b815a1b1",
+      "log": "rk_loopback.log"
+    },
+    {
+      "name": "显示消息来源的发送确认检查",
+      "sent": 3,
+      "returned": 3,
+      "exit": 0,
+      "message_source": "tx-confirmation",
+      "recvmsg_flags": "0x804",
+      "hardware_rx_delta": 0,
+      "binary_sha256": "d2dfc4004eea0dd588f2f5e1812979310fff204db9980e3a0ef21a05fa699e21",
+      "log": "rk_echo_confirmed.log"
+    },
+    {
+      "name": "关闭本机回送后的接收检查",
+      "sent": 1,
+      "returned": 0,
+      "exit": 1,
+      "wait_ms": 1000,
+      "hardware_rx_delta": 0,
+      "cause": "未确证",
+      "cleanup_exit": 0,
+      "log": "rk_no_local_echo.log"
+    }
+  ],
+  "test_bitrate": 500000,
+  "bitrate_scope": "仅本机临时检查，不是轴卡正式速率",
+  "final": {
+    "interface": "can0",
+    "state": "DOWN/STOPPED",
+    "controller_loopback": false,
+    "can_process_running": false,
+    "tx_packets": 7,
+    "rx_packets": 0,
+    "ttyS4_present": true,
+    "ttyS6_present": true
+  },
+  "hardware_scope": "尚未连接CAN收发器或轴卡，排针波形、硬件接收及真实总线通信未通过验收",
+  "backup": "07_backups/can/board_b_20261102",
+  "sources": [
+    {
+      "path": "06_programs/rk3576_system/configs/can0_m2.dts",
+      "sha256": "bfb846e0434d49d72c3c16389a28e7acdc5e87a88f98c51c23776ba6cdf69146"
+    },
+    {
+      "path": "05_tools/tests/can/can_loopback.c",
+      "sha256": "6c26cfeff0cbd7f4c38af05735e5ef4b3d227de98da9407e28430c6d813f5767"
+    },
+    {
+      "path": "05_tools/tests/can/build.sh",
+      "sha256": "b3bcb2d1e70a8e80fd7ac4bb91b994636f52ea0e24d35f28fad7e6b9f34ae025"
+    },
+    {
+      "path": "05_tools/tests/can/run_loopback.sh",
+      "sha256": "da66cd839cd41cd892bdeb87572286d8981686d40a801a81707f634b9bbe3a80"
+    },
+    {
+      "path": "04_references/can/20261102/can_loopback_initial.c",
+      "sha256": "7ef8cb3afbbf250775dfa4c87fab978430336e6297613476a4882d3b69248685"
+    }
+  ]
+}

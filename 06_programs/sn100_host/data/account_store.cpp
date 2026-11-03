@@ -411,6 +411,8 @@ void AccountStore::initializeOriginal(QString root)
     m_database = database->db;
     m_originalDatabase = std::move(database);
     m_ready = true;
+    // 原DriverInformation初始不能执行动作；先到的实际状态由独立入口保留。
+    m_session.actionReady = m_deviceActionReadyObserved ? m_deviceActionReady : false;
     clearSession();
     emit ready();
 }
@@ -437,7 +439,7 @@ void AccountStore::setSession(QString name, bool actionReady)
     {
         return;
     }
-    m_session.actionReady = actionReady;
+    m_session.actionReady = m_deviceActionReadyObserved ? m_deviceActionReady : actionReady;
     if (!m_originalRoot.isEmpty() && !name.isEmpty())
     {
         // 原账户必须经过口令登录；运行状态更新不能变成按用户名提权的入口。
@@ -480,6 +482,17 @@ void AccountStore::setSession(QString name, bool actionReady)
     m_session.authenticated = true;
     m_session.source = AccountSessionSource::Simulated;
     emit sessionChanged(m_session);
+}
+
+void AccountStore::setDeviceActionReady(bool actionReady)
+{
+    if (!checkThread(QStringLiteral("deviceActionReady"))) return;
+    // 首次false也必须接收，不能让旧独立模式的默认true残留。
+    const bool changed = !m_deviceActionReadyObserved || m_deviceActionReady != actionReady;
+    m_deviceActionReadyObserved = true;
+    m_deviceActionReady = actionReady;
+    m_session.actionReady = actionReady;
+    if (changed) emit deviceActionReadyChanged(actionReady);
 }
 
 bool AccountStore::loginAvailable(QString *message) const
@@ -1088,6 +1101,7 @@ void AccountStore::releaseDatabase()
 {
     m_ready = false;
     m_session = AccountSession();
+    if (m_deviceActionReadyObserved) m_session.actionReady = m_deviceActionReady;
     m_sessionId = 0;
     m_configuredRequiresDisabled = false;
     if (m_database.isValid())

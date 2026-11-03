@@ -2,7 +2,9 @@
 #define SN100_REAGENT_TYPES_H
 
 #include <QList>
+#include <QMap>
 #include <QMetaType>
+#include <QPair>
 #include <QString>
 #include <QStringList>
 #include <QVariantMap>
@@ -95,8 +97,21 @@ struct ReagentProject
     QString unit;
     bool enabled = true;
     QStringList reagentNames; // 原项目实际使用的试剂；孔位批组选项按这个关联筛选。
+    // 批组开关随原项目身份一起保存，不能用同编号的另一个工作根覆盖。
+    QString originalRoot;
+    QString originalFileName;
+    QString originalFingerprint;
+    QString originalGroupEnabled; // 只识别原字符串0/1；空值或未知值不能猜成关闭。
 };
 using ReagentProjects = QList<ReagentProject>;
+
+// 只供显示的估算次数；未知值保留原因，不能当作0次或作为任务放行依据。
+struct ReagentTestCount
+{
+    bool available = false;
+    int tests = 0;
+    QString reason;
+};
 
 struct ReagentSnapshot
 {
@@ -107,6 +122,9 @@ struct ReagentSnapshot
     QList<ReagentHole> holes;
     bool originalProfile = false;
     QString originalRoot;
+    QMap<QString, ReagentTestCount> holeTestCounts;
+    QList<QPair<QString, ReagentTestCount>> projectTestCounts;
+    QStringList originalProjectOrder; // 原耗材窗口包含所有项目，顺序与原sendSequence配置一致。
 };
 
 Q_DECLARE_METATYPE(ReagentRecord)

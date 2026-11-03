@@ -1,4 +1,6 @@
 INCLUDEPATH += $$PWD $$PWD/.. $$PWD/../ui $$PWD/widgets $$PWD/widgets/material
+SOURCES += $$PWD/startup_splash.cpp
+HEADERS += $$PWD/startup_splash.h
 SOURCES += $$PWD/frmmain.cpp $$PWD/frmuserset.cpp $$PWD/history_shell.cpp $$PWD/shutdown_request.cpp \
            $$PWD/../data/hospital_store.cpp \
            $$PWD/../data/account_store.cpp $$PWD/../ui/frmaccountsetting.cpp \
@@ -53,6 +55,7 @@ HEADERS += $$PWD/printer_report_shell.h
 # O10-2独立两QPA各17/0通过后接入本地LIS设置，不加载原活动通信类。
 include($$PWD/../ui/lis_settings.pri)
 SOURCES += $$PWD/lis_shell.cpp
+include($$PWD/../lis_transport/lis_transport.pri)
 include($$PWD/../lis_raw_inbox/lis_raw_inbox.pri)
 SOURCES += $$PWD/lis_raw_inbox_shell.cpp
 # O11本地质控；真实测量/临床规则不进入此依赖闭包。
@@ -76,6 +79,8 @@ SOURCES += $$PWD/../ui/maskdlgshutdown.cpp
 HEADERS += $$PWD/../ui/maskdlgshutdown.h
 FORMS += $$PWD/../ui/maskdlgshutdown.ui
 SOURCES *= $$clean_path($$PWD/../original_files/original_ini.cpp) $$PWD/device_control_shell.cpp
+SOURCES *= $$clean_path($$PWD/../original_files/theme_configuration.cpp)
+SOURCES *= $$clean_path($$PWD/../original_files/original_runtime_settings.cpp)
 HEADERS *= $$clean_path($$PWD/../original_files/original_ini.h)
 
 # 原库读写依赖与ARM64 build.sh保持一致；仅链接后台不等于所有页面已接通。
@@ -101,3 +106,14 @@ HEADERS *= $$clean_path($$PWD/../original_files/original_business_database.h) \
            $$PWD/../original_files/original_ini_write.h \
            $$PWD/../original_files/original_system_profile.h \
            $$clean_path($$PWD/../reagents/original_reagent_editor.h)
+
+# 原Ql/QL新告警只在原资料联机模式启用，当前Qk/QK查询不写历史。
+SOURCES += $$PWD/../alarm_history/original_alarm_receiver.cpp
+HEADERS += $$PWD/../alarm_history/original_alarm_receiver.h
+
+# 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
+SOURCES *= $$PWD/reagent_level_shell.cpp
+
+# 任务提交后的主窗口接续；仅接原动作，不增加设备命令。
+SOURCES *= $$PWD/task_reagent_shell.cpp $$PWD/task_reagent_source.cpp $$PWD/../samples/original_task_reagent_receipt_writer.cpp
+HEADERS *= $$PWD/task_reagent_context.h $$PWD/../samples/original_task_reagent_receipt_writer.h $$PWD/../samples/original_task_reagent_receipt.h

@@ -94,8 +94,14 @@ void CalibrationStore::registerTypes()
 bool CalibrationStore::canEdit(const AccountSession &session)
 {
     if(!session.originalPolicySource.isEmpty())
-        return session.authenticated&&session.actionReady&&session.grantedPowerIds.contains(QStringLiteral("1"));
+        return session.authenticated&&session.grantedPowerIds.contains(QStringLiteral("1"));
     return session.authenticated && session.actionReady && session.role >= 1 && session.role <= 5;
+}
+
+bool CalibrationStore::canApplyOriginalCurve(const AccountSession &session)
+{
+    // 原Engineer=4、Administrator=5；人工应用另查工程师身份，不借审核权限或设备就绪状态补权。
+    return session.authenticated && !session.originalPolicySource.isEmpty() && session.role >= 4;
 }
 
 QString CalibrationStore::validate(const CalibrationRecord &record)

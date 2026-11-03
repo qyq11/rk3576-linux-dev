@@ -1,4 +1,6 @@
 #include "reagents_page.h"
+#include "original_reagent_level_runtime.h"
+#include "original_reagent_usage.h"
 #include "cusdialogmask.h"
 #include "cusmessagebox.h"
 #include "qtmaterialflatbutton.h"
@@ -164,18 +166,46 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
     connect(ui->btnReagentSet, &QPushButton::clicked, this, &ReagentsPage::openReagentEditor);
     connect(ui->btnReagentInfoSet, &QPushButton::clicked, this, &ReagentsPage::openHoleEditor);
     connect(ui->btnGroupSet, &QPushButton::clicked, this, &ReagentsPage::openBatchEditor);
+    connect(ui->btnUsaged,&QAbstractButton::clicked,this,&ReagentsPage::openUsageDialog);
     connect(ui->btnReagentInfoPage, &QPushButton::clicked, this,
         [this]() { ui->stkReagentInfo->setCurrentIndex(0); });
     connect(ui->btnReagentCountPage, &QPushButton::clicked, this,
         [this]()
         {
+            refreshTestCounts();
             ui->stkReagentInfo->setCurrentIndex(1);
-            showOffline(QStringLiteral("剩余测试次数计算：尚缺项目试剂消耗配置"));
         });
-    for (QAbstractButton* button : QList<QAbstractButton*> { ui->btnDect, ui->btnDectOne, ui->btnScan,
-             ui->btnChange, ui->btnChangeHole, ui->btnUpdatePriority, ui->btn_restore, ui->btn_clearPanel,
-             ui->btn_calibrationmode, ui->btnUsaged })
-        connect(button, &QAbstractButton::clicked, this, [this, button]() { showOffline(button->text()); });
+    connect(ui->btnDectOne, &QPushButton::clicked, this, [this]()
+    { requestOriginalDeviceOperation(QStringLiteral("detectOne"),QStringLiteral("是否进行试剂探测？")); });
+    connect(ui->btnDect, &QAbstractButton::clicked, this, [this]()
+    { requestOriginalDeviceOperation(QStringLiteral("detectAll"),QStringLiteral("是否进行试剂探测？")); });
+    connect(ui->btnChangeHole, &QPushButton::clicked, this, [this]()
+    { requestOriginalDeviceOperation(QStringLiteral("fillHole"),QStringLiteral("是否充满当前选中试剂?")); });
+    connect(ui->btnUpdatePriority, &QPushButton::clicked, this, [this]()
+    { requestOriginalDeviceOperation(QStringLiteral("prioritizeHole"),QStringLiteral("是否优先使用当前选中试剂?")); });
+    connect(ui->btn_clearPanel, &QAbstractButton::clicked, this, [this]()
+    { requestOriginalDeviceOperation(QStringLiteral("clearPanel"),QStringLiteral("是否清空所有试剂设置？")); });
+    // 参考源码默认禁用扫码、隐藏出口；现有SN450程序可见入口，SN500适用条件另核。
+    connect(ui->btnScan, &QAbstractButton::clicked, this, [this]()
+    { showOperationMessage(QStringLiteral("扫码"),QStringLiteral("当前机型的扫码启用条件和资料回读仍待核对，未开放此操作。")); });
+    connect(ui->btnChange, &QAbstractButton::clicked, this, [this]()
+    { showOperationMessage(QStringLiteral("转至出口"),QStringLiteral("当前机型的转至出口条件及完成通知仍待核对，未开放此操作。")); });
+    connect(ui->btn_restore, &QAbstractButton::clicked, this, [this]()
+    { showOperationMessage(QStringLiteral("恢复"),QStringLiteral("参考实现没有执行恢复操作，当前发行版的恢复行为仍待核对；本次未改资料或发送命令。")); });
+    connect(ui->btn_calibrationmode, &QAbstractButton::clicked, this, [this]()
+    { showOperationMessage(QStringLiteral("容量标定"),QStringLiteral("原容量标定模式、孔位编排和对应机型高度换算尚未完整接入，未开始标定。")); });
+    deviceOperationTimer_=new QTimer(this);
+    deviceOperationTimer_->setSingleShot(true);
+    connect(deviceOperationTimer_,&QTimer::timeout,this,[this]()
+    {
+        if (!pendingDeviceRequest_) return;
+        const QString operation=pendingDeviceOperation_;
+        pendingDeviceRequest_=0; pendingDeviceOperation_.clear(); deviceOperations_.clear();
+        store_->setOriginalDeviceOperationContext(0,QStringList());
+        setBusy(false);
+        showOperationMessage(operation,QStringLiteral("操作在等待时间内未得到完整确认，执行结果待核对；未重发。请先核设备与原资料回读，再重新开放操作。"));
+        emit operationFinished(operation,false);
+    });
     for (QTableWidget* table : { ui->projectUseageTable, ui->otherReagentUseageTable })
     {
         table->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -203,6 +233,10 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
     connect(
         this, &ReagentsPage::requestRemoveBottle, store, &ReagentStore::removeBottle, Qt::QueuedConnection);
     connect(this, &ReagentsPage::requestSaveBatch, store, &ReagentStore::saveBatch, Qt::QueuedConnection);
+    connect(this, &ReagentsPage::requestSaveOriginalBatchGroupEnabled, store,
+            &ReagentStore::saveOriginalBatchGroupEnabled, Qt::QueuedConnection);
+    connect(store, &ReagentStore::originalProjectGroupEnableCommitted, this,
+            [this](const ReagentProject &project) { pendingOriginalGroupCommit_=project; });
     connect(this, &ReagentsPage::requestRemoveBatch, store, &ReagentStore::removeBatch, Qt::QueuedConnection);
     connect(this, &ReagentsPage::requestSaveBarcode, store, &ReagentStore::saveBarcode, Qt::QueuedConnection);
     connect(
@@ -214,16 +248,33 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
         {
             snapshot_ = snapshot;
             ready_ = true;
-            setBusy(false);
+            setBusy(pendingDeviceRequest_!=0);
             applyPermissions();
             ui->reagentPanel->setSnapshot(snapshot_);
             selectHole(selectedHole_);
+            refreshTestCounts();
+            consumeOriginalLevelSnapshot();
+            ReagentProject savedGroupProject;
+            if (!pendingOriginalGroupCommit_.originalFileName.isEmpty())
+                for (const auto &project : projects_)
+                    // xuhao可由UP改写；提交后的重读按原工作根和实际文件名定位。
+                    if (project.originalRoot==pendingOriginalGroupCommit_.originalRoot &&
+                        project.originalFileName==pendingOriginalGroupCommit_.originalFileName &&
+                        !project.originalFingerprint.isEmpty())
+                    {
+                        savedGroupProject=project;
+                        pendingOriginalGroupCommit_=ReagentProject();
+                        break;
+                    }
             emit readyChanged(true);
             emit snapshotChanged(snapshot_);
+            if (!savedGroupProject.originalFingerprint.isEmpty()) emit originalProjectGroupEnabledSaved(savedGroupProject);
             if (!pendingSavedOperation_.isEmpty())
             {
                 const QString operation=pendingSavedOperation_; pendingSavedOperation_.clear();
-                emit operationMessage(operation,originalProfile_ ? QStringLiteral("原数据库保存并重新读取完成；设备同步状态另行核对") : QStringLiteral("本地保存并重新读取完成；未同步仪器"));
+                emit operationMessage(operation,operation==QStringLiteral("保存试剂组开关") ?
+                    QStringLiteral("试剂组开关已保存并重新读取；未同步仪器，请先完成项目重读并核对设备同步。") :
+                    originalProfile_ ? QStringLiteral("原数据库保存并重新读取完成；设备同步状态另行核对") : QStringLiteral("本地保存并重新读取完成；未同步仪器"));
                 emit operationFinished(operation,true);
             }
         });
@@ -241,12 +292,13 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
                 message=QStringLiteral("数据库已保存，但重新读取失败：")+message;
                 pendingSavedOperation_.clear();
             }
-            setBusy(false);
+            setBusy(pendingDeviceRequest_!=0);
             emit operationMessage(op, message);
             emit operationFinished(op, false);
             QToolTip::showText(mapToGlobal(QPoint(width() / 2, 50)), op + "：" + message, this);
         });
     applyPermissions();
+    initializeOriginalTaskReagentDisplay();
 }
 ReagentsPage::~ReagentsPage()
 {
@@ -256,8 +308,28 @@ ReagentsPage::~ReagentsPage()
 }
 void ReagentsPage::setProjects(ReagentProjects projects)
 {
-    if (originalProfile_) return; // 原项目由同一原库读取，不接受早期catalog编号覆盖。
+    if (originalProfile_)
+    {
+        // 主窗口的项目快照通知只用于使估算失效；不能用早期catalog编号覆盖原项目。
+        for (auto it=snapshot_.holeTestCounts.begin();it!=snapshot_.holeTestCounts.end();++it)
+        { it->available=false; it->reason=QStringLiteral("原项目资料已变化，正在重新读取用量。"); }
+        for (auto &entry : snapshot_.projectTestCounts)
+        { entry.second.available=false; entry.second.reason=QStringLiteral("原项目资料已变化，正在重新读取用量。"); }
+        refreshTestCounts(); selectHole(selectedHole_);
+        reloadOriginal();
+        return;
+    }
     projects_ = projects;
+}
+void ReagentsPage::configureLayout(int count)
+{
+    ui->reagentPanel->configureLayout(count);
+    if (count==42)
+    {
+        ui->reagentPanel->setGeometry(13,11,1111,941);
+        selectedHole_=QStringLiteral("A_1");
+    }
+    setProperty("configuredReagentPositions",count);
 }
 bool ReagentsPage::canEdit() const
 {
@@ -266,6 +338,15 @@ bool ReagentsPage::canEdit() const
 }
 void ReagentsPage::setSession(AccountSession session)
 {
+    const bool identityChanged=session_.name!=session.name || session_.role!=session.role ||
+        session_.authenticated!=session.authenticated || session_.source!=session.source ||
+        session_.originalPolicySource!=session.originalPolicySource || session_.grantedPowerIds!=session.grantedPowerIds;
+    if (identityChanged) setDeviceOperations(0,QStringList());
+    else if (!session.actionReady)
+    {
+        store_->setOriginalDeviceOperationContext(0,QStringList());
+        deviceOperations_.clear();
+    }
     session_ = session;
     emit requestSession(session);
     applyPermissions();
@@ -304,11 +385,169 @@ void ReagentsPage::setBusy(bool busy)
     if (!busy_ && !dirty_ && pendingOriginalReload_)
         QTimer::singleShot(0,this,&ReagentsPage::reloadOriginal);
 }
-void ReagentsPage::showOffline(QString action)
+void ReagentsPage::showOperationMessage(const QString &operation, const QString &message)
 {
-    const QString message = action + QStringLiteral("：设备未连接，未发送命令");
-    emit operationMessage(action, message);
+    emit operationMessage(operation, message);
     QToolTip::showText(QCursor::pos(), message, this);
+}
+
+void ReagentsPage::setDeviceOperations(quint64 connection, QStringList operations)
+{
+    store_->setOriginalDeviceOperationContext(connection,operations);
+    if (usageDialog_ && (!connection || connection!=deviceConnection_)) usageDialog_->invalidateDeviceData();
+    if (pendingDeviceRequest_ && connection!=deviceConnection_)
+    {
+        const QString operation=pendingDeviceOperation_;
+        pendingDeviceRequest_=0; pendingDeviceOperation_.clear(); deviceOperationTimer_->stop();
+        setBusy(false);
+        showOperationMessage(operation,QStringLiteral("连接已变化，原操作执行结果待核对；没有将新连接的回复归给旧操作。"));
+        emit operationFinished(operation,false);
+    }
+    deviceConnection_=connection;
+    deviceOperations_=connection ? operations : QStringList();
+}
+
+void ReagentsPage::requestOriginalDeviceOperation(const QString &operation, const QString &question)
+{
+    if (!originalProfile_ || !canEdit() || busy_ || dirty_ || dialog_ || pendingDeviceRequest_)
+    {
+        showOperationMessage(operation,QStringLiteral("当前账户、仪器占用状态或未保存的试剂资料不允许此操作。"));
+        return;
+    }
+    if ((operation==QStringLiteral("fillHole") && session_.role!=5) ||
+        (operation==QStringLiteral("clearPanel") && session_.role<4))
+    {
+        showOperationMessage(operation,QStringLiteral("当前账户没有此试剂操作权限。"));
+        return;
+    }
+    if (!deviceConnection_ || !deviceOperations_.contains(operation) ||
+        !receivers(SIGNAL(deviceOperationRequested(quint64,quint64,QString,QString))))
+    {
+        const QString blocker=operation==QStringLiteral("prioritizeHole") ? property("originalPriorityBlocker").toString() : QString();
+        showOperationMessage(operation,blocker.isEmpty() ?
+            QStringLiteral("主窗口尚未开放该操作的设备发送及完整回读流程，未修改资料或发送命令。") : blocker);
+        return;
+    }
+    const quint64 connection=deviceConnection_;
+    const QString hole=selectedHole_;
+    CusMessageBox confirmation(this);
+    confirmation.showQuestionBox(question);
+    if (confirmation.getClickButton()!=QMessageBox::Yes) return;
+    // 确认框打开期间仍会处理状态消息，确认后再次核对连接和权限。
+    if (connection!=deviceConnection_ || !deviceOperations_.contains(operation) || !canEdit() || busy_)
+    {
+        showOperationMessage(operation,QStringLiteral("确认期间设备连接或操作条件已变化，未执行。"));
+        return;
+    }
+    const quint64 request=++nextDeviceRequest_;
+    if (!store_->authorizeOriginalDeviceOperation(request,connection,operation))
+    {
+        showOperationMessage(operation,QStringLiteral("设备操作许可已经变化，未提交请求。"));
+        return;
+    }
+    pendingDeviceRequest_=request; pendingDeviceOperation_=operation;
+    setBusy(true);
+    deviceOperationTimer_->start(operation==QStringLiteral("detectOne") || operation==QStringLiteral("detectAll") ||
+        operation==QStringLiteral("fillHole") ? 60000 : 10000);
+    showOperationMessage(operation,QStringLiteral("正在请求主窗口核对设备条件；发送、执行和资料回读分别等待确认。"));
+    emit deviceOperationRequested(pendingDeviceRequest_,connection,operation,hole);
+}
+
+void ReagentsPage::deviceOperationProgress(quint64 request, quint64 connection, QString message)
+{
+    if (!request || request!=pendingDeviceRequest_ || connection!=deviceConnection_) return;
+    showOperationMessage(pendingDeviceOperation_,message);
+}
+
+void ReagentsPage::renewDeviceOperationWait(quint64 request, quint64 connection)
+{
+    if (!request || request!=pendingDeviceRequest_ || connection!=deviceConnection_) return;
+    // 主窗口仅在当前探测孔的有效N消息、且原灯状态为操作中时调用，与原等待续时一致。
+    if (pendingDeviceOperation_==QStringLiteral("detectOne") || pendingDeviceOperation_==QStringLiteral("detectAll") ||
+        pendingDeviceOperation_==QStringLiteral("fillHole")) deviceOperationTimer_->start(60000);
+}
+
+void ReagentsPage::finishDeviceOperation(quint64 request, quint64 connection, bool success, QString message)
+{
+    if (!request || request!=pendingDeviceRequest_ || connection!=deviceConnection_) return;
+    const QString operation=pendingDeviceOperation_;
+    deviceOperationTimer_->stop(); pendingDeviceRequest_=0; pendingDeviceOperation_.clear();
+    setBusy(false);
+    showOperationMessage(operation,message);
+    emit operationFinished(operation,success);
+    if (success) reloadOriginal();
+}
+
+void ReagentsPage::refreshTestCounts()
+{
+    ui->projectUseageTable->setRowCount(0);
+    // 原refreshUseageTable不显示稀释液区的可测次数，不能用装载量臆算。
+    ui->otherReagentUseageTable->setRowCount(0);
+    for (const auto &entry : snapshot_.projectTestCounts)
+    {
+        const int row=ui->projectUseageTable->rowCount();
+        ui->projectUseageTable->insertRow(row);
+        auto *name=new QTableWidgetItem(entry.first);
+        auto *count=new QTableWidgetItem(entry.second.available ? QString::number(entry.second.tests) : QStringLiteral("待核"));
+        name->setTextAlignment(Qt::AlignCenter); count->setTextAlignment(Qt::AlignCenter);
+        count->setToolTip(entry.second.available ? QStringLiteral("按原已存液量和项目单次用量估算；不代替开始前的选瓶、批组和扣量校验。") : entry.second.reason);
+        ui->projectUseageTable->setItem(row,0,name); ui->projectUseageTable->setItem(row,1,count);
+        ui->projectUseageTable->setRowHeight(row,41);
+    }
+}
+
+void ReagentsPage::openUsageDialog()
+{
+    if (!originalProfile_ || !ready_) return;
+    if (dialog_) { dialog_->raise(); return; }
+    if (!usageDialog_)
+    {
+        usageDialog_=new OriginalReagentUsageDialog(this);
+        usageDialog_->setThemeStyle(editorStyle(),QColor(232,51,35));
+        connect(usageDialog_,&OriginalReagentUsageDialog::feedbackRequested,this,[this](const QString &message,bool)
+        { showOperationMessage(QStringLiteral("试剂耗材"),message); });
+        connect(usageDialog_,&OriginalReagentUsageDialog::commandRequested,this,[this](const QByteArray &payload)
+        {
+            const QString operation=payload=="QH" ? QStringLiteral("queryUsage") : payload=="QI" ?
+                QStringLiteral("queryDeviceKey") : payload.startsWith("J[") && payload.endsWith(']') ?
+                QStringLiteral("updateUsage") : QString();
+            if (operation.isEmpty() || payload.size()>128000 || !deviceConnection_ ||
+                !deviceOperations_.contains(operation) ||
+                !receivers(SIGNAL(usageCommandRequested(quint64,QByteArray))))
+            {
+                showOperationMessage(QStringLiteral("试剂耗材"),QStringLiteral("设备耗材收发和资料回写尚未开放，未发送；未知次数继续显示问号。"));
+                return;
+            }
+            if (operation==QStringLiteral("updateUsage") && (!canEdit() || busy_))
+            {
+                showOperationMessage(QStringLiteral("试剂耗材"),QStringLiteral("当前账户或仪器状态不允许添加耗材，原输入保留。"));
+                return;
+            }
+            emit usageCommandRequested(deviceConnection_,payload);
+        });
+    }
+    QStringList names=snapshot_.originalProjectOrder;
+    if (names.isEmpty()) for (const auto &project : projects_) names.append(project.name);
+    usageDialog_->setProjects(names);
+    usageDialog_->openUsage();
+}
+
+void ReagentsPage::updateOriginalUsage(quint64 connection,QHash<QString,QString> projectHas,QHash<QString,QString> projectUsed)
+{
+    if (!connection || connection!=deviceConnection_ || !usageDialog_) return;
+    usageDialog_->setUsage(projectHas,projectUsed);
+}
+
+void ReagentsPage::updateOriginalDeviceKey(quint64 connection,QString key)
+{
+    if (!connection || connection!=deviceConnection_ || !usageDialog_) return;
+    usageDialog_->setDeviceKey(key);
+}
+
+void ReagentsPage::finishOriginalUsageImport(quint64 connection,bool success)
+{
+    if (!connection || connection!=deviceConnection_ || !usageDialog_) return;
+    usageDialog_->setImportResult(success);
 }
 void ReagentsPage::markDirty()
 {
@@ -376,6 +615,8 @@ void ReagentsPage::initializeDialog(QDialog* dialog)
         {
             dirty_ = false;
             dialog_.clear();
+            if (pendingOriginalReload_ && !busy_)
+                QTimer::singleShot(0,this,&ReagentsPage::reloadOriginal);
         });
     if (auto* mask = dialog->findChild<CusDialogMask*>("mask"))
     {
@@ -446,11 +687,16 @@ void ReagentsPage::selectHole(QString name)
     ui->lblBottleName->setText(bottle.id ? bottle.name : QStringLiteral("-"));
     ui->lblBatch->setText(snapshot_.originalProfile ? hole.originalBatch : batch.id ? batch.batchGroup : QStringLiteral("-"));
     ui->lblAmount->setText(hole.id ? QString::number(hole.remainingUl) : QStringLiteral("-"));
+    ui->lblAmount->setToolTip(QString());
     ui->lblOutDate->setText(hole.expiry);
     ui->lblKeepTime->setText("-");
     ui->lblSetDate->setText(hole.changedAt.section('T', 0, 0));
     ui->lblSetTime->setText(hole.changedAt.section('T', 1, 1));
-    ui->lblTests->setText("-");
+    const auto tests=snapshot_.holeTestCounts.value(name);
+    ui->lblTests->setText(!tests.available || !tests.tests ? QStringLiteral("-") :
+        tests.tests>999 ? QStringLiteral(">999") : QString::number(tests.tests));
+    ui->lblTests->setToolTip(tests.available ? QStringLiteral("按原已存液量估算，不表示本次设备液面已实测。") : tests.reason);
+    renderOriginalLevelViews();
 }
 void ReagentsPage::openReagentEditor()
 {
@@ -671,7 +917,7 @@ void ReagentsPage::openHoleEditor()
     form->setupUi(dialog);
     auto current = std::make_shared<ReagentHole>();
     current->name = selectedHole_;
-    current->area = selectedHole_.startsWith("R_") ? "r_area" : "s_area";
+    current->area = selectedHole_.startsWith("SD_") ? "s_area" : "r_area";
     for (const auto& h : snapshot_.holes)
         if (h.name == selectedHole_)
             *current = h;
@@ -825,6 +1071,8 @@ void ReagentsPage::openBatchEditor()
         form->tblProjReagentGroup->insertRow(row);
         auto* item = new QTableWidgetItem(p.name);
         item->setData(Qt::UserRole, p.id);
+        item->setData(Qt::UserRole+1, p.originalFileName);
+        item->setData(Qt::UserRole+2, p.originalRoot);
         form->tblProjReagentGroup->setItem(row, 0, item);
         form->tblProjReagentGroup->setRowHeight(row, 40);
     }
@@ -840,13 +1088,44 @@ void ReagentsPage::openBatchEditor()
     form->ldtNormalVal->setToolTip(form->ldtIsiVal->toolTip());
     form->btnIsiVal->setEnabled(false);
     form->btnNormal->setEnabled(false);
-    form->cbx_use_Batch_Group->setEnabled(false);
+    form->cbx_use_Batch_Group->setText(tr("是否启用试剂组功能"));
+    form->cbx_use_Batch_Group->setEnabled(originalProfile_);
     form->cbxRBatch->setEditable(true);
     auto refresh = [this, form, current]()
     {
-        QSignalBlocker blocker(form->tblGroup);
+        if (dirty_) return; // 失败回执或资料变化不能重填尚未保存的批组草稿。
+        QSignalBlocker blocker(form->tblGroup), groupSignals(form->cbx_use_Batch_Group), projectSignals(form->tblProjReagentGroup);
+        ReagentProject project;
+        const int projectRow=form->tblProjReagentGroup->currentRow();
+        auto *selectedProject=projectRow>=0 ? form->tblProjReagentGroup->item(projectRow,0) : nullptr;
+        for (const auto &candidate : projects_)
+            if (originalProfile_ ? selectedProject && !candidate.originalFileName.isEmpty() &&
+                    candidate.originalFileName==selectedProject->data(Qt::UserRole+1).toString() &&
+                    candidate.originalRoot==selectedProject->data(Qt::UserRole+2).toString() : candidate.id==current->projectId)
+            { project=candidate;break; }
+        if (originalProfile_)
+        {
+            if (!project.originalFileName.isEmpty())
+            {
+                // 同文件成功读回后采用实际新xuhao；表格旧序号不能把页面困在旧项目上。
+                current->projectId=project.id;
+                selectedProject->setData(Qt::UserRole,project.id);
+                selectedProject->setText(project.name);
+            }
+            else *current=ReagentBatch();
+        }
+        const bool committedUnread=!pendingOriginalGroupCommit_.originalFileName.isEmpty() &&
+            project.originalRoot==pendingOriginalGroupCommit_.originalRoot &&
+            project.originalFileName==pendingOriginalGroupCommit_.originalFileName;
+        const bool known=originalProfile_ && !committedUnread && !project.originalFingerprint.isEmpty() &&
+            (project.originalGroupEnabled==QStringLiteral("0") || project.originalGroupEnabled==QStringLiteral("1"));
+        const bool enabled=project.originalGroupEnabled==QStringLiteral("1");
+        form->cbx_use_Batch_Group->setTristate(!known);
+        form->cbx_use_Batch_Group->setCheckState(known ? (enabled ? Qt::Checked : Qt::Unchecked) : Qt::PartiallyChecked);
+        form->cbx_use_Batch_Group->setProperty("reagentBaseEnabled",known);
+        form->cbx_use_Batch_Group->setEnabled(known && canEdit() && !busy_);
         form->tblGroup->setRowCount(0);
-        int selected = -1;
+        int selected = -1, firstVisible = -1;
         for (const auto& b : snapshot_.batches)
             if (b.projectId == current->projectId)
             {
@@ -855,12 +1134,22 @@ void ReagentsPage::openBatchEditor()
                 auto* item = new QTableWidgetItem(b.code);
                 item->setData(Qt::UserRole, b.id);
                 form->tblGroup->setItem(row, 0, item);
-                if (b.id == current->id || (!current->id && b.code == current->code))
+                const bool hidden=originalProfile_ && (b.batchGroup==QStringLiteral("PTFbg") ||
+                    (b.batchGroup==QStringLiteral("Default") && (enabled || !project.name.startsWith(QStringLiteral("PT")))));
+                form->tblGroup->setRowHidden(row,hidden);
+                if (!hidden && firstVisible<0) firstVisible=row;
+                if (!hidden && (b.id == current->id || (!current->id && b.code == current->code)))
                 {
                     selected = row;
                     *current = b;
                 }
             }
+        if (originalProfile_ && selected<0 && !dirty_ && firstVisible>=0)
+        {
+            selected=firstVisible;
+            const qint64 id=form->tblGroup->item(selected,0)->data(Qt::UserRole).toLongLong();
+            for (const auto &batch : snapshot_.batches) if (batch.id==id) *current=batch;
+        }
         form->tblGroup->setCurrentCell(selected, 0);
         if (selected < 0 && current->id)
         {
@@ -874,6 +1163,29 @@ void ReagentsPage::openBatchEditor()
         form->ldtIsiVal->setText(current->isiValue);
         form->ldtNormalVal->setText(current->normalValue);
     };
+    connect(form->cbx_use_Batch_Group, &QCheckBox::clicked, dialog,
+        [this, form, current](bool enabled)
+        {
+            ReagentProject project;
+            for (const auto &candidate : projects_) if (candidate.id==current->projectId) project=candidate;
+            const QSignalBlocker blocker(form->cbx_use_Batch_Group);
+            form->cbx_use_Batch_Group->setChecked(project.originalGroupEnabled==QStringLiteral("1"));
+            if (!originalProfile_ || !canEdit() || busy_ || dirty_ || project.originalFingerprint.isEmpty())
+            {
+                showOperationMessage(QStringLiteral("保存试剂组开关"),QStringLiteral("请先保存或取消批组草稿，并确认账户、仪器状态和原项目资料就绪。"));
+                return;
+            }
+            // 点击即保存；没有调用下面的ISI/正常值保存，也没有发送设备命令。
+            setBusy(true);
+            emit requestSaveOriginalBatchGroupEnabled(project,enabled);
+        });
+    connect(this, &ReagentsPage::operationFinished, dialog,
+        [this,refresh](const QString &operation,bool success)
+        {
+            const bool groupReceipt=operation==QStringLiteral("保存试剂组开关") ||
+                (!success && operation==QStringLiteral("读取原试剂") && !pendingOriginalGroupCommit_.originalFileName.isEmpty());
+            if (groupReceipt && !dirty_) refresh();
+        });
     connect(form->tblProjReagentGroup, &QTableWidget::itemSelectionChanged, dialog,
         [this, form, current, refresh]()
         {
@@ -1208,6 +1520,11 @@ void ReagentsPage::setInstrumentBusy(bool busy)
 {
     if (instrumentBusy_==busy) return;
     instrumentBusy_=busy;
+    if (busy)
+    {
+        store_->setOriginalDeviceOperationContext(0,QStringList());
+        deviceOperations_.clear();
+    }
     QMetaObject::invokeMethod(store_,"setInstrumentBusy",Qt::QueuedConnection,Q_ARG(bool,busy));
     applyPermissions();
 }

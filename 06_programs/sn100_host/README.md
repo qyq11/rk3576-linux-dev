@@ -1,5 +1,31 @@
 # SN100 上位机移植
 
+**当前板B第八轮`08bc43a7`：24个基础软件检查通过、0失败，可选项0项未评估。**674份源码、381项输入、284个主对象及2个报告辅助对象的修订02完整构建、依赖/打包、保存和归档均实际0；14:34:39—14:35:01唯一自动专项四类退出0，19项启停记录齐全，6条发送仅查询主控状态（Qj），96格原文字/上报标记逐格一致。65535不代表物理读数有效。14:35:49结束后选择的程序版本仍为08，应用/检查器均已退出，原主控4550和5000监听正常，7份配置（6INI+1CFG）不变。可选项因启动前文件指纹清单仅root可读、运行检查器的普通用户lckfb无权读取而未执行，不是INI变化；未验证默认容器当前视图或新孔初建。任务下发和液面回报只有空闲关闭记录，真实业务、在途一次退出、真人实屏及资源预算仍待。[本轮实际记录](../../02_records/20261022_sn100_host_migration.md#integration-08-live-20261103) · [固定专项证据](../../04_references/sn100_host/board_b/20261103_status_login_08/collection_scope.md) · [构建证据](../../04_references/sn100_host/workflow_night_20261102/integration_08/README.md) · [程序与源码](../../07_backups/sn100_host/board_b/workflow_integration_20261102/integration_08/README.md)。
+
+[新总管理窗口唯一交接](../../02_records/20261022_sn100_host_migration.md#root-manager-handoff-20261103)：先修公开SHA清单的最小读取条件并同版复测，其余候选独立审阅后按依赖串行整合。下方第07轮及更早段落保留历史时点，当前以本段及同一记录末尾为准。
+
+**板B第七轮`94d1b979`原资料联机软件检查24项通过、0失败。**同版277个正式对象的检查器于11:03:40–11:03:59运行，96格文字及上报标记与本次原RX逐格一致，18项启动/关闭记录齐全，四类退出码全0，7条TX均为Qj状态查询。11:09后验程序已关闭、唯一原主控仍运行、三份应用INI及四份主控配置指纹不变。N真实保存/在途退出、明确保存下发、任务、真人键鼠实屏及资源预算仍待验；[固定专项证据](../../04_references/sn100_host/board_b/20261103_status_login_07/collection_scope.md)已归档。[实际结果及限制](../../02_records/20261022_sn100_host_migration.md#integration-07-live-20261103) · [构建证据](../../04_references/sn100_host/workflow_night_20261102/integration_07/README.md) · [匹配程序与源码](../../07_backups/sn100_host/board_b/workflow_integration_20261102/integration_07/README.md)。
+
+**前轮`14ce9714`原资料软件专项24项通过。**同版267个正式对象保留真实主入口，01:44:12–01:44:32连接原主控，24路96格原文字及本次上报标记与新连接回包逐格一致；检查、应用、封装和场景退出均0，17项启动/关闭记录齐全，7条TX仅Qj状态查询。程序已关闭，原主控继续运行。65535物理有效性、真实密码/实体键鼠/实屏、Uh保存、校准同步、本地复制及恢复、资源预算仍待验；普通/批组保存生产入口和N液面回报另批衔接。[实际记录与范围](../../02_records/20261022_sn100_host_migration.md#integration-06-live-20261103) · [649份源码及完整构建证据](../../04_references/sn100_host/workflow_night_20261102/integration_06/README.md) · [程序与源码](../../07_backups/sn100_host/board_b/workflow_integration_20261102/integration_06/README.md)。
+
+**前轮`e31491a1`原资料状态/登录软件专项20项通过。**四类结果码均0，全程7条发送仅实际Qj；当时AD回包25/26计数差异拒收，06已按原行为修复并实核96格。[原实际证据与限制](../../04_references/sn100_host/board_b/20261102_status_login_05/README.md)。真实密码、实体键鼠/实屏、红色退出重开、绿灯、该批均值/主题/重连/批组操作及资源预算继续分别待验。[原构建证据](../../04_references/sn100_host/workflow_night_20261102/integration_05/README.md) · [原程序/源码](../../07_backups/sn100_host/board_b/workflow_integration_20261102/integration_05/README.md)。42/48及800/405保护保持，批组到主控参数同步另批接。
+
+板B原主控已按原脚本、原配置恢复，启动SSH断开后的两次独立检查仍运行；退出原因待核，硬件/校准警告未解决。[本次恢复与日志入口](../../04_references/sn100_host/board_b/20261102_controller_restore/README.md)。原资料基础联机结果见上方第七轮，真实业务仍分别待验。
+
+板B已安装`sqlite3=3.45.1-1ubuntu2.8`，便于直接检查实际数据库；仅新增命令行工具，未升级现有运行库。原定标/默认试剂库的只读字段和匿名数量检查通过，未写业务库、未执行复制。[安装及核对证据](../../04_references/sn100_host/workflow_night_20261102/sqlite3_20261102/README.md) · [安装包](../../07_backups/sn100_host/board_b/sqlite3_20261102/README.md)。
+
+**第三批流程修补`4e6c321f`已完整编译并保存到板B：**优先使用、项目默认定标参数、原权限、校准并发保护、启动登录及直接入口单实例八份窄补丁已完整链接/依赖检查/打包，639项匹配源码解包及板B独立目录文件/动态库核对通过。没有切换current或执行新程序；当前42/48差异继续阻断设备操作，主控已恢复，实际功能、界面和资源待验。后续均值/主题、重连、通道及N换算继续准备。[固定证据](../../04_references/sn100_host/workflow_night_20261102/integration_04/README.md) · [程序与源码](../../07_backups/sn100_host/board_b/workflow_integration_20261102/integration_04/README.md)。
+
+**第二批流程版本`d71e4cf4`已完整编译并保存到板B：**261个ARM64对象、主程序及报告程序链接、依赖、打包、639项匹配源码解包核对和板B独立发布目录指纹/动态库检查通过，未切换current或运行新程序。范围为质控/定标任务、Qq通道读数、试剂剩余次数/耗材界面和LIS基础，设备动作及真实LIS连接未开放。优先使用、项目默认参数、校准权限与启动登录等后续修补另批整合；RK功能和仪器验证继续待验。[固定证据](../../04_references/sn100_host/workflow_night_20261102/integration_03/README.md) · [程序与源码](../../07_backups/sn100_host/board_b/workflow_integration_20261102/integration_03/README.md) · [当前卡](../../01_docs/plans/sn100_host_migration_plan.md#workflow-night-20261102)。
+
+**20:36板B待联机新版本：**`3cfcea34`已完成完整ARM64编译/链接、依赖、打包和板B独立目录暂存，文件指纹及动态库检查通过；尚未切换或运行新版本。current仍为`7c4abe30`，主控已停止，业务及仪器验证待恢复安排明确后继续。本批代码包括报告翻条、同步/任务错误恢复、运行态进入资料权限、告警保存/退出排空及项目保存前备份。[证据与边界](../../04_references/sn100_host/workflow_night_20261102/integration_02/README.md) · [恢复输入](../../07_backups/sn100_host/board_b/workflow_integration_20261102/integration_02/README.md)。下文较早的发布、启动和测试结论按各自时点理解。
+
+**2026-11-02后续不再做脱机测试。**板B旧测试资料已删除；日常使用`/home/rkshare/programs/sn100_shell/runtime/data`中的原配置和配套资料，后续直接连接主控验证。下文匿名资料及脱机用例保留为历史说明，不再作为后续测试步骤；遇到控制/运行异常先查实际生效的INI。[清理结果与后续约定](../../02_records/20261022_sn100_host_migration.md#remove-offline-data-20261102)。
+
+**板B局域网入口：**2026-11-02已接入503无线网络，当前可从Windows打开`\\192.168.3.59\rkshare\programs\sn100_shell`，共享用root及本轮指定密码登录；有线入口仍用`192.168.100.123`。无线IP由路由器分配，可能变化。开机登录、WiFi自动连接与无线共享已实际核对，上位机仍以原lckfb用户手动运行。[登录与无线记录](../../04_references/workspace_setup/root_login_board_b_20261102/README.md)。
+
+**2026-11-02较早的板B发布记录：**`eb9d9ae6`已使用完整原资料和用户新SN500主题，42试剂位、普通5孔/急诊5孔、24通道。完整ARM64编译及RK专项17/0、实际退出0；正式程序实际连接同板主控，正常关闭退出0并重开，初始两轮141份原工作文件指纹一致。随后用户手动操作并关闭，试剂库已更新，项目同步仍报回包不对应；主控继续运行。保留原登录，当前未启动检测；主控试剂位48与附件42、归位失败和完整仪器流程仍待核。root终端用`runuser -u lckfb -- bash /home/rkshare/programs/sn100_shell/sn100.sh status`查看，末尾改`start`打开或`stop`正常关闭。[本轮配置、日志及范围](../../04_references/sn100_host/board_b/20261102_sn500_connection/README.md)。此前ef294a92匿名部署和板A结果保留历史范围。
+
 **2026-10-30最新：试剂有效期日历和名称列表顺序已恢复原行为，正式发布`ef294a92`。**日历取消、选中后取消孔位、保存/对应回读/编辑器重开、空日期、两区域有效候选顺序及注销恢复在RK整组8/0、实屏7/0，均退出0；统一和独立ARM64编译通过。安装后两次匿名实屏启动、正常关闭重开通过，最终程序关闭、显示和锁释放；未连接真实仪器，没有覆盖现场数据/配置。首轮失败及修正均保留。[证据与边界](../../04_references/sn100_host/reagent_calendar_20261030/README.md)。下一步按原计划准备真实连接、状态和版本核对，算法继续暂缓；本轮不自动接机。
 
 **2026-10-30两项收尾与当前安装版本：**原质控/校准资料页和试剂批组选项已统一全量ARM64重编、直接RK验证并发布为`a247d2f8`。质控/校准无窗口8/0、实屏6/0，批组无窗口及实屏各3/0；同批任务链7/0、设置11/0、报告14/0，实际退出均0。安装后的正式程序用自产匿名资料两次实屏启动、正常关闭和重开通过，最终保持关闭。没有改生产业务以迁就测试，没有读写现场患者/账户/运行库或自动连接仪器；物理键鼠、完整原Windows视觉、资源门槛及长稳另验。[证据与交接](../../04_references/sn100_host/resume_20261030/README.md)、[匹配应用与源码恢复输入](../../07_backups/sn100_host/resume_20261030/README.md)。本次两项结束，不自动接日期日历、候选顺序、任务或算法。
@@ -674,6 +700,8 @@ QT_QPA_PLATFORM=offscreen SN100_INTEGRATED_REPORT_EVIDENCE_DIR="$SN100_SHELL_WOR
 <a id="rk-prepare"></a>
 
 ## RK统一界面：离线准备与上机入口
+
+**板B当前资料选择（2026-11-02）：**用户要求日常上机改用整套原Windows配置，141份资料已按原分类放入`/home/rkshare/programs/sn100_shell/runtime/data`，原测试资料移到同板备用目录。日常`sn100.sh`检测到`original_project_root`后沿用原账户/登录，不追加匿名管理员；本次SN500主题、同板连接地址及逐键改动见[板B原配置记录](../../04_references/sn100_host/board_b/20261102_original_files/README.md)。下面匿名初始化方式保留为历史与显式测试用法，不作为这块板当前上机的数据来源。
 
 本节命令在 **WSL Ubuntu-24.04 / qyq、项目的`06_programs/`目录**执行。O03-3离线准备已有[历史结果](../../02_records/20261022_sn100_host_migration.md#rk-prepare-20261023)，O03-4报告报告辅助程序、字体与依赖构建/运行组件完整性检查/固定版本也已通过；当前准备范围另含项目/单位、试剂、样本及QtSvg，修后ARM最终审计已通过。下面部署、预检、启动、停止及回收的RK命令尚未在实板执行，当前状态以[本轮记录](../../02_records/20261022_sn100_host_migration.md#catalog-sample-offline-20261024)为准。
 

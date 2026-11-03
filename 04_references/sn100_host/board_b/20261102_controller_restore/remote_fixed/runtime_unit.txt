@@ -1,0 +1,13 @@
+# /run/systemd/transient/sn100-original-controller-board-b.service
+# This is a transient unit file, created programmatically via the systemd API. Do not edit.
+[Unit]
+Description=Board B original controller restored by user request
+
+[Service]
+Restart=no
+KillMode=control-group
+WorkingDirectory=/userdata/shared
+UMask=0027
+Type=exec
+ExecStart=
+ExecStart="/usr/bin/bash" "/home/rkshare/programs/aca_flow_test/run_correct_live.sh"

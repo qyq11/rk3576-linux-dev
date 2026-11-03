@@ -1,0 +1,79 @@
+{
+  "format": "sn100-integration-08-inventory-defect-controlled-stop-v1",
+  "kind": "controlled_stop_after_source_inventory_defect_found",
+  "actual_wsl_exit": 13,
+  "build_exit_record_present": false,
+  "build_complete_present": false,
+  "published_binaries_present": false,
+  "partial_object_count": 20,
+  "source_manifest_item_count": 674,
+  "listed_unique_inputs": 370,
+  "listed_source_count": 173,
+  "listed_header_count": 135,
+  "missing_new_source_or_header_inputs": [
+    "reagents/original_reagent_level_task.cpp",
+    "reagents/original_task_reagent_display.cpp",
+    "reagents/original_task_reagent_display.h",
+    "reagents/original_task_reagent_readback.cpp",
+    "reagents/reagents_page_task.cpp",
+    "samples/original_task_reagent_receipt.h",
+    "samples/original_task_reagent_receipt_writer.cpp",
+    "samples/original_task_reagent_receipt_writer.h",
+    "shell/task_reagent_context.h",
+    "shell/task_reagent_shell.cpp",
+    "shell/task_reagent_source.cpp"
+  ],
+  "source_build_sh_before_sha256": "97d5844e0d06cb4269ea8f75f8caee6b893d4a70d9e335b6715775d50cbbac8b",
+  "cause": "新增七个源文件在list_inputs提前退出之后才追加，四个新增配套头也未列入headers；实际编译源与导出清单不一致，后续对象核对不能通过。",
+  "stop_scope": "验证实际08构建命令、cwd及PGID307成员后发送TERM；另一次ps确认组及编译器均已退出。",
+  "exit_scope": "13是本次主动停止后WSL返回的真实值，不是编译错误代码或编译成功；build_exit.txt实际缺失，未补造。",
+  "compiled_complete": false,
+  "program_executed": false,
+  "deployed": false,
+  "evidence": [
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_build_dispatch/started.json",
+      "sha256": "5c7ab2b68a3e55202b4aed895adabf61013892d55009bda576d434c0c46489f6"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_build_dispatch/execution.log",
+      "sha256": "dc6c636d52ee3e942f3d60bd1a656455dedf05b14820a1d988ebd4cbe6cc9b41"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_build_dispatch/execution.exit",
+      "sha256": "f7c4f4cc6c99f0e5d21986eaf4e0ee5170b03b05ba444a6b2792a902e38f07b2"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_build_dispatch/inventory_stop.log",
+      "sha256": "9162ff7c4e6ac8c7fd0ff6129ed0ef0a06e4123a9a0c7083af24a029f1707548"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_build_dispatch/inventory_stop.exit",
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08/logs/build.log",
+      "sha256": "07e3ee6490b75e93628dde45134014ee8807df75be4d99aa28dda058688e7454"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08/build_inputs.tsv",
+      "sha256": "bb754898b5f3afbf6833b83f3847f450a413117ebfe19c86b99c1bb026f3fb13"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08/input_verification.json",
+      "sha256": "c8b1ba3ae05aeb356336dfc2e3b5fe5dc91614afbfbb947ac18a72a1134d9f67"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08/source_snapshot.json",
+      "sha256": "bac841ac46f7a0cce183063c5bbcb4b51153eac458733d58a0ae45ff886ead82"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/invoke_build_08.py",
+      "sha256": "535e4e1f46852a8ca11ff794e678e245387e5ea67a70b7ed9108b255b513f52e"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/stop_build_08_for_inventory_01.py",
+      "sha256": "ac88296428b31a7254c1d628c69ccbeb21082f50ea969a64b9f37512c0107050"
+    }
+  ]
+}

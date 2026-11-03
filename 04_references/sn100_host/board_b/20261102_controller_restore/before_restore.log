@@ -1,0 +1,176 @@
+UTC_NOW=2026-11-02T15:17:09Z
+LOCAL_NOW=2026-11-02T23:17:09+0800
+SERIAL=8314b1e8ffd0321f
+UPTIME=21396.44 161359.96
+
+CONTROLLER_PROCESSES
+
+PORT_5000
+State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+
+ORIGINAL_LAUNCHER
+#!/usr/bin/env bash
+# 使用用户最终确认的主控文件，实时显示并保存原始日志；终端Ctrl+C结束。
+set -Eeuo pipefail
+test "$(tr -d '\0' </proc/device-tree/serial-number)" = 8314b1e8ffd0321f
+cd /userdata/shared
+test "$(sha256sum ACA_V1.0OffLineD-500 | cut -d' ' -f1)" = ee8e1932f9a9f33d0bbffebfc9e161515dd79a53f50c78da274b04ef837d81ff
+for exe in /proc/[0-9]*/exe; do
+    path=$(readlink "$exe" || true)
+    case "$path" in
+        */ACA_V1.0OffLineD-500|*/ACA_V1.0D-500) printf '主控已经在运行：%s\n' "$path"; exit 1 ;;
+    esac
+done
+run=/home/rkshare/programs/aca_flow_test/runs/correct_05
+live=$run/live_$(date +%Y%m%d_%H%M%S)
+mkdir -m 750 "$live"
+printf '%s\n' "$live" >"$run/latest_live_path.txt"
+printf '板B主控实时日志：本次正确文件，已去掉(1)。按 Ctrl+C 结束。\n程序：/userdata/shared/ACA_V1.0OffLineD-500\n日志：%s/program.log\n\n' "$live"
+date -Is >"$live/started_at.txt"
+set +e
+trap ':' INT TERM
+LD_LIBRARY_PATH=/userdata/shared stdbuf -oL -eL ./ACA_V1.0OffLineD-500 2>&1 | tee "$live/program.log"
+code=${PIPESTATUS[0]}
+set -e
+printf 'PROGRAM_EXIT=%s\n' "$code" | tee "$live/result.txt"
+date -Is >"$live/ended_at.txt"
+exit "$code"
+
+CORRECT_EXECUTABLE
+/userdata/shared/ACA_V1.0OffLineD-500 10131952 root:root 755 2026-11-02 17:38:02.646664648 +0800
+ee8e1932f9a9f33d0bbffebfc9e161515dd79a53f50c78da274b04ef837d81ff  /userdata/shared/ACA_V1.0OffLineD-500
+
+OLD_RUN_FILES
+program.log 1918618 2026-11-02T19:53:12.1584932000
+started_at.txt 26 2026-11-02T17:38:07.0467275680
+
+OLD_LOG_TAIL
+[0m[1;36m->19:52:41.361982 us(9128094ms)Select/ tcp_server.cpp L162] end data receive success,g_ReceiveSpliteData.size=1
+[0m[1;32m->19:52:41.362695 us(9128095ms)Main/ main.cpp L580] PcReceive_Protocol success and g_ReceiveSpliteData.size=0,curReceive.size=2
+[0m[1;32m->19:52:41.362741 us(9128095ms)Main/ pccommreceiver.cpp L84] PCQuery_Cmd,size=1
+[0m[1;36m->19:52:42.162651 us(9128895ms)Select/ iselect.cpp L211] thread_TCPListen tid=39608, UseTime(us)=112.
+[0m[1;36m->19:52:42.429197 us(9129161ms)Select/ tcp_server.cpp L227] g_pcRevPacketDataList.size=0,curPacketIndex=0,totalPacketCount=1
+[0m[1;36m->19:52:42.429362 us(9129161ms)Select/ tcp_server.cpp L162] end data receive success,g_ReceiveSpliteData.size=1
+[0m[1;32m->19:52:42.429901 us(9129162ms)Main/ main.cpp L580] PcReceive_Protocol success and g_ReceiveSpliteData.size=0,curReceive.size=2
+[0m[1;32m->19:52:42.429935 us(9129162ms)Main/ pccommreceiver.cpp L84] PCQuery_Cmd,size=1
+[0m[1;32m->19:52:42.530402 us(9129262ms)Main/ main.cpp L547] main tid=39408, maincnt=14329818,main OneUse(us)=551.TCPClientFd=7
+[0m[1;37m->19:52:43.277520 us(9130010ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=8075107000,TestCnt=64353566,useTimeUs=1022,useTimeMax=25018,main_step=0,g_MainState=[2]MainState_Ready,g_WorkType=[1]WorkType_Idle,ErrorType=7,g_isHomeAllSuccess=1
+[0m[1;36m->19:52:43.469275 us(9130201ms)Select/ tcp_server.cpp L227] g_pcRevPacketDataList.size=0,curPacketIndex=0,totalPacketCount=1
+[0m[1;36m->19:52:43.469408 us(9130201ms)Select/ tcp_server.cpp L162] end data receive success,g_ReceiveSpliteData.size=1
+[0m[1;32m->19:52:43.469520 us(9130202ms)Main/ main.cpp L580] PcReceive_Protocol success and g_ReceiveSpliteData.size=0,curReceive.size=2
+[0m[1;32m->19:52:43.469541 us(9130202ms)Main/ pccommreceiver.cpp L84] PCQuery_Cmd,size=1
+[0m[1;33m->19:52:44.067600 us(9130800ms)AD/ thread_ad.cpp L671] AD485dTimeSum=8088910033,485Cnt=80748,485CalCnt=80748,485MaxUse(us)=329,485dTimeMax(us)=112069
+[0m[1;33m->19:52:44.067729 us(9130800ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=8074800160,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[0;30;43m->19:52:44.153156 us(9130885ms)Warning/ tcp_server.cpp L174] tcp recv error!
+[0mrecv: Connection reset by peer
+[1;36m->19:52:44.153374 us(9130885ms)Select/ iselect.cpp L87] updataFD end minfd=6, maxfd=6!
+[0m[1;36m->19:52:44.153403 us(9130885ms)Select/ iselect.cpp L95] select_ctl ESELECT_CTL_DEL fd=7
+[0m[1;36m->19:52:44.153413 us(9130885ms)Select/ iselect.cpp L100] del gSt_SelectCtrl[1] selectCnt=1, fd=7, type(0)SELECT_TCPListen, min=6, max=6
+[0m[1;36m->19:52:44.153425 us(9130886ms)Select/ tcp_server.cpp L185] tcp client 7 disconnected! gSt_SelectCtrl.TcpClientCnt=0
+[0m[1;31m->19:52:45.212151 us(9131944ms)CAN/ thread_can.cpp L501] CANCalCnt=62967352,max_checkAll(us)=3999,max_CANAll(us)=300,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->19:52:47.162718 us(9133895ms)Select/ iselect.cpp L211] thread_TCPListen tid=39608, UseTime(us)=97.
+[0m[1;32m->19:52:47.530896 us(9134263ms)Main/ main.cpp L547] main tid=39408, maincnt=14338814,main OneUse(us)=540.TCPClientFd=0
+[0m[1;37m->19:52:48.277591 us(9135010ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=8080107071,TestCnt=64395258,useTimeUs=1033,useTimeMax=25018,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=7,g_isHomeAllSuccess=0
+[0m[1;33m->19:52:49.167532 us(9135900ms)AD/ thread_ad.cpp L671] AD485dTimeSum=8094015651,485Cnt=80799,485CalCnt=80799,485MaxUse(us)=329,485dTimeMax(us)=112069
+[0m[1;33m->19:52:49.168308 us(9135900ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=8079900094,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->19:52:50.212224 us(9136944ms)CAN/ thread_can.cpp L501] CANCalCnt=63007669,max_checkAll(us)=3999,max_CANAll(us)=300,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->19:52:52.162790 us(9138895ms)Select/ iselect.cpp L211] thread_TCPListen tid=39608, UseTime(us)=120.
+[0m[1;32m->19:52:52.531099 us(9139263ms)Main/ main.cpp L547] main tid=39408, maincnt=14347730,main OneUse(us)=602.TCPClientFd=0
+[0m[1;37m->19:52:53.277660 us(9140010ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=8085107141,TestCnt=64435496,useTimeUs=1033,useTimeMax=25018,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=7,g_isHomeAllSuccess=0
+[0m[1;33m->19:52:54.267692 us(9141000ms)AD/ thread_ad.cpp L671] AD485dTimeSum=8099123121,485Cnt=80850,485CalCnt=80850,485MaxUse(us)=329,485dTimeMax(us)=112069
+[0m[1;33m->19:52:54.267914 us(9141000ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=8085000245,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->19:52:55.212244 us(9141944ms)CAN/ thread_can.cpp L501] CANCalCnt=63046381,max_checkAll(us)=3999,max_CANAll(us)=300,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->19:52:57.162902 us(9143895ms)Select/ iselect.cpp L211] thread_TCPListen tid=39608, UseTime(us)=176.
+[0m[1;32m->19:52:57.531595 us(9144264ms)Main/ main.cpp L547] main tid=39408, maincnt=14356596,main OneUse(us)=538.TCPClientFd=0
+[0m[1;37m->19:52:58.277677 us(9145010ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=8090107156,TestCnt=64475235,useTimeUs=1498,useTimeMax=25018,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=7,g_isHomeAllSuccess=0
+[0m[1;33m->19:52:59.367601 us(9146100ms)AD/ thread_ad.cpp L671] AD485dTimeSum=8104230608,485Cnt=80901,485CalCnt=80901,485MaxUse(us)=329,485dTimeMax(us)=112069
+[0m[1;33m->19:52:59.367770 us(9146100ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=8090100161,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->19:53:00.212253 us(9146944ms)CAN/ thread_can.cpp L501] CANCalCnt=63085226,max_checkAll(us)=3999,max_CANAll(us)=300,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->19:53:02.162883 us(9148895ms)Select/ iselect.cpp L211] thread_TCPListen tid=39608, UseTime(us)=104.
+[0m[1;32m->19:53:02.531968 us(9149264ms)Main/ main.cpp L547] main tid=39408, maincnt=14365452,main OneUse(us)=539.TCPClientFd=0
+[0m[1;37m->19:53:03.277801 us(9150010ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=8095107284,TestCnt=64514933,useTimeUs=1019,useTimeMax=25018,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=7,g_isHomeAllSuccess=0
+[0m[1;33m->19:53:04.367673 us(9151100ms)AD/ thread_ad.cpp L671] AD485dTimeSum=8109238125,485Cnt=80951,485CalCnt=80951,485MaxUse(us)=329,485dTimeMax(us)=112069
+[0m[1;33m->19:53:04.368584 us(9151101ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=8095100232,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->19:53:05.212400 us(9151944ms)CAN/ thread_can.cpp L501] CANCalCnt=63123862,max_checkAll(us)=3999,max_CANAll(us)=300,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->19:53:07.162895 us(9153895ms)Select/ iselect.cpp L211] thread_TCPListen tid=39608, UseTime(us)=91.
+[0m[1;32m->19:53:07.532448 us(9154265ms)Main/ main.cpp L547] main tid=39408, maincnt=14374336,main OneUse(us)=541.TCPClientFd=0
+[0m[1;37m->19:53:08.277951 us(9155010ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=8100107427,TestCnt=64554980,useTimeUs=1265,useTimeMax=25018,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=7,g_isHomeAllSuccess=0
+[0m[1;33m->19:53:09.467588 us(9156200ms)AD/ thread_ad.cpp L671] AD485dTimeSum=8114346260,485Cnt=81002,485CalCnt=81002,485MaxUse(us)=329,485dTimeMax(us)=112069
+[0m[1;33m->19:53:09.467953 us(9156200ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=8100200149,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->19:53:10.212416 us(9156944ms)CAN/ thread_can.cpp L501] CANCalCnt=63163154,max_checkAll(us)=3999,max_CANAll(us)=300,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->19:53:12.162911 us(9158895ms)Select/ iselect.cpp L211] thread_TCPListen tid=39608, UseTime(us)=99.
+[0m
+EXIT_AND_CORE_FILES
+/userdata/shared/core/core_ACA_V1_20260828_163951 1476 2026-11-02T17:11:51.0000000000
+/userdata/shared/core/core_ACA_V1_00006 771 2026-11-02T17:11:51.0000000000
+/userdata/shared/core/core_ACA_V1_00007 729 2026-11-02T17:11:51.0000000000
+/userdata/shared/core/core_ACA_V1_00003 565 2026-11-02T17:11:51.0000000000
+/userdata/shared/core/core_ACA_V1_00005 771 2026-11-02T17:11:51.0000000000
+/userdata/shared/core/core_ACA_V1_00004 565 2026-11-02T17:11:51.0000000000
+
+KERNEL_FAILURES
+
+RECENT_SERVICE_FAILURES
+2026-11-02T19:50:46+08:00 localhost sshd[72580]: Received disconnect from 192.168.100.200 port 55471:11: disconnected by user
+2026-11-02T19:50:46+08:00 localhost sshd[72580]: Disconnected from user root 192.168.100.200 port 55471
+2026-11-02T19:50:46+08:00 localhost sshd[72580]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:50:46+08:00 localhost sshd[72638]: Received disconnect from 192.168.100.200 port 55476:11: disconnected by user
+2026-11-02T19:50:46+08:00 localhost sshd[72638]: Disconnected from user root 192.168.100.200 port 55476
+2026-11-02T19:50:46+08:00 localhost sshd[72638]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:51:03+08:00 localhost runuser[73448]: pam_unix(runuser:session): session closed for user lckfb
+2026-11-02T19:51:04+08:00 localhost sshd[72698]: Received disconnect from 192.168.100.200 port 55516:11: disconnected by user
+2026-11-02T19:51:04+08:00 localhost sshd[72698]: Disconnected from user root 192.168.100.200 port 55516
+2026-11-02T19:51:04+08:00 localhost sshd[72698]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:51:13+08:00 localhost sshd[73552]: Received disconnect from 192.168.100.200 port 55582:11: disconnected by user
+2026-11-02T19:51:13+08:00 localhost sshd[73552]: Disconnected from user root 192.168.100.200 port 55582
+2026-11-02T19:51:13+08:00 localhost sshd[73552]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:52:20+08:00 localhost sshd[73709]: Received disconnect from 192.168.100.200 port 49210:11: disconnected by user
+2026-11-02T19:52:20+08:00 localhost sshd[73709]: Disconnected from user root 192.168.100.200 port 49210
+2026-11-02T19:52:20+08:00 localhost sshd[73709]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:52:30+08:00 localhost sshd[73768]: Received disconnect from 192.168.100.200 port 49233:11: disconnected by user
+2026-11-02T19:52:30+08:00 localhost sshd[73768]: Disconnected from user root 192.168.100.200 port 49233
+2026-11-02T19:52:30+08:00 localhost sshd[73768]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:52:44+08:00 localhost runuser[73677]: pam_unix(runuser:session): session closed for user lckfb
+2026-11-02T19:52:44+08:00 localhost sshd[73610]: Received disconnect from 192.168.100.200 port 55588:11: disconnected by user
+2026-11-02T19:52:44+08:00 localhost sshd[73610]: Disconnected from user root 192.168.100.200 port 55588
+2026-11-02T19:52:44+08:00 localhost sshd[73610]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:53:12+08:00 localhost sshd[73835]: Received disconnect from 192.168.100.200 port 49345:11: disconnected by user
+2026-11-02T19:53:12+08:00 localhost sshd[73835]: Disconnected from user root 192.168.100.200 port 49345
+2026-11-02T19:53:12+08:00 localhost sshd[73835]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:53:12+08:00 localhost sshd[38601]: Received disconnect from 192.168.3.37 port 61413:11: disconnected by user
+2026-11-02T19:53:12+08:00 localhost sshd[38601]: Disconnected from user root 192.168.3.37 port 61413
+2026-11-02T19:53:12+08:00 localhost sshd[38601]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:53:22+08:00 localhost sshd[71961]: Received disconnect from 192.168.3.37 port 53073:11: disconnected by user
+2026-11-02T19:53:22+08:00 localhost sshd[71961]: Disconnected from user root 192.168.3.37 port 53073
+2026-11-02T19:53:22+08:00 localhost sshd[71961]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:54:37+08:00 localhost sshd[73902]: Received disconnect from 192.168.100.200 port 57951:11: disconnected by user
+2026-11-02T19:54:37+08:00 localhost sshd[73902]: Disconnected from user root 192.168.100.200 port 57951
+2026-11-02T19:54:37+08:00 localhost sshd[73902]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:55:18+08:00 localhost sshd[73962]: Received disconnect from 192.168.100.200 port 54462:11: disconnected by user
+2026-11-02T19:55:18+08:00 localhost sshd[73962]: Disconnected from user root 192.168.100.200 port 54462
+2026-11-02T19:55:18+08:00 localhost sshd[73962]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:57:09+08:00 localhost sshd[74023]: Received disconnect from 192.168.100.200 port 62771:11: disconnected by user
+2026-11-02T19:57:09+08:00 localhost sshd[74023]: Disconnected from user root 192.168.100.200 port 62771
+2026-11-02T19:57:09+08:00 localhost sshd[74023]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:57:25+08:00 localhost sshd[74182]: Received disconnect from 192.168.100.200 port 62819:11: disconnected by user
+2026-11-02T19:57:25+08:00 localhost sshd[74182]: Disconnected from user root 192.168.100.200 port 62819
+2026-11-02T19:57:25+08:00 localhost sshd[74182]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:57:39+08:00 localhost sshd[74242]: Received disconnect from 192.168.100.200 port 62874:11: disconnected by user
+2026-11-02T19:57:39+08:00 localhost sshd[74242]: Disconnected from user root 192.168.100.200 port 62874
+2026-11-02T19:57:39+08:00 localhost sshd[74242]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:58:12+08:00 localhost runuser[74150]: pam_unix(runuser:session): session closed for user lckfb
+2026-11-02T19:58:12+08:00 localhost sshd[74083]: Received disconnect from 192.168.100.200 port 62779:11: disconnected by user
+2026-11-02T19:58:12+08:00 localhost sshd[74083]: Disconnected from user root 192.168.100.200 port 62779
+2026-11-02T19:58:12+08:00 localhost sshd[74083]: pam_unix(sshd:session): session closed for user root
+2026-11-02T19:59:57+08:00 localhost sshd[74313]: Received disconnect from 192.168.100.200 port 56162:11: disconnected by user
+2026-11-02T19:59:57+08:00 localhost sshd[74313]: Disconnected from user root 192.168.100.200 port 56162
+2026-11-02T19:59:57+08:00 localhost sshd[74313]: pam_unix(sshd:session): session closed for user root
+2026-11-02T20:01:09+08:00 localhost sshd[74386]: Received disconnect from 192.168.100.200 port 56370:11: disconnected by user
+2026-11-02T20:01:09+08:00 localhost sshd[74386]: Disconnected from user root 192.168.100.200 port 56370
+2026-11-02T20:01:09+08:00 localhost sshd[74386]: pam_unix(sshd:session): session closed for user root
+2026-11-02T20:01:29+08:00 localhost sshd[74452]: Received disconnect from 192.168.100.200 port 56439:11: disconnected by user
+2026-11-02T20:01:29+08:00 localhost sshd[74452]: Disconnected from user root 192.168.100.200 port 56439
+2026-11-02T20:01:29+08:00 localhost sshd[74452]: pam_unix(sshd:session): session closed for user root
+2026-11-02T20:03:06+08:00 localhost sshd[74513]: Received disconnect from 192.168.100.200 port 51989:11: disconnected by user
+2026-11-02T20:03:06+08:00 localhost sshd[74513]: Disconnected from user root 192.168.100.200 port 51989
+2026-11-02T20:03:06+08:00 localhost sshd[74513]: pam_unix(sshd:session): session closed for user root

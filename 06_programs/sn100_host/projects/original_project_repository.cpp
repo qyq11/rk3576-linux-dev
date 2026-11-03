@@ -1,6 +1,9 @@
 #include "original_project_repository.h"
+#include "original_project_copy.h"
 #include <QCryptographicHash>
 #include <QDate>
+#include <QDateTime>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -233,11 +236,31 @@ ProjectActionFields actionFields(const OriginalRow &row, bool sample)
     return result;
 }
 
+const QMap<QString, QStringList> &defaultCalibrationChoices()
+{
+    // 原项目页六个下拉框的原串；不能套用单条曲线设置中的额外方法。
+    static const QMap<QString, QStringList> choices = {
+        {QStringLiteral("calibration_mode"), {QStringLiteral("手动稀释"), QStringLiteral("自动稀释")}},
+        {QStringLiteral("repeat_number"), {QStringLiteral("1"), QStringLiteral("2"), QStringLiteral("3"), QStringLiteral("4")}},
+        {QStringLiteral("calculate_select"), {QStringLiteral("直线法"), QStringLiteral("一元三次曲线法"),
+                                             QStringLiteral("插值曲线法"), QStringLiteral("折线法")}},
+        {QStringLiteral("point_number"), {QStringLiteral("1"), QStringLiteral("2"), QStringLiteral("3"), QStringLiteral("4"),
+                                         QStringLiteral("5"), QStringLiteral("6"), QStringLiteral("7"), QStringLiteral("8")}},
+        {QStringLiteral("x_change"), {QStringLiteral("x"), QStringLiteral("log(x)"), QStringLiteral("1/x"),
+                                     QStringLiteral("ln(x)"), QStringLiteral("log(log(x))"), QStringLiteral("ln(ln(x))")}},
+        {QStringLiteral("y_change"), {QStringLiteral("y"), QStringLiteral("log(y)"), QStringLiteral("1/y"),
+                                     QStringLiteral("ln(y)"), QStringLiteral("log(log(y))"), QStringLiteral("ln(ln(y))")}}};
+    return choices;
+}
+
 bool readProjectData(QSqlDatabase &db, ProjectRecord *project, QString *message)
 {
     if (!schema(db, message) || !readPairs(db, QStringLiteral("project_base"), QStringLiteral("name"), &project->originalBaseValues, message) ||
         !readPairs(db, QStringLiteral("AlgParam"), QStringLiteral("key"), &project->originalAlgorithmValues, message)) return false;
     const auto &base = project->originalBaseValues;
+    project->defaultCalibrationValues.clear();
+    for (auto field = defaultCalibrationChoices().cbegin(); field != defaultCalibrationChoices().cend(); ++field)
+        if (base.contains(field.key())) project->defaultCalibrationValues.insert(field.key(), base.value(field.key()));
     if (!integer(base.value(QStringLiteral("xuhao")), &project->id) || project->id <= 0 || project->id > 1000000000)
         return fail(message, QStringLiteral("原项目显示顺序编号无效，未根据文件名猜测。"));
     project->instrumentProjectId = base.value(QStringLiteral("project_id"));
@@ -384,6 +407,195 @@ bool snapshotDatabase(const QString &source, const QString &destination, QString
     return true;
 }
 
+QString quotedBackupIdentifier(QString name)
+{
+    name.replace(QLatin1Char('"'), QStringLiteral("\"\""));
+    return QLatin1Char('"') + name + QLatin1Char('"');
+}
+
+bool backupTableMatches(QSqlDatabase &source, QSqlDatabase &backup, const QString &table,
+                        qint64 *rowCount, QString *message)
+{
+    const QString quotedTable = quotedBackupIdentifier(table);
+    QSqlQuery sourceColumns(source), backupColumns(backup);
+    if (!sourceColumns.exec(QStringLiteral("SELECT * FROM ") + quotedTable + QStringLiteral(" LIMIT 0")) ||
+        !backupColumns.exec(QStringLiteral("SELECT * FROM ") + quotedTable + QStringLiteral(" LIMIT 0")))
+        return fail(message, QStringLiteral("项目备份表无法读取列定义：") + table);
+    const QSqlRecord fields = sourceColumns.record(), copiedFields = backupColumns.record();
+    if (fields.count() < 1 || fields.count() > 256 || fields.count() != copiedFields.count())
+        return fail(message, QStringLiteral("项目备份列数不同或超出256列核对范围：") + table);
+    QStringList names, values;
+    for (int column = 0; column < fields.count(); ++column)
+    {
+        const QString name = fields.fieldName(column);
+        if (name != copiedFields.fieldName(column))
+            return fail(message, QStringLiteral("项目备份列名或列顺序不同：") + table);
+        names.append(name.toLower());
+        const QString quoted = quotedBackupIdentifier(name);
+        // 类型和值分别核；文字/二进制另按原字节比较，不能把NULL、空串和数字文字混同。
+        values << QStringLiteral("typeof(%1)").arg(quoted) << quoted
+               << QStringLiteral("CAST(%1 AS BLOB)").arg(quoted);
+    }
+    QString rowid;
+    for (const QString &alias : {QStringLiteral("rowid"), QStringLiteral("_rowid_"), QStringLiteral("oid")})
+        if (!names.contains(alias)) { rowid = alias; break; }
+    if (rowid.isEmpty()) return fail(message, QStringLiteral("项目表遮蔽了全部ROWID入口，未假定行身份一致：") + table);
+    // rowid来自固定别名且不加引号，WITHOUT ROWID不能被SQLite兼容语法误读成常量文字。
+    const QString statement = QStringLiteral("SELECT ") + rowid + QLatin1Char(',') + values.join(QLatin1Char(','))
+        + QStringLiteral(" FROM ") + quotedTable + QStringLiteral(" ORDER BY ") + rowid;
+    QSqlQuery original(source), copied(backup);
+    original.setForwardOnly(true);
+    copied.setForwardOnly(true);
+    if (!original.exec(statement) || !copied.exec(statement))
+        return fail(message, QStringLiteral("项目表无法按真实ROWID逐行核对，未发布备份：") + table);
+    *rowCount = 0;
+    while (original.next())
+    {
+        if (++*rowCount > 4096 || !copied.next())
+            return fail(message, QStringLiteral("项目备份少行或单表超过4096行核对范围：") + table);
+        bool sourceIdOk = false, backupIdOk = false;
+        const qint64 sourceId = original.value(0).toLongLong(&sourceIdOk);
+        const qint64 backupId = copied.value(0).toLongLong(&backupIdOk);
+        if (!sourceIdOk || !backupIdOk || sourceId != backupId)
+            return fail(message, QStringLiteral("项目备份改变了原ROWID或行顺序，未发布：") + table);
+        for (int column = 0; column < fields.count(); ++column)
+        {
+            const int position = 1 + column * 3;
+            const QString type = original.value(position).toString();
+            bool equal = type == copied.value(position).toString();
+            if (equal && type == QStringLiteral("integer"))
+                equal = original.value(position + 1).toLongLong() == copied.value(position + 1).toLongLong();
+            else if (equal && type == QStringLiteral("real"))
+                equal = original.value(position + 1).toDouble() == copied.value(position + 1).toDouble();
+            else if (equal && (type == QStringLiteral("text") || type == QStringLiteral("blob")))
+                equal = original.value(position + 2).toByteArray() == copied.value(position + 2).toByteArray();
+            else if (equal)
+                equal = type == QStringLiteral("null") && original.value(position + 1).isNull() && copied.value(position + 1).isNull();
+            if (!equal)
+                return fail(message, QStringLiteral("项目备份字段类型或完整内容不同，未发布：%1/%2").arg(table, fields.fieldName(column)));
+        }
+    }
+    if (original.lastError().isValid() || copied.next() || copied.lastError().isValid())
+        return fail(message, QStringLiteral("项目备份存在多余行或逐行读取未完成：") + table);
+    return true;
+}
+
+bool verifyProjectBackup(QSqlDatabase &source, const QString &snapshot,
+                         QJsonObject *verification, QString *message)
+{
+    Connection backup;
+    if (!backup.open(snapshot, false, message)) return false;
+    QSqlQuery original(source), copied(backup.db);
+    const QString schema = QStringLiteral("SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name");
+    if (!original.exec(schema) || !copied.exec(schema))
+        return fail(message, QStringLiteral("项目备份结构清单无法读取，未发布。"));
+    QStringList tables;
+    int objects = 0;
+    while (original.next())
+    {
+        if (++objects > 256 || !copied.next())
+            return fail(message, QStringLiteral("项目备份缺少结构对象或超出256项核对范围。"));
+        for (int column = 0; column < 4; ++column)
+            if (original.value(column).isNull() != copied.value(column).isNull() ||
+                original.value(column).toString() != copied.value(column).toString())
+                return fail(message, QStringLiteral("项目备份的表、索引、视图或触发器定义不同，未发布。"));
+        if (original.value(0).toString() != QStringLiteral("table")) continue;
+        const QString definition = original.value(3).toString();
+        // 只核普通行表，未知扩展或虚拟表不能仅凭quick_check就认定可恢复。
+        const QRegularExpression ordinary(QStringLiteral("^CREATE\\s+TABLE\\b"), QRegularExpression::CaseInsensitiveOption);
+        if (!ordinary.match(definition).hasMatch() ||
+            definition.contains(QRegularExpression(QStringLiteral("\\bWITHOUT\\s+ROWID\\b"), QRegularExpression::CaseInsensitiveOption)))
+            return fail(message, QStringLiteral("项目含虚拟表、无ROWID表或未支持的表定义，未发布备份：") + original.value(1).toString());
+        tables.append(original.value(1).toString());
+    }
+    if (original.lastError().isValid() || copied.next() || copied.lastError().isValid() || tables.size() > 64)
+        return fail(message, QStringLiteral("项目备份有多余结构、读取失败或超过64张表，未发布。"));
+    QJsonArray checkedTables;
+    for (const QString &table : tables)
+    {
+        qint64 rows = 0;
+        if (!backupTableMatches(source, backup.db, table, &rows, message)) return false;
+        QJsonObject checked;
+        checked.insert(QStringLiteral("table"), table);
+        checked.insert(QStringLiteral("rows"), rows);
+        checkedTables.append(checked);
+    }
+    for (const QString &key : {QStringLiteral("user_version"), QStringLiteral("application_id"), QStringLiteral("encoding")})
+    {
+        QSqlQuery sourceValue(source), backupValue(backup.db);
+        if (!sourceValue.exec(QStringLiteral("PRAGMA ") + key) || !sourceValue.next() ||
+            !backupValue.exec(QStringLiteral("PRAGMA ") + key) || !backupValue.next() ||
+            sourceValue.value(0).toString() != backupValue.value(0).toString())
+            return fail(message, QStringLiteral("项目备份的数据库标记或文字编码不同，未发布：") + key);
+    }
+    verification->insert(QStringLiteral("method"), QStringLiteral("schema+column-order+rowid+sqlite-type+full-value"));
+    verification->insert(QStringLiteral("schema_objects"), objects);
+    verification->insert(QStringLiteral("tables"), checkedTables);
+    verification->insert(QStringLiteral("row_identity_preserved"), true);
+    return true;
+}
+
+bool backupProjectBeforeSave(QSqlDatabase &lockedSource, const QString &root, const QString &source,
+                            const ProjectRecord &before, QString *message)
+{
+    // 原保存按钮只备份当前一个项目，日期目录和秒级名称保持原规则。
+    // 另开只读连接生成一致快照，不能裸拷仍可能带WAL日志的主文件。
+    const QDir projects(QDir(root).filePath(QStringLiteral("project")));
+    if (QFileInfo(source).absolutePath() != projects.absolutePath() ||
+        QFileInfo(source).fileName() != before.originalFileName)
+        return fail(message, QStringLiteral("备份来源不是本次选中的原项目文件。"));
+    const QDateTime now = QDateTime::currentDateTime();
+    const QString day = now.toString(QStringLiteral("yyyy-MM-dd"));
+    const QString directory = projects.filePath(day);
+    if (QFileInfo(directory).isSymLink() ||
+        (!QFileInfo::exists(directory) && !projects.mkdir(day)) ||
+        !regularPath(directory, true, message))
+        return fail(message, QStringLiteral("无法创建或核对当前项目的日期备份目录。"));
+    const QFileInfo sourceInfo(source);
+    const QString fileName = sourceInfo.baseName() + QLatin1Char('_')
+        + now.toString(QStringLiteral("HHmmss")) + QLatin1Char('.') + sourceInfo.completeSuffix();
+    const QString destination = QDir(directory).filePath(fileName);
+    const QString manifestPath = destination + QStringLiteral(".json");
+    if (QFileInfo::exists(destination) || QFileInfo(destination).isSymLink() ||
+        QFileInfo::exists(manifestPath) || QFileInfo(manifestPath).isSymLink())
+        return fail(message, QStringLiteral("同秒项目备份或清单已存在，按原规则保留旧文件、不覆盖。"));
+
+    QTemporaryDir stage(QDir(directory).filePath(QStringLiteral(".sn100-save-XXXXXX")));
+    if (!stage.isValid()) return fail(message, QStringLiteral("无法创建项目备份的临时目录。"));
+    const QString staged = QDir(stage.path()).filePath(fileName);
+    if (!snapshotDatabase(source, staged, message)) return false;
+    QJsonObject verification;
+    if (!verifyProjectBackup(lockedSource, staged, &verification, message)) return false;
+    for (const QString &suffix : {QStringLiteral("-wal"), QStringLiteral("-journal")})
+        if (QFileInfo::exists(staged + suffix))
+            return fail(message, QStringLiteral("项目快照仍有独立写入日志，未发布为单文件恢复输入。"));
+    const QString backupFingerprint = fingerprint(staged, message);
+    if (backupFingerprint.isEmpty()) return false;
+    QJsonObject manifest;
+    manifest.insert(QStringLiteral("format"), QStringLiteral("sn100-project-save-backup-v1"));
+    manifest.insert(QStringLiteral("created_at"), now.toString(Qt::ISODateWithMs));
+    manifest.insert(QStringLiteral("source_relative_file"), QStringLiteral("project/") + before.originalFileName);
+    manifest.insert(QStringLiteral("source_fingerprint"), before.originalFingerprint);
+    manifest.insert(QStringLiteral("backup_file"), fileName);
+    manifest.insert(QStringLiteral("backup_sha256"), backupFingerprint);
+    manifest.insert(QStringLiteral("snapshot_method"), QStringLiteral("VACUUM main INTO"));
+    manifest.insert(QStringLiteral("identity_verification"), verification);
+    manifest.insert(QStringLiteral("restore_scope"), QStringLiteral("仅恢复保存前这一份项目数据库；不含外部校准、试剂批组、单位或患者资料。"));
+    const QByteArray manifestBytes = QJsonDocument(manifest).toJson(QJsonDocument::Indented);
+    const QString stagedManifest = staged + QStringLiteral(".json");
+    QSaveFile manifestFile(stagedManifest);
+    manifestFile.setDirectWriteFallback(false);
+    if (!manifestFile.open(QIODevice::WriteOnly) || manifestFile.write(manifestBytes) != manifestBytes.size() ||
+        !manifestFile.commit())
+        return fail(message, QStringLiteral("项目备份校验清单写入失败，未发布本次临时备份。"));
+    if (!QFile::rename(staged, destination))
+        return fail(message, QStringLiteral("项目备份无法移入日期目录，未覆盖现有文件。"));
+    if (!QFile::rename(stagedManifest, manifestPath))
+        return fail(message, QStringLiteral("项目备份文件已保留，但校验清单移入失败：") + destination);
+    qInfo().noquote() << "ORIGINAL_PROJECT_BACKUP_READY" << destination << "sha256=" << backupFingerprint;
+    return true;
+}
+
 bool hasValue(const QString &file, const QString &table, const QString &column, const QString &value,
               bool *exists, QString *message)
 {
@@ -406,6 +618,12 @@ void OriginalProjectRepository::close()
     m_root.clear();
     m_referenceCatalogDirectory.clear();
     m_files.clear();
+    m_uncommittedCopyFiles.clear();
+}
+
+bool OriginalProjectRepository::writesAllowed(QString *message) const
+{
+    return checkRoot(message) && OriginalProjectCopy::noPending(m_root,message);
 }
 
 QString OriginalProjectRepository::unitsDatabasePath() const
@@ -437,7 +655,8 @@ bool OriginalProjectRepository::initialize(QString root, QString referenceCatalo
     m_referenceCatalogDirectory = referenceCatalogDirectory;
     ProjectRecords projects;
     ProjectUnits units;
-    if (!checkRoot(message) || !readUnits(&units, message) || !readProjects(&projects, message))
+    if (!checkRoot(message) || !OriginalProjectCopy::recoverPending(m_root, &m_uncommittedCopyFiles, message) ||
+        !readUnits(&units, message) || !readProjects(&projects, message, true))
     {
         close();
         return false;
@@ -463,27 +682,31 @@ bool OriginalProjectRepository::readProject(QString filePath, ProjectRecord *pro
     return true;
 }
 
-bool OriginalProjectRepository::readProjects(ProjectRecords *projects, QString *message)
+bool OriginalProjectRepository::readProjects(ProjectRecords *projects, QString *message, bool allowVerifiedPending)
 {
-    projects->clear();
-    m_files.clear();
-    if (!checkRoot(message)) return false;
+    if (!checkRoot(message) || (!allowVerifiedPending && !OriginalProjectCopy::noPending(m_root, message))) return false;
+    ProjectRecords observed;
+    QMap<qint64,QString> observedFiles;
     const QDir directory(QDir(m_root).filePath(QStringLiteral("project")));
     const QFileInfoList entries = directory.entryInfoList(QDir::Files | QDir::NoDotAndDotDot | QDir::System, QDir::Name);
     QSet<QString> names;
     for (const QFileInfo &entry : entries)
     {
         if (!entry.fileName().endsWith(QStringLiteral(".db"), Qt::CaseInsensitive)) continue;
-        if (projects->size() >= 1024) return fail(message, QStringLiteral("原项目文件超过1024份，未截断列表。"));
+        if (allowVerifiedPending && m_uncommittedCopyFiles.contains(entry.fileName())) continue;
+        if (observed.size() >= 1024) return fail(message, QStringLiteral("原项目文件超过1024份，未截断列表。"));
         ProjectRecord project;
         if (!readProject(entry.absoluteFilePath(), &project, message)) return false;
-        if (m_files.contains(project.id) || names.contains(project.name.toCaseFolded()))
+        if (observedFiles.contains(project.id) || names.contains(project.name))
             return fail(message, QStringLiteral("原项目编号或名称重复，未根据文件名或顺序合并。"));
-        m_files.insert(project.id, entry.absoluteFilePath());
-        names.insert(project.name.toCaseFolded());
-        projects->append(project);
+        observedFiles.insert(project.id, entry.absoluteFilePath());
+        names.insert(project.name);
+        observed.append(project);
     }
-    std::sort(projects->begin(), projects->end(), [](const ProjectRecord &a, const ProjectRecord &b) { return a.id < b.id; });
+    std::sort(observed.begin(), observed.end(), [](const ProjectRecord &a, const ProjectRecord &b) { return a.id < b.id; });
+    // 失败不发布半份清单，避免按目录顺序先看到的克隆留进样本/报告缓存。
+    *projects=observed;
+    m_files=observedFiles;
     return true;
 }
 
@@ -519,24 +742,36 @@ bool OriginalProjectRepository::readUnits(ProjectUnits *units, QString *message)
 }
 
 bool OriginalProjectRepository::load(ProjectRecords *projects, ProjectUnits *units, QStringList *reagents,
-                                     QStringList *cleaners, QStringList *diluents, QString *message)
+                                     QStringList *cleaners, QStringList *diluents, QString *message, bool allowVerifiedPending)
 {
-    reagents->clear(); cleaners->clear(); diluents->clear();
-    if (!readProjects(projects, message) || !readUnits(units, message)) return false;
+    if (!allowVerifiedPending && !OriginalProjectCopy::noPending(m_root,message)) return false;
+    QStringList pending;
+    if (!checkRoot(message) || !OriginalProjectCopy::recoverPending(m_root, &pending, message)) return false;
+    const auto previousFiles=m_files;
+    const auto previousExcluded=m_uncommittedCopyFiles;
+    m_uncommittedCopyFiles=pending;
+    ProjectRecords observed;
+    ProjectUnits observedUnits;
+    QStringList observedReagents,observedCleaners,observedDiluents;
+    const auto failedRead=[this,&previousFiles,&previousExcluded]()
+    {m_files=previousFiles;m_uncommittedCopyFiles=previousExcluded;return false;};
+    if (!readProjects(&observed, message, true) || !readUnits(&observedUnits, message)) return failedRead();
     Connection connection;
     const QString path = QDir(m_root).filePath(QStringLiteral("db/userSet/reagent_Information.db"));
-    if (!connection.open(path, false, message)) return false;
+    if (!connection.open(path, false, message)) return failedRead();
     QSqlQuery query(connection.db);
     if (!query.exec(QStringLiteral("SELECT reagent_name,reagent_type FROM reagent_list WHERE valid=1 ORDER BY id")))
-        return fail(message, QStringLiteral("原试剂目录结构不匹配。"));
+    {fail(message, QStringLiteral("原试剂目录结构不匹配。"));return failedRead();}
     while (query.next())
     {
         const QString name = query.value(0).toString();
         const QString type = query.value(1).toString();
-        if (type == QStringLiteral("试剂") || type == QStringLiteral("r_reagent")) reagents->append(name);
-        else if (type == QStringLiteral("清洗液") || type == QStringLiteral("cleaner")) cleaners->append(name);
-        else if (type == QStringLiteral("缓冲稀释液") || type == QStringLiteral("s_ibs")) diluents->append(name);
+        if (type == QStringLiteral("试剂") || type == QStringLiteral("r_reagent")) observedReagents.append(name);
+        else if (type == QStringLiteral("清洗液") || type == QStringLiteral("cleaner")) observedCleaners.append(name);
+        else if (type == QStringLiteral("缓冲稀释液") || type == QStringLiteral("s_ibs")) observedDiluents.append(name);
     }
+    if (query.lastError().isValid()) {fail(message, QStringLiteral("原试剂目录读取未完成。"));return failedRead();}
+    *projects=observed;*units=observedUnits;*reagents=observedReagents;*cleaners=observedCleaners;*diluents=observedDiluents;
     return true;
 }
 
@@ -680,8 +915,11 @@ bool referenceChoices(const QString &root, const ProjectAdvanced &advanced, QStr
 }
 }
 
-bool OriginalProjectRepository::save(ProjectRecord project, qint64 *savedId, bool *changed, QString *message)
+bool OriginalProjectRepository::save(ProjectRecord project, qint64 *savedId, bool *changed, QString *message,
+    OriginalProjectSaveNotice *result, const QString &expectedFileName, const std::function<bool()> &claim,
+    const std::function<void(const OriginalProjectSaveNotice &)> &committed)
 {
+    if (result) *result=OriginalProjectSaveNotice();
     *changed = false; *savedId = 0;
     if (!checkRoot(message)) return false;
     if (project.originalRoot != m_root) return fail(message, QStringLiteral("项目草稿来自其他原库目录，请重新读取。"));
@@ -697,9 +935,20 @@ bool OriginalProjectRepository::save(ProjectRecord project, qint64 *savedId, boo
     if (found == all.cend() || found->originalFileName != project.originalFileName || found->originalFingerprint != project.originalFingerprint)
         return fail(message, QStringLiteral("原项目文件已经变化或不再存在；旧草稿没有覆盖新内容，请重新读取。"));
     const ProjectRecord before = *found;
+    if (!expectedFileName.isEmpty() && before.originalFileName!=expectedFileName)
+        return fail(message,QStringLiteral("实际保存目标不再是预检文件，本次尚未提交，请重新读取。"));
+    OriginalProjectSaveNotice notice;
+    notice.root=m_root; notice.originalFileName=before.originalFileName; notice.projectId=before.id;
+    notice.projectName=project.name; notice.beforeFingerprint=before.originalFingerprint;
     if (project.instrumentProjectId != before.instrumentProjectId || project.fixed != before.fixed ||
         project.originalBaseValues != before.originalBaseValues || project.originalAlgorithmValues != before.originalAlgorithmValues)
         return fail(message, QStringLiteral("原编号、固定状态或只读原参数被改变，未保存隐藏修改。"));
+    if (project.defaultCalibrationValues.keys() != before.defaultCalibrationValues.keys())
+        return fail(message, QStringLiteral("默认校准参数的原键不能增加或删除，请重新读取原项目资料。"));
+    for (auto field = project.defaultCalibrationValues.cbegin(); field != project.defaultCalibrationValues.cend(); ++field)
+        if (field.value() != before.defaultCalibrationValues.value(field.key()) &&
+            !defaultCalibrationChoices().value(field.key()).contains(field.value()))
+            return fail(message, QStringLiteral("默认校准参数%1须从原项目下拉选项中选择；未知旧值只能原样保留。").arg(field.key()));
     for (const auto &other : all)
         if (other.id != project.id && other.name.compare(project.name, Qt::CaseInsensitive) == 0)
             return fail(message, QStringLiteral("项目名称已存在，没有覆盖其他项目。"));
@@ -769,79 +1018,110 @@ bool OriginalProjectRepository::save(ProjectRecord project, qint64 *savedId, boo
             return fail(message, QStringLiteral("修改后的结果下限不能大于上限。"));
     }
     if (mainSelectionChanged && mainCount != 1) return fail(message, QStringLiteral("修改主结果选择后须保留唯一主结果。"));
-    Connection connection;
-    const QString path = m_files.value(project.id);
-    if (!connection.open(path, true, message) || !sql(connection.db, QStringLiteral("BEGIN IMMEDIATE"), {}, message)) return false;
-    if (fingerprint(path, message) != project.originalFingerprint)
+    if (claim && !claim()) return fail(message,QStringLiteral("本次保存预留已取消、过期或上下文已变，尚未提交，草稿保留。"));
     {
-        fail(message, QStringLiteral("取得写入权限时原项目已变化，请重新读取。"));
-        return rollback(connection.db, message);
-    }
-    QMap<QString, QString> base;
-    if (project.name != before.name) base.insert(QStringLiteral("project_en_name"), project.name);
-    if (project.fullName != before.fullName) base.insert(QStringLiteral("project_cn_name"), project.fullName);
-    if (project.lisCode != before.lisCode) base.insert(QStringLiteral("project_lis_code"), project.lisCode);
-    if (project.enabled != before.enabled) base.insert(QStringLiteral("is_used"), project.enabled ? QStringLiteral("1") : QStringLiteral("0"));
-    if (algorithmChanged)
-    {
-        if (project.algorithm.coefficientA != before.algorithm.coefficientA) base.insert(QStringLiteral("xishu_a"), QString::number(project.algorithm.coefficientA, 'g', 15));
-        if (project.algorithm.coefficientB != before.algorithm.coefficientB) base.insert(QStringLiteral("xishu_b"), QString::number(project.algorithm.coefficientB, 'g', 15));
-        if (project.algorithm.coefficientC != before.algorithm.coefficientC) base.insert(QStringLiteral("sample_warmup_length"), QString::number(project.algorithm.coefficientC, 'g', 15));
-        if (project.algorithm.autoApply != before.algorithm.autoApply) base.insert(QStringLiteral("auto_apply"), project.algorithm.autoApply ? QStringLiteral("1") : QStringLiteral("0"));
-    }
-    if (scalarChanged)
-    {
-        if (project.advanced.fields.keys() != before.advanced.fields.keys())
+        Connection connection;
+        const QString path = m_files.value(project.id);
+        if (!connection.open(path, true, message) || !sql(connection.db, QStringLiteral("BEGIN IMMEDIATE"), {}, message)) return false;
+        if (fingerprint(path, message) != project.originalFingerprint)
         {
-            fail(message, QStringLiteral("原基础参数字段不能被删除或隐式添加。"));
+            fail(message, QStringLiteral("取得写入权限时原项目已变化，请重新读取。"));
             return rollback(connection.db, message);
         }
-        for (auto field = project.advanced.fields.cbegin(); field != project.advanced.fields.cend(); ++field)
-            if (field.value() != before.advanced.fields.value(field.key())) base.insert(field.key(), field.value());
-    }
-    for (auto field = base.cbegin(); field != base.cend(); ++field)
-        if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), field.key(), field.value(), changed, message))
+        // 已取得写锁且没有执行任何UPDATE，快照对应本次保存前的已提交版本。
+        // 原copyFileToBackupDirectory失败只记录日志并继续保存，这里保留该行为。
+        QString backupMessage;
+        if (!backupProjectBeforeSave(connection.db, m_root, path, before, &backupMessage))
+            qWarning().noquote() << "ORIGINAL_PROJECT_BACKUP_FAILED" << backupMessage
+                                 << QStringLiteral("；按原版继续保存，不能据此认定已有可用旧版本备份。");
+        if (fingerprint(path, message) != project.originalFingerprint)
+        {
+            fail(message, QStringLiteral("备份期间原项目已变化，未把旧草稿写入不同版本。"));
             return rollback(connection.db, message);
-    const QMap<QString, QString> linked = {{QStringLiteral("min_test_time"), QStringLiteral("Sort_startTime")},
-                                          {QStringLiteral("stopTime"), QStringLiteral("Sort_stopTime")}};
-    for (auto key = linked.cbegin(); key != linked.cend(); ++key)
-        if (base.contains(key.key()) && before.originalAlgorithmValues.contains(key.value()))
-            if (!updatePair(connection.db, QStringLiteral("AlgParam"), QStringLiteral("key"), key.value(), base.value(key.key()), changed, message))
+        }
+        QMap<QString, QString> base;
+        if (project.name != before.name) base.insert(QStringLiteral("project_en_name"), project.name);
+        if (project.fullName != before.fullName) base.insert(QStringLiteral("project_cn_name"), project.fullName);
+        if (project.lisCode != before.lisCode) base.insert(QStringLiteral("project_lis_code"), project.lisCode);
+        if (project.enabled != before.enabled) base.insert(QStringLiteral("is_used"), project.enabled ? QStringLiteral("1") : QStringLiteral("0"));
+        for (auto field = project.defaultCalibrationValues.cbegin(); field != project.defaultCalibrationValues.cend(); ++field)
+            if (field.value() != before.defaultCalibrationValues.value(field.key())) base.insert(field.key(), field.value());
+        if (algorithmChanged)
+        {
+            if (project.algorithm.coefficientA != before.algorithm.coefficientA) base.insert(QStringLiteral("xishu_a"), QString::number(project.algorithm.coefficientA, 'g', 15));
+            if (project.algorithm.coefficientB != before.algorithm.coefficientB) base.insert(QStringLiteral("xishu_b"), QString::number(project.algorithm.coefficientB, 'g', 15));
+            if (project.algorithm.coefficientC != before.algorithm.coefficientC) base.insert(QStringLiteral("sample_warmup_length"), QString::number(project.algorithm.coefficientC, 'g', 15));
+            if (project.algorithm.autoApply != before.algorithm.autoApply) base.insert(QStringLiteral("auto_apply"), project.algorithm.autoApply ? QStringLiteral("1") : QStringLiteral("0"));
+        }
+        if (scalarChanged)
+        {
+            if (project.advanced.fields.keys() != before.advanced.fields.keys())
+            {
+                fail(message, QStringLiteral("原基础参数字段不能被删除或隐式添加。"));
                 return rollback(connection.db, message);
-    if (sampleChanged && !updateActionRows(connection.db, QStringLiteral("project_sample_rate"), project.advanced.samples, project.sampleRates, true, changed, message))
-        return rollback(connection.db, message);
-    if (reagentChanged && !updateActionRows(connection.db, QStringLiteral("project_reagent"), project.advanced.reagents, {}, false, changed, message))
-        return rollback(connection.db, message);
-    if (resultsChanged)
-    {
-        OriginalRows rows;
-        if (!readRows(connection.db, QStringLiteral("project_results"), QStringLiteral(" ORDER BY result_id,rowid"), &rows, message)) return rollback(connection.db, message);
-        for (int index = 0; index < project.results.size(); ++index)
-        {
-            const auto &result = project.results[index]; const auto &old = before.results[index];
-            if (sameResult(result, old)) continue;
-            QMap<QString, QVariant> fields;
-            if (result.name != old.name) fields.insert(QStringLiteral("result_name"), result.name);
-            if (result.unit != old.unit) fields.insert(QStringLiteral("unit_name"), result.unit);
-            if (result.decimals != old.decimals) fields.insert(QStringLiteral("decimal_point"), QString::number(result.decimals));
-            if (result.testLow != old.testLow) fields.insert(QStringLiteral("test_low_range"), QString::number(result.testLow, 'g', 15));
-            if (result.testHigh != old.testHigh) fields.insert(QStringLiteral("test_up_range"), QString::number(result.testHigh, 'g', 15));
-            if (result.normalLow != old.normalLow) fields.insert(QStringLiteral("normal_low_range"), QString::number(result.normalLow, 'g', 15));
-            if (result.normalHigh != old.normalHigh) fields.insert(QStringLiteral("normal_up_range"), QString::number(result.normalHigh, 'g', 15));
-            if (result.lisCode != old.lisCode) fields.insert(QStringLiteral("lis_code"), result.lisCode);
-            if (result.used != old.used) fields.insert(QStringLiteral("is_used"), result.used ? QStringLiteral("1") : QStringLiteral("0"));
-            if (result.display != old.display) fields.insert(QStringLiteral("display"), result.display ? QStringLiteral("1") : QStringLiteral("0"));
-            if (result.mainResult != old.mainResult) fields.insert(QStringLiteral("main_result"), result.mainResult ? QStringLiteral("1") : QStringLiteral("0"));
-            if (!updateColumns(connection.db, QStringLiteral("project_results"), rows[index], fields, changed, message)) return rollback(connection.db, message);
+            }
+            for (auto field = project.advanced.fields.cbegin(); field != project.advanced.fields.cend(); ++field)
+                if (field.value() != before.advanced.fields.value(field.key())) base.insert(field.key(), field.value());
         }
-    }
-    if (*changed && before.originalBaseValues.contains(QStringLiteral("change_time")))
-        if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), QStringLiteral("change_time"), QDate::currentDate().toString(QStringLiteral("yyyy-MM-dd")), changed, message))
+        for (auto field = base.cbegin(); field != base.cend(); ++field)
+            if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), field.key(), field.value(), changed, message))
+                return rollback(connection.db, message);
+        const QMap<QString, QString> linked = {{QStringLiteral("min_test_time"), QStringLiteral("Sort_startTime")},
+                                              {QStringLiteral("stopTime"), QStringLiteral("Sort_stopTime")}};
+        for (auto key = linked.cbegin(); key != linked.cend(); ++key)
+            if (base.contains(key.key()) && before.originalAlgorithmValues.contains(key.value()))
+                if (!updatePair(connection.db, QStringLiteral("AlgParam"), QStringLiteral("key"), key.value(), base.value(key.key()), changed, message))
+                    return rollback(connection.db, message);
+        if (sampleChanged && !updateActionRows(connection.db, QStringLiteral("project_sample_rate"), project.advanced.samples, project.sampleRates, true, changed, message))
             return rollback(connection.db, message);
-    if (!connection.db.commit())
+        if (reagentChanged && !updateActionRows(connection.db, QStringLiteral("project_reagent"), project.advanced.reagents, {}, false, changed, message))
+            return rollback(connection.db, message);
+        if (resultsChanged)
+        {
+            OriginalRows rows;
+            if (!readRows(connection.db, QStringLiteral("project_results"), QStringLiteral(" ORDER BY result_id,rowid"), &rows, message)) return rollback(connection.db, message);
+            for (int index = 0; index < project.results.size(); ++index)
+            {
+                const auto &result = project.results[index]; const auto &old = before.results[index];
+                if (sameResult(result, old)) continue;
+                QMap<QString, QVariant> fields;
+                if (result.name != old.name) fields.insert(QStringLiteral("result_name"), result.name);
+                if (result.unit != old.unit) fields.insert(QStringLiteral("unit_name"), result.unit);
+                if (result.decimals != old.decimals) fields.insert(QStringLiteral("decimal_point"), QString::number(result.decimals));
+                if (result.testLow != old.testLow) fields.insert(QStringLiteral("test_low_range"), QString::number(result.testLow, 'g', 15));
+                if (result.testHigh != old.testHigh) fields.insert(QStringLiteral("test_up_range"), QString::number(result.testHigh, 'g', 15));
+                if (result.normalLow != old.normalLow) fields.insert(QStringLiteral("normal_low_range"), QString::number(result.normalLow, 'g', 15));
+                if (result.normalHigh != old.normalHigh) fields.insert(QStringLiteral("normal_up_range"), QString::number(result.normalHigh, 'g', 15));
+                if (result.lisCode != old.lisCode) fields.insert(QStringLiteral("lis_code"), result.lisCode);
+                if (result.used != old.used) fields.insert(QStringLiteral("is_used"), result.used ? QStringLiteral("1") : QStringLiteral("0"));
+                if (result.display != old.display) fields.insert(QStringLiteral("display"), result.display ? QStringLiteral("1") : QStringLiteral("0"));
+                if (result.mainResult != old.mainResult) fields.insert(QStringLiteral("main_result"), result.mainResult ? QStringLiteral("1") : QStringLiteral("0"));
+                if (!updateColumns(connection.db, QStringLiteral("project_results"), rows[index], fields, changed, message)) return rollback(connection.db, message);
+            }
+        }
+        if (*changed && before.originalBaseValues.contains(QStringLiteral("change_time")))
+            if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), QStringLiteral("change_time"), QDate::currentDate().toString(QStringLiteral("yyyy-MM-dd")), changed, message))
+                return rollback(connection.db, message);
+        if (!connection.db.commit())
+        {
+            fail(message, QStringLiteral("原项目提交失败：") + connection.db.lastError().text());
+            return rollback(connection.db, message);
+        }
+        notice.commitSeen=true;
+    } // 写连接已关闭；原项目QLock仍持有，随后核真实文件快照并排提交通知。
+    if (result || committed)
     {
-        fail(message, QStringLiteral("原项目提交失败：") + connection.db.lastError().text());
-        return rollback(connection.db, message);
+        ProjectRecord observed;
+        const QString path=m_files.value(project.id);
+        notice.verifiedSnapshot=readProject(path,&observed,message) &&
+            observed.originalFileName==notice.originalFileName && observed.id==project.id && observed.name==project.name &&
+            !observed.originalFingerprint.isEmpty() && observed.originalFingerprint==fingerprint(path,message);
+        if (notice.verifiedSnapshot) notice.committedFingerprint=observed.originalFingerprint;
+        else if (message->isEmpty()) *message=QStringLiteral("已提交文件的身份或版本未核实。");
+        notice.message=*message;
+        if (result) *result=notice;
+        if (committed) committed(notice);
+        if (!notice.verifiedSnapshot) return false;
     }
     *savedId = project.id;
     return true;
@@ -874,22 +1154,6 @@ QStringList reagentDatabases()
             QStringLiteral("db/userSet/reagent_Information_hongkui.db"),
             QStringLiteral("db/userSet/reagent_Information_liangchen.db"),
             QStringLiteral("db/userSet/reagent_Information_seerain.db")};
-}
-
-bool externalCopyReferences(const QString &root, const QString &name, QString *message)
-{
-    bool used = false;
-    for (const QString &table : {QStringLiteral("calibration_base"), QStringLiteral("calibration_batch_group")})
-    {
-        if (!requiredReference(root, QStringLiteral("result/calibration.db"), table, QStringLiteral("project_name"), name, &used, message)) return false;
-        if (used) return fail(message, QStringLiteral("该项目有外部校准资料（result/calibration.db/%1）；本次复制尚不支持跨库复制校准曲线，未创建任何项目。").arg(table));
-    }
-    for (const QString &file : reagentDatabases())
-    {
-        if (!requiredReference(root, file, QStringLiteral("reagent_batch_group"), QStringLiteral("project_name"), name, &used, message)) return false;
-        if (used) return fail(message, QStringLiteral("该项目有外部试剂批组（%1/reagent_batch_group）；本次复制尚不支持跨库关联复制，未创建任何项目。").arg(file));
-    }
-    return true;
 }
 
 bool cleanSidecars(const QString &path, QString *message)
@@ -1010,10 +1274,15 @@ bool OriginalProjectRepository::copy(qint64 sourceId, QString newName, qint64 *n
     {
         id = qMax(id, project.id + 1);
         if (project.id == sourceId) source = project;
-        if (project.name.compare(newName, Qt::CaseInsensitive) == 0) return fail(message, QStringLiteral("新项目名称已存在，未覆盖。"));
+        if (project.name == newName) return fail(message, QStringLiteral("新项目名称已存在，未覆盖。"));
     }
     if (!source.id || id > 1000000000) return fail(message, QStringLiteral("复制源不存在或编号超出上限。"));
-    if (!externalCopyReferences(m_root, source.name, message)) return false;
+    const QString prefix = source.name.section(QLatin1Char('_'), 0, 0) + QLatin1Char('_');
+    const QString suffix = newName.mid(prefix.size());
+    if (!newName.startsWith(prefix) || !QRegularExpression(QStringLiteral("^[0-9A-Za-z]{1,4}$")).match(suffix).hasMatch())
+        return fail(message, QStringLiteral("复制名称须沿用原项目前缀，再输入1至4位数字或字母。"));
+    bool linked = false;
+    if (!OriginalProjectCopy::hasCalibrationBindings(m_root, source.name, &linked, message)) return false;
     const QString sourceFile = m_files.value(sourceId);
     const QString destination = QDir(m_root).filePath(QStringLiteral("project/%1 %2.db").arg(id).arg(newName));
     if (QFileInfo::exists(destination)) return fail(message, QStringLiteral("原命名规则下的目标文件已存在，未覆盖。"));
@@ -1021,24 +1290,24 @@ bool OriginalProjectRepository::copy(qint64 sourceId, QString newName, qint64 *n
     if (!stage.isValid()) return fail(message, QStringLiteral("无法创建复制暂存目录。"));
     const QString staged = QDir(stage.path()).filePath(QStringLiteral("project.db"));
     if (!snapshotDatabase(sourceFile, staged, message)) return false;
+    // 先证实整份项目的表、行号、类型、参数均在；默认定标和算法资料不重建。
     {
-        Connection connection;
-        if (!connection.open(staged, true, message) || !sql(connection.db, QStringLiteral("BEGIN IMMEDIATE"), {}, message)) return false;
-        bool changed = false;
-        const QMap<QString, QString> base = {{QStringLiteral("xuhao"), QString::number(id)}, {QStringLiteral("project_en_name"), newName},
-                                             {QStringLiteral("fixed"), QStringLiteral("0")}, {QStringLiteral("is_related"), QStringLiteral("0")}};
-        for (auto field = base.cbegin(); field != base.cend(); ++field)
-            if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), field.key(), field.value(), &changed, message)) return rollback(connection.db, message);
-        OriginalRows results;
-        if (!readRows(connection.db, QStringLiteral("project_results"), QStringLiteral(" ORDER BY result_id,rowid"), &results, message)) return rollback(connection.db, message);
-        for (const auto &row : results)
-        {
-            QString name = row.values.value(QStringLiteral("result_name")).toString();
-            name.replace(source.name, newName);
-            if (!updateColumns(connection.db, QStringLiteral("project_results"), row, {{QStringLiteral("result_name"), name}}, &changed, message)) return rollback(connection.db, message);
-        }
-        if (!commit(connection.db, message)) return false;
+        Connection sourceCheck;
+        QJsonObject verification;
+        if (!sourceCheck.open(sourceFile, false, message) || !sourceCheck.db.transaction() ||
+            !verifyProjectBackup(sourceCheck.db, staged, &verification, message) || !sourceCheck.db.commit()) return false;
     }
+    if (fingerprint(sourceFile, message) != source.originalFingerprint)
+        return fail(message, QStringLiteral("复制期间源项目变化，未创建新项目。"));
+    if (linked)
+    {
+        bool committed = false;
+        const bool result = OriginalProjectCopy::publishLinked(m_root, sourceFile, source.originalFingerprint, staged,
+                                                               source.name, newName, id, &committed, message);
+        if (committed) *newId = id;
+        return result;
+    }
+    if (!OriginalProjectCopy::rewriteClone(staged, source.name, newName, id, message)) return false;
     if (fingerprint(sourceFile, message) != source.originalFingerprint)
         return fail(message, QStringLiteral("复制期间源项目变化，未发布复制文件，请重新读取。"));
     if (!QFile::rename(staged, destination)) return fail(message, QStringLiteral("复制文件无法发布，原文件没有覆盖。"));
@@ -1124,10 +1393,11 @@ bool OriginalProjectRepository::unitReferenced(QString name, bool *referenced, Q
 
 bool OriginalProjectRepository::addUnit(ProjectUnit unit, QString *message)
 {
-    if (!checkRoot(message)) return false;
+    if (!writesAllowed(message)) return false;
     QLockFile guard(QDir(m_root).filePath(QStringLiteral(".sn100-original-project-write.lock")));
     guard.setStaleLockTime(0);
     if (!guard.tryLock(0)) return fail(message, QStringLiteral("原库正在维护，请稍后重试。"));
+    if (!writesAllowed(message)) return false;
     ProjectUnits units;
     if (!readUnits(&units, message)) return false;
     if (unit.originalType.isEmpty()) unit.originalType = QStringLiteral("1");
@@ -1141,10 +1411,11 @@ bool OriginalProjectRepository::addUnit(ProjectUnit unit, QString *message)
 
 bool OriginalProjectRepository::updateUnit(QString originalName, ProjectUnit unit, QString *message)
 {
-    if (!checkRoot(message)) return false;
+    if (!writesAllowed(message)) return false;
     QLockFile guard(QDir(m_root).filePath(QStringLiteral(".sn100-original-project-write.lock")));
     guard.setStaleLockTime(0);
     if (!guard.tryLock(0)) return fail(message, QStringLiteral("原库正在维护，请稍后重试。"));
+    if (!writesAllowed(message)) return false;
     ProjectUnits units;
     if (!readUnits(&units, message)) return false;
     const auto found = std::find_if(units.cbegin(), units.cend(), [&](const ProjectUnit &old) { return old.name == originalName; });
@@ -1184,10 +1455,11 @@ bool OriginalProjectRepository::removeUnit(QString name, QString *message)
 
 bool OriginalProjectRepository::removeUnit(QString name, QString expectedFingerprint, QString *message)
 {
-    if (!checkRoot(message)) return false;
+    if (!writesAllowed(message)) return false;
     QLockFile guard(QDir(m_root).filePath(QStringLiteral(".sn100-original-project-write.lock")));
     guard.setStaleLockTime(0);
     if (!guard.tryLock(0)) return fail(message, QStringLiteral("原库正在维护，请稍后重试。"));
+    if (!writesAllowed(message)) return false;
     bool used = false;
     if (!unitReferenced(name, &used, message)) return false;
     if (used) return fail(message, QStringLiteral("该单位仍被原项目/校准或当前新模块使用，未删除。"));

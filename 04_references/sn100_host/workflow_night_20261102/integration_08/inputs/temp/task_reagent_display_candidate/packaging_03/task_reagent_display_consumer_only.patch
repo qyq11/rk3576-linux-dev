@@ -1,0 +1,1527 @@
+diff --git a/06_programs/sn100_host/reagents/build.sh b/06_programs/sn100_host/reagents/build.sh
+--- a/06_programs/sn100_host/reagents/build.sh
++++ b/06_programs/sn100_host/reagents/build.sh
+@@ -56,6 +56,8 @@
+ # 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
+ sources+=("$module_dir/original_reagent_level_packet.cpp" "$module_dir/original_reagent_level_model.cpp" "$module_dir/original_reagent_level_projects.cpp" "$module_dir/original_reagent_level_repository.cpp" "$module_dir/original_reagent_level_runtime.cpp" "$module_dir/original_reagent_level_worker.cpp" "$module_dir/reagents_page_level.cpp" "$program_dir/original_files/original_reagent_capacity.cpp" "$program_dir/original_files/theme_configuration.cpp")
+ headers+=("$module_dir/original_reagent_level.h" "$module_dir/original_reagent_level_runtime.h" "$module_dir/original_reagent_level_worker.h")
++# 任务剩余量走专用重读和运行采用，不发送设备命令。
++sources+=("$module_dir/original_task_reagent_display.cpp" "$module_dir/original_reagent_level_task.cpp" "$module_dir/original_task_reagent_readback.cpp" "$module_dir/reagents_page_task.cpp")
+ for header in "${headers[@]}"; do
+     if grep -q Q_OBJECT "$header"; then
+         generated=$build_dir/moc_$(basename -- "${header%.h}").cpp
+diff --git a/06_programs/sn100_host/reagents/original_reagent_editor.cpp b/06_programs/sn100_host/reagents/original_reagent_editor.cpp
+--- a/06_programs/sn100_host/reagents/original_reagent_editor.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_editor.cpp
+@@ -291,6 +291,70 @@
+ }
+ }
+ 
++void OriginalReagentEditor::projectSnapshot(const OriginalReagentState &observed, const Rows &isiRows,
++    const ProjectRecords &records, const QMap<QString,QString> &versions,
++    ReagentSnapshot *snapshot, ReagentProjects *choices) const
++{
++    ReagentSnapshot result; result.originalProfile=true; result.originalRoot=root_;
++    ReagentProjects projectChoices;
++    for (const auto &project : records)
++    {
++        ReagentProject choice;
++        choice.id=project.id; choice.name=project.name; choice.enabled=project.enabled;
++        choice.originalRoot=project.originalRoot; choice.originalFileName=project.originalFileName;
++        choice.originalFingerprint=project.originalFingerprint;
++        choice.originalGroupEnabled=project.originalBaseValues.value(QStringLiteral("is_related"));
++        for (const auto &step : project.advanced.reagents)
++        {
++            const QString name=step.value(QStringLiteral("reagent_name"));
++            if (!choice.reagentNames.contains(name)) choice.reagentNames.append(name);
++        }
++        projectChoices.append(choice);
++    }
++    for (const auto &row : observed.reagents)
++    {
++        ReagentRecord r;
++        r.id=row.value("id").toLongLong(); r.name=row.value("reagent_name").toString(); r.type=displayedType(row.value("reagent_type").toString());
++        r.manufacturer=row.value("manufacturer").toString(); r.warningUl=row.value("warning_ul").toInt(); r.outUl=row.value("out_ul").toInt();
++        r.valid=row.value("valid").toBool(); r.checkExpiry=row.value("check_limit").toBool(); r.fixed=row.value("fixed").toBool();
++        r.originalValues=row; r.originalFingerprint=versions.value(informationFile); result.reagents.append(r);
++    }
++    for (const auto &row : observed.bottles)
++    {
++        ReagentBottle b;
++        b.id=row.value("id").toLongLong(); b.name=row.value("bottle_type_name").toString(); b.area=row.value("area").toString();
++        b.capacityUl=row.value("max_amount_ul").toInt(); b.heightMm=row.value("bottle_real_height_mm").toDouble();
++        b.originalValues=row; b.originalFingerprint=versions.value(bottleFile); result.bottles.append(b);
++    }
++    for (const auto &row : observed.batchGroups)
++    {
++        ReagentBatch b; b.id=row.value("id").toLongLong(); b.code=b.batchGroup=row.value("batch_group").toString();
++        for (const auto &project : records) if (project.name==row.value("project_name").toString()) b.projectId=project.id;
++        for (const auto &metadata : isiRows) if (metadata.value("batch_group").toString()==b.batchGroup)
++        { b.hasMetadata=true; b.isiValue=metadata.value("isi_value").toString(); b.normalValue=metadata.value("normal_value").toString(); }
++        b.originalValues=row; b.originalFingerprint=versions.value(informationFile); result.batches.append(b);
++    }
++    for (const auto &row : observed.barcodes)
++    {
++        ReagentBarcode b; b.id=row.value("id").toLongLong(); b.code=row.value("reagent_barcode").toString();
++        b.reagentId=idByName(observed.reagents,"reagent_name",row.value("reagent_name").toString());
++        b.bottleId=idByName(observed.bottles,"bottle_type_name",row.value("bottle_type").toString());
++        b.expiry=row.value("reagent_limit_date").toString(); b.originalValues=row; b.originalFingerprint=versions.value(informationFile);
++        result.barcodes.append(b);
++    }
++    for (const auto &row : observed.holes)
++    {
++        ReagentHole h; h.id=row.value("id").toLongLong(); h.name=row.value("hole_name").toString().toUpper(); h.area=row.value("area").toString();
++        h.reagentId=idByName(observed.reagents,"reagent_name",row.value("reagent_name").toString());
++        h.bottleId=idByName(observed.bottles,"bottle_type_name",row.value("bottle_type").toString());
++        h.originalBatch=row.value("reagent_batch").toString(); h.expiry=row.value("out_date").toString();
++        h.amountUl=row.value("amount_uL").toDouble(); h.remainingUl=row.value("used_ul").toDouble(); h.priority=row.value("priority").toInt();
++        h.changedAt=row.value("datetime").toString(); h.originalValues=row; h.originalFingerprint=versions.value(settingFile); result.holes.append(h);
++    }
++    loadDisplayTestCounts(root_,observed,records,&result);
++    *snapshot=result; *choices=projectChoices;
++}
++
+ bool OriginalReagentEditor::initialize(const QString &root, QString *message)
+ {
+     if (!repository_.initialize(root,message)) return false;
+@@ -310,66 +374,13 @@
+     Rows isiRows;
+     const QString isiVersion=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(isiFile),message);
+     if (isiVersion.isEmpty() || !isi.open(root_,isiFile,false,message) || !allRows(isi,"isi_value",&isiRows,message)) return false;
+-    ReagentSnapshot result; result.originalProfile=true; result.originalRoot=root_;
+-    ReagentProjects projectChoices;
+     QMap<QString,QString> versions=observed.versions;
+     versions.insert(isiFile,isiVersion);
+     for (const auto &project : records)
+-    {
+-        ReagentProject choice;
+-        choice.id=project.id; choice.name=project.name; choice.enabled=project.enabled;
+-        choice.originalRoot=project.originalRoot; choice.originalFileName=project.originalFileName;
+-        choice.originalFingerprint=project.originalFingerprint;
+-        choice.originalGroupEnabled=project.originalBaseValues.value(QStringLiteral("is_related"));
+-        for (const auto &step : project.advanced.reagents)
+-        {
+-            const QString name=step.value(QStringLiteral("reagent_name"));
+-            if (!choice.reagentNames.contains(name)) choice.reagentNames.append(name);
+-        }
+-        projectChoices.append(choice);
+         versions.insert(QStringLiteral("project/")+project.originalFileName,project.originalFingerprint);
+-    }
+-    for (const auto &row : observed.reagents)
+-    {
+-        ReagentRecord r;
+-        r.id=row.value("id").toLongLong(); r.name=row.value("reagent_name").toString(); r.type=displayedType(row.value("reagent_type").toString());
+-        r.manufacturer=row.value("manufacturer").toString(); r.warningUl=row.value("warning_ul").toInt(); r.outUl=row.value("out_ul").toInt();
+-        r.valid=row.value("valid").toBool(); r.checkExpiry=row.value("check_limit").toBool(); r.fixed=row.value("fixed").toBool();
+-        r.originalValues=row; r.originalFingerprint=versions.value(informationFile); result.reagents.append(r);
+-    }
+-    for (const auto &row : observed.bottles)
+-    {
+-        ReagentBottle b;
+-        b.id=row.value("id").toLongLong(); b.name=row.value("bottle_type_name").toString(); b.area=row.value("area").toString();
+-        b.capacityUl=row.value("max_amount_ul").toInt(); b.heightMm=row.value("bottle_real_height_mm").toDouble();
+-        b.originalValues=row; b.originalFingerprint=versions.value(bottleFile); result.bottles.append(b);
+-    }
+-    for (const auto &row : observed.batchGroups)
+-    {
+-        ReagentBatch b; b.id=row.value("id").toLongLong(); b.code=b.batchGroup=row.value("batch_group").toString();
+-        for (const auto &project : records) if (project.name==row.value("project_name").toString()) b.projectId=project.id;
+-        for (const auto &metadata : isiRows) if (metadata.value("batch_group").toString()==b.batchGroup)
+-        { b.hasMetadata=true; b.isiValue=metadata.value("isi_value").toString(); b.normalValue=metadata.value("normal_value").toString(); }
+-        b.originalValues=row; b.originalFingerprint=versions.value(informationFile); result.batches.append(b);
+-    }
+-    for (const auto &row : observed.barcodes)
+-    {
+-        ReagentBarcode b; b.id=row.value("id").toLongLong(); b.code=row.value("reagent_barcode").toString();
+-        b.reagentId=idByName(observed.reagents,"reagent_name",row.value("reagent_name").toString());
+-        b.bottleId=idByName(observed.bottles,"bottle_type_name",row.value("bottle_type").toString());
+-        b.expiry=row.value("reagent_limit_date").toString(); b.originalValues=row; b.originalFingerprint=versions.value(informationFile);
+-        result.barcodes.append(b);
+-    }
+-    for (const auto &row : observed.holes)
+-    {
+-        ReagentHole h; h.id=row.value("id").toLongLong(); h.name=row.value("hole_name").toString().toUpper(); h.area=row.value("area").toString();
+-        h.reagentId=idByName(observed.reagents,"reagent_name",row.value("reagent_name").toString());
+-        h.bottleId=idByName(observed.bottles,"bottle_type_name",row.value("bottle_type").toString());
+-        h.originalBatch=row.value("reagent_batch").toString(); h.expiry=row.value("out_date").toString();
+-        h.amountUl=row.value("amount_uL").toDouble(); h.remainingUl=row.value("used_ul").toDouble(); h.priority=row.value("priority").toInt();
+-        h.changedAt=row.value("datetime").toString(); h.originalValues=row; h.originalFingerprint=versions.value(settingFile); result.holes.append(h);
+-    }
+-    loadDisplayTestCounts(root_,observed,records,&result);
++    ReagentSnapshot result;
++    ReagentProjects projectChoices;
++    projectSnapshot(observed,isiRows,records,versions,&result,&projectChoices);
+     for (auto it=versions.cbegin();it!=versions.cend();++it)
+         if (it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(it.key()),message))
+             return fail(message,QStringLiteral("读取期间原试剂或项目资料变化，请重新读取。"));
+diff --git a/06_programs/sn100_host/reagents/original_reagent_editor.h b/06_programs/sn100_host/reagents/original_reagent_editor.h
+--- a/06_programs/sn100_host/reagents/original_reagent_editor.h
++++ b/06_programs/sn100_host/reagents/original_reagent_editor.h
+@@ -2,6 +2,7 @@
+ #define SN100_ORIGINAL_REAGENT_EDITOR_H
+ #include "original_reagent_repository.h"
+ #include "projects/original_project_repository.h"
++#include "samples/original_task_reagent_receipt.h"
+ #include <functional>
+ 
+ // 只在ReagentStore数据库线程使用；界面仍用原表单，原名称关联不转成catalog外键。
+@@ -10,6 +11,9 @@
+ public:
+     bool initialize(const QString &root, QString *message);
+     bool load(ReagentSnapshot *snapshot, ReagentProjects *projects, QString *message);
++    // 调用者持项目→试剂两锁；仅用于临时副本，成功后再整体采用，绝不调用普通load/recover。
++    bool loadTaskReagentCommit(const OriginalTaskReagents::Commit &receipt, ReagentSnapshot *snapshot,
++                               ReagentProjects *projects, QString *message);
+     bool saveReagent(const ReagentRecord &record, QString *message);
+     bool saveBottle(const ReagentBottle &record, QString *message);
+     bool saveBarcode(const ReagentBarcode &record, QString *message);
+@@ -40,6 +44,9 @@
+     OriginalBusiness::Rows isiRows_;
+     ProjectRecords projects_;
+     QMap<QString,QString> versions_;
++    void projectSnapshot(const OriginalReagentState &observed, const OriginalBusiness::Rows &isiRows,
++                         const ProjectRecords &records, const QMap<QString,QString> &versions,
++                         ReagentSnapshot *snapshot, ReagentProjects *choices) const;
+     bool mutate(const QString &file, const QString &expected, const std::function<bool(OriginalBusiness::Database &, QString *)> &change,
+                 QString *message, const ProjectRecord *projectSave = nullptr, const QString &groupEnabled = QString(),
+                 OriginalProjectSaveNotice *result = nullptr, const std::function<bool()> &claim = {},
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_runtime.h b/06_programs/sn100_host/reagents/original_reagent_level_runtime.h
+--- a/06_programs/sn100_host/reagents/original_reagent_level_runtime.h
++++ b/06_programs/sn100_host/reagents/original_reagent_level_runtime.h
+@@ -2,6 +2,7 @@
+ #define SN100_ORIGINAL_REAGENT_LEVEL_RUNTIME_H
+ 
+ #include "original_reagent_level.h"
++#include "original_task_reagent_display.h"
+ 
+ namespace OriginalLevels
+ {
+@@ -22,6 +23,15 @@
+     bool acceptObservation(const QString &beforeSettingFingerprint, const CurrentHoleRuntime &after,
+                            const ReagentSnapshot &persistedSnapshot, QString *message);
+ 
++    // 任务专口：调用者先冻结真实动作上下文；采用须在普通observeSnapshot之前。
++    OriginalTaskReagents::RuntimeBasis freezeTaskBasis(OriginalTaskReagents::RuntimeBasis seed, QString *message,
++                                                      const QStringList &activeHoles) const;
++    void cancelTaskBasis(const QString &token);
++    bool taskBasisCurrent(const OriginalTaskReagents::RuntimeBasis &basis, QString *message) const;
++    OriginalTaskReagents::RuntimeAdoption acceptTaskCommit(const OriginalTaskReagents::Commit &receipt,
++                                                          const ReagentSnapshot &persistedSnapshot);
++    OriginalTaskReagents::RuntimeAdoption rejectTaskCommit(const OriginalTaskReagents::Commit &receipt, const QString &reason);
++
+ private:
+     void put(CurrentHoleRuntime runtime, const QString &reason);
+     ReagentSnapshot snapshot_, previousSnapshot_;
+@@ -31,6 +41,13 @@
+     QMap<QString, QString> diagnostics_;
+     quint64 revision_ = 0;
+     bool observed_ = false, snapshotValid_ = false, previousValid_ = false;
++    QString acceptedTaskReceipt_;
++    QByteArray acceptedTaskSignature_;
++    OriginalTaskReagents::RuntimeAdoption acceptedTaskAdoption_;
++    mutable OriginalTaskReagents::RuntimeBasis frozenTaskBasis_;
++    mutable QByteArray frozenTaskSignature_;
++    QByteArray cancelledTaskSignature_;
++    QString cancelledTaskToken_;
+ };
+ }
+ #endif
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_task.cpp b/06_programs/sn100_host/reagents/original_reagent_level_task.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_task.cpp
+@@ -0,0 +1,329 @@
++#include "original_reagent_level_runtime.h"
++#include <QCryptographicHash>
++#include <QDataStream>
++#include <QSet>
++#include <cmath>
++
++namespace OriginalLevels
++{
++namespace
++{
++using namespace OriginalTaskReagents;
++const QString information=QStringLiteral("db/userSet/reagent_Information.db");
++const QString bottle=QStringLiteral("db/systemInfo/reagent_Bottle_Type.db");
++const QString setting=QStringLiteral("db/userSet/reagent_Setting.db");
++
++bool same(const QVariant &a,const QVariant &b)
++{ return a.userType()==b.userType() && a.isNull()==b.isNull() && a==b; }
++bool sameRow(const QVariantMap &a,const QVariantMap &b)
++{
++    if (a.keys()!=b.keys()) return false;
++    for (auto it=a.cbegin();it!=a.cend();++it) if (!same(it.value(),b.value(it.key()))) return false;
++    return true;
++}
++QString sourceName(MaximumSource source)
++{
++    switch (source)
++    {
++    case MaximumSource::InitialBottleByName: return QStringLiteral("InitialBottleByName");
++    case MaximumSource::ConfirmedUr: return QStringLiteral("ConfirmedUr");
++    case MaximumSource::ManualHoleSave: return QStringLiteral("ManualHoleSave");
++    case MaximumSource::FilledHole: return QStringLiteral("FilledHole");
++    case MaximumSource::ClearedHole: return QStringLiteral("ClearedHole");
++    case MaximumSource::Unknown: return QStringLiteral("Unknown");
++    }
++    return QStringLiteral("Unknown");
++}
++bool snapshotVersions(const ReagentSnapshot &snapshot,QMap<QString,QString> *versions)
++{
++    if (!snapshot.originalProfile || snapshot.originalRoot.isEmpty()) return false;
++    const auto collect=[&](const QString &file,const QString &fingerprint)
++    {
++        if (fingerprint.isEmpty() || (!versions->value(file).isEmpty() && versions->value(file)!=fingerprint)) return false;
++        versions->insert(file,fingerprint); return true;
++    };
++    for (const auto &row : snapshot.holes) if (!collect(setting,row.originalFingerprint)) return false;
++    for (const auto &row : snapshot.bottles) if (!collect(bottle,row.originalFingerprint)) return false;
++    for (const auto &row : snapshot.reagents) if (!collect(information,row.originalFingerprint)) return false;
++    for (const auto &row : snapshot.batches) if (!collect(information,row.originalFingerprint)) return false;
++    for (const auto &row : snapshot.barcodes) if (!collect(information,row.originalFingerprint)) return false;
++    return versions->size()==3;
++}
++bool snapshotMatches(const ReagentSnapshot &snapshot,const TypedPlate &plate)
++{
++    if (snapshot.holes.size()!=plate.rows.size()) return false;
++    QMap<qint64,const TypedRow *> indexed;
++    for (const auto &row : plate.rows) indexed.insert(row.values.value(QStringLiteral("id")).toLongLong(),&row);
++    QSet<QString> names; QSet<qint64> ids;
++    for (const auto &hole : snapshot.holes)
++    {
++        const auto *stored=indexed.value(hole.id,nullptr);
++        if (!stored || names.contains(hole.name) || ids.contains(hole.id) ||
++            hole.name!=stored->values.value(QStringLiteral("hole_name")).toString() || hole.originalValues.isEmpty()) return false;
++        const QStringList required{"id","hole_name","area","reagent_type","reagent_name","reagent_batch",
++            "bottle_type","amount_uL","used_ul","state","priority","datetime","out_date","formula_level",
++            "out_ul","warning_ul","max_ul"};
++        for (const auto &column : required) if (!hole.originalValues.contains(column)) return false;
++        names.insert(hole.name); ids.insert(hole.id);
++        for (auto field=hole.originalValues.cbegin();field!=hole.originalValues.cend();++field)
++            if (!stored->values.contains(field.key()) || !same(field.value(),stored->values.value(field.key()))) return false;
++    }
++    return true;
++}
++RuntimeAdoption adoption(const Commit &receipt)
++{
++    RuntimeAdoption result;
++    const auto &basis=receipt.basis;
++    result.actionId=basis.actionId; result.arrivalPacketId=basis.arrivalPacketId;
++    result.connection=basis.connection; result.permissionRevision=basis.permissionRevision;
++    result.receiptId=receipt.receiptId; result.basisToken=basis.basisToken;
++    result.root=receipt.root; result.payloadSha256=receipt.payloadSha256;
++    result.transaction=receipt.transaction; result.committed=receipt.committed;
++    return result;
++}
++QByteArray basisSignature(const RuntimeBasis &b)
++{
++    QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
++       <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
++       <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
++       <<b.mainStatus<<b.capacityCalibrationActive<<b.versions<<b.unavailableReason<<b.holes.size();
++    for (auto hole=b.holes.cbegin();hole!=b.holes.cend();++hole)
++        out<<hole.key()<<hole->available<<hole->rowId<<hole->hole<<hole->originalIdentity<<hole->revision
++           <<hole->maximumSource<<hole->maximumMicrolitres<<hole->amountMicrolitres<<hole->usedMicrolitres
++           <<hole->state<<hole->unavailableReason;
++    return QCryptographicHash::hash(bytes,QCryptographicHash::Sha256);
++}
++// 只为进程内重复凭据作等值校验；不代替数据库版本、完整行链或页面身份检查。
++QByteArray signature(const Commit &receipt)
++{
++    QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    const auto &b=receipt.basis;
++    out<<receipt.receiptId<<int(receipt.action)<<receipt.root<<receipt.payloadSha256<<receipt.settingTable
++       <<int(receipt.transaction)<<receipt.committed<<receipt.postCommitVerified<<receipt.basisMatchesDatabaseBefore
++       <<receipt.reagentSqlWritten<<receipt.beforeVersions<<receipt.afterVersions<<receipt.proofMessage
++       <<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
++       <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
++       <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
++       <<b.mainStatus<<b.capacityCalibrationActive<<b.versions<<b.unavailableReason<<b.holes.size();
++    for (auto hole=b.holes.cbegin();hole!=b.holes.cend();++hole)
++        out<<hole.key()<<hole->available<<hole->rowId<<hole->hole<<hole->originalIdentity<<hole->revision
++           <<hole->maximumSource<<hole->maximumMicrolitres<<hole->amountMicrolitres<<hole->usedMicrolitres
++           <<hole->state<<hole->unavailableReason;
++    for (const auto *plate : {&receipt.beforePlate,&receipt.afterPlate})
++    {
++        out<<plate->complete<<plate->table<<plate->columns<<plate->rows.size();
++        for (const auto &row : plate->rows) out<<row.values<<row.sqliteTypes;
++    }
++    out<<receipt.sqlWrites.size();
++    for (const auto &write : receipt.sqlWrites) out<<write.rowId<<write.hole<<write.predicateUsed<<write.writtenUsed<<write.columns;
++    out<<receipt.refreshHoles.size();
++    for (const auto &hole : receipt.refreshHoles)
++        out<<hole.rowId<<hole.hole<<hole.storedUsed<<hole.sqliteType<<hole.trustedBasis
++           <<hole.displayConversionVerified<<hole.usedMicrolitres<<hole.message;
++    out<<receipt.tasks.size();
++    for (const auto &task : receipt.tasks)
++        out<<task.taskId<<task.reportRow<<task.projectId<<task.calibrationId<<task.rack<<task.type
++           <<task.projectName<<task.projectFile<<task.projectFingerprint<<task.hole<<task.repeatIndex<<task.calibrationPoint
++           <<task.reagentSlots<<task.reservedByHole<<task.returnedByHole<<task.skippedAdded;
++    out<<receipt.alreadyHandledTaskIds<<receipt.skippedAddedTaskIds<<receipt.refusedUncertainTaskIds;
++    return QCryptographicHash::hash(bytes,QCryptographicHash::Sha256);
++}
++}
++
++OriginalTaskReagents::RuntimeBasis RuntimeProvider::freezeTaskBasis(OriginalTaskReagents::RuntimeBasis seed,QString *message,
++                                                                  const QStringList &activeHoles) const
++{
++    seed.available=false; seed.holes.clear(); seed.versions.clear(); seed.basisRevision=0;
++    const auto reject=[&](const QString &reason)
++    { seed.unavailableReason=reason; if (message) *message=reason; return seed; };
++    if (!frozenTaskSignature_.isEmpty())
++        return reject(QStringLiteral("上一任务冻结依据尚未收尾，未覆盖原动作。"));
++    QSet<QString> active;
++    for (const auto &hole : activeHoles)
++    {
++        if (hole.isEmpty() || active.contains(hole)) return reject(QStringLiteral("当前活动试剂盘孔名为空或重复。"));
++        active.insert(hole);
++    }
++    if (active.isEmpty() || !observed_ || !snapshotValid_ || seed.root!=snapshot_.originalRoot || !seed.actionId ||
++        !seed.arrivalPacketId || !seed.connection || !seed.permissionRevision || seed.basisToken.isEmpty() ||
++        seed.payloadSha256.isEmpty() || seed.protocolToken.isEmpty() || !revision_ ||
++        !snapshotVersions(snapshot_,&seed.versions))
++        return reject(QStringLiteral("任务动作上下文或当前三库运行快照不完整，任务可照常处理，运行量依据待核。"));
++    QSet<qint64> ids;
++    for (const auto &hole : snapshot_.holes)
++    {
++        if (hole.id<=0 || ids.contains(hole.id) || seed.holes.contains(hole.name) || hole.originalValues.isEmpty())
++            return reject(QStringLiteral("当前孔集合或原身份投影不唯一，未冻结任务运行依据。"));
++        ids.insert(hole.id);
++        const auto current=runtimes_.value(hole.name);
++        OriginalTaskReagents::HoleRuntimeBasis basis;
++        basis.rowId=hole.id; basis.hole=hole.name; basis.originalIdentity=hole.originalValues;
++        basis.revision=current.revision; basis.maximumSource=sourceName(current.maximumSource);
++        basis.maximumMicrolitres=current.maximumMicrolitres; basis.amountMicrolitres=current.amountMicrolitres;
++        basis.usedMicrolitres=current.usedMicrolitres; basis.state=current.state;
++        basis.available=active.contains(hole.name) && current.available && current.revision && current.root==seed.root && current.hole==hole.name &&
++            current.maximumSource!=MaximumSource::Unknown && std::isfinite(current.maximumMicrolitres) &&
++            current.maximumMicrolitres>=0 && std::isfinite(current.amountMicrolitres) && std::isfinite(current.usedMicrolitres) &&
++            current.settingFingerprint==seed.versions.value(setting) && current.bottleFingerprint==seed.versions.value(bottle) &&
++            current.informationFingerprint==seed.versions.value(information);
++        if (!basis.available) basis.unavailableReason=active.contains(hole.name) ? diagnostic(hole.name) :
++            QStringLiteral("该原库行不属于当前活动试剂盘控件，保留全行证据但无可信GUI运行来源。");
++        seed.holes.insert(hole.name,basis);
++    }
++    seed.available=true; seed.basisRevision=revision_; seed.unavailableReason.clear();
++    frozenTaskBasis_=seed; frozenTaskSignature_=basisSignature(seed);
++    if (message) *message=QStringLiteral("已冻结任务前全盘运行依据；未知孔未补造最大量来源。");
++    return seed;
++}
++
++void RuntimeProvider::cancelTaskBasis(const QString &token)
++{
++    if (!token.isEmpty() && token==frozenTaskBasis_.basisToken)
++    {
++        // 只留一份取消依据，供稍后真实COMMIT通知撤旧值；它永远不能授权采用。
++        cancelledTaskToken_=token; cancelledTaskSignature_=frozenTaskSignature_;
++        frozenTaskBasis_=OriginalTaskReagents::RuntimeBasis(); frozenTaskSignature_.clear();
++    }
++}
++
++bool RuntimeProvider::taskBasisCurrent(const OriginalTaskReagents::RuntimeBasis &basis,QString *message) const
++{
++    const auto reject=[&](const QString &reason) { if (message) *message=reason; return false; };
++    QMap<QString,QString> versions;
++    if (frozenTaskSignature_.isEmpty() || frozenTaskSignature_!=basisSignature(basis) ||
++        !snapshotValid_ || revision_!=basis.basisRevision || snapshot_.originalRoot!=basis.root ||
++        !snapshotVersions(snapshot_,&versions) || versions!=basis.versions || snapshot_.holes.size()!=basis.holes.size())
++        return reject(QStringLiteral("任务冻结动作、三库或Provider全局revision已变化，未重贴旧依据。"));
++    for (const auto &hole : snapshot_.holes)
++    {
++        const auto frozen=basis.holes.constFind(hole.name); const auto now=current(hole.name);
++        if (frozen==basis.holes.cend() || frozen->rowId!=hole.id || !sameRow(frozen->originalIdentity,hole.originalValues) ||
++            frozen->revision!=now.revision || (frozen->available &&
++                (!now.available || frozen->maximumSource!=sourceName(now.maximumSource) ||
++                 frozen->maximumMicrolitres!=now.maximumMicrolitres || frozen->amountMicrolitres!=now.amountMicrolitres ||
++                 frozen->usedMicrolitres!=now.usedMicrolitres || frozen->state!=now.state)))
++            return reject(QStringLiteral("任务冻结孔的当前原身份、revision或独立运行值已变化。"));
++    }
++    if (message) message->clear();
++    return true;
++}
++
++OriginalTaskReagents::RuntimeAdoption RuntimeProvider::rejectTaskCommit(const OriginalTaskReagents::Commit &receipt,const QString &reason)
++{
++    auto result=adoption(receipt); result.message=reason;
++    const QByteArray originalSignature=basisSignature(receipt.basis);
++    const bool authenticated=(!frozenTaskSignature_.isEmpty() && frozenTaskSignature_==originalSignature) ||
++        (!cancelledTaskSignature_.isEmpty() && cancelledTaskSignature_==originalSignature && cancelledTaskToken_==receipt.basis.basisToken);
++    for (auto hole=receipt.basis.holes.cbegin();hole!=receipt.basis.holes.cend();++hole)
++    {
++        const auto before=current(hole.key()); bool changed=false;
++        // 晚到结果不能撤销后来Ur/N/身份产生的新来源；只撤本次冻结后仍未改变的旧revision。
++        if (authenticated && receipt.committed && before.root==receipt.root && before.revision && before.revision==hole->revision)
++        { invalidate(hole.key()); changed=true; }
++        const auto now=current(hole.key());
++        OriginalTaskReagents::HoleRuntimeAdoption item;
++        item.rowId=hole->rowId; item.hole=hole.key(); item.available=now.available; item.changed=changed;
++        item.revision=now.revision; item.reason=reason; result.holes.append(item);
++    }
++    if (authenticated)
++    {
++        cancelTaskBasis(receipt.basis.basisToken);
++        if (cancelledTaskToken_==receipt.basis.basisToken && cancelledTaskSignature_==originalSignature)
++        { cancelledTaskToken_.clear(); cancelledTaskSignature_.clear(); }
++    }
++    return result;
++}
++
++OriginalTaskReagents::RuntimeAdoption RuntimeProvider::acceptTaskCommit(const OriginalTaskReagents::Commit &receipt,
++                                                                     const ReagentSnapshot &persistedSnapshot)
++{
++    const QByteArray receiptSignature=signature(receipt);
++    if (!acceptedTaskReceipt_.isEmpty() && receipt.receiptId==acceptedTaskReceipt_)
++    {
++        if (receiptSignature!=acceptedTaskSignature_)
++        { auto result=adoption(receipt); result.message=QStringLiteral("同一任务凭据标识的内容冲突，未改当前运行量。"); return result; }
++        auto result=acceptedTaskAdoption_; result.duplicate=true;
++        for (auto &hole : result.holes)
++        {
++            const auto now=current(hole.hole); hole.changed=false;
++            if (now.revision!=hole.revision)
++            {
++                result.runtimeApplied=false; result.snapshotAccepted=false; hole.runtimeApplied=false;
++                hole.reason=QStringLiteral("该凭据已处理，当前孔已有更新来源，未重放旧值。");
++            }
++            hole.available=now.available; hole.revision=now.revision;
++        }
++        result.message=QStringLiteral("同一任务凭据已处理，本次未重复推进运行revision。");
++        return result;
++    }
++    QString problem;
++    if (frozenTaskSignature_.isEmpty() || frozenTaskSignature_!=basisSignature(receipt.basis))
++        return rejectTaskCommit(receipt,QStringLiteral("任务回执不属于Provider登记的原冻结动作，未撤销或覆盖当前来源。"));
++    if (!OriginalTaskReagents::verifyDisplayCommit(receipt,&problem)) return rejectTaskCommit(receipt,problem);
++    const auto &basis=receipt.basis;
++    QMap<QString,QString> beforeVersions,afterVersions;
++    if (!snapshotValid_ || revision_!=basis.basisRevision || snapshot_.originalRoot!=receipt.root ||
++        persistedSnapshot.originalRoot!=receipt.root || !snapshotVersions(snapshot_,&beforeVersions) ||
++        !snapshotVersions(persistedSnapshot,&afterVersions) || beforeVersions!=basis.versions ||
++        afterVersions!=receipt.afterVersions || !snapshotMatches(snapshot_,receipt.beforePlate) ||
++        !snapshotMatches(persistedSnapshot,receipt.afterPlate) || snapshot_.holes.size()!=basis.holes.size())
++        return rejectTaskCommit(receipt,QStringLiteral("任务凭据与Provider当前revision、工作根、三库或完整行链不对应，已提交显示待核。"));
++    for (const auto &hole : snapshot_.holes)
++    {
++        const auto frozen=basis.holes.constFind(hole.name); const auto now=current(hole.name);
++        if (frozen==basis.holes.cend() || frozen->rowId!=hole.id || frozen->hole!=hole.name ||
++            !sameRow(frozen->originalIdentity,hole.originalValues) || frozen->revision!=now.revision ||
++            (frozen->available &&
++                (!now.available || frozen->maximumSource!=sourceName(now.maximumSource) || frozen->maximumMicrolitres!=now.maximumMicrolitres ||
++                 frozen->amountMicrolitres!=now.amountMicrolitres || frozen->usedMicrolitres!=now.usedMicrolitres || frozen->state!=now.state)))
++            return rejectTaskCommit(receipt,QStringLiteral("任务冻结孔与当前独立运行来源或原身份不同，未用新来源替换旧basis。"));
++    }
++    if (quint64(receipt.refreshHoles.size())>std::numeric_limits<quint64>::max()-revision_)
++        return rejectTaskCommit(receipt,QStringLiteral("任务已提交，但全盘运行revision余量不足，未部分发布或回绕。"));
++    int trustedCount=0;
++    for (const auto &hole : basis.holes) if (hole.available) ++trustedCount;
++    if (!trustedCount)
++        return rejectTaskCommit(receipt,QStringLiteral("任务已提交，但冻结前没有可信孔；不把空集合当运行采用成功。"));
++    auto result=adoption(receipt); result.snapshotAccepted=true; result.runtimeApplied=true;
++    QMap<QString,CurrentHoleRuntime> proposed; QMap<QString,QString> reasons;
++    for (const auto &refresh : receipt.refreshHoles)
++    {
++        auto runtime=current(refresh.hole); const auto frozen=basis.holes.value(refresh.hole);
++        QString reason;
++        const bool applied=frozen.available && refresh.trustedBasis && refresh.displayConversionVerified;
++        if (applied)
++        {
++            // 原slotRefreshRemainder只setUseVol；保留可信max来源/max/amount/state，不夹到amount。
++            runtime.usedMicrolitres=refresh.usedMicrolitres;
++            reason=QStringLiteral("任务真实提交后的整盘used已采用；保留本孔原最大量来源、液量及状态，不表示设备已加液。")+refresh.message;
++        }
++        else
++        {
++            runtime.available=false; runtime.maximumSource=MaximumSource::Unknown;
++            reason=frozen.available ? QStringLiteral("任务已提交，本孔used显示转换未核实：")+refresh.message :
++                QStringLiteral("本孔冻结前无可信运行来源，任务整盘刷新未从库max补造来源。");
++            if (frozen.available) result.runtimeApplied=false;
++        }
++        runtime.settingFingerprint=afterVersions.value(setting); runtime.bottleFingerprint=afterVersions.value(bottle);
++        runtime.informationFingerprint=afterVersions.value(information);
++        proposed.insert(refresh.hole,runtime); reasons.insert(refresh.hole,reason);
++    }
++    // 以上先构造整盘并完成全部校验；发布时没有SQL、回调或事件循环重入。
++    for (auto hole=proposed.cbegin();hole!=proposed.cend();++hole)
++    {
++        put(hole.value(),reasons.value(hole.key())); const auto now=current(hole.key());
++        OriginalTaskReagents::HoleRuntimeAdoption item;
++        item.rowId=basis.holes.value(hole.key()).rowId; item.hole=hole.key(); item.runtimeApplied=now.available;
++        item.available=now.available; item.changed=true; item.revision=now.revision; item.reason=diagnostic(hole.key());
++        result.holes.append(item);
++    }
++    snapshot_=persistedSnapshot; snapshotValid_=true; observed_=true;
++    previousValid_=false; previousRuntimes_.clear(); previousTransitionRevisions_.clear();
++    result.message=result.runtimeApplied ? QStringLiteral("任务已提交，全盘已有可信前版的孔已按同次after更新剩余量；未知孔仍待核。") :
++        QStringLiteral("任务已提交，整盘快照已采用，部分孔运行剩余量待核；未重放、退量或发送设备动作。");
++    acceptedTaskReceipt_=receipt.receiptId; acceptedTaskSignature_=receiptSignature; acceptedTaskAdoption_=result;
++    cancelTaskBasis(basis.basisToken);
++    return result;
++}
++}
+diff --git a/06_programs/sn100_host/reagents/original_reagent_store.cpp b/06_programs/sn100_host/reagents/original_reagent_store.cpp
+--- a/06_programs/sn100_host/reagents/original_reagent_store.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_store.cpp
+@@ -37,6 +37,7 @@
+ void ReagentStore::initializeOriginal(QString root)
+ {
+     qRegisterMetaType<ReagentProject>();
++    qRegisterMetaType<OriginalTaskReagents::Commit>("OriginalTaskReagents::Commit");
+     if (!onWorker(QStringLiteral("初始化原试剂"))) return;
+     close();
+     std::unique_ptr<OriginalReagentEditor> editor(new OriginalReagentEditor);
+diff --git a/06_programs/sn100_host/reagents/original_task_reagent_display.cpp b/06_programs/sn100_host/reagents/original_task_reagent_display.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_task_reagent_display.cpp
+@@ -0,0 +1,134 @@
++#include "original_task_reagent_display.h"
++#include <QSet>
++#include <cmath>
++
++namespace OriginalTaskReagents
++{
++namespace
++{
++bool fail(QString *message,const QString &reason)
++{ if (message) *message=reason; return false; }
++
++bool same(const QVariant &a,const QVariant &b)
++{ return a.userType()==b.userType() && a.isNull()==b.isNull() && a==b; }
++
++bool index(const TypedPlate &plate,QMap<qint64,const TypedRow *> *rows,QString *message)
++{
++    if (!plate.complete || plate.columns.isEmpty() ||
++        (plate.table!=QStringLiteral("reagent_setting") && plate.table!=QStringLiteral("reagent_setting_6600")))
++        return fail(message,QStringLiteral("任务凭据没有原孔表的完整行。"));
++    QSet<QString> columns,names;
++    for (const auto &column : plate.columns)
++    {
++        if (column.isEmpty() || columns.contains(column))
++            return fail(message,QStringLiteral("任务凭据原列清单重复或为空。"));
++        columns.insert(column);
++    }
++    for (const auto &key : {QStringLiteral("id"),QStringLiteral("hole_name"),QStringLiteral("used_ul")})
++        if (!columns.contains(key)) return fail(message,QStringLiteral("任务凭据缺少原孔身份或used列。"));
++    QStringList sorted=plate.columns; sorted.sort();
++    const QSet<QString> types{QStringLiteral("null"),QStringLiteral("integer"),QStringLiteral("real"),QStringLiteral("text"),QStringLiteral("blob")};
++    for (const auto &row : plate.rows)
++    {
++        if (row.values.keys()!=sorted || row.sqliteTypes.keys()!=sorted)
++            return fail(message,QStringLiteral("任务凭据未逐列保留原值与SQLite类型。"));
++        for (const auto &column : plate.columns)
++            if (!types.contains(row.sqliteTypes.value(column)) ||
++                (row.sqliteTypes.value(column)==QStringLiteral("null"))!=row.values.value(column).isNull())
++                return fail(message,QStringLiteral("任务凭据原值的NULL或存储类型无法核实。"));
++        bool ok=false;
++        const qint64 id=row.values.value(QStringLiteral("id")).toLongLong(&ok);
++        const QString hole=row.values.value(QStringLiteral("hole_name")).toString();
++        if (!ok || id<=0 || hole.isEmpty() || rows->contains(id) || names.contains(hole))
++            return fail(message,QStringLiteral("任务凭据孔id或孔名不唯一。"));
++        rows->insert(id,&row); names.insert(hole);
++    }
++    return true;
++}
++}
++
++bool verifyDisplayCommit(const Commit &receipt,QString *message)
++{
++    if (message) message->clear();
++    const auto &basis=receipt.basis;
++    if (!receipt.committed || receipt.transaction!=TransactionState::Committed ||
++        !receipt.postCommitVerified || !receipt.basisMatchesDatabaseBefore || !basis.available ||
++        receipt.receiptId.isEmpty() || !basis.actionId || !basis.arrivalPacketId || !basis.connection ||
++        !basis.permissionRevision || !basis.basisRevision || basis.basisToken.isEmpty() ||
++        basis.root.isEmpty() || receipt.root!=basis.root || receipt.payloadSha256.isEmpty() ||
++        receipt.payloadSha256!=basis.payloadSha256 ||
++        (receipt.action!=Action::RackReservation && receipt.action!=Action::UnusedReservationReturn))
++        return fail(message,QStringLiteral("任务提交事实、完整后核或动作前依据未核实；保留真实提交状态，显示待核。"));
++    const QString information=QStringLiteral("db/userSet/reagent_Information.db");
++    const QString bottle=QStringLiteral("db/systemInfo/reagent_Bottle_Type.db");
++    const QString setting=QStringLiteral("db/userSet/reagent_Setting.db");
++    if (receipt.beforeVersions.size()!=3 || receipt.afterVersions.size()!=3 || receipt.beforeVersions!=basis.versions)
++        return fail(message,QStringLiteral("任务凭据三库前版与冻结依据不同。"));
++    for (const auto &file : {information,bottle,setting})
++        if (receipt.beforeVersions.value(file).isEmpty() || receipt.afterVersions.value(file).isEmpty())
++            return fail(message,QStringLiteral("任务凭据缺少真实三库版本。"));
++    if (receipt.beforeVersions.value(information)!=receipt.afterVersions.value(information) ||
++        receipt.beforeVersions.value(bottle)!=receipt.afterVersions.value(bottle))
++        return fail(message,QStringLiteral("任务期间试剂定义或瓶型库变化，不能续接旧最大量来源。"));
++    const auto &before=receipt.beforePlate; const auto &after=receipt.afterPlate;
++    const QString expectedTable=basis.configuredPositions==20 ? QStringLiteral("reagent_setting") :
++        basis.configuredPositions==42 ? QStringLiteral("reagent_setting_6600") : QString();
++    if (expectedTable.isEmpty() || receipt.settingTable!=expectedTable || before.table!=receipt.settingTable ||
++        after.table!=before.table || before.columns!=after.columns || before.rows.size()!=after.rows.size())
++        return fail(message,QStringLiteral("任务前后孔表、列或行集合不对应原配置。"));
++    QMap<qint64,const TypedRow *> first,last;
++    if (!index(before,&first,message) || !index(after,&last,message) || first.keys()!=last.keys()) return false;
++    QMap<qint64,const SqlHoleWrite *> writes;
++    for (const auto &write : receipt.sqlWrites)
++    {
++        const auto *old=first.value(write.rowId,nullptr);
++        if (!old || writes.contains(write.rowId) || write.columns!=QStringList{QStringLiteral("used_ul")} ||
++            write.hole!=old->values.value(QStringLiteral("hole_name")).toString() ||
++            !same(write.predicateUsed,old->values.value(QStringLiteral("used_ul"))))
++            return fail(message,QStringLiteral("任务SQL写孔、原WHERE值或列范围不对应完整前行。"));
++        writes.insert(write.rowId,&write);
++    }
++    if (receipt.reagentSqlWritten!=!writes.isEmpty())
++        return fail(message,QStringLiteral("任务SQL是否写入与实际写孔清单不同。"));
++    for (auto row=first.cbegin();row!=first.cend();++row)
++        for (const auto &column : before.columns)
++        {
++            if (column==QStringLiteral("used_ul") && writes.contains(row.key())) continue;
++            const auto *saved=last.value(row.key());
++            if (!same(row.value()->values.value(column),saved->values.value(column)) ||
++                row.value()->sqliteTypes.value(column)!=saved->sqliteTypes.value(column))
++                return fail(message,QStringLiteral("任务前后存在used允许写孔之外的字段变化。"));
++        }
++    // 不重演writer或SQL亲和转换。真实绑定由sqlWrites保存，实际after由完整typed链和三库后核绑定。
++    QSet<qint64> refreshed;
++    if (receipt.refreshHoles.size()!=after.rows.size() || basis.holes.size()!=before.rows.size())
++        return fail(message,QStringLiteral("任务运行刷新清单或冻结孔集合不是整盘。"));
++    for (const auto &refresh : receipt.refreshHoles)
++    {
++        const auto *saved=last.value(refresh.rowId,nullptr);
++        if (!saved || refreshed.contains(refresh.rowId) ||
++            saved->values.value(QStringLiteral("hole_name")).toString()!=refresh.hole ||
++            !same(saved->values.value(QStringLiteral("used_ul")),refresh.storedUsed) ||
++            saved->sqliteTypes.value(QStringLiteral("used_ul"))!=refresh.sqliteType)
++            return fail(message,QStringLiteral("任务运行刷新孔不对应同次整盘after原值/类型。"));
++        refreshed.insert(refresh.rowId);
++        const auto found=basis.holes.constFind(refresh.hole);
++        const auto *old=first.value(refresh.rowId,nullptr);
++        if (found==basis.holes.cend() || found->rowId!=refresh.rowId || found->hole!=refresh.hole ||
++            !old || found->originalIdentity.isEmpty() || refresh.trustedBasis!=found->available)
++            return fail(message,QStringLiteral("任务整盘刷新与冻结孔身份不对应。"));
++        for (auto field=found->originalIdentity.cbegin();field!=found->originalIdentity.cend();++field)
++            if (!old->values.contains(field.key()) || !same(field.value(),old->values.value(field.key())))
++                return fail(message,QStringLiteral("任务冻结孔的原字段/类型与完整前行不同。"));
++        if (refresh.displayConversionVerified)
++        {
++            const QString text=refresh.storedUsed.toString(); bool ok=false;
++            const double value=text.isEmpty() ? 0 : text.toDouble(&ok);
++            if (refresh.storedUsed.isNull() || refresh.sqliteType==QStringLiteral("blob") ||
++                (!text.isEmpty() && !ok) || !std::isfinite(value) || value!=refresh.usedMicrolitres)
++                return fail(message,QStringLiteral("任务used显示转换与实际after原文不同，未用默认0补成功。"));
++        }
++    }
++    return true;
++}
++}
+diff --git a/06_programs/sn100_host/reagents/original_task_reagent_display.h b/06_programs/sn100_host/reagents/original_task_reagent_display.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_task_reagent_display.h
+@@ -0,0 +1,32 @@
++#ifndef SN100_ORIGINAL_TASK_REAGENT_DISPLAY_H
++#define SN100_ORIGINAL_TASK_REAGENT_DISPLAY_H
++
++#include "samples/original_task_reagent_receipt.h"
++
++// 页面采用的值回执。数据库是否提交与运行量是否采用分开，不能据此重发或退量。
++namespace OriginalTaskReagents
++{
++struct HoleRuntimeAdoption
++{
++    qint64 rowId=0;
++    QString hole;
++    bool runtimeApplied=false, available=false, changed=false;
++    quint64 revision=0;
++    QString reason;
++};
++
++struct RuntimeAdoption
++{
++    quint64 actionId=0, arrivalPacketId=0, connection=0, permissionRevision=0;
++    QString receiptId, basisToken, root, payloadSha256;
++    TransactionState transaction=TransactionState::NotStarted;
++    bool committed=false, snapshotAccepted=false, runtimeApplied=false, duplicate=false;
++    QList<HoleRuntimeAdoption> holes;
++    QString message;
++};
++
++// 只核凭据形状、完整原行链与固定投影，不开库、不重新分配/扣量。
++bool verifyDisplayCommit(const Commit &receipt, QString *message);
++}
++Q_DECLARE_METATYPE(OriginalTaskReagents::RuntimeAdoption)
++#endif
+diff --git a/06_programs/sn100_host/reagents/original_task_reagent_readback.cpp b/06_programs/sn100_host/reagents/original_task_reagent_readback.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_task_reagent_readback.cpp
+@@ -0,0 +1,230 @@
++#include "reagent_store.h"
++#include "original_reagent_editor.h"
++#include "original_task_reagent_display.h"
++#include "projects/original_project_copy.h"
++#include <QDir>
++#include <QFileInfo>
++#include <QLockFile>
++#include <QSet>
++#include <QThread>
++#include <cmath>
++
++namespace
++{
++const QString informationFile=QStringLiteral("db/userSet/reagent_Information.db");
++const QString bottleFile=QStringLiteral("db/systemInfo/reagent_Bottle_Type.db");
++const QString settingFile=QStringLiteral("db/userSet/reagent_Setting.db");
++const QString isiFile=QStringLiteral("db/userSet/isi_Value.db");
++const QStringList reagentFiles{informationFile,bottleFile,settingFile};
++
++bool fail(QString *message,const QString &reason)
++{
++    if (message) *message=reason;
++    return false;
++}
++
++bool sameValue(const QVariant &first,const QVariant &second)
++{
++    return first.userType()==second.userType() && first.isNull()==second.isNull() && first==second;
++}
++
++bool sameNumber(double first,double second)
++{
++    return first==second || (std::isnan(first) && std::isnan(second));
++}
++
++qint64 idByName(const OriginalBusiness::Rows &rows,const QString &key,const QString &name)
++{
++    for (const auto &row : rows) if (row.value(key).toString()==name) return row.value(QStringLiteral("id")).toLongLong();
++    return 0;
++}
++
++bool afterVersionsMatch(const OriginalTaskReagents::Commit &receipt,QString *message)
++{
++    if (receipt.afterVersions.size()!=reagentFiles.size())
++        return fail(message,QStringLiteral("任务回执没有完整三库after版本，未采用缓存。"));
++    for (const auto &file : reagentFiles)
++    {
++        const QString expected=receipt.afterVersions.value(file);
++        if (expected.isEmpty()) return fail(message,QStringLiteral("任务回执after版本缺失：")+file);
++        const QString current=OriginalProjectRepository::databaseFingerprint(QDir(receipt.root).filePath(file),message);
++        if (current.isEmpty()) return false;
++        if (current!=expected)
++            return fail(message,QStringLiteral("任务已提交，但专用重读时原三库已变化，未把旧after交给当前页面：")+file);
++    }
++    return true;
++}
++
++// 原编辑器没有无恢复的项目初始化口。只复用仍可逐文件证明的项目/ISI缓存；
++// 有变更便失败，不由任务回执触发普通初始化或项目复制恢复。
++bool cachedMetadataMatches(const QString &root,const ProjectRecords &projects,
++                           const QMap<QString,QString> &versions,QString *message)
++{
++    QSet<QString> expected;
++    for (const auto &file : reagentFiles)
++    {
++        if (versions.value(file).isEmpty())
++            return fail(message,QStringLiteral("原编辑器尚无完整缓存版本，任务回执未临时补造。"));
++        expected.insert(file);
++    }
++    expected.insert(isiFile);
++    QSet<QString> projectFiles;
++    for (const auto &project : projects)
++    {
++        const QString file=project.originalFileName;
++        const QString relative=QStringLiteral("project/")+file;
++        if (project.originalRoot!=root || file.isEmpty() || file!=QFileInfo(file).fileName() ||
++            file.contains('/') || file.contains('\\') || projectFiles.contains(file) ||
++            project.originalFingerprint.isEmpty() || versions.value(relative)!=project.originalFingerprint)
++            return fail(message,QStringLiteral("原编辑器的项目缓存身份或版本不完整，未重新猜测项目。"));
++        projectFiles.insert(file);
++        expected.insert(relative);
++    }
++    if (expected.size()!=versions.size())
++        return fail(message,QStringLiteral("原编辑器缓存版本集合不对应本次项目及ISI资料。"));
++    for (auto entry=versions.cbegin();entry!=versions.cend();++entry)
++    {
++        if (!expected.contains(entry.key()) || entry.value().isEmpty())
++            return fail(message,QStringLiteral("原编辑器缓存含未核实的资料版本。"));
++        if (reagentFiles.contains(entry.key())) continue; // 三库由receipt.after单独逐文件核对。
++        const QString current=OriginalProjectRepository::databaseFingerprint(QDir(root).filePath(entry.key()),message);
++        if (current.isEmpty()) return false;
++        if (current!=entry.value())
++            return fail(message,QStringLiteral("任务已提交，但项目或ISI资料不再对应原缓存，显示保持待核：")+entry.key());
++    }
++    const QDir directory(QDir(root).filePath(QStringLiteral("project")));
++    const QFileInfo directoryInfo(directory.absolutePath());
++    if (!directoryInfo.isDir() || directoryInfo.isSymLink() || !directory.isReadable())
++        return fail(message,QStringLiteral("项目目录不可读或类型不符，未推定为空项目缓存。"));
++    QSet<QString> actual;
++    // 与07实际OriginalProjectRepository::readProjects一致：所有大小写.db文件，
++    // 不沿用N纯计数读取口的formula过滤规则。
++    const auto entries=directory.entryInfoList(QDir::Files|QDir::NoDotAndDotDot|QDir::System,QDir::Name);
++    for (const auto &entry : entries)
++        if (entry.fileName().endsWith(QStringLiteral(".db"),Qt::CaseInsensitive))
++        {
++            if (entry.isSymLink() || !entry.isFile())
++                return fail(message,QStringLiteral("项目文件存在符号链接或类型变化，任务未采用旧缓存。"));
++            actual.insert(entry.fileName());
++        }
++    return actual==projectFiles || fail(message,QStringLiteral("任务重读期间项目文件有增删，未沿用不完整缓存。"));
++}
++
++bool projectedAfterMatches(const OriginalReagentState &state,const ReagentSnapshot &snapshot,
++                           const OriginalTaskReagents::Commit &receipt,QString *message)
++{
++    if (state.root!=receipt.root || state.settingTable!=receipt.settingTable || state.versions!=receipt.afterVersions ||
++        !snapshot.originalProfile || snapshot.originalRoot!=receipt.root ||
++        state.holes.size()!=receipt.afterPlate.rows.size() || snapshot.holes.size()!=state.holes.size())
++        return fail(message,QStringLiteral("任务after整盘、三库或页面投影不属于同一原资料。"));
++    QMap<qint64,const OriginalTaskReagents::TypedRow *> after;
++    for (const auto &row : receipt.afterPlate.rows)
++    {
++        bool ok=false;
++        const qint64 id=row.values.value(QStringLiteral("id")).toLongLong(&ok);
++        if (!ok || after.contains(id)) return fail(message,QStringLiteral("任务after行身份重复或无法读取。"));
++        after.insert(id,&row);
++    }
++    QMap<qint64,const ReagentHole *> projected;
++    QSet<QString> pageNames;
++    for (const auto &hole : snapshot.holes)
++    {
++        if (projected.contains(hole.id) || pageNames.contains(hole.name))
++            return fail(message,QStringLiteral("任务页面投影孔身份重复，未合并整盘记录。"));
++        projected.insert(hole.id,&hole); pageNames.insert(hole.name);
++    }
++    for (const auto &row : state.holes)
++    {
++        bool ok=false;
++        const qint64 id=row.value(QStringLiteral("id")).toLongLong(&ok);
++        const auto *saved=after.value(id,nullptr);
++        const auto *hole=projected.value(id,nullptr);
++        if (!ok || !saved || !hole || row.keys()!=hole->originalValues.keys() ||
++            hole->originalFingerprint!=receipt.afterVersions.value(settingFile))
++            return fail(message,QStringLiteral("任务专用投影缺少唯一原孔或保存版本。"));
++        // Repository读取的是已知列投影，不将它称为SELECT *完整行。
++        // 未知列已经由verifyDisplayCommit全列链及前后整库版本绑定。
++        for (auto field=row.cbegin();field!=row.cend();++field)
++            if (!saved->values.contains(field.key()) || !sameValue(field.value(),saved->values.value(field.key())) ||
++                !sameValue(field.value(),hole->originalValues.value(field.key())))
++                return fail(message,QStringLiteral("任务专用重读的原列/Qt类型/NULL不对应完整after：")+field.key());
++        if (hole->name!=row.value(QStringLiteral("hole_name")).toString().toUpper() ||
++            hole->area!=row.value(QStringLiteral("area")).toString() ||
++            hole->reagentId!=idByName(state.reagents,QStringLiteral("reagent_name"),row.value(QStringLiteral("reagent_name")).toString()) ||
++            hole->bottleId!=idByName(state.bottles,QStringLiteral("bottle_type_name"),row.value(QStringLiteral("bottle_type")).toString()) ||
++            hole->originalBatch!=row.value(QStringLiteral("reagent_batch")).toString() ||
++            hole->expiry!=row.value(QStringLiteral("out_date")).toString() ||
++            hole->changedAt!=row.value(QStringLiteral("datetime")).toString() ||
++            hole->priority!=row.value(QStringLiteral("priority")).toInt() ||
++            !sameNumber(hole->amountUl,row.value(QStringLiteral("amount_uL")).toDouble()) ||
++            !sameNumber(hole->remainingUl,row.value(QStringLiteral("used_ul")).toDouble()))
++            return fail(message,QStringLiteral("任务页面已知字段的原转换投影不一致。"));
++    }
++    return true;
++}
++}
++
++bool OriginalReagentEditor::loadTaskReagentCommit(const OriginalTaskReagents::Commit &receipt,
++    ReagentSnapshot *snapshot,ReagentProjects *choices,QString *message)
++{
++    if (snapshot) *snapshot=ReagentSnapshot();
++    if (choices) choices->clear();
++    if (!snapshot || !choices) return fail(message,QStringLiteral("任务专用重读输出为空。"));
++    if (!OriginalTaskReagents::verifyDisplayCommit(receipt,message)) return false;
++    if (root_.isEmpty() || root_!=receipt.root || state_.root!=root_ || state_.settingTable!=receipt.settingTable)
++        return fail(message,QStringLiteral("任务专用读取的编辑器根或孔表已变化。"));
++    if (!cachedMetadataMatches(root_,projects_,versions_,message) || !afterVersionsMatch(receipt,message)) return false;
++    OriginalReagentState observed;
++    if (!repository_.load(&observed,message)) return false; // 不initialize，不调用普通Editor::load或recover。
++    if (observed.versions!=receipt.afterVersions || observed.settingTable!=receipt.settingTable)
++        return fail(message,QStringLiteral("任务after与实际原三库读取版本或孔表不同。"));
++    QMap<QString,QString> adoptedVersions=versions_;
++    for (auto entry=receipt.afterVersions.cbegin();entry!=receipt.afterVersions.cend();++entry)
++        adoptedVersions[entry.key()]=entry.value();
++    ReagentSnapshot projected;
++    ReagentProjects projectedChoices;
++    projectSnapshot(observed,isiRows_,projects_,adoptedVersions,&projected,&projectedChoices);
++    if (!projectedAfterMatches(observed,projected,receipt,message) ||
++        !cachedMetadataMatches(root_,projects_,adoptedVersions,message) || !afterVersionsMatch(receipt,message)) return false;
++    // 此对象是Store持有的临时值副本。完成所有证明后才改本副本的缓存。
++    state_=observed; versions_=adoptedVersions;
++    *snapshot=projected; *choices=projectedChoices;
++    return true;
++}
++
++void ReagentStore::loadOriginalTaskReagentCommit(OriginalTaskReagents::Commit receipt)
++{
++    bool verified=false;
++    ReagentSnapshot snapshot;
++    ReagentProjects projects;
++    QString message;
++    do
++    {
++        // onWorker失败会发普通error；本专用入口始终只回交带原receipt的值信号。
++        if (QThread::currentThread()!=thread())
++        { message=QStringLiteral("任务回执未排入所属存储线程，未读取资料或采用缓存。"); break; }
++        if (!ready_ || !originalEditor_ || receipt.root!=originalEditor_->root())
++        { message=QStringLiteral("任务回执对应的原编辑器未就绪或工作根已变化。"); break; }
++        if (!OriginalTaskReagents::verifyDisplayCommit(receipt,&message)) break;
++        QLockFile project(QDir(receipt.root).filePath(QStringLiteral(".sn100-original-project-write.lock")));
++        QLockFile reagent(QDir(receipt.root).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
++        project.setStaleLockTime(0); reagent.setStaleLockTime(0);
++        if (!project.tryLock(0) || !reagent.tryLock(0))
++        { message=QStringLiteral("任务已提交，但专用读取的项目/试剂锁被占用，显示待核。"); break; }
++        if (!OriginalProjectCopy::noPending(receipt.root,&message) || !afterVersionsMatch(receipt,&message)) break;
++        std::unique_ptr<OriginalReagentEditor> staged(new OriginalReagentEditor(*originalEditor_));
++        if (!staged->loadTaskReagentCommit(receipt,&snapshot,&projects,&message)) break;
++        if (staged->deviceVersions()!=receipt.afterVersions ||
++            !OriginalProjectCopy::noPending(receipt.root,&message) || !afterVersionsMatch(receipt,&message)) break;
++        originalEditor_.swap(staged); // 不给旧缓存只换SHA；采用已完整读取且通过投影检查的整份缓存。
++        verified=true;
++    } while (false);
++    if (!verified)
++    {
++        snapshot=ReagentSnapshot(); projects.clear();
++        if (message.isEmpty()) message=QStringLiteral("任务专用读取未完成认证，已提交事实保留，显示待核。");
++    }
++    else message=QStringLiteral("任务提交后的完整凭据及三库资料已重读核对；页面动作/连接/revision采用仍另行核对。");
++    // 两锁已释放；不发loaded、succeeded、normal error或设备通知，也不SQL重入接收方。
++    emit originalTaskReagentReadback(receipt,verified,snapshot,projects,message);
++}
+diff --git a/06_programs/sn100_host/reagents/reagent_store.h b/06_programs/sn100_host/reagents/reagent_store.h
+--- a/06_programs/sn100_host/reagents/reagent_store.h
++++ b/06_programs/sn100_host/reagents/reagent_store.h
+@@ -2,6 +2,7 @@
+ #define SN100_REAGENT_STORE_H
+ #include "data/account_store.h"
+ #include "reagent_types.h"
++#include "samples/original_task_reagent_receipt.h"
+ #include <QByteArray>
+ #include <QMap>
+ #include <QObject>
+@@ -37,6 +38,7 @@
+     void finishOriginalProjectSaveAdmission(OriginalProjectSaveAdmission admission);
+     void load();
+     void loadOriginalLevelObservation(QString root); // N专用重读：持原两锁并拒pending，不触发复制恢复。
++    void loadOriginalTaskReagentCommit(OriginalTaskReagents::Commit receipt);
+     void saveReagent(ReagentRecord reagent);
+     void removeReagent(qint64 id);
+     void saveBottle(ReagentBottle bottle);
+@@ -72,6 +74,9 @@
+     void originalPriorityReplyProcessed(quint64 request, quint64 connection, bool committed, bool loaded,
+                                         QString fingerprint, QString message);
+     void loaded(ReagentSnapshot snapshot);
++    // 只表示本次任务提交后的资料读取认证；不替代GUI动作/revision核对或设备完成。
++    void originalTaskReagentReadback(OriginalTaskReagents::Commit receipt, bool verified,
++                                     ReagentSnapshot snapshot, ReagentProjects projects, QString message);
+     void succeeded(QString operation);
+     void error(QString operation, QString message);
+     void closed();
+diff --git a/06_programs/sn100_host/reagents/reagents.pri b/06_programs/sn100_host/reagents/reagents.pri
+--- a/06_programs/sn100_host/reagents/reagents.pri
++++ b/06_programs/sn100_host/reagents/reagents.pri
+@@ -34,3 +34,7 @@
+ HEADERS *= $$clean_path($$PWD/../original_files/original_reagent_capacity.h)
+ SOURCES *= $$clean_path($$PWD/../original_files/theme_configuration.cpp)
+ HEADERS *= $$clean_path($$PWD/../original_files/theme_configuration.h)
++
++# 任务剩余量走专用重读和运行采用，不发送设备命令。
++SOURCES *= $$PWD/original_task_reagent_display.cpp $$PWD/original_reagent_level_task.cpp $$PWD/original_task_reagent_readback.cpp $$PWD/reagents_page_task.cpp
++HEADERS *= $$PWD/original_task_reagent_display.h $$clean_path($$PWD/../samples/original_task_reagent_receipt.h)
+diff --git a/06_programs/sn100_host/reagents/reagents_page.cpp b/06_programs/sn100_host/reagents/reagents_page.cpp
+--- a/06_programs/sn100_host/reagents/reagents_page.cpp
++++ b/06_programs/sn100_host/reagents/reagents_page.cpp
+@@ -298,6 +298,7 @@
+             QToolTip::showText(mapToGlobal(QPoint(width() / 2, 50)), op + "：" + message, this);
+         });
+     applyPermissions();
++    initializeOriginalTaskReagentDisplay();
+ }
+ ReagentsPage::~ReagentsPage()
+ {
+diff --git a/06_programs/sn100_host/reagents/reagents_page.h b/06_programs/sn100_host/reagents/reagents_page.h
+--- a/06_programs/sn100_host/reagents/reagents_page.h
++++ b/06_programs/sn100_host/reagents/reagents_page.h
+@@ -1,6 +1,7 @@
+ #ifndef SN100_REAGENTS_PAGE_H
+ #define SN100_REAGENTS_PAGE_H
+ #include "reagent_store.h"
++#include "original_task_reagent_display.h"
+ #include <QPointer>
+ #include <QHash>
+ #include <QWidget>
+@@ -51,6 +52,9 @@
+     void notifyOriginalLevel(const QString &message);
+     void originalLevelReloadFailed(const QString &message);
+     void rejectOriginalLevelObservation(const QString &hole, bool committed, const QString &message);
++    OriginalTaskReagents::RuntimeBasis freezeOriginalTaskReagentBasis(OriginalTaskReagents::RuntimeBasis seed, QString *message);
++    bool enqueueOriginalTaskReagentCommit(OriginalTaskReagents::Commit receipt, QString *message);
++    void cancelOriginalTaskReagentBasis(const QString &token, const QString &reason);
+ public slots:
+     void setProjects(ReagentProjects projects);
+     void setSession(AccountSession session);
+@@ -69,6 +73,7 @@
+     void updateOriginalDeviceKey(quint64 connection, QString key);
+     void finishOriginalUsageImport(quint64 connection, bool success);
+ signals:
++    void originalTaskReagentAdopted(OriginalTaskReagents::RuntimeAdoption result);
+     void originalLevelRuntimeChanged(); // 原运行来源改变时立即撤销在途N的旧依据。
+     void originalLevelPresentationFinished(quint64 packetId, quint64 connection, quint64 permissionRevision,
+                                          bool shown, QString fingerprint, QString message);
+@@ -100,6 +105,28 @@
+     void closeEvent(QCloseEvent* event) override;
+ 
+ private:
++    void initializeOriginalTaskReagentDisplay();
++    QStringList originalTaskReagentActiveHoles() const;
++    bool originalTaskReagentContextMatches(QString *message) const;
++    void finishOriginalTaskReagentDisplay(const OriginalTaskReagents::Commit &receipt,
++                                          OriginalTaskReagents::RuntimeAdoption result);
++    OriginalTaskReagents::RuntimeAdoption rejectOriginalTaskReagentCommit(
++        const OriginalTaskReagents::Commit &receipt, const QString &reason);
++    std::shared_ptr<const OriginalTaskReagents::RuntimeBasis> originalTaskReagentBasis_;
++    std::shared_ptr<const OriginalTaskReagents::Commit> originalTaskReagentCommit_;
++    std::shared_ptr<const OriginalTaskReagents::RuntimeBasis> cancelledOriginalTaskReagentBasis_;
++    AccountSession originalTaskReagentSession_;
++    AccountSession originalTaskReagentLastSession_;
++    ReagentSnapshot originalTaskReagentSnapshot_;
++    ReagentProjects originalTaskReagentProjects_;
++    QMap<QString,QVariantMap> originalTaskReagentViews_;
++    QString originalTaskReagentCancelled_;
++    quint64 originalTaskReagentActionFloor_ = 0;
++    QByteArray originalTaskReagentReceiptSignature_;
++    std::shared_ptr<const OriginalTaskReagents::RuntimeAdoption> originalTaskReagentLastAdoption_;
++    QTimer *originalTaskReagentTimer_ = nullptr;
++    bool originalTaskReagentOwnsBusy_ = false;
++    std::chrono::steady_clock::time_point originalTaskReagentDeadline_;
+     std::unique_ptr<OriginalLevels::RuntimeProvider> originalLevelRuntime_;
+     std::shared_ptr<const OriginalLevels::ObservationPresentation> pendingOriginalLevelPresentation_;
+     QMap<QString,QVariantMap> originalLevelViews_;
+diff --git a/06_programs/sn100_host/reagents/reagents_page_task.cpp b/06_programs/sn100_host/reagents/reagents_page_task.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/reagents_page_task.cpp
+@@ -0,0 +1,417 @@
++#include "reagents_page.h"
++#include "original_reagent_level_runtime.h"
++#include "cusreagenthole.h"
++#include "ui_frmreagentmaterial.h"
++#include <QCryptographicHash>
++#include <QDataStream>
++#include <QMetaObject>
++#include <QSet>
++#include <QThread>
++#include <QTimer>
++
++namespace
++{
++using namespace OriginalTaskReagents;
++
++bool sameValue(const QVariant &a,const QVariant &b)
++{ return a.userType()==b.userType() && a.isNull()==b.isNull() && a==b; }
++
++bool sameRow(const QVariantMap &a,const QVariantMap &b)
++{
++    if (a.keys()!=b.keys()) return false;
++    for (auto field=a.cbegin();field!=a.cend();++field)
++        if (!sameValue(field.value(),b.value(field.key()))) return false;
++    return true;
++}
++
++bool sameSession(const AccountSession &a,const AccountSession &b)
++{
++    // actionReady随检测状态变化，不把正常Testing当成换账户；roleLabel只作显示。
++    return a.name==b.name && a.role==b.role && a.authenticated==b.authenticated && a.source==b.source &&
++        a.originalPolicySource==b.originalPolicySource && a.grantedPowerIds==b.grantedPowerIds;
++}
++
++QByteArray basisBytes(const RuntimeBasis &b)
++{
++    QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
++       <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
++       <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
++       <<b.mainStatus<<b.capacityCalibrationActive<<b.versions<<b.unavailableReason<<b.holes.size();
++    for (auto hole=b.holes.cbegin();hole!=b.holes.cend();++hole)
++        out<<hole.key()<<hole->available<<hole->rowId<<hole->hole<<hole->originalIdentity<<hole->revision
++           <<hole->maximumSource<<hole->maximumMicrolitres<<hole->amountMicrolitres<<hole->usedMicrolitres
++           <<hole->state<<hole->unavailableReason;
++    return bytes;
++}
++
++QByteArray receiptSignature(const Commit &r)
++{
++    // 有界单槽重复回执核对：连typed原行、任务明细也核，不只比较receiptId或原包SHA。
++    QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<r.receiptId<<int(r.action)<<basisBytes(r.basis)<<r.root<<r.payloadSha256<<r.settingTable
++       <<int(r.transaction)<<r.committed<<r.reagentSqlWritten<<r.postCommitVerified<<r.basisMatchesDatabaseBefore
++       <<r.beforeVersions<<r.afterVersions<<r.proofMessage;
++    for (const auto *plate : {&r.beforePlate,&r.afterPlate})
++    {
++        out<<plate->complete<<plate->table<<plate->columns<<plate->rows.size();
++        for (const auto &row : plate->rows) out<<row.values<<row.sqliteTypes;
++    }
++    out<<r.sqlWrites.size();
++    for (const auto &row : r.sqlWrites) out<<row.rowId<<row.hole<<row.predicateUsed<<row.writtenUsed<<row.columns;
++    out<<r.refreshHoles.size();
++    for (const auto &row : r.refreshHoles)
++        out<<row.rowId<<row.hole<<row.storedUsed<<row.sqliteType<<row.trustedBasis
++           <<row.displayConversionVerified<<row.usedMicrolitres<<row.message;
++    out<<r.tasks.size();
++    for (const auto &task : r.tasks)
++        out<<task.taskId<<task.reportRow<<task.projectId<<task.calibrationId<<task.rack<<task.type
++           <<task.projectName<<task.projectFile<<task.projectFingerprint<<task.hole<<task.repeatIndex<<task.calibrationPoint
++           <<task.reagentSlots<<task.reservedByHole<<task.returnedByHole<<task.skippedAdded;
++    out<<r.alreadyHandledTaskIds<<r.skippedAddedTaskIds<<r.refusedUncertainTaskIds;
++    return QCryptographicHash::hash(bytes,QCryptographicHash::Sha256);
++}
++
++template<class Rows> bool sameOriginalRows(const Rows &a,const Rows &b)
++{
++    if (a.size()!=b.size()) return false;
++    for (int i=0;i<a.size();++i)
++        if (a[i].id!=b[i].id || a[i].originalFingerprint!=b[i].originalFingerprint ||
++            !sameRow(a[i].originalValues,b[i].originalValues)) return false;
++    return true;
++}
++
++bool sameSnapshot(const ReagentSnapshot &a,const ReagentSnapshot &b)
++{
++    return a.originalProfile && b.originalProfile && a.originalRoot==b.originalRoot &&
++        a.originalProjectOrder==b.originalProjectOrder && sameOriginalRows(a.holes,b.holes) &&
++        sameOriginalRows(a.bottles,b.bottles) && sameOriginalRows(a.reagents,b.reagents) &&
++        sameOriginalRows(a.batches,b.batches) && sameOriginalRows(a.barcodes,b.barcodes);
++}
++
++QMap<QString,QString> pageVersions(const ReagentSnapshot &snapshot)
++{
++    QMap<QString,QString> versions; bool valid=true;
++    const auto collect=[&](const QString &file,const QString &fingerprint)
++    {
++        if (fingerprint.isEmpty() || (versions.contains(file) && versions.value(file)!=fingerprint)) valid=false;
++        versions.insert(file,fingerprint);
++    };
++    for (const auto &row : snapshot.holes) collect(QStringLiteral("db/userSet/reagent_Setting.db"),row.originalFingerprint);
++    for (const auto &row : snapshot.bottles) collect(QStringLiteral("db/systemInfo/reagent_Bottle_Type.db"),row.originalFingerprint);
++    for (const auto &row : snapshot.reagents) collect(QStringLiteral("db/userSet/reagent_Information.db"),row.originalFingerprint);
++    for (const auto &row : snapshot.batches) collect(QStringLiteral("db/userSet/reagent_Information.db"),row.originalFingerprint);
++    for (const auto &row : snapshot.barcodes) collect(QStringLiteral("db/userSet/reagent_Information.db"),row.originalFingerprint);
++    return valid && versions.size()==3 ? versions : QMap<QString,QString>();
++}
++
++bool sameProjects(const ReagentProjects &a,const ReagentProjects &b)
++{
++    if (a.size()!=b.size()) return false;
++    for (int i=0;i<a.size();++i)
++        if (a[i].originalRoot!=b[i].originalRoot || a[i].originalFileName!=b[i].originalFileName ||
++            a[i].originalFingerprint.isEmpty() || a[i].originalFingerprint!=b[i].originalFingerprint ||
++            a[i].name!=b[i].name || a[i].id!=b[i].id || a[i].unit!=b[i].unit || a[i].enabled!=b[i].enabled ||
++            a[i].reagentNames!=b[i].reagentNames || a[i].originalGroupEnabled!=b[i].originalGroupEnabled) return false;
++    return true;
++}
++
++RuntimeAdoption unadopted(const Commit &r,const QString &message)
++{
++    RuntimeAdoption result;
++    result.actionId=r.basis.actionId; result.arrivalPacketId=r.basis.arrivalPacketId;
++    result.connection=r.basis.connection; result.permissionRevision=r.basis.permissionRevision;
++    result.receiptId=r.receiptId; result.basisToken=r.basis.basisToken; result.root=r.root;
++    result.payloadSha256=r.payloadSha256; result.transaction=r.transaction; result.committed=r.committed;
++    result.message=message;
++    return result;
++}
++
++bool viewMatches(const QVariantMap &view,const OriginalLevels::CurrentHoleRuntime &runtime,const RuntimeBasis &basis)
++{
++    return !view.isEmpty() && runtime.available && view.value("connection").toULongLong()==basis.connection &&
++        view.value("permission").toULongLong()==basis.permissionRevision && view.value("root").toString()==runtime.root &&
++        view.value("reagent").toString()==runtime.reagent && view.value("bottle").toString()==runtime.bottle &&
++        view.value("area").toString()==runtime.area && view.value("state").toString()==runtime.state &&
++        runtime.amountMicrolitres==view.value("amount").toDouble() && runtime.usedMicrolitres==view.value("used").toDouble() &&
++        runtime.maximumMicrolitres==view.value("maximum").toDouble();
++}
++}
++
++void ReagentsPage::initializeOriginalTaskReagentDisplay()
++{
++    qRegisterMetaType<OriginalTaskReagents::RuntimeBasis>("OriginalTaskReagents::RuntimeBasis");
++    qRegisterMetaType<OriginalTaskReagents::Commit>("OriginalTaskReagents::Commit");
++    qRegisterMetaType<OriginalTaskReagents::RuntimeAdoption>("OriginalTaskReagents::RuntimeAdoption");
++    originalTaskReagentTimer_=new QTimer(this);
++    originalTaskReagentTimer_->setSingleShot(true);
++    originalTaskReagentTimer_->setTimerType(Qt::PreciseTimer);
++    connect(originalTaskReagentTimer_,&QTimer::timeout,this,[this]()
++    {
++        if (!originalTaskReagentCommit_) return;
++        const auto receipt=*originalTaskReagentCommit_;
++        finishOriginalTaskReagentDisplay(receipt,rejectOriginalTaskReagentCommit(receipt,
++            QStringLiteral("任务数据库提交事实保留；页面专用重读10秒未收尾，显示待核，未重发或退量。")));
++    });
++    connect(this,&ReagentsPage::requestSession,this,[this](const AccountSession &session)
++    {
++        if (originalTaskReagentBasis_ && !sameSession(originalTaskReagentSession_,session))
++            cancelOriginalTaskReagentBasis(originalTaskReagentBasis_->basisToken,QStringLiteral("账户身份在任务显示期间变化，旧依据不用于新账户。"));
++    });
++    connect(store_,&ReagentStore::originalTaskReagentReadback,this,
++        [this](const Commit &receipt,bool loaded,const ReagentSnapshot &snapshot,const ReagentProjects &projects,const QString &problem)
++    {
++        if (!originalTaskReagentCommit_ || receiptSignature(receipt)!=receiptSignature(*originalTaskReagentCommit_)) return;
++        QString error;
++        if (std::chrono::steady_clock::now()>=originalTaskReagentDeadline_)
++            error=QStringLiteral("任务已提交，但页面专用重读超过原10秒单调截止时间，未因事件排队延后而续期采用。");
++        else if (!loaded) error=QStringLiteral("任务已提交，但专用页面资料重读失败：")+problem;
++        else if (!originalTaskReagentContextMatches(&error)) {}
++        else if (!sameProjects(originalTaskReagentProjects_,projects))
++            error=QStringLiteral("任务后项目文件、版本或原顺序改变，未复用冻结的次数和详情。");
++        else if (snapshot.originalProjectOrder!=originalTaskReagentSnapshot_.originalProjectOrder)
++            error=QStringLiteral("任务后实际配置的项目显示顺序改变，未以同文件SHA复用旧N次数。");
++        if (!error.isEmpty())
++        { finishOriginalTaskReagentDisplay(receipt,rejectOriginalTaskReagentCommit(receipt,error)); return; }
++        // Provider先核完整typed after和当前revision；不能先普通observe使可信前版失效。
++        auto result=originalLevelRuntime_->acceptTaskCommit(receipt,snapshot);
++        if (result.snapshotAccepted)
++        {
++            for (const auto &hole : result.holes)
++            {
++                if (!hole.changed) continue;
++                if (!hole.runtimeApplied) { originalLevelViews_.remove(hole.hole); continue; }
++                auto view=originalTaskReagentViews_.value(hole.hole);
++                const auto runtime=originalLevelRuntime_->current(hole.hole);
++                if (!view.isEmpty())
++                {
++                    // N量、上限、状态与次数项目版本原样保留；任务整盘刷新只续used。
++                    view.insert(QStringLiteral("used"),runtime.usedMicrolitres);
++                    const QString taskNote=QStringLiteral(" 任务真实提交后已按同次整盘资料刷新运行剩余量，不表示设备已加液。");
++                    QString source=view.value("source").toString();
++                    if (!source.endsWith(taskNote)) source+=taskNote; // 连续任务只保留一份提示，不能逐次增长。
++                    view.insert(QStringLiteral("source"),source);
++                    originalLevelViews_.insert(hole.hole,view);
++                }
++            }
++            snapshot_=snapshot; projects_=projects;
++            ui->reagentPanel->setSnapshot(snapshot_);
++            selectHole(selectedHole_); refreshTestCounts();
++        }
++        finishOriginalTaskReagentDisplay(receipt,result);
++        if (result.snapshotAccepted) emit snapshotChanged(snapshot_);
++    },Qt::QueuedConnection);
++}
++
++OriginalTaskReagents::RuntimeBasis ReagentsPage::freezeOriginalTaskReagentBasis(RuntimeBasis seed,QString *message)
++{
++    bool providerRegistered=false;
++    const auto reject=[&](const QString &reason)
++    { if (providerRegistered && originalLevelRuntime_) originalLevelRuntime_->cancelTaskBasis(seed.basisToken);
++      seed.available=false; seed.holes.clear(); seed.versions.clear(); seed.basisRevision=0;
++      seed.unavailableReason=reason; if (message) *message=reason; return seed; };
++    if (QThread::currentThread()!=thread()) return reject(QStringLiteral("任务页面依据只能在页面所属线程冻结。"));
++    if (originalTaskReagentBasis_ || originalTaskReagentCommit_)
++        return reject(QStringLiteral("上一动作的页面依据或重读尚未收尾，未覆盖它；本次任务本身仍按原流程处理。"));
++    if (!seed.actionId || seed.actionId<=originalTaskReagentActionFloor_ || !seed.arrivalPacketId || seed.basisToken.isEmpty())
++        return reject(QStringLiteral("任务动作编号或冻结标识缺失、已使用或过期，未复用旧依据。"));
++    if (!session_.authenticated || !originalLevelRuntime_ || !seed.connection || seed.connection!=originalLevelConnection_ ||
++        !seed.permissionRevision || seed.permissionRevision!=originalLevelPermissionRevision_ || seed.root!=snapshot_.originalRoot)
++        return reject(QStringLiteral("页面没有该动作原连接、许可和工作根的运行依据；任务不因此新增权限门槛。"));
++    if (busy_ || dirty_ || pendingOriginalReload_ || hasUnconfirmedOriginalLevelRuntime())
++        return reject(QStringLiteral("页面仍有草稿、重读或未确认来源，不能补抓任务前版；任务本身不由此阻止。"));
++    const auto active=originalTaskReagentActiveHoles();
++    if (active.isEmpty()) return reject(QStringLiteral("活动面板孔位缺失或重名，未借隐藏的旧20孔子树冻结依据。"));
++    seed=originalLevelRuntime_->freezeTaskBasis(seed,message,active);
++    if (!seed.available) return seed;
++    providerRegistered=true;
++    if (seed.versions!=pageVersions(snapshot_)) return reject(QStringLiteral("Provider与页面的三库实际指纹不同，未冻结旧页面。"));
++    if (seed.holes.size()!=snapshot_.holes.size()) return reject(QStringLiteral("Provider与页面原孔集合不同，未冻结半盘。"));
++    for (const auto &hole : snapshot_.holes)
++    {
++        const auto frozen=seed.holes.constFind(hole.name);
++        if (frozen==seed.holes.cend() || frozen->rowId!=hole.id || !sameRow(frozen->originalIdentity,hole.originalValues))
++            return reject(QStringLiteral("Provider原身份行与页面快照不对应，未以同名孔替代原瓶。"));
++    }
++    originalTaskReagentBasis_=std::make_shared<const RuntimeBasis>(seed);
++    originalTaskReagentActionFloor_=seed.actionId;
++    originalTaskReagentSession_=session_; originalTaskReagentSnapshot_=snapshot_; originalTaskReagentProjects_=projects_;
++    originalTaskReagentCancelled_.clear(); originalTaskReagentViews_.clear();
++    for (auto view=originalLevelViews_.cbegin();view!=originalLevelViews_.cend();++view)
++        if (viewMatches(view.value(),originalLevelRuntime_->current(view.key()),seed)) originalTaskReagentViews_.insert(view.key(),view.value());
++    if (message) message->clear();
++    return seed;
++}
++
++QStringList ReagentsPage::originalTaskReagentActiveHoles() const
++{
++    QStringList names;
++    QSet<QString> seen;
++    // 可见性相对面板判断，页面未显示也可冻结；隐藏的旧20孔祖先不会混入。
++    // 配置42位的原界面实际含46控件，不按配置数截断。
++    for (const auto *hole : ui->reagentPanel->findChildren<cusReagentHole*>())
++    {
++        if (!hole->isVisibleTo(ui->reagentPanel)) continue;
++        const QString name=hole->objectName();
++        if (name.isEmpty() || seen.contains(name)) return QStringList();
++        seen.insert(name); names.append(name);
++    }
++    return names;
++}
++
++bool ReagentsPage::originalTaskReagentContextMatches(QString *message) const
++{
++    const auto reject=[&](const QString &reason) { if (message) *message=reason; return false; };
++    if (!originalTaskReagentBasis_ || !originalLevelRuntime_) return reject(QStringLiteral("页面冻结依据已撤销，未补用当前新值。"));
++    const auto &basis=*originalTaskReagentBasis_;
++    if (!originalTaskReagentCancelled_.isEmpty()) return reject(originalTaskReagentCancelled_);
++    if (dirty_ || pendingOriginalReload_ || hasUnconfirmedOriginalLevelRuntime())
++        return reject(QStringLiteral("任务等待期间出现草稿、普通重读或Ur/手工待核来源，未覆盖原等待。"));
++    if (basis.connection!=originalLevelConnection_ || basis.permissionRevision!=originalLevelPermissionRevision_ ||
++        !sameSession(originalTaskReagentSession_,session_)) return reject(QStringLiteral("任务前后页面连接、许可或账户身份不对应。"));
++    if (!sameSnapshot(originalTaskReagentSnapshot_,snapshot_) || !sameProjects(originalTaskReagentProjects_,projects_))
++        return reject(QStringLiteral("任务等待期间页面原身份、三库或项目资料已变化，未给旧动作换标签。"));
++    QString error;
++    if (!originalLevelRuntime_->taskBasisCurrent(basis,&error))
++        return reject(error.isEmpty() ? QStringLiteral("任务冻结后Provider全局或逐孔revision/来源已经变化。") : error);
++    return true;
++}
++
++bool ReagentsPage::enqueueOriginalTaskReagentCommit(Commit receipt,QString *message)
++{
++    if (QThread::currentThread()!=thread())
++    { if (message) *message=QStringLiteral("任务页面凭据只能在页面所属线程排入。"); return false; }
++    const auto digest=receiptSignature(receipt);
++    if (originalTaskReagentLastAdoption_ && receipt.receiptId==originalTaskReagentLastAdoption_->receiptId)
++    {
++        if (digest!=originalTaskReagentReceiptSignature_)
++        {
++            const QString error=QStringLiteral("同一任务凭据标识内容冲突，未重复采用或覆盖当前等待。");
++            emit originalTaskReagentAdopted(unadopted(receipt,error));
++            if (message) *message=error;
++            return false;
++        }
++        auto result=*originalTaskReagentLastAdoption_; result.duplicate=true;
++        const bool contextCurrent=result.connection==originalLevelConnection_ && result.permissionRevision==originalLevelPermissionRevision_ &&
++            sameSession(originalTaskReagentLastSession_,session_);
++        if (!contextCurrent) { result.runtimeApplied=false; result.snapshotAccepted=false; }
++        for (auto &hole : result.holes)
++        {
++            const auto runtime=originalLevelRuntime_ ? originalLevelRuntime_->current(hole.hole) : OriginalLevels::CurrentHoleRuntime();
++            hole.changed=false;
++            if (!contextCurrent || runtime.revision!=hole.revision) { result.runtimeApplied=false; result.snapshotAccepted=false; hole.runtimeApplied=false; }
++            hole.available=runtime.available; hole.revision=runtime.revision;
++        }
++        emit originalTaskReagentAdopted(result);
++        if (message) *message=result.message;
++        return true;
++    }
++    if (originalTaskReagentCommit_)
++    {
++        if (digest==receiptSignature(*originalTaskReagentCommit_)) { if (message) *message=QStringLiteral("相同凭据仍在专用重读中，未重复入队。"); return true; }
++        const QString error=QStringLiteral("上一任务页面凭据仍在处理，未覆盖等待或排无界队列。");
++        emit originalTaskReagentAdopted(unadopted(receipt,error));
++        if (message) *message=error;
++        return false;
++    }
++    QString error;
++    const bool registered=originalTaskReagentBasis_ && basisBytes(receipt.basis)==basisBytes(*originalTaskReagentBasis_);
++    if (!registered)
++    {
++        error=QStringLiteral("任务凭据没有本页面登记的完整冻结前版，提交事实保留，运行显示待核。");
++        auto result=unadopted(receipt,error);
++        if (cancelledOriginalTaskReagentBasis_ && basisBytes(receipt.basis)==basisBytes(*cancelledOriginalTaskReagentBasis_))
++            result=rejectOriginalTaskReagentCommit(receipt,error);
++        bool changed=false;
++        for (const auto &hole : result.holes) if (hole.changed)
++        {
++            changed=true;
++            if (!hole.available)
++            {
++                originalLevelViews_.remove(hole.hole);
++                if (receipt.basis.holes.value(hole.hole).available) originalLevelProjectCountsVerified_=false;
++            }
++        }
++        if (changed) { renderOriginalLevelViews(); emit originalLevelRuntimeChanged(); }
++        emit originalTaskReagentAdopted(result);
++        if (message) *message=error;
++        return false;
++    }
++    if (!originalTaskReagentContextMatches(&error) || !verifyDisplayCommit(receipt,&error) ||
++        busy_ || dirty_ || pendingOriginalReload_ || hasUnconfirmedOriginalLevelRuntime())
++    {
++        if (error.isEmpty()) error=QStringLiteral("页面还有草稿、重读或Ur/手工未知来源，本次任务显示待核，未清除原等待。");
++        finishOriginalTaskReagentDisplay(receipt,rejectOriginalTaskReagentCommit(receipt,error));
++        if (message) *message=error;
++        return false;
++    }
++    originalTaskReagentCommit_=std::make_shared<const Commit>(receipt);
++    originalTaskReagentOwnsBusy_=true; setBusy(true);
++    // 只等待本次只读结果；超时不重发任务、不补偿，也不接普通loaded旁路。
++    originalTaskReagentDeadline_=std::chrono::steady_clock::now()+std::chrono::seconds(10);
++    originalTaskReagentTimer_->start(10000);
++    if (!QMetaObject::invokeMethod(store_,"loadOriginalTaskReagentCommit",Qt::QueuedConnection,Q_ARG(OriginalTaskReagents::Commit,receipt)))
++    {
++        error=QStringLiteral("任务已提交，但专用资料重读未能排入存储线程，显示待核。");
++        finishOriginalTaskReagentDisplay(receipt,rejectOriginalTaskReagentCommit(receipt,error));
++        if (message) *message=error;
++        return false;
++    }
++    if (message) *message=QStringLiteral("任务数据库事实已收到，等待专用重读；尚未确认运行量采用。");
++    return true;
++}
++
++OriginalTaskReagents::RuntimeAdoption ReagentsPage::rejectOriginalTaskReagentCommit(const Commit &receipt,const QString &reason)
++{
++    // 新连接可能重建Provider并重用数值revision；旧连接结果不可据编号巧合撤新来源。
++    if (originalLevelRuntime_ && receipt.basis.connection==originalLevelConnection_ &&
++        receipt.basis.permissionRevision==originalLevelPermissionRevision_ && receipt.root==snapshot_.originalRoot)
++        return originalLevelRuntime_->rejectTaskCommit(receipt,reason);
++    return unadopted(receipt,reason);
++}
++
++void ReagentsPage::finishOriginalTaskReagentDisplay(const Commit &receipt,RuntimeAdoption result)
++{
++    bool changed=false;
++    for (const auto &hole : result.holes)
++    {
++        changed=changed || hole.changed;
++        if (hole.changed && !hole.available)
++        {
++            originalLevelViews_.remove(hole.hole);
++            if (receipt.basis.holes.value(hole.hole).available) originalLevelProjectCountsVerified_=false;
++        }
++    }
++    originalTaskReagentReceiptSignature_=receiptSignature(receipt);
++    originalTaskReagentLastSession_=originalTaskReagentSession_;
++    originalTaskReagentLastAdoption_=std::make_shared<const RuntimeAdoption>(result);
++    if (originalLevelRuntime_) originalLevelRuntime_->cancelTaskBasis(receipt.basis.basisToken);
++    originalTaskReagentTimer_->stop(); originalTaskReagentCommit_.reset(); originalTaskReagentBasis_.reset();
++    originalTaskReagentViews_.clear(); originalTaskReagentSnapshot_=ReagentSnapshot(); originalTaskReagentProjects_.clear();
++    originalTaskReagentCancelled_.clear();
++    if (originalTaskReagentOwnsBusy_)
++    { originalTaskReagentOwnsBusy_=false; setBusy(pendingDeviceRequest_!=0); }
++    renderOriginalLevelViews();
++    if (changed) emit originalLevelRuntimeChanged();
++    setProperty("originalTaskReagentMessage",result.message);
++    emit operationMessage(QStringLiteral("任务试剂剩余量"),result.message);
++    emit originalTaskReagentAdopted(result);
++}
++
++void ReagentsPage::cancelOriginalTaskReagentBasis(const QString &token,const QString &reason)
++{
++    if (QThread::currentThread()!=thread() || !originalTaskReagentBasis_ || token!=originalTaskReagentBasis_->basisToken) return;
++    const QString cancelledToken=token;
++    originalTaskReagentCancelled_=reason.isEmpty() ? QStringLiteral("任务页面冻结依据已由原动作撤销。"):reason;
++    if (originalTaskReagentCommit_)
++    {
++        const auto receipt=*originalTaskReagentCommit_;
++        // 已知COMMIT先撤仍属旧basis的来源并回执；晚到只读结果不再应用到新动作。
++        finishOriginalTaskReagentDisplay(receipt,rejectOriginalTaskReagentCommit(receipt,originalTaskReagentCancelled_));
++        return;
++    }
++    if (originalLevelRuntime_) originalLevelRuntime_->cancelTaskBasis(cancelledToken);
++    cancelledOriginalTaskReagentBasis_=originalTaskReagentBasis_;
++    originalTaskReagentBasis_.reset(); originalTaskReagentViews_.clear();
++    originalTaskReagentSnapshot_=ReagentSnapshot(); originalTaskReagentProjects_.clear();
++}
+diff --git a/06_programs/sn100_host/shell/build.sh b/06_programs/sn100_host/shell/build.sh
+--- a/06_programs/sn100_host/shell/build.sh
++++ b/06_programs/sn100_host/shell/build.sh
+@@ -261,6 +261,8 @@
+     name=$(basename -- "${form%.ui}")
+     "$qt_tools/uic" "$form" -o "$build_dir/ui_$name.h"
+ done
++# 任务剩余量走专用重读和运行采用，不发送设备命令。
++sources+=("$program_dir/reagents/original_task_reagent_display.cpp" "$program_dir/reagents/original_reagent_level_task.cpp" "$program_dir/reagents/original_task_reagent_readback.cpp" "$program_dir/reagents/reagents_page_task.cpp")
+ for header in "${headers[@]}"; do
+     if grep -q 'Q_OBJECT' "$header"; then
+         name=$(basename -- "${header%.h}")

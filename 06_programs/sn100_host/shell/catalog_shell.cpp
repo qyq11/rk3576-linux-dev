@@ -55,6 +55,12 @@ void frmMain::attachCatalogPages(ProjectPage *projects, ReagentsPage *reagents)
     projects->setSession(session_);reagents->setSession(session_);
     connect(this,&frmMain::sessionChanged,projects,&ProjectPage::setSession);
     connect(this,&frmMain::sessionChanged,reagents,&ReagentsPage::setSession);
+    connect(reagents,&ReagentsPage::originalProjectGroupEnabledSaved,projects,
+            [projects](const ReagentProject &)
+    {
+        // 自动重读不打断项目草稿；旧任务仍由各自的原项目指纹拒绝。
+        if (projects->isReady() && !projects->isBusy() && !projects->hasUnsavedChanges()) projects->reload();
+    });
     connect(projects,&ProjectPage::snapshotChanged,reagents,
             [reagents](const ProjectRecords &records, const ProjectUnits &)
     {

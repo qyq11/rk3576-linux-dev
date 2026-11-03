@@ -33,67 +33,118 @@ QString requireFlag(const Sn100Protocol::StatusSnapshot &status, int blockId, in
 }
 }
 
-DeviceControl::DeviceControl(QObject *parent) : QObject(parent), transport_(this), timer_(this)
+DeviceControl::DeviceControl(QObject *parent) : QObject(parent), transport_(this), timer_(this), reconnectTimer_(this)
 {
     qRegisterMetaType<DeviceControlState>();
     clock_.start();
     timer_.setInterval(100);
     connect(&timer_, &QTimer::timeout, this, &DeviceControl::tick);
-    connect(&transport_, &DeviceTransport::connected, this, [this](quint64)
+    reconnectTimer_.setTimerType(Qt::PreciseTimer);
+    connect(&reconnectTimer_, &QTimer::timeout, this, [this]()
     {
+        if (!reconnectEnabled_ || !connectionRequested_ || connecting_ || state_.connected ||
+            retryIntent_!=connectionIntent_ || retryGeneration_!=transport_.generation()) return;
+        beginConnection(connectionIntent_);
+    });
+    connect(&transport_, &DeviceTransport::connected, this, [this](quint64 connection)
+    {
+        if (!connectionRequested_ || connection!=transport_.generation()) return;
+        const quint64 intent=connectionIntent_;
+        connecting_ = false;
+        reconnectTimer_.stop();
         state_.connected = true;
+        state_.fresh = false;
         statusAt_ = -1;
         queryAt_ = -1;
+        timer_.start();
         publish(tr("已连接主控，正在读取设备状态。"));
+        if (intent!=connectionIntent_ || connection!=transport_.generation() || !state_.connected) return;
         query(Sn100Protocol::ReadOnlyQuery::Status);
     });
-    connect(&transport_, &DeviceTransport::disconnected, this, [this](quint64)
+    connect(&transport_, &DeviceTransport::disconnected, this, [this](quint64 connection)
     {
-        // 断线后不再查询旧连接；释放“连接已启动”标记，允许用户重连同一端点。
-        timer_.stop();
-        state_.connected = false;
-        state_.fresh = false;
-        if (!state_.pending.isEmpty())
-        {
-            uncertainCommand_ = state_.pending;
-            state_.outcomeUnknown = true;
-        }
-        state_.pending.clear();
-        statusAt_ = -1;
-        publish(tr("主控连接已断开；旧设备状态已失效。"));
+        // 底层先使旧代次失效；错误通知的接收者也可能已重连，不能再改新连接。
+        if (!connectionRequested_ || connection+1!=transport_.generation()) return;
+        rememberConnectionLoss();
+        scheduleReconnect();
+        publish(reconnectTimer_.isActive()
+            ? tr("主控连接已断开，按%1毫秒间隔重连；旧业务结果仍保留待核对。").arg(reconnectMilliseconds_)
+            : tr("主控连接已断开；旧设备状态已失效。"));
     });
-    connect(&transport_, &DeviceTransport::errorOccurred, this, [this](const QString &message, quint64)
-    { reject(message); });
-    connect(&transport_, &DeviceTransport::wireQueued, this, [this](const QByteArray &bytes, quint64)
-    { emit wireActivity(QStringLiteral("TX queued"), bytes); });
-    connect(&transport_, &DeviceTransport::wireReceived, this, [this](const QByteArray &bytes, quint64)
-    { emit wireActivity(QStringLiteral("RX"), bytes); });
-    connect(&transport_, &DeviceTransport::messageReceived, this, [this](const QByteArray &message, quint64)
-    { receive(message); });
+    connect(&transport_, &DeviceTransport::errorOccurred, this, [this](const QString &message, quint64 connection)
+    {
+        if (!connectionRequested_ || connection+1!=transport_.generation()) return;
+        rememberConnectionLoss();
+        reject(message);
+    });
+    connect(&transport_, &DeviceTransport::wireQueued, this, [this](const QByteArray &bytes, quint64 connection)
+    { if (connection==transport_.generation()) emit wireActivity(QStringLiteral("TX queued"), bytes); });
+    connect(&transport_, &DeviceTransport::wireReceived, this, [this](const QByteArray &bytes, quint64 connection)
+    { if (connection==transport_.generation()) emit wireActivity(QStringLiteral("RX"), bytes); });
+    connect(&transport_, &DeviceTransport::messageReceived, this, [this](const QByteArray &message, quint64 connection)
+    { receive(message,connection); });
 }
 
 bool DeviceControl::open(const QString &address, quint16 port)
 {
     // 重复点击同一连接不会重建socket或重发控制命令。
-    if (state_.address == address && state_.port == port && timer_.isActive())
+    if (state_.address == address && state_.port == port && connectionRequested_ &&
+        (connecting_ || state_.connected || reconnectTimer_.isActive()))
         return reject(tr("该主控连接已启动，请等待结果或先断开。"));
+    const quint64 intent=connectionIntent_+1;
     close();
+    if (intent!=connectionIntent_) return false;
     const bool unknown = state_.outcomeUnknown;
     state_ = DeviceControlState();
     state_.outcomeUnknown = unknown;
     state_.address = address;
     state_.port = port;
+    connectionRequested_ = true;
+    return beginConnection(intent);
+}
+
+void DeviceControl::setReconnectOptions(bool enabled, int milliseconds)
+{
+    const bool cancellable=connectionRequested();
+    reconnectEnabled_ = enabled;
+    reconnectMilliseconds_ = qMax(2000,milliseconds);
+    reconnectTimer_.stop();
+    // 配置可能晚于首连立即失败；保留先前连接意图，但配置本身不新建连接。
+    if (connectionRequested_ && !connecting_ && !state_.connected) scheduleReconnect();
+    if (cancellable!=connectionRequested())
+        publish(connectionRequested()
+            ? tr("已启用主控自动重连，按%1毫秒间隔等待；旧业务命令不重发。").arg(reconnectMilliseconds_)
+            : tr("已停止主控自动重连，可手动再次连接。"));
+}
+
+bool DeviceControl::beginConnection(quint64 intent)
+{
+    if (intent!=connectionIntent_ || !connectionRequested_) return false;
+    connecting_ = true;
+    state_.connected = state_.fresh = false;
+    statusAt_ = queryAt_ = -1;
+    publish(tr("正在连接主控 %1:%2。").arg(state_.address).arg(state_.port));
+    if (intent!=connectionIntent_ || !connectionRequested_) return false;
+    const quint64 connection=transport_.generation()+1;
     QString message;
-    if (!transport_.open(address, port, &message)) return reject(message);
-    timer_.start();
-    publish(tr("正在连接主控 %1:%2。").arg(address).arg(port));
+    const bool opened=transport_.open(state_.address,state_.port,&message);
+    if (intent!=connectionIntent_ || !connectionRequested_) return false;
+    // 同步失败已由错误/断线槽处理，或通知期间另有连接；不能覆盖其重试或状态。
+    if (connection!=transport_.generation()) return false;
+    if (!opened)
+    {
+        connecting_ = false;
+        connectionRequested_ = false; // 地址/端口校验失败，不重复尝试无效配置。
+        reconnectTimer_.stop();
+        return reject(message);
+    }
     return true;
 }
 
-void DeviceControl::close()
+void DeviceControl::rememberConnectionLoss()
 {
     timer_.stop();
-    transport_.close();
+    connecting_ = false;
     state_.connected = false;
     state_.fresh = false;
     if (!state_.pending.isEmpty())
@@ -101,15 +152,37 @@ void DeviceControl::close()
         uncertainCommand_ = state_.pending;
         state_.outcomeUnknown = true;
     }
+    if (state_.outcomeUnknown) uncertainAcrossConnection_ = true;
     state_.pending.clear();
     statusAt_ = queryAt_ = pendingAt_ = -1;
+}
+
+void DeviceControl::scheduleReconnect()
+{
+    if (!reconnectEnabled_ || !connectionRequested_ || connecting_ || state_.connected) return;
+    retryIntent_ = connectionIntent_;
+    retryGeneration_ = transport_.generation();
+    // 与原循环计时一致，失败不追加一次完整间隔；尚在连接时下一拍只等待，不并发建连。
+    if (!reconnectTimer_.isActive()) reconnectTimer_.start(reconnectMilliseconds_);
+}
+
+void DeviceControl::close()
+{
+    const quint64 intent=++connectionIntent_;
+    connectionRequested_ = false;
+    reconnectTimer_.stop();
+    rememberConnectionLoss();
+    transport_.close();
+    if (intent!=connectionIntent_) return;
     publish(tr("主控连接已关闭。"));
 }
 
 bool DeviceControl::reject(const QString &message)
 {
     state_.message = message;
+    const quint64 intent=connectionIntent_, connection=transport_.generation();
     emit error(message);
+    if (intent!=connectionIntent_ || connection!=transport_.generation()) return false;
     emit changed(state_);
     return false;
 }
@@ -125,13 +198,25 @@ bool DeviceControl::send(const QByteArray &payload, const QString &pending)
     if (!state_.connected) return reject(tr("主控未连接，请先连接设备。"));
     if (!pending.isEmpty() && (!state_.pending.isEmpty() || state_.outcomeUnknown))
         return reject(tr("上一条控制命令尚未确认，不能重复提交；请核对设备状态。"));
-    QString message;
-    if (!transport_.send(payload, &message)) return reject(message);
+    const quint64 intent=connectionIntent_, connection=transport_.generation();
+    // 入队通知可能同步断线。先登记正在提交的控制动作，使断线能保留它的未知结果。
     if (!pending.isEmpty())
     {
         state_.pending = pending;
         pendingAt_ = clock_.elapsed();
+    }
+    QString message;
+    const bool queued=transport_.send(payload,&message);
+    if (intent!=connectionIntent_ || connection!=transport_.generation() || !state_.connected) return false;
+    if (!queued)
+    {
+        if (!pending.isEmpty()) { state_.pending.clear(); pendingAt_=-1; }
+        return reject(message);
+    }
+    if (!pending.isEmpty())
+    {
         publish(tr("命令已进入发送队列，正在等待设备返回。"));
+        if (intent!=connectionIntent_ || connection!=transport_.generation() || !state_.connected) return false;
     }
     return true;
 }
@@ -214,7 +299,8 @@ bool DeviceControl::pause()
 
 bool DeviceControl::sendTaskReply(const QByteArray &payload)
 {
-    if (!payload.startsWith("Tt[")) return reject(tr("不是已经准备完成的原任务回应。"));
+    if (!payload.startsWith("Tt[") && payload!="TF" && payload!="TF[Emergency]")
+        return reject(tr("不是已经准备完成的原任务或预设架回应。"));
     return send(payload);
 }
 
@@ -273,13 +359,18 @@ bool DeviceControl::confirmObservedState()
     if (!state_.connected || !state_.fresh || !state_.pending.isEmpty())
         return reject(tr("请先读取当前有效状态，再确认设备实际情况。"));
     state_.outcomeUnknown = false;
+    uncertainAcrossConnection_ = false;
     uncertainCommand_.clear();
     publish(tr("操作者已核对当前设备状态；旧命令不重发。"));
     return true;
 }
 
-void DeviceControl::receive(const QByteArray &message)
+void DeviceControl::receive(const QByteArray &message, quint64 connection)
 {
+    // wire日志或更早的直接槽可同步关闭/重连；不能把旧包贴上当前代次。
+    const auto current=[this,connection]()
+    { return connection==transport_.generation() && state_.connected; };
+    if (!current()) return;
     if (message.startsWith("Qj"))
     {
         Sn100Protocol::StatusSnapshot parsed;
@@ -299,7 +390,7 @@ void DeviceControl::receive(const QByteArray &message)
             state_.pending.clear();
             pendingAt_ = -1;
         }
-        if (state_.outcomeUnknown &&
+        if (state_.outcomeUnknown && !uncertainAcrossConnection_ &&
             ((uncertainCommand_.startsWith(QStringLiteral("start")) && parsed.mainStatus >= 3 && parsed.mainStatus <= 5) ||
              (uncertainCommand_ == QStringLiteral("pause") && parsed.mainStatus == 6) ||
              (uncertainCommand_ == QStringLiteral("stop") && parsed.mainStatus <= 2)))
@@ -324,9 +415,15 @@ void DeviceControl::receive(const QByteArray &message)
         state_.pending = accepted > 0 && !alreadyRunning ? QStringLiteral("start-state") : QString();
         pendingAt_ = state_.pending.isEmpty() ? -1 : clock_.elapsed();
         publish(accepted > 0 ? tr("设备已接受开始请求，等待实时运行状态。") : tr("设备拒绝开始：仪器初始化未完成。"));
+        if (!current()) return;
         emit startAccepted(accepted > 0);
+        if (!current()) return;
         query(Sn100Protocol::ReadOnlyQuery::Status);
     }
+    // publish、startAccepted及发送日志均允许接收者重入连接操作。
+    if (!current()) return;
+    emit payloadReceivedForConnection(message,connection);
+    if (!current()) return;
     emit payloadReceived(message);
 }
 
@@ -334,11 +431,14 @@ void DeviceControl::tick()
 {
     const qint64 now = clock_.elapsed();
     if (!state_.connected) return;
+    const quint64 intent=connectionIntent_, connection=transport_.generation();
     if (queryAt_ < 0 || now - queryAt_ >= 1000) query(Sn100Protocol::ReadOnlyQuery::Status);
+    if (intent!=connectionIntent_ || connection!=transport_.generation() || !state_.connected) return;
     if (state_.fresh && (statusAt_ < 0 || now - statusAt_ >= 3000))
     {
         state_.fresh = false;
         publish(tr("设备状态超过3秒未更新，暂时停止使用旧状态。"));
+        if (intent!=connectionIntent_ || connection!=transport_.generation() || !state_.connected) return;
     }
     if (!state_.pending.isEmpty() && pendingAt_ >= 0 && now - pendingAt_ >= 10000)
     {

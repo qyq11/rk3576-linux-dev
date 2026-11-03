@@ -1,0 +1,527 @@
+SOURCE_ONLY_NOT_BOARD_RUNTIME
+bf3e03f69e6a3b766dc6356a7475e8ad64a48a98
+a10fa54a586077601868b45ea63dac05f2d5eab667b766a91587276c11c2f2a1  arch/arm64/boot/dts/rockchip/tspi-3m-rk3576-40pin.dtsi
+39cb7d34add770f1043504a3fb06042ef3f0687159531fad15e20a8ba8079b2f  arch/arm64/boot/dts/rockchip/rk3576-pinctrl.dtsi
+0f26f8a81532220ba59ab41913aa09cee8f20f61ca4896ffe5ebee8a4a5eccc8  arch/arm64/boot/dts/rockchip/rk3576.dtsi
+
+BOARD_DEFAULT_40PIN_SOURCE
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2025 LCKFB <lckfb@sz-jlc.com>
+ * TaishanPi-3M RK3576 40Pin Header Configuration
+ *
+ * DEFAULT ACTIVE FUNCTIONS:
+ * =========================
+ * Pin 3/5  (GPIO3_A1/A0): I2C7_M1
+ * Pin 8/10 (GPIO2_D0/D1): UART4_M0
+ * Pin 12   (GPIO0_B5):    PWM1_CH1_M0
+ * Pin 19/21/23/24/26 (GPIO2_C2/C3/C5/C4/C1): SPI1_M1 (MOSI/MISO/CLK/CSN0/CSN1)
+ * Pin 27/28 (GPIO2_B7/B6): I2C8_M2
+ * Pin 32   (GPIO2_C7):    PWM0_CH1_M2
+ * Pin 33   (GPIO4_A7):    PWM2_CH6_M0
+ * Pin 35   (GPIO0_D2):    PWM1_CH5_M0
+ *
+ * GPIO-ONLY PINS (no mux function active):
+ * =========================================
+ * Pin 7  (GPIO4_A6), Pin 11 (GPIO4_A4), Pin 13 (GPIO2_C6),
+ * Pin 15 (GPIO0_C7), Pin 16 (GPIO0_C6), Pin 18 (GPIO3_A3),
+ * Pin 22 (GPIO2_D6), Pin 29 (GPIO2_C0), Pin 31 (GPIO2_B0),
+ * Pin 36 (GPIO2_D7), Pin 37 (GPIO2_A6), Pin 38 (GPIO3_A2),
+ * Pin 40 (GPIO2_A7)
+ *
+ * PIN CONFLICT GUIDE:
+ * ===================
+ * Pin 3/5 (GPIO3_A1/A0):
+ *   - I2C7_M1 (enabled) vs UART3_M0 vs SPI3_MOSI/CLK_M0
+ *   - To use UART3: disable i2c7, enable uart3
+ *   - To use SPI3: disable i2c7, enable spi3 (also needs pin 18/38)
+ *
+ * Pin 8/10 (GPIO2_D0/D1):
+ *   - UART4_M0 (enabled) vs PWM2_CH0/CH1_M2
+ *   - To use PWM2_CH0/CH1: disable uart4, enable pwm2_8ch_0/1
+ *
+ * Pin 12 (GPIO0_B5) vs Pin 26 (GPIO2_C1):
+ *   - Same hardware channel: pwm1_6ch_1
+ *   - Pin 12 uses PWM1_CH1_M0 (enabled), Pin 26 can use PWM1_CH1_M2
+ *   - To use PWM1_CH1 on Pin 26 instead: change pinctrl-0 to <&pwm1m2_ch1>
+ *     and disable spi1 (Pin 26 is SPI1_CSN1)
+ *
+ * Pin 13 (GPIO2_C6):
+ *   - Can use PWM1_CH5_M2, but shares hardware channel with Pin 35 (pwm1_6ch_5)
+ *   - To use PWM1_CH5 on Pin 13: change pwm1_6ch_5 pinctrl-0 to <&pwm1m2_ch5>
+ *
+ * Pin 19/21/23/24/26 (GPIO2_C2/C3/C5/C4/C1):
+ *   - SPI1_M1 (enabled)
+ *   - Pin 19: also PWM1_CH2_M2
+ *   - Pin 21: also PWM0_CH0_M2
+ *   - Pin 23: also PWM1_CH4_M2, UART11_RX_M1
+ *   - Pin 24: also PWM1_CH3_M2, UART11_TX_M1
+ *   - Pin 26: also PWM1_CH1_M2, UART9_TX_M0
+ *   - To use UART11: disable spi1, enable uart11
+ *
+ * Pin 22 (GPIO2_D6):
+ *   - Can use PWM2_CH6_M2, but shares hardware channel with Pin 33 (pwm2_8ch_6)
+ *   - To use PWM2_CH6 on Pin 22: change pwm2_8ch_6 pinctrl-0 to <&pwm2m2_ch6>
+ *
+ * Pin 27/28 (GPIO2_B7/B6):
+ *   - I2C8_M2 (enabled) vs UART7_M0
+ *   - To use UART7: disable i2c8, enable uart7
+ *
+ * Pin 29 (GPIO2_C0):
+ *   - GPIO (default), can use UART9_RX_M0 or PWM1_CH0_M2
+ *
+ * Pin 33 (GPIO4_A7) vs Pin 22 (GPIO2_D6):
+ *   - Same hardware channel: pwm2_8ch_6
+ *   - Pin 33 uses PWM2_CH6_M0 (enabled), Pin 22 can use PWM2_CH6_M2
+ *
+ * Pin 35 (GPIO0_D2) vs Pin 13 (GPIO2_C6):
+ *   - Same hardware channel: pwm1_6ch_5
+ *   - Pin 35 uses PWM1_CH5_M0 (enabled), Pin 13 can use PWM1_CH5_M2
+ *
+ * Pin 37/40 (GPIO2_A6/A7):
+ *   - GPIO (default) vs UART8_M1
+ *   - To use UART8: enable uart8
+ *
+ * Pin 18/38 (GPIO3_A3/A2):
+ *   - GPIO (default) vs CAN1_RX/TX_M3 vs SPI3_CSN0/MISO_M0
+ *   - To use CAN1: enable can1
+ *   - To use SPI3: disable i2c7 (pin 3/5), enable spi3
+ */
+
+/* ========== I2C ========== */
+
+&i2c7 {
+	/* Pin 3/5: I2C7_M1 (enabled)
+	 * Conflicts: UART3_M0, SPI3_MOSI/CLK_M0
+	 */
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c7m1_xfer>;
+	clock-frequency = <400000>;
+};
+
+&i2c8 {
+	/* Pin 27/28: I2C8_M2 (enabled)
+	 * Conflicts: UART7_M0
+	 */
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c8m2_xfer>;
+	clock-frequency = <400000>;
+};
+
+/* ========== UART ========== */
+
+&uart4 {
+	/* Pin 8/10: UART4_M0 (enabled)
+	 * Conflicts: PWM2_CH0/CH1_M2
+	 */
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart4m0_xfer>;
+};
+
+&uart3 {
+	/* Pin 3/5: disabled, conflicts with I2C7_M1 */
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart3m0_xfer>;
+};
+
+&uart7 {
+	/* Pin 27/28: disabled, conflicts with I2C8_M2 */
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart7m0_xfer>;
+};
+
+&uart8 {
+	/* Pin 37/40: disabled, pins default to GPIO */
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart8m1_xfer>;
+};
+
+&uart9 {
+	/* Pin 26(TX)/29(RX): disabled
+	 * Pin 26 used by SPI1_CSN1_M1, Pin 29 default GPIO
+	 */
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart9m0_xfer>;
+};
+
+&uart11 {
+	/* Pin 23/24: disabled, conflicts with SPI1_CLK/CSN0_M1 */
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart11m1_xfer>;
+};
+
+/* ========== SPI ========== */
+
+&spi1 {
+	/* Pin 19/21/23/24/26: SPI1_M1 with CSN0 + CSN1 (enabled)
+	 * MOSI=Pin19(GPIO2_C2), MISO=Pin21(GPIO2_C3),
+	 * CLK=Pin23(GPIO2_C5), CSN0=Pin24(GPIO2_C4), CSN1=Pin26(GPIO2_C1)
+	 * Conflicts: PWM1_CH2/PWM0_CH0/PWM1_CH4/PWM1_CH3/PWM1_CH1_M2, UART11_M1
+	 */
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi1m1_csn0 &spi1m1_csn1 &spi1m1_pins>;
+	max-freq = <50000000>;
+
+	spidev@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+	};
+
+	spidev@1 {
+		compatible = "rockchip,spidev";
+		reg = <1>;
+		spi-max-frequency = <10000000>;
+	};
+};
+
+&spi3 {
+	/* Pin 3/5(CLK/MOSI)/18(CSN0)/38(MISO): disabled
+	 * Conflicts: I2C7_M1 (pin 3/5), CAN1_M3 (pin 18/38)
+	 */
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi3m0_csn0 &spi3m0_pins>;
+	max-freq = <50000000>;
+
+	spidev@0 {
+		compatible = "rockchip,spidev";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+	};
+};
+
+/* ========== CAN ========== */
+
+&can0 {
+	/* Pin 7/11: disabled, pins default to GPIO */
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&can0m2_pins>;
+};
+
+&can1 {
+	/* Pin 18/38: disabled, pins default to GPIO */
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&can1m3_pins>;
+};
+
+/* ========== PWM (enabled) ========== */
+
+&pwm1_6ch_1 {
+	/* Pin 12 (GPIO0_B5): PWM1_CH1_M0, no conflicts
+	 * Alternative: Pin 26 (GPIO2_C1) via pwm1m2_ch1 (needs SPI1 disabled)
+	 */
+	status = "okay";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm1m0_ch1>;
+};
+
+&pwm0_2ch_1 {
+	/* Pin 32 (GPIO2_C7): PWM0_CH1_M2, no conflicts */
+	status = "okay";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm0m2_ch1>;
+};
+
+&pwm2_8ch_6 {
+	/* Pin 33 (GPIO4_A7): PWM2_CH6_M0, no conflicts
+	 * Alternative: Pin 22 (GPIO2_D6) via pwm2m2_ch6
+	 */
+	status = "okay";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm2m0_ch6>;
+};
+
+&pwm1_6ch_5 {
+	/* Pin 35 (GPIO0_D2): PWM1_CH5_M0, no conflicts
+	 * Alternative: Pin 13 (GPIO2_C6) via pwm1m2_ch5
+	 */
+	status = "okay";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm1m0_ch5>;
+};
+
+/* ========== PWM (disabled, for easy enabling) ========== */
+
+&pwm2_8ch_0 {
+	/* Pin 8 (GPIO2_D0): PWM2_CH0_M2, conflicts with UART4_TX */
+	status = "disabled";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm2m2_ch0>;
+};
+
+&pwm2_8ch_1 {
+	/* Pin 10 (GPIO2_D1): PWM2_CH1_M2, conflicts with UART4_RX */
+	status = "disabled";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm2m2_ch1>;
+};
+
+&pwm1_6ch_2 {
+	/* Pin 19 (GPIO2_C2): PWM1_CH2_M2, conflicts with SPI1_MOSI */
+	status = "disabled";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm1m2_ch2>;
+};
+
+&pwm0_2ch_0 {
+	/* Pin 21 (GPIO2_C3): PWM0_CH0_M2, conflicts with SPI1_MISO */
+	status = "disabled";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm0m2_ch0>;
+};
+
+&pwm1_6ch_4 {
+	/* Pin 23 (GPIO2_C5): PWM1_CH4_M2, conflicts with SPI1_CLK */
+	status = "disabled";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm1m2_ch4>;
+};
+
+&pwm1_6ch_3 {
+	/* Pin 24 (GPIO2_C4): PWM1_CH3_M2, conflicts with SPI1_CSN0 */
+	status = "disabled";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm1m2_ch3>;
+};
+
+&pwm1_6ch_0 {
+	/* Pin 29 (GPIO2_C0): PWM1_CH0_M2, no active conflicts */
+	status = "disabled";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm1m2_ch0>;
+};
+
+&pwm2_8ch_7 {
+	/* Pin 36 (GPIO2_D7): PWM2_CH7_M2, no active conflicts */
+	status = "disabled";
+	pinctrl-names = "active";
+	pinctrl-0 = <&pwm2m2_ch7>;
+};
+
+UART_AND_FLOW_CONTROL_PIN_GROUPS
+1548-		};
+1549-		/omit-if-no-ref/
+1550:		fspi1m1_csn1: fspi1m1-csn1 {
+1551-			rockchip,pins =
+1552:				/* fspi1m1_csn1 */
+1553-				<1 RK_PC2 3 &pcfg_pull_none>;
+1554-		};
+1555-	};
+1556-
+1557-	fspi0_testclk {
+1558-		/omit-if-no-ref/
+1559-		fspi0_testclk_test: fspi0_testclk-test {
+1560-			rockchip,pins =
+1561-				/* fspi0_testclk_out */
+1562-				<1 RK_PB0 6 &pcfg_pull_none>;
+--
+1874-
+1875-		/omit-if-no-ref/
+1876:		i2c7m1_xfer: i2c7m1-xfer {
+1877-			rockchip,pins =
+1878-				/* i2c7_scl_m1 */
+1879-				<3 RK_PA0 11 &pcfg_pull_none_smt>,
+1880-				/* i2c7_sda_m1 */
+1881-				<3 RK_PA1 11 &pcfg_pull_none_smt>;
+1882-		};
+1883-
+1884-		/omit-if-no-ref/
+1885-		i2c7m2_xfer: i2c7m2-xfer {
+1886-			rockchip,pins =
+--
+1921-
+1922-		/omit-if-no-ref/
+1923:		i2c8m2_xfer: i2c8m2-xfer {
+1924-			rockchip,pins =
+1925-				/* i2c8_scl_m2 */
+1926-				<2 RK_PB6 11 &pcfg_pull_none_smt>,
+1927-				/* i2c8_sda_m2 */
+1928-				<2 RK_PB7 11 &pcfg_pull_none_smt>;
+1929-		};
+1930-
+1931-		/omit-if-no-ref/
+1932-		i2c8m3_xfer: i2c8m3-xfer {
+1933-			rockchip,pins =
+--
+4205-		};
+4206-		/omit-if-no-ref/
+4207:		spi1m1_csn1: spi1m1-csn1 {
+4208-			rockchip,pins =
+4209:				/* spi1m1_csn1 */
+4210-				<2 RK_PC1 10 &pcfg_pull_none>;
+4211-		};
+4212-
+4213-		/omit-if-no-ref/
+4214-		spi1m2_pins: spi1m2-pins {
+4215-			rockchip,pins =
+4216-				/* spi1_clk_m2 */
+4217-				<3 RK_PC7 10 &pcfg_pull_none>,
+4218-				/* spi1_miso_m2 */
+4219-				<3 RK_PC5 10 &pcfg_pull_none>,
+--
+4674-	uart3 {
+4675-		/omit-if-no-ref/
+4676:		uart3m0_xfer: uart3m0-xfer {
+4677-			rockchip,pins =
+4678-				/* uart3_rx_m0 */
+4679-				<3 RK_PA1 9 &pcfg_pull_up>,
+4680-				/* uart3_tx_m0 */
+4681-				<3 RK_PA0 9 &pcfg_pull_up>;
+4682-		};
+4683-
+4684-		/omit-if-no-ref/
+4685:		uart3m0_ctsn: uart3m0-ctsn {
+4686-			rockchip,pins =
+4687:				/* uart3m0_ctsn */
+4688-				<3 RK_PA2 9 &pcfg_pull_none>;
+4689-		};
+4690-		/omit-if-no-ref/
+4691:		uart3m0_rtsn: uart3m0-rtsn {
+4692-			rockchip,pins =
+4693:				/* uart3m0_rtsn */
+4694-				<3 RK_PA3 9 &pcfg_pull_none>;
+4695-		};
+4696-
+4697-		/omit-if-no-ref/
+4698-		uart3m1_xfer: uart3m1-xfer {
+4699-			rockchip,pins =
+4700-				/* uart3_rx_m1 */
+4701-				<4 RK_PA1 9 &pcfg_pull_up>,
+4702-				/* uart3_tx_m1 */
+4703-				<4 RK_PA0 9 &pcfg_pull_up>;
+--
+4742-	uart4 {
+4743-		/omit-if-no-ref/
+4744:		uart4m0_xfer: uart4m0-xfer {
+4745-			rockchip,pins =
+4746-				/* uart4_rx_m0 */
+4747-				<2 RK_PD1 9 &pcfg_pull_up>,
+4748-				/* uart4_tx_m0 */
+4749-				<2 RK_PD0 9 &pcfg_pull_up>;
+4750-		};
+4751-
+4752-		/omit-if-no-ref/
+4753:		uart4m0_ctsn: uart4m0-ctsn {
+4754-			rockchip,pins =
+4755:				/* uart4m0_ctsn */
+4756-				<2 RK_PC6 9 &pcfg_pull_none>;
+4757-		};
+4758-		/omit-if-no-ref/
+4759:		uart4m0_rtsn: uart4m0-rtsn {
+4760-			rockchip,pins =
+4761:				/* uart4m0_rtsn */
+4762-				<2 RK_PC7 9 &pcfg_pull_none>;
+4763-		};
+4764-
+4765-		/omit-if-no-ref/
+4766-		uart4m1_xfer: uart4m1-xfer {
+4767-			rockchip,pins =
+4768-				/* uart4_rx_m1 */
+4769-				<1 RK_PC5 9 &pcfg_pull_up>,
+4770-				/* uart4_tx_m1 */
+4771-				<1 RK_PC4 9 &pcfg_pull_up>;
+--
+4942-	uart7 {
+4943-		/omit-if-no-ref/
+4944:		uart7m0_xfer: uart7m0-xfer {
+4945-			rockchip,pins =
+4946-				/* uart7_rx_m0 */
+4947-				<2 RK_PB7 9 &pcfg_pull_up>,
+4948-				/* uart7_tx_m0 */
+4949-				<2 RK_PB6 9 &pcfg_pull_up>;
+4950-		};
+4951-
+4952-		/omit-if-no-ref/
+4953:		uart7m0_ctsn: uart7m0-ctsn {
+4954-			rockchip,pins =
+4955:				/* uart7m0_ctsn */
+4956-				<2 RK_PB4 9 &pcfg_pull_none>;
+4957-		};
+4958-		/omit-if-no-ref/
+4959:		uart7m0_rtsn: uart7m0-rtsn {
+4960-			rockchip,pins =
+4961:				/* uart7m0_rtsn */
+4962-				<2 RK_PB5 9 &pcfg_pull_none>;
+4963-		};
+4964-
+4965-		/omit-if-no-ref/
+4966-		uart7m1_xfer: uart7m1-xfer {
+4967-			rockchip,pins =
+4968-				/* uart7_rx_m1 */
+4969-				<1 RK_PA3 9 &pcfg_pull_up>,
+4970-				/* uart7_tx_m1 */
+4971-				<1 RK_PA2 9 &pcfg_pull_up>;
+--
+5019-
+5020-		/omit-if-no-ref/
+5021:		uart8m1_xfer: uart8m1-xfer {
+5022-			rockchip,pins =
+5023-				/* uart8_rx_m1 */
+5024-				<2 RK_PA7 9 &pcfg_pull_up>,
+5025-				/* uart8_tx_m1 */
+5026-				<2 RK_PA6 9 &pcfg_pull_up>;
+5027-		};
+5028-
+5029-		/omit-if-no-ref/
+5030:		uart8m1_ctsn: uart8m1-ctsn {
+5031-			rockchip,pins =
+5032:				/* uart8m1_ctsn */
+5033-				<2 RK_PB7 10 &pcfg_pull_none>;
+5034-		};
+5035-		/omit-if-no-ref/
+5036:		uart8m1_rtsn: uart8m1-rtsn {
+5037-			rockchip,pins =
+5038:				/* uart8m1_rtsn */
+5039-				<2 RK_PB6 10 &pcfg_pull_none>;
+5040-		};
+5041-
+5042-		/omit-if-no-ref/
+5043-		uart8m2_xfer: uart8m2-xfer {
+5044-			rockchip,pins =
+5045-				/* uart8_rx_m2 */
+5046-				<0 RK_PC2 10 &pcfg_pull_up>,
+5047-				/* uart8_tx_m2 */
+5048-				<0 RK_PC1 10 &pcfg_pull_up>;
+--
+5052-	uart9 {
+5053-		/omit-if-no-ref/
+5054:		uart9m0_xfer: uart9m0-xfer {
+5055-			rockchip,pins =
+5056-				/* uart9_rx_m0 */
+5057-				<2 RK_PC0 9 &pcfg_pull_up>,
+5058-				/* uart9_tx_m0 */
+5059-				<2 RK_PC1 9 &pcfg_pull_up>;
+5060-		};
+5061-
+5062-		/omit-if-no-ref/
+5063:		uart9m0_ctsn: uart9m0-ctsn {
+5064-			rockchip,pins =
+5065:				/* uart9m0_ctsn */
+5066-				<2 RK_PD7 9 &pcfg_pull_none>;
+5067-		};
+5068-		/omit-if-no-ref/
+5069:		uart9m0_rtsn: uart9m0-rtsn {
+5070-			rockchip,pins =
+5071:				/* uart9m0_rtsn */
+5072-				<2 RK_PD6 9 &pcfg_pull_none>;
+5073-		};
+5074-
+5075-		/omit-if-no-ref/
+5076-		uart9m1_xfer: uart9m1-xfer {
+5077-			rockchip,pins =
+5078-				/* uart9_rx_m1 */
+5079-				<3 RK_PB2 9 &pcfg_pull_up>,
+5080-				/* uart9_tx_m1 */
+5081-				<3 RK_PB3 9 &pcfg_pull_up>;

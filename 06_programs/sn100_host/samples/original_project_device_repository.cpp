@@ -1,5 +1,6 @@
 #include "original_project_device_repository.h"
 #include "original_files/original_business_database.h"
+#include "projects/original_project_copy.h"
 #include <QDir>
 #include <QLockFile>
 #include <QRegularExpression>
@@ -155,37 +156,65 @@ bool OriginalProjectDeviceRepository::matchesSentParameters(const OriginalDevice
 }
 
 bool OriginalProjectDeviceRepository::applyDeviceProject(const QByteArray &payload, const QString &expectedProject,
-    const QString &expectedFingerprint, QString *message)
+    const QString &expectedFingerprint, QString *message, const QString &expectedFileName, OriginalDeviceProjectWriteResult *result)
 {
+    OriginalDeviceProjectWriteResult localResult;
+    if (!result) result=&localResult;
+    *result=OriginalDeviceProjectWriteResult();
     OriginalProjectWire::Project received;
     if (!OriginalProjectWire::parseDeviceProject(payload,&received,message)) return false;
     if (received.base.value("project_en_name")!=expectedProject) return fail(message,QStringLiteral("项目回包与本次请求名称不符，未写入其他项目。"));
     QLockFile guard(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
     if (!guard.tryLock(0)) return fail(message,QStringLiteral("原项目正在编辑保存，本次设备返回未覆盖草稿，请稍后重读。"));
+    // 允许读取过滤后的旧项目，不代表可以在待核复制期间保存设备返回。
+    if (!OriginalProjectCopy::noPending(root_,message)) return false;
     QList<OriginalDeviceProject> projects;
     if (!load(&projects,message)) return false;
     const OriginalDeviceProject *target=nullptr;
     for (const auto &project : projects) if (project.record.name==expectedProject) { if (target) return fail(message,QStringLiteral("原库项目重名，未猜测目标文件。")); target=&project; }
     if (!target || target->record.originalFingerprint!=expectedFingerprint) return fail(message,QStringLiteral("请求后原项目已变化或不存在，未用迟到返回覆盖新配置。"));
+    if (!expectedFileName.isEmpty() && target->record.originalFileName!=expectedFileName)
+        return fail(message,QStringLiteral("项目回读的原文件身份改变，未用同名文件替代本次目标。"));
     QString number;
     if (!numericKey(received.base.value("xuhao"),&number)) return fail(message,QStringLiteral("设备返回的项目排序编号无效。"));
     for (const auto &other : projects)
         if (other.record.name!=expectedProject && equivalent(other.wire.base.value("xuhao"),number)) return fail(message,QStringLiteral("设备项目编号与另一原项目重复，未改写。"));
-    Database database;
-    if (!database.open(root_,QStringLiteral("project/")+target->record.originalFileName,true,message) || !database.begin(message)) return false;
-    if (target->record.originalFingerprint!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(QStringLiteral("project/")+target->record.originalFileName),message))
-        return fail(message,QStringLiteral("写入前原项目已变化，设备返回未覆盖较新配置。"));
-    for (auto it=received.base.cbegin();it!=received.base.cend();++it)
     {
-        QSqlQuery existing(database.db); existing.prepare("SELECT COUNT(*) FROM project_base WHERE name=?"); existing.addBindValue(it.key());
-        if (!existing.exec() || !existing.next()) return fail(message,existing.lastError().text());
-        const int count=existing.value(0).toInt();
-        if (count>1) return fail(message,QStringLiteral("原项目基础参数重名，未覆盖多条记录。"));
-        if (!database.execute(count ? "UPDATE project_base SET value=? WHERE name=?" : "INSERT INTO project_base(value,name) VALUES(?,?)",{it.value(),it.key()},message,1)) return false;
+        Database database;
+        if (!database.open(root_,QStringLiteral("project/")+target->record.originalFileName,true,message) || !database.begin(message)) return false;
+        if (target->record.originalFingerprint!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(QStringLiteral("project/")+target->record.originalFileName),message))
+            return fail(message,QStringLiteral("写入前原项目已变化，设备返回未覆盖较新配置。"));
+        for (auto it=received.base.cbegin();it!=received.base.cend();++it)
+        {
+            QSqlQuery existing(database.db); existing.prepare("SELECT COUNT(*) FROM project_base WHERE name=?"); existing.addBindValue(it.key());
+            if (!existing.exec() || !existing.next()) return fail(message,existing.lastError().text());
+            const int count=existing.value(0).toInt();
+            if (count>1) return fail(message,QStringLiteral("原项目基础参数重名，未覆盖多条记录。"));
+            if (!database.execute(count ? "UPDATE project_base SET value=? WHERE name=?" : "INSERT INTO project_base(value,name) VALUES(?,?)",{it.value(),it.key()},message,1)) return false;
+        }
+        if (!updateRows(database,"project_sample_rate","xuhao",received.samples,true,message) ||
+            !updateRows(database,"project_reagent","xuhao",received.reagents,true,message) ||
+            !updateRows(database,"project_results","result_id",received.results,false,message)) return false;
+        // 与原slotReceiveProjectInfo一致，这条返回不改AlgParam；所有未涉及的原键/列保留。
+        if (!database.commit(message)) return false;
+        result->commitSeen=true;
+    } // 写连接先关闭，原项目锁仍持有；后续快照不能被另一保存者替换。
+    QList<OriginalDeviceProject> committed;
+    if (!load(&committed,message))
+    {
+        if (message) *message=QStringLiteral("项目UP已经提交，但提交后快照未能核实：")+*message;
+        return false;
     }
-    if (!updateRows(database,"project_sample_rate","xuhao",received.samples,true,message) ||
-        !updateRows(database,"project_reagent","xuhao",received.reagents,true,message) ||
-        !updateRows(database,"project_results","result_id",received.results,false,message)) return false;
-    // 与原slotReceiveProjectInfo一致，这条返回不改AlgParam；所有未涉及的原键/列保留。
-    return database.commit(message);
+    const OriginalDeviceProject *saved=nullptr;
+    for (const auto &project : committed)
+        if (project.record.originalFileName==target->record.originalFileName && project.record.name==expectedProject) saved=&project;
+    OriginalDeviceProject response;
+    response.wire=received;
+    if (!saved || saved->record.originalFingerprint.isEmpty() || !matchesSentParameters(response,saved->wire,message))
+    {
+        if (message) *message=QStringLiteral("项目UP已经提交，但同文件的实际参数快照未能核实：")+*message;
+        return false;
+    }
+    result->project=*saved; result->verifiedSnapshot=true;
+    return true;
 }

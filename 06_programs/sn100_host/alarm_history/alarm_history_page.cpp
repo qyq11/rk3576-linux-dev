@@ -200,6 +200,7 @@ void AlarmHistoryPage::report(QString text,bool error)
 }
 void AlarmHistoryPage::updateControls()
 {
+    refreshCommittedEventsWhenIdle();
     const bool choosing=!calendar_.isNull(),warning=!warning_.isNull();
     const bool stationary=!opening_&&!active_&&!sourceClosing_&&!closingDialog_&&!choosing&&!warning;
     ui->btnQuery->setEnabled((stationary&&!sourcePath_.isEmpty())||(active_&&!cancelling_&&!localAbort_&&!closingDialog_&&!warning));
@@ -222,6 +223,41 @@ void AlarmHistoryPage::clearDisplay()
     pending_.clear();pendingIndex_=0;pendingBytes_=retainedBytes_=0;credit_=0;terminalPending_=false;complete_=false;
     QSignalBlocker blocker(ui->tlbAbnormallog);ui->tlbAbnormallog->setRowCount(0);
 }
+void AlarmHistoryPage::originalEventsCommitted(Rows rows)
+{
+    if (!sourceReady_ || closingDialog_ || !request_.key.requestId ||
+        request_.first != readDate(ui->ldtStartDate) || request_.last != readDate(ui->ldtEndDate)) return;
+    const QDate first = request_.scope == Scope::LatestToday20 ? request_.today : request_.first;
+    const QDate last = request_.scope == Scope::LatestToday20 ? request_.today : request_.last;
+    for (const Row &row : rows)
+    {
+        const QDate date = QDate::fromString(row.dateTime.left(10), QStringLiteral("yyyy/MM/dd"));
+        if (date.isValid() && date >= first && date <= last)
+        {
+            originalRefreshPending_ = true;
+            refreshCommittedEventsWhenIdle();
+            break;
+        }
+    }
+}
+void AlarmHistoryPage::refreshCommittedEventsWhenIdle()
+{
+    if (!originalRefreshPending_ || originalRefreshScheduled_) return;
+    originalRefreshScheduled_ = true;
+    QTimer::singleShot(0, this, [this]()
+    {
+        originalRefreshScheduled_ = false;
+        if (!originalRefreshPending_ || !sourceReady_ || !complete_ || isBusy() || closingDialog_) return;
+        if (request_.first != readDate(ui->ldtStartDate) || request_.last != readDate(ui->ldtEndDate))
+        {
+            originalRefreshPending_ = false;
+            return;
+        }
+        // 只刷新当前已经显示完成的范围；不改日期，也不把最近20条改成全部记录。
+        const Scope scope = request_.scope;
+        beginQuery(scope);
+    });
+}
 void AlarmHistoryPage::queryInterval()
 {
     if(active_){cancelCurrent();return;}
@@ -238,6 +274,7 @@ void AlarmHistoryPage::queryInterval()
 }
 void AlarmHistoryPage::beginQuery(Scope scope)
 {
+    originalRefreshPending_ = false;
     clearDisplay();++generation_;request_=Request();request_.key={sequence.fetchAndAddRelaxed(1)+1,generation_,sourceToken_};
     request_.scope=scope;request_.first=readDate(ui->ldtStartDate);request_.last=readDate(ui->ldtEndDate);
     request_.today=today_;request_.batchSize=128;lastCredit_=0;active_=true;cancelling_=localAbort_=false;

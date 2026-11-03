@@ -8,6 +8,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QTextCodec>
+#include <QRegularExpression>
 
 namespace OriginalRuntime
 {
@@ -279,5 +280,361 @@ bool setTestChannelEnabled(const QString &root, const QString &number, bool enab
                           {enabled ? 1 : 0, number, old ? 1 : 0}, message, 1) || !database.commit(message))
     { database.rollback(); return false; }
     return true;
+}
+
+void ChannelCommitPermit::revoke() noexcept
+{
+    state_.exchange(State::Revoked, std::memory_order_acq_rel);
+}
+
+bool ChannelCommitPermit::tryBeginCommit() noexcept
+{
+    State expected = State::Active;
+    return state_.compare_exchange_strong(expected, State::Committing,
+                                         std::memory_order_acq_rel, std::memory_order_acquire);
+}
+
+ChannelCommitPermit::State ChannelCommitPermit::state() const noexcept
+{
+    return state_.load(std::memory_order_acquire);
+}
+
+void ChannelCommitPermit::markCommitted() noexcept
+{
+    // 撤销已发生时保留Revoked，供页面拒收旧结果；实际提交事实由返回值单独保存。
+    State expected = State::Committing;
+    state_.compare_exchange_strong(expected, State::Committed,
+                                  std::memory_order_acq_rel, std::memory_order_acquire);
+}
+
+namespace
+{
+constexpr qint64 MaximumChannelDatabaseBytes = 16 * 1024 * 1024;
+constexpr int MaximumChannelSnapshotRows = 1024;
+constexpr int MaximumChannelReadbackUpdates = 1024;
+
+bool channelFileReady(const QString &path, QString *message)
+{
+    const QFileInfo info(path);
+    if (!info.isAbsolute() || !info.isFile() || info.size() < 100 || info.size() > MaximumChannelDatabaseBytes)
+        return fail(message, QStringLiteral("通道库不存在、格式不完整或超过本次16MiB本地预算。"));
+    for (QFileInfo current(info.absoluteFilePath()); ; current.setFile(current.absolutePath()))
+    {
+        if (current.isSymLink()) return fail(message, QStringLiteral("通道库路径不能经过符号链接。"));
+        if (current.absoluteFilePath() == current.absolutePath()) break;
+    }
+    // 文件hash只代表主库，不能拿它覆盖WAL内容或未经确认的遗留事务。
+    for (const QString &suffix : {QStringLiteral("-wal"), QStringLiteral("-shm"), QStringLiteral("-journal")})
+    {
+        const QFileInfo sidecar(path + suffix);
+        if (sidecar.exists() || sidecar.isSymLink())
+            return fail(message, QStringLiteral("通道库存在WAL或回滚日志文件，暂不支持本次回读保存；未清理或转换原库。"));
+    }
+    QFile input(path);
+    if (!input.open(QIODevice::ReadOnly)) return fail(message, QStringLiteral("无法读取通道库格式。"));
+    const QByteArray header = input.read(100);
+    if (header.size() != 100 || header.left(16) != QByteArray("SQLite format 3\0", 16) ||
+        header.at(18) != char(1) || header.at(19) != char(1))
+        return fail(message, QStringLiteral("通道回读只支持原SQLite回滚日志格式，未启用WAL或转换数据库。"));
+    return true;
+}
+
+bool deleteJournalMode(OriginalBusiness::Database &database, QString *message)
+{
+    QSqlQuery query(database.db);
+    if (!query.exec(QStringLiteral("PRAGMA journal_mode")) || !query.next())
+        return fail(message, QStringLiteral("无法核对通道库日志模式：") + query.lastError().text());
+    const QString mode = query.value(0).toString();
+    if (mode.compare(QStringLiteral("delete"), Qt::CaseInsensitive) != 0)
+        return fail(message, QStringLiteral("通道回读仅支持DELETE日志模式，未改写原模式：") + mode);
+    return true;
+}
+
+bool boundedChannelDigest(const QString &path, QString *result, QString *message)
+{
+    QFile input(path);
+    if (!input.open(QIODevice::ReadOnly)) return fail(message, QStringLiteral("无法读取通道资料指纹。"));
+    const qint64 size = input.size();
+    const QString canonicalPath = QFileInfo(path).canonicalFilePath();
+    if (size < 100 || size > MaximumChannelDatabaseBytes || canonicalPath.isEmpty())
+        return fail(message, QStringLiteral("通道库指纹输入超过16MiB本地预算或路径无效。"));
+    QCryptographicHash hash(QCryptographicHash::Sha256);
+    qint64 readBytes = 0;
+    while (readBytes < size)
+    {
+        const QByteArray block = input.read(qMin(qint64(65536), size - readBytes));
+        if (block.isEmpty()) return fail(message, QStringLiteral("通道资料指纹读取未完成。"));
+        hash.addData(block);
+        readBytes += block.size();
+    }
+    if (!input.atEnd() || input.error() != QFileDevice::NoError || input.size() != size ||
+        QFileInfo(path).canonicalFilePath() != canonicalPath)
+        return fail(message, QStringLiteral("读取期间通道资料大小或路径已变化，未采用不一致指纹。"));
+    *result = QString::fromLatin1(QCryptographicHash::hash(canonicalPath.toUtf8() + '\n' + hash.result(),
+                                                         QCryptographicHash::Sha256).toHex());
+    return true;
+}
+
+bool boundedChannelRows(OriginalBusiness::Database &database, Channels *result, QString *message)
+{
+    Channels candidate;
+    const QStringList tables{QStringLiteral("test_channel"), QStringLiteral("warm_channel"), QStringLiteral("cache_channel")};
+    for (int table = 0; table < tables.size(); ++table)
+    {
+        // 只读原普通表；不执行视图或虚拟表的自定义读取/更新逻辑。
+        QSqlQuery schema(database.db);
+        if (!schema.prepare(QStringLiteral("SELECT type,sql FROM sqlite_master WHERE name=? COLLATE NOCASE")))
+            return fail(message, schema.lastError().text());
+        schema.addBindValue(tables.at(table));
+        if (!schema.exec() || !schema.next() || schema.value(0).toString() != QStringLiteral("table") ||
+            !schema.value(1).toString().simplified().startsWith(QStringLiteral("CREATE TABLE "), Qt::CaseInsensitive))
+            return fail(message, QStringLiteral("通道资料缺少支持的原普通表：") + tables.at(table));
+        // 原建表无COLLATE，文字键按BINARY匹配；历史自定义比较规则暂不猜测兼容。
+        if (table == 0 && schema.value(1).toString().contains(QRegularExpression(
+                QStringLiteral("\\bCOLLATE\\b"),QRegularExpression::CaseInsensitiveOption)))
+            return fail(message, QStringLiteral("检测通道表含COLLATE声明，本次回读暂不支持；未改比较规则。"));
+        schema.finish();
+
+        QSqlQuery query(database.db);
+        query.setForwardOnly(true);
+        const QString fields = table == 0 ? QStringLiteral("id,channel_num,is_open,warmup_only")
+                                         : QStringLiteral("id,channel_num,is_open");
+        if (!query.exec(QStringLiteral("SELECT %1 FROM %2 ORDER BY id LIMIT 1025").arg(fields, tables.at(table))))
+            return fail(message, QStringLiteral("无法读取原通道字段：") + query.lastError().text());
+        QSet<QString> names;
+        QVector<Channel> channels;
+        while (query.next())
+        {
+            if (channels.size() >= MaximumChannelSnapshotRows)
+                return fail(message, QStringLiteral("原通道表超过1024行本地预算，未截断或发布部分资料。"));
+            Channel channel;
+            if (!integer(query.value(0), 1, 1000000000, &channel.id) ||
+                !boolean(query.value(2), &channel.enabled) ||
+                (table == 0 && !boolean(query.value(3), &channel.warmupOnly)))
+                return fail(message, QStringLiteral("原通道编号、开关或仅预热值无效，未猜测修正。"));
+            channel.number = query.value(1).toString();
+            if (channel.number.isEmpty() || names.contains(channel.number))
+                return fail(message, QStringLiteral("原通道名称为空或重复，未应用回读。"));
+            names.insert(channel.number);
+            channels.append(channel);
+        }
+        if (query.lastError().isValid()) return fail(message, query.lastError().text());
+        if (table == 0) candidate.test = channels;
+        else if (table == 1) candidate.warm = channels;
+        else candidate.cache = channels;
+    }
+    *result = candidate;
+    return true;
+}
+
+bool channelUpdateSchemaReady(OriginalBusiness::Database &database, QString *message)
+{
+    QSqlQuery columns(database.db);
+    if (!columns.exec(QStringLiteral("PRAGMA table_xinfo(test_channel)")))
+        return fail(message, QStringLiteral("无法核对检测通道表的生成/隐藏列。"));
+    int columnCount = 0;
+    while (columns.next())
+    {
+        bool valid = false;
+        const int hidden = columns.value(6).toInt(&valid);
+        if (++columnCount > 256 || !valid || hidden != 0)
+            return fail(message, QStringLiteral("检测通道表存在生成/隐藏列或超过256列本地预算，未执行联动更新。"));
+    }
+    if (!columnCount || columns.lastError().isValid())
+        return fail(message, QStringLiteral("检测通道列资料无效或当前SQLite不支持核对，未猜测放行。"));
+    columns.finish();
+    // 只改is_open不能触发旧库中的其他联动；不通过关闭PRAGMA或删触发器放行。
+    QSqlQuery foreignKeys(database.db);
+    if (!foreignKeys.exec(QStringLiteral("PRAGMA foreign_keys")) || !foreignKeys.next())
+        return fail(message, QStringLiteral("无法核对通道库的外键联动设置。"));
+    if (foreignKeys.value(0).toInt() != 0)
+        return fail(message, QStringLiteral("本次通道回读暂不支持启用外键联动的连接，原设置未改。"));
+    foreignKeys.finish();
+    QSqlQuery triggers(database.db);
+    if (!triggers.exec(QStringLiteral("SELECT 1 FROM sqlite_master WHERE type='trigger' AND tbl_name='test_channel' COLLATE NOCASE LIMIT 1")))
+        return fail(message, triggers.lastError().text());
+    if (triggers.next()) return fail(message, QStringLiteral("原检测通道表存在触发器，未执行可能改变其他字段/表的更新。"));
+    if (triggers.lastError().isValid()) return fail(message, triggers.lastError().text());
+    return true;
+}
+
+bool rollbackChannels(OriginalBusiness::Database &database, QString *message)
+{
+    if (database.db.rollback()) return true;
+    if (message) *message += QStringLiteral("；通道事务回滚未完成：") + database.db.lastError().text();
+    return false;
+}
+
+bool channelReadLockReady(OriginalBusiness::Database &database, QString *message)
+{
+    QSqlQuery query(database.db);
+    if (!query.exec(QStringLiteral("SELECT 1 FROM sqlite_master LIMIT 1")) || !query.next())
+        return fail(message, QStringLiteral("无法取得通道库读取快照：") + query.lastError().text());
+    return true;
+}
+
+bool channelPageBudgetReady(OriginalBusiness::Database &database, QString *message)
+{
+    QSqlQuery pages(database.db);
+    QSqlQuery pageSize(database.db);
+    if (!pages.exec(QStringLiteral("PRAGMA page_count")) || !pages.next() ||
+        !pageSize.exec(QStringLiteral("PRAGMA page_size")) || !pageSize.next())
+        return fail(message, QStringLiteral("无法核对提交后的通道库大小预算。"));
+    qint64 count = 0;
+    qint64 bytes = 0;
+    if (!integer(pages.value(0), 1, MaximumChannelDatabaseBytes, &count) ||
+        !integer(pageSize.value(0), 512, 65536, &bytes) || count > MaximumChannelDatabaseBytes / bytes)
+        return fail(message, QStringLiteral("通道更新将超过16MiB本地文件预算，事务未提交。"));
+    return true;
+}
+
+bool channelReadTransaction(OriginalBusiness::Database &database, const QString &path,
+                            Channels *result, QString *message)
+{
+    if (!deleteJournalMode(database, message) || !database.execute(QStringLiteral("BEGIN"), {}, message)) return false;
+    Channels candidate;
+    // SELECT取得并保持SQLite读锁，直到指纹完成，防止合法并发提交与主库hash错版。
+    if (!channelReadLockReady(database, message) || !channelFileReady(path, message) ||
+        !deleteJournalMode(database, message) || !boundedChannelRows(database, &candidate, message) ||
+        !boundedChannelDigest(path, &candidate.fingerprint, message) ||
+        !database.commit(message))
+    {
+        rollbackChannels(database, message);
+        return false;
+    }
+    *result = candidate;
+    return true;
+}
+}
+
+bool readChannelsSnapshot(const QString &root, Channels *result, QString *message)
+{
+    if (message) message->clear();
+    if (!result) return fail(message, QStringLiteral("通道快照输出对象为空。"));
+    if (!OriginalBusiness::workingRoot(root, message)) return false;
+    const QString path = QDir(root).filePath(QStringLiteral("db/systemInfo/channel.db"));
+    QLockFile lock(path + QStringLiteral(".sn100-write.lock"));
+    lock.setStaleLockTime(30000);
+    if (!lock.tryLock(0)) return fail(message, QStringLiteral("原通道资料正在处理，请稍后重读。"));
+    if (!channelFileReady(path, message)) return false;
+    OriginalBusiness::Database database;
+    if (!database.open(root, QStringLiteral("db/systemInfo/channel.db"), false, message)) return false;
+    return channelReadTransaction(database, path, result, message);
+}
+
+ChannelApplyResult applyTestChannelReadback(const QString &root, const QVector<ChannelSwitchUpdate> &updates,
+                                           const QString &expectedFingerprint, const ChannelCommitPermitPtr &permit)
+{
+    ChannelApplyResult result;
+    if (!permit)
+    {
+        result.message = QStringLiteral("通道回读缺少提交许可，未修改。返回值不能作为设备完成确认。");
+        return result;
+    }
+    const auto cancelled = [&result]()
+    {
+        result.outcome = ChannelApplyOutcome::Cancelled;
+        result.message = QStringLiteral("通道回读提交前已撤销，事务未提交。");
+        return result;
+    };
+    const auto initialPermit = permit->state();
+    if (initialPermit == ChannelCommitPermit::State::Revoked) return cancelled();
+    if (initialPermit != ChannelCommitPermit::State::Active)
+    {
+        result.message = QStringLiteral("通道回读提交许可已被使用，未重复提交。");
+        return result;
+    }
+    if (updates.size() > MaximumChannelReadbackUpdates || expectedFingerprint.size() != 64)
+    {
+        result.message = QStringLiteral("通道回读超过1024项本地预算，或预期资料指纹无效。");
+        return result;
+    }
+    if (!OriginalBusiness::workingRoot(root, &result.message)) return result;
+    const QString path = QDir(root).filePath(QStringLiteral("db/systemInfo/channel.db"));
+    QLockFile lock(path + QStringLiteral(".sn100-write.lock"));
+    lock.setStaleLockTime(30000);
+    if (!lock.tryLock(0))
+    {
+        result.message = QStringLiteral("原通道资料正在写入，回读未排队覆盖。");
+        return result;
+    }
+    if (!channelFileReady(path, &result.message)) return result;
+    OriginalBusiness::Database database;
+    if (!database.open(root, QStringLiteral("db/systemInfo/channel.db"), true, &result.message) ||
+        !deleteJournalMode(database, &result.message) || !database.begin(&result.message)) return result;
+    Channels before;
+    if (!channelFileReady(path, &result.message) || !deleteJournalMode(database, &result.message) ||
+        !boundedChannelRows(database, &before, &result.message) || !boundedChannelDigest(path, &before.fingerprint, &result.message) ||
+        !channelUpdateSchemaReady(database, &result.message))
+    {
+        rollbackChannels(database, &result.message);
+        return result;
+    }
+    if (before.fingerprint != expectedFingerprint)
+    {
+        result.message = QStringLiteral("原通道资料指纹已变化，回读未覆盖其他修改。");
+        rollbackChannels(database, &result.message);
+        return result;
+    }
+    QMap<QString, int> known;
+    for (int index = 0; index < before.test.size(); ++index) known.insert(before.test.at(index).number, index);
+    int changedRows = 0;
+    int unknownRows = 0;
+    for (const ChannelSwitchUpdate &update : updates)
+    {
+        if (permit->state() == ChannelCommitPermit::State::Revoked)
+        {
+            if (!rollbackChannels(database, &result.message)) return result;
+            return cancelled();
+        }
+        const auto target = known.constFind(update.number);
+        if (target == known.constEnd())
+        {
+            ++unknownRows;
+            continue;
+        }
+        Channel &channel = before.test[target.value()];
+        if (channel.enabled == update.enabled) continue;
+        if (!database.execute(QStringLiteral("UPDATE OR ABORT test_channel SET is_open=? WHERE id=? AND channel_num=? AND is_open=?"),
+                              {update.enabled ? 1 : 0, channel.id, channel.number, channel.enabled ? 1 : 0}, &result.message, 1))
+        {
+            rollbackChannels(database, &result.message);
+            return result;
+        }
+        channel.enabled = update.enabled;
+        ++changedRows;
+    }
+    if (!channelPageBudgetReady(database, &result.message))
+    {
+        rollbackChannels(database, &result.message);
+        return result;
+    }
+    // CAS与COMMIT相邻：撤销先取得状态则回滚；提交票先取得后，不再把成功误报取消。
+    if (!permit->tryBeginCommit())
+    {
+        if (!rollbackChannels(database, &result.message)) return result;
+        if (permit->state() == ChannelCommitPermit::State::Revoked) return cancelled();
+        result.message = QStringLiteral("通道回读提交许可已被占用，事务未提交。");
+        return result;
+    }
+    if (!database.commit(&result.message))
+    {
+        rollbackChannels(database, &result.message);
+        return result;
+    }
+    permit->markCommitted();
+    result.changedRows = changedRows;
+    result.unknownRows = unknownRows;
+    // 提交后必须重读；失败时保持空快照，不把提交前资料伪装成新状态。
+    if (!channelFileReady(path, &result.message) || !channelReadTransaction(database, path, &result.channels, &result.message))
+    {
+        result.outcome = ChannelApplyOutcome::CommittedReloadFailed;
+        result.message = QStringLiteral("通道开关已提交，但重读新快照失败：") + result.message;
+        return result;
+    }
+    result.outcome = ChannelApplyOutcome::Committed;
+    result.message = QStringLiteral("通道回读已提交并重读；实际改变%1次，跳过未知项%2次。")
+        .arg(changedRows).arg(unknownRows);
+    return result;
 }
 }

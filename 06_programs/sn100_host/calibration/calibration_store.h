@@ -22,6 +22,7 @@ public:
     ~CalibrationStore() override;
     static void registerTypes();
     static bool canEdit(const AccountSession &session);
+    static bool canApplyOriginalCurve(const AccountSession &session);
     static QString validate(const CalibrationRecord &record);
 
 public slots:
@@ -31,6 +32,7 @@ public slots:
     void setOriginalReview(qint64 requestId, qint64 id, qint64 revision, bool checked);
     void setOriginalMethod(qint64 requestId, qint64 id, qint64 revision, QString method, QString xTransform, QString yTransform);
     void applyOriginalCurve(qint64 requestId, qint64 id, qint64 revision, QString batchGroup);
+    void applyOriginalCurve(qint64 requestId, qint64 id, qint64 revision, QString batchGroup, QVariantMap bindingBefore);
     void loadIsi(qint64 requestId);
     void saveIsi(qint64 requestId, CalibrationIsiRecord record);
     void setSession(AccountSession session);
@@ -59,7 +61,9 @@ private:
     ProjectUnits m_originalUnits;
     ReagentSnapshot m_originalReagents;
     std::unique_ptr<QLockFile> m_originalProjectLock, m_originalReagentLock;
-    bool beginOriginal(qint64 requestId, const QString &operation, QString *message);
+    enum class OriginalWriteAccess { EditPower, ManualApply };
+    bool beginOriginal(qint64 requestId, const QString &operation, QString *message,
+                       OriginalWriteAccess access = OriginalWriteAccess::EditPower);
     void finishOriginal(qint64 requestId, const QString &operation, qint64 id);
     void rejectOriginal(qint64 requestId, const QString &operation, const QString &message);
     bool readOriginal(CalibrationRecords *records, QString *message, bool includeHidden = false);

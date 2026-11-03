@@ -6,6 +6,8 @@
 #include <QWidget>
 #include "data/account_store.h"
 #include "maintenance_store.h"
+#include "original_status_values.h"
+#include "original_files/original_system_profile.h"
 #include "protocol/status_replay.h"
 #include <QElapsedTimer>
 namespace OriginalRuntime { struct RuntimeSettings; }
@@ -32,6 +34,12 @@ public:
     void setReadOnlyStatus(const Sn100Protocol::StatusSnapshot &snapshot, bool fresh,
                            const QString &prefix, const QString &sourceDetail);
     bool applyOriginalRuntime(const OriginalRuntime::RuntimeSettings &settings, QString *message);
+    // 通道行/开关来自原库只读快照；本接口不写通道配置、不发设备命令。
+    bool configureOriginalAdChannels(const OriginalRuntime::Channels &channels, int testChannels, QString *message);
+    // 仅在原signalReceiveDriverModel对应条件成立时调用，保留450nm重载表头。
+    bool reloadOriginalAdChannels(int testChannels, QString *message);
+    bool receiveOriginalAd(const QByteArray &payload, quint64 connectionGeneration, QString *message);
+    bool applyCommittedOriginalChannels(const OriginalRuntime::Channels &channels, quint64 generation, QString *message);
 
 signals:
     void statusChanged(QString message);
@@ -61,10 +69,20 @@ private:
     quint64 sentCommunication_ = 0, receivedCommunication_ = 0, communicationGeneration_ = 0;
     QElapsedTimer communicationClock_;
     Sn100Protocol::FrameDecoder sentDecoder_{Sn100Protocol::Direction::HostToDevice};
+    Sn100Protocol::StatusSnapshot displayedSnapshot_;
+    OriginalInstrument::StatusDisplay displayedValues_;
+    bool displayedStatusFresh_ = false;
+    QString displayedPrefix_, displayedDetail_;
+    int configuredReagentPositions_ = 20;
+    OriginalRuntime::Channels originalAdChannels_;
+    int originalAdChannelCount_ = 0;
+    bool originalAdConfigured_ = false, originalAdHeadersReloaded_ = false;
+    quint64 originalAdGeneration_ = 0;
+    QString originalAdCheckedColour_ = QStringLiteral("42,118,242,255");
 
     void applyOriginalStyle();
     void disableDeviceActions();
-    void clearDeviceValues();
+    void clearDeviceValues(bool initializeCommunication = false);
     void updatePermissions();
     void setBusy(bool busy);
     void loadSelectedMonth();
@@ -80,6 +98,8 @@ private:
     void restoreConnectionDraft();
     void updateDeviceButtons();
     void appendOriginalCommunication(bool transmitted, const QByteArray &payload);
+    void refreshOriginalAdChannels();
+    void clearOriginalAdValues(const QString &reason);
 };
 
 #endif

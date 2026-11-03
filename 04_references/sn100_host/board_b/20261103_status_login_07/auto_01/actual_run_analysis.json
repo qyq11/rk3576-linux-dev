@@ -1,0 +1,234 @@
+{
+  "release_id": "94d1b9794f2d8f1ff776b498e62d29ba2ebd82fef807d7cda70b05837c3eccb1",
+  "case_exit": 0,
+  "software_checks_passed": true,
+  "checks": 24,
+  "failed": 0,
+  "wire_events": [
+    {
+      "line": 997,
+      "direction": "TX queued",
+      "byte_count": 13
+    },
+    {
+      "line": 1009,
+      "direction": "RX",
+      "byte_count": 300
+    },
+    {
+      "line": 1013,
+      "direction": "RX",
+      "byte_count": 791
+    },
+    {
+      "line": 1015,
+      "direction": "TX queued",
+      "byte_count": 13
+    },
+    {
+      "line": 1016,
+      "direction": "RX",
+      "byte_count": 150
+    },
+    {
+      "line": 1017,
+      "direction": "RX",
+      "byte_count": 150
+    },
+    {
+      "line": 1018,
+      "direction": "RX",
+      "byte_count": 791
+    },
+    {
+      "line": 1025,
+      "direction": "RX",
+      "byte_count": 150
+    },
+    {
+      "line": 1026,
+      "direction": "TX queued",
+      "byte_count": 13
+    },
+    {
+      "line": 1027,
+      "direction": "RX",
+      "byte_count": 150
+    },
+    {
+      "line": 1029,
+      "direction": "RX",
+      "byte_count": 791
+    },
+    {
+      "line": 1030,
+      "direction": "RX",
+      "byte_count": 150
+    },
+    {
+      "line": 1031,
+      "direction": "TX queued",
+      "byte_count": 13
+    },
+    {
+      "line": 1032,
+      "direction": "RX",
+      "byte_count": 150
+    },
+    {
+      "line": 1047,
+      "direction": "TX queued",
+      "byte_count": 13
+    },
+    {
+      "line": 1048,
+      "direction": "RX",
+      "byte_count": 1091
+    },
+    {
+      "line": 1055,
+      "direction": "RX",
+      "byte_count": 791
+    },
+    {
+      "line": 1056,
+      "direction": "TX queued",
+      "byte_count": 13
+    },
+    {
+      "line": 1057,
+      "direction": "RX",
+      "byte_count": 150
+    },
+    {
+      "line": 1058,
+      "direction": "RX",
+      "byte_count": 791
+    },
+    {
+      "line": 1059,
+      "direction": "TX queued",
+      "byte_count": 13
+    },
+    {
+      "line": 1060,
+      "direction": "RX",
+      "byte_count": 150
+    },
+    {
+      "line": 1061,
+      "direction": "RX",
+      "byte_count": 150
+    }
+  ],
+  "wire_event_counts": {
+    "TX queued": 7,
+    "RX": 16
+  },
+  "rx_complete_messages": {
+    "Qj": 13,
+    "Qq": 6
+  },
+  "rx_frames": 19,
+  "rx_fragmented_messages": 0,
+  "rx_raw_n_messages": 0,
+  "rx_incomplete_frame_or_message": false,
+  "ad_selected_window": {
+    "clear_pass_line": 1044,
+    "reopen_pass_line": 1051,
+    "ad_comparison_pass_line": 1052,
+    "rx_log_lines": [
+      1048
+    ],
+    "valid_frames": 3,
+    "complete_messages": 3,
+    "fragmented_messages": 0,
+    "qq_messages": 1
+  },
+  "ad_new_generation": "5",
+  "ad_old_generation": "3",
+  "ad_compared_cells": 96,
+  "ad_mismatches": [],
+  "actual_status_text": "未就绪",
+  "main_status": 0,
+  "led_status": 1,
+  "n_lifecycle_observation": {
+    "accepted_log_count": 0,
+    "processed_log_count": 0,
+    "display_log_count": 0,
+    "ready_at_close": true,
+    "idle_without_accepted_n": true,
+    "n_function_verified": false,
+    "in_flight_n_single_outer_close_verified": false,
+    "scope": "只核真实关闭保护到达空闲就绪和既有存储线程收尾；不制造N、不由24项基础检查或定时关闭重试推断N业务及一次在途退出通过。",
+    "final_source_evidence": {
+      "in_flight_n_close_verified": false,
+      "log_statement_sha256": "7f1f858a92970b3885d6f342739ddf39705b549817c3d9d0eb8e991afe0daad6",
+      "n_function_verified": false,
+      "proof_scope": "只证明真实关闭保护到达成功分支时active和worker pending均空；不是N线程停止或提交中关闭验收。",
+      "required_existing_markers": [
+        "REAGENT_STORE_CLOSED",
+        "THREADS_STOPPED true"
+      ],
+      "required_ready_marker": "REAGENT_LEVEL_SHUTDOWN_READY active false worker_busy false",
+      "shutdown_function": "frmMain::requestReagentLevelShutdown",
+      "source": "shell/reagent_level_shell.cpp",
+      "source_sha256": {
+        "reagents/original_reagent_level_worker.cpp": "2eac51151cdc26af5164ab6400516545c1aa755ea4149c92b696959f7bf21881",
+        "reagents/original_reagent_level_worker.h": "60745972df82780edbdf8048fcccb402c18049a51a6bd49150506c99754c419b",
+        "shell/frmmain.cpp": "1a0b9d0bb173e487c55eea2b9ad08530cc980bac1e40ba9ad6c22670fad91367",
+        "shell/reagent_level_shell.cpp": "21e84ccaa973adee76521fb2b3841bd01a40c2d47f7c0304b1e566e5559806c0"
+      },
+      "worker_thread": "existing ReagentStore thread; no new QThread"
+    }
+  },
+  "resource_sample_count": 5,
+  "resource_sample_span_s": 11.950000000004366,
+  "resource_intervals": [
+    {
+      "seconds": 3.0599999999976717,
+      "cpu_percent_one_core": 133.66013071905596,
+      "ticks": 409
+    },
+    {
+      "seconds": 3.0200000000040745,
+      "cpu_percent_one_core": 116.55629139057122,
+      "ticks": 352
+    },
+    {
+      "seconds": 2.930000000000291,
+      "cpu_percent_one_core": 65.87030716722896,
+      "ticks": 193
+    },
+    {
+      "seconds": 2.9400000000023283,
+      "cpu_percent_one_core": 102.3809523808713,
+      "ticks": 301
+    }
+  ],
+  "resource_cpu_weighted_percent_one_core": 105.02092050205368,
+  "resource_interval_mean_percent_one_core": 104.61692041443186,
+  "rss_peak_kib": 436164,
+  "pss_peak_kib": 434075,
+  "event_loop_probe": {
+    "interval_max_ms": 471,
+    "interval_p95_ms": 273,
+    "period_ms": 20,
+    "samples": 112
+  },
+  "programmatic_action_ms": [
+    {
+      "action": "avatar_click_to_login_input_ready",
+      "ms": 430
+    },
+    {
+      "action": "configured_guest_login_to_dialog_closed",
+      "ms": 475
+    },
+    {
+      "action": "logout_click_to_login_input_ready",
+      "ms": 755
+    }
+  ],
+  "scope": "实际07空闲联机基础专项；数值只验证原文映射，不是物理有效性/N业务/保存或在途退出通过；短窗资源不作预算、同板控制或长稳通过结论"
+}

@@ -1,0 +1,84 @@
+{
+  "format": "sn100-integration-08-closed-component-inputs-v1",
+  "created_at_utc": "2026-11-03T03:45:01.472776+00:00",
+  "status": "awaiting_final_root_candidate",
+  "final_review_approved": false,
+  "formal_baseline_files_checked": 663,
+  "formal_sources_changed": false,
+  "root_candidate_included": false,
+  "root_attributes": {
+    "path": ".gitattributes",
+    "sha256": "ac7fd8f4c639db19a3f6192a1cf4205bcc4ef06a573a29a2a98653fd19ae3bf8",
+    "bytes": 3941
+  },
+  "root_attributes_copy": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/root_attributes.gitattributes",
+    "sha256": "ac7fd8f4c639db19a3f6192a1cf4205bcc4ef06a573a29a2a98653fd19ae3bf8",
+    "bytes": 3941
+  },
+  "inputs": {
+    "baseline_source_archive": {
+      "path": "07_backups/sn100_host/board_b/workflow_integration_20261102/integration_07/sn100_sources_94d1b9794f2d8f1ff776b498e62d29ba2ebd82fef807d7cda70b05837c3eccb1.tar.gz",
+      "sha256": "18eaa7fb091d82cddee883c52ac8d6d50d2d86d9d65cd6f25cff99cd74520b41",
+      "bytes": 2158526
+    },
+    "baseline_source_snapshot": {
+      "path": "04_references/sn100_host/workflow_night_20261102/integration_07/source_snapshot.json",
+      "sha256": "fd5614ad0673ab6896eeea1f7502ac09ec8a4ac4f98a338f5967a4ad3717fdaf",
+      "bytes": 71131
+    },
+    "backend_delivery": {
+      "path": "temp/sn100_host/workflow_night_20261102/task_reagent_receipt_candidate/packaging_01/delivery_manifest.json",
+      "sha256": "4de91f9169d27221a7b9659994500192a71f7a24fa144f4650097fff494eb62f",
+      "bytes": 19229
+    },
+    "backend_patch": {
+      "path": "temp/sn100_host/workflow_night_20261102/task_reagent_receipt_candidate/packaging_01/task_reagent_receipt_exact.patch",
+      "sha256": "bfbaeb6dbfb3496aa27c283416a5dedf858e20577e9058c681234a060a346afa",
+      "bytes": 58547
+    },
+    "store_delivery": {
+      "path": "temp/sn100_host/workflow_night_20261102/task_reagent_store_bridge_candidate/delivery_manifest.json",
+      "sha256": "ffe03b110d7c70fa1a031d8422e3b934c5f7c5b4f74174b1f4c8ddbb80dfdc7b",
+      "bytes": 20224
+    },
+    "store_patch": {
+      "path": "temp/sn100_host/workflow_night_20261102/task_reagent_store_bridge_candidate/store_bridge.patch",
+      "sha256": "9c1e2135a06d87abb357f3c16bc1089cf2713d2a852b3f3e7f2b7fa602911d3c",
+      "bytes": 8069
+    },
+    "page_consumer_manifest": {
+      "path": "temp/task_reagent_display_candidate/packaging_03/consumer_manifest.json",
+      "sha256": "bd379d499e0be68f13360e194b06c56181b3428c171ac39c9ca60464b06cc753",
+      "bytes": 2813
+    },
+    "page_consumer_patch": {
+      "path": "temp/task_reagent_display_candidate/packaging_03/task_reagent_display_consumer_only.patch",
+      "sha256": "73ffa8fc64c9ce6cfbb74a00ca62f7c2750dc73cfcaed6be2b202e6175257962",
+      "bytes": 95092
+    },
+    "page_handoff": {
+      "path": "temp/task_reagent_display_candidate/handoff.md",
+      "sha256": "b5abdeafcdbb80c49b81dd999800f5cfaa8998c64b8261b31f26996ea42ae53d",
+      "bytes": 10020
+    },
+    "default_container_delivery": {
+      "path": "temp/sn100_host/workflow_night_20261102/default_sample_container_candidate_20261103/delivery_manifest.json",
+      "sha256": "90109f6f685d4c4c2a617910490b49b7797c1b819a34f3a9f0bcf6e8b23a3c70",
+      "bytes": 26831
+    },
+    "default_container_patch": {
+      "path": "temp/sn100_host/workflow_night_20261102/default_sample_container_candidate_20261103/default_sample_container.patch",
+      "sha256": "b119c60c3d07f74e8e2d7edaf87046c0badebf5cafeb961dd212072cc58550c0",
+      "bytes": 8308
+    }
+  },
+  "intended_order": [
+    "backend_patch",
+    "store_patch",
+    "page_consumer_patch",
+    "final_root_patch_pending",
+    "default_container_patch"
+  ],
+  "scope": "仅固定四份已收口分片及原07来源；未合片、晋级、编译、部署或运行。最终主窗口和完整新源码仍待独立审阅。"
+}

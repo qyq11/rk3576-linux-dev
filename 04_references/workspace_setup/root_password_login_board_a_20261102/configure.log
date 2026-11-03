@@ -1,0 +1,19 @@
+tty1_autologin.before.conf: OK
+ttyFIQ0_autologin.before.conf: OK
+tty1_password_login.conf: OK
+ttyFIQ0_password_login.conf: OK
+root P 2026-11-02 0 99999 7 -1
+[effective_password_login_commands]
+getty@tty1.service
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --noclear - $TERM ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+serial-getty@ttyFIQ0.service
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+df749b94065b5ffae3bec6ab1618e2550ad58ae7912512259a3234310f406c8f  /etc/systemd/system/getty@tty1.service.d/zz-board-a-password-login.conf
+ea16792e8d264c250d4685264bf8bea7645bd5b4324ba4c62f2ee81dca616b05  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-password-login.conf
+1b12ee238e4193a1c811ac5ceafba0627f44674e218b6fe0db7af0366529a203  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+Id=getty@tty1.service
+DropInPaths=/etc/systemd/system/getty@tty1.service.d/zz-board-a-password-login.conf
+
+Id=serial-getty@ttyFIQ0.service
+DropInPaths=/etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-password-login.conf
+configuration_exit=0

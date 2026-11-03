@@ -10,6 +10,9 @@ cusReagentHole::cusReagentHole(QWidget* parent)
 }
 void cusReagentHole::setInformation(const ReagentHole& h, const ReagentRecord& r, const ReagentBottle& b)
 {
+    setProperty("originalNView",false); // 页面随后按当前独立运行来源重新绘制，不把库中used称为实测。
+    setProperty("originalLevelUnavailable",false);
+    setProperty("originalNTestsAvailable",false);
     hole_ = h;
     reagent_ = r;
     bottle_ = b;
@@ -59,8 +62,12 @@ void cusReagentHole::paintEvent(QPaintEvent*)
     p.setPen(Qt::NoPen);
     p.drawEllipse(all);
     const bool hasReagent = hole_.reagentId > 0;
-    const bool missing = hasReagent && hole_.remainingUl <= reagent_.outUl;
-    const bool warning = hasReagent && hole_.remainingUl <= reagent_.warningUl;
+    const bool levelView=property("originalNView").toBool();
+    const bool unknownLevel=property("originalLevelUnavailable").toBool();
+    const double shownAmount=levelView ? property("originalNAmount").toDouble() : hole_.remainingUl;
+    const double shownMaximum=levelView ? property("originalNMaximum").toDouble() : bottle_.capacityUl;
+    const bool missing = hasReagent && !unknownLevel && (levelView ? property("originalNState").toString()==QStringLiteral("r_useout") : hole_.remainingUl<=reagent_.outUl);
+    const bool warning = hasReagent && !unknownLevel && (levelView ? property("originalNState").toString()==QStringLiteral("r_warning") : hole_.remainingUl<=reagent_.warningUl);
     QPainterPath circle;
     circle.addEllipse(all);
     if (hasReagent)
@@ -69,9 +76,9 @@ void cusReagentHole::paintEvent(QPaintEvent*)
         top.addRect(QRectF(x, y, side, side * .3));
         p.setBrush(QColor(missing ? "#FFA6A6" : warning ? "#FFE1A6" : "#D8D8D8"));
         p.drawPath(circle.intersected(top));
-        if (!missing && bottle_.capacityUl > 0)
+        if (!unknownLevel && !missing && shownMaximum > 0)
         {
-            const double fraction = qBound(0.0, double(hole_.remainingUl) / bottle_.capacityUl, 1.0);
+            const double fraction = qBound(0.0, shownAmount / shownMaximum, 1.0);
             QPainterPath water;
             water.addRect(QRectF(x, y + side * .3 + (1 - fraction) * side * .7, side, side * .7));
             p.setBrush(QColor("#B7D7FF"));
@@ -94,9 +101,14 @@ void cusReagentHole::paintEvent(QPaintEvent*)
         p.drawText(rect, Qt::AlignCenter, text);
     };
     fittedText(QRectF(x + side * .05, y + side * .3, side * .9, side * .28), reagent_.name);
-    QString amount = QString::number(hole_.remainingUl / 1000.0, 'f', 1) + "ml";
+    QString amount = QString::number(shownAmount / 1000.0, 'f', 1) + "ml";
+    if (unknownLevel) amount=QStringLiteral("-ml");
     if (displayMode_ == 1)
-        amount = QStringLiteral("- tests"); // Consumption configuration is not yet migrated.
+    {
+        const int tests=property("originalNTests").toInt();
+        amount=!property("originalNTestsAvailable").toBool() || !tests ? QStringLiteral("- tests") :
+            tests>999 ? QStringLiteral(">999 tests") : QString::number(tests)+QStringLiteral(" tests");
+    }
     if (displayMode_ == 2)
     {
         const QDateTime loaded = QDateTime::fromString(hole_.changedAt, Qt::ISODate);

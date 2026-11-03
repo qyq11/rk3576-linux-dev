@@ -1,7 +1,9 @@
-/* RK3576 Linux UART loopback, default /dev/ttyS4, 115200 8N1.
- * Build on RK: gcc -std=c11 -O2 -Wall -Wextra -Wpedantic uart4_loopback.c -o uart4_loopback
- * Connect physical pins 8 (TX) and 10 (RX) only after checking the board pinout.
- * This tests a local loopback; Windows-to-RK communication is a separate test.
+/* RK3576排针收发回环，默认/dev/ttyS4、115200/8N1。
+ * 用--port选择串口，断电后在排针上短接对应TX/RX：
+ * ttyS3为3/5脚，ttyS4为8/10脚，ttyS7为27/28脚，
+ * ttyS8为37/40脚，ttyS9为26/29脚；接好并上电后才能执行。
+ * 测试关闭软件回显及控制器内部回环，逐帧比较实际TX/RX。
+ * 这能验证所接排针的回环链路；RS485/RS232转换和真实外设通信另验。
  */
 #define _DEFAULT_SOURCE
 #define _POSIX_C_SOURCE 200809L
@@ -20,6 +22,11 @@
 #include <termios.h>
 #include <time.h>
 #include <unistd.h>
+
+/* Linux UAPI的asm-generic/termios.h定义该位；部分C库头文件未导出名称。 */
+#ifndef TIOCM_LOOP
+#define TIOCM_LOOP 0x8000
+#endif
 
 static volatile sig_atomic_t interrupted;
 
@@ -152,6 +159,8 @@ int main(int argc, char **argv)
     size_t sent_total = 0, received_total = 0;
     int exit_code = 2, fd = -1;
     bool saved_valid = false;
+    bool modem_saved = false;
+    int saved_modem = 0;
     struct termios saved, settings;
     unsigned char received[4096];
     struct sigaction action = {0};
@@ -199,6 +208,22 @@ int main(int argc, char **argv)
         goto cleanup;
     }
     saved_valid = true;
+    /* 排针回环必须经过外部跳线，先关闭控制器内部直接回送。 */
+    if (ioctl(fd, TIOCMGET, &saved_modem) < 0) {
+        perror("read modem control before external loopback");
+        goto cleanup;
+    }
+    modem_saved = true;
+    int loop_control = TIOCM_LOOP;
+    if (ioctl(fd, TIOCMBIC, &loop_control) < 0) {
+        perror("disable internal UART loopback");
+        goto cleanup;
+    }
+    int current_modem = 0;
+    if (ioctl(fd, TIOCMGET, &current_modem) < 0 || (current_modem & TIOCM_LOOP)) {
+        fputs("Cannot confirm that internal UART loopback is disabled\n", stderr);
+        goto cleanup;
+    }
     settings = saved;
     cfmakeraw(&settings);
     settings.c_cflag &= ~(CSIZE | PARENB | CSTOPB);
@@ -214,6 +239,7 @@ int main(int argc, char **argv)
         goto cleanup;
     }
     printf("Port: %s; settings: 115200 8N1; flow control: none\n", port);
+    puts("Internal UART loopback: disabled; external header jumper required.");
     for (unsigned sequence = 1; sequence <= frames && !interrupted; ++sequence) {
         unsigned char payload[32];
         int length = snprintf((char *)payload, sizeof(payload), "UART_TEST_%04u\r\n", sequence);
@@ -275,6 +301,13 @@ int main(int argc, char **argv)
     exit_code = 0;
 
 cleanup:
+    if (modem_saved && (saved_modem & TIOCM_LOOP)) {
+        int loop_control_restore = TIOCM_LOOP;
+        if (ioctl(fd, TIOCMBIS, &loop_control_restore) < 0) {
+            perror("restore original internal loopback state");
+            exit_code = 2;
+        }
+    }
     if (saved_valid && tcsetattr(fd, TCSANOW, &saved) < 0) {
         perror("restore UART settings");
         exit_code = 2;

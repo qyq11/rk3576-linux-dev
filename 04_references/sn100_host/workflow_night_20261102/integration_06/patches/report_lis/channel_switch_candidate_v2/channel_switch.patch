@@ -1,0 +1,1389 @@
+diff --git a/06_programs/sn100_host/original_files/original_system_profile.h b/06_programs/sn100_host/original_files/original_system_profile.h
+--- a/06_programs/sn100_host/original_files/original_system_profile.h
++++ b/06_programs/sn100_host/original_files/original_system_profile.h
+@@ -5,6 +5,8 @@
+ #include <QSet>
+ #include <QStringList>
+ #include <QVector>
++#include <atomic>
++#include <memory>
+ 
+ namespace OriginalRuntime
+ {
+@@ -73,6 +75,57 @@
+ // 原Windows只开放test_channel的is_open修改；其他通道字段与字典保持只读。
+ bool setTestChannelEnabled(const QString &root, const QString &number, bool enabled,
+                            const QString &expectedFingerprint, QString *message);
++
++// Uh回读保留出现顺序；重复名称逐条处理，不插入未知通道，不关闭未列通道。
++struct ChannelSwitchUpdate
++{
++    QString number;
++    bool enabled = false;
++};
++enum class ChannelApplyOutcome
++{
++    Committed,
++    Cancelled,
++    Failed,
++    CommittedReloadFailed
++};
++struct ChannelApplyResult
++{
++    ChannelApplyOutcome outcome = ChannelApplyOutcome::Failed;
++    Channels channels;
++    QString message;
++    // 仅成功COMMIT后统计；重复项的每次实际改变各计1，不是最终不同通道数。
++    int changedRows = 0;
++    int unknownRows = 0;
++};
++class ChannelCommitPermit;
++using ChannelCommitPermitPtr = std::shared_ptr<ChannelCommitPermit>;
++
++// GUI只做原子撤销，不等SQLite。提交票先取得时，后续撤销不能抹去提交事实。
++class ChannelCommitPermit
++{
++public:
++    enum class State { Active, Revoked, Committing, Committed };
++    ChannelCommitPermit() = default;
++    ChannelCommitPermit(const ChannelCommitPermit &) = delete;
++    ChannelCommitPermit &operator=(const ChannelCommitPermit &) = delete;
++    void revoke() noexcept;
++    bool tryBeginCommit() noexcept;
++    State state() const noexcept;
++
++private:
++    void markCommitted() noexcept;
++    std::atomic<State> state_{State::Active};
++    friend ChannelApplyResult applyTestChannelReadback(const QString &, const QVector<ChannelSwitchUpdate> &,
++                                                      const QString &, const ChannelCommitPermitPtr &);
++};
++
++// 同步数据库接口，仅由worker调用。新接口限16MiB、每表1024行、每包1024项。
++// 只支持DELETE回滚日志；拒绝WAL/遗留日志，不改变原数据库PRAGMA或旧接口行为。
++// 新写入拒绝检测表触发器及启用外键联动的连接，防止is_open改变其他字段/表。
++bool readChannelsSnapshot(const QString &root, Channels *result, QString *message);
++ChannelApplyResult applyTestChannelReadback(const QString &root, const QVector<ChannelSwitchUpdate> &updates,
++                                           const QString &expectedFingerprint, const ChannelCommitPermitPtr &permit);
+ }
+ 
+ #endif
+diff --git a/06_programs/sn100_host/original_files/original_system_profile.cpp b/06_programs/sn100_host/original_files/original_system_profile.cpp
+--- a/06_programs/sn100_host/original_files/original_system_profile.cpp
++++ b/06_programs/sn100_host/original_files/original_system_profile.cpp
+@@ -8,6 +8,7 @@
+ #include <QSqlError>
+ #include <QSqlQuery>
+ #include <QTextCodec>
++#include <QRegularExpression>
+ 
+ namespace OriginalRuntime
+ {
+@@ -280,4 +281,360 @@
+     { database.rollback(); return false; }
+     return true;
+ }
+-}
++
++void ChannelCommitPermit::revoke() noexcept
++{
++    state_.exchange(State::Revoked, std::memory_order_acq_rel);
++}
++
++bool ChannelCommitPermit::tryBeginCommit() noexcept
++{
++    State expected = State::Active;
++    return state_.compare_exchange_strong(expected, State::Committing,
++                                         std::memory_order_acq_rel, std::memory_order_acquire);
++}
++
++ChannelCommitPermit::State ChannelCommitPermit::state() const noexcept
++{
++    return state_.load(std::memory_order_acquire);
++}
++
++void ChannelCommitPermit::markCommitted() noexcept
++{
++    // 撤销已发生时保留Revoked，供页面拒收旧结果；实际提交事实由返回值单独保存。
++    State expected = State::Committing;
++    state_.compare_exchange_strong(expected, State::Committed,
++                                  std::memory_order_acq_rel, std::memory_order_acquire);
++}
++
++namespace
++{
++constexpr qint64 MaximumChannelDatabaseBytes = 16 * 1024 * 1024;
++constexpr int MaximumChannelSnapshotRows = 1024;
++constexpr int MaximumChannelReadbackUpdates = 1024;
++
++bool channelFileReady(const QString &path, QString *message)
++{
++    const QFileInfo info(path);
++    if (!info.isAbsolute() || !info.isFile() || info.size() < 100 || info.size() > MaximumChannelDatabaseBytes)
++        return fail(message, QStringLiteral("通道库不存在、格式不完整或超过本次16MiB本地预算。"));
++    for (QFileInfo current(info.absoluteFilePath()); ; current.setFile(current.absolutePath()))
++    {
++        if (current.isSymLink()) return fail(message, QStringLiteral("通道库路径不能经过符号链接。"));
++        if (current.absoluteFilePath() == current.absolutePath()) break;
++    }
++    // 文件hash只代表主库，不能拿它覆盖WAL内容或未经确认的遗留事务。
++    for (const QString &suffix : {QStringLiteral("-wal"), QStringLiteral("-shm"), QStringLiteral("-journal")})
++    {
++        const QFileInfo sidecar(path + suffix);
++        if (sidecar.exists() || sidecar.isSymLink())
++            return fail(message, QStringLiteral("通道库存在WAL或回滚日志文件，暂不支持本次回读保存；未清理或转换原库。"));
++    }
++    QFile input(path);
++    if (!input.open(QIODevice::ReadOnly)) return fail(message, QStringLiteral("无法读取通道库格式。"));
++    const QByteArray header = input.read(100);
++    if (header.size() != 100 || header.left(16) != QByteArray("SQLite format 3\0", 16) ||
++        header.at(18) != char(1) || header.at(19) != char(1))
++        return fail(message, QStringLiteral("通道回读只支持原SQLite回滚日志格式，未启用WAL或转换数据库。"));
++    return true;
++}
++
++bool deleteJournalMode(OriginalBusiness::Database &database, QString *message)
++{
++    QSqlQuery query(database.db);
++    if (!query.exec(QStringLiteral("PRAGMA journal_mode")) || !query.next())
++        return fail(message, QStringLiteral("无法核对通道库日志模式：") + query.lastError().text());
++    const QString mode = query.value(0).toString();
++    if (mode.compare(QStringLiteral("delete"), Qt::CaseInsensitive) != 0)
++        return fail(message, QStringLiteral("通道回读仅支持DELETE日志模式，未改写原模式：") + mode);
++    return true;
++}
++
++bool boundedChannelDigest(const QString &path, QString *result, QString *message)
++{
++    QFile input(path);
++    if (!input.open(QIODevice::ReadOnly)) return fail(message, QStringLiteral("无法读取通道资料指纹。"));
++    const qint64 size = input.size();
++    const QString canonicalPath = QFileInfo(path).canonicalFilePath();
++    if (size < 100 || size > MaximumChannelDatabaseBytes || canonicalPath.isEmpty())
++        return fail(message, QStringLiteral("通道库指纹输入超过16MiB本地预算或路径无效。"));
++    QCryptographicHash hash(QCryptographicHash::Sha256);
++    qint64 readBytes = 0;
++    while (readBytes < size)
++    {
++        const QByteArray block = input.read(qMin(qint64(65536), size - readBytes));
++        if (block.isEmpty()) return fail(message, QStringLiteral("通道资料指纹读取未完成。"));
++        hash.addData(block);
++        readBytes += block.size();
++    }
++    if (!input.atEnd() || input.error() != QFileDevice::NoError || input.size() != size ||
++        QFileInfo(path).canonicalFilePath() != canonicalPath)
++        return fail(message, QStringLiteral("读取期间通道资料大小或路径已变化，未采用不一致指纹。"));
++    *result = QString::fromLatin1(QCryptographicHash::hash(canonicalPath.toUtf8() + '\n' + hash.result(),
++                                                         QCryptographicHash::Sha256).toHex());
++    return true;
++}
++
++bool boundedChannelRows(OriginalBusiness::Database &database, Channels *result, QString *message)
++{
++    Channels candidate;
++    const QStringList tables{QStringLiteral("test_channel"), QStringLiteral("warm_channel"), QStringLiteral("cache_channel")};
++    for (int table = 0; table < tables.size(); ++table)
++    {
++        // 只读原普通表；不执行视图或虚拟表的自定义读取/更新逻辑。
++        QSqlQuery schema(database.db);
++        if (!schema.prepare(QStringLiteral("SELECT type,sql FROM sqlite_master WHERE name=? COLLATE NOCASE")))
++            return fail(message, schema.lastError().text());
++        schema.addBindValue(tables.at(table));
++        if (!schema.exec() || !schema.next() || schema.value(0).toString() != QStringLiteral("table") ||
++            !schema.value(1).toString().simplified().startsWith(QStringLiteral("CREATE TABLE "), Qt::CaseInsensitive))
++            return fail(message, QStringLiteral("通道资料缺少支持的原普通表：") + tables.at(table));
++        // 原建表无COLLATE，文字键按BINARY匹配；历史自定义比较规则暂不猜测兼容。
++        if (table == 0 && schema.value(1).toString().contains(QRegularExpression(
++                QStringLiteral("\\bCOLLATE\\b"),QRegularExpression::CaseInsensitiveOption)))
++            return fail(message, QStringLiteral("检测通道表含COLLATE声明，本次回读暂不支持；未改比较规则。"));
++        schema.finish();
++
++        QSqlQuery query(database.db);
++        query.setForwardOnly(true);
++        const QString fields = table == 0 ? QStringLiteral("id,channel_num,is_open,warmup_only")
++                                         : QStringLiteral("id,channel_num,is_open");
++        if (!query.exec(QStringLiteral("SELECT %1 FROM %2 ORDER BY id LIMIT 1025").arg(fields, tables.at(table))))
++            return fail(message, QStringLiteral("无法读取原通道字段：") + query.lastError().text());
++        QSet<QString> names;
++        QVector<Channel> channels;
++        while (query.next())
++        {
++            if (channels.size() >= MaximumChannelSnapshotRows)
++                return fail(message, QStringLiteral("原通道表超过1024行本地预算，未截断或发布部分资料。"));
++            Channel channel;
++            if (!integer(query.value(0), 1, 1000000000, &channel.id) ||
++                !boolean(query.value(2), &channel.enabled) ||
++                (table == 0 && !boolean(query.value(3), &channel.warmupOnly)))
++                return fail(message, QStringLiteral("原通道编号、开关或仅预热值无效，未猜测修正。"));
++            channel.number = query.value(1).toString();
++            if (channel.number.isEmpty() || names.contains(channel.number))
++                return fail(message, QStringLiteral("原通道名称为空或重复，未应用回读。"));
++            names.insert(channel.number);
++            channels.append(channel);
++        }
++        if (query.lastError().isValid()) return fail(message, query.lastError().text());
++        if (table == 0) candidate.test = channels;
++        else if (table == 1) candidate.warm = channels;
++        else candidate.cache = channels;
++    }
++    *result = candidate;
++    return true;
++}
++
++bool channelUpdateSchemaReady(OriginalBusiness::Database &database, QString *message)
++{
++    QSqlQuery columns(database.db);
++    if (!columns.exec(QStringLiteral("PRAGMA table_xinfo(test_channel)")))
++        return fail(message, QStringLiteral("无法核对检测通道表的生成/隐藏列。"));
++    int columnCount = 0;
++    while (columns.next())
++    {
++        bool valid = false;
++        const int hidden = columns.value(6).toInt(&valid);
++        if (++columnCount > 256 || !valid || hidden != 0)
++            return fail(message, QStringLiteral("检测通道表存在生成/隐藏列或超过256列本地预算，未执行联动更新。"));
++    }
++    if (!columnCount || columns.lastError().isValid())
++        return fail(message, QStringLiteral("检测通道列资料无效或当前SQLite不支持核对，未猜测放行。"));
++    columns.finish();
++    // 只改is_open不能触发旧库中的其他联动；不通过关闭PRAGMA或删触发器放行。
++    QSqlQuery foreignKeys(database.db);
++    if (!foreignKeys.exec(QStringLiteral("PRAGMA foreign_keys")) || !foreignKeys.next())
++        return fail(message, QStringLiteral("无法核对通道库的外键联动设置。"));
++    if (foreignKeys.value(0).toInt() != 0)
++        return fail(message, QStringLiteral("本次通道回读暂不支持启用外键联动的连接，原设置未改。"));
++    foreignKeys.finish();
++    QSqlQuery triggers(database.db);
++    if (!triggers.exec(QStringLiteral("SELECT 1 FROM sqlite_master WHERE type='trigger' AND tbl_name='test_channel' COLLATE NOCASE LIMIT 1")))
++        return fail(message, triggers.lastError().text());
++    if (triggers.next()) return fail(message, QStringLiteral("原检测通道表存在触发器，未执行可能改变其他字段/表的更新。"));
++    if (triggers.lastError().isValid()) return fail(message, triggers.lastError().text());
++    return true;
++}
++
++bool rollbackChannels(OriginalBusiness::Database &database, QString *message)
++{
++    if (database.db.rollback()) return true;
++    if (message) *message += QStringLiteral("；通道事务回滚未完成：") + database.db.lastError().text();
++    return false;
++}
++
++bool channelReadLockReady(OriginalBusiness::Database &database, QString *message)
++{
++    QSqlQuery query(database.db);
++    if (!query.exec(QStringLiteral("SELECT 1 FROM sqlite_master LIMIT 1")) || !query.next())
++        return fail(message, QStringLiteral("无法取得通道库读取快照：") + query.lastError().text());
++    return true;
++}
++
++bool channelPageBudgetReady(OriginalBusiness::Database &database, QString *message)
++{
++    QSqlQuery pages(database.db);
++    QSqlQuery pageSize(database.db);
++    if (!pages.exec(QStringLiteral("PRAGMA page_count")) || !pages.next() ||
++        !pageSize.exec(QStringLiteral("PRAGMA page_size")) || !pageSize.next())
++        return fail(message, QStringLiteral("无法核对提交后的通道库大小预算。"));
++    qint64 count = 0;
++    qint64 bytes = 0;
++    if (!integer(pages.value(0), 1, MaximumChannelDatabaseBytes, &count) ||
++        !integer(pageSize.value(0), 512, 65536, &bytes) || count > MaximumChannelDatabaseBytes / bytes)
++        return fail(message, QStringLiteral("通道更新将超过16MiB本地文件预算，事务未提交。"));
++    return true;
++}
++
++bool channelReadTransaction(OriginalBusiness::Database &database, const QString &path,
++                            Channels *result, QString *message)
++{
++    if (!deleteJournalMode(database, message) || !database.execute(QStringLiteral("BEGIN"), {}, message)) return false;
++    Channels candidate;
++    // SELECT取得并保持SQLite读锁，直到指纹完成，防止合法并发提交与主库hash错版。
++    if (!channelReadLockReady(database, message) || !channelFileReady(path, message) ||
++        !deleteJournalMode(database, message) || !boundedChannelRows(database, &candidate, message) ||
++        !boundedChannelDigest(path, &candidate.fingerprint, message) ||
++        !database.commit(message))
++    {
++        rollbackChannels(database, message);
++        return false;
++    }
++    *result = candidate;
++    return true;
++}
++}
++
++bool readChannelsSnapshot(const QString &root, Channels *result, QString *message)
++{
++    if (message) message->clear();
++    if (!result) return fail(message, QStringLiteral("通道快照输出对象为空。"));
++    if (!OriginalBusiness::workingRoot(root, message)) return false;
++    const QString path = QDir(root).filePath(QStringLiteral("db/systemInfo/channel.db"));
++    QLockFile lock(path + QStringLiteral(".sn100-write.lock"));
++    lock.setStaleLockTime(30000);
++    if (!lock.tryLock(0)) return fail(message, QStringLiteral("原通道资料正在处理，请稍后重读。"));
++    if (!channelFileReady(path, message)) return false;
++    OriginalBusiness::Database database;
++    if (!database.open(root, QStringLiteral("db/systemInfo/channel.db"), false, message)) return false;
++    return channelReadTransaction(database, path, result, message);
++}
++
++ChannelApplyResult applyTestChannelReadback(const QString &root, const QVector<ChannelSwitchUpdate> &updates,
++                                           const QString &expectedFingerprint, const ChannelCommitPermitPtr &permit)
++{
++    ChannelApplyResult result;
++    if (!permit)
++    {
++        result.message = QStringLiteral("通道回读缺少提交许可，未修改。返回值不能作为设备完成确认。");
++        return result;
++    }
++    const auto cancelled = [&result]()
++    {
++        result.outcome = ChannelApplyOutcome::Cancelled;
++        result.message = QStringLiteral("通道回读提交前已撤销，事务未提交。");
++        return result;
++    };
++    const auto initialPermit = permit->state();
++    if (initialPermit == ChannelCommitPermit::State::Revoked) return cancelled();
++    if (initialPermit != ChannelCommitPermit::State::Active)
++    {
++        result.message = QStringLiteral("通道回读提交许可已被使用，未重复提交。");
++        return result;
++    }
++    if (updates.size() > MaximumChannelReadbackUpdates || expectedFingerprint.size() != 64)
++    {
++        result.message = QStringLiteral("通道回读超过1024项本地预算，或预期资料指纹无效。");
++        return result;
++    }
++    if (!OriginalBusiness::workingRoot(root, &result.message)) return result;
++    const QString path = QDir(root).filePath(QStringLiteral("db/systemInfo/channel.db"));
++    QLockFile lock(path + QStringLiteral(".sn100-write.lock"));
++    lock.setStaleLockTime(30000);
++    if (!lock.tryLock(0))
++    {
++        result.message = QStringLiteral("原通道资料正在写入，回读未排队覆盖。");
++        return result;
++    }
++    if (!channelFileReady(path, &result.message)) return result;
++    OriginalBusiness::Database database;
++    if (!database.open(root, QStringLiteral("db/systemInfo/channel.db"), true, &result.message) ||
++        !deleteJournalMode(database, &result.message) || !database.begin(&result.message)) return result;
++    Channels before;
++    if (!channelFileReady(path, &result.message) || !deleteJournalMode(database, &result.message) ||
++        !boundedChannelRows(database, &before, &result.message) || !boundedChannelDigest(path, &before.fingerprint, &result.message) ||
++        !channelUpdateSchemaReady(database, &result.message))
++    {
++        rollbackChannels(database, &result.message);
++        return result;
++    }
++    if (before.fingerprint != expectedFingerprint)
++    {
++        result.message = QStringLiteral("原通道资料指纹已变化，回读未覆盖其他修改。");
++        rollbackChannels(database, &result.message);
++        return result;
++    }
++    QMap<QString, int> known;
++    for (int index = 0; index < before.test.size(); ++index) known.insert(before.test.at(index).number, index);
++    int changedRows = 0;
++    int unknownRows = 0;
++    for (const ChannelSwitchUpdate &update : updates)
++    {
++        if (permit->state() == ChannelCommitPermit::State::Revoked)
++        {
++            if (!rollbackChannels(database, &result.message)) return result;
++            return cancelled();
++        }
++        const auto target = known.constFind(update.number);
++        if (target == known.constEnd())
++        {
++            ++unknownRows;
++            continue;
++        }
++        Channel &channel = before.test[target.value()];
++        if (channel.enabled == update.enabled) continue;
++        if (!database.execute(QStringLiteral("UPDATE OR ABORT test_channel SET is_open=? WHERE id=? AND channel_num=? AND is_open=?"),
++                              {update.enabled ? 1 : 0, channel.id, channel.number, channel.enabled ? 1 : 0}, &result.message, 1))
++        {
++            rollbackChannels(database, &result.message);
++            return result;
++        }
++        channel.enabled = update.enabled;
++        ++changedRows;
++    }
++    if (!channelPageBudgetReady(database, &result.message))
++    {
++        rollbackChannels(database, &result.message);
++        return result;
++    }
++    // CAS与COMMIT相邻：撤销先取得状态则回滚；提交票先取得后，不再把成功误报取消。
++    if (!permit->tryBeginCommit())
++    {
++        if (!rollbackChannels(database, &result.message)) return result;
++        if (permit->state() == ChannelCommitPermit::State::Revoked) return cancelled();
++        result.message = QStringLiteral("通道回读提交许可已被占用，事务未提交。");
++        return result;
++    }
++    if (!database.commit(&result.message))
++    {
++        rollbackChannels(database, &result.message);
++        return result;
++    }
++    permit->markCommitted();
++    result.changedRows = changedRows;
++    result.unknownRows = unknownRows;
++    // 提交后必须重读；失败时保持空快照，不把提交前资料伪装成新状态。
++    if (!channelFileReady(path, &result.message) || !channelReadTransaction(database, path, &result.channels, &result.message))
++    {
++        result.outcome = ChannelApplyOutcome::CommittedReloadFailed;
++        result.message = QStringLiteral("通道开关已提交，但重读新快照失败：") + result.message;
++        return result;
++    }
++    result.outcome = ChannelApplyOutcome::Committed;
++    result.message = QStringLiteral("通道回读已提交并重读；实际改变%1次，跳过未知项%2次。")
++        .arg(changedRows).arg(unknownRows);
++    return result;
++}
++}
+diff --git a/06_programs/sn100_host/instrument/original_channel_store.h b/06_programs/sn100_host/instrument/original_channel_store.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/instrument/original_channel_store.h
+@@ -0,0 +1,48 @@
++#ifndef SN100_ORIGINAL_CHANNEL_STORE_H
++#define SN100_ORIGINAL_CHANNEL_STORE_H
++
++#include "original_files/original_system_profile.h"
++
++#include <QMetaType>
++#include <QObject>
++
++using OriginalChannelUpdates = QVector<OriginalRuntime::ChannelSwitchUpdate>;
++
++Q_DECLARE_METATYPE(OriginalRuntime::Channels)
++Q_DECLARE_METATYPE(OriginalChannelUpdates)
++Q_DECLARE_METATYPE(OriginalRuntime::ChannelCommitPermitPtr)
++Q_DECLARE_METATYPE(OriginalRuntime::ChannelApplyResult)
++
++// 只在所属后台线程读写原通道资料；调用方排队关闭后再退出线程。
++class OriginalChannelStore : public QObject
++{
++    Q_OBJECT
++public:
++    explicit OriginalChannelStore(QObject *parent = nullptr);
++    static void registerTypes();
++
++public slots:
++    void openOriginal(QString root);
++    void reload();
++    void apply(quint64 requestId, quint64 generation, OriginalChannelUpdates updates,
++               QString expectedFingerprint, OriginalRuntime::ChannelCommitPermitPtr permit);
++    void close();
++
++signals:
++    void opened(QString root, OriginalRuntime::Channels channels);
++    void openFailed(QString message);
++    void reloaded(OriginalRuntime::Channels channels, QString error);
++    void applied(quint64 requestId, quint64 generation, OriginalRuntime::ChannelApplyResult result);
++    void closed();
++
++private:
++    bool inWorkerThread(QString *message) const;
++
++    // 首次打开后目录固定；失败可重读，关闭后不可重新打开或写入。
++    QString root_;
++    bool openRequested_ = false;
++    bool ready_ = false;
++    bool closed_ = false;
++};
++
++#endif
+diff --git a/06_programs/sn100_host/instrument/original_channel_store.cpp b/06_programs/sn100_host/instrument/original_channel_store.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/instrument/original_channel_store.cpp
+@@ -0,0 +1,130 @@
++#include "original_channel_store.h"
++
++#include <QCoreApplication>
++#include <QDebug>
++#include <QThread>
++
++OriginalChannelStore::OriginalChannelStore(QObject *parent) : QObject(parent)
++{
++    registerTypes();
++}
++
++void OriginalChannelStore::registerTypes()
++{
++    qRegisterMetaType<OriginalRuntime::Channels>("OriginalRuntime::Channels");
++    qRegisterMetaType<OriginalChannelUpdates>("OriginalChannelUpdates");
++    qRegisterMetaType<OriginalRuntime::ChannelCommitPermitPtr>("OriginalRuntime::ChannelCommitPermitPtr");
++    qRegisterMetaType<OriginalRuntime::ChannelApplyResult>("OriginalRuntime::ChannelApplyResult");
++}
++
++bool OriginalChannelStore::inWorkerThread(QString *message) const
++{
++    const auto *application = QCoreApplication::instance();
++    if (QThread::currentThread() == thread() && application && thread() != application->thread())
++        return true;
++    if (message) *message = tr("原通道资料必须在所属后台线程操作，未读写数据库。");
++    return false;
++}
++
++void OriginalChannelStore::openOriginal(QString root)
++{
++    QString message;
++    if (!inWorkerThread(&message))
++    {
++        emit openFailed(message);
++        return;
++    }
++    if (closed_ || openRequested_)
++    {
++        emit openFailed(tr("原通道资料目录已固定或已关闭，不能重新打开；未切换目录。"));
++        return;
++    }
++    openRequested_ = true;
++    root_ = root;
++    OriginalRuntime::Channels channels;
++    if (!OriginalRuntime::readChannelsSnapshot(root_, &channels, &message))
++    {
++        emit openFailed(message);
++        return;
++    }
++    ready_ = true;
++    emit opened(root_, channels);
++}
++
++void OriginalChannelStore::reload()
++{
++    QString message;
++    OriginalRuntime::Channels channels;
++    if (!inWorkerThread(&message))
++    {
++        emit reloaded(channels, message);
++        return;
++    }
++    if (closed_ || !openRequested_)
++    {
++        emit reloaded(channels, tr("原通道资料尚未打开或已关闭，未读取数据库。"));
++        return;
++    }
++    ready_ = OriginalRuntime::readChannelsSnapshot(root_, &channels, &message);
++    emit reloaded(ready_ ? channels : OriginalRuntime::Channels(), message);
++}
++
++void OriginalChannelStore::apply(quint64 requestId, quint64 generation, OriginalChannelUpdates updates,
++    QString expectedFingerprint, OriginalRuntime::ChannelCommitPermitPtr permit)
++{
++    OriginalRuntime::ChannelApplyResult result;
++    if (!inWorkerThread(&result.message))
++        result.outcome = OriginalRuntime::ChannelApplyOutcome::Failed;
++    else if (closed_)
++    {
++        result.outcome = OriginalRuntime::ChannelApplyOutcome::Cancelled;
++        result.message = tr("原通道资料已关闭，本次通道回读未写入。");
++    }
++    else if (!permit)
++    {
++        result.outcome = OriginalRuntime::ChannelApplyOutcome::Failed;
++        result.message = tr("缺少通道提交许可，本次通道回读未写入。");
++    }
++    else if (permit->state() == OriginalRuntime::ChannelCommitPermit::State::Revoked)
++    {
++        result.outcome = OriginalRuntime::ChannelApplyOutcome::Cancelled;
++        result.message = tr("通道提交许可已撤销，本次通道回读未写入。");
++    }
++    else if (!ready_)
++    {
++        result.outcome = OriginalRuntime::ChannelApplyOutcome::Failed;
++        result.message = tr("原通道资料尚未就绪，请先读取确认；本次通道回读未写入。");
++    }
++    else
++    {
++        result = OriginalRuntime::applyTestChannelReadback(root_, updates, expectedFingerprint, permit);
++        if (result.outcome == OriginalRuntime::ChannelApplyOutcome::CommittedReloadFailed)
++            ready_ = false;
++    }
++    const char *outcome = "Failed";
++    switch (result.outcome)
++    {
++    case OriginalRuntime::ChannelApplyOutcome::Committed: outcome = "Committed"; break;
++    case OriginalRuntime::ChannelApplyOutcome::Cancelled: outcome = "Cancelled"; break;
++    case OriginalRuntime::ChannelApplyOutcome::Failed: break;
++    case OriginalRuntime::ChannelApplyOutcome::CommittedReloadFailed: outcome = "CommittedReloadFailed"; break;
++    }
++    qInfo().nospace() << "original-channel apply requestId=" << requestId
++                     << " generation=" << generation << " outcome=" << outcome
++                     << " changedRows=" << result.changedRows << " unknownRows=" << result.unknownRows;
++    // 所有分支汇到同一个回执，调用方据此结束等待并决定是否重读。
++    emit applied(requestId, generation, result);
++}
++
++void OriginalChannelStore::close()
++{
++    QString message;
++    if (!inWorkerThread(&message))
++    {
++        qWarning().noquote() << message;
++        return;
++    }
++    ready_ = false;
++    closed_ = true;
++    emit closed();
++}
+diff --git a/06_programs/sn100_host/instrument/original_channel_receiver.h b/06_programs/sn100_host/instrument/original_channel_receiver.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/instrument/original_channel_receiver.h
+@@ -0,0 +1,82 @@
++#ifndef SN100_ORIGINAL_CHANNEL_RECEIVER_H
++#define SN100_ORIGINAL_CHANNEL_RECEIVER_H
++
++#include "original_channel_store.h"
++#include <QPointer>
++#include <QQueue>
++#include <functional>
++#include <memory>
++
++class DeviceControl;
++
++// GUI适配器：只接被动Uh并把值交专用SQL线程；不发设备命令、不要求人工登录。
++class OriginalChannelReceiver : public QObject
++{
++    Q_OBJECT
++public:
++    using SnapshotConsumer = std::function<bool(const OriginalRuntime::Channels &, quint64, QString *)>;
++    OriginalChannelReceiver(OriginalChannelStore *store, DeviceControl *control, QString originalRoot,
++                            SnapshotConsumer consumer, QObject *parent = nullptr);
++    ~OriginalChannelReceiver() override;
++    bool start();
++    bool isStopped() const { return stopped_; }
++    int pendingBatchCount() const { return waiting_.size() + (inFlight_ ? 1 : 0); }
++    // 仅在worker已释放或专用线程已停止后作异常尾清理；未收到的终态如实标待核。
++    void finishAfterWorkerStopped();
++
++public slots:
++    void receivePayload(QByteArray payload, quint64 generation);
++    void requestStop();
++
++signals:
++    void requestOpen(QString originalRoot);
++    void requestReload();
++    void requestApply(quint64 requestId, quint64 generation, OriginalChannelUpdates updates,
++                      QString fingerprint, OriginalRuntime::ChannelCommitPermitPtr permit);
++    void requestClose();
++    void batchFinished(quint64 requestId, quint64 generation, QString outcome, bool displayed,
++                       QString message, int changedRows, int unknownRows);
++    // 已提交批次重读恢复的显示结果；不产生第二次提交终态，不重放该批。
++    void snapshotRecovered(quint64 requestId, quint64 generation, bool displayed, QString message);
++    void error(QString message);
++    void stopped();
++
++private:
++    struct Batch
++    {
++        quint64 request = 0, generation = 0;
++        qint64 bytes = 0;
++        OriginalChannelUpdates updates;
++        OriginalRuntime::ChannelCommitPermitPtr permit;
++    };
++    struct CommittedRecovery
++    {
++        quint64 request = 0, generation = 0;
++        OriginalRuntime::ChannelCommitPermitPtr permit;
++    };
++    QPointer<OriginalChannelStore> store_;
++    QPointer<DeviceControl> control_;
++    QString originalRoot_, fingerprint_;
++    SnapshotConsumer consumer_;
++    QQueue<Batch> waiting_;
++    std::unique_ptr<Batch> inFlight_;
++    std::unique_ptr<CommittedRecovery> committedRecovery_;
++    quint64 nextRequest_ = 0, generation_ = 0;
++    qint64 pendingBytes_ = 0;
++    bool connected_ = false, started_ = false, ready_ = false, reloadPending_ = false;
++    bool stopRequested_ = false, closeRequested_ = false, sourceClosed_ = false, stopped_ = false;
++    bool dispatching_ = false, finishing_ = false;
++
++    void synchronizeConnection();
++    void dispatch();
++    void reloadIfNeeded();
++    void cancelWaiting(const QString &reason, const QString &outcome = QStringLiteral("Cancelled"));
++    void finishResult(quint64 request, quint64 generation, OriginalRuntime::ChannelApplyResult result);
++    void finishStop();
++    bool current(const Batch &batch) const;
++    bool current(quint64 generation, const OriginalRuntime::ChannelCommitPermitPtr &permit) const;
++    void consumeRecoveredSnapshot(const OriginalRuntime::Channels &channels);
++    static bool parse(const QByteArray &payload, OriginalChannelUpdates *updates, QString *message);
++};
++
++#endif
+diff --git a/06_programs/sn100_host/instrument/original_channel_receiver.cpp b/06_programs/sn100_host/instrument/original_channel_receiver.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/instrument/original_channel_receiver.cpp
+@@ -0,0 +1,357 @@
++#include "original_channel_receiver.h"
++#include "instrument/device_control.h"
++#include <QCoreApplication>
++#include <QDir>
++#include <QScopedValueRollback>
++#include <QThread>
++#include <limits>
++#include <utility>
++
++namespace
++{
++constexpr int MaximumBatches = 32, MaximumRows = 1024, MaximumPayloadBytes = 128000;
++constexpr qint64 MaximumPendingBytes = 2 * 1024 * 1024;
++bool revoked(const OriginalRuntime::ChannelCommitPermitPtr &permit)
++{
++    return !permit || permit->state() == OriginalRuntime::ChannelCommitPermit::State::Revoked;
++}
++QString outcomeName(OriginalRuntime::ChannelApplyOutcome outcome)
++{
++    using Outcome = OriginalRuntime::ChannelApplyOutcome;
++    if (outcome == Outcome::Committed) return QStringLiteral("Committed");
++    if (outcome == Outcome::Cancelled) return QStringLiteral("Cancelled");
++    if (outcome == Outcome::CommittedReloadFailed) return QStringLiteral("CommittedReloadFailed");
++    return QStringLiteral("Failed");
++}
++}
++
++OriginalChannelReceiver::OriginalChannelReceiver(OriginalChannelStore *store, DeviceControl *control,
++    QString originalRoot, SnapshotConsumer consumer, QObject *parent)
++    : QObject(parent), store_(store), control_(control), originalRoot_(QDir::cleanPath(originalRoot)),
++      consumer_(std::move(consumer))
++{
++    OriginalChannelStore::registerTypes();
++    if (store)
++    {
++        connect(this,&OriginalChannelReceiver::requestOpen,store,&OriginalChannelStore::openOriginal,Qt::QueuedConnection);
++        connect(this,&OriginalChannelReceiver::requestReload,store,&OriginalChannelStore::reload,Qt::QueuedConnection);
++        connect(this,&OriginalChannelReceiver::requestApply,store,&OriginalChannelStore::apply,Qt::QueuedConnection);
++        connect(this,&OriginalChannelReceiver::requestClose,store,&OriginalChannelStore::close,Qt::QueuedConnection);
++        connect(store,&OriginalChannelStore::opened,this,[this](const QString &root, OriginalRuntime::Channels channels)
++        {
++            reloadPending_ = false;
++            if (QDir::cleanPath(root) != originalRoot_ || channels.fingerprint.size() != 64)
++            {
++                ready_ = false;
++                emit error(tr("通道后台来源不符，未消费快照。"));
++                requestStop();
++                return;
++            }
++            fingerprint_ = channels.fingerprint;
++            ready_ = true;
++            if (stopRequested_) finishStop(); else dispatch();
++        },Qt::QueuedConnection);
++        connect(store,&OriginalChannelStore::openFailed,this,[this](const QString &message)
++        {
++            reloadPending_ = false; ready_ = false;
++            cancelWaiting(message,QStringLiteral("Failed"));
++            emit error(message);
++            finishStop();
++        },Qt::QueuedConnection);
++        connect(store,&OriginalChannelStore::reloaded,this,[this](OriginalRuntime::Channels channels, const QString &message)
++        {
++            reloadPending_ = false;
++            ready_ = message.isEmpty() && channels.fingerprint.size() == 64;
++            if (ready_)
++            {
++                fingerprint_ = channels.fingerprint;
++                consumeRecoveredSnapshot(channels);
++            }
++            else
++            {
++                cancelWaiting(message,QStringLiteral("Failed"));
++                emit error(tr("通道资料重读失败，未沿用旧指纹：") + message);
++            }
++            if (stopRequested_) finishStop(); else dispatch();
++        },Qt::QueuedConnection);
++        connect(store,&OriginalChannelStore::applied,this,&OriginalChannelReceiver::finishResult,Qt::QueuedConnection);
++        connect(store,&OriginalChannelStore::closed,this,[this]()
++        {
++            sourceClosed_ = true; ready_ = false; reloadPending_ = false;
++            if (!stopRequested_) emit error(tr("通道后台提前关闭，停止接收；在途回执仍按实际结果结清。"));
++            requestStop();
++        },Qt::QueuedConnection);
++        connect(store,&QObject::destroyed,this,[this]()
++        {
++            store_ = nullptr;
++            finishAfterWorkerStopped();
++        },Qt::QueuedConnection);
++    }
++    if (control && control->thread() == thread())
++    {
++        // 同GUI线程直接撤销，不能等SQL排队后再判旧连接。
++        connect(control,&DeviceControl::changed,this,[this](const DeviceControlState &) { synchronizeConnection(); },Qt::DirectConnection);
++        connect(control,&DeviceControl::payloadReceivedForConnection,this,&OriginalChannelReceiver::receivePayload,Qt::DirectConnection);
++        connect(control,&QObject::destroyed,this,[this]() { control_ = nullptr; requestStop(); },Qt::DirectConnection);
++        synchronizeConnection();
++    }
++}
++
++OriginalChannelReceiver::~OriginalChannelReceiver()
++{
++    if (inFlight_) inFlight_->permit->revoke();
++    if (committedRecovery_) committedRecovery_->permit->revoke();
++    for (const Batch &batch : waiting_) batch.permit->revoke();
++}
++
++bool OriginalChannelReceiver::start()
++{
++    if (!QCoreApplication::instance() || thread() != QCoreApplication::instance()->thread()
++        || QThread::currentThread() != thread() || started_ || stopRequested_ || !store_ || !control_
++        || control_->thread() != thread() || !store_->thread() || !store_->thread()->isRunning()
++        || store_->thread() == thread() || !QDir::isAbsolutePath(originalRoot_))
++    {
++        emit error(tr("Uh接收须在GUI线程使用已运行的独立通道后台及明确原工作根。"));
++        return false;
++    }
++    started_ = true;
++    reloadPending_ = true;
++    emit requestOpen(originalRoot_);
++    return true;
++}
++
++bool OriginalChannelReceiver::parse(const QByteArray &payload, OriginalChannelUpdates *updates, QString *message)
++{
++    const auto reject = [message](const QString &text) { *message = text; return false; };
++    if (!payload.startsWith("Uh") || payload.size() > MaximumPayloadBytes)
++        return reject(QStringLiteral("Uh消息超过128000字节本地上限或命令不符。"));
++    QVector<QString> fields;
++    QByteArray field;
++    bool inField = false;
++    for (int position = 2; position < payload.size(); ++position)
++    {
++        const char byte = payload.at(position);
++        if (!inField)
++        {
++            if (byte == '[') inField = true;
++            continue;
++        }
++        if (byte != ']') { field.append(byte); continue; }
++        // 与原commandChanger的QString(QByteArray)相同：逐字段UTF8，首NUL停止该字段。
++        fields.append(QString(field));
++        field.clear(); inField = false;
++        if (fields.size() > 1 + 2 * MaximumRows)
++            return reject(QStringLiteral("Uh字段数量超过本地上限，未截断写库。"));
++    }
++    // 原扫描忽略字段外字节、保留字段内'['，不追加未闭合尾字段。
++    if (fields.size() < 2) return reject(QStringLiteral("Uh不足原入口要求的两个字段，未写库。"));
++    // 原转换失败或负数仍交空列表刷新；只安全拒绝正数量缺项和超预算。
++    const int count = qMax(0,fields.at(0).toInt());
++    if (count > MaximumRows || count > (fields.size()-1)/2)
++        return reject(QStringLiteral("Uh超过1024项或正数量字段不足，未写库。"));
++    OriginalChannelUpdates result;
++    result.reserve(count);
++    for (int index = 0; index < count; ++index)
++        result.append({fields.at(1+2*index), bool(fields.at(2+2*index).toInt())});
++    // 沿原循环只使用count项；完整的额外尾字段不解释为其他通道。
++    *updates = result;
++    return true;
++}
++
++void OriginalChannelReceiver::synchronizeConnection()
++{
++    if (QThread::currentThread() != thread()) return;
++    const quint64 generation = control_ ? control_->connectionGeneration() : 0;
++    const bool connected = control_ && control_->state().connected;
++    if (generation == generation_ && connected == connected_) return;
++    generation_ = generation; connected_ = connected;
++    if (inFlight_) inFlight_->permit->revoke();
++    if (committedRecovery_) committedRecovery_->permit->revoke();
++    {
++        QScopedValueRollback<bool> guard(dispatching_,true);
++        cancelWaiting(tr("连接已改变，未派发的旧Uh已取消。"));
++    }
++    dispatch();
++}
++
++void OriginalChannelReceiver::receivePayload(QByteArray payload, quint64 generation)
++{
++    if (!payload.startsWith("Uh")) return;
++    if (QThread::currentThread() != thread()) return;
++    synchronizeConnection();
++    if (!started_ || stopRequested_ || !connected_ || generation != generation_)
++    {
++        emit error(tr("Uh不属于当前启用连接，未排队写库。"));
++        return;
++    }
++    OriginalChannelUpdates updates;
++    QString message;
++    if (!parse(payload,&updates,&message)) { emit error(message); return; }
++    if (pendingBatchCount() >= MaximumBatches || pendingBytes_+payload.size() > MaximumPendingBytes
++        || nextRequest_ == std::numeric_limits<quint64>::max())
++    {
++        emit error(tr("Uh待处理超过32批/2MiB或请求编号耗尽，本批明确拒绝，未覆盖旧批。"));
++        return;
++    }
++    Batch batch;
++    batch.request = ++nextRequest_; batch.generation = generation;
++    batch.bytes = payload.size(); batch.updates = updates;
++    batch.permit = std::make_shared<OriginalRuntime::ChannelCommitPermit>();
++    pendingBytes_ += batch.bytes;
++    waiting_.enqueue(batch);
++    if (!ready_) reloadIfNeeded();
++    dispatch();
++}
++
++bool OriginalChannelReceiver::current(const Batch &batch) const
++{
++    return current(batch.generation,batch.permit);
++}
++
++bool OriginalChannelReceiver::current(quint64 generation, const OriginalRuntime::ChannelCommitPermitPtr &permit) const
++{
++    return !stopRequested_ && connected_ && generation == generation_ && !revoked(permit)
++        && control_ && control_->state().connected && control_->connectionGeneration() == generation;
++}
++
++void OriginalChannelReceiver::consumeRecoveredSnapshot(const OriginalRuntime::Channels &channels)
++{
++    if (!committedRecovery_) return;
++    QScopedValueRollback<bool> guard(finishing_,true);
++    const CommittedRecovery owner = *committedRecovery_;
++    committedRecovery_.reset();
++    bool displayed = false;
++    QString message;
++    if (current(owner.generation,owner.permit) && consumer_)
++    {
++        displayed = consumer_(channels,owner.generation,&message);
++        displayed = displayed && current(owner.generation,owner.permit);
++        if (displayed) message = tr("已提交通道资料重读恢复，当前原表已刷新并清除旧AD。");
++        else message = tr("已提交资料重读恢复，但页面未消费：") + message;
++    }
++    else message = tr("已提交资料重读恢复，归属连接已失效或正在关闭，未刷新页面。");
++    emit snapshotRecovered(owner.request,owner.generation,displayed,message);
++}
++
++void OriginalChannelReceiver::dispatch()
++{
++    if (dispatching_ || finishing_ || inFlight_ || !ready_ || stopRequested_ || !store_) return;
++    QScopedValueRollback<bool> guard(dispatching_,true);
++    while (!waiting_.isEmpty() && !stopRequested_)
++    {
++        Batch batch = waiting_.dequeue();
++        if (!current(batch))
++        {
++            batch.permit->revoke(); pendingBytes_ -= batch.bytes;
++            emit batchFinished(batch.request,batch.generation,QStringLiteral("Cancelled"),false,
++                               tr("旧连接的Uh未派发。"),0,0);
++            continue;
++        }
++        inFlight_.reset(new Batch(batch));
++        emit requestApply(batch.request,batch.generation,batch.updates,fingerprint_,batch.permit);
++        return;
++    }
++    finishStop();
++}
++
++void OriginalChannelReceiver::reloadIfNeeded()
++{
++    if (!started_ || ready_ || reloadPending_ || inFlight_ || stopRequested_ || !store_) return;
++    reloadPending_ = true;
++    emit requestReload();
++}
++
++void OriginalChannelReceiver::cancelWaiting(const QString &reason, const QString &outcome)
++{
++    const auto waiting = waiting_;
++    waiting_.clear();
++    for (const Batch &batch : waiting) { batch.permit->revoke(); pendingBytes_ -= batch.bytes; }
++    for (const Batch &batch : waiting)
++        emit batchFinished(batch.request,batch.generation,outcome,false,reason,0,0);
++}
++
++void OriginalChannelReceiver::finishResult(quint64 request, quint64 generation, OriginalRuntime::ChannelApplyResult result)
++{
++    if (!inFlight_ || inFlight_->request != request || inFlight_->generation != generation)
++    { emit error(tr("通道后台回执没有对应在途批次，未更新指纹或页面。")); return; }
++    {
++        QScopedValueRollback<bool> guard(finishing_,true);
++        const Batch batch = *inFlight_;
++        inFlight_.reset(); pendingBytes_ -= batch.bytes;
++        using Outcome = OriginalRuntime::ChannelApplyOutcome;
++        bool displayed = false;
++        if (result.outcome == Outcome::Committed && result.channels.fingerprint.size() == 64)
++        {
++            // 即使旧代次已提交，也推进后台版本；显示归属另按当前连接判断。
++            fingerprint_ = result.channels.fingerprint; ready_ = true;
++            if (current(batch) && consumer_)
++            {
++                QString problem;
++                displayed = consumer_(result.channels,generation,&problem);
++                displayed = displayed && current(batch);
++                if (!displayed) result.message += tr("；库已提交，但页面未消费：") + problem;
++            }
++            else result.message += tr("；库已提交，结果属于旧连接或正在关闭，未刷新页面。");
++        }
++        else
++        {
++            ready_ = false;
++            if (result.outcome == Outcome::Committed)
++            {
++                result.outcome = Outcome::CommittedReloadFailed;
++                result.message += tr("；后台未返回有效的新资料指纹，暂停刷新并重读。");
++            }
++        }
++        if (result.outcome == Outcome::CommittedReloadFailed)
++        {
++            // 仅保留已提交事实的归属，后续真实重读可补刷新，不保存/重放原更新。
++            committedRecovery_.reset(new CommittedRecovery{request,generation,batch.permit});
++        }
++        emit batchFinished(request,generation,outcomeName(result.outcome),displayed,
++                           result.message,result.changedRows,result.unknownRows);
++    }
++    if (stopRequested_) finishStop();
++    else { if (!ready_) reloadIfNeeded(); dispatch(); }
++}
++
++void OriginalChannelReceiver::requestStop()
++{
++    if (QThread::currentThread() != thread() || stopped_) return;
++    stopRequested_ = true; ready_ = false;
++    if (inFlight_) inFlight_->permit->revoke();
++    if (committedRecovery_) committedRecovery_->permit->revoke();
++    cancelWaiting(tr("通道接收正在关闭，未派发批次已取消。"));
++    finishStop();
++}
++
++void OriginalChannelReceiver::finishStop()
++{
++    if (!stopRequested_ || stopped_ || inFlight_ || finishing_) return;
++    if (sourceClosed_)
++    {
++        stopped_ = true;
++        emit stopped();
++    }
++    else if (!closeRequested_ && store_)
++    {
++        closeRequested_ = true;
++        emit requestClose();
++    }
++}
++
++void OriginalChannelReceiver::finishAfterWorkerStopped()
++{
++    if (QThread::currentThread() != thread() || stopped_) return;
++    stopRequested_ = true;
++    if (committedRecovery_) committedRecovery_->permit->revoke();
++    cancelWaiting(tr("通道线程已停止，未派发批次取消。"));
++    if (inFlight_)
++    {
++        const Batch batch = *inFlight_;
++        batch.permit->revoke(); inFlight_.reset(); pendingBytes_ -= batch.bytes;
++        emit batchFinished(batch.request,batch.generation,QStringLiteral("Unconfirmed"),false,
++                           tr("线程结束前未消费回执，写入结果待核；禁止自动重放。"),0,0);
++    }
++    sourceClosed_ = true;
++    finishStop();
++}
+diff --git a/06_programs/sn100_host/instrument/instrument_page.h b/06_programs/sn100_host/instrument/instrument_page.h
+--- a/06_programs/sn100_host/instrument/instrument_page.h
++++ b/06_programs/sn100_host/instrument/instrument_page.h
+@@ -39,6 +39,7 @@
+     // 仅在原signalReceiveDriverModel对应条件成立时调用，保留450nm重载表头。
+     bool reloadOriginalAdChannels(int testChannels, QString *message);
+     bool receiveOriginalAd(const QByteArray &payload, quint64 connectionGeneration, QString *message);
++    bool applyCommittedOriginalChannels(const OriginalRuntime::Channels &channels, quint64 generation, QString *message);
+ 
+ signals:
+     void statusChanged(QString message);
+diff --git a/06_programs/sn100_host/instrument/instrument_page.cpp b/06_programs/sn100_host/instrument/instrument_page.cpp
+--- a/06_programs/sn100_host/instrument/instrument_page.cpp
++++ b/06_programs/sn100_host/instrument/instrument_page.cpp
+@@ -1039,3 +1039,43 @@
+     if (transmitted) ui->label_SendCount->setText(QString::number(++sentCommunication_));
+     else ui->label_ReceiveCount->setText(QString::number(++receivedCommunication_));
+ }
++
++bool InstrumentPage::applyCommittedOriginalChannels(const OriginalRuntime::Channels &channels,
++    quint64 generation, QString *message)
++{
++    if (message) message->clear();
++    if (QThread::currentThread() != thread())
++    {
++        if (message) *message = tr("通道资料必须在界面线程更新。");
++        return false;
++    }
++    if (!originalAdConfigured_)
++    {
++        if (message) *message = tr("原通道资料未就绪，未替换通道表。");
++        return false;
++    }
++    if (!deviceControl_ || !deviceControl_->state().connected
++        || generation != deviceControl_->connectionGeneration())
++    {
++        if (message) *message = tr("通道资料不属于当前有效连接，未替换通道表。");
++        return false;
++    }
++    if (channels.test.size() > 1024 || channels.fingerprint.size() != 64)
++    {
++        if (message) *message = tr("通道数量或资料指纹无效，未替换通道表。");
++        return false;
++    }
++    QSet<QString> numbers;
++    for (const auto &channel : channels.test)
++    {
++        if (channel.number.isEmpty() || numbers.contains(channel.number))
++        {
++            if (message) *message = tr("原通道名称为空或重复，未猜测通道身份。");
++            return false;
++        }
++        numbers.insert(channel.number);
++    }
++    originalAdChannels_ = channels;
++    refreshOriginalAdChannels();
++    return true;
++}
+diff --git a/06_programs/sn100_host/shell/main.cpp b/06_programs/sn100_host/shell/main.cpp
+--- a/06_programs/sn100_host/shell/main.cpp
++++ b/06_programs/sn100_host/shell/main.cpp
+@@ -12,6 +12,7 @@
+ #include <QScrollArea>
+ #include <QThread>
+ #include <QTimer>
++#include <QToolTip>
+ #include <QVBoxLayout>
+ #include <memory>
+ #include <QMessageBox>
+@@ -50,6 +51,7 @@
+ #include "instrument/instrument_page.h"
+ #include "instrument/device_control.h"
+ #include "instrument/maintenance_store.h"
++#include "instrument/original_channel_receiver.h"
+ #include "data/printer_settings_store.h"
+ #include "ui/frmprintersetting.h"
+ #include "data/lis_settings_store.h"
+@@ -217,12 +219,28 @@
+         setMinimumSize(900, 600);
+     }
+ 
++    void setOriginalChannelReceiver(OriginalChannelReceiver *receiver) { originalChannelReceiver_ = receiver; }
++    void finishOriginalChannelStop()
++    {
++        if (!originalChannelClosePending_) return;
++        originalChannelClosePending_ = false;
++        close();
++    }
++
+ protected:
+     void closeEvent(QCloseEvent *event) override
+     {
+         // QWidget::close() returns false when the page guard rejects it.
+         if (!shell_->close())
+         {
++            event->ignore();
++            return;
++        }
++        // 原草稿/忙态守卫已接受退出，才撤销Uh；等待回执期间仍处理GUI事件。
++        if (originalChannelReceiver_ && !originalChannelReceiver_->isStopped())
++        {
++            originalChannelClosePending_ = true;
++            originalChannelReceiver_->requestStop();
+             event->ignore();
+             return;
+         }
+@@ -231,6 +249,8 @@
+ 
+ private:
+     frmMain *shell_;
++    QPointer<OriginalChannelReceiver> originalChannelReceiver_;
++    bool originalChannelClosePending_ = false;
+ };
+ 
+ int main(int argc, char *argv[])
+@@ -577,6 +597,12 @@
+         maintenance->moveToThread(&maintenanceThread);
+         QObject::connect(&maintenanceThread,&QThread::finished,maintenance,&QObject::deleteLater);
+     }
++    // Uh使用独立后台，只有下方本片接线能退出它，不能借维护线程的closed信号。
++    QThread originalChannelThread;
++    originalChannelThread.setObjectName(QStringLiteral("OriginalChannelDatabase"));
++    QPointer<OriginalChannelStore> originalChannelStore;
++    OriginalChannelReceiver *originalChannelReceiver = nullptr;
++    bool originalChannelFailure = false;
+     QThread printerThread;
+     printerThread.setObjectName(QStringLiteral("O10PrinterSettings"));
+     auto *printer = withPrinterSettings ? new PrinterSettingsStore : nullptr;
+@@ -1174,6 +1200,103 @@
+             }
+             qInfo() << "ORIGINAL_AD_CHANNELS_READY configured_count=" << theme.testChannels
+                     << "source_rows=" << originalAlarmProfile.channels.test.size();
++            originalChannelStore = new OriginalChannelStore;
++            originalChannelStore->moveToThread(&originalChannelThread);
++            QObject::connect(&originalChannelThread,&QThread::finished,originalChannelStore.data(),&QObject::deleteLater);
++            originalChannelReceiver = new OriginalChannelReceiver(originalChannelStore.data(),control,originalDbRoot,
++                [target=QPointer<InstrumentPage>(page)](const OriginalRuntime::Channels &channels,quint64 generation,QString *message)
++            {
++                if (!target)
++                {
++                    if (message) *message=QStringLiteral("仪器状态页面已关闭，库已保存但未刷新页面。");
++                    return false;
++                }
++                return target->applyCommittedOriginalChannels(channels,generation,message);
++            },&app);
++            QObject::connect(&originalChannelThread,&QThread::started,originalChannelReceiver,
++                [originalChannelReceiver,&originalChannelFailure]()
++            {
++                if (!originalChannelReceiver->start())
++                {
++                    originalChannelFailure=true;
++                    originalChannelReceiver->requestStop();
++                }
++            },Qt::QueuedConnection);
++            // 连设备时statusChanged不会改主状态区；沿用已有非模态浮动提示，不覆盖主控状态灯。
++            const auto presentOriginalChannelResult = [page,host=QPointer<frmMain>(shell)](
++                quint64 request,quint64 generation,const QString &outcome,bool displayed,const QString &text)
++            {
++                page->setProperty("originalChannelResult",text);
++                page->setProperty("originalChannelResultRequest",QVariant::fromValue(request));
++                page->setProperty("originalChannelResultGeneration",QVariant::fromValue(generation));
++                page->setProperty("originalChannelResultOutcome",outcome);
++                page->setProperty("originalChannelResultDisplayed",displayed);
++                page->setToolTip(text);
++                emit page->statusChanged(text);
++                // 通道页可能隐藏或滚出可见画布；固定原状态区作锚点，不切页、不抢焦点。
++                if (!host || !host->isVisible() || !host->window()->isActiveWindow()) return;
++                auto *anchor=host->findChild<QWidget*>(QStringLiteral("statusArea"));
++                if (!anchor || !anchor->isVisible() || anchor->visibleRegion().isEmpty()) return;
++                const QString tooltip=QStringLiteral("<qt>%1</qt>").arg(
++                    text.toHtmlEscaped().replace(QLatin1Char('\n'),QStringLiteral("<br/>")));
++                QToolTip::showText(anchor->mapToGlobal(anchor->visibleRegion().boundingRect().center()),
++                                   tooltip,anchor,QRect(),12000);
++            };
++            QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::error,page,
++                [presentOriginalChannelResult,&originalChannelFailure](const QString &message)
++            {
++                originalChannelFailure=true;
++                qWarning().noquote() << "ORIGINAL_CHANNEL_ERROR" << message;
++                presentOriginalChannelResult(0,0,QStringLiteral("ReceiverError"),false,message);
++            });
++            QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::batchFinished,page,
++                [presentOriginalChannelResult,source=QPointer<DeviceControl>(control),&originalChannelFailure](
++                    quint64 request,quint64 generation,const QString &outcome,bool displayed,
++                    const QString &message,int changed,int unknown)
++            {
++                qInfo().noquote() << "ORIGINAL_CHANNEL_RESULT request=" << request << "generation=" << generation
++                    << "outcome=" << outcome << "displayed=" << displayed << "changed=" << changed
++                    << "unknown=" << unknown << message;
++                if (outcome==QStringLiteral("Failed") || outcome==QStringLiteral("CommittedReloadFailed")
++                    || outcome==QStringLiteral("Unconfirmed")) originalChannelFailure=true;
++                const bool current=source && source->state().connected && source->connectionGeneration()==generation;
++                const bool refreshed=displayed && current;
++                QString result;
++                if (outcome==QStringLiteral("Committed"))
++                    result=refreshed ? QStringLiteral("通道资料已保存，当前通道表已刷新并清除旧AD；等待主控上报新读数。")
++                        : current ? QStringLiteral("通道资料已保存，但当前页面未刷新。")
++                                  : QStringLiteral("旧连接的通道资料已保存，未刷新当前页面。");
++                else if (outcome==QStringLiteral("CommittedReloadFailed"))
++                    result=QStringLiteral("通道资料已保存，但重新读取失败，页面尚未刷新；需重新读取核对。");
++                else if (outcome==QStringLiteral("Cancelled"))
++                    result=QStringLiteral("本批通道回读已取消，未保存。");
++                else if (outcome==QStringLiteral("Failed"))
++                    result=QStringLiteral("通道回读未保存，请核对以下原因。");
++                else
++                    result=QStringLiteral("通道回读的保存结果待核，未确认完成，不会自动重放。");
++                if (!message.isEmpty()) result+=QStringLiteral("\n原因或详情：")+message;
++                presentOriginalChannelResult(request,generation,outcome,refreshed,result);
++            });
++            QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::snapshotRecovered,page,
++                [presentOriginalChannelResult,source=QPointer<DeviceControl>(control)](
++                    quint64 request,quint64 generation,bool displayed,const QString &message)
++            {
++                qInfo().noquote() << "ORIGINAL_CHANNEL_SNAPSHOT_RECOVERED request=" << request
++                    << "generation=" << generation << "displayed=" << displayed << message;
++                const bool refreshed=displayed && source && source->state().connected
++                    && source->connectionGeneration()==generation;
++                const QString result=(refreshed
++                    ? QStringLiteral("已保存的通道资料重新读取成功，当前通道表已刷新并清除旧AD。")
++                    : QStringLiteral("已保存的通道资料重新读取成功，未刷新当前页面。"))
++                    +(displayed && !refreshed
++                        ? QStringLiteral("\n连接在显示结果确认期间已变化，以当前连接页面为准。")
++                        : QStringLiteral("\n详情：")+message);
++                presentOriginalChannelResult(request,generation,QStringLiteral("SnapshotRecovered"),refreshed,result);
++            });
++            // 正常停止由GUI消费closed后触发；异常退出在app.exec返回后由main显式quit/join。
++            QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::stopped,&originalChannelThread,&QThread::quit);
++            QObject::connect(&app,&QCoreApplication::aboutToQuit,originalChannelReceiver,
++                             &OriginalChannelReceiver::requestStop,Qt::DirectConnection);
+             QObject::connect(control,&DeviceControl::payloadReceived,page,
+                 [page,control,reagentPositions=theme.reagentPositions](const QByteArray &payload) mutable
+             {
+@@ -1323,6 +1446,10 @@
+                          []() { qInfo() << "LIS_SETTINGS_CLOSED"; });
+     }
+     ShellViewport viewport(shell, viewportSize, withAccounts, withHistory);
++    viewport.setOriginalChannelReceiver(originalChannelReceiver);
++    if (originalChannelReceiver)
++        QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::stopped,&viewport,
++                         [&viewport]() { viewport.finishOriginalChannelStop(); },Qt::QueuedConnection);
+     if (withThemeConfiguration) shell->applyThemeConfiguration(themeConfiguration);
+     if (withCatalog) viewport.setWindowTitle(QStringLiteral("SN100 · 统一脱机 · 项目/单位、试剂、医院、账户、历史/报告"));
+     if (withSamples) viewport.setWindowTitle(QStringLiteral("SN100 · 统一脱机 · 样本/任务、项目/单位、试剂、医院、账户、历史/报告"));
+@@ -1383,6 +1510,7 @@
+     if (history) historyThread.start();
+     if (samples) sampleThread.start();
+     if (maintenance) maintenanceThread.start();
++    if (originalChannelStore) originalChannelThread.start();
+     if (printer) printerThread.start();
+     if (lis) lisThread.start();
+     if (quality) qualityThread.start();
+@@ -1392,6 +1520,25 @@
+                       << "platform=" << QGuiApplication::platformName()
+                       << "logical_canvas=1920x1080 viewport=" << viewportSize << "data_dir=" << dataDir;
+     int result = app.exec();
++    if (originalChannelReceiver)
++    {
++        if (!originalChannelReceiver->isStopped())
++        {
++            originalChannelReceiver->requestStop();
++            // 本线程仅由Receiver.stopped或此处quit；未stopped时仍能处理最后的close。
++            // GUI循环已结束，不把排队但未消费的applied当取消，也不自动重放。
++            if (originalChannelStore && originalChannelThread.isRunning())
++                QMetaObject::invokeMethod(originalChannelStore.data(),"close",Qt::BlockingQueuedConnection);
++            qCritical() << "ORIGINAL_CHANNEL_SHUTDOWN_UNCONFIRMED pending_batches="
++                        << originalChannelReceiver->pendingBatchCount();
++            result=3;
++        }
++        originalChannelThread.quit();
++        originalChannelThread.wait();
++        originalChannelReceiver->finishAfterWorkerStopped();
++        qInfo() << "ORIGINAL_CHANNEL_WORKER_STOPPED" << !originalChannelThread.isRunning();
++        if (originalChannelFailure) result=3;
++    }
+     if (originalAlarmReceiver && !shell->originalAlarmShutdownComplete())
+     {
+         // 启动失败或强制退出可能绕过closeEvent；直接close不代表在途批次已排空。
+diff --git a/06_programs/sn100_host/shell/build.sh b/06_programs/sn100_host/shell/build.sh
+--- a/06_programs/sn100_host/shell/build.sh
++++ b/06_programs/sn100_host/shell/build.sh
+@@ -89,6 +89,7 @@
+           "$program_dir/protocol/tcp_transport.cpp" "$program_dir/protocol/read_only_messages.cpp")
+ sources+=("$module_dir/instrument_shell.cpp" "$program_dir/instrument/instrument_page.cpp"
+          "$program_dir/instrument/original_status_values.cpp"
++         "$program_dir/instrument/original_channel_receiver.cpp" "$program_dir/instrument/original_channel_store.cpp"
+          "$program_dir/instrument/maintenance_store.cpp" "$module_dir/device_control_shell.cpp"
+          "$program_dir/instrument/device_control.cpp" "$program_dir/instrument/original_device_commands.cpp")
+ sources+=("$module_dir/login_shell.cpp" "$program_dir/ui/maskdlglogin.cpp")
+@@ -164,7 +165,8 @@
+          "$program_dir/quality_control/quality_control_item_add_project_wgt.ui"
+          "$program_dir/quality_control/cus_quality_chart.ui")
+ headers+=("$program_dir/instrument/instrument_page.h" "$program_dir/instrument/original_status_values.h" "$program_dir/instrument/maintenance_store.h"
+-          "$program_dir/instrument/device_control.h")
++          "$program_dir/instrument/device_control.h" "$program_dir/instrument/original_channel_receiver.h"
++          "$program_dir/instrument/original_channel_store.h")
+ headers+=("$program_dir/ui/maskdlglogin.h")
+ headers+=("$module_dir/printer_report_shell.h" "$program_dir/ui/frmprintersetting.h" "$program_dir/data/printer_settings_store.h"
+            "$program_dir/ui/frmlissetting.h" "$program_dir/data/lis_settings_store.h" "$program_dir/data/serial_port_catalog.h")
+diff --git a/06_programs/sn100_host/instrument/instrument_widgets.pri b/06_programs/sn100_host/instrument/instrument_widgets.pri
+--- a/06_programs/sn100_host/instrument/instrument_widgets.pri
++++ b/06_programs/sn100_host/instrument/instrument_widgets.pri
+@@ -4,5 +4,7 @@
+ INCLUDEPATH += $$PWD
+ SOURCES += $$PWD/instrument_page.cpp $$PWD/original_status_values.cpp
+ HEADERS += $$PWD/instrument_page.h $$PWD/original_status_values.h
++SOURCES += $$PWD/original_channel_receiver.cpp $$PWD/original_channel_store.cpp
++HEADERS += $$PWD/original_channel_receiver.h $$PWD/original_channel_store.h
+ FORMS += $$PWD/frmdriverset.ui
+ RESOURCES += $$PWD/instrument_resources.qrc

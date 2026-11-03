@@ -1,0 +1,141 @@
+diff --git a/06_programs/sn100_host/samples/sample_store.h b/06_programs/sn100_host/samples/sample_store.h
+--- a/06_programs/sn100_host/samples/sample_store.h
++++ b/06_programs/sn100_host/samples/sample_store.h
+@@ -2,6 +2,7 @@
+ #define SN100_SAMPLE_STORE_H
+ #include "data/account_store.h"
+ #include "sample_types.h"
++#include "original_task_reagent_receipt.h"
+ #include <QObject>
+ #include <QSqlDatabase>
+ #include <QSet>
+@@ -42,6 +43,8 @@
+     void originalProjectUpdateSent(quint64 intent, quint64 connection, bool attempted, bool queued, QString message);
+     void answerDeviceRackRequest(QByteArray payload, quint64 connection);
+     void receiveDevicePacket(QByteArray payload, quint64 connection, quint64 packet);
++    void receiveDevicePacketWithTaskBasis(QByteArray payload, quint64 connection, quint64 packet,
++        OriginalTaskReagents::RuntimeBasis basis);
+     void beginOriginalDeviceSync(quint64 connection, bool linuxNew);
+     void invalidateOriginalDeviceSync();
+     void prepareOriginalReagentUpdate(QString holeName, bool updateAmount, quint64 connection);
+@@ -78,6 +81,7 @@
+     void deviceRackTasksPrepared(QByteArray payload, quint64 connection);
+     void deviceTaskError(QString message);
+     void deviceTaskStateChanged();
++    void taskReagentCommitObserved(OriginalTaskReagents::Commit receipt); // 已提交或无法确认的原动作事实。
+     void originalResultsChanged(); // 原Tr曲线及报告状态保存成功后，历史页重读同一原库。
+     void originalReagentsChanged(); // 原Ur写回完成后，试剂页重读，避免只改设备缓存。
+     void originalProjectsChanged(); // 原UP保存后，项目页重读同一原库。
+@@ -111,6 +115,8 @@
+     void acceptOriginalProjectAdmission(const OriginalProjectSaveNotice &notice);
+     void publishOriginalProjectUpdateStates();
+     void sendOriginalConfigurationStep(const OriginalConfigurationStep &step);
++    void receiveDevicePacketImpl(QByteArray payload, quint64 connection, quint64 packet,
++        const OriginalTaskReagents::RuntimeBasis *taskBasis);
+     bool originalRackChange(qint64 request, const QString &operation, const SampleRack &rack, qint64 id);
+     QSqlDatabase database_;
+     QString connection_;
+diff --git a/06_programs/sn100_host/samples/sample_store.cpp b/06_programs/sn100_host/samples/sample_store.cpp
+--- a/06_programs/sn100_host/samples/sample_store.cpp
++++ b/06_programs/sn100_host/samples/sample_store.cpp
+@@ -275,6 +275,8 @@
+     qRegisterMetaType<SampleCombination>();
+     qRegisterMetaType<SampleSnapshot>();
+     qRegisterMetaType<ProjectRecords>();
++    qRegisterMetaType<OriginalTaskReagents::RuntimeBasis>();
++    qRegisterMetaType<OriginalTaskReagents::Commit>();
+     qRegisterMetaType<OriginalProjectSaveNotice>();
+     qRegisterMetaType<OriginalProjectSaveAdmission>();
+     qRegisterMetaType<OriginalProjectUpdateState>();
+diff --git a/06_programs/sn100_host/samples/original_sample_store.cpp b/06_programs/sn100_host/samples/original_sample_store.cpp
+--- a/06_programs/sn100_host/samples/original_sample_store.cpp
++++ b/06_programs/sn100_host/samples/original_sample_store.cpp
+@@ -329,6 +329,33 @@
+ 
+ void SampleStore::receiveDevicePacket(QByteArray payload, quint64 connection, quint64 packet)
+ {
++    receiveDevicePacketImpl(payload,connection,packet,nullptr);
++}
++
++void SampleStore::receiveDevicePacketWithTaskBasis(QByteArray payload, quint64 connection, quint64 packet,
++    OriginalTaskReagents::RuntimeBasis basis)
++{
++    // 仅原Tt和大写TR走任务凭据；Ur、TD、Tr和项目同步沿原入口规则。
++    const bool taskAction=payload.startsWith("Tt") || payload.startsWith("TR");
++    receiveDevicePacketImpl(payload,connection,packet,taskAction ? &basis : nullptr);
++}
++
++void SampleStore::receiveDevicePacketImpl(QByteArray payload, quint64 connection, quint64 packet,
++    const OriginalTaskReagents::RuntimeBasis *taskBasis)
++{
++    OriginalTaskReagents::Commit taskReceipt;
++    bool receiptObserved=false;
++    OriginalTaskReagents::CommitHandler committed;
++    if (taskBasis)
++    {
++        committed=[this,&receiptObserved](const OriginalTaskReagents::Commit &receipt)
++        {
++            if (!receipt.committed || receiptObserved) return;
++            receiptObserved=true;
++            // Session写连接已关闭，但资料锁仍在；这里只排纯值，不读库、不等待GUI。
++            emit taskReagentCommitObserved(receipt);
++        };
++    }
+     QString message;
+     bool success = false;
+     if (QThread::currentThread() != thread() || !originalDetection_)
+@@ -338,8 +365,17 @@
+     else if (payload.startsWith("Tt"))
+     {
+         QByteArray response;
+-        success = originalDetection_->answerRackRequest(payload,&response,&message);
++        success = taskBasis
++            ? originalDetection_->answerRackRequest(payload,&response,&message,*taskBasis,&taskReceipt,committed)
++            : originalDetection_->answerRackRequest(payload,&response,&message);
+         if (success) { emit deviceRackTasksPrepared(response,connection); emit originalCalibrationRecordsChanged(); }
++        else if (taskBasis && taskReceipt.committed)
++        {
++            // 已占号/预留但外层失败：锁已释放，只让原读者核实际写入，不发送任务。
++            emit deviceTaskStateChanged();
++            emit originalResultsChanged();
++            emit originalCalibrationRecordsChanged();
++        }
+     }
+     else if (payload=="TF")
+     {
+@@ -405,11 +441,16 @@
+     }
+     else
+     {
+-        success = originalDetection_->receiveDevicePayload(payload,&message);
+-        if (success && (payload.startsWith("TD") || payload.startsWith("Tr") || payload.startsWith("TR") || payload.startsWith("TB"))) emit deviceTaskStateChanged();
+-        if (success && (payload.startsWith("Tr") || payload.startsWith("TR"))) emit originalResultsChanged();
+-        if (success && (payload.startsWith("TD") || payload.startsWith("Tr") || payload.startsWith("TR"))) emit originalCalibrationRecordsChanged();
+-        if (success && (payload.startsWith("Ur") || payload.startsWith("TR"))) emit originalReagentsChanged();
++        const bool taskReturn=taskBasis && payload.startsWith("TR");
++        success = taskReturn
++            ? originalDetection_->receiveDevicePayload(payload,&message,*taskBasis,&taskReceipt,committed)
++            : originalDetection_->receiveDevicePayload(payload,&message);
++        const bool committedTask=taskReturn && taskReceipt.committed;
++        if ((success || committedTask) && (payload.startsWith("TD") || payload.startsWith("Tr") || payload.startsWith("TR") || payload.startsWith("TB"))) emit deviceTaskStateChanged();
++        if ((success || committedTask) && (payload.startsWith("Tr") || payload.startsWith("TR"))) emit originalResultsChanged();
++        if ((success || committedTask) && (payload.startsWith("TD") || payload.startsWith("Tr") || payload.startsWith("TR"))) emit originalCalibrationRecordsChanged();
++        // 新链实提交由Root等Processed后专用回读，避免普通reload先使冻结前版失效。
++        if (success && !committedTask && (payload.startsWith("Ur") || payload.startsWith("TR"))) emit originalReagentsChanged();
+         if (payload.startsWith("Ur") && originalDeviceSync_ && originalDeviceSync_->waitingForReagents())
+         {
+             OriginalConfigurationStep step;
+@@ -424,6 +465,13 @@
+             }
+         }
+     }
++    if (taskBasis && !receiptObserved &&
++        taskReceipt.transaction==OriginalTaskReagents::TransactionState::CommitUnconfirmed)
++    {
++        receiptObserved=true;
++        emit taskReagentCommitObserved(taskReceipt); // 保留committed=false，不猜回滚或重放。
++    }
++    // Root以此确认Session已返回、两锁已释放，再排Page专用回读；不能收到锁内通知就重读。
+     emit devicePacketProcessed(packet,connection,payload.left(2),success,message);
+ }
+ 

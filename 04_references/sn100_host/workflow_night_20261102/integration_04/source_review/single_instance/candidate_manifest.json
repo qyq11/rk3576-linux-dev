@@ -1,0 +1,20 @@
+{
+  "scope": "仅temp候选；正式main/build/配置/计划未改；未运行产品或设备",
+  "formal_file": "06_programs/sn100_host/shell/main.cpp",
+  "baseline_sha256": "c2d7e6d857aee1f47ade23a8be4605689f7b41791f57beb31fa07fc63a1872c4",
+  "candidate_sha256": "a69993b608c122a8eea772c16d9506b4b7e49fcdf769df8885fde01b311ad2ec",
+  "patch_sha256": "69352155cd4d8a71015671be75b0657388e76f409a032d87c1b13f1371c7f8ba",
+  "business_switch": "RuntimeSettings.debug.allowMultipleInstances / userOption/isAppOpenMultiple / default false",
+  "linux_scope": "effective UID and shared /tmp filesystem namespace; not a Windows logon-session equivalent",
+  "startup_candidate_independent": "插入点在原RuntimeSettings读取后，启动登录候选只改后段调用，互不覆盖；只应用patch，不覆盖整份main",
+  "compile_verified": true,
+  "compile_scope": "仅一个AArch64主程序对象；C++14/Qt5/-O0/-g0；不链接、不运行、不创建运行锁",
+  "object_sha256": "5092da15108e066d2eee93da4e62f9e99e4dd11f0fb68c267bdd0291dc7b1e31",
+  "compiler_inputs_unchanged": true,
+  "compiler_input_count": 688,
+  "compiler_input_manifest_sha256": "e6f7b7f7cfdd5bba6bd54205d2996edc666277b57c589f3fd4a095945b4bb0e9",
+  "independent_review": "原版语义及窄修只读复核；登记空构造先于QApplication，实际登记仍在配置后，未再见确定阻断",
+  "startup_main_hunks_compatible_both_orders": true,
+  "startup_compatibility_scope": "仅私有temp main副本；startup后于本片时忽略原CRLF空白差异，本片后于startup普通check；均退出0，不代表合并产品已构建",
+  "formal_unchanged_after_compile": true
+}

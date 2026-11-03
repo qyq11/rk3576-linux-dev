@@ -18,6 +18,45 @@
 #include <numeric>
 #include <limits>
 
+namespace
+{
+bool sameOriginalActor(const AccountSession &before, const AccountSession &after)
+{
+    return before.name == after.name && before.role == after.role &&
+           before.authenticated == after.authenticated && before.source == after.source &&
+           before.originalPolicySource == after.originalPolicySource && before.grantedPowerIds == after.grantedPowerIds;
+}
+bool sameCurveAfterReview(const CalibrationRecord &before, const CalibrationRecord &after)
+{
+    if (!before.originalProfile || !after.originalProfile || before.id != after.id || !after.checked ||
+        before.originalRoot != after.originalRoot || before.projectId != after.projectId ||
+        before.projectName != after.projectName || before.appliedBatchGroups != after.appliedBatchGroups ||
+        before.points.size() != after.points.size()) return false;
+    QVariantMap expectedBase = before.originalBaseValues;
+    expectedBase.insert(QStringLiteral("is_checked"), after.originalBaseValues.value(QStringLiteral("is_checked")));
+    if (expectedBase != after.originalBaseValues) return false;
+    for (int index = 0; index < before.points.size(); ++index)
+        if (before.points.at(index).originalValues != after.points.at(index).originalValues) return false;
+    return true;
+}
+bool targetBindingBefore(const CalibrationRecord &record, const QString &group, QVariantMap *snapshot)
+{
+    if(!record.originalProfile||!record.originalBindingsLoaded||record.originalRoot.isEmpty())return false;
+    QVariantList rows;
+    for(const QVariant &binding:record.originalProjectBindings)
+    {
+        if(binding.type()!=QVariant::Map)return false;
+        const QVariantMap fields=binding.toMap();
+        if(fields.value("project_name").toString()!=record.projectName)return false;
+        if(fields.value("batch_group").toString()==group)rows.append(binding);
+    }
+    if(rows.size()>1)return false;
+    *snapshot={{QStringLiteral("original_root"),record.originalRoot},{QStringLiteral("project_name"),record.projectName},
+               {QStringLiteral("batch_group"),group},{QStringLiteral("rows"),rows}};
+    return true;
+}
+}
+
 CalibrationPage::CalibrationPage(CalibrationStore *store, QWidget *parent)
     : QWidget(parent), ui(new Ui::frmCalibrationMaterial), m_store(store)
 {
@@ -133,10 +172,15 @@ CalibrationPage::CalibrationPage(CalibrationStore *store, QWidget *parent)
         report(m_originalMode?tr("已读取原校准库，审核标志与批组应用关系按原记录显示；拟合与反算另行核对。"):tr("已读取本地原始点记录；全部未审核、未应用。右键曲线列表可新增。"));
         emit snapshotChanged(m_records);
         emit operationFinished(QStringLiteral("load"), true);
+        continueOriginalApply();
     });
     connect(store, &CalibrationStore::succeeded, this, [this](qint64 request, const QString &op, qint64 id)
     {
         if (request != m_request) return;
+        if (op == QStringLiteral("setOriginalReview") && id == m_applyAfterReviewId)
+            m_applyReviewSaved = true;
+        else if (op == QStringLiteral("applyOriginalCurve"))
+            clearPendingOriginalApply();
         m_dirty = false;
         m_selectAfterLoad = op == QStringLiteral("remove") ? 0 : id;
         if (op == QStringLiteral("remove")) m_record = CalibrationRecord();
@@ -148,8 +192,11 @@ CalibrationPage::CalibrationPage(CalibrationStore *store, QWidget *parent)
             [this](qint64 request, const QString &op, const QString &message)
     {
         if (request && request != m_request) return;
+        const bool reviewSaved = m_applyReviewSaved;
+        clearPendingOriginalApply();
         setBusy(false);
-        report(tr("%1失败：%2；草稿保留，可修正后重试。").arg(op, message));
+        report(reviewSaved ? tr("审核已保存，后续应用结果尚未确认：%1；请重读后核对批组绑定。").arg(message)
+                           : tr("%1失败：%2；草稿保留，可修正后重试。").arg(op, message));
         emit operationFinished(op, false);
     });
     renderRecord(); updateActions();
@@ -201,6 +248,9 @@ void CalibrationPage::setSession(AccountSession session)
 {
     // Integration must call prepareToLeave before logout; never silently discard
     // another user's draft if a session change nevertheless reaches this page.
+    // 设备状态刷新不取消本地操作；操作者或其原授权改变后，不继续上一身份确认的应用。
+    if (!sameOriginalActor(m_session, session))
+        clearPendingOriginalApply();
     m_session = session;
     QMetaObject::invokeMethod(m_store, "setSession", Qt::QueuedConnection, Q_ARG(AccountSession, session));
     updateActions();
@@ -248,8 +298,10 @@ void CalibrationPage::updateActions()
         const bool stable=edit&&m_record.id>0&&!m_dirty;
         ui->btnCheck->setEnabled(stable&&!m_record.checked);
         ui->btnCheck->setToolTip(tr("按原版保存操作者确认的审核标志；不会把未执行的计算标记为已计算。"));
-        ui->btnApply->setEnabled(stable);
-        ui->btn_use_curve_2->setEnabled(stable);
+        const bool apply = m_ready && !m_busy && currentProject && m_record.id > 0 && !m_dirty &&
+                           CalibrationStore::canApplyOriginalCurve(m_session);
+        ui->btnApply->setEnabled(apply);
+        ui->btn_use_curve_2->setEnabled(apply);
         ui->btnCalculateIDSetting->setEnabled(stable&&m_session.role>=4);
         ui->btnApply->setToolTip(tr("把所选原批组绑定到当前原校准编号。"));
         ui->btn_use_curve_2->setToolTip(tr("把原Default批组绑定到当前原校准编号。"));
@@ -611,22 +663,72 @@ void CalibrationPage::cancelDraft()
 void CalibrationPage::reviewOriginalCurve()
 {
     if(!m_originalMode||m_busy||m_dirty||!m_record.id||!CalibrationStore::canEdit(m_session))return;
-    if(QMessageBox::question(this,tr("审核原曲线"),tr("确认按原业务审核当前曲线？此操作只保存原审核标志；尚未接入的拟合与反算不会自动执行。"),QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes)return;
+    const qint64 id=m_record.id,revision=m_record.revision;
+    const AccountSession actor=m_session;
+    if(QMessageBox::question(this,tr("审核原曲线"),tr("是否审核当前曲线?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;
+    if(m_busy||m_dirty||m_record.id!=id||m_record.revision!=revision||!sameOriginalActor(actor,m_session)||!CalibrationStore::canEdit(m_session))
+    {report(tr("确认期间曲线或操作者已变化，请重读后重新审核。"));return;}
     setBusy(true);
-    QMetaObject::invokeMethod(m_store,"setOriginalReview",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,m_record.id),Q_ARG(qint64,m_record.revision),Q_ARG(bool,true));
+    QMetaObject::invokeMethod(m_store,"setOriginalReview",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,id),Q_ARG(qint64,revision),Q_ARG(bool,true));
 }
 void CalibrationPage::applyOriginalCurve(bool useDefault)
 {
-    if(!m_originalMode||m_busy||m_dirty||!m_record.id||!CalibrationStore::canEdit(m_session))return;
+    if(!m_originalMode||m_busy||m_dirty||!m_record.id)return;
+    if(!CalibrationStore::canApplyOriginalCurve(m_session)){report(tr("当前账号不支持此操作!"));return;}
+    const qint64 id=m_record.id,revision=m_record.revision;
+    const AccountSession actor=m_session;
     QString group=QStringLiteral("Default");
     if(!useDefault)
-    {const int row=ui->tblLineApply->currentRow();if(row<0||!ui->tblLineApply->item(row,0)){report(tr("请先选择原试剂批组。"));return;}group=ui->tblLineApply->item(row,0)->text();}
-    if(!m_record.checked)
-    {report(tr("请先审核该原曲线，再选择批组应用；项目已明确启用自动应用时由后台按原规则核对。"));
-     bool autoApply=false;for(const auto &project:m_projects)if(project.id==m_record.projectId)autoApply=project.algorithm.autoApply;if(!autoApply)return;}
-    if(QMessageBox::question(this,tr("应用原曲线"),tr("把原批组“%1”绑定到校准编号%2？").arg(group).arg(m_record.id),QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel)!=QMessageBox::Yes)return;
+    {const int row=ui->tblLineApply->currentRow();if(row<0||!ui->tblLineApply->item(row,0)){report(tr("请选择试剂组分!"));return;}group=ui->tblLineApply->item(row,0)->text();}
+    QVariantMap bindingBefore;
+    if(!targetBindingBefore(m_record,group,&bindingBefore))
+    {report(tr("目标批组原关联未完整读取或存在重复，请重读核对后再应用。"));return;}
+    bool autoApply=false;
+    for(const auto &project:m_projects)if(project.id==m_record.projectId)autoApply=project.algorithm.autoApply;
+    if(!m_record.checked&&!autoApply)
+    {
+        if(QMessageBox::question(this,tr("应用原曲线"),tr("曲线未审核,是否审核当前曲线并应用?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;
+        if(m_busy||m_dirty||m_record.id!=id||m_record.revision!=revision||!sameOriginalActor(actor,m_session)||!CalibrationStore::canApplyOriginalCurve(m_session))
+        {report(tr("确认期间曲线或操作者已变化，请重读后重新应用。"));return;}
+        if(!CalibrationStore::canEdit(m_session)){report(tr("当前账号不支持此操作!"));return;}
+        // 原版先保存审核，再应用；第二步失败不会撤销已经保存的审核。
+        m_applyAfterReviewId=id;m_applyAfterReviewGroup=group;m_applyReviewSaved=false;
+        m_applyAfterReviewSource=m_record;
+        m_applyAfterReviewBinding=bindingBefore;
+        setBusy(true);
+        QMetaObject::invokeMethod(m_store,"setOriginalReview",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,id),Q_ARG(qint64,revision),Q_ARG(bool,true));
+        return;
+    }
     setBusy(true);
-    QMetaObject::invokeMethod(m_store,"applyOriginalCurve",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,m_record.id),Q_ARG(qint64,m_record.revision),Q_ARG(QString,group));
+    QMetaObject::invokeMethod(m_store,"applyOriginalCurve",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,id),Q_ARG(qint64,revision),Q_ARG(QString,group),Q_ARG(QVariantMap,bindingBefore));
+}
+void CalibrationPage::clearPendingOriginalApply()
+{
+    m_applyAfterReviewId=0;m_applyAfterReviewGroup.clear();m_applyReviewSaved=false;
+    m_applyAfterReviewSource=CalibrationRecord();
+    m_applyAfterReviewBinding.clear();
+}
+void CalibrationPage::continueOriginalApply()
+{
+    if(!m_applyAfterReviewId)return;
+    const qint64 id=m_applyAfterReviewId;
+    const QString group=m_applyAfterReviewGroup;
+    const bool reviewSaved=m_applyReviewSaved;
+    const QVariantMap bindingBefore=m_applyAfterReviewBinding;
+    QVariantMap bindingAfter;
+    const bool sameBinding=targetBindingBefore(m_record,group,&bindingAfter)&&bindingAfter==bindingBefore;
+    // 只允许本次审核标志变化；若同时收到了新点或其他修改，须重新让操作者核对。
+    const bool sameCurve=sameCurveAfterReview(m_applyAfterReviewSource,m_record);
+    clearPendingOriginalApply();
+    if(!m_originalMode||m_busy||m_dirty||m_record.id!=id||!sameCurve||
+       m_session.originalPolicySource!=m_originalRoot||!CalibrationStore::canApplyOriginalCurve(m_session))
+    {report(tr("审核已保存，当前曲线或操作者已变化，未继续应用；请重读核对。"));return;}
+    if(!sameBinding)
+    {report(tr("审核已保存，目标批组绑定已变化，未继续应用；请重读核对。"));return;}
+    // 审核提交会改变资料版本；先回读新版本，再用同一曲线身份排队绑定，不能沿用旧revision。
+    m_applyReviewSaved=reviewSaved;
+    setBusy(true);
+    QMetaObject::invokeMethod(m_store,"applyOriginalCurve",Qt::QueuedConnection,Q_ARG(qint64,++m_request),Q_ARG(qint64,id),Q_ARG(qint64,m_record.revision),Q_ARG(QString,group),Q_ARG(QVariantMap,bindingBefore));
 }
 void CalibrationPage::editOriginalMethod()
 {

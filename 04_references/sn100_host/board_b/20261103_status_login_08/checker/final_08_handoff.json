@@ -1,0 +1,190 @@
+{
+  "schema": "sn100-final-08-checker-handoff-v1",
+  "release_id": "08bc43a73a9e8e4826a559f501829355357a46a999799e8b662ebd1feae1a0ef",
+  "status": "checker_arm64_link_and_static_dependencies_passed_RK_pending",
+  "formal_application_sha256": "f6381c3cac13a3ca072bc7870bf5538b597bf87ec3d2b4bd40221e124e09ffdd",
+  "source_archive": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/07_backups/sn100_host/board_b/workflow_integration_20261102/integration_08/sn100_sources_08bc43a73a9e8e4826a559f501829355357a46a999799e8b662ebd1feae1a0ef.tar.gz",
+  "source_archive_sha256": "8a25a38e678120fac398aae8e35c2ae244410097608ddc9917a4a4e2462721e3",
+  "source_count": 674,
+  "object_count": 284,
+  "unique_build_inputs": 381,
+  "main_object_kinds": {
+    "source": 180,
+    "moc": 93,
+    "resource": 11
+  },
+  "helper_object_count": 2,
+  "all_aarch64_object_count": 286,
+  "complete_arm64_build_file_count": 440,
+  "generated_file_count": 153,
+  "main_object": {
+    "index": 0,
+    "input": "shell/main.cpp",
+    "kind": "source",
+    "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_08_revision_02/arm64_build/obj_0.o",
+    "sha256": "ae7e689672006f6a607a3a05c4cea126cb9354c43b31539bfceed7259d3493b0"
+  },
+  "formal_snapshot_sha256": "7b2935bbb207f3e74aa455a6f0b99b930424349fda63c365e9a31eef90310900",
+  "frozen_snapshot_sha256": "097e538263882ba23e405427140729f5316f0c839aeb1d4582045d658be9e768",
+  "checker_sha256": "2968a11c54ec89a7c8a706fa4feb715fd48484d58ab41cc722b84d2ff74abb09",
+  "checker_bytes": 176277552,
+  "checker_source_sha256": "6ab71d0de6009968372da7dcc2b30926e6481fc673745d36b0737ad32f8d8dbc",
+  "observer_sha256": "c1982e4435f5332f7103c5c5fad27dc1df9b61a6c02a872639ff0288433595a0",
+  "actual_driver_exit_code": 0,
+  "actual_step_exit_codes": {
+    "build_review": 0,
+    "checker_dependency_check": 0,
+    "freeze": 0
+  },
+  "before_after_identical": true,
+  "before_after_sha256": "76637120b3d1e6ecd5561c301765dca9c59f4051a3ebe3261e9066da9a3a40aa",
+  "contract_sha256": "ccde95746b31a1c9957940b5c0ee1998759f2ee51131b5445d566e9a9c7e4bdb",
+  "required_marker_count": 19,
+  "required_markers": [
+    "SHELL_READY",
+    "ALARM_HISTORY_SOURCE_CLOSED",
+    "ACCOUNT_STORE_CLOSED",
+    "HISTORY_STORE_CLOSED",
+    "QUALITY_CONTROL_STORE_CLOSED",
+    "SAMPLE_STORE_CLOSED",
+    "CALIBRATION_STORE_CLOSED",
+    "PROJECT_STORE_CLOSED",
+    "REAGENT_STORE_CLOSED",
+    "MAINTENANCE_STORE_CLOSED",
+    "PRINTER_SETTINGS_CLOSED",
+    "LIS_SETTINGS_CLOSED",
+    "HOSPITAL_STORE_CLOSED",
+    "ORIGINAL_CHANNEL_WORKER_STOPPED true",
+    "ALARM_HISTORY_WORKER_STOPPED true",
+    "ORIGINAL_ALARM_WORKER_STOPPED true",
+    "THREADS_STOPPED true",
+    "REAGENT_LEVEL_SHUTDOWN_READY active false worker_busy false",
+    "TASK_REAGENT_SHUTDOWN_READY"
+  ],
+  "n_source_guard": {
+    "in_flight_n_close_verified": false,
+    "log_statement_sha256": "7f1f858a92970b3885d6f342739ddf39705b549817c3d9d0eb8e991afe0daad6",
+    "n_function_verified": false,
+    "proof_scope": "只证明真实关闭保护到达成功分支时active和worker pending均空；不是N线程停止或提交中关闭验收。",
+    "required_existing_markers": [
+      "REAGENT_STORE_CLOSED",
+      "THREADS_STOPPED true"
+    ],
+    "required_ready_marker": "REAGENT_LEVEL_SHUTDOWN_READY active false worker_busy false",
+    "shutdown_function": "frmMain::requestReagentLevelShutdown",
+    "source": "shell/reagent_level_shell.cpp",
+    "source_sha256": {
+      "reagents/original_reagent_level_worker.cpp": "eb54a1b10f8b01b157a68fd91c245ed46d0ba9ea3247a82ae79f334aabf3ce89",
+      "reagents/original_reagent_level_worker.h": "4a1b140057358f8243d3e717d3ba19f7b51f1053c52c107d3434badc1dc0ddb0",
+      "shell/frmmain.cpp": "7166308a61273db758ade4ce00c2f5f6a4a30c28294f2750264c6eb8564154fd",
+      "shell/reagent_level_shell.cpp": "a75781e4b83db0294f8c850227b550286c8db09118c001976e62b9c370f62bc4"
+    },
+    "worker_thread": "existing ReagentStore thread; no new QThread"
+  },
+  "task_source_guard": {
+    "approved_review_sha256": "62683e9babba255ae1f2bf58a4a69b5961a7a7bdcd5c59d1a36ef847a6527eac",
+    "diagnostic_policy": "关闭正常证明、事务事实、页面采用及未知状态分别报告；不能把所有false当关闭失败，也不能因READY而把未知改成功。",
+    "diagnostic_rules": {
+      "business_evidence_only": [
+        "TASK_REAGENT_ARRIVED",
+        "TASK_REAGENT_OBSERVED",
+        "TASK_REAGENT_PROCESSED",
+        "TASK_REAGENT_DISPLAY",
+        "TASK_REAGENT_HOLE",
+        "TASK_REAGENT_RETIRED"
+      ],
+      "reader_queue_failure": [
+        "REAGENT_LEVEL_N_READER_GUI_QUEUE_FAILED"
+      ],
+      "transaction_or_display_uncertainty": [
+        "TASK_REAGENT_UNCONFIRMED_DISPLAY",
+        "TASK_REAGENT_UNBOUND_FACT"
+      ],
+      "waiting_notice_not_cancellation_or_drain": [
+        "TASK_REAGENT_WAIT_TIMEOUT"
+      ]
+    },
+    "history_unknowns_may_remain": true,
+    "in_flight_task_single_outer_close_verified": false,
+    "no_bridge_returns_without_marker": true,
+    "required_marker": "TASK_REAGENT_SHUTDOWN_READY",
+    "source_sha256": {
+      "reagents/original_reagent_level_runtime.h": "b87a7c5528c5819fb138c6edfea7076a90290a800f69eb4c4bce7ae3351319a7",
+      "reagents/original_reagent_level_task.cpp": "fe180cfb1985d7023d3f58082f222720a0fe56d21a4de6988bc49c620400d4b6",
+      "reagents/original_reagent_level_worker.cpp": "eb54a1b10f8b01b157a68fd91c245ed46d0ba9ea3247a82ae79f334aabf3ce89",
+      "reagents/original_reagent_level_worker.h": "4a1b140057358f8243d3e717d3ba19f7b51f1053c52c107d3434badc1dc0ddb0",
+      "reagents/original_task_reagent_readback.cpp": "2e8316211fc2fcb404b101a7f142b5df19ecec701e767d81bb2791aceefafc72",
+      "reagents/reagents_page_task.cpp": "26deafea7b4bcd3f6571fe203500d40fdaa1daa07d17048230d0709a4edd99d8",
+      "samples/original_sample_store.cpp": "5ed8e530d968099782a26cfb87eb3d88d42ba2758f2a92a5e8eecdaa902ce04d",
+      "samples/original_task_reagent_receipt.h": "3d749c53cb9001a40a0167ba2d0cc16a36399db53f9a62c3ecabfc523e206119",
+      "shell/device_control_shell.cpp": "7f87cadc6fa8d68b6f8d68339644de0854b23d80b0097c351fc56c84837024e5",
+      "shell/frmmain.cpp": "7166308a61273db758ade4ce00c2f5f6a4a30c28294f2750264c6eb8564154fd",
+      "shell/frmmain.h": "de981b3bcc116c1d62376a0f7e9774125508e37031e9fdd8e7523a8dc2b867e4",
+      "shell/main.cpp": "46e6074bf7c3d4794ed664e1c222fc03b9fc791c6ca50385f37312f4cbba772d",
+      "shell/reagent_level_shell.cpp": "a75781e4b83db0294f8c850227b550286c8db09118c001976e62b9c370f62bc4",
+      "shell/task_reagent_context.h": "29adc84dbb0af7ba48ccaca99c99615749a4c1453afaf41d427d705e5311eda2",
+      "shell/task_reagent_shell.cpp": "e27fc51eb505798a9082a7553506c50d200ec60ec6af375940d7e9b86758b518",
+      "shell/task_reagent_source.cpp": "9871b1967f0312302812bb57a02849082b471ee1b165f3395ce1b3432063c768"
+    },
+    "task_business_verified": false,
+    "thread_ownership": "复用已有SampleStore/ReagentStore线程；Provider是页面持有的值对象，无新线程STOPPED。"
+  },
+  "observation_scope": {
+    "schema": "sn100-review-08-observation-scope-v1",
+    "release_id": "08bc43a73a9e8e4826a559f501829355357a46a999799e8b662ebd1feae1a0ef",
+    "checker_source_sha256": "6ab71d0de6009968372da7dcc2b30926e6481fc673745d36b0737ad32f8d8dbc",
+    "new_construction_proven": false,
+    "same_main_memory_bool_read": false,
+    "normal_new_rack_verified": false,
+    "other_bool_branch_verified": false,
+    "save_reopen_manual_cal_clear_verified": false,
+    "runtime_verified": false,
+    "raw_output_preserved": true,
+    "proof_scope": "仅在实际比较通过时说明当前急诊初始视图与当前未变化INI配置一致；不能独立证明创建来源、时点或main同一内存布尔值。",
+    "source_review": "initial_snapshot_provenance_review.md",
+    "source_review_sha256": "3f2afe2096d94f265e31158faa399a83c46271e6689f2ce11b62bb4dfbb27321",
+    "actual_check_count": null
+  },
+  "actual_runtime_check_count": null,
+  "upload_file_count": 8,
+  "upload_manifest_sha256": "e9675a3e2889b1737a79d28cbdf4de9a9200356eb997838814472c707900d0dc",
+  "upload_files_sha256": {
+    "status_login_review_08": "2968a11c54ec89a7c8a706fa4feb715fd48484d58ab41cc722b84d2ff74abb09",
+    "review_release_id": "51790fe5c41eda3c3e9ee3e65ab889668867670132b8f4cd75c8432fe5f909ce",
+    "run_case_on_board.sh": "60e909c7a0940c8727dbed0f188f855cb2458a7a4905bab7ccb969d0b22b905f",
+    "capture_application_exit.sh": "a6f74ddd8b7b5b6620ef031312bcc26444119b44696a12345793f74a442a046c",
+    "shutdown_contract.json": "ccde95746b31a1c9957940b5c0ee1998759f2ee51131b5445d566e9a9c7e4bdb",
+    "required_shutdown_markers.txt": "cf723d5b416dfb7ab57ded84920e967a89a557f9c39b1574e16aa978f7407a19",
+    "forbidden_shutdown_markers.txt": "950b017636dae2ead5daa590a7e6bc5edb7bf357bf2a85ab991c00bda031e8f4",
+    "shutdown_contract_release_id": "51790fe5c41eda3c3e9ee3e65ab889668867670132b8f4cd75c8432fe5f909ce"
+  },
+  "dependency_file_count": 55,
+  "link_record_sha256": "b8927c9efe3e05180d4ed67a953ecf121cca14c91a7b4d1d7f0c657d78171870",
+  "formal_dependency_file_count": 56,
+  "runtime_archived_file_count": 7,
+  "record_files_sha256": {
+    "execute_final_08_build.py": "4747775a05c6a0ba7d7faff0876e80c601d65651b82fd3e4884f264ec22b2d70",
+    "execution_08_result.json": "10a98469f98a2e32ab216ea324be125b3b0f97d8ac5f5491344464e16e9d8c0e",
+    "link_provenance.json": "c5f07e088d603a8641570ec20eef1853b288c5a89d228fa91b896bef024ec106",
+    "review_build_provenance.json": "437ec021591c023a6cf3fa8faffc35cc987582f818513ab969fa067c1acd375b",
+    "prepared_inputs.json": "49a62a557db1a8edeef55aa2d0a87ba0feab5df1c695088afb01dd79492de1c9",
+    "source_snapshot_08.json": "097e538263882ba23e405427140729f5316f0c839aeb1d4582045d658be9e768",
+    "official_qa_handoff.json": "357da4bee161ddd4498f76a06cb000807ecf2369dce980940bb8c662731adf75",
+    "official_object_binding.json": "ebd6118079a7b900b1b7bf16be4e733561aeb87ac5ddfeaa2b639f5979d143bf",
+    "observation_scope_08.json": "e29f2aec987dab8dac5ec5cba4108b32ee711ce9508b751b3437682334cd8e5d",
+    "initial_snapshot_provenance_review.md": "3f2afe2096d94f265e31158faa399a83c46271e6689f2ce11b62bb4dfbb27321",
+    "checker_dependencies/dependency_report.json": "9e6e7ff583dd66d03333ff68daecbcf574e2dac481f231c134d4cc98e6d83706"
+  },
+  "board_accessed": false,
+  "product_executed": false,
+  "current_switched": false,
+  "n_function_verified": false,
+  "in_flight_n_close_verified": false,
+  "task_business_verified": false,
+  "in_flight_task_single_outer_close_verified": false,
+  "new_construction_proven": false,
+  "same_main_memory_bool_read": false,
+  "administrator_password_verified": false,
+  "physical_input_or_screen_verified": false,
+  "binding_method": "按冻结build.sh和实际build_inputs重建并对照正式owner对象表；不是编译器trace或完整头文件依赖图。"
+}

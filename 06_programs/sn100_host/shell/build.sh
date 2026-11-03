@@ -49,7 +49,7 @@ include_flags+=(-I"$program_dir/alarm_history" -I"$program_dir/alarm_history/cal
 include_flags+=(-I"$program_dir/lis_raw_inbox")
 modules=(QtCore QtGui QtWidgets QtSql QtXml QtPrintSupport QtQml QtNetwork QtCharts QtSvg)
 for module in "${modules[@]}"; do include_flags+=(-I"$include/$module"); done
-sources=("$module_dir/main.cpp" "$module_dir/shutdown_request.cpp" "$module_dir/frmmain.cpp" "$module_dir/frmuserset.cpp" "$module_dir/history_shell.cpp"
+sources=("$module_dir/main.cpp" "$module_dir/shutdown_request.cpp" "$module_dir/startup_splash.cpp" "$module_dir/frmmain.cpp" "$module_dir/frmuserset.cpp" "$module_dir/history_shell.cpp"
          "$program_dir/data/hospital_store.cpp" "$program_dir/ui/frmhospinfosetting.cpp" "$program_dir/ui/mnemonic.cpp"
          "$program_dir/data/account_store.cpp" "$program_dir/ui/frmaccountsetting.cpp"
          "$program_dir/ui/cusmessagebox.cpp" "$program_dir/ui/cusdialogmask.cpp"
@@ -62,16 +62,19 @@ sources+=("$program_dir/history/report_controller.cpp" "$program_dir/history/rep
 # Match projects_core.pri and reagents.pri explicitly. Their standalone main.cpp,
 # tests and alternate widget bundles do not belong to the unified executable.
 sources+=("$module_dir/catalog_shell.cpp"
-         "$program_dir/original_files/original_ini.cpp"
+         "$program_dir/original_files/original_ini.cpp" "$program_dir/original_files/theme_configuration.cpp" "$program_dir/original_files/original_runtime_settings.cpp"
          "$program_dir/projects/projects_store.cpp" "$program_dir/projects/project_page.cpp" "$program_dir/projects/cuscheckbox.cpp"
          "$program_dir/projects/project_advanced.cpp"
          "$program_dir/projects/projects_current_format.cpp" "$program_dir/projects/project_format_dialog.cpp"
          "$program_dir/projects/original_project_repository.cpp"
+         "$program_dir/projects/original_project_copy.cpp" "$program_dir/projects/original_project_copy_dialog.cpp"
          "$program_dir/reagents/reagent_store.cpp" "$program_dir/reagents/reagents_page.cpp"
          "$program_dir/reagents/wgtreagentpanel.cpp" "$program_dir/reagents/cusreagenthole.cpp")
 # samples_core.pri contains the local preset/task page and only the additional
 # Material controls it needs; the shell already owns the common Material base.
 sources+=("$program_dir/samples/sample_store.cpp" "$program_dir/samples/sample_page.cpp"
+         "$program_dir/samples/original_calibration_preset.cpp" "$program_dir/samples/original_control_tasks.cpp"
+         "$program_dir/samples/sample_calibration_page.cpp" "$program_dir/samples/cusnumberkeyboard.cpp"
          "$program_dir/samples/sample_task_reset.cpp"
          "$program_dir/samples/sample_qc_preset.cpp" "$program_dir/samples/sample_qc_storage.cpp"
          "$module_dir/sample_qc_shell.cpp"
@@ -86,11 +89,14 @@ sources+=("$module_dir/device_status_shell.cpp" "$program_dir/protocol/status_re
 sources+=("$program_dir/protocol/status_loopback.cpp" "$program_dir/protocol/read_only_client.cpp"
           "$program_dir/protocol/tcp_transport.cpp" "$program_dir/protocol/read_only_messages.cpp")
 sources+=("$module_dir/instrument_shell.cpp" "$program_dir/instrument/instrument_page.cpp"
+         "$program_dir/instrument/original_status_values.cpp"
+         "$program_dir/instrument/original_channel_receiver.cpp" "$program_dir/instrument/original_channel_store.cpp"
          "$program_dir/instrument/maintenance_store.cpp" "$module_dir/device_control_shell.cpp"
          "$program_dir/instrument/device_control.cpp" "$program_dir/instrument/original_device_commands.cpp")
 sources+=("$module_dir/login_shell.cpp" "$program_dir/ui/maskdlglogin.cpp")
 sources+=("$module_dir/printer_shell.cpp" "$module_dir/printer_report_shell.cpp" "$program_dir/ui/frmprintersetting.cpp" "$program_dir/data/printer_settings_store.cpp")
 sources+=("$module_dir/lis_shell.cpp" "$program_dir/ui/frmlissetting.cpp" "$program_dir/data/lis_settings_store.cpp" "$program_dir/data/serial_port_catalog.cpp")
+sources+=("$program_dir/lis_transport/lis_mllp_codec.cpp" "$program_dir/lis_transport/lis_tcp_transport.cpp")
 # 原报文辅助窗口只有文件/本地SQL；不引入LIS网络、ACK或任务映射。
 sources+=("$module_dir/lis_raw_inbox_shell.cpp" "$program_dir/lis_raw_inbox/lis_dsr_raw.cpp"
           "$program_dir/lis_raw_inbox/lis_inbox_store.cpp" "$program_dir/lis_raw_inbox/lis_inbox_page.cpp"
@@ -113,11 +119,13 @@ forms+=("$program_dir/ui/frmaccountsetting.ui" "$program_dir/ui/cusmessagebox.ui
 forms+=("$program_dir/history/frm_report_material.ui" "$program_dir/history/mask_dlg_query_report.ui"
         "$program_dir/history/mask_dlg_report_detail.ui" "$program_dir/history/mask_dlg_export.ui")
 forms+=("$program_dir/projects/frmsystemmaterial.ui"
-        "$program_dir/reagents/frmreagentmaterial.ui" "$program_dir/reagents/wgtreagentpanel.ui"
+        "$program_dir/projects/copyprojectdialog.ui"
+        "$program_dir/reagents/frmreagentmaterial.ui" "$program_dir/reagents/wgtreagentpanel.ui" "$program_dir/reagents/wgtreagentpanel_42.ui"
         "$program_dir/reagents/maskdlgreagentlistsetting.ui" "$program_dir/reagents/maskdlgreagentsetting.ui"
         "$program_dir/reagents/maskdlggroupsetting.ui" "$program_dir/reagents/maskdlgreagentcode.ui"
-        "$program_dir/reagents/addbatchgroupdialog.ui")
+        "$program_dir/reagents/addbatchgroupdialog.ui" "$program_dir/reagents/maskdlgreagentusage.ui")
 forms+=("$program_dir/samples/frmsamplematerial.ui" "$program_dir/samples/frmsamplesettingmaterial.ui"
+        "$program_dir/samples/maskdlgcalibratorsetting.ui" "$program_dir/samples/cusnumberkeyboard.ui"
         "$program_dir/samples/cussamplerack.ui" "$program_dir/samples/maskdlgsampledetail.ui"
         "$program_dir/samples/maskdlgrepeatsetting.ui" "$program_dir/samples/maskdlgcombasetting.ui"
         "$program_dir/samples/maskdlgracknosetting.ui")
@@ -129,11 +137,13 @@ headers=("$module_dir/frmmain.h" "$module_dir/frmuserset.h" "$program_dir/data/h
          "$module_dir"/widgets/*.h "$module_dir"/widgets/material/*.h "$module_dir"/widgets/material/lib/*.h)
 headers+=("$program_dir/history/report_controller.h" "$vendor/QtRPT/"*.h "$vendor/CommonFiles/"*.h)
 headers+=("$program_dir/projects/projects_store.h" "$program_dir/projects/project_page.h" "$program_dir/projects/cuscheckbox.h"
+          "$program_dir/projects/original_project_copy.h" "$program_dir/projects/original_project_copy_dialog.h"
           "$program_dir/projects/project_advanced.h"
           "$program_dir/projects/project_current_format.h" "$program_dir/projects/project_format_dialog.h"
           "$program_dir/reagents/reagent_types.h" "$program_dir/reagents/reagent_store.h" "$program_dir/reagents/reagents_page.h"
           "$program_dir/reagents/wgtreagentpanel.h" "$program_dir/reagents/cusreagenthole.h")
 headers+=("$program_dir/samples/sample_types.h" "$program_dir/samples/sample_store.h" "$program_dir/samples/sample_page.h"
+          "$program_dir/samples/original_calibration_preset.h" "$program_dir/samples/original_control_tasks.h" "$program_dir/samples/cusnumberkeyboard.h"
           "$program_dir/samples/sample_task_reset.h"
           "$program_dir/samples/sample_qc_preset.h" "$program_dir/samples/sample_qc_protocol.h"
           "$module_dir/sample_qc_shell.h"
@@ -157,11 +167,13 @@ forms+=("$program_dir/quality_control/frm_quality.ui" "$program_dir/quality_cont
          "$program_dir/quality_control/quality_control_add_wgt.ui"
          "$program_dir/quality_control/quality_control_item_add_project_wgt.ui"
          "$program_dir/quality_control/cus_quality_chart.ui")
-headers+=("$program_dir/instrument/instrument_page.h" "$program_dir/instrument/maintenance_store.h"
-          "$program_dir/instrument/device_control.h")
+headers+=("$program_dir/instrument/instrument_page.h" "$program_dir/instrument/original_status_values.h" "$program_dir/instrument/maintenance_store.h"
+          "$program_dir/instrument/device_control.h" "$program_dir/instrument/original_channel_receiver.h"
+          "$program_dir/instrument/original_channel_store.h")
 headers+=("$program_dir/ui/maskdlglogin.h")
 headers+=("$module_dir/printer_report_shell.h" "$program_dir/ui/frmprintersetting.h" "$program_dir/data/printer_settings_store.h"
            "$program_dir/ui/frmlissetting.h" "$program_dir/data/lis_settings_store.h" "$program_dir/data/serial_port_catalog.h")
+headers+=("$program_dir/lis_transport/lis_tcp_transport.h")
 headers+=("$program_dir/quality_control/qc_store.h" "$program_dir/quality_control/quality_control_page.h"
           "$program_dir/quality_control/qc_history_core.h" "$program_dir/quality_control/qc_history_reply.h"
           "$program_dir/quality_control/cus_quality_chart.h" "$program_dir/quality_control/qualitychart.h"
@@ -190,11 +202,13 @@ sources+=("$program_dir/original_files/original_business_database.cpp"
           "$program_dir/original_files/original_system_profile.cpp"
           "$program_dir/history/original_history_source.cpp"
           "$program_dir/alarm_history/original_alarm_events.cpp"
+          "$program_dir/alarm_history/original_alarm_receiver.cpp"
           "$program_dir/quality_control/qc_original_store.cpp"
           "$program_dir/calibration/calibration_original_store.cpp"
           "$program_dir/reagents/original_reagent_repository.cpp"
           "$program_dir/reagents/original_reagent_editor.cpp"
           "$program_dir/reagents/original_reagent_store.cpp"
+          "$program_dir/reagents/original_reagent_usage.cpp"
           "$program_dir/samples/original_sample_store.cpp"
           "$program_dir/samples/original_sample_repository.cpp"
           "$program_dir/samples/original_detection_session.cpp"
@@ -203,7 +217,8 @@ sources+=("$program_dir/original_files/original_business_database.cpp"
           "$program_dir/samples/original_device_sync.cpp"
           "$program_dir/samples/original_project_device_repository.cpp"
           "$program_dir/projects/original_project_codec.cpp")
-headers+=("$program_dir/reagents/original_reagent_editor.h")
+headers+=("$program_dir/reagents/original_reagent_editor.h" "$program_dir/reagents/original_reagent_usage.h")
+headers+=("$program_dir/alarm_history/original_alarm_receiver.h")
 # One stable name for each QRC prevents basename collisions with other modules.
 resource_names=(shell_resources account_resources report_resources imagesRpt projects_resources reagents_resources samples_resources instrument_resources qc_history_resources)
 resource_files=("$module_dir/resources.qrc" "$module_dir/account_resources.qrc"
@@ -224,6 +239,18 @@ is_report_helper_source()
     esac
     return 1
 }
+# 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
+sources+=("$program_dir/reagents/original_reagent_level_packet.cpp" "$program_dir/reagents/original_reagent_level_model.cpp" "$program_dir/reagents/original_reagent_level_projects.cpp" "$program_dir/reagents/original_reagent_level_repository.cpp" "$program_dir/reagents/original_reagent_level_runtime.cpp" "$program_dir/reagents/original_reagent_level_worker.cpp" "$program_dir/reagents/reagents_page_level.cpp" "$program_dir/original_files/original_reagent_capacity.cpp" "$module_dir/reagent_level_shell.cpp")
+headers+=("$program_dir/reagents/original_reagent_level.h" "$program_dir/reagents/original_reagent_level_runtime.h" "$program_dir/reagents/original_reagent_level_worker.h" "$program_dir/original_files/original_reagent_capacity.h")
+# 任务剩余量走专用重读和运行采用，不发送设备命令。
+sources+=("$program_dir/reagents/original_task_reagent_display.cpp" "$program_dir/reagents/original_reagent_level_task.cpp" "$program_dir/reagents/original_task_reagent_readback.cpp" "$program_dir/reagents/reagents_page_task.cpp")
+# 任务提交后的主窗口接续；仅接原动作，不增加设备命令。
+sources+=("$module_dir/task_reagent_shell.cpp" "$module_dir/task_reagent_source.cpp" "$program_dir/samples/original_task_reagent_receipt_writer.cpp")
+# 显式登记配套头文件，使只读清单与实际构建输入一致。
+headers+=("$program_dir/reagents/original_task_reagent_display.h"
+          "$program_dir/samples/original_task_reagent_receipt.h"
+          "$program_dir/samples/original_task_reagent_receipt_writer.h"
+          "$module_dir/task_reagent_context.h")
 for input in "${sources[@]}" "${forms[@]}" "${headers[@]}" "${resource_files[@]}" "${helper_sources[@]}"; do
     [[ -f $input ]] || { echo "Required ARM64 build input missing: $input" >&2; exit 1; }
 done

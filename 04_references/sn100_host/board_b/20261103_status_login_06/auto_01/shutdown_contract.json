@@ -1,0 +1,286 @@
+{
+  "aggregate_includes_channel_thread": false,
+  "aggregate_is_running_inventory": [
+    "databaseThread",
+    "accountThread",
+    "historyThread",
+    "projectThread",
+    "reagentThread",
+    "sampleThread",
+    "maintenanceThread",
+    "printerThread",
+    "lisThread",
+    "qualityThread",
+    "calibrationThread",
+    "statusLoopback",
+    "alarmHistoryThread",
+    "originalAlarmThread"
+  ],
+  "channel_failed_outcomes": [
+    "CommittedReloadFailed",
+    "Failed",
+    "Unconfirmed"
+  ],
+  "channel_failure_condition_line": 1273,
+  "failure_patterns": [
+    "\\bORIGINAL_CHANNEL_WORKER_STOPPED\\s+false\\b",
+    "\\bALARM_HISTORY_WORKER_STOPPED\\s+false\\b",
+    "\\bORIGINAL_ALARM_WORKER_STOPPED\\s+false\\b",
+    "\\bTHREADS_STOPPED\\s+false\\b",
+    "\\bORIGINAL_ALARM_SHUTDOWN_UNCONFIRMED\\b",
+    "\\bORIGINAL_CHANNEL_SHUTDOWN_UNCONFIRMED\\b",
+    "\\bORIGINAL_CHANNEL_ERROR\\b",
+    "\\bORIGINAL_CHANNEL_RESULT\\b[^\\r\\n]*\\boutcome=\\s*(?:CommittedReloadFailed|Failed|Unconfirmed)\\b",
+    "\\bREVIEW_WINDOW_CLOSE_NOT_CONFIRMED\\b"
+  ],
+  "failure_patterns_are_regex": true,
+  "main_qthread_inventory": [
+    "accountThread",
+    "alarmHistoryThread",
+    "calibrationThread",
+    "databaseThread",
+    "historyThread",
+    "lisThread",
+    "maintenanceThread",
+    "originalAlarmThread",
+    "originalChannelThread",
+    "printerThread",
+    "projectThread",
+    "qualityThread",
+    "reagentThread",
+    "sampleThread"
+  ],
+  "main_sha256": "a0683da0485f71ac2b8af5abda6c7251fc35b65cc19288dd63c9d4ea1193bed7",
+  "marker_evidence": [
+    {
+      "line": 731,
+      "marker": "SHELL_READY",
+      "purpose": "证明已到正式启动就绪点；单独不证明正常退出。",
+      "required": true,
+      "requires_true": false
+    },
+    {
+      "excluded_reason": null,
+      "line": 637,
+      "marker": "ALARM_HISTORY_SOURCE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "861c3e14488351bb2c3165820dda811e77e54600f6c4354ca1957ed30bb5793e"
+    },
+    {
+      "excluded_reason": null,
+      "line": 852,
+      "marker": "ACCOUNT_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "4e40078619274d1e7aa049a9b728b422caf03999d6c87947665439f6e5a041d5"
+    },
+    {
+      "excluded_reason": null,
+      "line": 922,
+      "marker": "HISTORY_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "f64a00457cff202461375d516232ebbe4de40c728c3e9e743d12af3f9bfdcae3"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1028,
+      "marker": "QUALITY_CONTROL_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "700b597e1f17c41bd91b9a712263839c65a4dea5a64a0ac7d213118976102a4b"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1055,
+      "marker": "SAMPLE_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "20a3f30722b063677b5472451aa5e3e4e9441b4276406ce5566531fbfe4ce59d"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1123,
+      "marker": "CALIBRATION_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "90725cc397533b5e52b25dbc733370e3f9b79110de9757d3e1d07fa4763d3c25"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1184,
+      "marker": "PROJECT_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "c5b66c45bad2af8469f1219f1e8c210dae154162585fdba95468c7e43fd29cc6"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1185,
+      "marker": "REAGENT_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "8932c47ff28489602c04d33ea9e4084e7e810d0f46c66a08f298ef9b8898f6c0"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1379,
+      "marker": "MAINTENANCE_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "58d61c7699dd3a5a771803587353b1fb5452c3ebb9022aceae74e25e31acc151"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1403,
+      "marker": "PRINTER_SETTINGS_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "eb7db0dc5cbeeb1406456687cab8b32fb9bceb777b2ab4e9d3c14fc4394d287e"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1459,
+      "marker": "LIS_SETTINGS_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "1be644e39efe0ff0c13fdff16d3b051abc6b6dcdacf3b3223b2457bfa330a144"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1512,
+      "marker": "HOSPITAL_STORE_CLOSED",
+      "required": true,
+      "requires_true": false,
+      "statement_sha256": "fd91f3d2c0381847e04090930b4b6c6e024d30ae1b8e18d01901c46e82ebd7c5"
+    },
+    {
+      "excluded_reason": "实际传入--accounts，三元表达式使用HOSPITAL_STORE_CLOSED。",
+      "line": 1512,
+      "marker": "STORE_CLOSED",
+      "required": false,
+      "requires_true": false,
+      "statement_sha256": "fd91f3d2c0381847e04090930b4b6c6e024d30ae1b8e18d01901c46e82ebd7c5"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1552,
+      "marker": "ORIGINAL_CHANNEL_WORKER_STOPPED",
+      "required": true,
+      "requires_true": true,
+      "statement_sha256": "bfa50095bc70723973bb4c118f4e304e94c78febb979a651249e2ac4384e012f"
+    },
+    {
+      "excluded_reason": "实际未传--lis-raw-inbox。",
+      "line": 1574,
+      "marker": "LIS_RAW_INBOX_STOPPED",
+      "required": false,
+      "requires_true": true,
+      "statement_sha256": "b85690af7035fc638ae90c8f9d36d8ffe6256b14bb8f7e41017bf3238610f448"
+    },
+    {
+      "excluded_reason": "实际未传--status-replay。",
+      "line": 1581,
+      "marker": "STATUS_REPLAY_STOPPED",
+      "required": false,
+      "requires_true": true,
+      "statement_sha256": "1c116219ecc8a9beb3354659d6352ded9108f863e48af98dead2e9acc4acf3bb"
+    },
+    {
+      "excluded_reason": "实际未传--status-loopback。",
+      "line": 1586,
+      "marker": "STATUS_LOOPBACK_STOPPED",
+      "required": false,
+      "requires_true": true,
+      "statement_sha256": "a2cec552db6eb955f68424cf311ee8e5ca0a50fe356cc4f85111da0e848e08c0"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1620,
+      "marker": "ALARM_HISTORY_WORKER_STOPPED",
+      "required": true,
+      "requires_true": true,
+      "statement_sha256": "e844a451f0f74a6c7dc8fc7d6b9ea8cce15be8b499e31eb9721e48340541e192"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1625,
+      "marker": "ORIGINAL_ALARM_WORKER_STOPPED",
+      "required": true,
+      "requires_true": true,
+      "statement_sha256": "29a566fe89795ce8df5d3c2483efa7e95379c16b196d3ec3c9c2270dfd613f20"
+    },
+    {
+      "excluded_reason": null,
+      "line": 1636,
+      "marker": "THREADS_STOPPED",
+      "required": true,
+      "requires_true": true,
+      "statement_sha256": "26d36e2b514fc4fd21fe48fbc84e8cf28398deb95349379d442201035d24326c"
+    },
+    {
+      "excluded_reason": "实际启用accounts/history，使用THREADS_STOPPED分支。",
+      "line": 1638,
+      "marker": "THREAD_STOPPED",
+      "required": false,
+      "requires_true": true,
+      "statement_sha256": "150e4f1865e7dc8e27e3182c5d47584c1eda357818cb4a6383c2fb35d4e76924"
+    }
+  ],
+  "notes": [
+    "必须同时核对检查器结果、应用真实退出码、timeout封装码及正常窗口关闭保护。",
+    "ALARM_HISTORY_SOURCE_CLOSED也可能在运行中出现，单独出现不能证明最终退出。",
+    "THREADS_STOPPED不能替代ORIGINAL_CHANNEL_WORKER_STOPPED true。",
+    "未声明通道库关闭日志；通道线程停止和未确认结果分别核对。"
+  ],
+  "release_id": "14ce9714aaa0017c7ad78ff3f551d978672e5def79b96e817605295d7e59020c",
+  "required_markers": [
+    "SHELL_READY",
+    "ALARM_HISTORY_SOURCE_CLOSED",
+    "ACCOUNT_STORE_CLOSED",
+    "HISTORY_STORE_CLOSED",
+    "QUALITY_CONTROL_STORE_CLOSED",
+    "SAMPLE_STORE_CLOSED",
+    "CALIBRATION_STORE_CLOSED",
+    "PROJECT_STORE_CLOSED",
+    "REAGENT_STORE_CLOSED",
+    "MAINTENANCE_STORE_CLOSED",
+    "PRINTER_SETTINGS_CLOSED",
+    "LIS_SETTINGS_CLOSED",
+    "HOSPITAL_STORE_CLOSED",
+    "ORIGINAL_CHANNEL_WORKER_STOPPED true",
+    "ALARM_HISTORY_WORKER_STOPPED true",
+    "ORIGINAL_ALARM_WORKER_STOPPED true",
+    "THREADS_STOPPED true"
+  ],
+  "runner_options": {
+    "--accounts": true,
+    "--alarm-history": true,
+    "--calibration": true,
+    "--catalog": true,
+    "--data-dir": "$data",
+    "--history": true,
+    "--instrument": true,
+    "--instrument-config": "$configuration",
+    "--instrument-control": true,
+    "--lis-settings": true,
+    "--offline": true,
+    "--original-db-root": "$data",
+    "--password-login": true,
+    "--printer-settings": true,
+    "--quality-control": true,
+    "--samples": true,
+    "--start-project-page": true,
+    "--theme-config": "$theme",
+    "--viewport": "1600x900"
+  },
+  "runner_sha256": "8c8563816bac910a376991f07598fdf6d5acf48aa6a636119bb33fc72b90d7da",
+  "runtime_verified": false,
+  "schema": "sn100-shutdown-contract-06-v1",
+  "source": "frozen_06/sn100_host/shell/main.cpp",
+  "unconfirmed_markers": [
+    "ORIGINAL_ALARM_SHUTDOWN_UNCONFIRMED",
+    "ORIGINAL_CHANNEL_SHUTDOWN_UNCONFIRMED"
+  ]
+}

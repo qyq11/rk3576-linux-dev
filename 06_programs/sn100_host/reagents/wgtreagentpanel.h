@@ -14,11 +14,13 @@ public:
     ~wgtReagentPanel() override;
     void setSnapshot(const ReagentSnapshot& snapshot);
     void selectHole(const QString& name);
+    void configureLayout(int count);
 signals:
     void holeSelected(QString name);
     void holeEditRequested(QString name);
 
 private:
     Ui::wgtReagentPanel* ui;
+    QWidget *panel42_ = nullptr;
 };
 #endif

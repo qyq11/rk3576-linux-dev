@@ -14,6 +14,22 @@ struct SampleTask
     int repeats = 1;
     bool prolonged = false;
     QList<SampleTaskState> states; // 空列表兼容旧本地预设：每次重复均为Idle，不代表设备状态。
+    int calibrationPoint = 0; // 校准点从1开始；普通/质控为0，不是报告行号。
+    QString calibrationConcentration; // 原单位换算后的浓度文字；不是测量值或计算结果。
+};
+struct SampleCalibrationPreset
+{
+    qint64 projectId = 0;
+    QString groupToken; // 只连接同一份校准草稿的多个孔；原校准编号在任务占号时取得。
+    QString calibratorBatch;
+    QString reagentBatchGroup = QStringLiteral("Default");
+    bool autoDilution = false;
+    int pointCount = 0;
+    int repeatCount = 0;
+    QString baselineConcentration;
+    QStringList rates;
+    QStringList concentrations;
+    QList<int> holes;
 };
 struct SampleHole
 {
@@ -22,8 +38,9 @@ struct SampleHole
     int container = 1; // Original Tube=0 / MicroCup=1; source default is MicroCup.
     QList<SampleTask> tasks;
     bool revise = true;
-    int sampleType = 0; // 原TypeSample=0/TypeQuality=2；不在此开放校准样本。
+    int sampleType = 0; // 原普通=0、校准=1、质控=2；校准仅用于原资料模式。
     SampleQcIdentity quality;
+    SampleCalibrationPreset calibration;
 };
 inline QList<SampleTaskState> sampleTaskStates(const SampleTask &task)
 {
@@ -53,6 +70,8 @@ struct SampleRack
     QString name;
     bool emergency = false;
     QList<SampleHole> holes;
+    int remainingSeconds = -1; // TB实际上报的秒数；-1表示未上报，不能当作0。
+    qint64 remainingAtMs = 0; // 同一系统单调时钟，不受校时影响。
 };
 enum class SampleCombinationMode
 {

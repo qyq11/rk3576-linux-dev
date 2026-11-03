@@ -1,0 +1,42 @@
+{
+  "format": "sn100-integration-08-revision-02-root-review-v1",
+  "scope": "原五片已实际合入，本次仅修第六片build.sh；未重跑或重新正式应用原五片。",
+  "parent_cross_review": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/root_cross_patch_review.json",
+    "sha256": "f73670b447abb4fadbc5dd401742a04404b5b2df56ba2aed284cfdc7d6412bd7"
+  },
+  "parent_promotion": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/promotion_progress.json",
+    "sha256": "95b5c41fe17c4220ca75558e1329a36d5f9ceab65c52c34e6999822a30164d5c"
+  },
+  "inventory_component": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_inventory_fix_01/component_manifest.json",
+    "sha256": "08aa34c6615760a126ab066c5e96ebb203dfc9ca85fd4730f812f92913730653"
+  },
+  "inventory_execution": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_inventory_fix_01/preparation_result.json",
+    "sha256": "f77be29e122bc9b98ea1396fb1a1e73d3d9bb177e673bd0b32668b328cde30f1"
+  },
+  "inventory_delivery": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_inventory_fix_01/delivery_manifest.json",
+    "sha256": "b87153134a0504faca335b262a115aab20a22b620513041c1e77f02fd4261ebc"
+  },
+  "tool_review": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_revision_02_review/promotion_tool_contract_review.md",
+    "sha256": "43fb9873d9bb47d4e05bdee317f7cfc129b2d51cb5e3c91d1a22fad3f21e83b0"
+  },
+  "controlled_stop": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_build_dispatch/inventory_defect.json",
+    "sha256": "3318fbb5db384d11faebe1beaffcf80292ffc30b63887517813845e8bef7c3c3"
+  },
+  "findings": [
+    "根已实际读取单文件精确差片：原537字节七源追加块整体前移，补登记四个纯头；原编译源顺序、优化、编译和链接参数保留。",
+    "四个新头无Q_OBJECT，未增加moc对象。真实只列输入为180源、139头、49表单、11资源、18辅助源条目，去重381；11个新增文件各一次。",
+    "673份其他源码逐字节不变，Task关闭16源和默认容器七文件的业务代码未由修点改动；原五片源码审范围保留。",
+    "首次构建主动中止后真实WSL退出13，20个局部对象保留，无build_exit.txt/完整链接/程序包或部署结论；新目录将全量重编，不沿用局部对象。"
+  ],
+  "blocking_findings_in_reviewed_scope": [],
+  "compiled": false,
+  "product_executed": false,
+  "pending_validation": "修订版完整ARM64编译、板B原资料软件专项、真实任务/N/仪器、原交互及资源仍分别验证；原五片已声明业务差异保持未关闭。"
+}

@@ -2,6 +2,7 @@
 #include "protocol/frame_codec.h"
 #include <QRegularExpression>
 #include <QStringList>
+#include <QSet>
 #include <limits>
 
 namespace OriginalTasks
@@ -78,6 +79,44 @@ bool parseResult(const QByteArray &payload, ReceivedResult *result, QString *mes
     read.payload = payload;
     *result = read;
     return true;
+}
+
+bool parseTaskError(const QByteArray &payload, ReceivedTaskError *error, QString *message)
+{
+    QStringList data;
+    if (!error || !payload.startsWith("TR") || !fields(payload,&data,message)) return false;
+    qint64 reason=0,count=0;
+    if (data.size()<2 || !number(data[0],0,7,&reason) || !number(data[1],0,1024,&count) || data.size()!=2+count*3)
+        return fail(message,QStringLiteral("任务错误原因、数量或完整字段数不符；未修改任务或退还试剂。"));
+    ReceivedTaskError read; read.reason=int(reason);
+    QSet<qint64> ids;
+    for (int i=0;i<count;++i)
+    {
+        const int offset=2+i*3;
+        FailedTask task; task.rack=data[offset]; qint64 hole=0;
+        if (task.rack.isEmpty() || !number(data[offset+1],1,128,&hole) ||
+            !number(data[offset+2],1,std::numeric_limits<int>::max(),&task.taskId) || ids.contains(task.taskId))
+            return fail(message,QStringLiteral("任务错误含无效位置、任务号或重复任务，整包未修改。"));
+        task.hole=int(hole); ids.insert(task.taskId); read.tasks.append(task);
+    }
+    *error=read; return true;
+}
+
+bool parseRackTimes(const QByteArray &payload, QMap<QString, int> *seconds, QString *message)
+{
+    QStringList data; qint64 count=0;
+    if (!seconds || !payload.startsWith("TB") || !fields(payload,&data,message)) return false;
+    if (data.isEmpty() || !number(data[0],0,1024,&count) || data.size()!=1+count*2)
+        return fail(message,QStringLiteral("样本架剩余时间的数量或字段不完整。"));
+    QMap<QString,int> read;
+    for (int i=0;i<count;++i)
+    {
+        const QString rack=data[1+i*2]; qint64 value=0;
+        if (rack.isEmpty() || read.contains(rack) || !number(data[2+i*2],0,std::numeric_limits<int>::max(),&value))
+            return fail(message,QStringLiteral("样本架剩余时间有重复架号或无效秒数，未覆盖已有显示。"));
+        read.insert(rack,int(value));
+    }
+    *seconds=read; return true;
 }
 
 bool parseProgress(const QByteArray &payload, ReceivedProgress *progress, QString *message)

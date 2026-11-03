@@ -4,6 +4,7 @@
 #include "protocol/frame_codec.h"
 #include <QDate>
 #include <QDir>
+#include <QLockFile>
 #include <QRegularExpression>
 #include <algorithm>
 #include <cmath>
@@ -67,6 +68,76 @@ bool appendWire(QByteArray *payload, const QStringList &fields, QString *message
     }
     return true;
 }
+
+const QStringList &deviceReplyColumns()
+{
+    static const QStringList columns{"hole_name","reagent_type","reagent_name","reagent_batch","bottle_type","formula_level","out_ul",
+        "amount_uL","priority","state","datetime","out_date","warning_ul","max_ul","used_ul"};
+    return columns;
+}
+
+bool readReagentFields(const QByteArray &payload, const QByteArray &command, QStringList *values, QString *message)
+{
+    if (!payload.startsWith(command) || payload.size() > Sn100Protocol::kMaxMessageBytes)
+        return fail(message, QStringLiteral("不是有效的原试剂信息返回。"));
+    values->clear();
+    for (int cursor = command.size(); cursor < payload.size(); )
+    {
+        if (payload[cursor++] != '[') return fail(message, QStringLiteral("试剂返回字段缺少左括号。"));
+        const int end = payload.indexOf(']', cursor);
+        if (end < cursor || end - cursor > 4096 || values->size() >= 4096)
+            return fail(message, QStringLiteral("试剂返回字段不完整或超过读取上限。"));
+        const QByteArray field = payload.mid(cursor, end - cursor);
+        for (unsigned char character : field)
+            if (character < 32 || character == '[') return fail(message, QStringLiteral("试剂返回含非法控制字符。"));
+        values->append(QString::fromLatin1(field));
+        cursor = end + 1;
+    }
+    return true;
+}
+
+// 保存回读和核对优先级共用整包校验，不能只取孔名就跳过其他孔的错误字段。
+bool readDeviceReply(const QByteArray &payload, Rows *rows, bool *single, QString *message)
+{
+    QStringList values;
+    if (!readReagentFields(payload, QByteArrayLiteral("Ur"), &values, message)) return false;
+    if (values.size() < 2) return fail(message, QStringLiteral("原试剂返回缺少孔位清单或完整/单孔标记，未清空原试剂盘。"));
+    bool countOk = false;
+    const int count = values.first().toInt(&countOk);
+    if (!countOk || count < 0 || count > 128)
+        return fail(message, QStringLiteral("原试剂返回孔数无效或超过128孔。"));
+    const int expected = 1 + count * 15;
+    if (values.size() != expected && values.size() != expected + 1)
+        return fail(message, QStringLiteral("原试剂返回孔数与每孔15字段不符。"));
+    if (values.size() == expected + 1 && values.last() != QStringLiteral("0") && values.last() != QStringLiteral("1"))
+        return fail(message, QStringLiteral("原试剂返回完整/单孔标记无效。"));
+    const auto &columns = deviceReplyColumns();
+    const QStringList states{"r_none","r_normal","r_warning","r_useout","r_unknown","r_outdate"};
+    Rows incoming;
+    QSet<QString> received;
+    for (int i = 0; i < count; ++i)
+    {
+        Row row;
+        for (int column = 0; column < columns.size(); ++column) row.insert(columns[column], values[1 + i * 15 + column]);
+        const QString name = text(row,"hole_name");
+        if (name.isEmpty() || received.contains(name)) return fail(message, QStringLiteral("原试剂返回孔名为空或重复。"));
+        received.insert(name);
+        bool stateOk = false;
+        const int state = row.value(QStringLiteral("state")).toString().toInt(&stateOk);
+        if (!stateOk || state < 0 || state >= states.size()) return fail(message, QStringLiteral("原试剂返回孔位状态未识别。"));
+        row[QStringLiteral("state")] = states[state];
+        for (const auto &key : {QStringLiteral("amount_uL"),QStringLiteral("out_ul"),QStringLiteral("priority"),QStringLiteral("warning_ul"),QStringLiteral("max_ul"),QStringLiteral("used_ul")})
+        {
+            double value = 0;
+            if (key == QStringLiteral("used_ul") && row.value(key).toString().isEmpty()) continue;
+            if (!number(row.value(key), &value)) return fail(message, QStringLiteral("原试剂返回的容量、优先级或液量无效。"));
+        }
+        incoming.append(row);
+    }
+    *rows = incoming;
+    *single = values.size() == expected + 1 && values.last() == QStringLiteral("1");
+    return true;
+}
 }
 
 bool OriginalReagentRepository::initialize(const QString &root, QString *message)
@@ -114,9 +185,13 @@ bool OriginalReagentRepository::load(OriginalReagentState *state, QString *messa
         uniqueHoles.insert(text(hole, "hole_name"));
         if (eligible(read, hole))
         {
-            double remaining = 0;
-            if (!number(hole.value(QStringLiteral("used_ul")), &remaining))
-                return fail(message, QStringLiteral("原试剂剩余量不是有效的非负数：") + text(hole, "hole_name"));
+            // 原库可能保留已扣成负数的剩余量；读取页面时保留原值，不改库或阻止整个程序启动。
+            // 原Windows在used_ul为空时读取amount_uL。分配任务、清洗液检查和扣量仍分别核对可用量。
+            const QString used = text(hole, "used_ul");
+            bool valid = false;
+            const double remaining = (used.isEmpty() ? text(hole, "amount_uL") : used).toDouble(&valid);
+            if (!valid || !std::isfinite(remaining))
+                return fail(message, QStringLiteral("原试剂剩余量不是有效数字：") + text(hole, "hole_name"));
         }
     }
     for (const auto &file : files)
@@ -354,6 +429,207 @@ bool OriginalReagentRepository::singleReagentSettingPayload(const OriginalReagen
     return singleReagentUpdatePayload(sending,holeName,updateAmount,payload,message);
 }
 
+bool OriginalReagentRepository::singleReagentPriorityPayload(const OriginalReagentState &state,
+    const QString &holeName, QByteArray *payload, QString *message) const
+{
+    OriginalReagentState sending=state;
+    for (auto &hole : sending.holes)
+        if (text(hole,"hole_name").compare(holeName,Qt::CaseInsensitive)==0)
+            hole.insert(QStringLiteral("priority"),QStringLiteral("1"));
+    return singleReagentUpdatePayload(sending,holeName,false,payload,message);
+}
+
+bool OriginalReagentRepository::priorityReplyMatches(const QByteArray &payload,
+    const QByteArray &sentPayload, QString *message) const
+{
+    Rows incoming;
+    bool single=false;
+    if (!readDeviceReply(payload,&incoming,&single,message)) return false;
+    if (!single || incoming.size()!=1)
+        return fail(message,QStringLiteral("优先使用仅匹配明确单孔标记1且恰含一个孔位的Ur，整盘或未知范围回包未确认本次动作。"));
+    QStringList sent;
+    if (!readReagentFields(sentPayload,QByteArrayLiteral("Us"),&sent,message)) return false;
+    if (sent.size()!=15 || sent[0].isEmpty() || sent[14]!=QStringLiteral("0"))
+        return fail(message,QStringLiteral("优先使用发送快照不是完整15字段Us或末项不是0，未确认回读。"));
+    for (int index : {5,6,10,11,12,13})
+    {
+        double value=0;
+        if (!number(sent[index],&value))
+            return fail(message,QStringLiteral("优先使用发送快照的液量、优先级或阈值无效。"));
+    }
+    bool stateOk=false;
+    const int sentState=sent[7].toInt(&stateOk);
+    static const QStringList states{"r_none","r_normal","r_warning","r_useout","r_unknown","r_outdate"};
+    if (!stateOk || sentState<0 || sentState>=states.size() || sent[6].toDouble()!=1 ||
+        sent[12].toDouble()!=sent[13].toDouble())
+        return fail(message,QStringLiteral("优先使用快照的状态、优先级1或原max字段不符，未确认回读。"));
+    const Row *received=named(incoming,QStringLiteral("hole_name"),sent[0]);
+    if (!received)
+        return fail(message,QStringLiteral("合法试剂回读未包含本次优先使用孔位%1，未确认本次动作。").arg(sent[0]));
+    const QList<QPair<int,QString>> identityFields{{0,QStringLiteral("hole_name")},{1,QStringLiteral("reagent_type")},
+        {2,QStringLiteral("reagent_name")},{3,QStringLiteral("reagent_batch")},{4,QStringLiteral("bottle_type")},
+        {8,QStringLiteral("datetime")},{9,QStringLiteral("out_date")}};
+    for (const auto &field : identityFields)
+        if (received->value(field.second).toString()!=sent[field.first])
+            return fail(message,QStringLiteral("优先使用回读字段%1与本次发送快照不符，未确认完成。").arg(field.second));
+    if (received->value(QStringLiteral("priority")).toString().toDouble()!=1 ||
+        received->value(QStringLiteral("state")).toString()!=states[sentState])
+        return fail(message,QStringLiteral("优先使用回读的优先级或孔位状态与本次发送不符，未确认完成。"));
+    const QList<QPair<int,QString>> configurationFields{{10,QStringLiteral("warning_ul")},
+        {11,QStringLiteral("out_ul")},{12,QStringLiteral("max_ul")}};
+    for (const auto &field : configurationFields)
+        if (received->value(field.second).toString().toDouble()!=sent[field.first].toDouble())
+            return fail(message,QStringLiteral("优先使用回读字段%1与本次发送快照不符，未确认完成。").arg(field.second));
+    // isUpdate=0不要求液量按Us第14项max重置；formula_level也没有在Us中发送。
+    // 此处仅核报文内容，不据此认定旧连接/迟到回复属于本次动作，也不写入原库。
+    return true;
+}
+
+bool OriginalReagentRepository::applyPriorityReply(const QByteArray &payload, const QByteArray &sentPayload,
+    const QMap<QString,QString> &expectedVersions, const std::function<bool()> &stillCurrent,
+    bool *committed, QString *savedFingerprint, QString *message)
+{
+    if (committed) *committed=false;
+    if (savedFingerprint) savedFingerprint->clear();
+    if (!committed || !savedFingerprint)
+        return fail(message,QStringLiteral("优先级回读提交结果或指纹输出为空，未写入原库。"));
+    if (root_.isEmpty() || (table_!=QStringLiteral("reagent_setting") && table_!=QStringLiteral("reagent_setting_6600")))
+        return fail(message,QStringLiteral("原试剂资料未初始化，未保存优先级回读。"));
+    if (!priorityReplyMatches(payload,sentPayload,message)) return false;
+    Rows incoming;
+    bool single=false;
+    if (!readDeviceReply(payload,&incoming,&single,message)) return false;
+    // 无尾标/尾标0在原协议中会清整盘；本动作只接明确的目标单孔，不改尾标或截取满盘。
+    if (!single || incoming.size()!=1)
+        return fail(message,QStringLiteral("优先使用仅接受明确单孔标记1且恰含目标孔的Ur，未改写整盘或其他孔。"));
+
+    const QString settingFile=QStringLiteral("db/userSet/reagent_Setting.db");
+    const QStringList files{QStringLiteral("db/userSet/reagent_Information.db"),
+        QStringLiteral("db/systemInfo/reagent_Bottle_Type.db"),settingFile};
+    if (expectedVersions.size()!=files.size())
+        return fail(message,QStringLiteral("优先使用必须固定发送时的试剂、瓶型及孔位三份文件版本，未保存回读。"));
+    for (const auto &file : files)
+        if (expectedVersions.value(file).isEmpty())
+            return fail(message,QStringLiteral("优先使用缺少发送时文件版本：")+file);
+    const auto permitted=[&]()
+    {
+        if (!stillCurrent || !stillCurrent())
+            return fail(message,QStringLiteral("优先使用的连接、请求或等待许可已失效，回读未提交。"));
+        return true;
+    };
+    const auto versionsMatch=[&](bool includeSetting)
+    {
+        if (!permitted()) return false;
+        for (const auto &file : files)
+        {
+            if (!includeSetting && file==settingFile) continue;
+            const QString actual=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(file),message);
+            if (actual.isEmpty()) return false;
+            if (actual!=expectedVersions.value(file))
+                return fail(message,QStringLiteral("优先使用请求后原资料已变化，未用迟到回读覆盖当前文件：")+file);
+        }
+        return permitted();
+    };
+    if (!permitted()) return false;
+    // 与原编辑器采用相同顺序，避免一个入口先取试剂锁、另一个先取项目锁。
+    QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+    QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
+    if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
+        return fail(message,QStringLiteral("原项目或试剂正在保存，优先级回读未覆盖当前编辑。"));
+    if (!versionsMatch(true)) return false;
+
+    Database database;
+    if (!database.open(root_,settingFile,true,message) || !database.begin(message)) return false;
+    const auto rollback=[&]() { database.rollback(); return false; };
+    // BEGIN IMMEDIATE取得孔位库写保留锁后再核请求时三份版本，防止检查与入事务之间被改写。
+    if (!versionsMatch(true)) return rollback();
+    OriginalReagentState observed;
+    if (!load(&observed,message)) return rollback();
+    for (const auto &file : files)
+        if (observed.versions.value(file)!=expectedVersions.value(file))
+        {
+            fail(message,QStringLiteral("读取优先级回读目标期间原资料已变化，未保存：")+file);
+            return rollback();
+        }
+    const Row &row=incoming.first();
+    const QString holeName=text(row,"hole_name");
+    if (!named(observed.holes,QStringLiteral("hole_name"),holeName))
+    {
+        fail(message,QStringLiteral("优先级回读的孔位不在当前机型原表中，未创建或猜测孔位：")+holeName);
+        return rollback();
+    }
+    if (!versionsMatch(true)) return rollback();
+    QStringList assignments;
+    QVariantList arguments;
+    for (const auto &column : deviceReplyColumns())
+    {
+        if (column==QStringLiteral("hole_name") ||
+            (column==QStringLiteral("used_ul") && row.value(column).toString().isEmpty())) continue;
+        assignments.append('"'+column+QStringLiteral("\"=?"));
+        arguments.append(row.value(column));
+    }
+    arguments.append(holeName);
+    if (!database.execute(QStringLiteral("UPDATE \"%1\" SET %2 WHERE hole_name=?").arg(table_,assignments.join(',')),
+                          arguments,message,1)) return rollback();
+    // 孔位库已在本事务内修改，不能把自己的未提交页当外部冲突；写锁仍阻止另一写事务。
+    // 另外两份资料未被本方法修改，提交前继续核其发送时版本及可撤销许可。
+    if (!versionsMatch(false) || !permitted()) return rollback();
+    if (!database.commit(message)) return rollback();
+    *committed=true;
+    database.db.close();
+    QString fingerprintError;
+    *savedFingerprint=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(settingFile),&fingerprintError);
+    if (savedFingerprint->isEmpty())
+        return fail(message,QStringLiteral("优先级回读已经提交，但无法核对保存后的文件指纹，请核对当前资料：")+fingerprintError);
+    if (!stillCurrent || !stillCurrent())
+        return fail(message,QStringLiteral("优先级回读已经提交，但提交期间连接、请求或等待许可发生变化；结果待核对，未报告操作完成。"));
+    if (message) *message=QStringLiteral("优先级回读已提交并取得文件指纹，仍须页面重新读取后确认。");
+    return true;
+}
+
+bool OriginalReagentRepository::detectionPayload(const OriginalReagentState &state,
+    const QStringList &holeNames, const QMap<QString,int> &needleSelection, QByteArray *payload, QString *message) const
+{
+    if (!payload || root_.isEmpty() || table_.isEmpty() || state.root!=root_ || state.settingTable!=table_)
+        return fail(message,QStringLiteral("试剂探测资料来源或输出无效，未准备命令。"));
+    if (holeNames.isEmpty() || holeNames.size()>128)
+        return fail(message,QStringLiteral("试剂探测孔位为空或超过128孔，未截断。"));
+    QByteArray result="Mg["+QByteArray::number(holeNames.size())+']';
+    for (const auto &holeName : holeNames)
+    {
+        const Row *selected=nullptr;
+        for (const auto &hole : state.holes)
+            if (text(hole,"hole_name").compare(holeName,Qt::CaseInsensitive)==0)
+            {
+                if (selected) return fail(message,QStringLiteral("试剂探测孔位重名，未猜测目标：")+holeName);
+                selected=&hole;
+            }
+        if (!selected) return fail(message,QStringLiteral("试剂探测孔位不存在：")+holeName);
+        const auto &hole=*selected;
+        const QString area=text(hole,"area"), reagent=text(hole,"reagent_name");
+        if ((area!=QStringLiteral("r_area") && area!=QStringLiteral("s_area")) || reagent.isEmpty() || reagent==QStringLiteral("none"))
+            return fail(message,QStringLiteral("试剂探测孔位区域或试剂名称未配置：")+holeName);
+        // 原编码器按瓶名采用第一项，不用另一区域的后续同名项替代它。
+        const Row *bottle=named(state.bottles,QStringLiteral("bottle_type_name"),text(hole,"bottle_type"));
+        if (!bottle) return fail(message,QStringLiteral("试剂探测孔位缺少原瓶型：")+holeName);
+        double diameter=0;
+        bool angleOk=false;
+        const double angle=text(*bottle,"angle").toDouble(&angleOk);
+        if (!number(bottle->value(QStringLiteral("bottom_diameter")),&diameter) || !angleOk || !std::isfinite(angle))
+            return fail(message,QStringLiteral("试剂探测瓶型的底径或角度不是有效数值：")+holeName);
+        int needle=needleSelection.value(reagent,0);
+        if (needle==0) needle=area==QStringLiteral("r_area") ? 1 : 3;
+        if (needle<1 || needle>3) return fail(message,QStringLiteral("试剂探测针号不是1、2或3：")+holeName);
+        QPair<QString,QString> position;
+        // 原initPanel取split('_')[1]，与既有slot一致，不能误用数据库记录id。
+        if (!slot(hole,&position,message)) return false;
+        if (!appendWire(&result,{position.first,reagent,area,QString::number(needle),position.second,
+            text(hole,"bottle_type"),text(*bottle,"bottom_diameter"),text(*bottle,"angle")},message)) return false;
+    }
+    *payload=result;
+    return true;
+}
+
 bool OriginalReagentRepository::saveRemaining(const OriginalReagentState &observed,
                                             const QMap<qint64, double> &remaining, QString *message)
 {
@@ -384,56 +660,10 @@ bool OriginalReagentRepository::saveRemaining(const OriginalReagentState &observ
 bool OriginalReagentRepository::applyDeviceReply(const QByteArray &payload, QString *message)
 {
     // 原pcReceiveReagentInfo每孔15字段，末尾可带isSingle；先校验整包，再改原试剂表。
-    if (!payload.startsWith("Ur") || payload.size() > Sn100Protocol::kMaxMessageBytes)
-        return fail(message, QStringLiteral("不是有效的原试剂信息返回。"));
-    QStringList values;
-    for (int cursor = 2; cursor < payload.size(); )
-    {
-        if (payload[cursor++] != '[') return fail(message, QStringLiteral("试剂返回字段缺少左括号。"));
-        const int end = payload.indexOf(']', cursor);
-        if (end < cursor || end - cursor > 4096 || values.size() >= 4096)
-            return fail(message, QStringLiteral("试剂返回字段不完整或超过读取上限。"));
-        const QByteArray field = payload.mid(cursor, end - cursor);
-        for (unsigned char character : field)
-            if (character < 32 || character == '[') return fail(message, QStringLiteral("试剂返回含非法控制字符。"));
-        values.append(QString::fromLatin1(field));
-        cursor = end + 1;
-    }
-    if (values.size() < 2) return fail(message, QStringLiteral("原试剂返回缺少孔位清单或完整/单孔标记，未清空原试剂盘。"));
-    bool countOk = false;
-    const int count = values.first().toInt(&countOk);
-    if (!countOk || count < 0 || count > 128)
-        return fail(message, QStringLiteral("原试剂返回孔数无效或超过128孔。"));
-    const int expected = 1 + count * 15;
-    if (values.size() != expected && values.size() != expected + 1)
-        return fail(message, QStringLiteral("原试剂返回孔数与每孔15字段不符。"));
-    const bool single = values.size() == expected + 1 && values.last() == QStringLiteral("1");
-    if (values.size() == expected + 1 && values.last() != QStringLiteral("0") && values.last() != QStringLiteral("1"))
-        return fail(message, QStringLiteral("原试剂返回完整/单孔标记无效。"));
-    const QStringList columns{"hole_name","reagent_type","reagent_name","reagent_batch","bottle_type","formula_level","out_ul",
-        "amount_uL","priority","state","datetime","out_date","warning_ul","max_ul","used_ul"};
-    const QStringList states{"r_none","r_normal","r_warning","r_useout","r_unknown","r_outdate"};
     Rows incoming;
-    QSet<QString> received;
-    for (int i = 0; i < count; ++i)
-    {
-        Row row;
-        for (int column = 0; column < columns.size(); ++column) row.insert(columns[column], values[1 + i * 15 + column]);
-        const QString name = text(row,"hole_name");
-        if (name.isEmpty() || received.contains(name)) return fail(message, QStringLiteral("原试剂返回孔名为空或重复。"));
-        received.insert(name);
-        bool stateOk = false;
-        const int state = row.value(QStringLiteral("state")).toString().toInt(&stateOk);
-        if (!stateOk || state < 0 || state >= states.size()) return fail(message, QStringLiteral("原试剂返回孔位状态未识别。"));
-        row[QStringLiteral("state")] = states[state];
-        for (const auto &key : {QStringLiteral("amount_uL"),QStringLiteral("out_ul"),QStringLiteral("priority"),QStringLiteral("warning_ul"),QStringLiteral("max_ul"),QStringLiteral("used_ul")})
-        {
-            double value = 0;
-            if (key == QStringLiteral("used_ul") && row.value(key).toString().isEmpty()) continue;
-            if (!number(row.value(key), &value)) return fail(message, QStringLiteral("原试剂返回的容量、优先级或液量无效。"));
-        }
-        incoming.append(row);
-    }
+    bool single = false;
+    if (!readDeviceReply(payload, &incoming, &single, message)) return false;
+    const auto &columns = deviceReplyColumns();
     OriginalReagentState observed;
     if (!load(&observed, message)) return false;
     for (const auto &row : incoming)

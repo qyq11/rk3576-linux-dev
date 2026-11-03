@@ -1,0 +1,475 @@
+sh: 1: cannot create /sys/class/gpio/gpio15/value: Directory nonexistent
+Linux version 6.1.99-rt36-tspi (qyq@qyq) (aarch64-none-linux-gnu-gcc (GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29)) 10.3.1 20210621, GNU ld (GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29)) 2.36.1.20210621) #2 SMP PREEMPT_RT Fri Oct 30 21:07:55 CST 2026
+C++的版本: 201103.
+[0;35m->23:18:53.820552 us(21500553ms)Debug/ main.cpp L263] Firmware compile time:Nov  2 2026 17:35:14
+
+[0msystem has 8 CPU(s). 
+main thread is running at cpu: 3
+ioctl: No such device
+eth0 mac1[0]:
+WINDOWS_DEBUG is true, and AL4A_INCLUDE is false
+[1;36m->23:18:53.835251 us(21500567ms)Select/ output_ctrl.cpp L38] output_int success
+[0m[1;32m->23:18:54.834849 us(21501567ms)Main/ main.cpp L386] thread_test creat = 0
+[0m[1;37m->23:18:54.851513 us(21501584ms)Test/ thread_test.cpp L948] thread_test open
+[0mTest thread set cpu:0
+Test thread is running cpu: 0
+AbnormalCSV_Init i=0,first error_Code=2000059, isOpen=0, describe_cn=样本针液位不在范围内(%s ~%s  当前液位%s ), measure=请检查液位感应通讯线，请确认液位感应电路板是否正常工作，如果未发现异常请联系工程师。, notesting=1, testing=5, para[2]
+error_Code=2000059,para[0]=80
+error_Code=2000059,para[1]=1500
+AbnormalCSV_Init i=1,first error_Code=2000050, isOpen=0, describe_cn=选杯料斗缺少, measure=若大料仓反应杯缺少，请添加反应杯；否则请检查传感器状态, notesting=1, testing=1, para[1]
+error_Code=2000050,para[0]=
+AbnormalCSV_Init i=2,first error_Code=2000030, isOpen=0, describe_cn=%s 分析项目没有测试通道, measure=请确认项目参数是否正常，若正常，请联系工程师, notesting=1, testing=2, para[1]
+error_Code=2000030,para[0]=未使用
+[0;35m->23:18:54.859011 us(21501591ms)Debug/ thread_test.cpp L291] g_isReagentDoorOpen=1,g_isTemperatureOpen=1,g_isErrorIgnore=0,g_isErrorExit=0,g_isNoCupTestRun=0,g_isNoWaterTestRun=0,g_isLeftoverTestCountClose=1
+[0m[0;35m->23:18:54.859058 us(21501591ms)Debug/ thread_test.cpp L293] g_reagentSettingFile=/userdata/shared/reagent_Setting.db,SamCatcherBlender=160,TestCatcherBlender=255,g_isReagentRackScan=0,g_isReagentBarcode=0,g_RScanRackNumber[0]=1
+[0m[0;35m->23:18:54.859093 us(21501591ms)Debug/ thread_test.cpp L325] g_isConsumeCtrl=1,g_isReagentLack_stop=1,g_isIBSLackPause=0,g_isSampleChangeClean=0,g_isCupWasteBeep=1,g_isNeedleFreqErrorOpen=1,g_isReagentTempValue=37.g_isReagentWashInIdle=1,g_isCoolPlateMove=3,g_ADDPERIOD_TICKMS=9000,g_is2ReagentNeedleWorking=0
+[0m[0;35m->23:18:54.859121 us(21501591ms)Debug/ thread_test.cpp L348] initSteps:g_StepHomeAll=1,g_StepCupClean=1,g_StepNeedleClean=1,g_StepNeedleDect=1,g_isSampleCleanAmountUl=200,g_isReagentCleanAmountUl=120
+[0m[0;35m->23:18:54.859176 us(21501591ms)Debug/ thread_test.cpp L383] pump_Sample    LV_beforewash=1,SuckAfterRelease=0,  ibsSuck_Offset=30,ibsTu_Offset=20,  a1=1.00,b1=0.00,breakpoint=0,a2=1.00,b2=0.00
+[0m[0;35m->23:18:54.859232 us(21501591ms)Debug/ thread_test.cpp L418] pump_Reangent1 LV_beforewash=0,SuckAfterRelease=0,     Suck_Offset=30,   Tu_Offset=20,  a1=1.00,b1=0.00,breakpoint=0,a2=1.00,b2=0.00
+[0m[0;35m->23:18:54.859269 us(21501591ms)Debug/ thread_test.cpp L453] pump_Reangent2 LV_beforewash=0,SuckAfterRelease=0,     Suck_Offset=30,   Tu_Offset=20,  a1=1.00,b1=0.00,breakpoint=0,a2=1.00,b2=0.00
+[0m
+GetFileNameAndNumber /userdata/shared/project/ readdir:/userdata/shared/project/5 D-D.db, suffix=db
+/userdata/shared/project/1 PT.db, suffix=db
+/userdata/shared/project/4 FIB.db, suffix=db
+/userdata/shared/project/6 FDP.db, suffix=db
+/userdata/shared/project/3 TT.db, suffix=db
+/userdata/shared/project/7 AT-III.db, suffix=db
+/userdata/shared/project/2 APTT.db, suffix=db
+
+[1;37m->23:18:54.913278 us(21501645ms)Test/ manage_reagentCarlibration.cpp L581] ReagentCalibrationFile is load failed!
+[0m[1;32m->23:18:54.916342 us(21501648ms)Main/ manage_reagent.cpp L304] Reagent_Init g_ReagentSettingdb=/userdata/shared/reagent_Setting.db open success, and g_reagentSettingFile=/userdata/shared/reagent_Setting.db
+[0m[1;32m->23:18:54.916488 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=1,A_1,priority=1,vol=7000.0,rName=Cleaner,Batch=Default,r_area,rType=[3]cleaner,bottle=7mL,State=[1]r_normal,setDate=2026/10/29 17:36:09,outDate=,outUL=1200,w_ul=2000,max_ul=7000,t_ul=7000.0
+[0m[1;32m->23:18:54.916545 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=2,A_2,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916593 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=3,A_3,priority=1,vol=7000.0,rName=CaCl2,Batch=Default,r_area,rType=[1]r_reagent,bottle=7mL,State=[1]r_normal,setDate=2026/10/20 13:14:29,outDate=,outUL=300,w_ul=1000,max_ul=7000,t_ul=7000.0
+[0m[1;32m->23:18:54.916620 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=4,A_4,priority=1,vol=7000.0,rName=PT,Batch=Default,r_area,rType=[1]r_reagent,bottle=7mL,State=[1]r_normal,setDate=2026/10/29 19:06:01,outDate=,outUL=300,w_ul=1000,max_ul=7000,t_ul=7000.0
+[0m[1;32m->23:18:54.916648 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=5,A_5,priority=1,vol=7000.0,rName=TT,Batch=Default,r_area,rType=[1]r_reagent,bottle=7mL,State=[1]r_normal,setDate=2026/10/20 13:14:40,outDate=,outUL=300,w_ul=1000,max_ul=7000,t_ul=7000.0
+[0m[1;32m->23:18:54.916673 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=6,A_6,priority=1,vol=7000.0,rName=FIB,Batch=Default,r_area,rType=[1]r_reagent,bottle=7mL,State=[1]r_normal,setDate=2026/10/20 13:14:45,outDate=,outUL=300,w_ul=1000,max_ul=7000,t_ul=7000.0
+[0m[1;32m->23:18:54.916697 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=7,A_7,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916721 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=8,B_1,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916747 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=9,B_2,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916768 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=10,B_3,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916790 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=11,B_4,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916813 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=12,B_5,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916834 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=13,B_6,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916854 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=14,B_7,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916876 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=15,C_1,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916897 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=16,C_2,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916928 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=17,C_3,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916952 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=18,C_4,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916973 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=19,C_5,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.916994 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=20,C_6,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917015 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=21,C_7,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917034 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=22,D_1,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917054 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=23,D_2,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917098 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=24,D_3,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917120 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=51,SD_1,priority=1,vol=7000.0,rName=OVB,Batch=Default,s_area,rType=[2]s_ibs,bottle=7mL,State=[1]r_normal,setDate=2026/10/30 10:36:50,outDate=,outUL=1200,w_ul=2000,max_ul=7000,t_ul=7000.0
+[0m[1;32m->23:18:54.917145 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=52,SD_2,priority=0,vol=0.0,rName=none,Batch=,s_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917166 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=53,SD_3,priority=0,vol=0.0,rName=none,Batch=,s_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917188 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=54,SD_4,priority=1,vol=7000.0,rName=Cleaner,Batch=Default,s_area,rType=[3]cleaner,bottle=7mL,State=[1]r_normal,setDate=2026/10/30 14:12:37,outDate=,outUL=1200,w_ul=2000,max_ul=7000,t_ul=7000.0
+[0m[1;32m->23:18:54.917211 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=201,D_4,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917232 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=202,D_5,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917255 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=203,D_6,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917289 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=204,D_7,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917324 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=205,E_1,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917347 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=206,E_2,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917367 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=207,E_3,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917389 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=208,E_4,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917410 us(21501649ms)Main/ manage_reagent.cpp L363] Hole=209,E_5,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917433 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=210,E_6,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917467 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=211,E_7,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917489 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=212,F_1,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917511 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=213,F_2,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917531 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=214,F_3,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917553 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=215,F_4,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917576 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=216,F_5,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917598 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=217,F_6,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;32m->23:18:54.917619 us(21501650ms)Main/ manage_reagent.cpp L363] Hole=218,F_7,priority=0,vol=0.0,rName=none,Batch=,r_area,rType=[0],bottle=,State=[0]r_none,setDate=,outDate=,outUL=0,w_ul=0,max_ul=0,t_ul=0.0
+[0m[1;37m->23:18:54.919792 us(21501652ms)Test/ manage_testchannel.cpp L73] TestChannel_Init nRow=50,nColumn=2
+[0m[1;37m->23:18:54.919868 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=1,isOpen=1
+[0m[1;37m->23:18:54.919915 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=2,isOpen=1
+[0m[1;37m->23:18:54.919924 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=3,isOpen=1
+[0m[1;37m->23:18:54.919932 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=4,isOpen=1
+[0m[1;37m->23:18:54.919940 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=5,isOpen=1
+[0m[1;37m->23:18:54.919948 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=6,isOpen=1
+[0m[1;37m->23:18:54.919955 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=7,isOpen=1
+[0m[1;37m->23:18:54.919963 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=8,isOpen=1
+[0m[1;37m->23:18:54.919970 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=9,isOpen=1
+[0m[1;37m->23:18:54.919977 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=10,isOpen=1
+[0m[1;37m->23:18:54.919985 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=11,isOpen=1
+[0m[1;37m->23:18:54.919992 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=12,isOpen=1
+[0m[1;37m->23:18:54.920019 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=13,isOpen=1
+[0m[1;37m->23:18:54.920026 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=14,isOpen=1
+[0m[1;37m->23:18:54.920033 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=15,isOpen=1
+[0m[1;37m->23:18:54.920041 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=16,isOpen=1
+[0m[1;37m->23:18:54.920048 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=17,isOpen=1
+[0m[1;37m->23:18:54.920056 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=18,isOpen=1
+[0m[1;37m->23:18:54.920063 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=19,isOpen=1
+[0m[1;37m->23:18:54.920070 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=20,isOpen=1
+[0m[1;37m->23:18:54.920077 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=21,isOpen=1
+[0m[1;37m->23:18:54.920084 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=22,isOpen=1
+[0m[1;37m->23:18:54.920092 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=23,isOpen=1
+[0m[1;37m->23:18:54.920099 us(21501652ms)Test/ manage_testchannel.cpp L106] Added new channel=24,isOpen=1
+[0m[1;37m->23:18:54.920524 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=1 ,isOpen=1
+[0m[1;37m->23:18:54.920563 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=2 ,isOpen=1
+[0m[1;37m->23:18:54.920572 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=3 ,isOpen=1
+[0m[1;37m->23:18:54.920579 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=4 ,isOpen=1
+[0m[1;37m->23:18:54.920586 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=5 ,isOpen=1
+[0m[1;37m->23:18:54.920593 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=6 ,isOpen=1
+[0m[1;37m->23:18:54.920599 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=7 ,isOpen=1
+[0m[1;37m->23:18:54.920606 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=8 ,isOpen=1
+[0m[1;37m->23:18:54.920612 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=9 ,isOpen=1
+[0m[1;37m->23:18:54.920619 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=10 ,isOpen=1
+[0m[1;37m->23:18:54.920626 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=11 ,isOpen=1
+[0m[1;37m->23:18:54.920632 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=12 ,isOpen=1
+[0m[1;37m->23:18:54.920639 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=13 ,isOpen=1
+[0m[1;37m->23:18:54.920645 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=14 ,isOpen=1
+[0m[1;37m->23:18:54.920652 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=15 ,isOpen=1
+[0m[1;37m->23:18:54.920659 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=16 ,isOpen=1
+[0m[1;37m->23:18:54.920665 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=17 ,isOpen=1
+[0m[1;37m->23:18:54.920672 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=18 ,isOpen=1
+[0m[1;37m->23:18:54.920679 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=19 ,isOpen=1
+[0m[1;37m->23:18:54.920685 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=20 ,isOpen=1
+[0m[1;37m->23:18:54.920692 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=21 ,isOpen=1
+[0m[1;37m->23:18:54.920699 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=22 ,isOpen=1
+[0m[1;37m->23:18:54.920706 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=23 ,isOpen=1
+[0m[1;37m->23:18:54.920727 us(21501653ms)Test/ manage_testchannel.cpp L137] g_TableChannels.size=24,channelNum=24 ,isOpen=1
+[0mTaskListInit malloc.size=85272 listName=g_List_TasksRecving
+TaskListInit malloc.size=85272 listName=g_List_TasksArrange
+TaskListInit malloc.size=85272 listName=g_List_TasksTesting
+TaskListInit malloc.size=85272 listName=g_List_TaskCollect
+[1;37m->23:18:54.920852 us(21501653ms)Test/ thread_test.cpp L1014] thread_test start... g_TestCurrentTick=21501653429
+[0m[1;37m->23:18:54.920914 us(21501653ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=10,TestCnt=1,useTimeUs=0,useTimeMax=0,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[0;30;43m->23:18:54.922970 us(21501655ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=1053
+[0m[0;30;43m->23:18:54.924029 us(21501656ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=1062
+[0m[0;30;43m->23:18:54.984227 us(21501716ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=1066
+[0m[0;30;43m->23:18:54.985335 us(21501717ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=1111
+[0m[0;30;43m->23:18:55.272566 us(21502005ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=1236
+[0m[0;30;43m->23:18:55.436868 us(21502169ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=1294
+[0m[1;32m->23:18:55.834769 us(21502567ms)Main/ main.cpp L414] thread_AD485 creat = 0
+[0m[1;33m->23:18:55.851501 us(21502584ms)AD/ thread_ad.cpp L309] thread_AD485 open
+[0mAD485 thread set cpu:1
+AD485 thread is running at cpu: 1
+[1;33m->23:18:55.851692 us(21502584ms)AD/ thread_ad.cpp L158] RS485 AD is offline Debug,and set fd=12!!!
+[0m[1;33m->23:18:55.851705 us(21502584ms)AD/ thread_ad.cpp L362] start,begin Tick_us=21503000000,Tick_ms=21503000,Sec=21503,Nsec=0
+[0m[0;30;43m->23:18:55.853472 us(21502586ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=1938
+[0m[1;33m->23:18:56.267517 us(21503000ms)AD/ thread_ad.cpp L421] thread_RS485 start... tv_sec=21503,tv_nsec=0,g_ADCurrentTick=21502584312
+[0m[0;30;43m->23:18:56.367592 us(21503100ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99809, ADCurTick-BeginTick_us=100159,Rs485Cnt=0,dt=100159,dTime_max=100159,dTime_min=999999,dTime_avg=0
+[0m[0;30;43m->23:18:56.367678 us(21503100ms)Warning/ thread_ad.cpp L641] 485 update maxTime,Rs485Cnt=1, max_485=95us!
+[0m[1;33m->23:18:56.367689 us(21503100ms)AD/ thread_ad.cpp L671] AD485dTimeSum=0,485Cnt=1,485CalCnt=1,485MaxUse(us)=95,485dTimeMax(us)=100159
+[0m[1;33m->23:18:56.367699 us(21503100ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=100159,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[0;30;43m->23:18:56.667637 us(21503400ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99918, ADCurTick-BeginTick_us=400205,Rs485Cnt=3,dt=100205,dTime_max=100205,dTime_min=100077,dTime_avg=100121
+[0m[0;30;43m->23:18:56.667724 us(21503400ms)Warning/ thread_ad.cpp L641] 485 update maxTime,Rs485Cnt=4, max_485=96us!
+[0m[1;32m->23:18:56.834809 us(21503567ms)Main/ main.cpp L442] thread_Can creat = 0
+[0m[1;31m->23:18:56.851489 us(21503584ms)CAN/ thread_can.cpp L345] thread_CAN open
+[0mcan thread set cpu:2
+can thread is running at cpu: 2
+OperationRule_Init alpha=A, comb_rule.cmd=65, BeforeByte=1, AfterByte=2, comb_rule.size=1
+OperationRule_Init alpha=B, comb_rule.cmd=66, BeforeByte=0, AfterByte=1, comb_rule.size=2
+OperationRule_Init alpha=C, comb_rule.cmd=67, BeforeByte=1, AfterByte=1, comb_rule.size=3
+OperationRule_Init alpha=D, comb_rule.cmd=68, BeforeByte=0, AfterByte=2, comb_rule.size=4
+OperationRule_Init alpha=E, comb_rule.cmd=69, BeforeByte=0, AfterByte=2, comb_rule.size=5
+OperationRule_Init alpha=F, comb_rule.cmd=70, BeforeByte=1, AfterByte=1, comb_rule.size=6
+OperationRule_Init alpha=G, comb_rule.cmd=71, BeforeByte=0, AfterByte=2, comb_rule.size=7
+OperationRule_Init alpha=H, comb_rule.cmd=72, BeforeByte=1, AfterByte=2, comb_rule.size=8
+OperationRule_Init alpha=I, comb_rule.cmd=73, BeforeByte=0, AfterByte=1, comb_rule.size=9
+OperationRule_Init alpha=J, comb_rule.cmd=74, BeforeByte=1, AfterByte=2, comb_rule.size=10
+OperationRule_Init alpha=K, comb_rule.cmd=75, BeforeByte=1, AfterByte=1, comb_rule.size=11
+OperationRule_Init alpha=L, comb_rule.cmd=76, BeforeByte=0, AfterByte=2, comb_rule.size=12
+OperationRule_Init alpha=M, comb_rule.cmd=77, BeforeByte=0, AfterByte=1, comb_rule.size=13
+OperationRule_Init alpha=N, comb_rule.cmd=78, BeforeByte=0, AfterByte=0, comb_rule.size=14
+OperationRule_Init alpha=O, comb_rule.cmd=79, BeforeByte=1, AfterByte=2, comb_rule.size=15
+OperationRule_Init alpha=P, comb_rule.cmd=80, BeforeByte=1, AfterByte=1, comb_rule.size=16
+OperationRule_Init alpha=Q, comb_rule.cmd=81, BeforeByte=0, AfterByte=1, comb_rule.size=17
+OperationRule_Init alpha=R, comb_rule.cmd=82, BeforeByte=0, AfterByte=1, comb_rule.size=18
+OperationRule_Init alpha=S, comb_rule.cmd=83, BeforeByte=0, AfterByte=2, comb_rule.size=19
+OperationRule_Init alpha=T, comb_rule.cmd=84, BeforeByte=0, AfterByte=2, comb_rule.size=20
+OperationRule_Init alpha=U, comb_rule.cmd=85, BeforeByte=0, AfterByte=1, comb_rule.size=21
+OperationRule_Init alpha=V, comb_rule.cmd=86, BeforeByte=0, AfterByte=1, comb_rule.size=22
+OperationRule_Init alpha=W, comb_rule.cmd=87, BeforeByte=0, AfterByte=1, comb_rule.size=23
+OperationRule_Init alpha=X, comb_rule.cmd=88, BeforeByte=0, AfterByte=2, comb_rule.size=24
+OperationRule_Init alpha=Y, comb_rule.cmd=89, BeforeByte=0, AfterByte=2, comb_rule.size=25
+OperationRule_Init alpha=Z, comb_rule.cmd=90, BeforeByte=0, AfterByte=1, comb_rule.size=26
+OperationRule_Init alpha=a, comb_rule.cmd=97, BeforeByte=1, AfterByte=2, comb_rule.size=27
+OperationRule_Init alpha=b, comb_rule.cmd=98, BeforeByte=0, AfterByte=2, comb_rule.size=28
+OperationRule_Init alpha=c, comb_rule.cmd=99, BeforeByte=1, AfterByte=1, comb_rule.size=29
+OperationRule_Init alpha=d, comb_rule.cmd=100, BeforeByte=0, AfterByte=2, comb_rule.size=30
+OperationRule_Init alpha=e, comb_rule.cmd=101, BeforeByte=0, AfterByte=0, comb_rule.size=31
+OperationRule_Init alpha=f, comb_rule.cmd=102, BeforeByte=0, AfterByte=0, comb_rule.size=32
+OperationRule_Init alpha=g, comb_rule.cmd=103, BeforeByte=0, AfterByte=0, comb_rule.size=33
+OperationRule_Init alpha=h, comb_rule.cmd=104, BeforeByte=1, AfterByte=2, comb_rule.size=34
+OperationRule_Init alpha=i, comb_rule.cmd=105, BeforeByte=0, AfterByte=1, comb_rule.size=35
+OperationRule_Init alpha=j, comb_rule.cmd=106, BeforeByte=0, AfterByte=0, comb_rule.size=36
+OperationRule_Init alpha=k, comb_rule.cmd=107, BeforeByte=1, AfterByte=1, comb_rule.size=37
+OperationRule_Init alpha=l, comb_rule.cmd=108, BeforeByte=0, AfterByte=2, comb_rule.size=38
+OperationRule_Init alpha=m, comb_rule.cmd=109, BeforeByte=1, AfterByte=2, comb_rule.size=39
+OperationRule_Init alpha=n, comb_rule.cmd=110, BeforeByte=1, AfterByte=2, comb_rule.size=40
+OperationRule_Init alpha=o, comb_rule.cmd=111, BeforeByte=1, AfterByte=2, comb_rule.size=41
+OperationRule_Init alpha=p, comb_rule.cmd=112, BeforeByte=1, AfterByte=1, comb_rule.size=42
+OperationRule_Init alpha=q, comb_rule.cmd=113, BeforeByte=0, AfterByte=0, comb_rule.size=43
+OperationRule_Init alpha=r, comb_rule.cmd=114, BeforeByte=0, AfterByte=1, comb_rule.size=44
+OperationRule_Init alpha=s, comb_rule.cmd=115, BeforeByte=1, AfterByte=2, comb_rule.size=45
+OperationRule_Init alpha=t, comb_rule.cmd=116, BeforeByte=0, AfterByte=2, comb_rule.size=46
+OperationRule_Init alpha=u, comb_rule.cmd=117, BeforeByte=0, AfterByte=0, comb_rule.size=47
+OperationRule_Init alpha=v, comb_rule.cmd=118, BeforeByte=0, AfterByte=0, comb_rule.size=48
+OperationRule_Init alpha=w, comb_rule.cmd=119, BeforeByte=1, AfterByte=2, comb_rule.size=49
+OperationRule_Init alpha=x, comb_rule.cmd=120, BeforeByte=0, AfterByte=2, comb_rule.size=50
+OperationRule_Init alpha=y, comb_rule.cmd=121, BeforeByte=0, AfterByte=2, comb_rule.size=51
+OperationRule_Init alpha=z, comb_rule.cmd=122, BeforeByte=0, AfterByte=0, comb_rule.size=52
+
+GetFileNameAndNumber /userdata/shared/public_operation500/ readdir:/userdata/shared/public_operation500/ALL_Reagent500.csv, suffix=csv
+/userdata/shared/public_operation500/ALL_Sample500.csv, suffix=csv
+
+[0;30;41m->23:18:56.853903 us(21503586ms)Error/ manage_operation.cpp L132] File is empty or cannot read header
+[0m[0;30;41m->23:18:56.853966 us(21503586ms)Error/ manage_operation.cpp L203] File is empty or cannot read header
+[0m[1;31m->23:18:56.854024 us(21503586ms)CAN/ iepoll.cpp L57] epoll_create success.epoll_fd=5
+[0m[1;31m->23:18:56.854040 us(21503586ms)CAN/ thread_can.cpp L164] Can is offline Debug,and set fd=11!!!
+[0m[1;31m->23:18:56.854067 us(21503586ms)CAN/ iepoll.cpp L82] epoll_ctl EPOLL_CTL_ADD fd=11,fdmax=1
+[0m[1;31m->23:18:56.854076 us(21503586ms)CAN/ thread_can.cpp L393] thread_Can start... CanCurTick=21503586653
+[0m[1;31m->23:18:56.854254 us(21503586ms)CAN/ thread_can.cpp L279] can send SampleNd, max_check_send=35
+[0m[1;31m->23:18:56.854272 us(21503586ms)CAN/ thread_can.cpp L324] can send and recv SampleNd, max_check_recv=1
+[0m[0;30;43m->23:18:56.854284 us(21503586ms)Warning/ thread_can.cpp L484] can max_checkAll SampleNd update seTimeUs > max_can,useTimeUs=70, max_checkAll=0!
+[0m[1;31m->23:18:56.854293 us(21503586ms)CAN/ thread_can.cpp L501] CANCalCnt=1,max_checkAll(us)=70,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[0;30;41m->23:18:56.856937 us(21503589ms)Error/ subSystem.cpp L192] CAN OneCycle useTimeMax(ms)=0, useTime(ms)=1
+[0m[0;30;41m->23:18:56.977074 us(21503709ms)Error/ subSystem.cpp L192] CAN OneCycle useTimeMax(ms)=1, useTime(ms)=2
+[0m[0;30;43m->23:18:56.977166 us(21503709ms)Warning/ thread_can.cpp L484] can max_checkAll CoolPlat update seTimeUs > max_can,useTimeUs=102, max_checkAll=70!
+[0m[1;32m->23:18:57.834858 us(21504567ms)Main/ main.cpp L470] thread_leftTime creat = 0
+[0m[1;36m->23:18:57.835135 us(21504567ms)Select/ scanner.cpp L351] RS232 Scanner is offline Debug,and set g_iSampleScannerFd=24,g_iReagentScannerFd=25!!!
+[0m[1;36m->23:18:57.835317 us(21504567ms)Select/ tcp_server.cpp L366] tcp_open success.tcp_fd=6
+[0m[1;36m->23:18:57.835331 us(21504567ms)Select/ iselect.cpp L125] select_ctl ADD fd=6
+[0m[1;36m->23:18:57.835339 us(21504567ms)Select/ iselect.cpp L130] add gSt_SelectCtrl. selectCnt=1, fd=6, type(0)SELECT_TCPListen, min=6, max=6
+[0m[1;36m->23:18:57.835350 us(21504567ms)Select/ key_ctrl.cpp L37] input&output is offline Debug,and set input fd=26!!!
+[0m[1;36m->23:18:57.835358 us(21504567ms)Select/ TTLS9.cpp L86] TTL is offline Debug,and set g_TTLFd=50!!!
+[0m[1;37m->23:18:57.851555 us(21504584ms)Test/ thread_leftTime.cpp L775] thread_test open
+[0mTest thread set cpu:3
+Test thread is running cpu: 3
+[1;37m->23:18:57.851629 us(21504584ms)Test/ thread_leftTime.cpp L818] thread_leftTime start... g_leftTime_CurrentTick=21504584205
+[0m[0;35m->23:18:57.851656 us(21504584ms)Debug/ thread_leftTime.cpp L829] thread_leftTime to sleep.AllTasks_Recv1.size=0, AllTasks_CaculateLeftTime1.size=0
+[0m[1;32m->23:18:58.834835 us(21505567ms)Main/ main.cpp L506] thread_TCPListen creat = 0
+[0m[1;32m->23:18:58.835118 us(21505567ms)Main/ main.cpp L538] main start... g_tcpBeginTime=21505567694
+[0m[1;36m->23:18:58.835187 us(21505567ms)Select/ iselect.cpp L150] thread_TCPListen open
+[0mthread_TCPListen set cpu:3
+Select thread is running at cpu: 3
+[1;36m->23:18:58.835221 us(21505567ms)Select/ iselect.cpp L194] thread_TCPListen start... g_SCurrentTick=21505567798
+[0m[1;36m->23:18:58.835381 us(21505567ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=151.
+[0m[0;30;43m->23:18:58.836217 us(21505568ms)Warning/ main.cpp L601] Main update maxTime max(us)=537
+[0m[0;30;43m->23:18:58.836767 us(21505569ms)Warning/ main.cpp L601] Main update maxTime max(us)=550
+[0m[0;30;43m->23:18:58.837325 us(21505569ms)Warning/ main.cpp L601] Main update maxTime max(us)=557
+[0m[0;30;43m->23:18:58.837895 us(21505570ms)Warning/ main.cpp L601] Main update maxTime max(us)=571
+[0m[0;30;43m->23:18:58.953315 us(21505685ms)Warning/ main.cpp L601] Main update maxTime max(us)=573
+[0m[0;30;43m->23:18:58.953993 us(21505686ms)Warning/ main.cpp L601] Main update maxTime max(us)=684
+[0m[1;31m->23:18:59.052967 us(21505785ms)CAN/ thread_can.cpp L279] can send Reagent2, max_check_send=42
+[0m[0;30;43m->23:18:59.053134 us(21505785ms)Warning/ thread_can.cpp L484] can max_checkAll Reagent2 update seTimeUs > max_can,useTimeUs=223, max_checkAll=102!
+[0m[1;31m->23:18:59.209094 us(21505941ms)CAN/ thread_can.cpp L279] can send RCatcher2, max_check_send=59
+[0m[0;30;43m->23:18:59.209276 us(21505941ms)Warning/ thread_can.cpp L484] can max_checkAll RCatcher2 update seTimeUs > max_can,useTimeUs=253, max_checkAll=223!
+[0m[0;30;43m->23:18:59.267661 us(21506000ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99847, ADCurTick-BeginTick_us=3000221,Rs485Cnt=29,dt=100221,dTime_max=100221,dTime_min=100066,dTime_avg=100127
+[0m[0;30;43m->23:18:59.267851 us(21506000ms)Warning/ thread_ad.cpp L641] 485 update maxTime,Rs485Cnt=30, max_485=203us!
+[0m[1;31m->23:18:59.423501 us(21506156ms)CAN/ thread_can.cpp L279] can send Reagent2, max_check_send=71
+[0m[0;30;43m->23:18:59.867681 us(21506600ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99789, ADCurTick-BeginTick_us=3600239,Rs485Cnt=35,dt=100239,dTime_max=100239,dTime_min=100066,dTime_avg=100132
+[0m[0;30;43m->23:18:59.867889 us(21506600ms)Warning/ thread_ad.cpp L641] 485 update maxTime,Rs485Cnt=36, max_485=223us!
+[0m[1;37m->23:18:59.920927 us(21506653ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=5000066,TestCnt=43259,useTimeUs=1035,useTimeMax=1938,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[0;30;43m->23:18:59.967688 us(21506700ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99490, ADCurTick-BeginTick_us=3700248,Rs485Cnt=36,dt=100248,dTime_max=100248,dTime_min=100066,dTime_avg=100136
+[0m[0;30;43m->23:19:00.199654 us(21506932ms)Warning/ main.cpp L601] Main update maxTime max(us)=692
+[0m[0;30;43m->23:19:00.200447 us(21506933ms)Warning/ main.cpp L601] Main update maxTime max(us)=804
+[0m[1;31m->23:19:00.319686 us(21507052ms)CAN/ thread_can.cpp L279] can send TCatcher, max_check_send=253
+[0m[0;30;43m->23:19:00.319879 us(21507052ms)Warning/ thread_can.cpp L484] can max_checkAll TCatcher update seTimeUs > max_can,useTimeUs=459, max_checkAll=253!
+[0m[1;33m->23:19:01.367650 us(21508100ms)AD/ thread_ad.cpp L671] AD485dTimeSum=5007184,485Cnt=51,485CalCnt=51,485MaxUse(us)=223,485dTimeMax(us)=100248
+[0m[1;33m->23:19:01.367862 us(21508100ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=5100207,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->23:19:01.854326 us(21508586ms)CAN/ thread_can.cpp L501] CANCalCnt=40670,max_checkAll(us)=459,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[0;30;43m->23:19:01.967719 us(21508700ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99888, ADCurTick-BeginTick_us=5700277,Rs485Cnt=56,dt=100277,dTime_max=100277,dTime_min=100066,dTime_avg=100146
+[0m[1;31m->23:19:03.251450 us(21509984ms)CAN/ thread_can.cpp L324] can send and recv RCatcher2, max_check_recv=18
+[0m[0;30;43m->23:19:03.267791 us(21510000ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99850, ADCurTick-BeginTick_us=7000349,Rs485Cnt=69,dt=100349,dTime_max=100349,dTime_min=100066,dTime_avg=100151
+[0m[1;36m->23:19:03.835340 us(21510567ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=90.
+[0m[1;32m->23:19:03.835470 us(21510568ms)Main/ main.cpp L547] main tid=79082, maincnt=9011,main OneUse(us)=543.TCPClientFd=0
+[0m[1;31m->23:19:04.008472 us(21510741ms)CAN/ thread_can.cpp L324] can send and recv Reagent2, max_check_recv=39
+[0m[0;30;43m->23:19:04.144618 us(21510877ms)Warning/ main.cpp L601] Main update maxTime max(us)=967
+[0m[0;30;43m->23:19:04.524711 us(21511257ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=2054
+[0m[1;37m->23:19:04.920954 us(21511653ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=10000092,TestCnt=82947,useTimeUs=1031,useTimeMax=2054,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;33m->23:19:06.467527 us(21513200ms)AD/ thread_ad.cpp L671] AD485dTimeSum=10115000,485Cnt=102,485CalCnt=102,485MaxUse(us)=223,485dTimeMax(us)=100349
+[0m[1;33m->23:19:06.467636 us(21513200ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=10200090,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->23:19:06.854455 us(21513587ms)CAN/ thread_can.cpp L501] CANCalCnt=79272,max_checkAll(us)=459,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->23:19:08.835500 us(21515568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=161.
+[0m[1;32m->23:19:08.835847 us(21515568ms)Main/ main.cpp L547] main tid=79082, maincnt=17988,main OneUse(us)=586.TCPClientFd=0
+[0m[1;37m->23:19:09.921052 us(21516653ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=15000187,TestCnt=122240,useTimeUs=1016,useTimeMax=2054,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:19:11.156624 us(21517889ms)CAN/ thread_can.cpp L324] can send and recv Reagent1, max_check_recv=55
+[0m[1;33m->23:19:11.467528 us(21518200ms)AD/ thread_ad.cpp L671] AD485dTimeSum=15121940,485Cnt=152,485CalCnt=152,485MaxUse(us)=223,485dTimeMax(us)=100349
+[0m[1;33m->23:19:11.467634 us(21518200ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=15200092,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->23:19:11.854545 us(21518587ms)CAN/ thread_can.cpp L501] CANCalCnt=117721,max_checkAll(us)=459,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->23:19:13.835450 us(21520567ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=89.
+[0m[1;32m->23:19:13.835896 us(21520568ms)Main/ main.cpp L547] main tid=79082, maincnt=26981,main OneUse(us)=543.TCPClientFd=0
+[0m[1;37m->23:19:14.921192 us(21521653ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=20000323,TestCnt=161712,useTimeUs=1277,useTimeMax=2054,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;33m->23:19:16.567541 us(21523300ms)AD/ thread_ad.cpp L671] AD485dTimeSum=20229661,485Cnt=203,485CalCnt=203,485MaxUse(us)=223,485dTimeMax(us)=100349
+[0m[1;33m->23:19:16.567653 us(21523300ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=20300104,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->23:19:16.854667 us(21523587ms)CAN/ thread_can.cpp L501] CANCalCnt=156243,max_checkAll(us)=459,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[0;30;43m->23:19:17.467937 us(21524200ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99718, ADCurTick-BeginTick_us=21200495,Rs485Cnt=211,dt=100495,dTime_max=100495,dTime_min=100066,dTime_avg=100149
+[0m[0;30;43m->23:19:17.468147 us(21524200ms)Warning/ thread_ad.cpp L641] 485 update maxTime,Rs485Cnt=212, max_485=225us!
+[0m[1;36m->23:19:18.835514 us(21525568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=97.
+[0m[1;32m->23:19:18.836313 us(21525568ms)Main/ main.cpp L547] main tid=79082, maincnt=35966,main OneUse(us)=529.TCPClientFd=0
+[0m[1;37m->23:19:19.921337 us(21526653ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=25000465,TestCnt=200965,useTimeUs=1569,useTimeMax=2054,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;33m->23:19:21.667535 us(21528400ms)AD/ thread_ad.cpp L671] AD485dTimeSum=25337908,485Cnt=254,485CalCnt=254,485MaxUse(us)=225,485dTimeMax(us)=100495
+[0m[1;33m->23:19:21.667650 us(21528400ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=25400098,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[0;30;43m->23:19:21.670091 us(21528402ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=2765
+[0m[1;31m->23:19:21.854703 us(21528587ms)CAN/ thread_can.cpp L501] CANCalCnt=194499,max_checkAll(us)=459,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->23:19:23.835553 us(21530568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=90.
+[0m[1;32m->23:19:23.836477 us(21530569ms)Main/ main.cpp L547] main tid=79082, maincnt=44951,main OneUse(us)=566.TCPClientFd=0
+[0m[1;37m->23:19:24.921370 us(21531653ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=30000508,TestCnt=240803,useTimeUs=1026,useTimeMax=2765,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;33m->23:19:26.767644 us(21533500ms)AD/ thread_ad.cpp L671] AD485dTimeSum=30444504,485Cnt=305,485CalCnt=305,485MaxUse(us)=225,485dTimeMax(us)=100495
+[0m[1;33m->23:19:26.767796 us(21533500ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=30500207,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;31m->23:19:26.854720 us(21533587ms)CAN/ thread_can.cpp L501] CANCalCnt=232957,max_checkAll(us)=459,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;36m->23:19:28.835554 us(21535568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=90.
+[0m[1;32m->23:19:28.836512 us(21535569ms)Main/ main.cpp L547] main tid=79082, maincnt=53934,main OneUse(us)=511.TCPClientFd=0
+[0m[1;37m->23:19:29.921479 us(21536654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=35000615,TestCnt=279767,useTimeUs=1017,useTimeMax=2765,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:19:31.854771 us(21538587ms)CAN/ thread_can.cpp L501] CANCalCnt=271049,max_checkAll(us)=459,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:19:31.867589 us(21538600ms)AD/ thread_ad.cpp L671] AD485dTimeSum=35552064,485Cnt=356,485CalCnt=356,485MaxUse(us)=225,485dTimeMax(us)=100495
+[0m[1;33m->23:19:31.867768 us(21538600ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=35600143,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:19:33.835633 us(21540568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=94.
+[0m[1;32m->23:19:33.836724 us(21540569ms)Main/ main.cpp L547] main tid=79082, maincnt=62901,main OneUse(us)=566.TCPClientFd=0
+[0m[1;37m->23:19:34.921574 us(21541654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=40000709,TestCnt=319242,useTimeUs=1025,useTimeMax=2765,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:19:36.854825 us(21543587ms)CAN/ thread_can.cpp L501] CANCalCnt=309641,max_checkAll(us)=459,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:19:36.867672 us(21543600ms)AD/ thread_ad.cpp L671] AD485dTimeSum=40558484,485Cnt=406,485CalCnt=406,485MaxUse(us)=225,485dTimeMax(us)=100495
+[0m[1;33m->23:19:36.867745 us(21543600ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=40600239,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[0;30;41m->23:19:38.274513 us(21545007ms)Error/ subSystem.cpp L192] CAN OneCycle useTimeMax(ms)=2, useTime(ms)=4
+[0m[0;30;43m->23:19:38.424647 us(21545157ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=2931
+[0m[0;30;43m->23:19:38.431111 us(21545163ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=6464
+[0m[0;30;43m->23:19:38.493229 us(21545225ms)Warning/ main.cpp L601] Main update maxTime max(us)=1510
+[0m[0;30;41m->23:19:38.493617 us(21545226ms)Error/ subSystem.cpp L192] CAN OneCycle useTimeMax(ms)=4, useTime(ms)=9
+[0m[0;30;43m->23:19:38.501419 us(21545233ms)Warning/ main.cpp L601] Main update maxTime max(us)=2587
+[0m[1;36m->23:19:38.835675 us(21545568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=88.
+[0m[1;32m->23:19:38.836907 us(21545569ms)Main/ main.cpp L547] main tid=79082, maincnt=71896,main OneUse(us)=567.TCPClientFd=0
+[0m[0;30;43m->23:19:38.968988 us(21545701ms)Warning/ thread_ad.cpp L461] addSleepTimeUs=99907, ADCurTick-BeginTick_us=42701557,Rs485Cnt=426,dt=101557,dTime_max=101557,dTime_min=100066,dTime_avg=100147
+[0m[1;31m->23:19:38.972380 us(21545704ms)CAN/ thread_can.cpp L279] can send Reagent1, max_check_send=1112
+[0m[0;30;43m->23:19:38.972488 us(21545705ms)Warning/ thread_can.cpp L484] can max_checkAll Reagent1 update seTimeUs > max_can,useTimeUs=1227, max_checkAll=459!
+[0m[1;37m->23:19:39.921597 us(21546654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=45000729,TestCnt=359483,useTimeUs=1075,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[0;30;43m->23:19:40.375080 us(21547107ms)Warning/ main.cpp L601] Main update maxTime max(us)=3297
+[0m[0;30;43m->23:19:41.441828 us(21548174ms)Warning/ main.cpp L601] Main update maxTime max(us)=3850
+[0m[1;31m->23:19:41.854888 us(21548587ms)CAN/ thread_can.cpp L501] CANCalCnt=350234,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:19:41.967529 us(21548700ms)AD/ thread_ad.cpp L671] AD485dTimeSum=45667102,485Cnt=457,485CalCnt=457,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:19:41.967638 us(21548700ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=45700091,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:19:43.835821 us(21550568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=140.
+[0m[1;32m->23:19:43.837247 us(21550569ms)Main/ main.cpp L547] main tid=79082, maincnt=80949,main OneUse(us)=621.TCPClientFd=0
+[0m[1;37m->23:19:44.921614 us(21551654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=50000742,TestCnt=400100,useTimeUs=1507,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:19:45.132681 us(21551865ms)CAN/ thread_can.cpp L324] can send and recv CoolPlat, max_check_recv=56
+[0m[1;31m->23:19:46.854928 us(21553587ms)CAN/ thread_can.cpp L501] CANCalCnt=388561,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:19:46.967547 us(21553700ms)AD/ thread_ad.cpp L671] AD485dTimeSum=50674543,485Cnt=507,485CalCnt=507,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:19:46.967668 us(21553700ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=50700108,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:19:48.835917 us(21555568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=125.
+[0m[1;32m->23:19:48.837702 us(21555570ms)Main/ main.cpp L547] main tid=79082, maincnt=89904,main OneUse(us)=599.TCPClientFd=0
+[0m[1;37m->23:19:49.921606 us(21556654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=55000743,TestCnt=439358,useTimeUs=1037,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:19:51.855033 us(21558587ms)CAN/ thread_can.cpp L501] CANCalCnt=426908,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:19:51.967658 us(21558700ms)AD/ thread_ad.cpp L671] AD485dTimeSum=55681553,485Cnt=557,485CalCnt=557,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:19:51.967756 us(21558700ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=55700222,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:19:53.835978 us(21560568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=117.
+[0m[1;32m->23:19:53.838182 us(21560570ms)Main/ main.cpp L547] main tid=79082, maincnt=98896,main OneUse(us)=595.TCPClientFd=0
+[0m[1;37m->23:19:54.921625 us(21561654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=60000760,TestCnt=478819,useTimeUs=1027,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:19:55.187511 us(21561920ms)CAN/ thread_can.cpp L324] can send and recv RCatcher1, max_check_recv=72
+[0m[1;31m->23:19:56.855059 us(21563587ms)CAN/ thread_can.cpp L501] CANCalCnt=465017,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:19:57.067589 us(21563800ms)AD/ thread_ad.cpp L671] AD485dTimeSum=60789197,485Cnt=608,485CalCnt=608,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:19:57.067780 us(21563800ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=60800145,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:19:58.836039 us(21565568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=170.
+[0m[1;32m->23:19:58.838417 us(21565570ms)Main/ main.cpp L547] main tid=79082, maincnt=107854,main OneUse(us)=599.TCPClientFd=0
+[0m[1;37m->23:19:59.921657 us(21566654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=65000791,TestCnt=517958,useTimeUs=1016,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:01.855131 us(21568587ms)CAN/ thread_can.cpp L501] CANCalCnt=503607,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:02.167528 us(21568900ms)AD/ thread_ad.cpp L671] AD485dTimeSum=65896433,485Cnt=659,485CalCnt=659,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:02.167641 us(21568900ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=65900091,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:03.835982 us(21570568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=89.
+[0m[1;32m->23:20:03.838506 us(21570571ms)Main/ main.cpp L547] main tid=79082, maincnt=116843,main OneUse(us)=537.TCPClientFd=0
+[0m[1;37m->23:20:04.921713 us(21571654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=70000847,TestCnt=557516,useTimeUs=1016,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:06.855185 us(21573587ms)CAN/ thread_can.cpp L501] CANCalCnt=541992,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:07.167575 us(21573900ms)AD/ thread_ad.cpp L671] AD485dTimeSum=70904524,485Cnt=709,485CalCnt=709,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:07.167766 us(21573900ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=70900132,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:08.836022 us(21575568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=94.
+[0m[1;32m->23:20:08.838727 us(21575571ms)Main/ main.cpp L547] main tid=79082, maincnt=125833,main OneUse(us)=538.TCPClientFd=0
+[0m[1;37m->23:20:09.921820 us(21576654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=75000954,TestCnt=597012,useTimeUs=1016,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:11.855232 us(21578587ms)CAN/ thread_can.cpp L501] CANCalCnt=580313,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:12.267533 us(21579000ms)AD/ thread_ad.cpp L671] AD485dTimeSum=76013236,485Cnt=760,485CalCnt=760,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:12.267642 us(21579000ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=76000098,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:13.836019 us(21580568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=87.
+[0m[1;32m->23:20:13.838828 us(21580571ms)Main/ main.cpp L547] main tid=79082, maincnt=134812,main OneUse(us)=537.TCPClientFd=0
+[0m[1;37m->23:20:14.921855 us(21581654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=80000990,TestCnt=636369,useTimeUs=1018,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:16.855267 us(21583587ms)CAN/ thread_can.cpp L501] CANCalCnt=618809,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:17.267730 us(21584000ms)AD/ thread_ad.cpp L671] AD485dTimeSum=81020803,485Cnt=810,485CalCnt=810,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:17.267925 us(21584000ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=81000285,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:18.836099 us(21585568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=88.
+[0m[1;32m->23:20:18.838987 us(21585571ms)Main/ main.cpp L547] main tid=79082, maincnt=143792,main OneUse(us)=537.TCPClientFd=0
+[0m[1;31m->23:20:19.311534 us(21586044ms)CAN/ thread_can.cpp L324] can send and recv Reagent1, max_check_recv=94
+[0m[1;37m->23:20:19.921866 us(21586654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=85001001,TestCnt=675594,useTimeUs=1012,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:21.855283 us(21588587ms)CAN/ thread_can.cpp L501] CANCalCnt=657085,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:22.367529 us(21589100ms)AD/ thread_ad.cpp L671] AD485dTimeSum=86128647,485Cnt=861,485CalCnt=861,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:22.367645 us(21589100ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=86100091,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:23.836145 us(21590568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=89.
+[0m[1;32m->23:20:23.839420 us(21590571ms)Main/ main.cpp L547] main tid=79082, maincnt=152802,main OneUse(us)=533.TCPClientFd=0
+[0m[1;37m->23:20:24.922004 us(21591654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=90001133,TestCnt=715286,useTimeUs=1463,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:26.855326 us(21593587ms)CAN/ thread_can.cpp L501] CANCalCnt=695739,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:27.467547 us(21594200ms)AD/ thread_ad.cpp L671] AD485dTimeSum=91236800,485Cnt=912,485CalCnt=912,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:27.467661 us(21594200ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=91200106,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:28.836167 us(21595568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=94.
+[0m[1;32m->23:20:28.839457 us(21595572ms)Main/ main.cpp L547] main tid=79082, maincnt=161812,main OneUse(us)=548.TCPClientFd=0
+[0m[1;37m->23:20:29.922071 us(21596654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=95001207,TestCnt=754677,useTimeUs=1026,useTimeMax=6464,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[0;30;43m->23:20:30.345839 us(21597078ms)Warning/ thread_test.cpp L1057] Test testCycle testUse update TimeMax(us)=6886
+[0m[1;31m->23:20:31.855477 us(21598587ms)CAN/ thread_can.cpp L501] CANCalCnt=735495,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:32.467556 us(21599200ms)AD/ thread_ad.cpp L671] AD485dTimeSum=96244422,485Cnt=962,485CalCnt=962,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:32.467882 us(21599200ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=96200110,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:33.836250 us(21600568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=88.
+[0m[1;32m->23:20:33.839637 us(21600572ms)Main/ main.cpp L547] main tid=79082, maincnt=170892,main OneUse(us)=534.TCPClientFd=0
+[0m[1;37m->23:20:34.922117 us(21601654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=100001251,TestCnt=795834,useTimeUs=1010,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:36.855495 us(21603588ms)CAN/ thread_can.cpp L501] CANCalCnt=774625,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:37.467678 us(21604200ms)AD/ thread_ad.cpp L671] AD485dTimeSum=101251771,485Cnt=1012,485CalCnt=1012,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:37.467795 us(21604200ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=101200236,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:38.836285 us(21605568ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=88.
+[0m[1;32m->23:20:38.840014 us(21605572ms)Main/ main.cpp L547] main tid=79082, maincnt=179891,main OneUse(us)=534.TCPClientFd=0
+[0m[1;37m->23:20:39.922204 us(21606654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=105001333,TestCnt=835266,useTimeUs=1468,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:41.855498 us(21608588ms)CAN/ thread_can.cpp L501] CANCalCnt=813103,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:42.567545 us(21609300ms)AD/ thread_ad.cpp L671] AD485dTimeSum=106358668,485Cnt=1063,485CalCnt=1063,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:42.567700 us(21609300ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=106300104,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:43.836444 us(21610569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=141.
+[0m[1;32m->23:20:43.840281 us(21610572ms)Main/ main.cpp L547] main tid=79082, maincnt=188900,main OneUse(us)=556.TCPClientFd=0
+[0m[1;37m->23:20:44.922247 us(21611654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=110001377,TestCnt=874773,useTimeUs=1449,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:46.855504 us(21613588ms)CAN/ thread_can.cpp L501] CANCalCnt=851822,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:47.667516 us(21614400ms)AD/ thread_ad.cpp L671] AD485dTimeSum=111465709,485Cnt=1114,485CalCnt=1114,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:47.667631 us(21614400ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=111400077,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:48.836579 us(21615569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=168.
+[0m[1;32m->23:20:48.840703 us(21615573ms)Main/ main.cpp L547] main tid=79082, maincnt=197912,main OneUse(us)=594.TCPClientFd=0
+[0m[1;37m->23:20:49.922256 us(21616654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=115001391,TestCnt=914589,useTimeUs=1028,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:51.855530 us(21618588ms)CAN/ thread_can.cpp L501] CANCalCnt=890514,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:52.667535 us(21619400ms)AD/ thread_ad.cpp L671] AD485dTimeSum=116472666,485Cnt=1164,485CalCnt=1164,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:52.667649 us(21619400ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=116400098,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:53.836527 us(21620569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=87.
+[0m[1;32m->23:20:53.841187 us(21620573ms)Main/ main.cpp L547] main tid=79082, maincnt=206937,main OneUse(us)=536.TCPClientFd=0
+[0m[1;37m->23:20:54.922328 us(21621654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=120001458,TestCnt=954090,useTimeUs=1458,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:20:56.855636 us(21623588ms)CAN/ thread_can.cpp L501] CANCalCnt=929067,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:20:57.767534 us(21624500ms)AD/ thread_ad.cpp L671] AD485dTimeSum=121580867,485Cnt=1215,485CalCnt=1215,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:20:57.767652 us(21624500ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=121500097,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:20:58.836740 us(21625569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=171.
+[0m[1;32m->23:20:58.841186 us(21625573ms)Main/ main.cpp L547] main tid=79082, maincnt=215934,main OneUse(us)=534.TCPClientFd=0
+[0m[1;37m->23:20:59.922401 us(21626654ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=125001536,TestCnt=993460,useTimeUs=1012,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:21:01.855722 us(21628588ms)CAN/ thread_can.cpp L501] CANCalCnt=967246,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:21:02.767617 us(21629500ms)AD/ thread_ad.cpp L671] AD485dTimeSum=126588308,485Cnt=1265,485CalCnt=1265,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:21:02.767820 us(21629500ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=126500174,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:21:03.836824 us(21630569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=140.
+[0m[1;32m->23:21:03.841425 us(21630573ms)Main/ main.cpp L547] main tid=79082, maincnt=224931,main OneUse(us)=592.TCPClientFd=0
+[0m[1;37m->23:21:04.922456 us(21631655ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=130001585,TestCnt=1032802,useTimeUs=1460,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:21:06.855856 us(21633588ms)CAN/ thread_can.cpp L501] CANCalCnt=1005843,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:21:07.867527 us(21634600ms)AD/ thread_ad.cpp L671] AD485dTimeSum=131694787,485Cnt=1316,485CalCnt=1316,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:21:07.867640 us(21634600ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=131600089,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:21:08.836947 us(21635569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=138.
+[0m[1;32m->23:21:08.841901 us(21635574ms)Main/ main.cpp L547] main tid=79082, maincnt=233915,main OneUse(us)=594.TCPClientFd=0
+[0m[1;37m->23:21:09.922538 us(21636655ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=135001671,TestCnt=1072422,useTimeUs=1265,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:21:11.855918 us(21638588ms)CAN/ thread_can.cpp L501] CANCalCnt=1044392,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:21:12.867678 us(21639600ms)AD/ thread_ad.cpp L671] AD485dTimeSum=136701888,485Cnt=1366,485CalCnt=1366,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:21:12.867878 us(21639600ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=136600233,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:21:13.837084 us(21640569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=142.
+[0m[1;32m->23:21:13.842142 us(21640574ms)Main/ main.cpp L547] main tid=79082, maincnt=242922,main OneUse(us)=535.TCPClientFd=0
+[0m[1;37m->23:21:14.922622 us(21641655ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=140001757,TestCnt=1111946,useTimeUs=1010,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:21:16.855972 us(21643588ms)CAN/ thread_can.cpp L501] CANCalCnt=1082884,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:21:17.967513 us(21644700ms)AD/ thread_ad.cpp L671] AD485dTimeSum=141809455,485Cnt=1417,485CalCnt=1417,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:21:17.967630 us(21644700ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=141700076,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:21:18.837107 us(21645569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=94.
+[0m[1;32m->23:21:18.842684 us(21645575ms)Main/ main.cpp L547] main tid=79082, maincnt=251921,main OneUse(us)=592.TCPClientFd=0
+[0m[1;37m->23:21:19.922677 us(21646655ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=145001807,TestCnt=1151451,useTimeUs=1429,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:21:21.856086 us(21648588ms)CAN/ thread_can.cpp L501] CANCalCnt=1121441,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m[1;33m->23:21:22.967538 us(21649700ms)AD/ thread_ad.cpp L671] AD485dTimeSum=146815791,485Cnt=1467,485CalCnt=1467,485MaxUse(us)=225,485dTimeMax(us)=101557
+[0m[1;33m->23:21:22.967653 us(21649700ms)AD/ thread_ad.cpp L672] thread_485 Run: ADCurTick-BeginTick_us=146700100,485Tx_cnt=0, 485Rx_cnt=0, 485Err=0
+[0m[1;36m->23:21:23.837113 us(21650569ms)Select/ iselect.cpp L211] thread_TCPListen tid=79093, UseTime(us)=88.
+[0m[1;32m->23:21:23.842739 us(21650575ms)Main/ main.cpp L547] main tid=79082, maincnt=260919,main OneUse(us)=532.TCPClientFd=0
+[0m[1;37m->23:21:24.922758 us(21651655ms)Test/ thread_test.cpp L1071] TestCurTick-BeginTick_us=150001893,TestCnt=1191013,useTimeUs=1012,useTimeMax=6886,main_step=0,g_MainState=[0]MainState_idle,g_WorkType=[0]WorkType_UnLink,ErrorType=0,g_isHomeAllSuccess=0
+[0m[1;31m->23:21:26.856182 us(21653588ms)CAN/ thread_can.cpp L501] CANCalCnt=1160224,max_checkAll(us)=1227,max_CANAll(us)=0,CANTxCnt=0,CANRxCnt=0,Err=0
+[0m

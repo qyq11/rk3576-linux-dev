@@ -1,0 +1,81 @@
+{
+  "distro": "RK3576-Build-22.04",
+  "user": "uid=1000(qyq) gid=1000(qyq) groups=1000(qyq)",
+  "home": "/home/qyq",
+  "os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+  "sdk": "/home/qyq/TaishanPi-3-Linux",
+  "tools": {
+    "sdk_gcc": "aarch64-none-linux-gnu-gcc (GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29)) 10.3.1 20210621",
+    "sdk_gxx": "aarch64-none-linux-gnu-g++ (GNU Toolchain for the A-profile Architecture 10.3-2021.07 (arm-10.29)) 10.3.1 20210621",
+    "make": "GNU Make 4.3",
+    "git": "git version 2.34.1",
+    "go": "go version go1.24.13 linux/amd64",
+    "qemu_aarch64": "qemu-aarch64 version 6.2.0 (Debian 1:6.2+dfsg-2ubuntu6.31)",
+    "device_tree_compiler": "Version: DTC 1.6.1-g0a3a9d34"
+  },
+  "files": {
+    "kernel-6.1/.config": {
+      "bytes": 220993,
+      "sha256": "96464f3467a506e86d9c6da8e6dbfc05e8b14d749be85bcaf1d6f68f92c9ceda"
+    },
+    "kernel-6.1/Makefile": {
+      "bytes": 71246,
+      "sha256": "3d9cd3c81e4b311fb7a892817539a6fa750d286695faf28b920ffa69ea73d673"
+    },
+    "kernel-6.1/include/config/kernel.release": {
+      "bytes": 17,
+      "sha256": "74f9c5b132ba55d33b5b32fc67c336ea0ce0471bdfe630c89c012f79500f13e4"
+    },
+    "output/.config": {
+      "bytes": 6977,
+      "sha256": "9a22fddfd3920e7f8c8fcd0e0d8e522cc09d3773e61c9e36001fe0288021f902"
+    },
+    "ubuntu/chroot-script.sh": {
+      "bytes": 27402,
+      "sha256": "cc3e6f00b71745cd88224bea18d90e8ce3af835a689eff4621831e6d55659725"
+    },
+    "device/rockchip/common/post-hooks/zz-rk3576-environment.sh": {
+      "bytes": 732,
+      "sha256": "a9bfd0c38d7c1c8492203fdafba42970284687ad241b5917a66be6daf2854bbc"
+    },
+    "ubuntu/config/hooks/server/zz-rk3576-environment.sh": {
+      "bytes": 2455,
+      "sha256": "ab84561f29c5fc20f154b0dd7f9a50c55e6f3e1f519dd2fc9cc057db99278716"
+    },
+    "ubuntu/overlay/usr/local/sbin/rk3576-first-setup": {
+      "bytes": 423,
+      "sha256": "f99c2dca845d23e5142faecd43c64672b3a0dddf2fa0d4917d6cb7b49388615b"
+    },
+    "ubuntu/config/rk3576-ssh-keygen-firstboot.service": {
+      "bytes": 229,
+      "sha256": "0296b7c6dab7ee997841e631241bd02874ebf5ac2b1c4294cd2dfaedb7d4b3a5"
+    },
+    "rockdev/update.img": {
+      "bytes": 3032177283,
+      "sha256": "cd680eda3a96ff9dc6dbb4e3ceea6924474e68ce8b39702b4a78b4d662375a4c"
+    }
+  },
+  "repositories": {
+    "kernel-6.1": {
+      "head": "bf3e03f69e6a3b766dc6356a7475e8ad64a48a98",
+      "status": " M arch/arm/Kconfig\n M arch/arm/include/asm/thread_info.h\n M arch/arm/kernel/asm-offsets.c\n M arch/arm/kernel/entry-armv.S\n M arch/arm/kernel/signal.c\n M arch/arm/mm/fault.c\n M arch/arm64/Kconfig\n M arch/arm64/include/asm/preempt.h\n M arch/arm64/include/asm/thread_info.h\n M arch/arm64/kernel/asm-offsets.c\n M arch/arm64/kernel/signal.c\n M arch/powerpc/Kconfig\n M arch/powerpc/include/asm/stackprotector.h\n M arch/powerpc/include/asm/thread_info.h\n M arch/powerpc/kernel/interrupt.c\n M arch/powerpc/kernel/traps.c\n M arch/powerpc/kvm/Kconfig\n M arch/powerpc/platforms/pseries/iommu.c\n M arch/x86/Kconfig\n M arch/x86/include/asm/preempt.h\n M arch/x86/include/asm/thread_info.h\n M drivers/block/zram/zram_drv.c\n M drivers/block/zram/zram_drv.h\n M drivers/char/tpm/tpm_tis.c\n M drivers/gpu/drm/i915/Kconfig\n M drivers/gpu/drm/i915/display/intel_crtc.c\n M drivers/gpu/drm/i915/gt/intel_breadcrumbs.c\n M drivers/gpu/drm/i915/gt/intel_execlists_submission.c\n M drivers/gpu/drm/i915/gt/intel_reset.c\n M drivers/gpu/drm/i915/i915_irq.c\n M drivers/gpu/drm/i915/i915_request.c\n M drivers/gpu/drm/i915/i915_trace.h\n M drivers/gpu/drm/i915/i915_utils.h\n M drivers/net/ethernet/alacritech/slic.h\n M drivers/net/ethernet/amazon/ena/ena_ethtool.c\n M drivers/net/ethernet/amazon/ena/ena_netdev.c\n M drivers/net/ethernet/aquantia/atlantic/aq_ring.c\n M drivers/net/ethernet/asix/ax88796c_main.c\n M drivers/net/ethernet/broadcom/b44.c\n M drivers/net/ethernet/broadcom/bcmsysport.c\n M drivers/net/ethernet/cortina/gemini.c\n M drivers/net/ethernet/emulex/benet/be_ethtool.c\n M drivers/net/ethernet/emulex/benet/be_main.c\n M drivers/net/ethernet/fungible/funeth/funeth_txrx.h\n M drivers/net/ethernet/google/gve/gve_ethtool.c\n M drivers/net/ethernet/google/gve/gve_main.c\n M drivers/net/ethernet/hisilicon/hns3/hns3_enet.c\n M drivers/net/ethernet/huawei/hinic/hinic_rx.c\n M drivers/net/ethernet/huawei/hinic/hinic_tx.c\n M drivers/net/ethernet/intel/fm10k/fm10k_netdev.c\n M drivers/net/ethernet/intel/i40e/i40e_ethtool.c\n M drivers/net/ethernet/intel/i40e/i40e_main.c\n M drivers/net/ethernet/intel/iavf/iavf_ethtool.c\n M drivers/net/ethernet/intel/ice/ice_main.c\n M drivers/net/ethernet/intel/igb/igb_ethtool.c\n M drivers/net/ethernet/intel/igb/igb_main.c\n M drivers/net/ethernet/intel/igc/igc_ethtool.c\n M drivers/net/ethernet/intel/igc/igc_main.c\n M drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c\n M drivers/net/ethernet/intel/ixgbe/ixgbe_main.c\n M drivers/net/ethernet/intel/ixgbevf/ethtool.c\n M drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c\n M drivers/net/ethernet/marvell/mvneta.c\n M drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c\n M drivers/net/ethernet/marvell/sky2.c\n M drivers/net/ethernet/mediatek/mtk_eth_soc.c\n M drivers/net/ethernet/mellanox/mlxsw/spectrum.c\n M drivers/net/ethernet/microsoft/mana/mana_en.c\n M drivers/net/ethernet/microsoft/mana/mana_ethtool.c\n M drivers/net/ethernet/netronome/nfp/nfp_net_common.c\n M drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c\n M drivers/net/ethernet/netronome/nfp/nfp_net_repr.c\n M drivers/net/ethernet/nvidia/forcedeth.c\n M drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c\n M drivers/net/ethernet/realtek/8139too.c\n M drivers/net/ethernet/socionext/sni_ave.c\n M drivers/net/ethernet/ti/am65-cpsw-nuss.c\n M drivers/net/ethernet/ti/netcp_core.c\n M drivers/net/ethernet/via/via-rhine.c\n M drivers/net/ethernet/xilinx/xilinx_axienet_main.c\n M drivers/net/hyperv/netvsc_drv.c\n M drivers/net/ifb.c\n M drivers/net/ipvlan/ipvlan_main.c\n M drivers/net/loopback.c\n M drivers/net/macsec.c\n M drivers/net/macvlan.c\n M drivers/net/mhi_net.c\n M drivers/net/netdevsim/netdev.c\n M drivers/net/team/team.c\n M drivers/net/team/team_mode_loadbalance.c\n M drivers/net/veth.c\n M drivers/net/virtio_net.c\n M drivers/net/vrf.c\n M drivers/net/vxlan/vxlan_vnifilter.c\n M drivers/net/wwan/mhi_wwan_mbim.c\n M drivers/net/xen-netfront.c\n M drivers/spi/spi.c\n M drivers/tty/serial/8250/8250.h\n M drivers/tty/serial/8250/8250_aspeed_vuart.c\n M drivers/tty/serial/8250/8250_bcm7271.c\n M drivers/tty/serial/8250/8250_core.c\n M drivers/tty/serial/8250/8250_exar.c\n M drivers/tty/serial/8250/8250_fsl.c\n M drivers/tty/serial/8250/8250_ingenic.c\n M drivers/tty/serial/8250/8250_mtk.c\n M drivers/tty/serial/8250/8250_omap.c\n M drivers/tty/serial/8250/8250_port.c\n M drivers/tty/serial/8250/Kconfig\n M drivers/tty/serial/amba-pl011.c\n M drivers/tty/serial/omap-serial.c\n M drivers/tty/sysrq.c\n M drivers/vdpa/vdpa_user/iova_domain.h\n M include/linux/console.h\n M include/linux/entry-common.h\n M include/linux/interrupt.h\n M include/linux/io-mapping.h\n M include/linux/lockdep.h\n M include/linux/lockdep_types.h\n M include/linux/netdevice.h\n M include/linux/preempt.h\n M include/linux/printk.h\n M include/linux/sched.h\n M include/linux/sched/signal.h\n M include/linux/sched/task.h\n M include/linux/serial_8250.h\n M include/linux/thread_info.h\n M include/linux/trace_events.h\n M include/linux/u64_stats_sync.h\n M init/Kconfig\n M kernel/Kconfig.preempt\n M kernel/bpf/syscall.c\n M kernel/entry/common.c\n M kernel/hung_task.c\n M kernel/ksysfs.c\n M kernel/locking/lockdep.c\n M kernel/locking/rwbase_rt.c\n M kernel/panic.c\n M kernel/printk/internal.h\n M kernel/printk/printk.c\n M kernel/printk/printk_safe.c\n M kernel/rcu/rcutorture.c\n M kernel/rcu/tree_stall.h\n M kernel/reboot.c\n M kernel/sched/core.c\n M kernel/sched/fair.c\n M kernel/sched/features.h\n M kernel/sched/sched.h\n M kernel/signal.c\n M kernel/softirq.c\n M kernel/time/hrtimer.c\n M kernel/time/posix-timers.c\n M kernel/time/tick-sched.c\n M kernel/time/timer.c\n M kernel/trace/trace.c\n M kernel/trace/trace_events.c\n M kernel/trace/trace_output.c\n M kernel/watchdog.c\n M kernel/watchdog_hld.c\n M lib/debugobjects.c\n M mm/page_alloc.c\n M net/8021q/vlan_dev.c\n M net/bridge/br_multicast.c\n M net/bridge/br_vlan.c\n M net/core/dev.c\n M net/core/drop_monitor.c\n M net/core/gen_stats.c\n M net/core/skbuff.c\n M net/devlink/leftover.c\n M net/dsa/slave.c\n M net/ipv4/af_inet.c\n M net/ipv6/seg6_local.c\n M net/mac80211/sta_info.c\n M net/mpls/af_mpls.c\n M net/netfilter/ipvs/ip_vs_ctl.c\n M net/netfilter/nf_tables_api.c\n M net/openvswitch/datapath.c\n M net/openvswitch/flow_table.c\n?? arch/arm64/configs/rk3576_image_rt.config\n?? localversion-rt\n"
+    },
+    "ubuntu": {
+      "head": "66bf1d6860c465f8c758dadf55183936de5d6309",
+      "status": " M chroot-script.sh\n?? config/hooks/server/zz-rk3576-environment.sh\n?? config/rk3576-ssh-keygen-firstboot.service\n?? overlay/usr/local/sbin/rk3576-first-setup\n"
+    },
+    "device/rockchip": {
+      "head": "4705d11955b1787760b88ddf920d782d269b0ded",
+      "status": "?? common/post-hooks/zz-rk3576-environment.sh\n"
+    },
+    "external/rkwifibt": {
+      "head": "4233bd7e0f174367f8e1a0c5932a8c3c7e1fc4a6",
+      "status": ""
+    },
+    "app/ovtree": {
+      "head": "a1c3ab2885d6d7c76bd85e421822442dc41ce3e4",
+      "status": ""
+    }
+  },
+  "project_access": true
+}

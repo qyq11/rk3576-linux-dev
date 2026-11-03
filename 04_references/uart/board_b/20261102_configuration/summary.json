@@ -1,0 +1,110 @@
+{
+  "inspection_date": "2026-11-02",
+  "inspection_timezone": "Asia/Shanghai",
+  "board_id": "board_b",
+  "hardware_serial": "8314b1e8ffd0321f",
+  "ssh_user": "root",
+  "uid": 0,
+  "kernel": "6.1.99-rt36-tspi",
+  "realtime": 1,
+  "boot_id_before": "72b43693-95d9-4b7e-8620-63f56dfacbc4",
+  "boot_id_after": "2c8da208-9c8a-4b69-98e8-29d2ea1d460a",
+  "board_reported_utc_after": "2026-10-12T07:36:32Z",
+  "board_clock_corrected": false,
+  "overlay_file": "/boot/overlays/tspi-3m-uart-header-five.dtbo",
+  "overlay_sha256": "9e720d81dfa456d9824403cd6a02e8f6e9899a9eecf375e0d51226e129ea92a4",
+  "overlay_source_sha256": "5a237e12765c9f4e5702cfa7cecdb5b3cbc39b85811c4bf01a0d749b6d4cb69b",
+  "executable_sha256": "cbc2fabe9c8ecb365d9514f4468b14dea6fc282ea14c3637b492e4490f587041",
+  "executable_source_sha256": "b61baf614aa119d1ea8bd06ac4615a147d94d394ac70193269e71bfec3bd9b6a",
+  "configuration_ssh_exit": 0,
+  "verify_ssh_exit": 0,
+  "ports_opened": 5,
+  "ports_passed": 5,
+  "ports_failed": 0,
+  "serial_bytes_written": 0,
+  "serial_bytes_read": 0,
+  "current_default_baud": 9600,
+  "current_default_frame": "8N1",
+  "current_hardware_flow_control": "off",
+  "rs485_ioctl_flags": "0x00000002",
+  "rs485_enabled_bit_set": false,
+  "instrument_communication_verified": false,
+  "physical_loopback_verified": false,
+  "user_groups_modified": false,
+  "ports": [
+    {
+      "pin_group": "uart3m0-xfer",
+      "tx_header_pin": 5,
+      "rx_count": 0,
+      "tx_count": 0,
+      "rx_header_pin": 3,
+      "status": "okay",
+      "open": "OK",
+      "uart": 3,
+      "path": "/dev/ttyS3"
+    },
+    {
+      "pin_group": "uart4m0-xfer",
+      "tx_header_pin": 8,
+      "rx_count": 0,
+      "tx_count": 0,
+      "rx_header_pin": 10,
+      "status": "okay",
+      "open": "OK",
+      "uart": 4,
+      "path": "/dev/ttyS4"
+    },
+    {
+      "pin_group": "uart7m0-xfer",
+      "tx_header_pin": 28,
+      "rx_count": 0,
+      "tx_count": 0,
+      "rx_header_pin": 27,
+      "status": "okay",
+      "open": "OK",
+      "uart": 7,
+      "path": "/dev/ttyS7"
+    },
+    {
+      "pin_group": "uart8m1-xfer",
+      "tx_header_pin": 37,
+      "rx_count": 0,
+      "tx_count": 0,
+      "rx_header_pin": 40,
+      "status": "okay",
+      "open": "OK",
+      "uart": 8,
+      "path": "/dev/ttyS8"
+    },
+    {
+      "pin_group": "uart9m0-xfer",
+      "tx_header_pin": 26,
+      "rx_count": 0,
+      "tx_count": 0,
+      "rx_header_pin": 29,
+      "status": "okay",
+      "open": "OK",
+      "uart": 9,
+      "path": "/dev/ttyS9"
+    }
+  ],
+  "released": [
+    "I2C7",
+    "I2C8",
+    "SPI1 CS1"
+  ],
+  "preserved": [
+    "SPI1 CS0",
+    "CAN0 M2",
+    "UART6 Bluetooth",
+    "ttyFIQ0 console"
+  ],
+  "preserved_can_overlay_sha256": "92c1bdcfecb719bd1e9e04d75cee90dbb994a735fbf8e691ecc3259f4e1d7280",
+  "can_state": "DOWN/STOPPED",
+  "remaining": [
+    "确认两组RS485电路和收发方向，当前未启用RS485软件模式或RTS/CTS引脚",
+    "根据外设资料设置各路参数；9600仅为本次读取的系统默认值",
+    "物理接线、电平、回环、真实扫码/采集和长期运行尚未验证",
+    "仅按用户要求使用root配置和打开串口，未修改lckfb的用户组或应用启动方式"
+  ]
+}

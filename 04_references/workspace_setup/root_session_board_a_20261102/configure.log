@@ -1,0 +1,136 @@
+[original_login_settings]
+enabled
+enabled
+1b12ee238e4193a1c811ac5ceafba0627f44674e218b6fe0db7af0366529a203  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+# /usr/lib/systemd/system/getty@.service
+#  SPDX-License-Identifier: LGPL-2.1-or-later
+#
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Getty on %I
+Documentation=man:agetty(8) man:systemd-getty-generator(8)
+Documentation=https://0pointer.de/blog/projects/serial-console.html
+After=systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=rc-local.service
+
+# If additional gettys are spawned during boot then we should make
+# sure that this is synchronized before getty.target, even though
+# getty.target didn't actually pull it in.
+Before=getty.target
+IgnoreOnIsolate=yes
+
+# IgnoreOnIsolate causes issues with sulogin, if someone isolates
+# rescue.target or starts rescue.service from multi-user.target or
+# graphical.target.
+Conflicts=rescue.service
+Before=rescue.service
+
+# On systems without virtual consoles, don't start any getty. Note
+# that serial gettys are covered by serial-getty@.service, not this
+# unit.
+ConditionPathExists=/dev/tty0
+
+[Service]
+# the VT is cleared by TTYVTDisallocate
+# The '-o' option value tells agetty to replace 'login' arguments with an
+# option to preserve environment (-p), followed by '--' for safety, and then
+# the entered username.
+ExecStart=-/sbin/agetty -o '-p -- \\u' --noclear - $TERM
+Type=idle
+Restart=always
+RestartSec=0
+UtmpIdentifier=%I
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/%I
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+IgnoreSIGPIPE=no
+SendSIGHUP=yes
+ImportCredential=agetty.*
+ImportCredential=login.*
+
+# Unset locale for the console getty since the console has problems
+# displaying some internationalized messages.
+UnsetEnvironment=LANG LANGUAGE LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION
+
+[Install]
+WantedBy=getty.target
+DefaultInstance=tty1
+
+# /usr/lib/systemd/system/serial-getty@.service
+#  SPDX-License-Identifier: LGPL-2.1-or-later
+#
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Serial Getty on %I
+Documentation=man:agetty(8) man:systemd-getty-generator(8)
+Documentation=https://0pointer.de/blog/projects/serial-console.html
+BindsTo=dev-%i.device
+After=dev-%i.device systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=rc-local.service
+
+# If additional gettys are spawned during boot then we should make
+# sure that this is synchronized before getty.target, even though
+# getty.target didn't actually pull it in.
+Before=getty.target
+IgnoreOnIsolate=yes
+
+# IgnoreOnIsolate causes issues with sulogin, if someone isolates
+# rescue.target or starts rescue.service from multi-user.target or
+# graphical.target.
+Conflicts=rescue.service
+Before=rescue.service
+
+[Service]
+# The '-o' option value tells agetty to replace 'login' arguments with an
+# option to preserve environment (-p), followed by '--' for safety, and then
+# the entered username.
+ExecStart=-/sbin/agetty -o '-p -- \\u' --keep-baud 115200,57600,38400,9600 - $TERM
+Type=idle
+Restart=always
+UtmpIdentifier=%I
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/%I
+TTYReset=yes
+TTYVHangup=yes
+IgnoreSIGPIPE=no
+SendSIGHUP=yes
+ImportCredential=agetty.*
+ImportCredential=login.*
+
+[Install]
+WantedBy=getty.target
+
+# /etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin lckfb --noclear %I 1500000 linux
+
+[new_login_settings]
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin root --noclear - $TERM ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+Id=getty@tty1.service
+DropInPaths=/etc/systemd/system/getty@tty1.service.d/zz-board-a-root-autologin.conf
+
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin root --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+Id=serial-getty@ttyFIQ0.service
+DropInPaths=/etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-root-autologin.conf
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin root --noclear - $TERM ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin root --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+3faa620d81d93d788d8efb57a251ddde254ea3020c8b4522257e56c52fcb904e  /etc/systemd/system/getty@tty1.service.d/zz-board-a-root-autologin.conf
+85d3ad67f808e7e82ea381470fb3aba0b731962a13cf587ea40bf5e203abfeaa  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-root-autologin.conf
+login_configuration_exit=0

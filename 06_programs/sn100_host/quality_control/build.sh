@@ -44,6 +44,8 @@ headers=("$module_dir/qc_store.h" "$module_dir/qc_history_core.h" "$module_dir/q
 # 原库适配与结果显示由同一存储入口引用，独立构建也必须带齐。
 sources+=("$program_dir/projects/projects_current_format.cpp" "$program_dir/projects/original_project_repository.cpp")
 headers+=("$program_dir/projects/project_current_format.h" "$program_dir/projects/original_project_repository.h")
+sources+=("$program_dir/projects/original_project_copy.cpp")
+headers+=("$program_dir/projects/original_project_copy.h")
 
 for header in "${headers[@]}"; do
     if grep -q Q_OBJECT "$header"; then

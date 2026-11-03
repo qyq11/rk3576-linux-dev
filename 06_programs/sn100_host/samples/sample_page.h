@@ -3,7 +3,9 @@
 #include "projects/projects_store.h"
 #include "reagents/reagent_types.h"
 #include "sample_store.h"
+#include <QColor>
 #include <QPointer>
+#include <QThread>
 #include <QWidget>
 class QDialog;
 class QTableWidget;
@@ -33,6 +35,15 @@ class SamplePage : public QWidget
     bool prepareToLeave();
     SampleStore *taskStore() const { return store_; }
     bool originalProfile() const { return originalProfile_; }
+    // 只记录以后真正新孔的默认值，不重写快照、草稿或已选容器。
+    bool configureOriginalDefaultContainer(bool containerIsTube)
+    {
+        if (QThread::currentThread() != thread()) return false;
+        originalDefaultContainerIsTube_ = containerIsTube;
+        return true;
+    }
+    void configureLayout(int ordinary, int emergency)
+    { ordinaryHoles_=ordinary; emergencyHoles_=emergency; }
     SampleSnapshot snapshot() const
     {
         return snapshot_;
@@ -41,6 +52,7 @@ class SamplePage : public QWidget
     void setProjects(ProjectRecords projects);
     void setReagents(ReagentSnapshot reagents);
     void setSession(AccountSession session);
+    void setRackSelectedColour(QColor colour);
     void reload();
     void setQualityChoices(qint64 requestId, SampleQcPreset::Snapshot choices, QString message);
     void invalidateQualityChoices(QString message);
@@ -74,6 +86,8 @@ class SamplePage : public QWidget
     void resetTasks(SampleTaskResetAction action);
     bool canEditHole(int row) const;
     void detail();
+    void refreshCalibrationButtons();
+    void calibration(qint64 projectId);
     void repeat();
     void renameRack();
     void combinations();
@@ -89,11 +103,14 @@ class SamplePage : public QWidget
     QWidget *settingWidget_;
     SampleStore *store_;
     ProjectRecords projects_;
+    ProjectUnits originalUnits_;
     ReagentSnapshot reagents_;
     AccountSession session_;
     SampleSnapshot snapshot_;
     bool originalProfile_ = false, pendingDeviceReload_ = false;
+    bool originalDefaultContainerIsTube_ = false; // 旧独立入口继续用杯，不增加配置拒绝门。
     int ordinaryHoles_ = 8, emergencyHoles_ = 3;
+    QColor rackSelectedColour_ = QColor(QStringLiteral("#B7D7FF"));
     SampleRack editing_;
     QPointer<QDialog> dialog_;
     bool initialized_ = false, ready_ = false, busy_ = false, dirty_ = false, dialogDirty_ = false,
@@ -101,6 +118,7 @@ class SamplePage : public QWidget
     qint64 request_ = 0, selectAfter_ = 0;
     int row_ = 0;
     qint64 qualityChoicesRequest_ = 0;
+    qint64 calibrationParametersRequest_ = 0;
     SampleQcPreset::Snapshot qualityChoices_;
     QString qualityChoicesError_, qualityWarning_;
     bool qualityProtectionBound_ = false;

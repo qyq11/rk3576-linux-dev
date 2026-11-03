@@ -1,0 +1,28 @@
+{
+  "format": "sn100-integration-06-collector-directory-recovery-v1",
+  "complete": true,
+  "original_collector_exit": 1,
+  "original_failed_tool_sha256": "a7bf5381fcaf107592795ea81d965d2a65cccf9d8d2e496f159cfdd62e851f94",
+  "fixed_collector_sha256": "bd5d199ae648a9ee8c7db802baa332e89a22280736cbc7ec90861f1c4c1c193a",
+  "failure_tool_result_sha256": "c7c892a190de7680d26faf9dbe148ec72f016b539bf7fb96346ba6f3e39bdb12",
+  "failure_tool_result_path": "temp/sn100_host/workflow_night_20261102/collector_attempt_01_tool_result.json",
+  "failure_evidence_origin": "根转存当次exec_command真实返回；不是collector自行写出的原日志，不是重跑。",
+  "cause": "网络输入副本缺目标父目录；同源Path合并还覆盖了根级原255保存位置。修复为独立循环并先建父目录。",
+  "failed_target_path_characters": 195,
+  "path_length_failure_observed": false,
+  "original_directory": "04_references/sn100_host/workflow_night_20261102/integration_06",
+  "preserved_directory": "04_references/sn100_host/workflow_night_20261102/integration_06_collector_incomplete_01",
+  "partial_files": {
+    "build.log": "440e1756494dfdab53de938ed038e60c789a9b1def9277fd8941833a4bfd1c8b",
+    "build_exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "build_inputs.tsv": "315bf3b463a230e51c772e21d7e709fce2a43bac7820b7ba0ebe5385a59ba0fb",
+    "merge_inputs.json": "079ad9dabd9acd28b5db8d3b1b7a19cf9b9eb45aa2290d5ea8ed92bfeab298d2",
+    "input_verification.json": "b4e06c647cfb98310032d489443f82cc01d87a228bc77586624c559c2318286e",
+    "build_complete.json": "e90806afa8b096adf086aa2498fdb559de1bbde1685761f8f27bcc197c21a02f",
+    "promotion_progress.json": "079ad9dabd9acd28b5db8d3b1b7a19cf9b9eb45aa2290d5ea8ed92bfeab298d2"
+  },
+  "verification_was_present": false,
+  "rename_performed": true,
+  "new_evidence_directory_created": false,
+  "recovery_tool_sha256": "370008a7f777c43af47031e88dc5f3fc5060c0eca0e8cb7b7d6fc6e87803985b"
+}

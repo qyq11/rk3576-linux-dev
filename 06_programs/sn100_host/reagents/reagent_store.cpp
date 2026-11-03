@@ -24,6 +24,8 @@ ReagentStore::~ReagentStore()
 void ReagentStore::registerTypes()
 {
     qRegisterMetaType<AccountSession>();
+    qRegisterMetaType<OriginalProjectSaveNotice>();
+    qRegisterMetaType<OriginalProjectSaveAdmission>();
     qRegisterMetaType<ReagentRecord>();
     qRegisterMetaType<ReagentBottle>();
     qRegisterMetaType<ReagentBatch>();
@@ -33,6 +35,7 @@ void ReagentStore::registerTypes()
     qRegisterMetaType<ReagentHole>();
     qRegisterMetaType<ReagentSnapshot>();
     qRegisterMetaType<ReagentProjects>();
+    qRegisterMetaType<QList<QByteArray>>("QList<QByteArray>");
 }
 bool ReagentStore::onWorker(const QString& operation)
 {
@@ -205,7 +208,11 @@ void ReagentStore::initialize(QString directory)
 void ReagentStore::setSession(AccountSession session)
 {
     if (onWorker(QStringLiteral("试剂权限")))
+    {
+        if (!sameOriginalProjectSaveActor(session_,session))
+            cancelPendingOriginalGroupSave(QStringLiteral("账户身份已改变，本次尚未开始写库，草稿保留。"));
         session_ = session;
+    }
 }
 QString ReagentStore::validateBatchMetadata(QString isiValue, QString normalValue)
 {
@@ -812,8 +819,8 @@ void ReagentStore::saveHole(ReagentHole h)
     const QString op = QStringLiteral("保存孔位配置");
     if (!begin(op))
         return;
-    const QRegularExpression holeNames("^(R_([1-9]|1[0-9]|20)|SD_[1-4])$");
-    if (!holeNames.match(h.name).hasMatch() || h.area != (h.name.startsWith("R_") ? "r_area" : "s_area")
+    const QRegularExpression holeNames(reagentPositions_==42 ? "^([A-F]_[1-7]|SD_[1-4])$" : "^(R_([1-9]|1[0-9]|20)|SD_[1-4])$");
+    if (!holeNames.match(h.name).hasMatch() || h.area != (h.name.startsWith("SD_") ? "s_area" : "r_area")
         || h.reagentId <= 0 || h.bottleId <= 0 || !QDate::fromString(h.expiry, "yyyy-MM-dd").isValid())
     {
         finish(op, false, QStringLiteral("孔位、区域、资料、瓶型或有效日期不合法"));
@@ -891,6 +898,8 @@ void ReagentStore::clearHole(QString name)
 }
 void ReagentStore::close()
 {
+    if (QThread::currentThread()==thread()) cancelPendingOriginalGroupSave(QStringLiteral("原试剂资料已关闭或切换，尚未开始写库，草稿保留。"));
+    setOriginalDeviceOperationContext(0,QStringList());
     if (originalEditor_)
     {
         if (!onWorker(QStringLiteral("关闭原试剂"))) return;

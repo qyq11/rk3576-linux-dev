@@ -16,6 +16,8 @@ public:
     bool isBusy() const { return page_&&page_->isBusy(); }
     bool isOpen() const { return !page_.isNull(); }
     AlarmHistoryPage *page() const { return page_; }
+public slots:
+    void originalEventsCommitted(AlarmHistory::Rows rows);
 signals:
     void statusChanged(QString text,bool error);
     void busyChanged(bool busy);

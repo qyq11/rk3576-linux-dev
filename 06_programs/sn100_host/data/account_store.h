@@ -72,6 +72,8 @@ public slots:
     // 使用loginFinished回执；空口令登录另按原窗口同样采用默认角色。
     void applyOriginalConfiguredSession(quint64 requestId);
     void setSession(QString name, bool actionReady);
+    // 只更新设备动作条件，不改变账户身份；可在账户库初始化前接收首次状态。
+    void setDeviceActionReady(bool actionReady);
     // 密码认证与模拟身份选择分开，任何结果都不携带输入密码。
     void loadLoginDefault(quint64 requestId);
     void authenticate(quint64 requestId, QString name, QString password, bool remember);
@@ -87,6 +89,7 @@ public slots:
 signals:
     void ready();
     void sessionChanged(AccountSession session);
+    void deviceActionReadyChanged(bool actionReady);
     void defaultLoginLoaded(quint64 requestId, QString name, QString warning);
     void loginFinished(quint64 requestId, bool accepted, bool defaultSaved,
                        QString error, QString warning);
@@ -126,6 +129,8 @@ private:
     QMap<int, QString> m_originalRoles;
     std::unique_ptr<OriginalBusiness::Database> m_originalDatabase;
     bool m_configuredRequiresDisabled = false;
+    bool m_deviceActionReadyObserved = false;
+    bool m_deviceActionReady = false;
 };
 
 #endif

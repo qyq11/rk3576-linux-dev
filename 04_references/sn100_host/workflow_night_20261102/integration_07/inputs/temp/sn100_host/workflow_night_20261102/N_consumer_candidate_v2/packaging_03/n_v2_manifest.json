@@ -1,0 +1,1675 @@
+{
+  "06_patch_applied": false,
+  "application_choices": {
+    "capacity_only": "完整新增片和已有容量的delta是替代关系，不能重复应用",
+    "on_actual_06": "仅用n_v2_cumulative_on06.patch；其中容量已完整新增一次",
+    "on_v2_base": "n_v2_delta.patch加n_v2_store_guard.patch，或对应各分片；不能再叠加同内容分片"
+  },
+  "compile": {
+    "actual_06_project_copy_header": {
+      "all_required_consumers_selected_actual_06": true,
+      "path": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_copy.h",
+      "required_consumers": [
+        "original_reagent_level_projects.d",
+        "original_reagent_level_repository.d",
+        "original_reagent_level_worker.d",
+        "original_reagent_store.d"
+      ],
+      "sha256": "6631707ba3d486f75989092068ff0d79f732c1f86eff9bcf9c431c622c401efe"
+    },
+    "actual_log": {
+      "final_success_marker": true,
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/compile_followup_02.log",
+      "sha256": "6012c4fab1d87667657081ff48911610c926bc8ac8b9955e374818775d3648a7",
+      "success_marker": "COMPILE_ONLY_EXIT=0"
+    },
+    "actual_log_scope": "仅本轮重编；union还含02逐SHA复用的对象，不把一份日志称为全量重编",
+    "all_guarded_inputs_still_equal_after": true,
+    "all_local_dependencies_guarded": true,
+    "build_dir": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects",
+    "caller_reported_compile_exit": 0,
+    "compiler_dependency_report": {
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/actual_dependencies.json",
+      "scope": "phase2后完整union依赖",
+      "sha256": "fe34117f123b5a522a12cb3e2a3382887d5e2eaedafa9c0615102537f0616038"
+    },
+    "dependencies": {
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/catalog_shell.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/catalog_shell.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_document.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_remaining_view.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_runtime_settings.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_save_notice.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusbadgebutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusflageimage.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusmenubutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusview.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialtheme.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/qtmaterialflatbutton.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/device_control_shell.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/device_control_shell.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/calibration/calibration_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/calibration/calibration_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/calibration/calibration_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/hospital_dictionary_query.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_document.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_remaining_view.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/device_control.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/instrument_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/maintenance_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/original_status_values.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_runtime_settings.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_system_profile.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_save_notice.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/frame_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/read_only_messages.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/status_replay.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/status_session.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/tcp_transport.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusbadgebutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusflageimage.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusmenubutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusview.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialtheme.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/qtmaterialflatbutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/cusmessagebox.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/frmaccountsetting.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/frmmain.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/frmmain.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/hospital_dictionary_query.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/hospital_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/lis_settings_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_controller.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_document.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_remaining_view.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/instrument_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/maintenance_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/original_status_values.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_runtime_settings.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_system_profile.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/theme_configuration.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_save_notice.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/frame_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/status_replay.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/status_session.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/cusreagenthole.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/frmuserset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusbadgebutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusflageimage.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusmenubutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusview.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialtheme.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/qtmaterialflatbutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/frmaccountsetting.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/frmhospinfosetting.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/frmlissetting.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/maskdlglogin.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/maskdlgshutdown.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/main.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/main.cpp",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/alarm_history/alarm_history_host.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/alarm_history/alarm_history_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/alarm_history/alarm_history_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/alarm_history/original_alarm_receiver.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/calibration/calibration_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/calibration/calibration_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/calibration/calibration_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/hospital_dictionary_query.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/hospital_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/lis_settings_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/printer_settings_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_document.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_remaining_view.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/device_control.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/instrument_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/maintenance_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/original_channel_receiver.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/original_channel_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/original_status_values.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/lis_transport/lis_mllp_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/lis_transport/lis_tcp_transport.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_runtime_settings.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_system_profile.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/theme_configuration.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_save_notice.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/frame_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/read_only_messages.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/status_loopback.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/status_replay.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/status_session.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/tcp_transport.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/quality/statistics.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/quality_control/qc_history_core.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/quality_control/qc_history_reply.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/quality_control/qc_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/quality_control/quality_control_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/printer_report_shell.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/sample_qc_shell.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/shutdown_request.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/startup_splash.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/frmaccountsetting.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/frmhospinfosetting.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/frmlissetting.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/frmprintersetting.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/language_setting_page.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_frmmain.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_frmmain.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_document.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_remaining_view.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_runtime_settings.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_save_notice.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_original_reagent_level_worker.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_original_reagent_level_worker.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/original_files/original_reagent_capacity.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_worker.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagent_store.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagent_store.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagents_page.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagents_page.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_model.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/original_files/original_reagent_capacity.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_model.cpp",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_projects.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/original_files/original_reagent_capacity.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_projects.cpp",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_copy.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_repository.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/original_files/original_reagent_capacity.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_repository.cpp",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_copy.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_worker.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/original_files/original_reagent_capacity.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_worker.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_worker.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_runtime_settings.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/theme_configuration.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_copy.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_editor.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_store.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_store.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_copy.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_editor.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagent_level_shell.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/original_files/original_reagent_capacity.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_worker.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/frmmain.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/reagent_level_shell.cpp",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/history_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_document.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/history/report_remaining_view.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/instrument/device_control.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_ini.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_runtime_settings.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/original_project_save_notice.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/frame_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/read_only_messages.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/status_session.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/protocol/tcp_transport.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagents_page.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_addbatchgroupdialog.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_cusmaskcalendar.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_frmreagentmaterial.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_maskdlggroupsetting.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_maskdlgreagentcode.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_maskdlgreagentlistsetting.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_maskdlgreagentsetting.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/original_files/original_reagent_capacity.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_runtime.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.cpp",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/alarm_history/calendar/cuscalendar.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/cuscheckbox.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_usage.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/wgtreagentpanel.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusview.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialtheme.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/qtmaterialflatbutton.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/cusdialogmask.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/ui/cusmessagebox.h"
+      ],
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagents_page_level.d": [
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_frmreagentmaterial.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/original_files/original_reagent_capacity.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_runtime.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_worker.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page_level.cpp",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/data/account_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/original_files/original_business_database.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_advanced.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/project_current_format.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/projects/projects_store.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/cusreagenthole.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_repository.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/wgtreagentpanel.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/original_task_codec.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_preset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_qc_protocol.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_task_reset.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/samples/sample_types.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/cusview.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/lib/qtmaterialtheme.h",
+        "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/widgets/material/qtmaterialflatbutton.h"
+      ]
+    },
+    "dependency_file_count": 16,
+    "generated_dependencies": {
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_frmmain.cpp": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/frmmain.h",
+        "sha256": "a0f7f13d90c4be2b9f03e7b6c189333e4fd99626f44ff222e367182ed6eb8b25"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_original_reagent_level_worker.cpp": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_worker.h",
+        "sha256": "59f2596833871b0d7df3db385be312778fe3324b22831239fca522c433c88303"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagent_store.cpp": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagent_store.h",
+        "sha256": "5efed46f045c2cc43f14f6d9faa94b662144e6ecbf1ebf13e8cdd2aa4f05282c"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagents_page.cpp": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/reagents_page.h",
+        "sha256": "1c8fada0bea5ec1224becb7dffcbbdb37f00847f556e4669d1bfe7e7dfb68c01"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_addbatchgroupdialog.h": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/addbatchgroupdialog.ui",
+        "sha256": "04b56ac97155309f78886e1bf69cc8d37ad79e6230a2a45847802c6bdf189576"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_cusmaskcalendar.h": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/alarm_history/cusmaskcalendar.ui",
+        "sha256": "81bf5d21a3f21bce41d5e6070e8afc92b3d5cfb98b8e0f558151de90d417d7f1"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_frmmain.h": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/frmmain.ui",
+        "sha256": "09a9e218ac8e7959a40e289f731424f61dae53ca6e4fdfba7d4f0970fc3a79ec"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_frmreagentmaterial.h": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/frmreagentmaterial.ui",
+        "sha256": "748a7739866b2d92511c7a2ee24bb41249deb2e3d82d38252e9b145130c6b148"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_maskdlggroupsetting.h": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/maskdlggroupsetting.ui",
+        "sha256": "373f558f440e420fba6d9bef5d251f0a96fca4623c21f646341d3880d6a41cfe"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_maskdlgreagentcode.h": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/maskdlgreagentcode.ui",
+        "sha256": "9e8d143400797bbbbdeed2d0e9ea6ed89e7b649f285def6c709433e37102095e"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_maskdlgreagentlistsetting.h": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/maskdlgreagentlistsetting.ui",
+        "sha256": "2842a972f4ecda15ea5c6c2d81a56ce84994ee91d03f282b414feac0090cbef4"
+      },
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/ui_maskdlgreagentsetting.h": {
+        "guarded_source": "temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/maskdlgreagentsetting.ui",
+        "sha256": "8be976ce7a4c4e16388768e7a0ae3e25560c0af5207e4c52bafac955a83d194b"
+      }
+    },
+    "input_count": 379,
+    "input_inventory_bytes_equal": true,
+    "inputs_after": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/inputs_after.json",
+    "inputs_after_sha256": "2e301fcabfe5da34810439b94355ee6a46569f47ee9f1e2e4a384c67df522368",
+    "inputs_before": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/inputs_before.json",
+    "inputs_before_equal_after": true,
+    "inputs_before_sha256": "2e301fcabfe5da34810439b94355ee6a46569f47ee9f1e2e4a384c67df522368",
+    "moc_object_count": 4,
+    "object_count": 16,
+    "objects": {
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/catalog_shell.o": "72256c523ad6d315d5e26799f6cd58505e9d2c2ed29030d4b3dff7a9e2d93014",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/device_control_shell.o": "33cb997fc03950ed632b14464a2e075db45185dc339294d7497730707bb041e4",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/frmmain.o": "d070070ee903862f7d5f778ecb89d7dd5c23390703659a3659b3c96740ff2da5",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/main.o": "7de2ccdf615eb0119f0a866974712a95b707aeb5308145fd9ac6b516b9475f1a",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_frmmain.o": "956dad28451ad9abcca9cb11add0f4fe686f3d2fe949f0d9ca74c2ac8ab053c4",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_original_reagent_level_worker.o": "c0b03af2825585022690168ef6febc4856883bd50e4cf398b3d0b310c502b30f",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagent_store.o": "80714163d3c9a46ac1f36d36cc7aba4dc1ff6ccfc644df6089bae747e1b97074",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagents_page.o": "95e192631860b899803c2ceb0ddb4fb9a57b492c2738f5e2661fe714adc7939b",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_model.o": "38b454048eec15675d8ee5ea1390a66f60166359c6af25b67f771774211406a8",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_projects.o": "b8f876d4050ea1c2987f2599f97a0b92cca501088768ca274ee58b42c7a7e322",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_repository.o": "4f1463a967285f440a276958b4672b6d2762262762d6dd6b4ea4b2646134158e",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_worker.o": "f47771969e43d045eff11182beaaa652ef54e59d11defc6938e29ccab8342bc7",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_store.o": "cb16d5628664da70de1960bd1cf795f435db330d5d2dbeb017c79a44267f540e",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagent_level_shell.o": "93f053576719188e85e17fa371236360e916c3f7f5d386318941f139d2c5c6a6",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagents_page.o": "9708fb7ba862b818d6a39bc95179ebaa937eaf2c2cf6807fb57a72a455e35020",
+      "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagents_page_level.o": "fcf12b238a319f0b60e72271f0bc627c3266963201c28800f145668b92bd2e42"
+    },
+    "phases": {
+      "phase1": {
+        "actual_log": {
+          "final_success_marker": true,
+          "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/compile_01.log",
+          "sha256": "6be3217e811a947827e58646a421bb8d9276849f83b03fb3787a1cf4a6900b07"
+        },
+        "all_local_dependencies_guarded": true,
+        "allowed_changed_inputs": [
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_model.cpp",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_projects.cpp",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/reagents/original_reagent_level_repository.cpp",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/candidate/shell/reagent_level_shell.cpp"
+        ],
+        "caller_reported_compile_exit": 0,
+        "compiler_dependency_report": {
+          "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/actual_dependencies.json",
+          "sha256": "fe34117f123b5a522a12cb3e2a3382887d5e2eaedafa9c0615102537f0616038"
+        },
+        "input_count": 378,
+        "input_inventory_bytes_equal": true,
+        "inputs_after": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/inputs_after.json",
+        "inputs_after_sha256": "f2e8e53df66242556fa77bb4d351bedcfc25257e0a246cc95eb9f66608c0047e",
+        "inputs_before": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/inputs_before.json",
+        "inputs_before_equal_after": true,
+        "inputs_before_sha256": "f2e8e53df66242556fa77bb4d351bedcfc25257e0a246cc95eb9f66608c0047e",
+        "manifest": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_02/n_v2_manifest.json",
+        "manifest_sha256": "ba059ef434d11c42df605119cb2e4358673b799db28423b0532c00a948aa1745",
+        "moc_object_count": 4,
+        "object_count": 16,
+        "only_added_guard": "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/compile_v2_followup.py",
+        "replaced_outputs_and_sources_preserved": {
+          "reagents/original_reagent_level_model.cpp": {
+            ".cpp": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_model_before.cpp",
+              "sha256": "c5b14384c7c65d0540b76273e4cb602baf9448f0725cfdf72ca86e55fd7ec23e"
+            },
+            ".d": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_model_before.d",
+              "sha256": "84ead1f1170e07730561adbcae8be74a5624e9b4cf645a34ec48be424b59a6a5"
+            },
+            ".o": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_model_before.o",
+              "sha256": "67a179de2d13d7b76f3c842e0d3034a84f0d3725a92b991d7686aee56ea8f132"
+            }
+          },
+          "reagents/original_reagent_level_projects.cpp": {
+            ".cpp": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_projects_before.cpp",
+              "sha256": "64b2a34cab42aa9d542fd678c402b8de397edffd1e5cea8560b4c4e9de5d1b10"
+            },
+            ".d": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_projects_before.d",
+              "sha256": "8685f40b4ed3b533e101c0840bb193fba6100ade7e08f6a5fce7bc374885a5bf"
+            },
+            ".o": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_projects_before.o",
+              "sha256": "b9c223685bdab83c24b71915d6c95e62442fdced2994272f3075ecce870ea699"
+            }
+          },
+          "reagents/original_reagent_level_repository.cpp": {
+            ".cpp": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_repository_before.cpp",
+              "sha256": "eb63867987f3989f9e19b0ccd6ffe800f4ed50ee6f6a1dfa22279d76bd8ddec8"
+            },
+            ".d": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_repository_before.d",
+              "sha256": "6da43158e24bae5017b65b753983b3e6c75478b164529c07d0a06d669f8ec436"
+            },
+            ".o": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/original_reagent_level_repository_before.o",
+              "sha256": "89a31e9b0e61833a9cb2d837b23e5189d1867f232c09a1f32fa354cb2bef073c"
+            }
+          },
+          "shell/reagent_level_shell.cpp": {
+            ".cpp": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/reagent_level_shell_before.cpp",
+              "sha256": "4b3e48fa05de5a1192461de6d3affe6d406913deb6230f8bdb835c75819f52cf"
+            },
+            ".d": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/reagent_level_shell_before.d",
+              "sha256": "361af61cb12cd3bc41612a9f65a62dcff08768d6847a5879351a60412f01e6c0"
+            },
+            ".o": {
+              "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/reagent_level_shell_before.o",
+              "sha256": "2eaed0e1819f367ec2ddabd62ad7e7e208110e17924468b1aaec2585ba74a003"
+            }
+          }
+        },
+        "source_object_count": 12
+      },
+      "phase2": {
+        "actual_log": {
+          "final_success_marker": true,
+          "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/compile_followup_02.log",
+          "sha256": "6012c4fab1d87667657081ff48911610c926bc8ac8b9955e374818775d3648a7",
+          "success_marker": "COMPILE_ONLY_EXIT=0"
+        },
+        "caller_reported_compile_exit": 0,
+        "compile_phases_report": {
+          "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/compile_phases.json",
+          "sha256": "8e799a9b8647878dd10fc15a48ef531914c1589cb4ede9a7168691da3ed9874e"
+        },
+        "input_count": 379,
+        "input_inventory_bytes_equal": true,
+        "inputs_after": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/inputs_after.json",
+        "inputs_after_sha256": "2e301fcabfe5da34810439b94355ee6a46569f47ee9f1e2e4a384c67df522368",
+        "inputs_before": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/inputs_before.json",
+        "inputs_before_equal_after": true,
+        "inputs_before_sha256": "2e301fcabfe5da34810439b94355ee6a46569f47ee9f1e2e4a384c67df522368",
+        "recompiled_count": 4,
+        "recompiled_objects": {
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_model.o": "38b454048eec15675d8ee5ea1390a66f60166359c6af25b67f771774211406a8",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_projects.o": "b8f876d4050ea1c2987f2599f97a0b92cca501088768ca274ee58b42c7a7e322",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_repository.o": "4f1463a967285f440a276958b4672b6d2762262762d6dd6b4ea4b2646134158e",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagent_level_shell.o": "93f053576719188e85e17fa371236360e916c3f7f5d386318941f139d2c5c6a6"
+        },
+        "reused_objects": {
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/catalog_shell.o": "72256c523ad6d315d5e26799f6cd58505e9d2c2ed29030d4b3dff7a9e2d93014",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/device_control_shell.o": "33cb997fc03950ed632b14464a2e075db45185dc339294d7497730707bb041e4",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/frmmain.o": "d070070ee903862f7d5f778ecb89d7dd5c23390703659a3659b3c96740ff2da5",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/main.o": "7de2ccdf615eb0119f0a866974712a95b707aeb5308145fd9ac6b516b9475f1a",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_frmmain.o": "956dad28451ad9abcca9cb11add0f4fe686f3d2fe949f0d9ca74c2ac8ab053c4",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_original_reagent_level_worker.o": "c0b03af2825585022690168ef6febc4856883bd50e4cf398b3d0b310c502b30f",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagent_store.o": "80714163d3c9a46ac1f36d36cc7aba4dc1ff6ccfc644df6089bae747e1b97074",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/moc_reagents_page.o": "95e192631860b899803c2ceb0ddb4fb9a57b492c2738f5e2661fe714adc7939b",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_level_worker.o": "f47771969e43d045eff11182beaaa652ef54e59d11defc6938e29ccab8342bc7",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/original_reagent_store.o": "cb16d5628664da70de1960bd1cf795f435db330d5d2dbeb017c79a44267f540e",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagents_page.o": "9708fb7ba862b818d6a39bc95179ebaa937eaf2c2cf6807fb57a72a455e35020",
+          "temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/arm64_objects/reagents_page_level.o": "fcf12b238a319f0b60e72271f0bc627c3266963201c28800f145668b92bd2e42"
+        },
+        "reused_objects_before_report": {
+          "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/shell_followup/reused_objects_before.json",
+          "sha256": "7e065b16c9ea00bf3f5de199f695064fc5c46dbc94c627a22f5a8f8da6519486"
+        }
+      }
+    },
+    "recompiled_object_count": 4,
+    "reused_object_count": 12,
+    "source_object_count": 12,
+    "unguarded_external_dependencies": []
+  },
+  "compile_artifacts_end": {
+    "passed": true
+  },
+  "compile_guard_end": {
+    "passed": true
+  },
+  "direct_formal_apply_ready": true,
+  "errors": [],
+  "excluded_compile_support": {
+    "06_programs/sn100_host/shell/catalog_shell.cpp": {
+      "base_sha256": "4e7a0480f366562f68226ddae71a731b55c78dd1f939cbff7ada0d8fad03c183",
+      "candidate_sha256": "4e7a0480f366562f68226ddae71a731b55c78dd1f939cbff7ada0d8fad03c183",
+      "reason": "main/catalog仅本轮编译支持，不纳正式N补丁"
+    },
+    "06_programs/sn100_host/shell/main.cpp": {
+      "base_sha256": "a0683da0485f71ac2b8af5abda6c7251fc35b65cc19288dd63c9d4ea1193bed7",
+      "candidate_sha256": "a0683da0485f71ac2b8af5abda6c7251fc35b65cc19288dd63c9d4ea1193bed7",
+      "reason": "main/catalog仅本轮编译支持，不纳正式N补丁"
+    }
+  },
+  "files": {
+    "06_programs/sn100_host/original_files/original_reagent_capacity.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "8b2cd6917a65720e0725089483b58b3db98c7f5a501678c050af9d37bb34fa9b",
+      "cumulative_base_directory_sha256": "7ed662f1999e660d58419f0f87cf2505e792def71a51801f8735748b1a8bff1d",
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "8b2cd6917a65720e0725089483b58b3db98c7f5a501678c050af9d37bb34fa9b"
+    },
+    "06_programs/sn100_host/original_files/original_reagent_capacity.h": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "913e3d14997f559e19c64ef7e95b314ff98288b0be18540777eb88d1d0e4e2d8",
+      "cumulative_base_directory_sha256": "4cdd4fe5044dacf532d3469396e78001bf1f1c47d5744f9fefc60603c0ceedc1",
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "913e3d14997f559e19c64ef7e95b314ff98288b0be18540777eb88d1d0e4e2d8"
+    },
+    "06_programs/sn100_host/reagents/build.sh": {
+      "actual_06_sha256": "218c7719950c2b9202c5955d9b148370e5f19f3ecfa60aca7c7dd750b80fec17",
+      "candidate_sha256": "1f85bc0620583e79ade83f229883566699e35be43ff5b5b67a49e19dcbd01431",
+      "cumulative_base_directory_sha256": "218c7719950c2b9202c5955d9b148370e5f19f3ecfa60aca7c7dd750b80fec17",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/build.sh",
+      "v2_base_sha256": "1f85bc0620583e79ade83f229883566699e35be43ff5b5b67a49e19dcbd01431"
+    },
+    "06_programs/sn100_host/reagents/cusreagenthole.cpp": {
+      "actual_06_sha256": "54f303f0289cdaba90ab2f013bce3d72ff31cc70fd103e93c7481ef12cc23edc",
+      "candidate_sha256": "823464871a16f5194dbfe59550e6c076fdad7e4a8c17fe8b7d55652899cc0123",
+      "cumulative_base_directory_sha256": "54f303f0289cdaba90ab2f013bce3d72ff31cc70fd103e93c7481ef12cc23edc",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/cusreagenthole.cpp",
+      "v2_base_sha256": "823464871a16f5194dbfe59550e6c076fdad7e4a8c17fe8b7d55652899cc0123"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level.h": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "4a83d79493889dfb89dea5261ed35b2a29c6fc60761b08678c9683cc284ba494",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "4a83d79493889dfb89dea5261ed35b2a29c6fc60761b08678c9683cc284ba494"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level_model.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "0d83d1fb4cb7b466b6fc056a20d7cc13789b390f88e173802fa75e877a865f25",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "f6446a1e72f674216e10445890181d5658c41bce07083c03638a66932cb18d74"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level_packet.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "7537727b4e4a5a976693c5e1d25552f55c863c9f109bdad1a3367b68f7bc3e7b",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "7537727b4e4a5a976693c5e1d25552f55c863c9f109bdad1a3367b68f7bc3e7b"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "c566a72b82c9afa5a1c3fd0c34eb96625712f29bf2022c7916e3bf4e572351c0",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "77f0cde3a627c1338e1994c144cddbc2104856b467e28dc47296ec092c03a585"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "d1b2c49adc7e59e318d7f0cb393118a62c371a00847679e5660f17c1d4f11b6d",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "0ca763efd9c90926c9759dac2809e6911bc130265bc17d515ceff8f92998a004"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "9637a3513c79a6ea134b523cc25cc436f84300df48293175d39c7c9beeeea22e",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "9637a3513c79a6ea134b523cc25cc436f84300df48293175d39c7c9beeeea22e"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level_runtime.h": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "582a6bc8b67acf2a6e4f4b1c28c4449a100b62f4dd32c84a6d8a15091613a844",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "582a6bc8b67acf2a6e4f4b1c28c4449a100b62f4dd32c84a6d8a15091613a844"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "2eac51151cdc26af5164ab6400516545c1aa755ea4149c92b696959f7bf21881",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "50b5aa1ab4bc27fd6214f9aa2baaa068fd0f13ff4a1a89f418f874390639d7af"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_level_worker.h": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "60745972df82780edbdf8048fcccb402c18049a51a6bd49150506c99754c419b",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "8a189d2b8e11cf38c4df7eaae4290566faed28bce5555d3c6a2a6e54b68a0918"
+    },
+    "06_programs/sn100_host/reagents/original_reagent_store.cpp": {
+      "actual_06_sha256": "d30ef2e72903697574ed7220d4592c51db21f567d9186606e67ddb7115849a94",
+      "candidate_sha256": "b2396b50051708cac9f926fb690b92878f77acf717d66ebf9ca09e920a44ecac",
+      "cumulative_base_directory_sha256": "d30ef2e72903697574ed7220d4592c51db21f567d9186606e67ddb7115849a94",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/original_reagent_store.cpp",
+      "v2_base_sha256": "d30ef2e72903697574ed7220d4592c51db21f567d9186606e67ddb7115849a94"
+    },
+    "06_programs/sn100_host/reagents/reagent_store.h": {
+      "actual_06_sha256": "b384b21672886934e63c7279f9229f1cd066c61531ff108bb399927a297e9dc7",
+      "candidate_sha256": "a1f78940a79b289291a0da46d829332a79c7224aabe74f48407a9aac9dec20d4",
+      "cumulative_base_directory_sha256": "b384b21672886934e63c7279f9229f1cd066c61531ff108bb399927a297e9dc7",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagent_store.h",
+      "v2_base_sha256": "b384b21672886934e63c7279f9229f1cd066c61531ff108bb399927a297e9dc7"
+    },
+    "06_programs/sn100_host/reagents/reagents.pri": {
+      "actual_06_sha256": "00bc3ada5c5dc4820603f726c4d996bd5016d24b25751a100b847e521bd62a5e",
+      "candidate_sha256": "74e3632d10cb71c704f5286309a4646ff495c6358e52960f18b3e7f96dd6a197",
+      "cumulative_base_directory_sha256": "00bc3ada5c5dc4820603f726c4d996bd5016d24b25751a100b847e521bd62a5e",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagents.pri",
+      "v2_base_sha256": "74e3632d10cb71c704f5286309a4646ff495c6358e52960f18b3e7f96dd6a197"
+    },
+    "06_programs/sn100_host/reagents/reagents_page.cpp": {
+      "actual_06_sha256": "d3982c14f8aa312da340bf845f7a3bc208a1d1e3c8c3b7e3fb9a410efb8e08e1",
+      "candidate_sha256": "7bb68eb3ce6814ec69bc570d8a3e13bc040a19bf9164d52520702551dec38397",
+      "cumulative_base_directory_sha256": "d3982c14f8aa312da340bf845f7a3bc208a1d1e3c8c3b7e3fb9a410efb8e08e1",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagents_page.cpp",
+      "v2_base_sha256": "7bb68eb3ce6814ec69bc570d8a3e13bc040a19bf9164d52520702551dec38397"
+    },
+    "06_programs/sn100_host/reagents/reagents_page.h": {
+      "actual_06_sha256": "8f79f3a911e1c67485ff5942f11730f4d46af18decfa7b1bd42f8a7828db682d",
+      "candidate_sha256": "12c56fa9b2d404a5cb39685d8354708c1a14fb17282b379a6dbdfcc3d6430d03",
+      "cumulative_base_directory_sha256": "8f79f3a911e1c67485ff5942f11730f4d46af18decfa7b1bd42f8a7828db682d",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/reagents/reagents_page.h",
+      "v2_base_sha256": "f7eb0725b47371075d0cabe04b8333c370035e4b811aa430a38cf253b56dd463"
+    },
+    "06_programs/sn100_host/reagents/reagents_page_level.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "1a8f63de297a1823c0161248271c780045f764795d5d8d057aa774af7e2dbb76",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "feda570aad40c79a577552cb1e94cb02f7ec0799079e79bc37f2a188e68e70c6"
+    },
+    "06_programs/sn100_host/shell/build.sh": {
+      "actual_06_sha256": "0b46e94d755eba19c30a5589e3f15634f29dc213cbc6053da56f5c09ed660617",
+      "candidate_sha256": "3a7c1ee5c31f988e432af2ae9625c8f77d96fff50d0dfd28abb3d678262c856c",
+      "cumulative_base_directory_sha256": "0b46e94d755eba19c30a5589e3f15634f29dc213cbc6053da56f5c09ed660617",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/build.sh",
+      "v2_base_sha256": "3a7c1ee5c31f988e432af2ae9625c8f77d96fff50d0dfd28abb3d678262c856c"
+    },
+    "06_programs/sn100_host/shell/device_control_shell.cpp": {
+      "actual_06_sha256": "871227756333596a198f04bd982952b2df360fa349a6bd583b3ff7a7f6bf7802",
+      "candidate_sha256": "37445869a22ae08e1fa4fb1ddd44b9be36c1cc192183442edae8871a5896e955",
+      "cumulative_base_directory_sha256": "871227756333596a198f04bd982952b2df360fa349a6bd583b3ff7a7f6bf7802",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/device_control_shell.cpp",
+      "v2_base_sha256": "12b38e5673967d144a34ef9ae1627a74ebee26062593663d3441b5510353184a"
+    },
+    "06_programs/sn100_host/shell/frmmain.cpp": {
+      "actual_06_sha256": "a9be90d4f762e065de382b1fc84c00d02e6704177c39c1902053c3eb0645c600",
+      "candidate_sha256": "1a0b9d0bb173e487c55eea2b9ad08530cc980bac1e40ba9ad6c22670fad91367",
+      "cumulative_base_directory_sha256": "a9be90d4f762e065de382b1fc84c00d02e6704177c39c1902053c3eb0645c600",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/frmmain.cpp",
+      "v2_base_sha256": "1a0b9d0bb173e487c55eea2b9ad08530cc980bac1e40ba9ad6c22670fad91367"
+    },
+    "06_programs/sn100_host/shell/frmmain.h": {
+      "actual_06_sha256": "f492265c46e5ee250c12824d061e7fff60fb9e3c418e2592b8f97d03fe56c61a",
+      "candidate_sha256": "2552d4bbba8e53231cf6e72697045dec4751975a494bf4a9e394819114b5841b",
+      "cumulative_base_directory_sha256": "f492265c46e5ee250c12824d061e7fff60fb9e3c418e2592b8f97d03fe56c61a",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/frmmain.h",
+      "v2_base_sha256": "f3cd42a1b81775810a19d0980811e2f64b3d5758716552108ff45469aef39ea8"
+    },
+    "06_programs/sn100_host/shell/reagent_level_shell.cpp": {
+      "actual_06_sha256": null,
+      "candidate_sha256": "ba5c765f6bf6e535c029a16fc635e3edcba5bcac40567bfdd033103af26b6011",
+      "cumulative_base_directory_sha256": null,
+      "cumulative_preimage": "/dev/null",
+      "v2_base_sha256": "7f1e4cf99f4534b30636820e189eaedf3cc569fd4b57eb33e7501c400538b9f2"
+    },
+    "06_programs/sn100_host/shell/shell.pri": {
+      "actual_06_sha256": "f8118cc87eee28c045a2d9c3f7f55bcafa31617d3ac65c0e7ce707e48b064d62",
+      "candidate_sha256": "72ab1171aa685bf870b11f254a61768fee6446e32eba228483f570bd62fcbb4b",
+      "cumulative_base_directory_sha256": "f8118cc87eee28c045a2d9c3f7f55bcafa31617d3ac65c0e7ce707e48b064d62",
+      "cumulative_preimage": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_06_review/06_programs/sn100_host/shell/shell.pri",
+      "v2_base_sha256": "72ab1171aa685bf870b11f254a61768fee6446e32eba228483f570bd62fcbb4b"
+    }
+  },
+  "formal_check_note": "正式目录只读检查；失败可能表示只合入部分06，须由总窗口整合，不等于通过",
+  "formal_patch_applied": false,
+  "packaged_inputs_end": {
+    "passed": true
+  },
+  "packaging_passed": true,
+  "patches": {
+    "n_v2_build_delta.patch": {
+      "all_target_files": [
+        "06_programs/sn100_host/reagents/reagents.pri",
+        "06_programs/sn100_host/reagents/build.sh",
+        "06_programs/sn100_host/shell/shell.pri",
+        "06_programs/sn100_host/shell/build.sh"
+      ],
+      "changed_files": [],
+      "status": "无字节差异，不生成空补丁"
+    },
+    "n_v2_capacity_complete_new_files.patch": {
+      "all_target_files": [
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp"
+      ],
+      "changed_files": [
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp"
+      ],
+      "formal_readonly_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_capacity_complete_new_files.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_capacity_complete_new_files.patch",
+      "private_apply": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_capacity_complete_new_files.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_capacity_complete_new_files",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_capacity_complete_new_files.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_capacity_complete_new_files",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check_apply_exact_sha_passed": true,
+      "private_init": {
+        "argv": [
+          "git",
+          "init",
+          "-q",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_capacity_complete_new_files"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_target_sha256": {
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp": "8b2cd6917a65720e0725089483b58b3db98c7f5a501678c050af9d37bb34fa9b",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h": "913e3d14997f559e19c64ef7e95b314ff98288b0be18540777eb88d1d0e4e2d8"
+      },
+      "sha256": "188aba36278c845b77ba17e66d89a43072250cb80c8f52cefd7230406f6c3288"
+    },
+    "n_v2_capacity_delta.patch": {
+      "all_target_files": [
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp"
+      ],
+      "changed_files": [],
+      "status": "无字节差异，不生成空补丁"
+    },
+    "n_v2_core_delta.patch": {
+      "all_target_files": [
+        "06_programs/sn100_host/reagents/original_reagent_level.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_packet.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp"
+      ],
+      "changed_files": [
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp"
+      ],
+      "formal_readonly_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_core_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+        "exit": 1,
+        "stderr": "error: 06_programs/sn100_host/reagents/original_reagent_level_model.cpp: No such file or directory\nerror: 06_programs/sn100_host/reagents/original_reagent_level_projects.cpp: No such file or directory\nerror: 06_programs/sn100_host/reagents/original_reagent_level_repository.cpp: No such file or directory\nerror: 06_programs/sn100_host/reagents/original_reagent_level_worker.h: No such file or directory\nerror: 06_programs/sn100_host/reagents/original_reagent_level_worker.cpp: No such file or directory\n",
+        "stdout": ""
+      },
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_core_delta.patch",
+      "private_apply": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_core_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_core_delta",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_core_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_core_delta",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check_apply_exact_sha_passed": true,
+      "private_init": {
+        "argv": [
+          "git",
+          "init",
+          "-q",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_core_delta"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_target_sha256": {
+        "06_programs/sn100_host/reagents/original_reagent_level.h": "4a83d79493889dfb89dea5261ed35b2a29c6fc60761b08678c9683cc284ba494",
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp": "0d83d1fb4cb7b466b6fc056a20d7cc13789b390f88e173802fa75e877a865f25",
+        "06_programs/sn100_host/reagents/original_reagent_level_packet.cpp": "7537727b4e4a5a976693c5e1d25552f55c863c9f109bdad1a3367b68f7bc3e7b",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp": "c566a72b82c9afa5a1c3fd0c34eb96625712f29bf2022c7916e3bf4e572351c0",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp": "d1b2c49adc7e59e318d7f0cb393118a62c371a00847679e5660f17c1d4f11b6d",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp": "9637a3513c79a6ea134b523cc25cc436f84300df48293175d39c7c9beeeea22e",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.h": "582a6bc8b67acf2a6e4f4b1c28c4449a100b62f4dd32c84a6d8a15091613a844",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp": "2eac51151cdc26af5164ab6400516545c1aa755ea4149c92b696959f7bf21881",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h": "60745972df82780edbdf8048fcccb402c18049a51a6bd49150506c99754c419b"
+      },
+      "sha256": "d64a2744036e0b3eb92f2dfcfdc8259a21b1d007bd39f3cef44428578572264e"
+    },
+    "n_v2_cumulative_on06.patch": {
+      "06_readonly_cumulative_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "--directory=temp/sn100_host/workflow_night_20261102/integration_06_review",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_cumulative_on06.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "all_target_files": [
+        "06_programs/sn100_host/reagents/original_reagent_level.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_packet.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp",
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp",
+        "06_programs/sn100_host/reagents/reagents_page.h",
+        "06_programs/sn100_host/reagents/reagents_page.cpp",
+        "06_programs/sn100_host/reagents/cusreagenthole.cpp",
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp",
+        "06_programs/sn100_host/shell/frmmain.h",
+        "06_programs/sn100_host/shell/frmmain.cpp",
+        "06_programs/sn100_host/shell/device_control_shell.cpp",
+        "06_programs/sn100_host/reagents/reagents.pri",
+        "06_programs/sn100_host/reagents/build.sh",
+        "06_programs/sn100_host/shell/shell.pri",
+        "06_programs/sn100_host/shell/build.sh",
+        "06_programs/sn100_host/reagents/reagent_store.h",
+        "06_programs/sn100_host/reagents/original_reagent_store.cpp",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp"
+      ],
+      "changed_files": [
+        "06_programs/sn100_host/reagents/original_reagent_level.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_packet.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp",
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp",
+        "06_programs/sn100_host/reagents/reagents_page.h",
+        "06_programs/sn100_host/reagents/reagents_page.cpp",
+        "06_programs/sn100_host/reagents/cusreagenthole.cpp",
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp",
+        "06_programs/sn100_host/shell/frmmain.h",
+        "06_programs/sn100_host/shell/frmmain.cpp",
+        "06_programs/sn100_host/shell/device_control_shell.cpp",
+        "06_programs/sn100_host/reagents/reagents.pri",
+        "06_programs/sn100_host/reagents/build.sh",
+        "06_programs/sn100_host/shell/shell.pri",
+        "06_programs/sn100_host/shell/build.sh",
+        "06_programs/sn100_host/reagents/reagent_store.h",
+        "06_programs/sn100_host/reagents/original_reagent_store.cpp",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp"
+      ],
+      "formal_readonly_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_cumulative_on06.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_cumulative_on06.patch",
+      "private_apply": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_cumulative_on06.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_cumulative_on06",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_cumulative_on06.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_cumulative_on06",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check_apply_exact_sha_passed": true,
+      "private_init": {
+        "argv": [
+          "git",
+          "init",
+          "-q",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_cumulative_on06"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_target_sha256": {
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp": "8b2cd6917a65720e0725089483b58b3db98c7f5a501678c050af9d37bb34fa9b",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h": "913e3d14997f559e19c64ef7e95b314ff98288b0be18540777eb88d1d0e4e2d8",
+        "06_programs/sn100_host/reagents/build.sh": "1f85bc0620583e79ade83f229883566699e35be43ff5b5b67a49e19dcbd01431",
+        "06_programs/sn100_host/reagents/cusreagenthole.cpp": "823464871a16f5194dbfe59550e6c076fdad7e4a8c17fe8b7d55652899cc0123",
+        "06_programs/sn100_host/reagents/original_reagent_level.h": "4a83d79493889dfb89dea5261ed35b2a29c6fc60761b08678c9683cc284ba494",
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp": "0d83d1fb4cb7b466b6fc056a20d7cc13789b390f88e173802fa75e877a865f25",
+        "06_programs/sn100_host/reagents/original_reagent_level_packet.cpp": "7537727b4e4a5a976693c5e1d25552f55c863c9f109bdad1a3367b68f7bc3e7b",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp": "c566a72b82c9afa5a1c3fd0c34eb96625712f29bf2022c7916e3bf4e572351c0",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp": "d1b2c49adc7e59e318d7f0cb393118a62c371a00847679e5660f17c1d4f11b6d",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp": "9637a3513c79a6ea134b523cc25cc436f84300df48293175d39c7c9beeeea22e",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.h": "582a6bc8b67acf2a6e4f4b1c28c4449a100b62f4dd32c84a6d8a15091613a844",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp": "2eac51151cdc26af5164ab6400516545c1aa755ea4149c92b696959f7bf21881",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h": "60745972df82780edbdf8048fcccb402c18049a51a6bd49150506c99754c419b",
+        "06_programs/sn100_host/reagents/original_reagent_store.cpp": "b2396b50051708cac9f926fb690b92878f77acf717d66ebf9ca09e920a44ecac",
+        "06_programs/sn100_host/reagents/reagent_store.h": "a1f78940a79b289291a0da46d829332a79c7224aabe74f48407a9aac9dec20d4",
+        "06_programs/sn100_host/reagents/reagents.pri": "74e3632d10cb71c704f5286309a4646ff495c6358e52960f18b3e7f96dd6a197",
+        "06_programs/sn100_host/reagents/reagents_page.cpp": "7bb68eb3ce6814ec69bc570d8a3e13bc040a19bf9164d52520702551dec38397",
+        "06_programs/sn100_host/reagents/reagents_page.h": "12c56fa9b2d404a5cb39685d8354708c1a14fb17282b379a6dbdfcc3d6430d03",
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp": "1a8f63de297a1823c0161248271c780045f764795d5d8d057aa774af7e2dbb76",
+        "06_programs/sn100_host/shell/build.sh": "3a7c1ee5c31f988e432af2ae9625c8f77d96fff50d0dfd28abb3d678262c856c",
+        "06_programs/sn100_host/shell/device_control_shell.cpp": "37445869a22ae08e1fa4fb1ddd44b9be36c1cc192183442edae8871a5896e955",
+        "06_programs/sn100_host/shell/frmmain.cpp": "1a0b9d0bb173e487c55eea2b9ad08530cc980bac1e40ba9ad6c22670fad91367",
+        "06_programs/sn100_host/shell/frmmain.h": "2552d4bbba8e53231cf6e72697045dec4751975a494bf4a9e394819114b5841b",
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp": "ba5c765f6bf6e535c029a16fc635e3edcba5bcac40567bfdd033103af26b6011",
+        "06_programs/sn100_host/shell/shell.pri": "72ab1171aa685bf870b11f254a61768fee6446e32eba228483f570bd62fcbb4b"
+      },
+      "sha256": "88bdc78486bfa009c41badc9b20df4085df52b383f52c0ac556679d2ca8c7edb"
+    },
+    "n_v2_delta.patch": {
+      "all_target_files": [
+        "06_programs/sn100_host/reagents/original_reagent_level.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_packet.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp",
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp",
+        "06_programs/sn100_host/reagents/reagents_page.h",
+        "06_programs/sn100_host/reagents/reagents_page.cpp",
+        "06_programs/sn100_host/reagents/cusreagenthole.cpp",
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp",
+        "06_programs/sn100_host/shell/frmmain.h",
+        "06_programs/sn100_host/shell/frmmain.cpp",
+        "06_programs/sn100_host/shell/device_control_shell.cpp",
+        "06_programs/sn100_host/reagents/reagents.pri",
+        "06_programs/sn100_host/reagents/build.sh",
+        "06_programs/sn100_host/shell/shell.pri",
+        "06_programs/sn100_host/shell/build.sh",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp"
+      ],
+      "changed_files": [
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp",
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp",
+        "06_programs/sn100_host/reagents/reagents_page.h",
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp",
+        "06_programs/sn100_host/shell/frmmain.h",
+        "06_programs/sn100_host/shell/device_control_shell.cpp"
+      ],
+      "formal_readonly_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+        "exit": 1,
+        "stderr": "error: 06_programs/sn100_host/reagents/original_reagent_level_model.cpp: No such file or directory\nerror: 06_programs/sn100_host/reagents/original_reagent_level_projects.cpp: No such file or directory\nerror: 06_programs/sn100_host/reagents/original_reagent_level_repository.cpp: No such file or directory\nerror: 06_programs/sn100_host/reagents/original_reagent_level_worker.h: No such file or directory\nerror: 06_programs/sn100_host/reagents/original_reagent_level_worker.cpp: No such file or directory\nerror: 06_programs/sn100_host/reagents/reagents_page_level.cpp: No such file or directory\nerror: patch failed: 06_programs/sn100_host/reagents/reagents_page.h:50\nerror: 06_programs/sn100_host/reagents/reagents_page.h: patch does not apply\nerror: 06_programs/sn100_host/shell/reagent_level_shell.cpp: No such file or directory\nerror: patch failed: 06_programs/sn100_host/shell/frmmain.h:131\nerror: 06_programs/sn100_host/shell/frmmain.h: patch does not apply\nerror: patch failed: 06_programs/sn100_host/shell/device_control_shell.cpp:275\nerror: 06_programs/sn100_host/shell/device_control_shell.cpp: patch does not apply\n",
+        "stdout": ""
+      },
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_delta.patch",
+      "private_apply": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_delta",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_delta",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check_apply_exact_sha_passed": true,
+      "private_init": {
+        "argv": [
+          "git",
+          "init",
+          "-q",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_delta"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_target_sha256": {
+        "06_programs/sn100_host/original_files/original_reagent_capacity.cpp": "8b2cd6917a65720e0725089483b58b3db98c7f5a501678c050af9d37bb34fa9b",
+        "06_programs/sn100_host/original_files/original_reagent_capacity.h": "913e3d14997f559e19c64ef7e95b314ff98288b0be18540777eb88d1d0e4e2d8",
+        "06_programs/sn100_host/reagents/build.sh": "1f85bc0620583e79ade83f229883566699e35be43ff5b5b67a49e19dcbd01431",
+        "06_programs/sn100_host/reagents/cusreagenthole.cpp": "823464871a16f5194dbfe59550e6c076fdad7e4a8c17fe8b7d55652899cc0123",
+        "06_programs/sn100_host/reagents/original_reagent_level.h": "4a83d79493889dfb89dea5261ed35b2a29c6fc60761b08678c9683cc284ba494",
+        "06_programs/sn100_host/reagents/original_reagent_level_model.cpp": "0d83d1fb4cb7b466b6fc056a20d7cc13789b390f88e173802fa75e877a865f25",
+        "06_programs/sn100_host/reagents/original_reagent_level_packet.cpp": "7537727b4e4a5a976693c5e1d25552f55c863c9f109bdad1a3367b68f7bc3e7b",
+        "06_programs/sn100_host/reagents/original_reagent_level_projects.cpp": "c566a72b82c9afa5a1c3fd0c34eb96625712f29bf2022c7916e3bf4e572351c0",
+        "06_programs/sn100_host/reagents/original_reagent_level_repository.cpp": "d1b2c49adc7e59e318d7f0cb393118a62c371a00847679e5660f17c1d4f11b6d",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp": "9637a3513c79a6ea134b523cc25cc436f84300df48293175d39c7c9beeeea22e",
+        "06_programs/sn100_host/reagents/original_reagent_level_runtime.h": "582a6bc8b67acf2a6e4f4b1c28c4449a100b62f4dd32c84a6d8a15091613a844",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.cpp": "2eac51151cdc26af5164ab6400516545c1aa755ea4149c92b696959f7bf21881",
+        "06_programs/sn100_host/reagents/original_reagent_level_worker.h": "60745972df82780edbdf8048fcccb402c18049a51a6bd49150506c99754c419b",
+        "06_programs/sn100_host/reagents/reagents.pri": "74e3632d10cb71c704f5286309a4646ff495c6358e52960f18b3e7f96dd6a197",
+        "06_programs/sn100_host/reagents/reagents_page.cpp": "7bb68eb3ce6814ec69bc570d8a3e13bc040a19bf9164d52520702551dec38397",
+        "06_programs/sn100_host/reagents/reagents_page.h": "12c56fa9b2d404a5cb39685d8354708c1a14fb17282b379a6dbdfcc3d6430d03",
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp": "1a8f63de297a1823c0161248271c780045f764795d5d8d057aa774af7e2dbb76",
+        "06_programs/sn100_host/shell/build.sh": "3a7c1ee5c31f988e432af2ae9625c8f77d96fff50d0dfd28abb3d678262c856c",
+        "06_programs/sn100_host/shell/device_control_shell.cpp": "37445869a22ae08e1fa4fb1ddd44b9be36c1cc192183442edae8871a5896e955",
+        "06_programs/sn100_host/shell/frmmain.cpp": "1a0b9d0bb173e487c55eea2b9ad08530cc980bac1e40ba9ad6c22670fad91367",
+        "06_programs/sn100_host/shell/frmmain.h": "2552d4bbba8e53231cf6e72697045dec4751975a494bf4a9e394819114b5841b",
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp": "ba5c765f6bf6e535c029a16fc635e3edcba5bcac40567bfdd033103af26b6011",
+        "06_programs/sn100_host/shell/shell.pri": "72ab1171aa685bf870b11f254a61768fee6446e32eba228483f570bd62fcbb4b"
+      },
+      "sha256": "ca3d1e214a5cc95e9036489f0a88b8ac5d8277bbdbfaa87404259705c1371104"
+    },
+    "n_v2_page_delta.patch": {
+      "all_target_files": [
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp",
+        "06_programs/sn100_host/reagents/reagents_page.h",
+        "06_programs/sn100_host/reagents/reagents_page.cpp",
+        "06_programs/sn100_host/reagents/cusreagenthole.cpp"
+      ],
+      "changed_files": [
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp",
+        "06_programs/sn100_host/reagents/reagents_page.h"
+      ],
+      "formal_readonly_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_page_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+        "exit": 1,
+        "stderr": "error: 06_programs/sn100_host/reagents/reagents_page_level.cpp: No such file or directory\nerror: patch failed: 06_programs/sn100_host/reagents/reagents_page.h:50\nerror: 06_programs/sn100_host/reagents/reagents_page.h: patch does not apply\n",
+        "stdout": ""
+      },
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_page_delta.patch",
+      "private_apply": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_page_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_page_delta",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_page_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_page_delta",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check_apply_exact_sha_passed": true,
+      "private_init": {
+        "argv": [
+          "git",
+          "init",
+          "-q",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_page_delta"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_target_sha256": {
+        "06_programs/sn100_host/reagents/cusreagenthole.cpp": "823464871a16f5194dbfe59550e6c076fdad7e4a8c17fe8b7d55652899cc0123",
+        "06_programs/sn100_host/reagents/reagents_page.cpp": "7bb68eb3ce6814ec69bc570d8a3e13bc040a19bf9164d52520702551dec38397",
+        "06_programs/sn100_host/reagents/reagents_page.h": "12c56fa9b2d404a5cb39685d8354708c1a14fb17282b379a6dbdfcc3d6430d03",
+        "06_programs/sn100_host/reagents/reagents_page_level.cpp": "1a8f63de297a1823c0161248271c780045f764795d5d8d057aa774af7e2dbb76"
+      },
+      "sha256": "b632bdcac126ae7f4c9978fecb7446953351e3a2666c39e7918ffcc6c50a7a97"
+    },
+    "n_v2_shell_delta.patch": {
+      "all_target_files": [
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp",
+        "06_programs/sn100_host/shell/frmmain.h",
+        "06_programs/sn100_host/shell/frmmain.cpp",
+        "06_programs/sn100_host/shell/device_control_shell.cpp"
+      ],
+      "changed_files": [
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp",
+        "06_programs/sn100_host/shell/frmmain.h",
+        "06_programs/sn100_host/shell/device_control_shell.cpp"
+      ],
+      "formal_readonly_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_shell_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+        "exit": 1,
+        "stderr": "error: 06_programs/sn100_host/shell/reagent_level_shell.cpp: No such file or directory\nerror: patch failed: 06_programs/sn100_host/shell/frmmain.h:131\nerror: 06_programs/sn100_host/shell/frmmain.h: patch does not apply\nerror: patch failed: 06_programs/sn100_host/shell/device_control_shell.cpp:275\nerror: 06_programs/sn100_host/shell/device_control_shell.cpp: patch does not apply\n",
+        "stdout": ""
+      },
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_shell_delta.patch",
+      "private_apply": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_shell_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_shell_delta",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_shell_delta.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_shell_delta",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check_apply_exact_sha_passed": true,
+      "private_init": {
+        "argv": [
+          "git",
+          "init",
+          "-q",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_shell_delta"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_target_sha256": {
+        "06_programs/sn100_host/shell/device_control_shell.cpp": "37445869a22ae08e1fa4fb1ddd44b9be36c1cc192183442edae8871a5896e955",
+        "06_programs/sn100_host/shell/frmmain.cpp": "1a0b9d0bb173e487c55eea2b9ad08530cc980bac1e40ba9ad6c22670fad91367",
+        "06_programs/sn100_host/shell/frmmain.h": "2552d4bbba8e53231cf6e72697045dec4751975a494bf4a9e394819114b5841b",
+        "06_programs/sn100_host/shell/reagent_level_shell.cpp": "ba5c765f6bf6e535c029a16fc635e3edcba5bcac40567bfdd033103af26b6011"
+      },
+      "sha256": "8ed41fa5ebc738bc75ab58a1f1c236b79a2b07453ddbe4aa3f5730cea5abd82d"
+    },
+    "n_v2_store_guard.patch": {
+      "all_target_files": [
+        "06_programs/sn100_host/reagents/reagent_store.h",
+        "06_programs/sn100_host/reagents/original_reagent_store.cpp"
+      ],
+      "changed_files": [
+        "06_programs/sn100_host/reagents/reagent_store.h",
+        "06_programs/sn100_host/reagents/original_reagent_store.cpp"
+      ],
+      "formal_readonly_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_store_guard.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "path": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_store_guard.patch",
+      "private_apply": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_store_guard.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_store_guard",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "core.safecrlf=false",
+          "-c",
+          "core.whitespace=cr-at-eol",
+          "apply",
+          "--check",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/n_v2_store_guard.patch"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_store_guard",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_check_apply_exact_sha_passed": true,
+      "private_init": {
+        "argv": [
+          "git",
+          "init",
+          "-q",
+          "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18/n_v2_store_guard"
+        ],
+        "cwd": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2",
+        "exit": 0,
+        "stderr": "",
+        "stdout": ""
+      },
+      "private_target_sha256": {
+        "06_programs/sn100_host/reagents/original_reagent_store.cpp": "b2396b50051708cac9f926fb690b92878f77acf717d66ebf9ca09e920a44ecac",
+        "06_programs/sn100_host/reagents/reagent_store.h": "a1f78940a79b289291a0da46d829332a79c7224aabe74f48407a9aac9dec20d4"
+      },
+      "sha256": "ef07df1c0298eb71688a1da847af4d575f1e94a83a3f594af84eb2c02f93c349"
+    }
+  },
+  "private_checks_directory": "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/N_consumer_candidate_v2/packaging_03/package_checks_20261102T173841Z_63068f18",
+  "scope": "只打包N被动消费候选；未正式应用、未运行、未联机或部署",
+  "script_sha256": "10831c9791c4145904e9321956f1f528b73765f020d49e58aa19777266fe9111",
+  "v1_additional_independent_reviews": {
+    "independent_behavior_review.md": "bc59ba047db0733a026b3b2323b3594397efd97c0365e02c12bda4a1a8dfa13c",
+    "independent_lifecycle_review.md": "c77e454628940553777a24180c488a7f4b7a517b891a0c66849727b5d6e15fa4"
+  },
+  "v1_additional_review_note": "总窗口独立审新增的两份说明另记；原241份字节必须全部不变，未放宽源码/补丁/对象校验",
+  "v1_originals": {
+    "all_hashes_equal_at_start": true,
+    "count": 241,
+    "inventory_sha256": "1fb63d83f54606795c5de85a6f26b40b4f65936e8a0b7c54308c4b9631e34d0f"
+  },
+  "v1_originals_end": {
+    "all_original_hashes_equal": true,
+    "passed": true,
+    "verified_count": 241
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "inspection_date": "2026-11-02",
+  "inspection_time_zone": "Asia/Shanghai",
+  "board_id": "board_b",
+  "model": "LCKFB TaishanPi 3M RK3576 Board",
+  "hardware_serial": "8314b1e8ffd0321f",
+  "ethernet_mac": "f6:ff:fb:6c:79:a1",
+  "ssh_host_ed25519_sha256": "SHA256:S4ihaw0V/Z8w7v3VlJOQEFLEH3Hp6nr3KjiUTxanwPg",
+  "kernel": "6.1.99-rt36-tspi",
+  "os": "Ubuntu 24.04.5 LTS",
+  "board_reported_utc": "2026-10-12T07:56:22Z",
+  "board_clock_is_correct": false,
+  "ssh_exit": 0,
+  "audit_exit": 0,
+  "read_only": true,
+  "serial_ports_opened": false,
+  "bytes_sent": 0,
+  "configuration_changed": false,
+  "raw_uart_driver_counters": {
+    "uart4_rx": 0,
+    "uart4_tx": 0
+  },
+  "lckfb_session_has_dialout": false,
+  "uart_ports": [
+    {
+      "uart": 3,
+      "mode": "M0",
+      "status": "disabled",
+      "device_exists": false,
+      "expected_device": "/dev/ttyS3",
+      "rx_header_pin": 3,
+      "tx_header_pin": 5,
+      "rx_gpio": "GPIO3_A1",
+      "tx_gpio": "GPIO3_A0",
+      "current_pin_owner": "I2C7_M1",
+      "pin_group": "uart3m0-xfer"
+    },
+    {
+      "uart": 4,
+      "mode": "M0",
+      "status": "okay",
+      "device_exists": true,
+      "expected_device": "/dev/ttyS4",
+      "rx_header_pin": 10,
+      "tx_header_pin": 8,
+      "rx_gpio": "GPIO2_D1",
+      "tx_gpio": "GPIO2_D0",
+      "current_pin_owner": "UART4_M0",
+      "pin_group": "uart4m0-xfer",
+      "open_process_seen": false,
+      "device_mode": "0660",
+      "device_owner": "root",
+      "device_group": "dialout"
+    },
+    {
+      "uart": 7,
+      "mode": "M0",
+      "status": "disabled",
+      "device_exists": false,
+      "expected_device": "/dev/ttyS7",
+      "rx_header_pin": 27,
+      "tx_header_pin": 28,
+      "rx_gpio": "GPIO2_B7",
+      "tx_gpio": "GPIO2_B6",
+      "current_pin_owner": "I2C8_M2",
+      "pin_group": "uart7m0-xfer"
+    },
+    {
+      "uart": 8,
+      "mode": "M1",
+      "status": "disabled",
+      "device_exists": false,
+      "expected_device": "/dev/ttyS8",
+      "rx_header_pin": 40,
+      "tx_header_pin": 37,
+      "rx_gpio": "GPIO2_A7",
+      "tx_gpio": "GPIO2_A6",
+      "current_pin_owner": "MUX_UNCLAIMED_AND_GPIO_UNCLAIMED",
+      "pin_group": "uart8m1-xfer"
+    },
+    {
+      "uart": 9,
+      "mode": "M0",
+      "status": "disabled",
+      "device_exists": false,
+      "expected_device": "/dev/ttyS9",
+      "rx_header_pin": 29,
+      "tx_header_pin": 26,
+      "rx_gpio": "GPIO2_C0",
+      "tx_gpio": "GPIO2_C1",
+      "current_rx_owner": "MUX_UNCLAIMED_AND_GPIO_UNCLAIMED",
+      "current_tx_owner": "SPI1_M1_CSN1",
+      "pin_group": "uart9m0-xfer"
+    }
+  ],
+  "limitations": [
+    "未打开串口，未执行新的收发或回环，未接仪器验收",
+    "未测量物理引脚电平、外接转换电路或扩展板接线",
+    "板端未安装dtc，已直接读取实时设备树的别名、状态、pinctrl引用和引脚属性",
+    "未改系统时间、设备树、用户组或服务；板A历史结果不套用到板B",
+    "I2C7、I2C8和SPI1第二片选在内核中被申请，其外接设备及业务用途仍需确认"
+  ]
+}

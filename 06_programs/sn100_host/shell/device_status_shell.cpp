@@ -3,7 +3,10 @@
 #include "protocol/status_replay.h"
 #include "protocol/status_loopback.h"
 #include "instrument/instrument_page.h"
+#include "instrument/device_control.h"
 
+#include <QColor>
+#include <QDebug>
 #include <QFontMetrics>
 
 namespace
@@ -45,6 +48,82 @@ QString observedStateText(const Sn100Protocol::StatusSnapshot &snapshot, QString
     *color = QStringLiteral("#DB4437");
     return led == 3 && main == 5 ? frmMain::tr("异常停止") : frmMain::tr("异常状态");
 }
+}
+
+void frmMain::updateDeviceStatusDisplay()
+{
+    if (!deviceControl_) return;
+    const DeviceControlState &state = deviceControl_->state();
+    const int main = state.status.mainStatus;
+    const int led = state.connected && state.fresh ? state.status.ledStatus : 0;
+    QString color = QStringLiteral("rgb(170,170,170)");
+    QString text = state.connected && !state.fresh ? tr("等待状态") : tr("等待连接");
+    QString image = QStringLiteral("status_off");
+    // 用户现场确认：等待连接时灰灯也默认渐变闪烁，区别于原源码的常亮设置。
+    bool flashing = true;
+    if (state.connected && state.fresh)
+    {
+        // 原frmmain::slotTimeTickerOut同时使用主状态和灯状态，不按按钮点击猜测测试状态。
+        text = observedStateText(state.status, &color);
+        switch (led)
+        {
+        case 1: // 空闲常亮，正在测试闪烁；暂停完成使用原黄色图片。
+            image = main == 6 ? QStringLiteral("status_warming") : QStringLiteral("status_ready");
+            flashing = main == 5;
+            break;
+        case 2:
+        case 4:
+            image = QStringLiteral("status_ready");
+            flashing = true;
+            break;
+        case 5:
+        {
+            image = main == 6 ? QStringLiteral("status_warming") : QStringLiteral("status_ready");
+            flashing = main == 5 || main == 6;
+            const QColor pause = property("devicePauseColour").value<QColor>();
+            if (pause.isValid())
+                color = QStringLiteral("rgba(%1,%2,%3,%4)")
+                    .arg(pause.red()).arg(pause.green()).arg(pause.blue()).arg(pause.alpha());
+            break;
+        }
+        case 6:
+            image = QStringLiteral("status_alarm");
+            flashing = true;
+            break;
+        case 3:
+        case 7:
+            image = QStringLiteral("status_error");
+            flashing = led == 7 || main == 5;
+            break;
+        default:
+            flashing = led == 0;
+            break;
+        }
+    }
+    const QString imagePath = QStringLiteral(":/shell/main_state/%1.png").arg(image);
+    ui->wgtDivStateLamp->setFlashImage(imagePath);
+    ui->wgtDivStateLamp->setFlash(flashing);
+    ui->lblDivState->setText(ui->lblDivState->fontMetrics().elidedText(text, Qt::ElideRight, ui->lblDivState->width()));
+    ui->lblDivState->setStyleSheet(QStringLiteral("QLabel{color:%1;}").arg(color));
+    QString detail = tr("主控 %1:%2；%3").arg(state.address).arg(state.port).arg(state.message);
+    if (!state.pending.isEmpty()) detail += tr("\n命令等待返回：%1").arg(state.pending);
+    if (state.outcomeUnknown) detail += tr("\n上次命令结果待核对；当前文字仅表示最新收到的仪器状态。");
+    ui->lblDivState->setToolTip(detail);
+    ui->statusArea->setToolTip(detail);
+    setProperty("instrumentStatusText", text);
+    setProperty("instrumentLedStatus", led);
+    setProperty("instrumentStatusLamp", imagePath);
+    setProperty("instrumentStatusLampFlashing", flashing);
+    setProperty("instrumentStatusTextHeight", ui->lblDivState->height());
+    setProperty("instrumentStatusFontHeight", ui->lblDivState->fontMetrics().height());
+    const QString presentation = QStringLiteral("%1|%2|%3|%4|%5")
+        .arg(state.connected).arg(state.fresh).arg(text, image).arg(flashing);
+    if (property("deviceStatusPresentation").toString() != presentation)
+    {
+        setProperty("deviceStatusPresentation", presentation);
+        qInfo().noquote() << "DEVICE_STATUS_DISPLAY" << text << image << "flash=" << flashing
+            << "main=" << main << "led=" << led;
+    }
 }
 
 void frmMain::setStatusReplayState(const Sn100Protocol::ReplayState &state)

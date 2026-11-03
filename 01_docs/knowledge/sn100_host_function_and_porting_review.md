@@ -1,5 +1,7 @@
 # SN100 上位机功能与 Linux 移植分析
 
+**2026-11-02流程复查：**当前源码确实还有多处“页面已接入、实际操作未接完”。最新结论见[按模块核对流程缺口](#workflow-gaps-20261102)，后续按用户确认先做流程、算法最后；今晚分窗口推进及验收责任只在[移植计划](../plans/sn100_host_migration_plan.md#workflow-night-20261102)维护。下方10月26至27日的表格保留当时范围，不能直接当作当前缺口清单。
+
 **项目配置的后续更新（2026-10-27）：**下方操作级核查保留当时源码范围；此后已补空库单位/项目新建与JSON导入、保存/取消/复制/删除、稀释/默认/稀释液和系数/结果启用，RK后台56项、正式页面105项核对均0失败，新发布`c89e4a65`已上传并短测关闭重开。完整算法和接机仍未完成，物理视觉/键鼠和资源门槛另验；最新依据见[本批记录](../../02_records/20261022_sn100_host_migration.md#project-config-dispatch-20261027)，不将下面旧“空库缺入口”继续当本批当前缺口。
 
 **2026-10-27逐项对照结论：**已按原入口与正式调用链区分“本地操作已实现、部分实现、缺实现、原版范围待核”，详见[操作级对照](#original-feature-audit-20261027)。当前不能称整套原上位机功能已完全实现；RK已通过部署、启动关闭、匿名报告文件生成及用户确认的显示/鼠标首验，逐页业务和真实仪器仍分别待验。本次是源码及已有证据审查，没有执行新的板端测试。
@@ -421,3 +423,44 @@ flowchart LR
 | 编码、文件和验证约定 | [局部AGENTS](../../06_programs/sn100_host/AGENTS.md)、[模块Skill](../../.agents/skills/sn100-module-migration/SKILL.md)、[文件Skill](../../.agents/skills/sn100-project-files/SKILL.md) |
 
 本文件2026-10-27操作级对照更新仅修改文档，没有修改业务代码，没有重跑编译、图形界面、RK或真实仪器测试；表内运行结论引用已有对应证据，源码审查不新增功能通过项。
+
+<a id="workflow-gaps-20261102"></a>
+## 六 2026-11-02按模块核对流程缺口
+
+本轮阅读当前未提交工作树、原Windows只读源码、正式主程序的组装入口及已有板B记录。没有运行参考程序、读取账户口令或改动数据库；本节是源码检查结果，不增加编译、RK运行或真实仪器通过结论。状态、登录和数值显示正由另一聊天修改，其未完成的发布不能算已验收。
+
+用户明确的顺序是：**先完成操作流程，算法最后。**流程包括连接、资料同步、试剂操作、样本安排和设备应答、错误处理、校准/质控任务流转、报告及系统收发。凝血点、曲线拟合、浓度反算、ISI/INR和质控判定留到最后；收到原始曲线后继续明确显示“待计算”，不填0、不凭资料保存或审核标志宣称计算成功。
+
+### 哪些已接，哪些还没有接完
+
+| 使用者要完成的操作 | 当前源码已经有的部分 | 仍缺的处理或验证 |
+| --- | --- | --- |
+| 登录、看连接及设备状态 | 真实主控连接、状态轮询和失效处理已有；状态灯、注销重登、权限入口和仪器数值正在修正 | 收尾当前聊天的整合、ARM64构建和板B原资料联机核对；不能重复开发一套登录或状态页 |
+| 把本机项目和试剂资料同步给主控 | Ur读取试剂、Up发送项目、UP项目回读、单孔Us更新及等待回读均有代码 | 板B现有记录中请求PT却收到其他项目，当前逐项匹配会令同步失效；须核原主控返回规则并处理无关、重复、乱序和失败恢复，不能取消字段核对来放行 |
+| 探测试剂、扫描、换位、更新优先级、恢复及清盘 | 原库资料/孔位/批组编辑、设备回读及部分单孔同步已接 | 试剂页面的这些按钮仍统一进入showOffline，只显示提示；剩余可测次数表仍为空。须逐个对照原动作、权限、完成通知和页面回读 |
+| 安排普通样本并检测 | 普通/急诊任务、重复次数、原稀释字段、任务编号预约、Tt索取任务、TD加样进度及Tr原曲线保存已有调用链；开始和暂停已有命令及等待状态 | 实际开始/暂停/恢复和急诊联动尚未完整验收；TR任务错误未进入当前业务分发，TF架信息更新、TB剩余时间、TK解锁也须逐项对照；断线重开后的在途任务归属待核 |
+| 用多瓶组合安排任务 | 组合设置可保存 | MultiReagentBottle在应用时明确拒绝；缺按实际试剂瓶展开任务、容量选择及失败恢复，不能把它按普通组合悄悄执行 |
+| 安排校准、质控样本 | 校准和质控资料、原批次和关联页面已接；早期本地质控预设也有代码 | 原资料启动时main.cpp没有调用connectSampleQuality；原样本仓库及任务准备均拒绝sampleType非0；校准项目按钮禁用。缺原编号/批次到样本任务、设备报文和结果归属的正式流转 |
+| 审核和使用校准资料 | 原库模式可保存原始点、审核标志、方法/坐标变换及批组到曲线编号的绑定 | 拟合、反算、重算和新曲线参与结果计算仍未接。此处须分清“绑定资料已保存”和“计算实际生效”，不能再把审核/绑定整项记成未实现 |
+| 查看质控历史和异常状态 | 控制品、项目、批次、规则资料以及历史点、均值和波动统计已有 | 真实质控任务返回到质控库的业务分流未通；图卡明确不输出正常/警告/失控结论。先补任务和记录，判定算法最后对照原规则 |
+| 查看报告明细、曲线、翻页、输出 | 原历史读取、患者编辑、结果格式、模板预览/PDF及打印提交桥已有 | 明细曲线及光源/坐标选择、明细上一条/下一条仍禁用；原始曲线到最终计算值未贯通，实际打印出纸另验 |
+| 从医院系统下载任务、上传结果 | LIS设置可读写；已有DSR完整消息文件的导入、保存和查看 | 正式联网、查询/下载应用、结果编码上传、确认回复及断线/重复处理尚未接入主程序。文件导入不等于任务下载成功；实际对端与消息对应规则需明确 |
+| 执行仪器维护、查看新告警 | 通信测试页已绑定23个固定按钮命令及校时；人工维护登记已有；告警历史可查，开始前已有配置告警限制及蜂鸣关闭 | 其余带参数的机械动作和长清洗仍未接；新告警转历史的函数有实现但正式主程序无调用者，实时告警详情、事件落库、解除/复位及显示仍须连起来 |
+
+任务所用试剂的选择和扣量不能再笼统列为“全部未实现”：OriginalReagentRepository::assignTask已按优先级、批组和瓶底剩余量选择足量试剂，prepare/reserve已有清洗液、辅助用量检查与扣量提交；**界面可测次数、现场液量和任务出错后的恢复仍是不同缺口。**
+
+### 三条能直接定位断点的源码路线
+
+1. **任务出错没有传到样本页。**原[命令定义](../../06_programs/sn100_host_reference/Seerain450_PC/communication/commanddefine.h)用T加R表示任务错误；[原接收器](../../06_programs/sn100_host_reference/Seerain450_PC/communication/commandreceiver.cpp)的pcTaskError解出原因、架、孔位和任务号，再由[原样本页](../../06_programs/sn100_host_reference/Seerain450_PC/frmsample/frmsamplematerial.cpp)的slotTasksErrReturn更新报告、孔位及试剂恢复。当前[主窗口设备接线](../../06_programs/sn100_host/shell/device_control_shell.cpp)只转交Tt、TD、Tr、Ur、UP和Tu，[原样本后台](../../06_programs/sn100_host/samples/original_sample_store.cpp)和[检测会话](../../06_programs/sn100_host/samples/original_detection_session.cpp)也没有TR处理。补接时必须核对已下发的任务身份、重复返回与恢复次数。
+2. **收到曲线还没有产生检测值。**当前OriginalDetectionSession::receiveDevicePayload保存原始报文、曲线、项目参数和单位快照，写入rk/calculation_state=waiting，并把报告状态写成“已收到曲线，待计算”。独立[凝血点研究程序](../../06_programs/sn100_host/coagulation/coagulation.pro)没有进入正式主程序构建；它不能当作原算法已迁入。原[样本结果处理](../../06_programs/sn100_host_reference/Seerain450_PC/frmsample/frmsamplematerial.cpp)在slotResultReceive中区分SAM普通样本、QC质控和CAL校准；当前流程必须先补这些身份与记录的分流，计算留到最后。
+3. **有告警后台，不代表正在接收新告警。**[新事件转换](../../06_programs/sn100_host/alarm_history/original_alarm_events.cpp)的originalNewEvents与[历史追加](../../06_programs/sn100_host/alarm_history/alarm_history_store.cpp)的appendOriginalEvents已有代码，当前正式调用链搜索仅找到声明/实现，调用在历史测试驱动中。[主窗口告警入口](../../06_programs/sn100_host/shell/alarm_shell.cpp)目前只打开既有历史，不能把Qk查询或状态中的告警数量当新事件重复写库。
+
+其他定位入口：[项目同步](../../06_programs/sn100_host/samples/original_device_sync.cpp)的projectReply、[试剂页面](../../06_programs/sn100_host/reagents/reagents_page.cpp)的showOffline、[原试剂分配](../../06_programs/sn100_host/reagents/original_reagent_repository.cpp)的assignTask、[样本页面](../../06_programs/sn100_host/samples/sample_page.cpp)的applyCombination、[校准页面](../../06_programs/sn100_host/calibration/calibration_page.cpp)的updateActions/reviewOriginalCurve/applyOriginalCurve、[报告页面](../../06_programs/sn100_host/history/history_page.cpp)的openDetail、[LIS主窗口接线](../../06_programs/sn100_host/shell/lis_shell.cpp)及[仪器控制接线](../../06_programs/sn100_host/instrument/instrument_page.cpp)的attachDeviceControl。
+
+### 原版自身的特殊行为不能当成移植漏项补新业务
+
+- 原报告明细的on_btnUpdateLis_clicked先发无水无杯调试信号，然后return；on_btn_recal_clicked也只发调试信号。不能按“上传”“重算”的按钮名字实现另一套行为，真实LIS应沿原有效上传链核对。
+- 原语言设置on_btnApply_clicked为空；英文切换不能直接列为确定漏项。XLSX是否在目标发行版启用仍按原范围核对。
+- 同一个仪器维护页中，部分固定命令已经接上，其他参数化动作仍被禁用；初始化阶段的“未连接”提示也可能在attachDeviceControl之后被替换。不能仅搜索“未接入”三个字统计完成率。
+
+本轮发现的事项交给各流程聊天逐项实施；完成标准为按钮输入、发出的具体命令、主控实际回复、数据库和页面变化、失败恢复均能对应。只能编译的、只在RK运行的、接主控通过的及真实仪器动作通过的分开登记。没有实际条件的保留待联机验证，后续不再安排脱机数据、模拟服务器或本机回环自测。

@@ -23,6 +23,10 @@ flags=(-std=c++14 -O2 -g -DQT_NO_DEBUG -fPIC -pthread -Wall -Wextra
     -isystem "$qt_include")
 for module in QtCore QtGui QtWidgets QtSql; do flags+=(-isystem "$qt_include/$module"); done
 /usr/lib/qt5/bin/uic "$module_dir/frmsystemmaterial.ui" -o "$build_dir/ui_frmsystemmaterial.h"
+/usr/lib/qt5/bin/uic "$module_dir/copyprojectdialog.ui" -o "$build_dir/ui_copyprojectdialog.h"
+/usr/lib/qt5/bin/uic "$program_dir/ui/cusmessagebox.ui" -o "$build_dir/ui_cusmessagebox.h"
+/usr/lib/qt5/bin/uic "$program_dir/ui/cusdialogmask.ui" -o "$build_dir/ui_cusdialogmask.h"
+flags+=(-I"$program_dir/ui")
 sources=("$module_dir/main.cpp" "$module_dir/projects_store.cpp" "$module_dir/project_page.cpp" "$module_dir/cuscheckbox.cpp" "$module_dir/project_advanced.cpp"
     "$program_dir/shell/widgets/cusview.cpp" "$program_dir/shell/widgets/material/"*.cpp "$program_dir/shell/widgets/material/lib/"*.cpp)
 headers=("$module_dir/projects_store.h" "$module_dir/project_page.h" "$module_dir/cuscheckbox.h" "$module_dir/project_advanced.h"
@@ -32,6 +36,10 @@ sources+=("$module_dir/projects_current_format.cpp" "$module_dir/original_projec
 headers+=("$module_dir/project_current_format.h" "$module_dir/original_project_repository.h")
 sources+=("$module_dir/project_format_dialog.cpp")
 headers+=("$module_dir/project_format_dialog.h")
+sources+=("$module_dir/original_project_copy.cpp" "$module_dir/original_project_copy_dialog.cpp"
+          "$program_dir/ui/cusmessagebox.cpp" "$program_dir/ui/cusdialogmask.cpp")
+headers+=("$module_dir/original_project_copy.h" "$module_dir/original_project_copy_dialog.h"
+          "$program_dir/ui/cusmessagebox.h" "$program_dir/ui/cusdialogmask.h")
 
 for header in "${headers[@]}"; do
     if grep -q Q_OBJECT "$header"; then
@@ -44,6 +52,8 @@ for resource in projects_resources projects_standalone_resources; do
     /usr/lib/qt5/bin/rcc -name "$resource" "$module_dir/$resource.qrc" -o "$build_dir/qrc_$resource.cpp"
     sources+=("$build_dir/qrc_$resource.cpp")
 done
+/usr/lib/qt5/bin/rcc -name account_resources "$program_dir/shell/account_resources.qrc" -o "$build_dir/qrc_account_resources.cpp"
+sources+=("$build_dir/qrc_account_resources.cpp")
 objects=()
 pids=()
 wait_batch()

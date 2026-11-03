@@ -2,6 +2,7 @@
 #include "original_sql.h"
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QHash>
 #include <QLockFile>
 #include <QSet>
 #include <QThread>
@@ -75,11 +76,14 @@ void CalibrationStore::setOriginalCatalog(ProjectRecords projects,ProjectUnits u
     if(QThread::currentThread()!=thread())return;
     m_originalProjects=projects;m_originalUnits=units;m_originalReagents=reagents;
 }
-bool CalibrationStore::beginOriginal(qint64 requestId,const QString &operation,QString *message)
+bool CalibrationStore::beginOriginal(qint64 requestId,const QString &operation,QString *message,OriginalWriteAccess access)
 {
-    if(!check(requestId,operation,true))return false;
-    if(m_session.originalPolicySource!=m_originalRoot||!m_session.grantedPowerIds.contains(QStringLiteral("1")))
-    {fail(requestId,operation,QStringLiteral("当前会话不是该原工作根授予的校准权限，未按离线角色高低补权。"));return false;}
+    const bool editPower = access == OriginalWriteAccess::EditPower;
+    if(!check(requestId,operation,editPower))return false;
+    if(m_session.originalPolicySource!=m_originalRoot)
+    {fail(requestId,operation,QStringLiteral("当前会话不属于该原工作根，未改变校准资料。"));return false;}
+    if(editPower ? !m_session.grantedPowerIds.contains(QStringLiteral("1")) : !canApplyOriginalCurve(m_session))
+    {fail(requestId,operation,QStringLiteral("当前账号不支持此操作!"));return false;}
     if(requestId<=0||requestId<=m_originalLastWrite){fail(requestId,operation,QStringLiteral("重复或迟到的原校准写请求未执行。"));return false;}
     m_originalLastWrite=requestId;
     // 与项目/试剂维护按相同顺序持锁，避免跨模块改批组或ISI后仍用旧草稿覆盖。
@@ -113,6 +117,7 @@ bool CalibrationStore::readOriginal(CalibrationRecords *records,QString *message
     QSqlQuery q(m_database);
     if(!query(&q,QStringLiteral("SELECT * FROM calibration_base")+(includeHidden?QString():QStringLiteral(" WHERE visible<>0"))+QStringLiteral(" ORDER BY id LIMIT 2049"),{},message))return false;
     QSet<qint64> ids;
+    QHash<QString,QVariantList> projectBindings;
     while(q.next())
     {
         const auto values=row(q);CalibrationRecord record;record.id=values.value("calibration_id").toLongLong();
@@ -141,8 +146,27 @@ bool CalibrationStore::readOriginal(CalibrationRecords *records,QString *message
             record.points<<point;if(record.points.size()>32)return Sn100OriginalSql::error(message,QStringLiteral("原曲线点数超过当前页面上限，未截断。"));
         }
         if(points.lastError().isValid())return Sn100OriginalSql::error(message,points.lastError().text());
-        QSqlQuery bindings(m_database);if(!query(&bindings,"SELECT batch_group FROM calibration_batch_group WHERE project_name=? AND calibration_id=? ORDER BY id",{record.projectName,record.id},message))return false;
-        while(bindings.next())record.appliedBatchGroups<<bindings.value(0).toString();records->append(record);
+        if(!projectBindings.contains(record.projectName))
+        {
+            QSqlQuery bindings(m_database);
+            if(!query(&bindings,"SELECT * FROM calibration_batch_group WHERE project_name=? ORDER BY id LIMIT 4097",{record.projectName},message))return false;
+            QVariantList rows;
+            while(bindings.next())
+            {
+                rows.append(row(bindings));
+                if(rows.size()>4096)return Sn100OriginalSql::error(message,QStringLiteral("原项目批组关联超过4096项，未截断返回。"));
+            }
+            if(bindings.lastError().isValid())return Sn100OriginalSql::error(message,bindings.lastError().text());
+            projectBindings.insert(record.projectName,rows);
+        }
+        record.originalProjectBindings=projectBindings.value(record.projectName);
+        record.originalBindingsLoaded=true;
+        for(const QVariant &binding:record.originalProjectBindings)
+        {
+            const QVariantMap fields=binding.toMap();
+            if(fields.value("calibration_id").toLongLong()==record.id)record.appliedBatchGroups<<fields.value("batch_group").toString();
+        }
+        records->append(record);
     }
     return !q.lastError().isValid()||Sn100OriginalSql::error(message,q.lastError().text());
 }
@@ -276,9 +300,14 @@ void CalibrationStore::setOriginalMethod(qint64 requestId,qint64 id,qint64 revis
 }
 void CalibrationStore::applyOriginalCurve(qint64 requestId,qint64 id,qint64 revision,QString batchGroup)
 {
+    Q_UNUSED(id);Q_UNUSED(revision);Q_UNUSED(batchGroup);
+    // 历史四参数调用缺少目标绑定前态，只报错；不能从新版本重新取前态后覆盖别人的改绑。
+    fail(requestId,QStringLiteral("applyOriginalCurve"),QStringLiteral("缺少确认时的目标批组绑定前态，未改变应用关系；请重读后重新应用。"));
+}
+void CalibrationStore::applyOriginalCurve(qint64 requestId,qint64 id,qint64 revision,QString batchGroup,QVariantMap bindingBefore)
+{
     const QString op="applyOriginalCurve";QString message;if(!m_originalMode){fail(requestId,op,QStringLiteral("当前不是原校准模式。"));return;}
-    if(!canEdit(m_session)){fail(requestId,op,QStringLiteral("当前原账户没有曲线应用权限。"));return;}
-    if(!beginOriginal(requestId,op,&message))return;
+    if(!beginOriginal(requestId,op,&message,OriginalWriteAccess::ManualApply))return;
     CalibrationRecords records;if(!readOriginal(&records,&message)){rejectOriginal(requestId,op,message);return;}
     const auto found=std::find_if(records.cbegin(),records.cend(),[&](const CalibrationRecord &value){return value.id==id;});
     if(found==records.cend()||found->revision!=revision){rejectOriginal(requestId,op,QStringLiteral("待应用原曲线已变化。"));return;}
@@ -287,9 +316,32 @@ void CalibrationStore::applyOriginalCurve(qint64 requestId,qint64 id,qint64 revi
     if(batchGroup.isEmpty()||batchGroup.contains(QChar::Null)){rejectOriginal(requestId,op,QStringLiteral("须明确选择原试剂批组或Default。"));return;}
     if(batchGroup!="Default")
     {QSqlQuery batch(m_database);if(!query(&batch,"SELECT 1 FROM original_reagent.reagent_batch_group WHERE project_name=? AND batch_group=?",{found->projectName,batchGroup},&message)||!batch.next()){rejectOriginal(requestId,op,QStringLiteral("原试剂批组不存在或不属于该项目。"));return;}}
-    QSqlQuery q(m_database);if(!query(&q,"SELECT id FROM calibration_batch_group WHERE project_name=? AND batch_group=?",{found->projectName,batchGroup},&message)){rejectOriginal(requestId,op,message);return;}
-    qint64 binding=0;if(q.next())binding=q.value(0).toLongLong();if(q.next()){rejectOriginal(requestId,op,QStringLiteral("原批组应用绑定重复，未任选一条覆盖。"));return;}q.finish();
-    bool ok=binding?updateFields(m_database,"calibration_batch_group",binding,{{"calibration_id",id}},&message):execute(m_database,"INSERT INTO calibration_batch_group(project_name,batch_group,calibration_id) VALUES(?,?,?)",{found->projectName,batchGroup,id},&message,1);
+    if(bindingBefore.size()!=4||bindingBefore.value("original_root").type()!=QVariant::String||
+       bindingBefore.value("project_name").type()!=QVariant::String||bindingBefore.value("batch_group").type()!=QVariant::String||
+       bindingBefore.value("rows").type()!=QVariant::List||bindingBefore.value("original_root").toString()!=m_originalRoot||
+       bindingBefore.value("project_name").toString()!=found->projectName||bindingBefore.value("batch_group").toString()!=batchGroup)
+    {rejectOriginal(requestId,op,QStringLiteral("目标批组绑定前态不完整或身份不符，未改变应用关系。"));return;}
+    const QVariantList expectedRows=bindingBefore.value("rows").toList();
+    if(expectedRows.size()>1||(!expectedRows.isEmpty()&&expectedRows.first().type()!=QVariant::Map))
+    {rejectOriginal(requestId,op,QStringLiteral("确认时的原批组绑定重复或字段无效，未改变应用关系。"));return;}
+    // 已持BEGIN IMMEDIATE写事务；核对确认前的完整目标行后才更新，不能用审核后的新revision替代此前态。
+    QSqlQuery q(m_database);
+    if(!query(&q,"SELECT * FROM calibration_batch_group WHERE project_name=? AND batch_group=? ORDER BY id",{found->projectName,batchGroup},&message)){rejectOriginal(requestId,op,message);return;}
+    QVariantList actualRows;
+    while(q.next())
+    {
+        actualRows.append(row(q));
+        if(actualRows.size()>1){rejectOriginal(requestId,op,QStringLiteral("原批组应用绑定重复，未任选一条覆盖。"));return;}
+    }
+    if(q.lastError().isValid()){rejectOriginal(requestId,op,q.lastError().text());return;}q.finish();
+    if(actualRows!=expectedRows)
+    {rejectOriginal(requestId,op,QStringLiteral("目标批组绑定在确认后已变化，未覆盖；请重读核对，已经提交的审核保留。"));return;}
+    const bool bindingExists=!actualRows.isEmpty();
+    bool bindingIdValid=false;
+    const qint64 binding=bindingExists?actualRows.first().toMap().value("id").toLongLong(&bindingIdValid):0;
+    if(bindingExists&&!bindingIdValid){rejectOriginal(requestId,op,QStringLiteral("原目标批组行编号无效，未插入或覆盖。"));return;}
+    // 是否已有行由完整前态决定；合法的零编号也属于已有行，不能误作空目标另插一行。
+    bool ok=bindingExists?updateFields(m_database,"calibration_batch_group",binding,{{"calibration_id",id}},&message):execute(m_database,"INSERT INTO calibration_batch_group(project_name,batch_group,calibration_id) VALUES(?,?,?)",{found->projectName,batchGroup,id},&message,1);
     if(!ok){rejectOriginal(requestId,op,message);return;}finishOriginal(requestId,op,id);
 }
 void CalibrationStore::loadIsi(qint64 requestId)

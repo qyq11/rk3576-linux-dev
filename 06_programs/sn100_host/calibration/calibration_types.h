@@ -47,6 +47,8 @@ struct CalibrationRecord
     bool checked = false;
     bool edited = false;
     QStringList appliedBatchGroups;
+    bool originalBindingsLoaded = false;
+    QVariantList originalProjectBindings; // 同项目完整原绑定行；按值共享，含其他曲线及未知列，空列表明确表示没有关联。
 };
 
 struct CalibrationIsiRecord

@@ -84,10 +84,13 @@ bool parseRackRequest(const QByteArray &payload, RackRequest *request, QString *
 bool taskFields(const Task &task, bool linuxNew, QStringList *fields, QString *message)
 {
     if (!fields || task.taskId <= 0 || task.taskId > std::numeric_limits<int>::max() ||
-        task.reportRow <= 0 || task.hole < 1 || task.hole > 128 || task.rack.isEmpty() ||
+        ((task.type == QStringLiteral("CAL")) ? task.reportRow != 0 || task.calibrationId <= 0 || task.calibrationPoint <= 0 : task.reportRow <= 0) ||
+        task.hole < 1 || task.hole > 128 || task.rack.isEmpty() ||
         (task.container != QStringLiteral("tube") && task.container != QStringLiteral("cup")) ||
-        (task.type != QStringLiteral("SAM") && task.type != QStringLiteral("QC")))
+        (task.type != QStringLiteral("SAM") && task.type != QStringLiteral("QC") && task.type != QStringLiteral("CAL")))
         return fail(message, QStringLiteral("任务编号、报告行、样本位置或任务类型不完整，未生成命令。"));
+    if (task.type == QStringLiteral("CAL") && task.prolonged)
+        return fail(message, QStringLiteral("原校准任务不延长测试时间，未套用普通样本的延长分支。"));
     const auto &project = task.project;
     const auto &base = project.originalBaseValues;
     if (project.originalFileName.isEmpty() || !project.enabled || !project.advanced.configured)
@@ -98,7 +101,7 @@ bool taskFields(const Task &task, bool linuxNew, QStringList *fields, QString *m
     for (const auto &option : project.sampleRates)
     {
         if (option.defaultOption) defaultRate = option.sampleRate;
-        if (option.sampleRate == task.rate) rateEnabled = option.sampleOption;
+        if (option.sampleRate == task.rate) rateEnabled = task.type == QStringLiteral("CAL") || option.sampleOption;
     }
     for (const auto &row : project.advanced.samples)
     {
@@ -109,7 +112,8 @@ bool taskFields(const Task &task, bool linuxNew, QStringList *fields, QString *m
     if (task.reagentSlots.size() != project.advanced.reagents.size() || task.batchGroup.isEmpty())
         return fail(message, QStringLiteral("任务未按试剂步骤分配完整孔位或批组，未生成命令。"));
     const QString name = base.value(QStringLiteral("project_en_name"));
-    if (name.isEmpty() || task.sample.isEmpty()) return fail(message, QStringLiteral("项目英文名或样本编号为空。"));
+    if (name.isEmpty() || (task.type != QStringLiteral("CAL") && task.sample.isEmpty()))
+        return fail(message, QStringLiteral("项目英文名或样本编号为空。"));
     QStringList result{task.type, QString::number(task.taskId)};
     if (!linuxNew) result.append(task.rack);
     result << QString::number(task.hole) << task.container << task.sample;
@@ -138,7 +142,8 @@ bool taskFields(const Task &task, bool linuxNew, QStringList *fields, QString *m
     }
     result << task.batchGroup;
     if (!linuxNew) result << base.value(QStringLiteral("IBS_name")) << sample.value(QStringLiteral("IBS_amount_ul"));
-    appendSlot(&result, task.sampleAreaSlots.value(base.value(QStringLiteral("IBS_name"))), linuxNew);
+    // 原CAL两种协议这里均发Cleaner孔；SAM/QC沿原IBS孔，不能统一改成同一孔。
+    appendSlot(&result, task.sampleAreaSlots.value(task.type == QStringLiteral("CAL") ? QStringLiteral("Cleaner") : base.value(QStringLiteral("IBS_name"))), linuxNew);
     if (!linuxNew)
     {
         for (const QString &key : {QStringLiteral("sample_amount_ul"), QStringLiteral("blender_type"), QStringLiteral("sample_add_mode"),
@@ -155,7 +160,7 @@ bool taskFields(const Task &task, bool linuxNew, QStringList *fields, QString *m
     {
         const auto &step = project.advanced.reagents[i];
         if (linuxNew)
-            result << base.value(QStringLiteral("is_related")) << (task.multiBottle ? task.reagentSlots[i].first : QString());
+            result << base.value(QStringLiteral("is_related")) << ((task.multiBottle || task.type == QStringLiteral("CAL")) ? task.reagentSlots[i].first : QString());
         else
         {
             result << step.value(QStringLiteral("reagent_name"))

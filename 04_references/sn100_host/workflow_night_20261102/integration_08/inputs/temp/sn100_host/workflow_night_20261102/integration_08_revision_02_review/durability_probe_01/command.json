@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "C:\\Windows\\System32\\wsl.exe",
+    "--distribution",
+    "Ubuntu-24.04",
+    "--user",
+    "qyq",
+    "--cd",
+    "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/workflow_night_20261102/integration_08_revision_02_review/durability_probe_01",
+    "--exec",
+    "/usr/bin/env",
+    "-i",
+    "HOME=/home/qyq",
+    "USER=qyq",
+    "LOGNAME=qyq",
+    "PATH=/usr/bin:/bin",
+    "LC_ALL=C",
+    "/usr/bin/python3",
+    "-c",
+    "import os,sys,hashlib,pwd; assert pwd.getpwuid(os.geteuid()).pw_name=='qyq' and os.geteuid()!=0; p=sys.argv[1]; expected=sys.argv[2]; assert hashlib.sha256(open(p,'rb').read()).hexdigest()==expected; f=os.open(p,os.O_RDONLY|os.O_NOFOLLOW); os.fsync(f); os.close(f); d=os.open('.',os.O_RDONLY|os.O_DIRECTORY); os.fsync(d); os.close(d); d=os.open('fix_promotion_commands',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW); os.fsync(d); os.close(d)",
+    "probe.txt",
+    "628c0ce809683c7bc7f72703b8d815d02d3379e85882313095e90f37417195eb"
+  ],
+  "native_python": "C:\\Users\\52400\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+  "promoter_sha256": "89edb4a69aace219e5eb759b0f74f6ade13502275ce558069453c853a772f260"
+}

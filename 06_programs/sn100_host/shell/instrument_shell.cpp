@@ -47,13 +47,18 @@ void frmMain::attachInstrumentPage(InstrumentPage *page)
         updateInstrumentStatus();
         updateAccountStatus();
     });
-    // 原项目工作目录同时保留config.ini；只转交文件路径，读写仍在存储线程。
+    // 显式配置和原资料配置共用连接页；只转交路径，读写仍在存储线程。
     const auto loadOriginalConnection = [this, page]()
     {
-        if (!projects_ || !projects_->property("originalProfile").toBool() || !page->isReady() || page->isBusy()) return;
-        const QString root = projects_->property("originalRoot").toString();
-        if (root.isEmpty()) return;
-        const QString file = QDir(root).filePath(QStringLiteral("config.ini"));
+        if (!page->isReady() || page->isBusy()) return;
+        QString file = property("deviceConfigurationFile").toString();
+        if (file.isEmpty())
+        {
+            if (!projects_ || !projects_->property("originalProfile").toBool()) return;
+            const QString root = projects_->property("originalRoot").toString();
+            if (root.isEmpty()) return;
+            file = QDir(root).filePath(QStringLiteral("config.ini"));
+        }
         if (page->property("connectionConfigurationFile").toString() != file)
             page->setConnectionConfigurationFile(file);
     };

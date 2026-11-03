@@ -10,6 +10,6 @@
 | [sources/](sources/README.md) | 官方SDK的9个压缩分卷、固定版本清单、文件指纹及Ubuntu ARM64基础包；附恢复方法。 |
 | [ubuntu24_server/](ubuntu24_server/README.md) | 可直接烧录的`update.img`、同内容压缩归档、匹配启动文件、模块、配置与校验清单；附首次使用方法及待板端验证范围。 |
 
-实际系统源码及构建入口在[06_programs/rk3576_system](../../06_programs/rk3576_system/README.md)，工作磁盘已经移入该工程，原源码并非只保留在临时目录。
+构建入口在[06_programs/rk3576_system](../../06_programs/rk3576_system/README.md)。实际系统源码位于专用WSL内`/home/qyq/TaishanPi-3-Linux`；工作磁盘已于2026-11-02迁到`D:\WSL\RK3576-Build-22.04\ext4.vhdx`，环境名称与内部路径保持不变。原始源码归档和正式镜像仍保存在本目录，迁移没有改变这些文件。
 
 本轮按用户最新要求只下载、编译和归档，后续烧录另安排。实际过程、来源和当前完成范围见[同一事项记录](../../02_records/20261030_system_image.md)。二进制安装包及最终镜像使用Git LFS；不自动提交或推送。

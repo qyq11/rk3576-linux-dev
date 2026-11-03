@@ -1,0 +1,56 @@
+/dts-v1/;
+/plugin/;
+
+/*
+ * 按接口开发图启用40针排针上的五组串口，只分配发送和接收信号。
+ * UART3替换3/5脚的I2C7，UART7替换27/28脚的I2C8，
+ * UART9替换26脚的SPI1第二路片选；SPI1第一路及其收发信号保留。
+ * UART4沿用8/10脚，UART8使用37/40脚。
+ * 不加入与灯光或其他串口重叠的RTS/CTS信号，不设置通信速率，
+ * 不自动发送数据；RS485/RS232电气转换和方向控制由实际电路另行核对。
+ */
+&i2c7 {
+    status = "disabled";
+};
+
+&i2c8 {
+    status = "disabled";
+};
+
+&spi1 {
+    pinctrl-0 = <&spi1m1_csn0 &spi1m1_pins>;
+
+    spidev@1 {
+        status = "disabled";
+    };
+};
+
+&uart3 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart3m0_xfer>;
+};
+
+&uart4 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart4m0_xfer>;
+};
+
+&uart7 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart7m0_xfer>;
+};
+
+&uart8 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart8m1_xfer>;
+};
+
+&uart9 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart9m0_xfer>;
+};

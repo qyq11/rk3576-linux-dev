@@ -1,0 +1,37 @@
+[identity]
+3bf8222fe1417f6a
+046347e9-a651-4392-af42-61fc37d00bcd
+Linux localhost 6.1.99-rt36-tspi #1 SMP PREEMPT_RT Thu Oct 22 11:35:54 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+1
+[final_can]
+3: can0: <NOARP,ECHO> mtu 16 qdisc pfifo_fast state DOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0  allmulti 0 minmtu 0 maxmtu 0 
+    can state STOPPED (berr-counter tx 0 rx 0) restart-ms 0 
+	  bitrate 500000 sample-point 0.868
+	  tq 20 prop-seg 42 phase-seg1 43 phase-seg2 13 sjw 1 brp 6
+	  rk3576_canfd: tseg1 1..128 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 2
+	  rk3576_canfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 2
+	  clock 297000000 
+	  re-started bus-errors arbit-lost error-warn error-pass bus-off
+	  0          0          0          0          0          0         numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus platform parentdev 2ac00000.can 
+    RX:  bytes packets errors dropped  missed   mcast           
+             0       0      0       0       0       0 
+    TX:  bytes packets errors dropped carrier collsns           
+            16       4      0       0       0       0 
+[serial]
+serinfo:1.0 driver revision:
+3: uart:16550A mmio:0x2AD60000 irq:46 tx:0 rx:0
+4: uart:16550A mmio:0x2AD70000 irq:47 tx:0 rx:0
+6: uart:16550A mmio:0x2AD90000 irq:48 tx:74896 rx:3319 RTS|CTS|DTR
+7: uart:16550A mmio:0x2ADA0000 irq:49 tx:0 rx:0
+8: uart:16550A mmio:0x2ADB0000 irq:50 tx:0 rx:0
+9: uart:16550A mmio:0x2ADC0000 irq:51 tx:0 rx:0
+[active_test_processes]
+pgrep: pattern that searches for process name longer than 15 characters will result in zero matches
+Try `pgrep -f' option to match against the complete command line.
+[startup_hashes]
+fbda3263837bcfbe1c2b12e9111a100c47f373c6f2b33b61f0b2e89a40dcff79  /boot/overlays/overlays.ini
+0a3a28657c9c3f01c60e37a0ee5dc07b09ac9abfea743dd30a2e314a684c0f44  /boot/overlays/.ubootenv
+92c1bdcfecb719bd1e9e04d75cee90dbb994a735fbf8e691ecc3259f4e1d7280  /boot/overlays/tspi-3m-can0-m2.dtbo
+9e720d81dfa456d9824403cd6a02e8f6e9899a9eecf375e0d51226e129ea92a4  /boot/overlays/tspi-3m-uart-header-five.dtbo
+96461f74b561a6b35565d07f95039325581b388a3316e409ef9a3cc46b826868  /usr/local/bin/ovtree

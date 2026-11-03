@@ -1,0 +1,268 @@
+[identity]
+3bf8222fe1417f6a
+3bdb939a-ec87-4ed2-a3fe-029ec5fa19a9
+256 SHA256:xLQv5sqzTRvKbfD2fNQQLYjCbPN6WOXgkXEoUqV8Yy4 root@qyq-virtual-machine (ED25519)
+Linux localhost 6.1.99-rt36-tspi #1 SMP PREEMPT_RT Thu Oct 22 11:35:54 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+
+[root_account_state]
+root:x:0:0:root:/root:/bin/bash
+root P 2026-11-02 0 99999 7 -1
+
+[effective_login_services]
+# /usr/lib/systemd/system/getty@.service
+#  SPDX-License-Identifier: LGPL-2.1-or-later
+#
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Getty on %I
+Documentation=man:agetty(8) man:systemd-getty-generator(8)
+Documentation=https://0pointer.de/blog/projects/serial-console.html
+After=systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=rc-local.service
+
+# If additional gettys are spawned during boot then we should make
+# sure that this is synchronized before getty.target, even though
+# getty.target didn't actually pull it in.
+Before=getty.target
+IgnoreOnIsolate=yes
+
+# IgnoreOnIsolate causes issues with sulogin, if someone isolates
+# rescue.target or starts rescue.service from multi-user.target or
+# graphical.target.
+Conflicts=rescue.service
+Before=rescue.service
+
+# On systems without virtual consoles, don't start any getty. Note
+# that serial gettys are covered by serial-getty@.service, not this
+# unit.
+ConditionPathExists=/dev/tty0
+
+[Service]
+# the VT is cleared by TTYVTDisallocate
+# The '-o' option value tells agetty to replace 'login' arguments with an
+# option to preserve environment (-p), followed by '--' for safety, and then
+# the entered username.
+ExecStart=-/sbin/agetty -o '-p -- \\u' --noclear - $TERM
+Type=idle
+Restart=always
+RestartSec=0
+UtmpIdentifier=%I
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/%I
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+IgnoreSIGPIPE=no
+SendSIGHUP=yes
+ImportCredential=agetty.*
+ImportCredential=login.*
+
+# Unset locale for the console getty since the console has problems
+# displaying some internationalized messages.
+UnsetEnvironment=LANG LANGUAGE LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION
+
+[Install]
+WantedBy=getty.target
+DefaultInstance=tty1
+
+# /etc/systemd/system/getty@tty1.service.d/zz-board-a-root-autologin.conf
+# 板A屏幕接键盘时，开机自动以root进入/root。
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear - $TERM
+
+# /usr/lib/systemd/system/serial-getty@.service
+#  SPDX-License-Identifier: LGPL-2.1-or-later
+#
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Serial Getty on %I
+Documentation=man:agetty(8) man:systemd-getty-generator(8)
+Documentation=https://0pointer.de/blog/projects/serial-console.html
+BindsTo=dev-%i.device
+After=dev-%i.device systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=rc-local.service
+
+# If additional gettys are spawned during boot then we should make
+# sure that this is synchronized before getty.target, even though
+# getty.target didn't actually pull it in.
+Before=getty.target
+IgnoreOnIsolate=yes
+
+# IgnoreOnIsolate causes issues with sulogin, if someone isolates
+# rescue.target or starts rescue.service from multi-user.target or
+# graphical.target.
+Conflicts=rescue.service
+Before=rescue.service
+
+[Service]
+# The '-o' option value tells agetty to replace 'login' arguments with an
+# option to preserve environment (-p), followed by '--' for safety, and then
+# the entered username.
+ExecStart=-/sbin/agetty -o '-p -- \\u' --keep-baud 115200,57600,38400,9600 - $TERM
+Type=idle
+Restart=always
+UtmpIdentifier=%I
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/%I
+TTYReset=yes
+TTYVHangup=yes
+IgnoreSIGPIPE=no
+SendSIGHUP=yes
+ImportCredential=agetty.*
+ImportCredential=login.*
+
+[Install]
+WantedBy=getty.target
+
+# /etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin lckfb --noclear %I 1500000 linux
+
+# /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-root-autologin.conf
+# 板A原三针调试控制台沿用1500000速率，自动登录账户改为root。
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I 1500000 linux
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin root --noclear - $TERM ; ignore_errors=yes ; start_time=[Mon 2026-11-02 14:13:27 CST] ; stop_time=[n/a] ; pid=1899 ; code=(null) ; status=0/0 }
+Id=getty@tty1.service
+ActiveState=active
+DropInPaths=/etc/systemd/system/getty@tty1.service.d/zz-board-a-root-autologin.conf
+
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin root --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[Mon 2026-11-02 14:13:27 CST] ; stop_time=[n/a] ; pid=1894 ; code=(null) ; status=0/0 }
+Id=serial-getty@ttyFIQ0.service
+ActiveState=active
+DropInPaths=/etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-root-autologin.conf
+
+[affected_files]
+3faa620d81d93d788d8efb57a251ddde254ea3020c8b4522257e56c52fcb904e  /etc/systemd/system/getty@tty1.service.d/zz-board-a-root-autologin.conf
+85d3ad67f808e7e82ea381470fb3aba0b731962a13cf587ea40bf5e203abfeaa  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-root-autologin.conf
+1b12ee238e4193a1c811ac5ceafba0627f44674e218b6fe0db7af0366529a203  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+
+[local_login_policy]
+#
+# The PAM configuration file for the Shadow `login' service
+#
+
+# Enforce a minimal delay in case of failure (in microseconds).
+# (Replaces the `FAIL_DELAY' setting from login.defs)
+# Note that other modules may require another minimal delay. (for example,
+# to disable any delay, you should add the nodelay option to pam_unix)
+auth       optional   pam_faildelay.so  delay=3000000
+
+# Outputs an issue file prior to each login prompt (Replaces the
+# ISSUE_FILE option from login.defs). Uncomment for use
+# auth       required   pam_issue.so issue=/etc/issue
+
+# Disallows other than root logins when /etc/nologin exists
+# (Replaces the `NOLOGINS_FILE' option from login.defs)
+auth       requisite  pam_nologin.so
+
+# SELinux needs to be the first session rule. This ensures that any
+# lingering context has been cleared. Without this it is possible
+# that a module could execute code in the wrong domain.
+# When the module is present, "required" would be sufficient (When SELinux
+# is disabled, this returns success.)
+session [success=ok ignore=ignore module_unknown=ignore default=bad] pam_selinux.so close
+
+# Sets the loginuid process attribute
+session    required     pam_loginuid.so
+
+# Prints the message of the day upon successful login.
+# (Replaces the `MOTD_FILE' option in login.defs)
+# This includes a dynamically generated part from /run/motd.dynamic
+# and a static (admin-editable) part from /etc/motd.
+session    optional   pam_motd.so motd=/run/motd.dynamic
+session    optional   pam_motd.so noupdate
+
+# SELinux needs to intervene at login time to ensure that the process
+# starts in the proper default security context. Only sessions which are
+# intended to run in the user's context should be run after this.
+# pam_selinux.so changes the SELinux context of the used TTY and configures
+# SELinux in order to transition to the user context with the next execve()
+# call.
+session [success=ok ignore=ignore module_unknown=ignore default=bad] pam_selinux.so open
+# When the module is present, "required" would be sufficient (When SELinux
+# is disabled, this returns success.)
+
+# This module parses environment configuration file(s)
+# and also allows you to use an extended config
+# file /etc/security/pam_env.conf.
+# 
+# parsing /etc/environment needs "readenv=1"
+session       required   pam_env.so readenv=1
+# locale variables can also be set in /etc/default/locale
+# reading this file *in addition to /etc/environment* does not hurt
+session       required   pam_env.so readenv=1 envfile=/etc/default/locale
+
+# Standard Un*x authentication.
+@include common-auth
+
+# This allows certain extra groups to be granted to a user
+# based on things like time of day, tty, service, and user.
+# Please edit /etc/security/group.conf to fit your needs
+# (Replaces the `CONSOLE_GROUPS' option in login.defs)
+auth       optional   pam_group.so
+
+# Uncomment and edit /etc/security/time.conf if you need to set
+# time restraint on logins.
+# (Replaces the `PORTTIME_CHECKS_ENAB' option from login.defs
+# as well as /etc/porttime)
+# account    requisite  pam_time.so
+
+# Uncomment and edit /etc/security/access.conf if you need to
+# set access limits.
+# (Replaces /etc/login.access file)
+# account  required       pam_access.so
+
+# Sets up user limits according to /etc/security/limits.conf
+# (Replaces the use of /etc/limits in old login)
+session    required   pam_limits.so
+
+# Prints the last login info upon successful login
+# (Replaces the `LASTLOG_ENAB' option from login.defs)
+session    optional   pam_lastlog.so
+
+# Prints the status of the user's mailbox upon successful login
+# (Replaces the `MAIL_CHECK_ENAB' option from login.defs). 
+#
+# This also defines the MAIL environment variable
+# However, userdel also needs MAIL_DIR and MAIL_FILE variables
+# in /etc/login.defs to make sure that removing a user 
+# also removes the user's mail spool file.
+# See comments in /etc/login.defs
+session    optional   pam_mail.so standard
+
+# Create a new session keyring.
+session    optional   pam_keyinit.so force revoke
+
+# Standard Un*x account and session
+@include common-account
+@include common-session
+@include common-password
+ttyFIQ0
+
+[sessions_and_applications]
+root     tty1         2026-11-02 14:13
+root     ttyFIQ0      2026-11-02 14:13
+   2056 root     tty1     -bash
+   2058 root     ttyFIQ0  -bash
+   2378 root     ?        timeout 20s bash /tmp/board_a_password_login_preflight_20261102.sh
+   2380 root     ?        bash /tmp/board_a_password_login_preflight_20261102.sh
+
+preflight_exit=0

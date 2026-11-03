@@ -8,6 +8,18 @@
 
 | 文件或目录 | 用途 |
 | --- | --- |
+| [板B第八轮有限恢复输入](board_b/status_login_08_20261103/checker_restore_scope.md) | 原07指针和同版2968检查器恢复包；8文件、新archive_SHA256SUMS 7项，原三指针原件不变；只配套正式08，不含工作库/配置/凭据。24基础项/0失败、可选0未评估，真实业务另验。 |
+| [板B第八轮流程版本](board_b/workflow_integration_20261102/integration_08/README.md) | 08bc43a7程序/报告程序及674份匹配源码，381输入、284+2对象完整构建保存与归档0；包内README的未运行是当时时点，后续切08及软件专项见[实际记录](../../02_records/20261022_sn100_host_migration.md#integration-08-live-20261103)。不含业务库或整环境。 |
+| [板B第七轮有限恢复输入](board_b/status_login_07_20261103/checker_restore_scope.md) | 原06程序指针和同版9819检查器恢复包；原指针三件保持原字节，不含工作库或凭据，仅配套正式07使用。 |
+| [板B第七轮流程版本](board_b/workflow_integration_20261102/integration_07/README.md) | 94d1b979主程序/报表程序及663份匹配源码；构建保存阶段未启用，后续11:03软件专项24/0另有记录；不含业务库，真实业务另验。 |
+| [板B第六轮有限恢复输入](board_b/status_login_06_20261103/checker_restore_scope.md) | 实测旧e314程序指针/属主、同版c920检查器和匹配脚本；正式649源码沿integration_06，原指针三件保持原字节，新包42成员读回一致，不含业务库或凭据。 |
+| [板B第六轮流程版本](board_b/workflow_integration_20261102/integration_06/README.md) | 14ce9714程序及649份匹配源码；完整构建和板B独立目录保存通过，合入与网络恢复证据另存，不含业务库，实际功能待验。 |
+| [板B第五轮状态专项的有限恢复输入](board_b/status_login_05_20261102/README.md) | 实际旧current目标/属主、同版8b48检查器及匹配源码脚本；正式程序与639源码沿integration_05，不含工作库或凭据。 |
+| [板B第四批流程修补](board_b/workflow_integration_20261102/integration_05/README.md) | e31491a1程序与639项源码；均值/主题、重连v2和批组本地开关完整构建及板B保存通过，实际功能待验。 |
+| [板B数据库命令行工具](board_b/sqlite3_20261102/README.md) | 匹配现有运行库的sqlite3安装包及来源校验；仅恢复工具，不含业务库或整环境。 |
+| [板B第三批流程修补](board_b/workflow_integration_20261102/integration_04/README.md) | 4e6c321f程序及639项匹配源码；八份窄补丁完整构建和板B独立目录保存通过，未切换或运行，实际功能待联机。 |
+| [板B第二批流程版本](board_b/workflow_integration_20261102/integration_03/README.md) | d71e4cf4主程序/报告程序及639项匹配源码；完整构建和板B独立目录保存通过，未切换或运行，联机功能待验。 |
+| [板B第一批流程版本](board_b/workflow_integration_20261102/integration_02/README.md) | 3cfcea34主程序/报告程序及622项匹配源码；完整构建和板B独立目录暂存通过，未切换启用，联机功能待验。 |
 | [original_db_20261027/](original_db_20261027/README.md) | 原项目DB、单位DB与INI兼容接入的固定源码及后续匹配应用；不含原患者/账户资料。 |
 | [combination_mode_20261027/](combination_mode_20261027) | 组合模式修复前受影响源码副本 |
 | [instrument_offline_20261024/](instrument_offline_20261024) | 仪器页/人工维护离线检查点的匹配应用与源码 |

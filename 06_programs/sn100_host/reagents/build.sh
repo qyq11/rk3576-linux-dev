@@ -21,7 +21,7 @@ flags=(-std=c++14 -O2 -g -DQT_NO_DEBUG -fPIC -pthread -Wall -Wextra
     -I"$module_dir" -I"$program_dir" -I"$build_dir" -I"$program_dir/ui" -I"$program_dir/projects"
     -I"$program_dir/shell/widgets" -I"$program_dir/shell/widgets/material" -isystem "$qt_include")
 for module in QtCore QtGui QtWidgets QtSql; do flags+=(-isystem "$qt_include/$module"); done
-for form in "$module_dir/"*.ui "$program_dir/projects/frmsystemmaterial.ui" "$program_dir/ui/cusdialogmask.ui" "$program_dir/ui/cusmessagebox.ui"; do
+for form in "$module_dir/"*.ui "$program_dir/projects/frmsystemmaterial.ui" "$program_dir/projects/copyprojectdialog.ui" "$program_dir/ui/cusdialogmask.ui" "$program_dir/ui/cusmessagebox.ui"; do
     /usr/lib/qt5/bin/uic "$form" -o "$build_dir/ui_$(basename -- "${form%.ui}").h"
 done
 sources=("$module_dir/main.cpp" "$module_dir/reagent_store.cpp" "$module_dir/reagents_page.cpp"
@@ -37,16 +37,27 @@ sources+=("$program_dir/projects/projects_current_format.cpp" "$program_dir/proj
 headers+=("$program_dir/projects/project_current_format.h" "$program_dir/projects/original_project_repository.h")
 sources+=("$program_dir/projects/project_format_dialog.cpp")
 headers+=("$program_dir/projects/project_format_dialog.h")
+sources+=("$program_dir/projects/original_project_copy.cpp" "$program_dir/projects/original_project_copy_dialog.cpp")
+headers+=("$program_dir/projects/original_project_copy.h" "$program_dir/projects/original_project_copy_dialog.h")
 
 # 有效期使用同一日历和箭头资源；原库适配由页面和存储实际调用。
 sources+=("$module_dir/original_reagent_repository.cpp" "$module_dir/original_reagent_editor.cpp" "$module_dir/original_reagent_store.cpp"
+    "$module_dir/original_reagent_usage.cpp"
+    "$program_dir/samples/material/qtmaterialscrollbar.cpp" "$program_dir/samples/material/qtmaterialscrollbar_internal.cpp"
     "$program_dir/original_files/original_business_database.cpp" "$program_dir/original_files/original_ini.cpp" "$program_dir/alarm_history/calendar/cuscalendar.cpp")
 headers+=("$module_dir/original_reagent_repository.h" "$module_dir/original_reagent_editor.h"
+    "$program_dir/samples/material/qtmaterialscrollbar.h" "$program_dir/samples/material/qtmaterialscrollbar_internal.h"
     "$program_dir/original_files/original_business_database.h" "$program_dir/original_files/original_ini.h" "$program_dir/alarm_history/calendar/cuscalendar.h")
 flags+=(-I"$program_dir/alarm_history/calendar")
 for form in "$program_dir/alarm_history/cusmaskcalendar.ui" "$program_dir/alarm_history/calendar/cuscalendar.ui"; do
     /usr/lib/qt5/bin/uic "$form" -o "$build_dir/ui_$(basename -- "${form%.ui}").h"
 done
+
+# 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
+sources+=("$module_dir/original_reagent_level_packet.cpp" "$module_dir/original_reagent_level_model.cpp" "$module_dir/original_reagent_level_projects.cpp" "$module_dir/original_reagent_level_repository.cpp" "$module_dir/original_reagent_level_runtime.cpp" "$module_dir/original_reagent_level_worker.cpp" "$module_dir/reagents_page_level.cpp" "$program_dir/original_files/original_reagent_capacity.cpp" "$program_dir/original_files/theme_configuration.cpp")
+headers+=("$module_dir/original_reagent_level.h" "$module_dir/original_reagent_level_runtime.h" "$module_dir/original_reagent_level_worker.h")
+# 任务剩余量走专用重读和运行采用，不发送设备命令。
+sources+=("$module_dir/original_task_reagent_display.cpp" "$module_dir/original_reagent_level_task.cpp" "$module_dir/original_task_reagent_readback.cpp" "$module_dir/reagents_page_task.cpp")
 for header in "${headers[@]}"; do
     if grep -q Q_OBJECT "$header"; then
         generated=$build_dir/moc_$(basename -- "${header%.h}").cpp

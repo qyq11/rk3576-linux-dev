@@ -1,0 +1,121 @@
+[identity]
+uid=0(root) gid=0(root) groups=0(root)
+Linux localhost 6.1.99-rt36-tspi #1 SMP PREEMPT_RT Thu Oct 22 11:35:54 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+046347e9-a651-4392-af42-61fc37d00bcd
+256 SHA256:xLQv5sqzTRvKbfD2fNQQLYjCbPN6WOXgkXEoUqV8Yy4 root@qyq-virtual-machine (ED25519)
+
+[login_and_console]
+root:x:0:0:root:/root:/bin/bash
+lckfb:x:1000:1000:lckfb,,,:/home/rkshare/lckfb:/bin/bash
+root P 2026-07-28 0 99999 7 -1
+storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal  androidboot.verifiedbootstate=orange rw rootwait earlycon=uart8250,mmio32,0x2ad40000 console=ttyFIQ0 root=PARTUUID=614e0000-0000 rcupdate.rcu_expedited=1 rcu_nocbs=all #q-09/12/2026 androidboot.fwver=ddr-v1.09-2f85f4b2d4,bl31-v1.14,bl32-v1.05,uboot-3fcd713
+ttyFIQ0
+tty1
+lckfb    ttyFIQ0      2026-11-02 11:16
+ c1 1000 lckfb - ttyFIQ0 active no -
+c11 1000 lckfb - -       active no -
+multi-user.target
+  UNIT                         LOAD      ACTIVE   SUB     DESCRIPTION
+● display-manager.service      not-found inactive dead    display-manager.service
+  getty@tty1.service           loaded    active   running Getty on tty1
+  serial-getty@ttyFIQ0.service loaded    active   running Serial Getty on ttyFIQ0
+
+Legend: LOAD   → Reflects whether the unit definition was properly loaded.
+        ACTIVE → The high-level unit activation state, i.e. generalization of SUB.
+        SUB    → The low-level unit activation state, values depend on unit type.
+
+3 loaded units listed.
+To show all installed unit files use 'systemctl list-unit-files'.
+enabled
+# /usr/lib/systemd/system/getty@.service
+#  SPDX-License-Identifier: LGPL-2.1-or-later
+#
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Getty on %I
+Documentation=man:agetty(8) man:systemd-getty-generator(8)
+Documentation=https://0pointer.de/blog/projects/serial-console.html
+After=systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=rc-local.service
+
+# If additional gettys are spawned during boot then we should make
+# sure that this is synchronized before getty.target, even though
+# getty.target didn't actually pull it in.
+Before=getty.target
+IgnoreOnIsolate=yes
+
+# IgnoreOnIsolate causes issues with sulogin, if someone isolates
+# rescue.target or starts rescue.service from multi-user.target or
+# graphical.target.
+Conflicts=rescue.service
+Before=rescue.service
+
+# On systems without virtual consoles, don't start any getty. Note
+# that serial gettys are covered by serial-getty@.service, not this
+# unit.
+ConditionPathExists=/dev/tty0
+
+[Service]
+# the VT is cleared by TTYVTDisallocate
+# The '-o' option value tells agetty to replace 'login' arguments with an
+# option to preserve environment (-p), followed by '--' for safety, and then
+# the entered username.
+ExecStart=-/sbin/agetty -o '-p -- \\u' --noclear - $TERM
+Type=idle
+Restart=always
+RestartSec=0
+UtmpIdentifier=%I
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/%I
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+IgnoreSIGPIPE=no
+SendSIGHUP=yes
+ImportCredential=agetty.*
+ImportCredential=login.*
+
+# Unset locale for the console getty since the console has problems
+# displaying some internationalized messages.
+UnsetEnvironment=LANG LANGUAGE LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION
+
+[Install]
+WantedBy=getty.target
+DefaultInstance=tty1
+MainPID=1840
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty -o -p -- \u --noclear - $TERM ; ignore_errors=yes ; start_time=[Mon 2026-11-02 11:16:24 CST] ; stop_time=[n/a] ; pid=1840 ; code=(null) ; status=0/0 }
+ActiveState=active
+FragmentPath=/usr/lib/systemd/system/getty@.service
+DropInPaths=
+
+[existing_dropins]
+ls: cannot access '/etc/systemd/system/getty@tty1.service.d': No such file or directory
+lrwxrwxrwx 1 root root 38 Sep 12 10:48 /etc/systemd/system/getty.target.wants/getty@tty1.service -> /usr/lib/systemd/system/getty@.service
+
+[root_ssh_access]
+700 root root /root
+700 root root /root/.ssh
+stat: cannot statx '/root/.ssh/authorized_keys': No such file or directory
+permitrootlogin without-password
+pubkeyauthentication yes
+passwordauthentication yes
+authorizedkeysfile .ssh/authorized_keys .ssh/authorized_keys2
+
+[active_applications]
+   1840 root     tty1     /sbin/agetty -o -p -- \u --noclear - linux
+   1987 lckfb    ttyFIQ0  -bash
+   2952 root     ?        sudo -n bash -s
+   2957 root     ?        bash -s
+   2981 root     ?        grep -E sn100|[X]org|[w]eston|[b]ash|[a]getty
+
+[agetty_version]
+agetty from util-linux 2.39.3 (flow control, hints, issue, issue.d, keyboard mode, plymouth, reload, syslog, widechar)
+
+preflight_exit=0

@@ -22,7 +22,9 @@ Reply prepare(const Snapshot &snapshot, qint64 controlId, qint64 batchId)
     {
         return failure("SNAPSHOT_NOT_READY", QStringLiteral("质控选择资料尚未就绪，保留原草稿。"));
     }
-    if (QUuid(snapshot.datasetId).isNull() || controlId <= 0 || batchId <= 0)
+    const bool originalIdentity = !snapshot.originalRoot.isEmpty() &&
+        snapshot.datasetId == QStringLiteral("original-quality:") + snapshot.originalRoot;
+    if ((!originalIdentity && QUuid(snapshot.datasetId).isNull()) || controlId <= 0 || batchId <= 0)
     {
         return failure("INVALID_IDENTITY", QStringLiteral("质控数据集或选择ID无效。"));
     }

@@ -1,0 +1,37 @@
+diff --git a/06_programs/sn100_host/reagents/original_reagent_editor.cpp b/06_programs/sn100_host/reagents/original_reagent_editor.cpp
+--- a/06_programs/sn100_host/reagents/original_reagent_editor.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_editor.cpp
+@@ -1,5 +1,6 @@
+ #include "original_reagent_editor.h"
+ #include "original_files/original_ini.h"
++#include "projects/original_project_copy.h"
+ #include <QDateTime>
+ #include <QDir>
+ #include <QFileInfo>
+@@ -383,6 +384,7 @@
+     QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+     QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
+     if (!projectLock.tryLock(0) || !reagentLock.tryLock(0)) return fail(message,QStringLiteral("原项目或试剂正在保存，请稍后重试，草稿保留。"));
++    if (file.startsWith(QStringLiteral("project/")) && !OriginalProjectCopy::noPending(root_,message)) return false;
+     if (!expected.isEmpty() && expected!=versions_.value(file)) return fail(message,QStringLiteral("试剂草稿已过期，请重新读取后编辑。"));
+     for (auto it=versions_.cbegin();it!=versions_.cend();++it)
+         if (it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(it.key()),message))
+diff --git a/06_programs/sn100_host/samples/original_project_device_repository.cpp b/06_programs/sn100_host/samples/original_project_device_repository.cpp
+--- a/06_programs/sn100_host/samples/original_project_device_repository.cpp
++++ b/06_programs/sn100_host/samples/original_project_device_repository.cpp
+@@ -1,5 +1,6 @@
+ #include "original_project_device_repository.h"
+ #include "original_files/original_business_database.h"
++#include "projects/original_project_copy.h"
+ #include <QDir>
+ #include <QLockFile>
+ #include <QRegularExpression>
+@@ -162,6 +163,8 @@
+     if (received.base.value("project_en_name")!=expectedProject) return fail(message,QStringLiteral("项目回包与本次请求名称不符，未写入其他项目。"));
+     QLockFile guard(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+     if (!guard.tryLock(0)) return fail(message,QStringLiteral("原项目正在编辑保存，本次设备返回未覆盖草稿，请稍后重读。"));
++    // 允许读取过滤后的旧项目，不代表可以在待核复制期间保存设备返回。
++    if (!OriginalProjectCopy::noPending(root_,message)) return false;
+     QList<OriginalDeviceProject> projects;
+     if (!load(&projects,message)) return false;
+     const OriginalDeviceProject *target=nullptr;

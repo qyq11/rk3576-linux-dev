@@ -1,0 +1,26 @@
+lckfb
+6.1.99-rt36-tspi
+1
+72b43693-95d9-4b7e-8620-63f56dfacbc4
+3: can0: <NOARP,ECHO> mtu 16 qdisc pfifo_fast state DOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0  allmulti 0 minmtu 0 maxmtu 0 
+    can state STOPPED (berr-counter tx 0 rx 0) restart-ms 0 
+	  bitrate 500000 sample-point 0.868
+	  tq 20 prop-seg 42 phase-seg1 43 phase-seg2 13 sjw 1 brp 6
+	  rk3576_canfd: tseg1 1..128 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 2
+	  rk3576_canfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 2
+	  clock 297000000 
+	  re-started bus-errors arbit-lost error-warn error-pass bus-off
+	  0          0          0          0          0          0         numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus platform parentdev 2ac00000.can 
+    RX:  bytes packets errors dropped  missed   mcast           
+             0       0      0       0       0       0 
+    TX:  bytes packets errors dropped carrier collsns           
+            32       7      0       0       0       0 
+pin 132 (gpio4-4): 2ac00000.can (GPIO UNCLAIMED) function can0 group can0m2-pins
+pin 134 (gpio4-6): 2ac00000.can (GPIO UNCLAIMED) function can0 group can0m2-pins
+975ed94b370b31d6666823aec3952616b5a486d9bb924f74064b0a78ef845cc3  /boot/overlays/overlays.ini
+14f644f7c7507426e4b365c1de6a007f1096ea9c94e20c89e5524bf7cc1f3fdb  /boot/overlays/.ubootenv
+92c1bdcfecb719bd1e9e04d75cee90dbb994a735fbf8e691ecc3259f4e1d7280  /boot/overlays/tspi-3m-can0-m2.dtbo
+d2dfc4004eea0dd588f2f5e1812979310fff204db9980e3a0ef21a05fa699e21  /home/rkshare/programs/can_loopback/can_loopback
+no_can_loopback_process
+ttyS4_and_ttyS6_present

@@ -1,0 +1,51 @@
+[identity_after_reboot]
+3bf8222fe1417f6a
+3df94f31-f1dc-43b7-a6c3-e2facf2895f1
+Linux localhost 6.1.99-rt36-tspi #1 SMP PREEMPT_RT Thu Oct 22 11:35:54 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+1
+
+[password_login_services]
+active
+TERMINAL=tty1
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --noclear - $TERM ; ignore_errors=yes ; start_time=[Mon 2026-11-02 14:19:27 CST] ; stop_time=[n/a] ; pid=1903 ; code=(null) ; status=0/0 }
+   1903 agetty          /sbin/agetty --noclear - linux
+WAITING_FOR_LOGIN_tty1=PASS
+active
+TERMINAL=ttyFIQ0
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[Mon 2026-11-02 14:19:27 CST] ; stop_time=[n/a] ; pid=1898 ; code=(null) ; status=0/0 }
+   1898 agetty          /sbin/agetty --noclear ttyFIQ0 1500000 linux
+WAITING_FOR_LOGIN_ttyFIQ0=PASS
+
+[local_sessions]
+
+[screen_login_prompt]
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+SCREEN_LOGIN_PROMPT=PASS
+
+[preserved_interface_settings]
+3: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0  allmulti 0 minmtu 0 maxmtu 0 
+    can <FD> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0 
+	  rk3576_canfd: tseg1 1..128 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 2
+	  rk3576_canfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 2
+	  clock 297000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus platform parentdev 2ac00000.can 
+fbda3263837bcfbe1c2b12e9111a100c47f373c6f2b33b61f0b2e89a40dcff79  /boot/overlays/overlays.ini
+0a3a28657c9c3f01c60e37a0ee5dc07b09ac9abfea743dd30a2e314a684c0f44  /boot/overlays/.ubootenv
+
+[configuration_files]
+df749b94065b5ffae3bec6ab1618e2550ad58ae7912512259a3234310f406c8f  /etc/systemd/system/getty@tty1.service.d/zz-board-a-password-login.conf
+ea16792e8d264c250d4685264bf8bea7645bd5b4324ba4c62f2ee81dca616b05  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-password-login.conf
+1b12ee238e4193a1c811ac5ceafba0627f44674e218b6fe0db7af0366529a203  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+permitrootlogin without-password
+pubkeyauthentication yes
+
+verify_exit=0

@@ -9,3 +9,6 @@ RESOURCES += $$PWD/projects_resources.qrc
 # Explicit auxiliary configuration operation; ordinary Save and original form stay intact.
 SOURCES += $$PWD/project_format_dialog.cpp
 HEADERS += $$PWD/project_format_dialog.h
+SOURCES += $$PWD/original_project_copy_dialog.cpp
+HEADERS += $$PWD/original_project_copy_dialog.h
+FORMS += $$PWD/copyprojectdialog.ui

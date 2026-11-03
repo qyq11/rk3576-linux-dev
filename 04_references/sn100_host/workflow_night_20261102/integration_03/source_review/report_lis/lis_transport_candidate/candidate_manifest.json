@@ -1,0 +1,125 @@
+{
+  "generated_utc": "2026-11-02T12:59:57.360397+00:00",
+  "scope": "LIS TCP基础候选；正式源码未由本窗口修改；主入口不会自动连接",
+  "files": [
+    {
+      "target": "06_programs/sn100_host/lis_transport/lis_mllp_codec.cpp",
+      "candidate": {
+        "sha256": "ce302ac3167aa32884818e5509a02de2dbaf0878421af303411d8405e56e3942",
+        "bytes": 4860
+      }
+    },
+    {
+      "target": "06_programs/sn100_host/lis_transport/lis_mllp_codec.h",
+      "candidate": {
+        "sha256": "d6787718c951e831acc00075d33ed33062cf56871d73883bdb3cbfb640e080e9",
+        "bytes": 736
+      }
+    },
+    {
+      "target": "06_programs/sn100_host/lis_transport/lis_tcp_transport.cpp",
+      "candidate": {
+        "sha256": "8404a7b5a7164be2533547b6e8a3a389770ad292abbc6a7c97eb037b713ad13d",
+        "bytes": 18400
+      }
+    },
+    {
+      "target": "06_programs/sn100_host/lis_transport/lis_tcp_transport.h",
+      "candidate": {
+        "sha256": "0b82561d09f0c5e9a133464edacd465ff0a17f9a28aaabae8ba2bd885fc11f67",
+        "bytes": 3309
+      }
+    },
+    {
+      "target": "06_programs/sn100_host/lis_transport/lis_transport.pri",
+      "candidate": {
+        "sha256": "382450015ec8b7f7736fc83969452146caa83a26a2bd53bf8fa694c1556c1dfc",
+        "bytes": 162
+      }
+    },
+    {
+      "target": "06_programs/sn100_host/shell/build.sh",
+      "candidate": {
+        "sha256": "124986260708d190f86a72e4ba375590285679e1c1ad3a654e98d525e938d118",
+        "bytes": 24829
+      },
+      "base": {
+        "sha256": "f2071d28e829a3797a05d739e0c19167b9bd823b624ff2f3d03d0d9220f58cac",
+        "bytes": 24659
+      },
+      "formal_at_manifest": {
+        "sha256": "9138ddc1c1fddb4118874a89cf442a55476aba049d16de1a05429c917688ce91",
+        "bytes": 25135
+      }
+    },
+    {
+      "target": "06_programs/sn100_host/shell/main.cpp",
+      "candidate": {
+        "sha256": "5918a99466a1d9fbf98cc85efb1a2630921c2f109f4f174fd2aa0ca7070f059a",
+        "bytes": 73758
+      },
+      "base": {
+        "sha256": "924d5fb5fa6544210b509b99e9adc0ddb7b3dce96ccb58464521aa4768869964",
+        "bytes": 71550
+      },
+      "formal_at_manifest": {
+        "sha256": "d1eb68ad77f75d6edaa152c7dcc0bd52046977e8a5b163e451397e3d180c0c71",
+        "bytes": 75432
+      }
+    },
+    {
+      "target": "06_programs/sn100_host/shell/shell.pri",
+      "candidate": {
+        "sha256": "f8118cc87eee28c045a2d9c3f7f55bcafa31617d3ac65c0e7ce707e48b064d62",
+        "bytes": 6921
+      },
+      "base": {
+        "sha256": "55d68c36a19c062d74a7706ac4f391db125ae752ecba951c4868f882c2e7182a",
+        "bytes": 6870
+      },
+      "formal_at_manifest": {
+        "sha256": "55d68c36a19c062d74a7706ac4f391db125ae752ecba951c4868f882c2e7182a",
+        "bytes": 6870
+      }
+    }
+  ],
+  "patch": {
+    "sha256": "e587f2a855dda4866b2a2213e1f4e2d1b5aa7b152f370c17c041b96c0cdd3a28",
+    "bytes": 34653
+  },
+  "arm64_object_compile_exit": 0,
+  "compile_mode": "codec-only",
+  "recompiled_objects": [
+    "lis_mllp_codec.o"
+  ],
+  "previous_compile_evidence": "revisions/8616f9_before_utf8_nul/",
+  "full_link": false,
+  "linux_runtime": false,
+  "rk_runtime": false,
+  "real_lis": false,
+  "simulated_or_loopback": false,
+  "windows_runtime_scope": "已有原程序的设置入口和静态显示，未保存或通信；详见windows_review.md",
+  "objects": {
+    "lis_mllp_codec.o": {
+      "sha256": "692f30fd876175c54eae7bdbc54a5e3f9f49f697eff439a4751c120b300f9475",
+      "bytes": 677032
+    },
+    "lis_tcp_transport.o": {
+      "sha256": "45dab639e632123319db5fc806872056092cc06366185800c862d9c8069b210b",
+      "bytes": 2357120
+    },
+    "main.o": {
+      "sha256": "bfc43da315ba164ac3f91c7f248c55ce717f238ff3f2da5a7ecf26e5e6032f99",
+      "bytes": 6539232
+    },
+    "moc_lis_tcp_transport.o": {
+      "sha256": "c75a8e2a405a32588596162b805448b93d6173f7f8f98072159afcb32484b18e",
+      "bytes": 770968
+    }
+  },
+  "compile_log": {
+    "sha256": "45bf006a8395adcf15d5b8d47910e16cbcd7214935baf930b12cc9cdaa21485c",
+    "bytes": 6718
+  },
+  "note": "候选指纹只覆盖candidate目录；总窗口完整构建须另外固定全部输入。只应用窄补丁，不覆盖整份公共main/build/pri。"
+}

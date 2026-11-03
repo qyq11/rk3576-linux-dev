@@ -4,8 +4,13 @@
 #include <QWidget>
 #include <QPointer>
 #include <QMap>
+#include <QSet>
+#include <QElapsedTimer>
+#include <memory>
 #include "data/account_store.h"
 #include "history/report_document.h"
+#include "original_files/original_runtime_settings.h"
+#include "projects/original_project_save_notice.h"
 
 class HospitalStore;
 class frmHospInfoSetting;
@@ -18,6 +23,9 @@ class QScrollArea;
 class HistoryReportController;
 class ProjectPage;
 class ReagentsPage;
+namespace OriginalLevels { class ObservationWorker; struct Context; }
+namespace OriginalTaskReagents { struct Commit; struct RuntimeAdoption; }
+namespace TaskReagentRouting { struct Bridge; }
 class SamplePage;
 class SampleStore;
 class InstrumentPage;
@@ -32,7 +40,7 @@ class LanguageSettingPage;
 class AlarmHistoryHost;
 class LisInboxPageHost;
 class QAction;
-namespace AlarmHistory { class Store; }
+namespace AlarmHistory { class Store; class OriginalAlarmReceiver; }
 namespace Sn100Protocol { struct ReplayState; struct LoopbackStatusState; }
 namespace OriginalRuntime { struct RuntimeSettings; struct SystemProfile; }
 
@@ -65,6 +73,8 @@ public:
     bool enableLisRawInbox(const QString &absoluteDirectory);
     void openLisRawInbox();
     bool lisRawInboxShutdownComplete() const;
+    bool enableOriginalAlarmReceiver(AlarmHistory::OriginalAlarmReceiver *receiver);
+    bool originalAlarmShutdownComplete() const;
     void attachQualityControlPage(QualityControlPage *page);
     QualityControlPage *qualityControlPage() const { return qualityControl_; }
     void attachCalibrationPage(CalibrationPage *page);
@@ -84,6 +94,8 @@ public:
     HistoryReportController *historyReports() const { return reports_; }
     AccountSession accountSession() const { return session_; }
     bool enablePasswordLogin();
+    // 只登记一次启动登录；页面忙时等待，显示或取消后不再自动重开。
+    void requestStartupLogin();
     bool requestLogin();
     bool requestLogout();
     bool requestShutdown();
@@ -96,6 +108,7 @@ public:
     bool selectMainPage(int index);
     bool selectUserPage(int index);
     void setDataDirectory(const QString &directory);
+    void applyThemeConfiguration(const OriginalRuntime::ThemeOptions &theme);
     bool applyOriginalRuntime(const OriginalRuntime::RuntimeSettings &settings,
                               const OriginalRuntime::SystemProfile &system, QString *message);
     // 只呈现显式离线回放；不改变账户动作条件或启用任何设备按钮。
@@ -107,12 +120,63 @@ signals:
     void navigationChanged(int mainIndex, int userIndex);
     void navigationRejected(QString reason);
     void sessionChanged(AccountSession session);
+    // 运行态变化只更新既有守卫，不触发身份切换的任务清理和配置重同步。
+    void deviceActionStateChanged(AccountSession session);
     void loggedOut();
 
 protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    std::shared_ptr<TaskReagentRouting::Bridge> taskReagentBridge_;
+    void attachTaskReagents();
+    bool routeTaskReagentPacket(quint64 packet, quint64 connection, const QByteArray &payload);
+    void finishTaskReagentPacket(quint64 packet, quint64 connection, const QByteArray &command, bool success, const QString &message);
+    void advanceTaskReagents();
+    void observeTaskReagentCommit(const OriginalTaskReagents::Commit &receipt);
+    void receiveTaskReagentAdoption(const OriginalTaskReagents::RuntimeAdoption &adoption);
+    void taskReagentReadbackFinished(const OriginalTaskReagents::Commit &receipt);
+    void completeTaskReagentAction(quint64 packet);
+    void cancelTaskReagentContexts(const QString &reason);
+    void taskReagentContextChanged();
+    void taskReagentSourceReviewed(bool success);
+    bool requestTaskReagentShutdown();
+    QString taskReagentNBlocker() const;
+    bool taskReagentObservationOnly(quint64 connection, bool validQj);
+    quint64 taskReagentFenceToken() const;
+    int taskReagentRetainedPackets() const;
+    qint64 taskReagentRetainedBytes() const;
+    void beginTaskReagentUrSource(const QByteArray &payload, quint64 connection);
+    void beginTaskReagentManualSource(const QString &hole, quint64 connection);
+    void finishTaskReagentSourceEnqueue();
+    void checkTaskReagentSource();
+    void reportTaskReagent(const QString &message);
+    void ensureTaskReagentFence();
+    void deferTaskReagentCatalogClose();
+    void enterTaskReagentCloseAttempt();
+    void syncTaskReagentDisplayUnknown();
+    QString taskReagentTransactionBlocker() const;
+    QPointer<OriginalLevels::ObservationWorker> reagentLevelWorker_;
+    std::shared_ptr<OriginalLevels::Context> reagentLevelContext_, reagentLevelSource_, reagentLevelActive_;
+    QString reagentLevelSourceRoot_;
+    QString reagentLevelRuntimeHole_;
+    quint64 reagentLevelSourceConnection_ = 0;
+    quint64 reagentLevelRequestedUrConnection_ = 0;
+    QMap<quint64,std::shared_ptr<OriginalLevels::Context>> reagentLevelUrContexts_;
+    std::shared_ptr<OriginalLevels::Context> reagentLevelPriorityUrContext_;
+    quint64 reagentLevelSourceRequest_ = 0, reagentLevelPermissionRevision_ = 0, reagentLevelPacket_ = 0;
+    bool reagentLevelClosing_ = false;
+    void attachReagentLevels();
+    void updateReagentLevelContext(bool validQj=false);
+    void reviewReagentLevelSource(const QString &root, quint64 connection);
+    std::shared_ptr<OriginalLevels::Context> reagentLevelUrContext(quint64 connection) const;
+    void confirmReagentLevelUr(const QByteArray &payload, quint64 connection,
+                              const std::shared_ptr<OriginalLevels::Context> &arrivalContext);
+    void invalidateReagentLevels();
+    bool reagentLevelBusy() const;
+    QString reagentLevelSyncBlocker(quint64 connection) const;
+    bool requestReagentLevelShutdown();
+    void reportReagentLevel(const QString &message);
     Ui::frmMain *ui;
     frmUserSet *userSet_;
     QButtonGroup *menuButtons_;
@@ -120,6 +184,12 @@ private:
     AccountSession session_;
     bool logoutPending_ = false;
     bool passwordLoginEnabled_ = false;
+    bool loginAfterLogoutPending_ = false;
+    bool loginAfterLogoutQueued_ = false;
+    // 启动自动登录与注销重登分别保存意图，不能借注销标记补启动。
+    bool startupLoginPending_ = false;
+    bool startupLoginQueued_ = false;
+    bool startupLoginConsumed_ = false;
     QPointer<MaskDlgLogin> loginDialog_;
     HistoryPage *history_ = nullptr;
     QScrollArea *historyViewport_ = nullptr;
@@ -173,29 +243,71 @@ private:
     bool alarmHistoryAvailable_ = false;
     bool alarmHistoryShutdownPending_ = false;
     bool alarmHistoryShutdownRetryQueued_ = false;
+    QPointer<AlarmHistory::OriginalAlarmReceiver> originalAlarmReceiver_;
+    bool originalAlarmShutdownPending_ = false;
+    bool requestOriginalAlarmShutdown();
     bool readOnlyStatusEnabled_ = false;
     QString readOnlyStatusText_, readOnlyStatusDetail_, readOnlyStatusColor_;
     QPointer<MaskDlgShutDown> shutdownDialog_;
     bool shutdownClosing_ = false;
     DeviceControl *deviceControl_ = nullptr;
+    bool deviceActionReadyObserved_ = false;
+    bool deviceActionReady_ = false;
+    void updateDeviceActionReadiness();
+    void applyDeviceActionReadiness(bool actionReady);
     bool connectDeviceAtStartup_ = false;
+    void updateDeviceStatusDisplay();
     void updateDeviceControlActions();
     QString detectionStartBlocker() const;
     void updateOriginalDeviceSync();
     void invalidateDeviceTaskContext();
+    void rememberReagentRecoveryContext();
+    QString deviceRecoveryBlocker() const;
+    void acceptOriginalProjectSave(const OriginalProjectSaveNotice &notice, quint64 intent, bool enqueue = false);
+    void applyOriginalProjectUpdateState(const OriginalProjectUpdateState &state);
+    void advanceOriginalProjectUpdates();
+    void updateOriginalProjectReadiness();
+    QString originalProjectUpdateBlocker() const;
     void reportDeviceTaskError(const QString &message);
     QPointer<SampleStore> deviceTaskStore_;
     bool deviceTaskPreparing_ = false;
     quint64 deviceTaskRequest_ = 0, deviceTaskConnection_ = 0;
     quint64 deviceConfigurationConnection_ = 0;
     bool deviceConfigurationStarted_ = false, deviceConfigurationReady_ = false;
+    bool deviceConfigurationBaseReady_ = false, projectUpdateReady_ = true, projectUpdatePumpQueued_ = false;
+    quint64 projectUpdatePumpConnection_ = 0;
+    QMap<QString, OriginalProjectUpdateState> projectUpdateNotices_;
     QString deviceConfigurationRoot_;
+    // 连接重建与业务恢复分别核对；这组字段不改旧任务和试剂记录。
+    quint64 deviceRecoveryRequest_ = 0, deviceRecoveryConnection_ = 0;
+    QString deviceRecoveryRoot_, deviceRecoveryMessage_;
+    bool deviceRecoveryPending_ = false, deviceRecoveryChecked_ = false, deviceRecoveryUnfinished_ = false;
+    bool deviceReagentRecoveryRequired_ = false;
     QMap<quint64, QByteArray> devicePackets_;
     quint64 devicePacket_ = 0;
     qint64 devicePacketBytes_ = 0;
     QString deviceReagentUpdateHole_;
     quint64 deviceReagentUpdateRequest_ = 0;
     bool deviceReagentUpdateUnknown_ = false;
+    enum class ReagentPriorityStage { None, Preparing, Queuing, WaitingReply, SavingReply, WaitingPage };
+    ReagentPriorityStage reagentPriorityStage_ = ReagentPriorityStage::None;
+    bool reagentPriorityAttached_ = false, reagentPriorityMayHaveQueued_ = false;
+    quint64 reagentPriorityRequest_ = 0, reagentPriorityConnection_ = 0;
+    quint64 reagentPriorityUnknownConnection_ = 0, reagentPriorityHistoryConnection_ = 0;
+    AccountSession reagentPriorityIdentity_;
+    QByteArray reagentPrioritySent_, reagentPriorityReply_;
+    QString reagentPrioritySavedFingerprint_;
+    QSet<QByteArray> reagentPriorityReplyDigests_;
+    QElapsedTimer reagentPriorityClock_;
+    void attachReagentPriority();
+    QString reagentPositionBlocker() const;
+    QString reagentPriorityBlocker(bool ownPageBusy = false) const;
+    void updateReagentPriorityAccess();
+    void beginReagentPriority(quint64 request, quint64 connection, const QString &operation, const QString &hole);
+    void finishReagentPriority(bool success, const QString &message, bool resultUnknown);
+    bool routeReagentPriorityReply(const QByteArray &payload, quint64 connection);
+    void finishReagentPriorityIfDisplayed();
+    void beginOriginalReagentWait(const QString &hole, const QString &message);
 
     void restoreMainSelection();
     void configureOfflineStatus();
@@ -205,6 +317,9 @@ private:
     bool alarmHistoryIdle() const;
     bool requestAlarmHistoryLeave(const QString &action);
     bool rejectLoginNavigation();
+    void resumeLoginAfterLogout();
+    void resumeStartupLogin();
+    void cancelStartupLogin();
     bool requestHistoryLeave(const QString &action);
     void restoreHistoryFocus();
     void updateHistoryStatus();

@@ -1,0 +1,160 @@
+diff --git a/06_programs/sn100_host/samples/original_sample_repository.cpp b/06_programs/sn100_host/samples/original_sample_repository.cpp
+index b224b0d..cacf3aa 100644
+--- a/06_programs/sn100_host/samples/original_sample_repository.cpp
++++ b/06_programs/sn100_host/samples/original_sample_repository.cpp
+@@ -37,7 +37,7 @@ bool OriginalSampleRepository::refreshProjects(QString *message)
+     return projectRepository_.load(&projects_, &units_, &reagents, &cleaners, &diluents, message);
+ }
+ 
+-bool OriginalSampleRepository::initialize(const QString &root, QString *message)
++bool OriginalSampleRepository::initialize(const QString &root, QString *message, bool newHoleContainerIsTube)
+ {
+     if (!OriginalBusiness::workingRoot(root, message) || !projectRepository_.initialize(root, {}, message)) return false;
+     OriginalIni::Settings theme;
+@@ -57,6 +57,7 @@ bool OriginalSampleRepository::initialize(const QString &root, QString *message)
+     {
+         SampleHole hole;
+         hole.number = i;
++        hole.container = newHoleContainerIsTube ? 0 : 1; // 仅本次真正创建的急诊孔。
+         emergency.holes.append(hole);
+     }
+     snapshot_.racks.append(emergency);
+diff --git a/06_programs/sn100_host/samples/original_sample_repository.h b/06_programs/sn100_host/samples/original_sample_repository.h
+index 75bd1ec..664ce63 100644
+--- a/06_programs/sn100_host/samples/original_sample_repository.h
++++ b/06_programs/sn100_host/samples/original_sample_repository.h
+@@ -11,7 +11,8 @@
+ class OriginalSampleRepository
+ {
+ public:
+-    bool initialize(const QString &root, QString *message);
++    // 主程序显式传已验配置；旧直接调用省略参数时保留既有杯默认和失败语义。
++    bool initialize(const QString &root, QString *message, bool newHoleContainerIsTube = false);
+     bool load(SampleSnapshot *snapshot, QString *message);
+     bool saveRack(SampleRack rack, qint64 *savedId, QString *message);
+     bool removeRack(qint64 rackId, QString *message);
+diff --git a/06_programs/sn100_host/samples/original_sample_store.cpp b/06_programs/sn100_host/samples/original_sample_store.cpp
+index 112cef7..9a34ed2 100644
+--- a/06_programs/sn100_host/samples/original_sample_store.cpp
++++ b/06_programs/sn100_host/samples/original_sample_store.cpp
+@@ -16,7 +16,7 @@ void SampleStore::initializeOriginal(QString root)
+     release();
+     auto repository = std::unique_ptr<OriginalSampleRepository>(new OriginalSampleRepository);
+     QString message;
+-    if (!repository->initialize(root, &message))
++    if (!repository->initialize(root, &message, originalDefaultContainerIsTube_))
+     { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+     auto detection = std::unique_ptr<OriginalDetectionSession>(new OriginalDetectionSession);
+     if (!detection->initialize(repository.get(), &message))
+diff --git a/06_programs/sn100_host/samples/sample_page.cpp b/06_programs/sn100_host/samples/sample_page.cpp
+index 38ae92a..1ca0fd7 100644
+--- a/06_programs/sn100_host/samples/sample_page.cpp
++++ b/06_programs/sn100_host/samples/sample_page.cpp
+@@ -1116,6 +1116,8 @@ void SamplePage::addRack()
+     {
+         SampleHole value;
+         value.number = hole;
++        // 仅原资料模式真正新孔应用默认，重读、复制及CAL/QC转换保留自身容器。
++        if (originalProfile_) value.container = originalDefaultContainerIsTube_ ? 0 : 1;
+         rack.holes.append(value);
+     }
+     editing_ = rack;
+diff --git a/06_programs/sn100_host/samples/sample_page.h b/06_programs/sn100_host/samples/sample_page.h
+index cde441b..fc456c3 100644
+--- a/06_programs/sn100_host/samples/sample_page.h
++++ b/06_programs/sn100_host/samples/sample_page.h
+@@ -5,6 +5,7 @@
+ #include "sample_store.h"
+ #include <QColor>
+ #include <QPointer>
++#include <QThread>
+ #include <QWidget>
+ class QDialog;
+ class QTableWidget;
+@@ -34,6 +35,13 @@ class SamplePage : public QWidget
+     bool prepareToLeave();
+     SampleStore *taskStore() const { return store_; }
+     bool originalProfile() const { return originalProfile_; }
++    // 只记录以后真正新孔的默认值，不重写快照、草稿或已选容器。
++    bool configureOriginalDefaultContainer(bool containerIsTube)
++    {
++        if (QThread::currentThread() != thread()) return false;
++        originalDefaultContainerIsTube_ = containerIsTube;
++        return true;
++    }
+     void configureLayout(int ordinary, int emergency)
+     { ordinaryHoles_=ordinary; emergencyHoles_=emergency; }
+     SampleSnapshot snapshot() const
+@@ -100,6 +108,7 @@ class SamplePage : public QWidget
+     AccountSession session_;
+     SampleSnapshot snapshot_;
+     bool originalProfile_ = false, pendingDeviceReload_ = false;
++    bool originalDefaultContainerIsTube_ = false; // 旧独立入口继续用杯，不增加配置拒绝门。
+     int ordinaryHoles_ = 8, emergencyHoles_ = 3;
+     QColor rackSelectedColour_ = QColor(QStringLiteral("#B7D7FF"));
+     SampleRack editing_;
+diff --git a/06_programs/sn100_host/samples/sample_store.h b/06_programs/sn100_host/samples/sample_store.h
+index fa9d8b1..a13a39c 100644
+--- a/06_programs/sn100_host/samples/sample_store.h
++++ b/06_programs/sn100_host/samples/sample_store.h
+@@ -5,6 +5,7 @@
+ #include "original_task_reagent_receipt.h"
+ #include <QObject>
+ #include <QSqlDatabase>
++#include <QThread>
+ #include <QSet>
+ #include <memory>
+ #include "projects/projects_store.h"
+@@ -28,6 +29,13 @@ class SampleStore : public QObject
+     static bool canEdit(const AccountSession &session);
+     // 在线程启动前设置；初始化时只调整空孔，已有样本或任务超出新范围则拒绝。
+     void configureLayout(int ordinary, int emergency);
++    // 主程序在移入工作线程前传入同次已核配置；旧独立入口仍保持原杯默认。
++    bool configureOriginalDefaultContainer(bool containerIsTube)
++    {
++        if (QThread::currentThread() != thread()) return false;
++        originalDefaultContainerIsTube_ = containerIsTube;
++        return true;
++    }
+   public slots:
+     void initialize(QString catalogDir);
+     void initializeOriginal(QString root);
+@@ -123,6 +131,7 @@ class SampleStore : public QObject
+     AccountSession session_;
+     bool ready_ = false;
+     bool layoutConfigured_ = false;
++    bool originalDefaultContainerIsTube_ = false; // false是原杯默认，不是“未初始化”。
+     int ordinaryHoles_ = 8, emergencyHoles_ = 3;
+     struct PendingQualityChange
+     {
+diff --git a/06_programs/sn100_host/shell/main.cpp b/06_programs/sn100_host/shell/main.cpp
+index 0fb1012..13c8a3f 100644
+--- a/06_programs/sn100_host/shell/main.cpp
++++ b/06_programs/sn100_host/shell/main.cpp
+@@ -582,6 +582,12 @@ int main(int argc, char *argv[])
+     sampleThread.setObjectName(QStringLiteral("O08SampleDatabase"));
+     SampleStore *samples=withSamples ? new SampleStore : nullptr;
+     if (samples && withThemeConfiguration) samples->configureLayout(themeConfiguration.sampleHoles,themeConfiguration.emergencyHoles);
++    if (samples && withOriginalProjects &&
++        !samples->configureOriginalDefaultContainer(originalRuntimeConfiguration.user.containerIsTube))
++    {
++        qCritical() << "原样本新孔默认容器未能在移入工作线程前配置。";
++        return 3;
++    }
+     if (samples)
+     {
+         SampleStore::registerTypes();
+@@ -1031,6 +1037,13 @@ int main(int argc, char *argv[])
+         {
+             auto *samplePage=new SamplePage(samples);
+             if (withThemeConfiguration) samplePage->configureLayout(themeConfiguration.sampleHoles,themeConfiguration.emergencyHoles);
++            if (withOriginalProjects &&
++                !samplePage->configureOriginalDefaultContainer(originalRuntimeConfiguration.user.containerIsTube))
++            {
++                delete samplePage;
++                qCritical() << "原样本页面的新孔默认容器未能在页面所属线程配置。";
++                return 3;
++            }
+             shell->attachSamplePage(samplePage);
+             // Schema changes on the shared catalog are serialized: project,
+             // reagent, then sample. Each store owns a separate SQL connection.

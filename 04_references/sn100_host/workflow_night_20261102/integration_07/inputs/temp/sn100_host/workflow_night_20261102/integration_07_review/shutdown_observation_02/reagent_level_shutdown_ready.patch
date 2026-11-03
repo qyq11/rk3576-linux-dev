@@ -1,0 +1,11 @@
+diff --git a/06_programs/sn100_host/shell/reagent_level_shell.cpp b/06_programs/sn100_host/shell/reagent_level_shell.cpp
+--- a/06_programs/sn100_host/shell/reagent_level_shell.cpp
++++ b/06_programs/sn100_host/shell/reagent_level_shell.cpp
+@@ -102,6 +102,7 @@
+         reportReagentLevel(tr("正在撤销N观测并等待在途保存结束；不终止数据库线程或假定已回滚。"));
+         return false;
+     }
++    qInfo() << "REAGENT_LEVEL_SHUTDOWN_READY active" << bool(reagentLevelActive_) << "worker_busy" << (reagentLevelWorker_ && reagentLevelWorker_->isBusy());
+     return true;
+ }
+ 

@@ -1,0 +1,15 @@
+/dts-v1/;
+/plugin/;
+
+/*
+ * 将40针排针的第7脚(GPIO4_A6，接收)、第11脚(GPIO4_A4，发送)
+ * 交给CAN0控制器。第9脚为地，不需要软件配置。
+ * 使用前确认实际板卡的设备树含有can0和can0m2_pins这两个标记。
+ * 此文件只启用控制器和引脚，不设置通信速率，不自动启动收发。
+ * 排针信号需要经过CAN收发器，才能连接外部CANH/CANL总线。
+ */
+&can0 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&can0m2_pins>;
+};

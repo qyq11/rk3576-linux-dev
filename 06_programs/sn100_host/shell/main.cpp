@@ -12,13 +12,29 @@
 #include <QScrollArea>
 #include <QThread>
 #include <QTimer>
+#include <QToolTip>
 #include <QVBoxLayout>
 #include <memory>
+#include <QMessageBox>
+#if defined(Q_OS_WIN)
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#elif defined(Q_OS_LINUX)
+#include <cerrno>
+#include <cstring>
+#include <fcntl.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 #include "frmmain.h"
 #include "sample_qc_shell.h"
 #include "printer_report_shell.h"
 #include "shutdown_request.h"
+#include "startup_splash.h"
 #include "data/hospital_store.h"
 #include "data/account_store.h"
 #include "ui/frmhospinfosetting.h"
@@ -27,21 +43,158 @@
 #include "history/history_store.h"
 #include "projects/project_page.h"
 #include "../original_files/original_ini.h"
+#include "../original_files/theme_configuration.h"
 #include "reagents/reagents_page.h"
 #include "samples/sample_page.h"
 #include "protocol/status_replay.h"
 #include "protocol/status_loopback.h"
 #include "instrument/instrument_page.h"
+#include "instrument/device_control.h"
 #include "instrument/maintenance_store.h"
+#include "instrument/original_channel_receiver.h"
 #include "data/printer_settings_store.h"
 #include "ui/frmprintersetting.h"
 #include "data/lis_settings_store.h"
+#include "lis_transport/lis_tcp_transport.h"
 #include "ui/frmlissetting.h"
 #include "quality_control/quality_control_page.h"
 #include "quality_control/qc_store.h"
 #include "calibration/calibration_page.h"
 #include "ui/language_setting_page.h"
 #include "alarm_history/alarm_history_host.h"
+#include "alarm_history/original_alarm_receiver.h"
+
+namespace
+{
+// 原checkOnly登记固定名称；首个实例持有到退出，允许多开也先尝试登记。
+class OriginalSingleInstance
+{
+public:
+    enum class Result { Registered, AlreadyRegistered, EnvironmentError };
+    OriginalSingleInstance() = default;
+    OriginalSingleInstance(const OriginalSingleInstance &) = delete;
+    OriginalSingleInstance &operator=(const OriginalSingleInstance &) = delete;
+    ~OriginalSingleInstance()
+    {
+#if defined(Q_OS_WIN)
+        if (handle_) CloseHandle(handle_);
+#elif defined(Q_OS_LINUX)
+        if (descriptor_>=0) ::close(descriptor_);
+#endif
+    }
+
+    Result registerProcess(QString *message)
+    {
+#if defined(Q_OS_WIN)
+        HANDLE created=CreateMutexW(nullptr,FALSE,L"fortest_abc123");
+        const DWORD error=GetLastError();
+        if (!created)
+        {
+            if (message) *message=QStringLiteral("无法建立单实例登记，Windows错误码：%1").arg(error);
+            return Result::EnvironmentError;
+        }
+        if (error==ERROR_ALREADY_EXISTS)
+        {
+            CloseHandle(created);
+            return Result::AlreadyRegistered;
+        }
+        handle_=created;
+        return Result::Registered;
+#elif defined(Q_OS_LINUX)
+        // 固定同一Linux有效用户编号（UID）及同一/tmp文件系统；不随程序、配置或XDG_RUNTIME_DIR变化。
+        // 这比Windows按登录会话隔离更严格，不宣称跨用户或多图形会话完全等价。
+        const uid_t user=::geteuid();
+        const QByteArray directory=QByteArrayLiteral("/tmp/sn100-single-instance-")+QByteArray::number(qulonglong(user));
+        if (::mkdir(directory.constData(),0700)<0 && errno!=EEXIST)
+        {
+            const int error=errno;
+            return systemError(message,QStringLiteral("无法建立单实例登记目录"),error);
+        }
+        const int directoryDescriptor=::open(directory.constData(),O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
+        if (directoryDescriptor<0)
+        {
+            const int error=errno;
+            return systemError(message,QStringLiteral("无法打开单实例登记目录"),error);
+        }
+        struct stat directoryInfo;
+        if (::fstat(directoryDescriptor,&directoryInfo)<0)
+        {
+            const int error=errno; ::close(directoryDescriptor);
+            return systemError(message,QStringLiteral("无法核对单实例登记目录"),error);
+        }
+        if (!S_ISDIR(directoryInfo.st_mode) || directoryInfo.st_uid!=user || (directoryInfo.st_mode&0777)!=0700)
+        {
+            ::close(directoryDescriptor);
+            if (message) *message=QStringLiteral("单实例登记目录的类型、所有者或0700权限不符，未接管或清理该目录。");
+            return Result::EnvironmentError;
+        }
+        const char *name="fortest_abc123.lock";
+        const int created=::openat(directoryDescriptor,name,O_CREAT|O_RDWR|O_NONBLOCK|O_NOFOLLOW|O_CLOEXEC,0600);
+        if (created<0)
+        {
+            const int error=errno; ::close(directoryDescriptor);
+            return systemError(message,QStringLiteral("无法打开单实例登记文件"),error);
+        }
+        struct stat info;
+        if (::fstat(created,&info)<0)
+        {
+            const int error=errno; ::close(created); ::close(directoryDescriptor);
+            return systemError(message,QStringLiteral("无法核对单实例登记文件"),error);
+        }
+        if (!S_ISREG(info.st_mode) || info.st_uid!=user || info.st_nlink!=1 || (info.st_mode&0777)!=0600)
+        {
+            ::close(created); ::close(directoryDescriptor);
+            if (message) *message=QStringLiteral("单实例登记文件的类型、所有者、链接数或0600权限不符，未接管或清理旧文件。");
+            return Result::EnvironmentError;
+        }
+        int locked;
+        do { locked=::flock(created,LOCK_EX|LOCK_NB); } while (locked<0 && errno==EINTR);
+        const int lockError=locked<0 ? errno : 0;
+        struct stat namedInfo;
+        const int namedStatus=::fstatat(directoryDescriptor,name,&namedInfo,AT_SYMLINK_NOFOLLOW);
+        const int namedError=namedStatus<0 ? errno : 0;
+        const bool sameFile=namedStatus==0 &&
+            S_ISREG(namedInfo.st_mode) && namedInfo.st_dev==info.st_dev && namedInfo.st_ino==info.st_ino &&
+            namedInfo.st_uid==user && namedInfo.st_nlink==1 && (namedInfo.st_mode&0777)==0600;
+        ::close(directoryDescriptor);
+        if (namedStatus<0)
+        {
+            ::close(created);
+            return systemError(message,QStringLiteral("无法复核单实例登记名称"),namedError);
+        }
+        if (!sameFile)
+        {
+            ::close(created);
+            if (message) *message=QStringLiteral("单实例登记文件在检查期间已变化，未把其他文件当作当前登记，也未清理文件。");
+            return Result::EnvironmentError;
+        }
+        if (locked==0)
+        {
+            descriptor_=created; // 退出时仅关闭自己的描述符；不删除文件，崩溃由内核释放锁。
+            return Result::Registered;
+        }
+        ::close(created);
+        if (lockError==EWOULDBLOCK || lockError==EAGAIN) return Result::AlreadyRegistered;
+        return systemError(message,QStringLiteral("无法取得单实例登记锁"),lockError);
+#else
+        if (message) *message=QStringLiteral("当前平台没有已接入的单实例登记实现，未按已登记或正常首次启动放行。");
+        return Result::EnvironmentError;
+#endif
+    }
+
+private:
+#if defined(Q_OS_WIN)
+    HANDLE handle_=nullptr;
+#elif defined(Q_OS_LINUX)
+    int descriptor_=-1;
+    static Result systemError(QString *message,const QString &operation,int error)
+    {
+        if (message) *message=operation+QStringLiteral("：")+QString::fromLocal8Bit(std::strerror(error));
+        return Result::EnvironmentError;
+    }
+#endif
+};
+}
 
 // Keep the original 1920x1080 logical canvas. A smaller WSL desktop scrolls
 // outside that canvas instead of stretching or rearranging business controls.
@@ -66,6 +219,14 @@ public:
         setMinimumSize(900, 600);
     }
 
+    void setOriginalChannelReceiver(OriginalChannelReceiver *receiver) { originalChannelReceiver_ = receiver; }
+    void finishOriginalChannelStop()
+    {
+        if (!originalChannelClosePending_) return;
+        originalChannelClosePending_ = false;
+        close();
+    }
+
 protected:
     void closeEvent(QCloseEvent *event) override
     {
@@ -75,15 +236,27 @@ protected:
             event->ignore();
             return;
         }
+        // 原草稿/忙态守卫已接受退出，才撤销Uh；等待回执期间仍处理GUI事件。
+        if (originalChannelReceiver_ && !originalChannelReceiver_->isStopped())
+        {
+            originalChannelClosePending_ = true;
+            originalChannelReceiver_->requestStop();
+            event->ignore();
+            return;
+        }
         event->accept();
     }
 
 private:
     frmMain *shell_;
+    QPointer<OriginalChannelReceiver> originalChannelReceiver_;
+    bool originalChannelClosePending_ = false;
 };
 
 int main(int argc, char *argv[])
 {
+    // 先声明空登记对象，使其晚于QApplication析构；实际取锁仍在配置读取后。
+    OriginalSingleInstance singleInstance;
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("sn100_shell"));
@@ -113,7 +286,9 @@ int main(int argc, char *argv[])
     parser.addOption({QStringLiteral("start-project-page"), QStringLiteral("本次启动就绪后显示分析项目页；需要--catalog")});
     parser.addOption({QStringLiteral("samples"), QStringLiteral("O08：接入本地样本预设/任务；需要--catalog，无真实投递或执行")});
     parser.addOption({QStringLiteral("instrument"), QStringLiteral("仪器操作原版页面及本地维护记录；需要--accounts，设备动作禁用")});
-    parser.addOption({QStringLiteral("instrument-control"), QStringLiteral("启用原Windows主控命令和原配置真实连接；需要--instrument及--original-db-root")});
+    parser.addOption({QStringLiteral("instrument-control"), QStringLiteral("启用现有主控连接；需要--instrument，并指定原资料根或--instrument-config")});
+    parser.addOption({QStringLiteral("instrument-config"), QStringLiteral("显式主控连接配置的绝对路径；读取tcpmain地址/端口和theme/DriverModel，保留原任务与状态检查"), QStringLiteral("path")});
+    parser.addOption({QStringLiteral("theme-config"), QStringLiteral("原theme_config.ini的绝对路径；应用机型、孔位数量、报告方式及原颜色"), QStringLiteral("path")});
     parser.addOption({QStringLiteral("status-replay"), QStringLiteral("O09-1：显式匿名状态文件回放；无网络或设备动作"), QStringLiteral("path")});
     parser.addOption({QStringLiteral("status-loopback"), QStringLiteral("O09-2：自建127.0.0.1模拟端的后台只读Qj；不接受外部端点，不执行仪器动作")});
     parser.addOption({QStringLiteral("seed-catalog-demo"), QStringLiteral("仅新catalog库：显式匿名项目/单位/比例候选，非生产配置")});
@@ -190,10 +365,92 @@ int main(int argc, char *argv[])
     const bool withSamples = parser.isSet(QStringLiteral("samples"));
     const bool withInstrument = parser.isSet(QStringLiteral("instrument"));
     const bool withDeviceControl = parser.isSet(QStringLiteral("instrument-control"));
-    if (withDeviceControl && (!withInstrument || !withOriginalProjects ||
+    OriginalRuntime::RuntimeSettings originalRuntimeConfiguration;
+    if (withOriginalProjects)
+    {
+        QString message;
+        if (!OriginalRuntime::loadRuntimeSettings(originalDbRoot,&originalRuntimeConfiguration,&message))
+        {
+            qCritical().noquote()<<"ORIGINAL_RUNTIME_CONFIGURATION_INVALID"<<message;
+            return 2;
+        }
+    }
+    // 原main先读取多开开关，再调用checkOnly；登记必须早于业务线程及设备连接。
+    QString singleInstanceError;
+    const auto instanceResult=singleInstance.registerProcess(&singleInstanceError);
+    if (instanceResult==OriginalSingleInstance::Result::EnvironmentError)
+    {
+        qCritical().noquote()<<"SINGLE_INSTANCE_ENVIRONMENT_ERROR"<<singleInstanceError;
+        QMessageBox::critical(nullptr,QStringLiteral("启动失败"),singleInstanceError);
+        return 2;
+    }
+    if (instanceResult==OriginalSingleInstance::Result::AlreadyRegistered &&
+        !originalRuntimeConfiguration.debug.allowMultipleInstances)
+    {
+        qWarning()<<"SINGLE_INSTANCE_ALREADY_RUNNING";
+        QMessageBox::critical(nullptr,QStringLiteral("错误"),QStringLiteral("程序已经在运行!"));
+        return 0; // 保留原已有实例时的退出值，不结束、唤醒或聚焦旧进程。
+    }
+    qInfo()<<"SINGLE_INSTANCE_CHECKED registered="<<(instanceResult==OriginalSingleInstance::Result::Registered)
+           <<"multiple_allowed="<<originalRuntimeConfiguration.debug.allowMultipleInstances;
+
+    OriginalRuntime::SystemProfile originalAlarmProfile;
+    if (withOriginalProjects && withDeviceControl)
+    {
+        QString message;
+        if (!OriginalRuntime::loadSystemProfile(originalDbRoot, &originalAlarmProfile, &message))
+        {
+            qCritical().noquote() << "ORIGINAL_ALARM_PROFILE_INVALID" << message;
+            return 2;
+        }
+    }
+    const bool withThemeConfiguration = parser.isSet(QStringLiteral("theme-config"));
+    OriginalRuntime::ThemeOptions themeConfiguration;
+    if (withThemeConfiguration)
+    {
+        QString message;
+        if (!loadThemeConfiguration(parser.value(QStringLiteral("theme-config")), &themeConfiguration, &message))
+        {
+            qCritical().noquote() << "THEME_CONFIGURATION_INVALID" << message;
+            return 2;
+        }
+        if (themeConfiguration.reportTableType!=1 && !withOriginalProjects)
+        {
+            qCritical() << "THEME_CONFIGURATION_INVALID current_local_report_requires_ReportTableType_1=true";
+            return 2;
+        }
+        qInfo().noquote() << "THEME_CONFIGURATION_LOADED model=" << themeConfiguration.driverModel
+            << "reagents=" << themeConfiguration.reagentPositions << "sample_holes=" << themeConfiguration.sampleHoles
+            << "emergency_holes=" << themeConfiguration.emergencyHoles << "channels=" << themeConfiguration.testChannels
+            << "report_table_type=" << themeConfiguration.reportTableType;
+    }
+    const QString deviceConfigurationFile = parser.isSet(QStringLiteral("instrument-config"))
+        ? QDir::cleanPath(parser.value(QStringLiteral("instrument-config"))) : QString();
+    QString configuredDeviceModel;
+    if (parser.isSet(QStringLiteral("instrument-config")))
+    {
+        OriginalIni::Settings settings;
+        QString message;
+        const QFileInfo file(deviceConfigurationFile);
+        if (!withDeviceControl || !file.isAbsolute() || !file.isFile() || file.isSymLink() ||
+            !OriginalIni::read(deviceConfigurationFile, &settings, &message))
+        {
+            qCritical() << "INSTRUMENT_CONFIGURATION_INVALID absolute_regular_ini_required=true";
+            return 2;
+        }
+        configuredDeviceModel = settings.values.value(QStringLiteral("theme/DriverModel")).toString().trimmed();
+        if (withThemeConfiguration) configuredDeviceModel=themeConfiguration.driverModel;
+        if (configuredDeviceModel.isEmpty() || configuredDeviceModel.size() > 64 ||
+            configuredDeviceModel.contains(QChar::LineFeed) || configuredDeviceModel.contains(QChar::CarriageReturn))
+        {
+            qCritical() << "INSTRUMENT_CONFIGURATION_INVALID theme_DriverModel_required=true";
+            return 2;
+        }
+    }
+    if (withDeviceControl && (!withInstrument || (!withOriginalProjects && deviceConfigurationFile.isEmpty()) ||
         parser.isSet(QStringLiteral("status-replay")) || parser.isSet(QStringLiteral("status-loopback"))))
     {
-        qCritical() << "--instrument-control requires --instrument and --original-db-root without replay/loopback";
+        qCritical() << "--instrument-control requires --instrument and an original root or explicit --instrument-config without replay/loopback";
         return 2;
     }
     const bool withStatusReplay = parser.isSet(QStringLiteral("status-replay"));
@@ -313,6 +570,7 @@ int main(int argc, char *argv[])
     reagentThread.setObjectName(QStringLiteral("O07ReagentDatabase"));
     ProjectsStore *projects = withCatalog ? new ProjectsStore : nullptr;
     ReagentStore *reagents = withCatalog ? new ReagentStore : nullptr;
+    if (reagents && withThemeConfiguration) reagents->configureLayout(themeConfiguration.reagentPositions);
     if (withCatalog)
     {
         ProjectsStore::registerTypes();ReagentStore::registerTypes();
@@ -323,6 +581,13 @@ int main(int argc, char *argv[])
     QThread sampleThread;
     sampleThread.setObjectName(QStringLiteral("O08SampleDatabase"));
     SampleStore *samples=withSamples ? new SampleStore : nullptr;
+    if (samples && withThemeConfiguration) samples->configureLayout(themeConfiguration.sampleHoles,themeConfiguration.emergencyHoles);
+    if (samples && withOriginalProjects &&
+        !samples->configureOriginalDefaultContainer(originalRuntimeConfiguration.user.containerIsTube))
+    {
+        qCritical() << "原样本新孔默认容器未能在移入工作线程前配置。";
+        return 3;
+    }
     if (samples)
     {
         SampleStore::registerTypes();
@@ -338,6 +603,12 @@ int main(int argc, char *argv[])
         maintenance->moveToThread(&maintenanceThread);
         QObject::connect(&maintenanceThread,&QThread::finished,maintenance,&QObject::deleteLater);
     }
+    // Uh使用独立后台，只有下方本片接线能退出它，不能借维护线程的closed信号。
+    QThread originalChannelThread;
+    originalChannelThread.setObjectName(QStringLiteral("OriginalChannelDatabase"));
+    QPointer<OriginalChannelStore> originalChannelStore;
+    OriginalChannelReceiver *originalChannelReceiver = nullptr;
+    bool originalChannelFailure = false;
     QThread printerThread;
     printerThread.setObjectName(QStringLiteral("O10PrinterSettings"));
     auto *printer = withPrinterSettings ? new PrinterSettingsStore : nullptr;
@@ -355,6 +626,8 @@ int main(int argc, char *argv[])
         QObject::connect(&lisThread, &QThread::finished, lis, &QObject::deleteLater);
     }
     auto *shell = new frmMain(store, nullptr, accounts);
+    shell->setProperty("deviceConfigurationFile", deviceConfigurationFile);
+    shell->setProperty("configuredDeviceModel", configuredDeviceModel);
     if (withOriginalProjects) shell->setProperty("originalDataRoot", originalDbRoot);
     shell->attachLanguagePage(new LanguageSettingPage);
     QThread alarmHistoryThread;
@@ -406,7 +679,31 @@ int main(int argc, char *argv[])
         : (withAccounts || withHistory || sharedOriginalRoot)
             ? QDir(dataDir).filePath(QStringLiteral("hospital")) : dataDir;
     shell->setDataDirectory(hospitalDir);
-    if (withDeviceControl) shell->enableDeviceControl(true);
+    if (withDeviceControl)
+    {
+        shell->enableDeviceControl(true);
+        if (auto *control=shell->deviceControl())
+        {
+            // 与原tcpmain共用调试配置；该配置不创建第二条主控连接。
+            if (withOriginalProjects)
+                control->setReconnectOptions(originalRuntimeConfiguration.debug.reconnect,
+                                             originalRuntimeConfiguration.debug.reconnectMilliseconds);
+            QObject::connect(&app,&QCoreApplication::aboutToQuit,control,&DeviceControl::close);
+        }
+    }
+    QThread originalAlarmThread;
+    originalAlarmThread.setObjectName(QStringLiteral("OriginalAlarmWriter"));
+    auto *originalAlarmWriter = withOriginalProjects && withDeviceControl ? new AlarmHistory::Store : nullptr;
+    AlarmHistory::OriginalAlarmReceiver *originalAlarmReceiver = nullptr;
+    if (originalAlarmWriter)
+    {
+        originalAlarmWriter->moveToThread(&originalAlarmThread);
+        QObject::connect(&originalAlarmThread, &QThread::finished, originalAlarmWriter, &QObject::deleteLater);
+        originalAlarmReceiver = new AlarmHistory::OriginalAlarmReceiver(originalAlarmWriter, originalAlarmProfile.alarms, originalDbRoot, shell);
+        shell->enableOriginalAlarmReceiver(originalAlarmReceiver);
+        QObject::connect(&originalAlarmThread, &QThread::started, originalAlarmReceiver,
+            [originalAlarmReceiver, originalDbRoot]() { originalAlarmReceiver->openOriginal(originalDbRoot); }, Qt::QueuedConnection);
+    }
     bool hospitalReady = false;
     bool accountReady = !withAccounts;
     bool historyReady = !withHistory;
@@ -423,6 +720,7 @@ int main(int argc, char *argv[])
     bool readyReported = false;
     bool reportSetupFailed = false;
     bool currentFormatRefreshPending = false; // Consumed after the writer Page reloads its actual committed source.
+    StartupSplash *startupSplash = nullptr; // 由实际显示宿主持有，数据就绪后停止动画。
     const auto reportReady = [&]()
     {
         if (!reportSetupFailed && hospitalReady && accountReady && historyReady && projectReady && reagentReady && sampleReady
@@ -435,13 +733,14 @@ int main(int argc, char *argv[])
                 app.exit(3);
                 return;
             }
+            if (startupSplash) startupSplash->finish();
             qInfo() << "SHELL_READY";
             if (withOriginalProjects)
             {
-                qInfo() << "ORIGINAL_PROJECTS_READY direct_original_files=true instrument=false";
+                qInfo() << "ORIGINAL_PROJECTS_READY direct_original_files=true instrument=" << withDeviceControl;
                 qInfo().noquote() << "ORIGINAL_PROJECTS_SCOPE 已启用页面读取原项目、医院、账户、历史、样本/试剂、维护、质控/校准和设置；质控/校准任务、算法及其余配置继续逐项接入。";
                 qInfo() << "ORIGINAL_SETTINGS_READY hospital=true printer=" << withPrinterSettings
-                        << "lis=" << withLisSettings << "network=false";
+                        << "lis=" << withLisSettings << "network=" << withDeviceControl;
             }
             if (withLocalResults) qInfo() << "LOCAL_RESULTS_READY empty_profile_allowed=true scheduler=false current_config_format="
                 << !withOriginalProjects << "measurement_unit_snapshot=false file_output=false";
@@ -469,6 +768,9 @@ int main(int argc, char *argv[])
             if (withCalibration) qInfo() << "CALIBRATION_READY local_only=true fitting=false applied=false";
             if (withPasswordLogin) qInfo() << "PASSWORD_LOGIN_ENABLED original_profile=" << withOriginalProjects
                 << "configured_or_password_session=true";
+            // 原版开启登录时在启动后自动弹登录卡；不能只启用头像按钮。
+            if (withOriginalProjects && withPasswordLogin && originalRuntimeConfiguration.debug.loginOpen)
+                shell->requestStartupLogin();
             if (withStatusReplay)
             {
                 shell->selectMainPage(7);
@@ -563,6 +865,8 @@ int main(int argc, char *argv[])
             : QDir(dataDir).filePath(QStringLiteral("history"));
         page->setDataDirectory(historyDir);
         page->setLocalResultsMode(withLocalResults);
+        // 原开关只控制竖向结果表的均值/CV显示，明细与打印仍保留各次任务结果。
+        if (withOriginalProjects) page->setAverageEnabled(originalRuntimeConfiguration.user.averageEnabled);
         shell->attachHistoryPage(page);
         page->setHospitalDictionaryAvailable(false);
         QObject::connect(page, &HistoryPage::requestHospitalDictionary,
@@ -696,6 +1000,7 @@ int main(int argc, char *argv[])
             auto *page = new QualityControlPage(quality);
             shell->attachQualityControlPage(page);
             QObject::connect(shell, &frmMain::sessionChanged, quality, &QcStore::setSession, Qt::QueuedConnection);
+            QObject::connect(shell, &frmMain::deviceActionStateChanged, quality, &QcStore::setSession, Qt::QueuedConnection);
             const QString qualityDir = QDir(dataDir).filePath(QStringLiteral("quality_control"));
             QObject::connect(projects, &ProjectsStore::ready, quality,
                              [quality, qualityDir, catalogDir, withOriginalProjects, originalDbRoot, initialized = false]() mutable
@@ -731,6 +1036,14 @@ int main(int argc, char *argv[])
         if (samples)
         {
             auto *samplePage=new SamplePage(samples);
+            if (withThemeConfiguration) samplePage->configureLayout(themeConfiguration.sampleHoles,themeConfiguration.emergencyHoles);
+            if (withOriginalProjects &&
+                !samplePage->configureOriginalDefaultContainer(originalRuntimeConfiguration.user.containerIsTube))
+            {
+                delete samplePage;
+                qCritical() << "原样本页面的新孔默认容器未能在页面所属线程配置。";
+                return 3;
+            }
             shell->attachSamplePage(samplePage);
             // Schema changes on the shared catalog are serialized: project,
             // reagent, then sample. Each store owns a separate SQL connection.
@@ -763,6 +1076,13 @@ int main(int argc, char *argv[])
         {
             auto *page = new CalibrationPage(calibration);
             shell->attachCalibrationPage(page);
+            if (withOriginalProjects && samples)
+            {
+                QObject::connect(samples, &SampleStore::originalCalibrationRecordsChanged, page, [page]()
+                {
+                    if (page->isReady() && !page->isBusy() && !page->hasUnsavedChanges()) page->reload();
+                });
+            }
             const QString calibrationDir = QDir(dataDir).filePath(QStringLiteral("calibration"));
             const QString catalogDatabase = QDir(catalogDir).filePath(QStringLiteral("catalog.db"));
             if (withOriginalProjects)
@@ -880,7 +1200,167 @@ int main(int argc, char *argv[])
     if (maintenance)
     {
         auto *page = new InstrumentPage(maintenance);
+        if (withThemeConfiguration)
+        {
+            OriginalRuntime::RuntimeSettings runtime=originalRuntimeConfiguration;
+            runtime.theme=themeConfiguration;
+            if (!withOriginalProjects) runtime.debug.showCommandsInitially=true;
+            page->applyOriginalRuntime(runtime,nullptr);
+        }
         shell->attachInstrumentPage(page);
+        if (withOriginalProjects && withDeviceControl)
+        {
+            // 告警初始化已经只读加载同一原系统资料；复用通道值快照，不重复打开数据库。
+            const auto &theme = withThemeConfiguration ? themeConfiguration : originalRuntimeConfiguration.theme;
+            QString message;
+            if (!page->configureOriginalAdChannels(originalAlarmProfile.channels,theme.testChannels,&message))
+            {
+                qCritical().noquote() << "ORIGINAL_AD_CHANNELS_INVALID" << message;
+                return 2;
+            }
+            auto *control = shell->deviceControl();
+            if (!control || control->thread() != page->thread())
+            {
+                qCritical() << "ORIGINAL_AD_ROUTE_INVALID device_and_page_must_share_gui_thread=true";
+                return 2;
+            }
+            qInfo() << "ORIGINAL_AD_CHANNELS_READY configured_count=" << theme.testChannels
+                    << "source_rows=" << originalAlarmProfile.channels.test.size();
+            originalChannelStore = new OriginalChannelStore;
+            originalChannelStore->moveToThread(&originalChannelThread);
+            QObject::connect(&originalChannelThread,&QThread::finished,originalChannelStore.data(),&QObject::deleteLater);
+            originalChannelReceiver = new OriginalChannelReceiver(originalChannelStore.data(),control,originalDbRoot,
+                [target=QPointer<InstrumentPage>(page)](const OriginalRuntime::Channels &channels,quint64 generation,QString *message)
+            {
+                if (!target)
+                {
+                    if (message) *message=QStringLiteral("仪器状态页面已关闭，库已保存但未刷新页面。");
+                    return false;
+                }
+                return target->applyCommittedOriginalChannels(channels,generation,message);
+            },&app);
+            QObject::connect(&originalChannelThread,&QThread::started,originalChannelReceiver,
+                [originalChannelReceiver,&originalChannelFailure]()
+            {
+                if (!originalChannelReceiver->start())
+                {
+                    originalChannelFailure=true;
+                    originalChannelReceiver->requestStop();
+                }
+            },Qt::QueuedConnection);
+            // 连设备时statusChanged不会改主状态区；沿用已有非模态浮动提示，不覆盖主控状态灯。
+            const auto presentOriginalChannelResult = [page,host=QPointer<frmMain>(shell)](
+                quint64 request,quint64 generation,const QString &outcome,bool displayed,const QString &text)
+            {
+                page->setProperty("originalChannelResult",text);
+                page->setProperty("originalChannelResultRequest",QVariant::fromValue(request));
+                page->setProperty("originalChannelResultGeneration",QVariant::fromValue(generation));
+                page->setProperty("originalChannelResultOutcome",outcome);
+                page->setProperty("originalChannelResultDisplayed",displayed);
+                page->setToolTip(text);
+                emit page->statusChanged(text);
+                // 通道页可能隐藏或滚出可见画布；固定原状态区作锚点，不切页、不抢焦点。
+                if (!host || !host->isVisible() || !host->window()->isActiveWindow()) return;
+                auto *anchor=host->findChild<QWidget*>(QStringLiteral("statusArea"));
+                if (!anchor || !anchor->isVisible() || anchor->visibleRegion().isEmpty()) return;
+                const QString tooltip=QStringLiteral("<qt>%1</qt>").arg(
+                    text.toHtmlEscaped().replace(QLatin1Char('\n'),QStringLiteral("<br/>")));
+                QToolTip::showText(anchor->mapToGlobal(anchor->visibleRegion().boundingRect().center()),
+                                   tooltip,anchor,QRect(),12000);
+            };
+            QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::error,page,
+                [presentOriginalChannelResult,&originalChannelFailure](const QString &message)
+            {
+                originalChannelFailure=true;
+                qWarning().noquote() << "ORIGINAL_CHANNEL_ERROR" << message;
+                presentOriginalChannelResult(0,0,QStringLiteral("ReceiverError"),false,message);
+            });
+            QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::batchFinished,page,
+                [presentOriginalChannelResult,source=QPointer<DeviceControl>(control),&originalChannelFailure](
+                    quint64 request,quint64 generation,const QString &outcome,bool displayed,
+                    const QString &message,int changed,int unknown)
+            {
+                qInfo().noquote() << "ORIGINAL_CHANNEL_RESULT request=" << request << "generation=" << generation
+                    << "outcome=" << outcome << "displayed=" << displayed << "changed=" << changed
+                    << "unknown=" << unknown << message;
+                if (outcome==QStringLiteral("Failed") || outcome==QStringLiteral("CommittedReloadFailed")
+                    || outcome==QStringLiteral("Unconfirmed")) originalChannelFailure=true;
+                const bool current=source && source->state().connected && source->connectionGeneration()==generation;
+                const bool refreshed=displayed && current;
+                QString result;
+                if (outcome==QStringLiteral("Committed"))
+                    result=refreshed ? QStringLiteral("通道资料已保存，当前通道表已刷新并清除旧AD；等待主控上报新读数。")
+                        : current ? QStringLiteral("通道资料已保存，但当前页面未刷新。")
+                                  : QStringLiteral("旧连接的通道资料已保存，未刷新当前页面。");
+                else if (outcome==QStringLiteral("CommittedReloadFailed"))
+                    result=QStringLiteral("通道资料已保存，但重新读取失败，页面尚未刷新；需重新读取核对。");
+                else if (outcome==QStringLiteral("Cancelled"))
+                    result=QStringLiteral("本批通道回读已取消，未保存。");
+                else if (outcome==QStringLiteral("Failed"))
+                    result=QStringLiteral("通道回读未保存，请核对以下原因。");
+                else
+                    result=QStringLiteral("通道回读的保存结果待核，未确认完成，不会自动重放。");
+                if (!message.isEmpty()) result+=QStringLiteral("\n原因或详情：")+message;
+                presentOriginalChannelResult(request,generation,outcome,refreshed,result);
+            });
+            QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::snapshotRecovered,page,
+                [presentOriginalChannelResult,source=QPointer<DeviceControl>(control)](
+                    quint64 request,quint64 generation,bool displayed,const QString &message)
+            {
+                qInfo().noquote() << "ORIGINAL_CHANNEL_SNAPSHOT_RECOVERED request=" << request
+                    << "generation=" << generation << "displayed=" << displayed << message;
+                const bool refreshed=displayed && source && source->state().connected
+                    && source->connectionGeneration()==generation;
+                const QString result=(refreshed
+                    ? QStringLiteral("已保存的通道资料重新读取成功，当前通道表已刷新并清除旧AD。")
+                    : QStringLiteral("已保存的通道资料重新读取成功，未刷新当前页面。"))
+                    +(displayed && !refreshed
+                        ? QStringLiteral("\n连接在显示结果确认期间已变化，以当前连接页面为准。")
+                        : QStringLiteral("\n详情：")+message);
+                presentOriginalChannelResult(request,generation,QStringLiteral("SnapshotRecovered"),refreshed,result);
+            });
+            // 正常停止由GUI消费closed后触发；异常退出在app.exec返回后由main显式quit/join。
+            QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::stopped,&originalChannelThread,&QThread::quit);
+            QObject::connect(&app,&QCoreApplication::aboutToQuit,originalChannelReceiver,
+                             &OriginalChannelReceiver::requestStop,Qt::DirectConnection);
+            QObject::connect(control,&DeviceControl::payloadReceived,page,
+                [page,control,reagentPositions=theme.reagentPositions](const QByteArray &payload) mutable
+            {
+                // 本信号与页面同在GUI线程并直接执行，接包时取代次，不排队后重标旧包。
+                const quint64 connection = control->connectionGeneration();
+                QString message;
+                if (payload.startsWith("Qq"))
+                {
+                    if (!page->receiveOriginalAd(payload,connection,&message))
+                        qWarning().noquote() << "ORIGINAL_AD_REJECTED" << message;
+                    else
+                        page->setProperty("originalAdMessageCount",page->property("originalAdMessageCount").toULongLong()+1);
+                    return;
+                }
+                if (!payload.startsWith("Qj") || !control->state().connected || !control->state().fresh) return;
+                // DeviceControl已完整校验并安装本条Qj；20/21为原试剂位/通道数字段。
+                // 旧协议缺这两项时，原pcQueryStatus明确使用20/18，不根据机型名称推断。
+                const auto &fields = control->state().status.generalFields;
+                bool positionsValid = true, channelsValid = true;
+                const int positions = fields.size()>20 ? fields.at(20).toInt(&positionsValid) : 20;
+                const int channels = fields.size()>21 ? fields.at(21).toInt(&channelsValid) : 18;
+                if (!positionsValid || !channelsValid || positions<0 || channels<0 || channels>1024)
+                {
+                    qWarning() << "ORIGINAL_AD_RELOAD_REJECTED invalid_reported_channel_counts=true";
+                    return;
+                }
+                if (positions == reagentPositions) return;
+                // 原signalReceiveDriverModel仅在试剂位数量改变时重建表头和通道行。
+                if (!page->reloadOriginalAdChannels(channels,&message))
+                    qWarning().noquote() << "ORIGINAL_AD_RELOAD_REJECTED" << message;
+                else
+                {
+                    reagentPositions = positions;
+                    qInfo() << "ORIGINAL_AD_CHANNELS_RELOADED reagent_positions=" << positions
+                            << "reported_channels=" << channels;
+                }
+            },Qt::DirectConnection);
+        }
         const QString instrumentDir = QDir(dataDir).filePath(QStringLiteral("instrument"));
         QObject::connect(&maintenanceThread,&QThread::started,maintenance,
                          [maintenance,instrumentDir,withOriginalProjects,originalDbRoot]()
@@ -949,6 +1429,32 @@ int main(int argc, char *argv[])
     {
         auto *page = new frmLisSetting(lis);
         shell->attachLisPage(page);
+        auto *transport = new Sn100Lis::LisTcpTransport(&app);
+        transport->setObjectName(QStringLiteral("originalLisTcpTransport"));
+        // 只采用worker已经读到/保存成功的值；草稿和保存失败不能更换端点。
+        // 实际LIS地址尚待核对，本切片只准备配置，不恢复原版启动/保存即连接。
+        const bool reconnect = originalRuntimeConfiguration.debug.reconnect;
+        const int reconnectMilliseconds = originalRuntimeConfiguration.debug.reconnectMilliseconds;
+        const auto configureTransport = [transport, reconnect, reconnectMilliseconds](const LisSettings &settings, const QStringList &)
+        {
+            QString message;
+            if (!transport->configure(settings, reconnect, reconnectMilliseconds, &message))
+                qWarning().noquote() << "LIS_TCP_CONFIGURATION_REJECTED" << message;
+            else qInfo() << "LIS_TCP_CONFIGURATION_PREPARED" << "response_mode=" << settings.link
+                         << "connection_started=false";
+        };
+        QObject::connect(lis, &LisSettingsStore::loaded, transport, configureTransport);
+        QObject::connect(lis, &LisSettingsStore::saved, transport, configureTransport);
+        QObject::connect(lis, &LisSettingsStore::closed, transport,
+                         [transport]() { transport->stop(QStringLiteral("LIS设置后台已关闭。")); });
+        QObject::connect(&app, &QCoreApplication::aboutToQuit, transport,
+                         [transport]() { transport->stop(QStringLiteral("应用正在退出。")); });
+        QObject::connect(transport, &Sn100Lis::LisTcpTransport::stateChanged, &app,
+                         [](const QString &state, quint64 generation, int peers)
+        { qInfo() << "LIS_TCP_STATE" << state << "generation=" << generation << "peers=" << peers; });
+        QObject::connect(transport, &Sn100Lis::LisTcpTransport::error, &app,
+                         [](const QString &operation, quint64 generation, quint64 peer, const QString &message)
+        { qWarning().noquote() << "LIS_TCP_ERROR" << operation << generation << peer << message; });
         const QString settingsDir = QDir(dataDir).filePath(QStringLiteral("settings"));
         QObject::connect(&lisThread, &QThread::started, lis,
                          [lis, settingsDir, withOriginalProjects, originalDbRoot]()
@@ -966,6 +1472,11 @@ int main(int argc, char *argv[])
                          []() { qInfo() << "LIS_SETTINGS_CLOSED"; });
     }
     ShellViewport viewport(shell, viewportSize, withAccounts, withHistory);
+    viewport.setOriginalChannelReceiver(originalChannelReceiver);
+    if (originalChannelReceiver)
+        QObject::connect(originalChannelReceiver,&OriginalChannelReceiver::stopped,&viewport,
+                         [&viewport]() { viewport.finishOriginalChannelStop(); },Qt::QueuedConnection);
+    if (withThemeConfiguration) shell->applyThemeConfiguration(themeConfiguration);
     if (withCatalog) viewport.setWindowTitle(QStringLiteral("SN100 · 统一脱机 · 项目/单位、试剂、医院、账户、历史/报告"));
     if (withSamples) viewport.setWindowTitle(QStringLiteral("SN100 · 统一脱机 · 样本/任务、项目/单位、试剂、医院、账户、历史/报告"));
     if (withStatusReplay) viewport.setWindowTitle(viewport.windowTitle() + QStringLiteral(" · 离线状态回放"));
@@ -1013,13 +1524,19 @@ int main(int argc, char *argv[])
     {
         qInfo() << (withAccounts ? "HOSPITAL_STORE_CLOSED" : "STORE_CLOSED");
     });
+    startupSplash = new StartupSplash(&viewport);
     viewport.show();
+    QString splashError;
+    if (!startupSplash->start(&splashError))
+        qWarning().noquote() << "STARTUP_SPLASH_UNAVAILABLE" << splashError;
     databaseThread.start();
     if (alarmHistory) alarmHistoryThread.start();
+    if (originalAlarmWriter) originalAlarmThread.start();
     if (accounts) accountThread.start();
     if (history) historyThread.start();
     if (samples) sampleThread.start();
     if (maintenance) maintenanceThread.start();
+    if (originalChannelStore) originalChannelThread.start();
     if (printer) printerThread.start();
     if (lis) lisThread.start();
     if (quality) qualityThread.start();
@@ -1029,6 +1546,41 @@ int main(int argc, char *argv[])
                       << "platform=" << QGuiApplication::platformName()
                       << "logical_canvas=1920x1080 viewport=" << viewportSize << "data_dir=" << dataDir;
     int result = app.exec();
+    if (originalChannelReceiver)
+    {
+        if (!originalChannelReceiver->isStopped())
+        {
+            originalChannelReceiver->requestStop();
+            // 本线程仅由Receiver.stopped或此处quit；未stopped时仍能处理最后的close。
+            // GUI循环已结束，不把排队但未消费的applied当取消，也不自动重放。
+            if (originalChannelStore && originalChannelThread.isRunning())
+                QMetaObject::invokeMethod(originalChannelStore.data(),"close",Qt::BlockingQueuedConnection);
+            qCritical() << "ORIGINAL_CHANNEL_SHUTDOWN_UNCONFIRMED pending_batches="
+                        << originalChannelReceiver->pendingBatchCount();
+            result=3;
+        }
+        originalChannelThread.quit();
+        originalChannelThread.wait();
+        originalChannelReceiver->finishAfterWorkerStopped();
+        qInfo() << "ORIGINAL_CHANNEL_WORKER_STOPPED" << !originalChannelThread.isRunning();
+        if (originalChannelFailure) result=3;
+    }
+    if (originalAlarmReceiver && !shell->originalAlarmShutdownComplete())
+    {
+        // 启动失败或强制退出可能绕过closeEvent；直接close不代表在途批次已排空。
+        // 此时GUI事件循环已经停止，先原子保留完整原行及接收账户/时间，再直接清理SQL。
+        QString savedFile, saveError;
+        const QString reason = QStringLiteral("GUI事件循环在告警接收器正常停止前退出，写入结果待核；禁止自动重放。");
+        if (!originalAlarmReceiver->savePendingRecovery(reason, &savedFile, &saveError))
+            qCritical().noquote() << "ORIGINAL_ALARM_RECOVERY_SAVE_FAILED" << saveError;
+        else if (!savedFile.isEmpty())
+            qCritical().noquote() << "ORIGINAL_ALARM_RECOVERY_SAVED" << savedFile << "automatic_replay=false";
+        qCritical() << "ORIGINAL_ALARM_SHUTDOWN_UNCONFIRMED pending_batches="
+                    << originalAlarmReceiver->pendingBatchCount()
+                    << "pending_recovery_batches=" << originalAlarmReceiver->pendingRecoveryBatchCount();
+        result = 3;
+    }
+    if (originalAlarmReceiver && originalAlarmReceiver->hasStorageErrors()) result = 3;
     if (withLisRawInbox)
     {
         const bool closed = shell->lisRawInboxShutdownComplete();
@@ -1049,6 +1601,7 @@ int main(int argc, char *argv[])
     }
     // Normal shell shutdown is accepted only after AlarmHistoryHost::viewClosed.
     // At boot all init-failure exits happen before the entry is enabled.
+    if (originalAlarmWriter) QMetaObject::invokeMethod(originalAlarmWriter,"close",Qt::BlockingQueuedConnection);
     if (alarmHistory) QMetaObject::invokeMethod(alarmHistory,"close",Qt::BlockingQueuedConnection);
     if (calibration) QMetaObject::invokeMethod(calibration,"close",Qt::BlockingQueuedConnection);
     if (quality) QMetaObject::invokeMethod(quality,"close",Qt::BlockingQueuedConnection);
@@ -1063,6 +1616,7 @@ int main(int argc, char *argv[])
     if (history) QMetaObject::invokeMethod(history, "close", Qt::BlockingQueuedConnection);
     databaseThread.quit();
     if (alarmHistory) alarmHistoryThread.quit();
+    if (originalAlarmWriter) originalAlarmThread.quit();
     if (accounts) accountThread.quit();
     if (history) historyThread.quit();
     if (samples) sampleThread.quit();
@@ -1078,6 +1632,11 @@ int main(int argc, char *argv[])
         alarmHistoryThread.wait();
         qInfo() << "ALARM_HISTORY_WORKER_STOPPED" << !alarmHistoryThread.isRunning();
     }
+    if (originalAlarmWriter)
+    {
+        originalAlarmThread.wait();
+        qInfo() << "ORIGINAL_ALARM_WORKER_STOPPED" << !originalAlarmThread.isRunning();
+    }
     if (accounts) accountThread.wait();
     if (history) historyThread.wait();
     if (samples) sampleThread.wait();
@@ -1088,7 +1647,7 @@ int main(int argc, char *argv[])
     if (calibration) calibrationThread.wait();
     if (withCatalog) { reagentThread.wait();projectThread.wait(); }
     if (accounts || history) qInfo() << "THREADS_STOPPED" << (!databaseThread.isRunning() && !accountThread.isRunning() && !historyThread.isRunning()
-        && !projectThread.isRunning() && !reagentThread.isRunning() && !sampleThread.isRunning() && !maintenanceThread.isRunning() && !printerThread.isRunning() && !lisThread.isRunning() && !qualityThread.isRunning() && !calibrationThread.isRunning() && !statusLoopback.isRunning() && !alarmHistoryThread.isRunning());
+        && !projectThread.isRunning() && !reagentThread.isRunning() && !sampleThread.isRunning() && !maintenanceThread.isRunning() && !printerThread.isRunning() && !lisThread.isRunning() && !qualityThread.isRunning() && !calibrationThread.isRunning() && !statusLoopback.isRunning() && !alarmHistoryThread.isRunning() && !originalAlarmThread.isRunning());
     else qInfo() << "THREAD_STOPPED" << !databaseThread.isRunning();
     qInfo() << "EXIT code=" << result;
     return result;

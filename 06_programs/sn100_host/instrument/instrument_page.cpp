@@ -1,6 +1,8 @@
 #include "instrument_page.h"
 #include "device_control.h"
 #include "original_device_commands.h"
+#include "original_status_values.h"
+#include "protocol/read_only_messages.h"
 #include "original_files/original_runtime_settings.h"
 #include "ui_frmdriverset.h"
 #include "ui/cusmessagebox.h"
@@ -15,6 +17,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QJsonObject>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QScroller>
@@ -23,6 +26,7 @@
 #include <QTableWidget>
 #include <QTextBrowser>
 #include <QTextDocument>
+#include <QThread>
 
 namespace
 {
@@ -31,11 +35,6 @@ const QString buttonStyle = QStringLiteral(
     ".QPushButton{background-color:rgba(42,118,242,255);color:#FFFFFF;border-radius:4px;padding:2px;}"
     ".QPushButton:hover{background-color:rgba(42,118,242,170);}"
     ".QPushButton:pressed{background-color:rgba(135,206,250,255);}");
-
-QString stateName(const QStringList &names, int value)
-{
-    return value >= 0 && value < names.size() ? names.at(value) : QStringLiteral("未知");
-}
 
 bool mayRecordManualMaintenance(const AccountSession &session)
 {
@@ -59,7 +58,8 @@ InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
     setFixedSize(1751,968);
     applyOriginalStyle();
     disableDeviceActions();
-    clearDeviceValues();
+    clearDeviceValues(true);
+    displayedValues_=OriginalInstrument::statusDisplay(displayedSnapshot_,0);
     refreshSensors();
 
     // 子页编号沿用原 PageIndex；此处没有原主窗口的自动连接或首次收包联动。
@@ -72,6 +72,8 @@ InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
         connect(item.first,&QPushButton::clicked,this,[this,item]()
         {
             if (isBusy()) return;
+            if ((item.first == ui->btnPort || item.first == ui->btnFunTest || item.first == ui->btn_CommunicationTest)
+                && (!session_.authenticated || session_.role < 5)) return;
             ui->stackedWidget->setCurrentIndex(item.second);
             if (item.second == 2 && ready_) loadSelectedMonth();
             if (item.second == 0 && !connectionFile_.isEmpty() && prepareToLeave())
@@ -80,11 +82,14 @@ InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
     }
     connect(ui->btn_board_status,&QPushButton::clicked,this,[this]()
     {
-        if (busy_) return;
-        // 未知机型仅查看原第一块参考布局，不据布局推断真实 SN100 配置。
-        ui->stackedWidget->setCurrentIndex(replayModel_ == QStringLiteral("SN600") ? 5 : 4);
+        if (isBusy() || !session_.authenticated || session_.role < 4) return;
+        // 原on_btn_board_status_clicked：已连接按实际型号，等待连接按20/42试剂位选页。
+        const bool linked = displayedStatusFresh_ && displayedSnapshot_.ledStatus != 0;
+        const bool otherModel = linked ? replayModel_ != QStringLiteral("SN450")
+                                      : configuredReagentPositions_ == 42;
+        ui->stackedWidget->setCurrentIndex(otherModel ? 5 : 4);
     });
-    ui->btn_board_status->setToolTip(tr("原板卡参考布局；真实机型、传感器映射及状态待设备核实。"));
+    ui->btn_board_status->setToolTip(tr("按原版机型规则显示电路板状态；仅显示主控实际上报的值。"));
 
     initializeMaintenanceTable(ui->tableDayMaintain,
         {QStringLiteral("btnCleanCup"),QStringLiteral("btnWasteWater"),QStringLiteral("btnWasteCup"),
@@ -297,7 +302,7 @@ void InstrumentPage::disableDeviceActions()
     for (QTextBrowser *browser : findChildren<QTextBrowser *>()) browser->clear();
 }
 
-void InstrumentPage::clearDeviceValues()
+void InstrumentPage::clearDeviceValues(bool initializeCommunication)
 {
     // 明确设备输出控件清单来自原reloadControl/BoradStatus_flush/slotStatusChanged。
     // 不按“未连接”等字符串全局替换，静态说明与单位仍由原.ui保存。
@@ -340,7 +345,7 @@ void InstrumentPage::clearDeviceValues()
         if (QLabel *label=findChild<QLabel *>(name))
         {
             label->setText(tr("未知"));
-            label->setToolTip(tr("脱机：无真实仪器数据。"));
+            label->setToolTip(tr("没有当前有效的主控数据；未上报的值不能作为正常状态依据。"));
             label->setProperty("instrumentDeviceValue",true);
         }
     }
@@ -362,33 +367,46 @@ void InstrumentPage::clearDeviceValues()
     ui->lstBoardVersion->clear();
     ui->algorithm_version->setText(tr("未接入"));
     ui->algorithm_version1->setText(tr("未接入"));
-    ui->lineEdit->clear();
-    ui->label_SendCount->setText(QStringLiteral("0"));
-    ui->label_ReceiveCount->setText(QStringLiteral("0"));
+    // 状态刷新不能清除操作者正在输入的命令，也不能把通信计数反复归零。
+    if (initializeCommunication)
+    {
+        ui->lineEdit->clear();
+        ui->label_SendCount->setText(QStringLiteral("0"));
+        ui->label_ReceiveCount->setText(QStringLiteral("0"));
+    }
+    clearOriginalAdValues(tr("没有当前有效的主控连接或状态；等待新的Qq读数。"));
 }
 
 void InstrumentPage::refreshSensors()
 {
-    QStringList names = {tr("清洗液桶:"),tr("废液桶:"),tr("反应杯舱:"),tr("废杯状态:"),
-        tr("丢杯桶:"),tr("制冷液:"),tr("清洗液瓶:"),tr("样本容器检测:")};
-    if (session_.authenticated && session_.role >= 4)
-        names << tr("进架区域:") << tr("出架区域:") << tr("进架就位:")
-              << tr("加样架对射右:") << tr("加样架对射左:") << tr("退架就位:")
-              << tr("样本针废液浮球:") << tr("试剂针废液浮球:") << tr("供杯导轨上光耦:")
-              << tr("导轨杯状态:") << tr("选杯料斗上光耦:") << tr("选杯料斗下光耦:")
-              << tr("新杯位状态:") << tr("开始按钮状态:") << tr("试剂盘按钮状态:");
-    ui->tlbSensor->clearContents();
-    ui->tlbSensor->setRowCount(names.size());
-    for (int row=0;row<names.size();++row)
+    const auto &sensors=displayedValues_.sensors;
+    ui->tlbSensor->setRowCount(sensors.size());
+    for (int row=0;row<sensors.size();++row)
     {
-        auto *name=new QTableWidgetItem(names.at(row));
-        name->setFont(QFont(QStringLiteral("Noto Sans CJK SC"),10));
-        name->setTextAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-        ui->tlbSensor->setItem(row,0,name);
-        auto *value=new QLabel(tr("未知"));
-        value->setFont(name->font());value->setAlignment(Qt::AlignCenter);
-        value->setToolTip(tr("机型/传感器映射待实物核实；当前没有真实仪器数据。"));
-        ui->tlbSensor->setCellWidget(row,1,value);
+        const auto &sensor=sensors.at(row);
+        auto *name=ui->tlbSensor->item(row,0);
+        if (!name)
+        {
+            name=new QTableWidgetItem;
+            name->setFont(QFont(QStringLiteral("Noto Sans CJK SC"),10));
+            name->setTextAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+            ui->tlbSensor->setItem(row,0,name);
+        }
+        name->setText(sensor.name);
+        auto *value=qobject_cast<QLabel *>(ui->tlbSensor->cellWidget(row,1));
+        if (!value)
+        {
+            value=new QLabel;
+            value->setFont(name->font());value->setAlignment(Qt::AlignCenter);
+            ui->tlbSensor->setCellWidget(row,1,value);
+        }
+        const QString valuePrefix=displayedPrefix_.isEmpty() || displayedPrefix_==tr("设备")
+            ? QString() : displayedPrefix_+QLatin1Char('/');
+        value->setText(displayedStatusFresh_ ? valuePrefix+sensor.value : tr("未知"));
+        value->setStyleSheet(!displayedStatusFresh_ || !sensor.known
+            ? QStringLiteral("QLabel{color:rgb(170,170,170);}")
+            : sensor.normal ? QString() : QStringLiteral("QLabel{background-color:white;color:#FF0000;border-radius:1px;border:1px solid white;}"));
+        value->setToolTip(displayedDetail_);
         ui->tlbSensor->setRowHeight(row,31);
     }
 }
@@ -450,7 +468,8 @@ void InstrumentPage::setSession(AccountSession session)
     session_=session;
     if (store_) QMetaObject::invokeMethod(store_,"setSession",Qt::QueuedConnection,Q_ARG(AccountSession,session));
     updatePermissions();
-    refreshSensors();
+    setReadOnlyStatus(displayedSnapshot_, displayedStatusFresh_, displayedPrefix_, displayedDetail_);
+    if (originalAdConfigured_) refreshOriginalAdChannels();
     ui->stackedWidget->setCurrentIndex(1);
 }
 
@@ -500,6 +519,11 @@ void InstrumentPage::attachDeviceControl(DeviceControl *control, bool connectAtS
             communicationGeneration_=deviceControl_->connectionGeneration();
             sentDecoder_.reset();
         }
+        if (deviceControl_ && originalAdGeneration_ != deviceControl_->connectionGeneration())
+        {
+            originalAdGeneration_ = deviceControl_->connectionGeneration();
+            clearOriginalAdValues(tr("连接已改变，旧连接的AD读数已清除。"));
+        }
         setReadOnlyStatus(state.status, state.connected && state.fresh, tr("设备"), state.message);
         updateDeviceButtons();
         report(state.message);
@@ -531,7 +555,7 @@ void InstrumentPage::attachDeviceControl(DeviceControl *control, bool connectAtS
     const auto toggleConnection = [this]()
     {
         if (!deviceControl_ || isBusy() || connectionDirty_) return;
-        if (deviceControl_->state().connected) deviceControl_->close();
+        if (deviceControl_->connectionRequested()) deviceControl_->close();
         else deviceControl_->open(committedAddress_, committedPort_.toUShort());
     };
     connect(ui->btnTcpConnect, &QPushButton::clicked, this, toggleConnection);
@@ -569,7 +593,7 @@ void InstrumentPage::updateDeviceButtons()
     for (QPushButton *button : {ui->btnTcpConnect, ui->pushButton_Connect})
     {
         button->setEnabled(available && !connectionDirty_ && !committedAddress_.isEmpty());
-        button->setText(connected ? tr("断开") : tr("连接"));
+        button->setText(deviceControl_ && deviceControl_->connectionRequested() ? tr("断开") : tr("连接"));
     }
     for (const auto &command : originalDeviceButtons())
         if (auto *button = findChild<QPushButton *>(command.name))
@@ -744,32 +768,206 @@ void InstrumentPage::setReplayState(const Sn100Protocol::ReplayState &state)
 void InstrumentPage::setReadOnlyStatus(const Sn100Protocol::StatusSnapshot &snapshot, bool fresh,
     const QString &prefix, const QString &sourceDetail)
 {
-    clearDeviceValues();
+    // 保存一份最后收到的快照供换账户时重新按角色显示，不重新查询或发送控制命令。
+    const bool modelChanged=displayedSnapshot_.model!=snapshot.model;
+    displayedSnapshot_=snapshot;
+    displayedStatusFresh_=fresh;
+    displayedPrefix_=prefix;
+    displayedDetail_=sourceDetail;
+    displayedValues_=OriginalInstrument::statusDisplay(snapshot,session_.authenticated ? session_.role : 0);
+    // 同机型连续状态直接更新现有值，避免每次报文先清空再重画全部输出。
+    if (!fresh || modelChanged) clearDeviceValues();
     replayModel_.clear();
     setProperty("instrumentStatusFresh",fresh);
+    refreshSensors();
+    for (QLabel *cover : {ui->lblReagentOpen,ui->lblDuilentOpen,ui->lblEmergencyOpen})
+    {
+        const auto normal=displayedValues_.coverNormal.constFind(cover->objectName());
+        cover->setStyleSheet(!fresh || normal==displayedValues_.coverNormal.cend()
+            ? QStringLiteral("QLabel{color:rgb(170,170,170);}")
+            : normal.value() ? QString() : QStringLiteral("QLabel{background-color:white;color:#FF0000;border-radius:1px;border:1px solid white;}"));
+    }
+    if (deviceControl_)
+    {
+        const bool connected=deviceControl_->state().connected;
+        ui->label_ConnectStatus->setText(connected ? tr("已连接") : tr("已断开"));
+        ui->label_ConnectStatus->setStyleSheet(connected ? QStringLiteral("QLabel{color:green;}")
+                                                       : QStringLiteral("QLabel{color:red;}"));
+    }
     if (!fresh) return;
     replayModel_=snapshot.model;
-    const auto display=[this,&prefix,&sourceDetail](const QStringList &names,const QString &value)
+    // 真实连接沿原版显示文字；历史回放保留来源前缀，来源细节始终放提示文字。
+    const QString valuePrefix=prefix.isEmpty() || prefix==tr("设备") ? QString() : prefix+QLatin1Char('/');
+    for (auto it=displayedValues_.labels.cbegin();it!=displayedValues_.labels.cend();++it)
     {
-        for (const QString &name : names)
-            if (auto *label=findChild<QLabel *>(name))
+        if (auto *label=findChild<QLabel *>(it.key()))
+        {
+            label->setTextFormat(Qt::PlainText);
+            label->setText(valuePrefix+it.value());
+            label->setToolTip(sourceDetail+(it.value()==tr("未上报")
+                ? tr("\n本次状态报文缺少该字段或数值无效，不能作为正常状态依据。") : QString()));
+        }
+    }
+    // 原slotStatusChanged仅SN600显示育温盘温度，隐藏稀释架盖和急诊架盖。
+    const bool sn600=displayedValues_.sn600;
+    const QList<QWidget *> covers={ui->lbl10_2,ui->lblDuilentOpen,ui->lineEdit_5,
+                                   ui->lbl10_3,ui->lblEmergencyOpen,ui->lineEdit_6};
+    for (QWidget *widget : covers) widget->setVisible(!sn600);
+    const QList<QWidget *> warming={ui->lbl10_25,ui->lblWPlateTemp,ui->label_13};
+    for (QWidget *widget : warming) widget->setVisible(sn600);
+}
+
+bool InstrumentPage::configureOriginalAdChannels(const OriginalRuntime::Channels &channels,
+    int testChannels, QString *message)
+{
+    if (message) message->clear();
+    if (QThread::currentThread() != thread() || testChannels < 0 || testChannels > 1024
+        || channels.test.size() > 1024)
+    {
+        if (message) *message = tr("通道资料不在界面线程或数量超出本地显示范围，未替换。 ");
+        return false;
+    }
+    QSet<QString> numbers;
+    for (const auto &channel : channels.test)
+    {
+        if (channel.number.isEmpty() || numbers.contains(channel.number))
+        {
+            if (message) *message = tr("原通道名称为空或重复，未猜测通道身份。 ");
+            return false;
+        }
+        numbers.insert(channel.number);
+    }
+    originalAdChannels_ = channels;
+    originalAdChannelCount_ = testChannels;
+    originalAdConfigured_ = true;
+    originalAdHeadersReloaded_ = false;
+    refreshOriginalAdChannels();
+    return true;
+}
+
+bool InstrumentPage::reloadOriginalAdChannels(int testChannels, QString *message)
+{
+    if (message) message->clear();
+    if (QThread::currentThread() != thread() || !originalAdConfigured_
+        || testChannels < 0 || testChannels > 1024)
+    {
+        if (message) *message = tr("原通道资料尚未就绪或通道数量无效，未重载AD表。 ");
+        return false;
+    }
+    originalAdChannelCount_ = testChannels;
+    originalAdHeadersReloaded_ = true;
+    refreshOriginalAdChannels();
+    return true;
+}
+
+void InstrumentPage::refreshOriginalAdChannels()
+{
+    ui->tableChannel->clearContents();
+    ui->tableChannel->setRowCount(0);
+    ui->tableChannel->setHorizontalHeaderLabels({tr("通道号"),tr("开启状态"),
+        originalAdHeadersReloaded_ ? QStringLiteral("450nm") : QStringLiteral("405nm"),
+        QStringLiteral("570nm"),QStringLiteral("660nm"),
+        originalAdChannelCount_ == 24 ? QStringLiteral("   ") : QStringLiteral("800nm")});
+    const int role = session_.authenticated ? session_.role : 0;
+    for (const auto &channel : originalAdChannels_.test)
+    {
+        // 原refreshChannelTable保留数据库返回顺序和完整字符串通道名。
+        if (channel.number == QStringLiteral("Base"))
+        {
+            if (role < 4) continue;
+        }
+        else if (channel.number.toInt() > originalAdChannelCount_) continue;
+        const int row = ui->tableChannel->rowCount();
+        ui->tableChannel->insertRow(row);
+        for (int column = 0; column < 6; ++column)
+        {
+            if (column == 1) continue;
+            auto *item = new QTableWidgetItem(column == 0 ? channel.number : QStringLiteral("-"));
+            item->setFont(QFont(QStringLiteral("Noto Sans CJK SC"),12));
+            item->setTextAlignment(Qt::AlignCenter);
+            ui->tableChannel->setItem(row,column,item);
+        }
+        auto *enabled = new QPushButton(ui->tableChannel);
+        enabled->setCheckable(true);
+        enabled->setChecked(channel.enabled);
+        enabled->setText(channel.enabled ? tr("开启") : tr("关闭"));
+        enabled->setMaximumWidth(95);
+        enabled->setEnabled(false);
+        enabled->setToolTip(tr("显示原通道资料中的开关状态；此处暂不可修改。"));
+        enabled->setStyleSheet(QStringLiteral(
+            "QPushButton{background-color:#FFFFFF;color:#444444;border-radius:5px;border:1px solid #DDDDDD;}"
+            "QPushButton:checked{color:#FFFFFF;background-color:rgba(%1);}").arg(originalAdCheckedColour_));
+        ui->tableChannel->setCellWidget(row,1,enabled);
+        ui->tableChannel->setRowHeight(row,39);
+    }
+    clearOriginalAdValues(tr("已读取原通道资料，等待主控实际上报Qq读数；开关仅显示原库状态。"));
+}
+
+void InstrumentPage::clearOriginalAdValues(const QString &reason)
+{
+    for (int row = 0; row < ui->tableChannel->rowCount(); ++row)
+        for (int column = 2; column < 6; ++column)
+            if (auto *item = ui->tableChannel->item(row,column))
             {
-                label->setTextFormat(Qt::PlainText);
-                label->setText(prefix+QLatin1Char('/')+value);
-                label->setToolTip(sourceDetail);
+                item->setText(QStringLiteral("-"));
+                item->setToolTip(reason);
+                item->setData(Qt::UserRole,false);
             }
+    ui->tableChannel->setToolTip(reason);
+}
+
+bool InstrumentPage::receiveOriginalAd(const QByteArray &payload, quint64 connectionGeneration, QString *message)
+{
+    if (message) message->clear();
+    const auto reject = [this,message](const QString &reason)
+    {
+        if (message) *message = reason;
+        ui->tableChannel->setToolTip(reason);
+        return false;
     };
-    display({QStringLiteral("lblDriverModel"),QStringLiteral("lbl6Main_emergencyCover_5"),
-        QStringLiteral("lbl6Main_reagentScaner_6")},snapshot.model);
-    display({QStringLiteral("lbl6Main_emergencyCover_2"),QStringLiteral("lbl6Main_emergencyCover_7")},
-        stateName({tr("空闲"),tr("育温中"),tr("准备就绪"),tr("初始化中"),tr("初始化完成"),tr("测试中"),tr("暂停")},snapshot.mainStatus));
-    display({QStringLiteral("lbl6Main_startButton_3"),QStringLiteral("lbl6Main_startButton_5")},
-        stateName({tr("未连接"),tr("未测试"),tr("未测试仪器动作"),tr("未测试异常"),tr("测试全部正常"),
-                   tr("测试终止"),tr("测试终止试剂"),tr("测试异常终止")},snapshot.ledStatus));
-    display({QStringLiteral("lbl6Main_plateButton_5"),QStringLiteral("lbl6Main_plateButton_9")},
-        stateName({tr("无错误"),tr("警告"),tr("进架暂停"),tr("进架立即停止"),tr("暂停加样"),tr("加样立即停止"),
-                   tr("停止加试剂"),tr("停止所有")},snapshot.errorWorkType));
-    // 原始子系统字段保留在协议快照；尚无SN100映射依据，不猜温度/液位/板卡状态。
+    if (QThread::currentThread() != thread())
+    {
+        if (message) *message = tr("AD读数必须在界面线程接收。 ");
+        return false;
+    }
+    if (!originalAdConfigured_) return reject(tr("原通道资料未就绪，未按AD回包创建通道或开关。"));
+    if (!deviceControl_ || !deviceControl_->state().connected
+        || connectionGeneration != deviceControl_->connectionGeneration())
+        return reject(tr("AD回复不属于当前有效连接，未替换通道读数。"));
+    Sn100Protocol::ReadOnlyMessage parsed;
+    QString error;
+    if (!payload.startsWith("Qq") || !Sn100Protocol::parseReadOnlyMessage(payload,&parsed,&error))
+        return reject(tr("AD回复未通过原字段校验，保留最后一次读数：%1").arg(error));
+    if (originalAdGeneration_ != connectionGeneration)
+    {
+        originalAdGeneration_ = connectionGeneration;
+        clearOriginalAdValues(tr("新连接等待本次AD读数。"));
+    }
+    const QJsonObject channels = parsed.data.value(QStringLiteral("channels")).toObject();
+    const QString receivedAt = QDateTime::currentDateTime().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss.zzz"));
+    for (int row = 0; row < ui->tableChannel->rowCount(); ++row)
+    {
+        const QString number = ui->tableChannel->item(row,0)->text();
+        const bool present = channels.contains(number);
+        const QStringList values = present ? channels.value(number).toString().split(QLatin1Char(' '),Qt::KeepEmptyParts)
+                                           : QStringList();
+        for (int column = 0; column < 4; ++column)
+        {
+            auto *item = ui->tableChannel->item(row,column+2);
+            const bool reported = present && column < values.size();
+            if (!present) item->setText(QStringLiteral("-"));
+            else if (reported) item->setText(values.at(column));
+            // 原短列表保留未提供列的旧文字；提示明确它不是本次读数，不能当作新测量。
+            item->setData(Qt::UserRole,reported);
+            item->setToolTip(reported ? tr("主控Qq，通道%1，第%2项；接收时间%3。")
+                .arg(number).arg(column+1).arg(receivedAt)
+                : present ? tr("本次Qq未提供此项；按原版保留旧文字，不能作为本次读数。")
+                          : tr("本次Qq未包含此通道，显示原版缺值标记。"));
+        }
+    }
+    ui->tableChannel->setToolTip(tr("主控Qq接收于%1；开关是原库状态，不表示设备已确认。重复通道%2项按原版取首值。")
+        .arg(receivedAt).arg(parsed.data.value(QStringLiteral("duplicate_channels")).toInt()));
+    return true;
 }
 
 void InstrumentPage::report(QString message)
@@ -781,6 +979,10 @@ void InstrumentPage::report(QString message)
 bool InstrumentPage::applyOriginalRuntime(const OriginalRuntime::RuntimeSettings &settings, QString *message)
 {
     if (message) message->clear();
+    // 原main把kBtnNormalColor交给buttonStyle::getStrChecked；通道状态沿用同一主题值。
+    originalAdCheckedColour_ = settings.theme.colours.value(QStringLiteral("kBtnNormalColor"),
+        QStringLiteral("42,118,242,255"));
+    if (originalAdConfigured_) refreshOriginalAdChannels();
     showCommunication_=settings.debug.showCommandsInitially;
     showOnlyCommunication_=settings.debug.showCommandFilter;
     maskCommunication_=settings.debug.maskCommandFilter;
@@ -804,6 +1006,7 @@ bool InstrumentPage::applyOriginalRuntime(const OriginalRuntime::RuntimeSettings
     ui->textBrowser_SendData->document()->setMaximumBlockCount(500);
     ui->textBrowser_ReceiveData->document()->setMaximumBlockCount(500);
     ui->lbl10_20->setText(settings.theme.company);
+    configuredReagentPositions_=settings.theme.reagentPositions;
     ui->lblDriverModel->setText(settings.theme.driverModel);
     ui->lblDriverModel->setToolTip(tr("原主题配置中的机型名称；实际设备状态以收到的有效报文为准。"));
     return true;
@@ -835,4 +1038,44 @@ void InstrumentPage::appendOriginalCommunication(bool transmitted, const QByteAr
     view->append(line.toHtmlEscaped());
     if (transmitted) ui->label_SendCount->setText(QString::number(++sentCommunication_));
     else ui->label_ReceiveCount->setText(QString::number(++receivedCommunication_));
+}
+
+bool InstrumentPage::applyCommittedOriginalChannels(const OriginalRuntime::Channels &channels,
+    quint64 generation, QString *message)
+{
+    if (message) message->clear();
+    if (QThread::currentThread() != thread())
+    {
+        if (message) *message = tr("通道资料必须在界面线程更新。");
+        return false;
+    }
+    if (!originalAdConfigured_)
+    {
+        if (message) *message = tr("原通道资料未就绪，未替换通道表。");
+        return false;
+    }
+    if (!deviceControl_ || !deviceControl_->state().connected
+        || generation != deviceControl_->connectionGeneration())
+    {
+        if (message) *message = tr("通道资料不属于当前有效连接，未替换通道表。");
+        return false;
+    }
+    if (channels.test.size() > 1024 || channels.fingerprint.size() != 64)
+    {
+        if (message) *message = tr("通道数量或资料指纹无效，未替换通道表。");
+        return false;
+    }
+    QSet<QString> numbers;
+    for (const auto &channel : channels.test)
+    {
+        if (channel.number.isEmpty() || numbers.contains(channel.number))
+        {
+            if (message) *message = tr("原通道名称为空或重复，未猜测通道身份。");
+            return false;
+        }
+        numbers.insert(channel.number);
+    }
+    originalAdChannels_ = channels;
+    refreshOriginalAdChannels();
+    return true;
 }

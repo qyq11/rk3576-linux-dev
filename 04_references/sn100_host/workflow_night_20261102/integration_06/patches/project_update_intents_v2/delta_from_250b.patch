@@ -1,0 +1,167 @@
+--- a/06_programs/sn100_host/samples/original_device_sync.h
++++ b/06_programs/sn100_host/samples/original_device_sync.h
+@@ -11,6 +11,7 @@
+     bool complete = false;
+     // 无关/重复回包只登记，不重启等待计时、不降级已完成状态、不写库。
+     bool ignored = false;
++    bool commitSeen = false; // 即使提交后快照/下一同步步失败，也保留实际写入事实。
+     QString message;
+ };
+ 
+@@ -61,6 +62,8 @@
+     quint64 nextUpdateIntent_ = 0, initialUpdateEpoch_ = 0;
+     OriginalProjectUpdateStates updateStates_;
+     QElapsedTimer projectUpdateClock_;
++    bool activeSendConclusionKnown_ = false, activeSendMayHaveQueued_ = false;
++    bool timeoutAwaitingSendConclusion_ = false;
+     void recordUpdateState(const OriginalProjectUpdateState &state);
+     void reconcileInitialProject(const OriginalDeviceProject &sent, const OriginalDeviceProject &confirmed);
+     OriginalProjectUpdateState referenceChangeState(const OriginalProjectUpdateState &source, qint64 oldId, qint64 newId,
+--- a/06_programs/sn100_host/samples/original_device_sync.cpp
++++ b/06_programs/sn100_host/samples/original_device_sync.cpp
+@@ -20,6 +20,7 @@
+ {
+     if (activeUpdate_)
+     {
++        timeoutAwaitingSendConclusion_=false;
+         activeUpdateState_.stage=QStringLiteral("connection-changed");
+         activeUpdateState_.message=QStringLiteral("项目本地提交保留，旧连接等待已停止；没有自动转发旧意图。");
+         recordUpdateState(activeUpdateState_);
+@@ -123,8 +124,10 @@
+     }
+     const auto sent=projects_[projectIndex_];
+     OriginalDeviceProjectWriteResult written;
+-    if (!OriginalProjectDeviceRepository::matchesSentParameters(sent,received,message) ||
+-        !repository_.applyDeviceProject(payload,sent.record.name,sent.record.originalFingerprint,message,sent.record.originalFileName,&written))
++    const bool applied=OriginalProjectDeviceRepository::matchesSentParameters(sent,received,message) &&
++        repository_.applyDeviceProject(payload,sent.record.name,sent.record.originalFingerprint,message,sent.record.originalFileName,&written);
++    step->commitSeen=written.commitSeen;
++    if (!applied)
+     {
+         const QString file=sent.record.originalFileName;
+         bool idOk=false;
+@@ -141,7 +144,9 @@
+     projects_[projectIndex_]=written.project;
+     reconcileInitialProject(sent,projects_[projectIndex_]);
+     ++projectIndex_;
+-    return nextProject(step,message);
++    const bool advanced=nextProject(step,message);
++    step->commitSeen=written.commitSeen; // nextProject会重置step，不能抹掉前一个已提交UP。
++    return advanced;
+ }
+ 
+ bool OriginalDeviceSync::canStart(bool linuxNew, QString *message) const
+@@ -312,6 +317,7 @@
+         projectUpdates_[file]=state; recordUpdateState(state); return false;
+     }
+     activeUpdateProject_=*target; activeUpdateState_=state; activeUpdate_=true;
++    activeSendConclusionKnown_=false; activeSendMayHaveQueued_=false; timeoutAwaitingSendConclusion_=false;
+     projectUpdateClock_.start();
+     projectUpdates_.remove(file);
+     activeUpdateState_.connection=connection; activeUpdateState_.stage=QStringLiteral("prepared");
+@@ -329,9 +335,30 @@
+ void OriginalDeviceSync::projectUpdateSendResult(quint64 intent, quint64 connection, bool attempted, bool queued, const QString &message)
+ {
+     if (!activeUpdate_ || activeUpdateState_.intent!=intent || activeUpdateState_.connection!=connection ||
+-        connection!=connection_ || activeUpdateState_.stage!=QStringLiteral("prepared")) return;
+-    if (projectUpdateClock_.isValid() && projectUpdateClock_.elapsed()>=10000)
+-    { expireProjectUpdate(intent,connection); return; }
++        connection!=connection_) return;
++    if (!attempted && queued) return; // 自相矛盾的回执不能作为“确未尝试”的证明。
++    const bool awaiting=activeUpdateState_.stage==QStringLiteral("prepared") ||
++        (activeUpdateState_.stage==QStringLiteral("unknown") && timeoutAwaitingSendConclusion_);
++    if (!awaiting || activeSendConclusionKnown_ || activeSendMayHaveQueued_) return;
++    if (!attempted)
++    {
++        // Root在调用任何send之前才可能给false；这条事实不因回执排队晚于10秒而丢失。
++        activeSendConclusionKnown_=true; timeoutAwaitingSendConclusion_=false;
++        auto proof=activeUpdateState_; proof.stage=QStringLiteral("not-attempted-proof");
++        proof.message=QStringLiteral("本批次没有尝试进入发送队列，已核清仅因等待入队结论超时的未知来由。");
++        recordUpdateState(proof);
++    }
++    else
++    {
++        activeSendConclusionKnown_=true; activeSendMayHaveQueued_=true; timeoutAwaitingSendConclusion_=false;
++        if (activeUpdateState_.stage!=QStringLiteral("prepared") ||
++            (projectUpdateClock_.isValid() && projectUpdateClock_.elapsed()>=10000))
++        {
++            activeUpdateState_.stage=QStringLiteral("unknown");
++            activeUpdateState_.message=QStringLiteral("本批次已可能发送，但未在10秒期限内确认；保留真实发送未知，未自动重发。");
++            recordUpdateState(activeUpdateState_); return;
++        }
++    }
+     const QString file=activeUpdateState_.notice.originalFileName;
+     const bool newer=projectUpdates_.contains(file) &&
+         projectUpdates_[file].notice.committedFingerprint!=activeUpdateState_.notice.committedFingerprint;
+@@ -356,6 +383,8 @@
+ void OriginalDeviceSync::expireProjectUpdate(quint64 intent, quint64 connection)
+ {
+     if (!activeUpdate_ || activeUpdateState_.intent!=intent || activeUpdateState_.connection!=connection || !projectUpdateWaiting()) return;
++    timeoutAwaitingSendConclusion_=activeUpdateState_.stage==QStringLiteral("prepared") &&
++        !activeSendConclusionKnown_ && !activeSendMayHaveQueued_;
+     activeUpdateState_.stage=QStringLiteral("unknown");
+     activeUpdateState_.message=QStringLiteral("单项目更新10秒未获完整匹配回读，执行结果待核，未自动重发。");
+     recordUpdateState(activeUpdateState_);
+--- a/06_programs/sn100_host/samples/original_sample_store.cpp
++++ b/06_programs/sn100_host/samples/original_sample_store.cpp
+@@ -274,19 +274,29 @@
+         }
+         OriginalConfigurationStep step;
+         success=originalDeviceSync_ && originalDeviceSync_->projectReply(payload,connection,&step,&message);
+-        if (success && !step.ignored)
++        if (step.commitSeen || (success && !step.ignored))
+         {
+             SampleSnapshot snapshot;
+-            success=originalSamples_->load(&snapshot,&message);
+-            if (success)
++            QString refreshMessage;
++            const bool loaded=originalSamples_->load(&snapshot,&refreshMessage);
++            if (loaded)
+             {
+                 emit originalProjectsReady(originalSamples_->projects());
+-                emit originalProjectsChanged(); emit deviceTaskStateChanged();
+-                sendOriginalConfigurationStep(step);
++                emit deviceTaskStateChanged();
+             }
++            // 实际写入即让其他读者尝试重读；本线程重读失败也不能藏掉已经提交的事实。
++            if (step.commitSeen || loaded) emit originalProjectsChanged();
++            if (!loaded)
++            {
++                success=false;
++                message+=(message.isEmpty() ? QString() : QStringLiteral(" "))+
++                    QStringLiteral("样本项目快照重读失败：")+refreshMessage;
++            }
++            if (success && !step.ignored) sendOriginalConfigurationStep(step);
+         }
+         if (!success && originalDeviceSync_)
+         {
++            if (step.commitSeen) message=QStringLiteral("项目UP已经提交，但完整同步确认尚未完成；实际写入保留：")+message;
+             originalDeviceSync_->invalidate();
+             publishOriginalProjectUpdateStates();
+             if (originalConfigurationTimeout_) originalConfigurationTimeout_->stop();
+--- a/06_programs/sn100_host/shell/device_control_shell.cpp
++++ b/06_programs/sn100_host/shell/device_control_shell.cpp
+@@ -911,6 +911,23 @@
+         !property("originalProjectReferencesNeedReview").isValid())
+         setProperty("originalProjectReferencesNeedReview",QVariant::fromValue(state));
+     const QVariant unknown=property("originalProjectUpdateUnknown");
++    if (state.stage==QStringLiteral("not-attempted-proof"))
++    {
++        if (unknown.isValid())
++        {
++            const auto old=unknown.value<OriginalProjectUpdateState>();
++            if (old.intent==state.intent && old.connection==state.connection &&
++                projectUpdateKey(old.notice)==projectUpdateKey(state.notice) &&
++                old.notice.source==state.notice.source && old.notice.writeRequest==state.notice.writeRequest &&
++                old.notice.beforeFingerprint==state.notice.beforeFingerprint &&
++                old.notice.committedFingerprint==state.notice.committedFingerprint)
++            {
++                setProperty("originalProjectUpdateUnknown",QVariant());
++                updateOriginalProjectReadiness(); updateDeviceControlActions(); advanceOriginalProjectUpdates();
++            }
++        }
++        return; // 只是结清同批未知来由，不确认参数，也不替换新保存的等待状态。
++    }
+     if (state.stage==QStringLiteral("unknown") && !unknown.isValid())
+         setProperty("originalProjectUpdateUnknown",QVariant::fromValue(state));
+     if (terminal && unknown.isValid())

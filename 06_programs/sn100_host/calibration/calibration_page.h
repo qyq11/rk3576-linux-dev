@@ -52,6 +52,8 @@ private:
     void markDirty();
     void updateRawPlot();
     void showRawChart();
+    void clearPendingOriginalApply();
+    void continueOriginalApply();
     Ui::frmCalibrationMaterial *ui;
     CalibrationStore *m_store;
     ProjectRecords m_projects;
@@ -69,5 +71,10 @@ private:
     bool m_populating = false;
     bool m_originalMode = false;
     QString m_originalRoot;
+    qint64 m_applyAfterReviewId = 0;
+    QString m_applyAfterReviewGroup;
+    CalibrationRecord m_applyAfterReviewSource;
+    QVariantMap m_applyAfterReviewBinding;
+    bool m_applyReviewSaved = false;
 };
 #endif

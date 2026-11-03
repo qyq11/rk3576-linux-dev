@@ -1,0 +1,1162 @@
+--- a/06_programs/sn100_host/projects/original_project_repository.cpp
++++ b/06_programs/sn100_host/projects/original_project_repository.cpp
+@@ -915,8 +915,11 @@
+ }
+ }
+ 
+-bool OriginalProjectRepository::save(ProjectRecord project, qint64 *savedId, bool *changed, QString *message)
+-{
++bool OriginalProjectRepository::save(ProjectRecord project, qint64 *savedId, bool *changed, QString *message,
++    OriginalProjectSaveNotice *result, const QString &expectedFileName, const std::function<bool()> &claim,
++    const std::function<void(const OriginalProjectSaveNotice &)> &committed)
++{
++    if (result) *result=OriginalProjectSaveNotice();
+     *changed = false; *savedId = 0;
+     if (!checkRoot(message)) return false;
+     if (project.originalRoot != m_root) return fail(message, QStringLiteral("项目草稿来自其他原库目录，请重新读取。"));
+@@ -932,6 +935,11 @@
+     if (found == all.cend() || found->originalFileName != project.originalFileName || found->originalFingerprint != project.originalFingerprint)
+         return fail(message, QStringLiteral("原项目文件已经变化或不再存在；旧草稿没有覆盖新内容，请重新读取。"));
+     const ProjectRecord before = *found;
++    if (!expectedFileName.isEmpty() && before.originalFileName!=expectedFileName)
++        return fail(message,QStringLiteral("实际保存目标不再是预检文件，本次尚未提交，请重新读取。"));
++    OriginalProjectSaveNotice notice;
++    notice.root=m_root; notice.originalFileName=before.originalFileName; notice.projectId=before.id;
++    notice.projectName=project.name; notice.beforeFingerprint=before.originalFingerprint;
+     if (project.instrumentProjectId != before.instrumentProjectId || project.fixed != before.fixed ||
+         project.originalBaseValues != before.originalBaseValues || project.originalAlgorithmValues != before.originalAlgorithmValues)
+         return fail(message, QStringLiteral("原编号、固定状态或只读原参数被改变，未保存隐藏修改。"));
+@@ -1010,92 +1018,110 @@
+             return fail(message, QStringLiteral("修改后的结果下限不能大于上限。"));
+     }
+     if (mainSelectionChanged && mainCount != 1) return fail(message, QStringLiteral("修改主结果选择后须保留唯一主结果。"));
+-    Connection connection;
+-    const QString path = m_files.value(project.id);
+-    if (!connection.open(path, true, message) || !sql(connection.db, QStringLiteral("BEGIN IMMEDIATE"), {}, message)) return false;
+-    if (fingerprint(path, message) != project.originalFingerprint)
+-    {
+-        fail(message, QStringLiteral("取得写入权限时原项目已变化，请重新读取。"));
+-        return rollback(connection.db, message);
+-    }
+-    // 已取得写锁且没有执行任何UPDATE，快照对应本次保存前的已提交版本。
+-    // 原copyFileToBackupDirectory失败只记录日志并继续保存，这里保留该行为。
+-    QString backupMessage;
+-    if (!backupProjectBeforeSave(connection.db, m_root, path, before, &backupMessage))
+-        qWarning().noquote() << "ORIGINAL_PROJECT_BACKUP_FAILED" << backupMessage
+-                             << QStringLiteral("；按原版继续保存，不能据此认定已有可用旧版本备份。");
+-    if (fingerprint(path, message) != project.originalFingerprint)
+-    {
+-        fail(message, QStringLiteral("备份期间原项目已变化，未把旧草稿写入不同版本。"));
+-        return rollback(connection.db, message);
+-    }
+-    QMap<QString, QString> base;
+-    if (project.name != before.name) base.insert(QStringLiteral("project_en_name"), project.name);
+-    if (project.fullName != before.fullName) base.insert(QStringLiteral("project_cn_name"), project.fullName);
+-    if (project.lisCode != before.lisCode) base.insert(QStringLiteral("project_lis_code"), project.lisCode);
+-    if (project.enabled != before.enabled) base.insert(QStringLiteral("is_used"), project.enabled ? QStringLiteral("1") : QStringLiteral("0"));
+-    for (auto field = project.defaultCalibrationValues.cbegin(); field != project.defaultCalibrationValues.cend(); ++field)
+-        if (field.value() != before.defaultCalibrationValues.value(field.key())) base.insert(field.key(), field.value());
+-    if (algorithmChanged)
+-    {
+-        if (project.algorithm.coefficientA != before.algorithm.coefficientA) base.insert(QStringLiteral("xishu_a"), QString::number(project.algorithm.coefficientA, 'g', 15));
+-        if (project.algorithm.coefficientB != before.algorithm.coefficientB) base.insert(QStringLiteral("xishu_b"), QString::number(project.algorithm.coefficientB, 'g', 15));
+-        if (project.algorithm.coefficientC != before.algorithm.coefficientC) base.insert(QStringLiteral("sample_warmup_length"), QString::number(project.algorithm.coefficientC, 'g', 15));
+-        if (project.algorithm.autoApply != before.algorithm.autoApply) base.insert(QStringLiteral("auto_apply"), project.algorithm.autoApply ? QStringLiteral("1") : QStringLiteral("0"));
+-    }
+-    if (scalarChanged)
+-    {
+-        if (project.advanced.fields.keys() != before.advanced.fields.keys())
+-        {
+-            fail(message, QStringLiteral("原基础参数字段不能被删除或隐式添加。"));
++    if (claim && !claim()) return fail(message,QStringLiteral("本次保存预留已取消、过期或上下文已变，尚未提交，草稿保留。"));
++    {
++        Connection connection;
++        const QString path = m_files.value(project.id);
++        if (!connection.open(path, true, message) || !sql(connection.db, QStringLiteral("BEGIN IMMEDIATE"), {}, message)) return false;
++        if (fingerprint(path, message) != project.originalFingerprint)
++        {
++            fail(message, QStringLiteral("取得写入权限时原项目已变化，请重新读取。"));
+             return rollback(connection.db, message);
+         }
+-        for (auto field = project.advanced.fields.cbegin(); field != project.advanced.fields.cend(); ++field)
+-            if (field.value() != before.advanced.fields.value(field.key())) base.insert(field.key(), field.value());
+-    }
+-    for (auto field = base.cbegin(); field != base.cend(); ++field)
+-        if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), field.key(), field.value(), changed, message))
++        // 已取得写锁且没有执行任何UPDATE，快照对应本次保存前的已提交版本。
++        // 原copyFileToBackupDirectory失败只记录日志并继续保存，这里保留该行为。
++        QString backupMessage;
++        if (!backupProjectBeforeSave(connection.db, m_root, path, before, &backupMessage))
++            qWarning().noquote() << "ORIGINAL_PROJECT_BACKUP_FAILED" << backupMessage
++                                 << QStringLiteral("；按原版继续保存，不能据此认定已有可用旧版本备份。");
++        if (fingerprint(path, message) != project.originalFingerprint)
++        {
++            fail(message, QStringLiteral("备份期间原项目已变化，未把旧草稿写入不同版本。"));
+             return rollback(connection.db, message);
+-    const QMap<QString, QString> linked = {{QStringLiteral("min_test_time"), QStringLiteral("Sort_startTime")},
+-                                          {QStringLiteral("stopTime"), QStringLiteral("Sort_stopTime")}};
+-    for (auto key = linked.cbegin(); key != linked.cend(); ++key)
+-        if (base.contains(key.key()) && before.originalAlgorithmValues.contains(key.value()))
+-            if (!updatePair(connection.db, QStringLiteral("AlgParam"), QStringLiteral("key"), key.value(), base.value(key.key()), changed, message))
++        }
++        QMap<QString, QString> base;
++        if (project.name != before.name) base.insert(QStringLiteral("project_en_name"), project.name);
++        if (project.fullName != before.fullName) base.insert(QStringLiteral("project_cn_name"), project.fullName);
++        if (project.lisCode != before.lisCode) base.insert(QStringLiteral("project_lis_code"), project.lisCode);
++        if (project.enabled != before.enabled) base.insert(QStringLiteral("is_used"), project.enabled ? QStringLiteral("1") : QStringLiteral("0"));
++        for (auto field = project.defaultCalibrationValues.cbegin(); field != project.defaultCalibrationValues.cend(); ++field)
++            if (field.value() != before.defaultCalibrationValues.value(field.key())) base.insert(field.key(), field.value());
++        if (algorithmChanged)
++        {
++            if (project.algorithm.coefficientA != before.algorithm.coefficientA) base.insert(QStringLiteral("xishu_a"), QString::number(project.algorithm.coefficientA, 'g', 15));
++            if (project.algorithm.coefficientB != before.algorithm.coefficientB) base.insert(QStringLiteral("xishu_b"), QString::number(project.algorithm.coefficientB, 'g', 15));
++            if (project.algorithm.coefficientC != before.algorithm.coefficientC) base.insert(QStringLiteral("sample_warmup_length"), QString::number(project.algorithm.coefficientC, 'g', 15));
++            if (project.algorithm.autoApply != before.algorithm.autoApply) base.insert(QStringLiteral("auto_apply"), project.algorithm.autoApply ? QStringLiteral("1") : QStringLiteral("0"));
++        }
++        if (scalarChanged)
++        {
++            if (project.advanced.fields.keys() != before.advanced.fields.keys())
++            {
++                fail(message, QStringLiteral("原基础参数字段不能被删除或隐式添加。"));
+                 return rollback(connection.db, message);
+-    if (sampleChanged && !updateActionRows(connection.db, QStringLiteral("project_sample_rate"), project.advanced.samples, project.sampleRates, true, changed, message))
+-        return rollback(connection.db, message);
+-    if (reagentChanged && !updateActionRows(connection.db, QStringLiteral("project_reagent"), project.advanced.reagents, {}, false, changed, message))
+-        return rollback(connection.db, message);
+-    if (resultsChanged)
+-    {
+-        OriginalRows rows;
+-        if (!readRows(connection.db, QStringLiteral("project_results"), QStringLiteral(" ORDER BY result_id,rowid"), &rows, message)) return rollback(connection.db, message);
+-        for (int index = 0; index < project.results.size(); ++index)
+-        {
+-            const auto &result = project.results[index]; const auto &old = before.results[index];
+-            if (sameResult(result, old)) continue;
+-            QMap<QString, QVariant> fields;
+-            if (result.name != old.name) fields.insert(QStringLiteral("result_name"), result.name);
+-            if (result.unit != old.unit) fields.insert(QStringLiteral("unit_name"), result.unit);
+-            if (result.decimals != old.decimals) fields.insert(QStringLiteral("decimal_point"), QString::number(result.decimals));
+-            if (result.testLow != old.testLow) fields.insert(QStringLiteral("test_low_range"), QString::number(result.testLow, 'g', 15));
+-            if (result.testHigh != old.testHigh) fields.insert(QStringLiteral("test_up_range"), QString::number(result.testHigh, 'g', 15));
+-            if (result.normalLow != old.normalLow) fields.insert(QStringLiteral("normal_low_range"), QString::number(result.normalLow, 'g', 15));
+-            if (result.normalHigh != old.normalHigh) fields.insert(QStringLiteral("normal_up_range"), QString::number(result.normalHigh, 'g', 15));
+-            if (result.lisCode != old.lisCode) fields.insert(QStringLiteral("lis_code"), result.lisCode);
+-            if (result.used != old.used) fields.insert(QStringLiteral("is_used"), result.used ? QStringLiteral("1") : QStringLiteral("0"));
+-            if (result.display != old.display) fields.insert(QStringLiteral("display"), result.display ? QStringLiteral("1") : QStringLiteral("0"));
+-            if (result.mainResult != old.mainResult) fields.insert(QStringLiteral("main_result"), result.mainResult ? QStringLiteral("1") : QStringLiteral("0"));
+-            if (!updateColumns(connection.db, QStringLiteral("project_results"), rows[index], fields, changed, message)) return rollback(connection.db, message);
+-        }
+-    }
+-    if (*changed && before.originalBaseValues.contains(QStringLiteral("change_time")))
+-        if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), QStringLiteral("change_time"), QDate::currentDate().toString(QStringLiteral("yyyy-MM-dd")), changed, message))
++            }
++            for (auto field = project.advanced.fields.cbegin(); field != project.advanced.fields.cend(); ++field)
++                if (field.value() != before.advanced.fields.value(field.key())) base.insert(field.key(), field.value());
++        }
++        for (auto field = base.cbegin(); field != base.cend(); ++field)
++            if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), field.key(), field.value(), changed, message))
++                return rollback(connection.db, message);
++        const QMap<QString, QString> linked = {{QStringLiteral("min_test_time"), QStringLiteral("Sort_startTime")},
++                                              {QStringLiteral("stopTime"), QStringLiteral("Sort_stopTime")}};
++        for (auto key = linked.cbegin(); key != linked.cend(); ++key)
++            if (base.contains(key.key()) && before.originalAlgorithmValues.contains(key.value()))
++                if (!updatePair(connection.db, QStringLiteral("AlgParam"), QStringLiteral("key"), key.value(), base.value(key.key()), changed, message))
++                    return rollback(connection.db, message);
++        if (sampleChanged && !updateActionRows(connection.db, QStringLiteral("project_sample_rate"), project.advanced.samples, project.sampleRates, true, changed, message))
+             return rollback(connection.db, message);
+-    if (!connection.db.commit())
+-    {
+-        fail(message, QStringLiteral("原项目提交失败：") + connection.db.lastError().text());
+-        return rollback(connection.db, message);
++        if (reagentChanged && !updateActionRows(connection.db, QStringLiteral("project_reagent"), project.advanced.reagents, {}, false, changed, message))
++            return rollback(connection.db, message);
++        if (resultsChanged)
++        {
++            OriginalRows rows;
++            if (!readRows(connection.db, QStringLiteral("project_results"), QStringLiteral(" ORDER BY result_id,rowid"), &rows, message)) return rollback(connection.db, message);
++            for (int index = 0; index < project.results.size(); ++index)
++            {
++                const auto &result = project.results[index]; const auto &old = before.results[index];
++                if (sameResult(result, old)) continue;
++                QMap<QString, QVariant> fields;
++                if (result.name != old.name) fields.insert(QStringLiteral("result_name"), result.name);
++                if (result.unit != old.unit) fields.insert(QStringLiteral("unit_name"), result.unit);
++                if (result.decimals != old.decimals) fields.insert(QStringLiteral("decimal_point"), QString::number(result.decimals));
++                if (result.testLow != old.testLow) fields.insert(QStringLiteral("test_low_range"), QString::number(result.testLow, 'g', 15));
++                if (result.testHigh != old.testHigh) fields.insert(QStringLiteral("test_up_range"), QString::number(result.testHigh, 'g', 15));
++                if (result.normalLow != old.normalLow) fields.insert(QStringLiteral("normal_low_range"), QString::number(result.normalLow, 'g', 15));
++                if (result.normalHigh != old.normalHigh) fields.insert(QStringLiteral("normal_up_range"), QString::number(result.normalHigh, 'g', 15));
++                if (result.lisCode != old.lisCode) fields.insert(QStringLiteral("lis_code"), result.lisCode);
++                if (result.used != old.used) fields.insert(QStringLiteral("is_used"), result.used ? QStringLiteral("1") : QStringLiteral("0"));
++                if (result.display != old.display) fields.insert(QStringLiteral("display"), result.display ? QStringLiteral("1") : QStringLiteral("0"));
++                if (result.mainResult != old.mainResult) fields.insert(QStringLiteral("main_result"), result.mainResult ? QStringLiteral("1") : QStringLiteral("0"));
++                if (!updateColumns(connection.db, QStringLiteral("project_results"), rows[index], fields, changed, message)) return rollback(connection.db, message);
++            }
++        }
++        if (*changed && before.originalBaseValues.contains(QStringLiteral("change_time")))
++            if (!updatePair(connection.db, QStringLiteral("project_base"), QStringLiteral("name"), QStringLiteral("change_time"), QDate::currentDate().toString(QStringLiteral("yyyy-MM-dd")), changed, message))
++                return rollback(connection.db, message);
++        if (!connection.db.commit())
++        {
++            fail(message, QStringLiteral("原项目提交失败：") + connection.db.lastError().text());
++            return rollback(connection.db, message);
++        }
++        notice.commitSeen=true;
++    } // 写连接已关闭；原项目QLock仍持有，随后核真实文件快照并排提交通知。
++    if (result || committed)
++    {
++        ProjectRecord observed;
++        const QString path=m_files.value(project.id);
++        notice.verifiedSnapshot=readProject(path,&observed,message) &&
++            observed.originalFileName==notice.originalFileName && observed.id==project.id && observed.name==project.name &&
++            !observed.originalFingerprint.isEmpty() && observed.originalFingerprint==fingerprint(path,message);
++        if (notice.verifiedSnapshot) notice.committedFingerprint=observed.originalFingerprint;
++        else if (message->isEmpty()) *message=QStringLiteral("已提交文件的身份或版本未核实。");
++        notice.message=*message;
++        if (result) *result=notice;
++        if (committed) committed(notice);
++        if (!notice.verifiedSnapshot) return false;
+     }
+     *savedId = project.id;
+     return true;
+--- a/06_programs/sn100_host/projects/original_project_repository.h
++++ b/06_programs/sn100_host/projects/original_project_repository.h
+@@ -3,6 +3,8 @@
+ 
+ #include "projects_store.h"
+ #include <QMap>
++#include "original_project_save_notice.h"
++#include <functional>
+ 
+ // 由ProjectsStore的数据库线程调用；不持有界面对象，不创建通信连接。
+ // 根目录维持原db/systemInfo、db/userSet、project、result分类。
+@@ -17,7 +19,10 @@
+     QString unitsDatabasePath() const;
+     bool load(ProjectRecords *projects, ProjectUnits *units, QStringList *reagents,
+               QStringList *cleaners, QStringList *diluents, QString *message, bool allowVerifiedPending = true);
+-    bool save(ProjectRecord project, qint64 *savedId, bool *changed, QString *message);
++    bool save(ProjectRecord project, qint64 *savedId, bool *changed, QString *message,
++              OriginalProjectSaveNotice *result = nullptr, const QString &expectedFileName = QString(),
++              const std::function<bool()> &claim = {},
++              const std::function<void(const OriginalProjectSaveNotice &)> &committed = {});
+     bool copy(qint64 sourceId, QString newName, qint64 *newId, QString *message);
+     bool remove(qint64 projectId, QString *message);
+     bool importFile(QString filePath, qint64 *newId, QString *message);
+--- /dev/null
++++ b/06_programs/sn100_host/projects/original_project_save_admission.h
+@@ -0,0 +1,94 @@
++#ifndef SN100_ORIGINAL_PROJECT_SAVE_ADMISSION_H
++#define SN100_ORIGINAL_PROJECT_SAVE_ADMISSION_H
++#include "original_project_save_notice.h"
++#include "data/account_store.h"
++#include <QMutex>
++#include <QMutexLocker>
++#include <atomic>
++#include <chrono>
++#include <memory>
++
++// 仅限同进程各线程使用的单调毫秒值；不是日期时间，也不保存到业务数据库。
++inline qint64 originalProjectSaveMonotonicNow()
++{
++    return std::chrono::duration_cast<std::chrono::milliseconds>(
++        std::chrono::steady_clock::now().time_since_epoch()).count();
++}
++inline quint64 nextOriginalProjectSaveTicket()
++{
++    static std::atomic<quint64> sequence{0};
++    return ++sequence;
++}
++inline bool sameOriginalProjectSaveActor(const AccountSession &a, const AccountSession &b)
++{
++    // 运行态另有原编辑守卫；它的变化不冒充注销或换账户。
++    return a.authenticated==b.authenticated && a.name==b.name && a.role==b.role && a.source==b.source &&
++        a.originalPolicySource==b.originalPolicySource && a.grantedPowerIds==b.grantedPowerIds;
++}
++inline bool sameOriginalProjectSave(const OriginalProjectSaveNotice &a, const OriginalProjectSaveNotice &b)
++{
++    return a.source==b.source && a.writeRequest==b.writeRequest && a.root==b.root &&
++        a.originalFileName==b.originalFileName && a.projectId==b.projectId && a.beforeFingerprint==b.beforeFingerprint;
++}
++
++// 跨线程只共享这份纯内存许可；不持QObject、数据库或文件锁。
++class OriginalProjectSavePermit
++{
++public:
++    enum State { Granted, Claimed, Committed, Released, Revoked, Accepted };
++    const quint64 ticket;
++    const OriginalProjectSaveNotice proposal;
++    const qint64 sourceDeadline;
++    explicit OriginalProjectSavePermit(quint64 value, const OriginalProjectSaveNotice &notice, qint64 expiresAt)
++        : ticket(value), proposal(notice), sourceDeadline(expiresAt),
++          deadline_(qMin(sourceDeadline,originalProjectSaveMonotonicNow()+10000)) {}
++    int state() const { return state_.load(); }
++    bool expired() const { return sourceDeadline<=0 || originalProjectSaveMonotonicNow()>=deadline_; }
++    bool claim(const OriginalProjectSaveNotice &notice)
++    {
++        // 仓库校验也消耗源请求期限；必须在锁内最终认领前再看同一单调截止点。
++        if (!sameOriginalProjectSave(proposal,notice) || expired()) { revoke(); return false; }
++        int expected=Granted;
++        return state_.compare_exchange_strong(expected,Claimed);
++    }
++    void revoke() { int expected=Granted; state_.compare_exchange_strong(expected,Revoked); }
++    void releaseUncommitted()
++    {
++        int expected=Granted;
++        if (!state_.compare_exchange_strong(expected,Released))
++        { expected=Claimed; state_.compare_exchange_strong(expected,Released); }
++    }
++    void committed(const OriginalProjectSaveNotice &notice)
++    {
++        QMutexLocker lock(&mutex_);
++        if (state()!=Claimed || !notice.commitSeen || !sameOriginalProjectSave(proposal,notice)) return;
++        committedNotice_=notice;
++        state_.store(Committed);
++    }
++    OriginalProjectSaveNotice committedNotice() const
++    { QMutexLocker lock(&mutex_); return committedNotice_; }
++    bool accept(const OriginalProjectSaveNotice &notice)
++    {
++        QMutexLocker lock(&mutex_);
++        if (state()!=Committed || !sameOriginalProjectSave(committedNotice_,notice) ||
++            committedNotice_.committedFingerprint!=notice.committedFingerprint ||
++            committedNotice_.verifiedSnapshot!=notice.verifiedSnapshot) return false;
++        state_.store(Accepted); return true;
++    }
++private:
++    std::atomic<int> state_{Granted};
++    const qint64 deadline_;
++    mutable QMutex mutex_;
++    OriginalProjectSaveNotice committedNotice_;
++};
++struct OriginalProjectSaveAdmission
++{
++    quint64 ticket=0;
++    OriginalProjectSaveNotice proposal;
++    qint64 sourceDeadline=0;
++    bool allowed=false;
++    QString message;
++    std::shared_ptr<OriginalProjectSavePermit> permit;
++};
++Q_DECLARE_METATYPE(OriginalProjectSaveAdmission)
++#endif
+--- a/06_programs/sn100_host/projects/project_page.h
++++ b/06_programs/sn100_host/projects/project_page.h
+@@ -17,6 +17,7 @@
+   public:
+     explicit ProjectPage(ProjectsStore *store, QWidget *parent = nullptr);
+     ~ProjectPage() override;
++    ProjectsStore *taskStore() const { return m_store; }
+     bool isReady() const
+     {
+         return m_ready;
+--- a/06_programs/sn100_host/projects/projects_store.cpp
++++ b/06_programs/sn100_host/projects/projects_store.cpp
+@@ -1,4 +1,5 @@
+ #include "projects_store.h"
++#include <QTimer>
+ #include "original_project_repository.h"
+ #include <QCoreApplication>
+ #include <QDateTime>
+@@ -298,7 +299,7 @@
+ }
+ } // namespace
+ 
+-ProjectsStore::ProjectsStore(QObject *parent) : QObject(parent) {}
++ProjectsStore::ProjectsStore(QObject *parent) : QObject(parent) { registerTypes(); }
+ ProjectsStore::~ProjectsStore()
+ {
+     release();
+@@ -306,6 +307,8 @@
+ void ProjectsStore::registerTypes()
+ {
+     qRegisterMetaType<AccountSession>();
++    qRegisterMetaType<OriginalProjectSaveNotice>();
++    qRegisterMetaType<OriginalProjectSaveAdmission>();
+     qRegisterMetaType<ProjectUnit>();
+     qRegisterMetaType<ProjectUnits>();
+     qRegisterMetaType<ProjectResult>();
+@@ -686,6 +689,7 @@
+             return false;
+         }
+     }
++    cancelPendingOriginalSave(QStringLiteral("原项目资料已重新打开，旧预检尚未写库，草稿保留。"));
+     m_original.swap(candidate);
+     m_referenceCatalogDirectory = referenceCatalogDirectory;
+     m_ready = true;
+@@ -759,6 +763,8 @@
+ {
+     if (QThread::currentThread() == thread())
+     {
++        if (!sameOriginalProjectSaveActor(m_session,session))
++            cancelPendingOriginalSave(QStringLiteral("账户身份已改变，本次尚未开始写库，草稿保留。"));
+         m_session = session;
+     }
+ }
+@@ -1232,19 +1238,111 @@
+     if (!m_database.commit()) { rollbackWrite(requestId, operation, m_database.lastError().text()); return; }
+     emit succeeded(requestId, operation, lastId);
+ }
++void ProjectsStore::setOriginalProjectSaveAdmissionEnabled(bool enabled)
++{
++    if (QThread::currentThread()!=thread()) return;
++    m_projectSaveAdmissionEnabled=enabled;
++    if (!enabled) cancelPendingOriginalSave(QStringLiteral("项目保存登记消费者已关闭，尚未写库，草稿保留。"));
++}
++
++void ProjectsStore::cancelPendingOriginalSave(QString message)
++{
++    if (!m_pendingOriginalSave.ticket) return;
++    const auto pending=m_pendingOriginalSave; m_pendingOriginalSave=PendingOriginalSave();
++    if (m_projectSaveAdmissionTimer) m_projectSaveAdmissionTimer->stop();
++    emit originalProjectSaveAdmissionCancelled(pending.ticket,QStringLiteral("projectSave"));
++    fail(pending.request,QStringLiteral("save"),message);
++}
++
++void ProjectsStore::finishOriginalProjectSaveAdmission(OriginalProjectSaveAdmission admission)
++{
++    if (QThread::currentThread()!=thread() || admission.proposal.source!=QStringLiteral("projectSave")) return;
++    if (!m_pendingOriginalSave.ticket || admission.ticket!=m_pendingOriginalSave.ticket)
++    {
++        if (admission.permit) admission.permit->revoke();
++        emit originalProjectSaveAdmissionCancelled(admission.ticket,QStringLiteral("projectSave"));
++        return;
++    }
++    const auto pending=m_pendingOriginalSave; m_pendingOriginalSave=PendingOriginalSave();
++    if (m_projectSaveAdmissionTimer) m_projectSaveAdmissionTimer->stop();
++    QString reason;
++    if (!admission.allowed || !admission.permit) reason=admission.message;
++    else if (!m_projectSaveAdmissionEnabled || !m_ready || !m_original || !canEdit(m_session) ||
++        !sameOriginalProjectSaveActor(pending.actor,m_session) || pending.deadline<=originalProjectSaveMonotonicNow() ||
++        admission.sourceDeadline!=pending.deadline || admission.permit->sourceDeadline!=pending.deadline || admission.permit->expired() ||
++        pending.project.originalRoot!=m_original->root() || admission.permit->ticket!=admission.ticket ||
++        !sameOriginalProjectSave(admission.proposal,admission.permit->proposal) ||
++        admission.proposal.writeRequest!=pending.request || admission.proposal.root!=pending.project.originalRoot ||
++        admission.proposal.originalFileName!=pending.project.originalFileName || admission.proposal.projectId!=pending.project.id ||
++        admission.proposal.beforeFingerprint!=pending.project.originalFingerprint)
++        reason=QStringLiteral("保存预检已过期或账户、文件、版本已变化，尚未写库，草稿保留。");
++    if (!reason.isEmpty() || !admission.allowed || !admission.permit)
++    {
++        if (admission.permit) admission.permit->revoke();
++        emit originalProjectSaveAdmissionCancelled(admission.ticket,QStringLiteral("projectSave"));
++        fail(pending.request,QStringLiteral("save"),reason.isEmpty() ? QStringLiteral("保存未获预留，尚未提交。") : reason);
++        return;
++    }
++    commitOriginalSave(pending.request,pending.project,admission.permit);
++}
++
++void ProjectsStore::commitOriginalSave(qint64 request,const ProjectRecord &project,
++    const std::shared_ptr<OriginalProjectSavePermit> &permit)
++{
++    QString message; qint64 id=0; bool changed=false; OriginalProjectSaveNotice result;
++    const auto claim=[permit]() { return permit->claim(permit->proposal); };
++    const auto post=[this,permit](OriginalProjectSaveNotice notice)
++    {
++        notice.source=QStringLiteral("projectSave"); notice.writeRequest=permit->proposal.writeRequest;
++        permit->committed(notice);
++        emit originalProjectSaveCommitted(notice); // 仍在原项目锁内，只排值对象，不回调SQL。
++    };
++    const bool ok=m_original->save(project,&id,&changed,&message,permit ? &result : nullptr,
++        permit ? permit->proposal.originalFileName : QString(),
++        permit ? std::function<bool()>(claim) : std::function<bool()>(),
++        permit ? std::function<void(const OriginalProjectSaveNotice &)>(post) : std::function<void(const OriginalProjectSaveNotice &)>());
++    if (permit && !result.commitSeen)
++    {
++        permit->releaseUncommitted();
++        emit originalProjectSaveAdmissionCancelled(permit->ticket,QStringLiteral("projectSave"));
++    }
++    if (!ok)
++    {
++        if (result.commitSeen) message=QStringLiteral("项目已经提交，但提交后快照未核实；设备参数尚未确认：")+message;
++        fail(request,QStringLiteral("save"),message); return;
++    }
++    emit succeeded(request,QStringLiteral("save"),id);
++}
++
+ void ProjectsStore::save(qint64 requestId, ProjectRecord project)
+ {
+     if (m_original)
+     {
++        // 从原库保存槽开始处理时取点；不包含此前GUI到存储线程的排队时间。
++        const qint64 sourceDeadline=originalProjectSaveMonotonicNow()+10000;
+         const QString operation = QStringLiteral("save");
+         if (!checkOriginalRequest(requestId, operation, true)) return;
+         if (project.originalRoot != m_original->root())
+         { fail(requestId, operation, QStringLiteral("草稿所属原目录已变化，未把旧输入写入新目录，请重新读取。")); return; }
+-        QString message;
+-        qint64 id = 0;
+-        bool changed = false;
+-        if (!m_original->save(project, &id, &changed, &message)) { fail(requestId, operation, message); return; }
+-        emit succeeded(requestId, operation, id);
++        if (m_pendingOriginalSave.ticket)
++        { fail(requestId,operation,QStringLiteral("另一项项目保存仍在预检，本次尚未提交，草稿保留。")); return; }
++        if (!m_projectSaveAdmissionEnabled) { commitOriginalSave(requestId,project); return; }
++        m_pendingOriginalSave.ticket=nextOriginalProjectSaveTicket();
++        m_pendingOriginalSave.request=requestId; m_pendingOriginalSave.project=project;
++        m_pendingOriginalSave.actor=m_session; m_pendingOriginalSave.deadline=sourceDeadline;
++        if (!m_projectSaveAdmissionTimer)
++        {
++            m_projectSaveAdmissionTimer=new QTimer(this); m_projectSaveAdmissionTimer->setSingleShot(true);
++            connect(m_projectSaveAdmissionTimer,&QTimer::timeout,this,[this]()
++            { cancelPendingOriginalSave(QStringLiteral("项目保存预检10秒未完成，尚未写库，草稿保留。")); });
++        }
++        m_projectSaveAdmissionTimer->start(static_cast<int>(qMax<qint64>(1,sourceDeadline-originalProjectSaveMonotonicNow())));
++        OriginalProjectSaveNotice proposal;
++        proposal.source=QStringLiteral("projectSave"); proposal.writeRequest=requestId;
++        proposal.root=project.originalRoot; proposal.originalFileName=project.originalFileName;
++        proposal.projectId=project.id; proposal.projectName=project.originalBaseValues.value(QStringLiteral("project_en_name"));
++        proposal.beforeFingerprint=project.originalFingerprint;
++        emit originalProjectSaveAdmissionRequested(m_pendingOriginalSave.ticket,proposal,sourceDeadline);
+         return;
+     }
+     // 身份、单位和引用在同一次写事务中检查，避免另一写者在核对后改动。
+@@ -1531,6 +1629,7 @@
+ }
+ void ProjectsStore::release()
+ {
++    cancelPendingOriginalSave(QStringLiteral("原项目资料已关闭或切换，本次尚未开始写库，草稿保留。"));
+     m_ready = false;
+     m_original.reset();
+     m_referenceCatalogDirectory.clear();
+--- a/06_programs/sn100_host/projects/projects_store.h
++++ b/06_programs/sn100_host/projects/projects_store.h
+@@ -9,6 +9,9 @@
+ #include <QObject>
+ #include <QSqlDatabase>
+ #include <memory>
++#include "original_project_save_admission.h"
++#include <QElapsedTimer>
++class QTimer;
+ 
+ class OriginalProjectRepository;
+ 
+@@ -112,6 +115,8 @@
+     void importOriginalFile(qint64 requestId, QString filePath);
+     void exportOriginalBundle(qint64 requestId, qint64 projectId, QString targetDirectory);
+     void setSession(AccountSession session);
++    void setOriginalProjectSaveAdmissionEnabled(bool enabled);
++    void finishOriginalProjectSaveAdmission(OriginalProjectSaveAdmission admission);
+     void load(qint64 requestId);
+     // Read-only, explicitly marked source profile; never creates its metadata.
+     void loadCurrentResultFormat(qint64 requestId);
+@@ -145,6 +150,9 @@
+     void currentProjectFormatReady(qint64 requestId, ProjectRecord project, ProjectCurrentFormatSnapshot snapshot);
+     void reagentOptionsReady(QStringList reagentNames, QStringList cleanerNames);
+     void diluentOptionsReady(QStringList diluentNames);
++    void originalProjectSaveAdmissionRequested(quint64 ticket, OriginalProjectSaveNotice proposal, qint64 sourceDeadline);
++    void originalProjectSaveAdmissionCancelled(quint64 ticket, QString source);
++    void originalProjectSaveCommitted(OriginalProjectSaveNotice notice);
+     void succeeded(qint64 requestId, QString operation, qint64 projectId);
+     void error(qint64 requestId, QString operation, QString message);
+     void closed();
+@@ -176,5 +184,18 @@
+     qint64 m_lastOriginalWriteRequest = 0;
+     QString m_referenceCatalogDirectory;
+     bool m_preparingAuxiliary = false;
++    bool m_projectSaveAdmissionEnabled = false;
++    struct PendingOriginalSave
++    {
++        quint64 ticket=0;
++        qint64 request=0;
++        ProjectRecord project;
++        AccountSession actor;
++        qint64 deadline=0;
++    } m_pendingOriginalSave;
++    QTimer *m_projectSaveAdmissionTimer=nullptr;
++    void cancelPendingOriginalSave(QString message);
++    void commitOriginalSave(qint64 request, const ProjectRecord &project,
++                            const std::shared_ptr<OriginalProjectSavePermit> &permit = {});
+ };
+ #endif
+--- a/06_programs/sn100_host/reagents/original_reagent_editor.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_editor.cpp
+@@ -379,8 +379,11 @@
+ }
+ 
+ bool OriginalReagentEditor::mutate(const QString &file, const QString &expected,
+-    const std::function<bool(Database &,QString *)> &change, QString *message)
+-{
++    const std::function<bool(Database &,QString *)> &change, QString *message, const ProjectRecord *projectSave,
++    const QString &groupEnabled, OriginalProjectSaveNotice *result, const std::function<bool()> &claim,
++    const std::function<void(const OriginalProjectSaveNotice &)> &committed)
++{
++    if (result) *result=OriginalProjectSaveNotice();
+     QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+     QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
+     if (!projectLock.tryLock(0) || !reagentLock.tryLock(0)) return fail(message,QStringLiteral("原项目或试剂正在保存，请稍后重试，草稿保留。"));
+@@ -389,10 +392,44 @@
+     for (auto it=versions_.cbegin();it!=versions_.cend();++it)
+         if (it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(it.key()),message))
+             return fail(message,QStringLiteral("原试剂或项目已被其他操作修改，本次没有覆盖，请重新读取。"));
+-    Database database;
+-    if (!database.open(root_,file,true,message) || !database.begin(message)) return false;
+-    if (!change(database,message)) { database.rollback(); return false; }
+-    return database.commit(message);
++    const bool reportCommit=projectSave && (result || committed);
++    OriginalProjectSaveNotice notice;
++    if (reportCommit)
++    {
++        if (file!=QStringLiteral("project/")+projectSave->originalFileName || expected!=projectSave->originalFingerprint)
++            return fail(message,QStringLiteral("组开关实际写入目标与预检文件不同，尚未提交。"));
++        notice.root=root_; notice.originalFileName=projectSave->originalFileName;
++        notice.projectId=projectSave->id; notice.projectName=projectSave->name; notice.beforeFingerprint=expected;
++        if (claim && !claim()) return fail(message,QStringLiteral("组开关保存预留已取消或过期，尚未提交，草稿保留。"));
++    }
++    {
++        Database database;
++        if (!database.open(root_,file,true,message) || !database.begin(message)) return false;
++        if (!change(database,message)) { database.rollback(); return false; }
++        if (!database.commit(message)) return false;
++        notice.commitSeen=true;
++    }
++    if (!reportCommit) return true; // 其他试剂资料不产生项目同步意图。
++    OriginalProjectRepository probe;
++    ProjectRecords projects; ProjectUnits units; QStringList reagents,cleaners,diluents;
++    bool loaded=probe.initialize(root_,QString(),message) && probe.load(&projects,&units,&reagents,&cleaners,&diluents,message);
++    int matches=0;
++    if (loaded)
++        for (const auto &actual : projects)
++            if (actual.originalFileName==notice.originalFileName && actual.id==notice.projectId && actual.name==notice.projectName &&
++                actual.originalBaseValues.value(QStringLiteral("is_related"))==groupEnabled && !actual.originalFingerprint.isEmpty() &&
++                actual.originalFingerprint==OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(file),message))
++            { ++matches; notice.committedFingerprint=actual.originalFingerprint; }
++    notice.verifiedSnapshot=matches==1;
++    if (!notice.verifiedSnapshot)
++    {
++        notice.committedFingerprint.clear();
++        if (message->isEmpty()) *message=QStringLiteral("组开关已提交文件的身份、开关值或版本未核实。");
++    }
++    notice.message=*message;
++    if (result) *result=notice;
++    if (committed) committed(notice); // 写连接已关闭，两个原文件锁仍持有；只排值对象。
++    return notice.verifiedSnapshot;
+ }
+ 
+ bool OriginalReagentEditor::saveRow(Database &database, const QString &table, qint64 id, QVariantMap values, QString *message)
+@@ -731,8 +768,11 @@
+     return true;
+ }
+ 
+-bool OriginalReagentEditor::saveBatchGroupEnabled(const ReagentProject &requested, bool enabled, QString *message)
+-{
++bool OriginalReagentEditor::saveBatchGroupEnabled(const ReagentProject &requested, bool enabled, QString *message,
++    OriginalProjectSaveNotice *result, const std::function<bool()> &claim,
++    const std::function<void(const OriginalProjectSaveNotice &)> &committed)
++{
++    if (result) *result=OriginalProjectSaveNotice();
+     const ProjectRecord *project=nullptr;
+     for (const auto &candidate : projects_)
+         if (candidate.id==requested.id)
+@@ -798,7 +838,7 @@
+             if (it.key()!=file && it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(it.key()),error))
+                 return fail(error,QStringLiteral("保存期间关联试剂或项目资料已变化，本次开关没有提交，请重新读取。"));
+         return true;
+-    },message);
++    },message,project,value,result,claim,committed);
+ }
+ 
+ bool OriginalReagentEditor::saveBatch(const ReagentBatch &b, QString *message)
+--- a/06_programs/sn100_host/reagents/original_reagent_editor.h
++++ b/06_programs/sn100_host/reagents/original_reagent_editor.h
+@@ -14,7 +14,9 @@
+     bool saveBottle(const ReagentBottle &record, QString *message);
+     bool saveBarcode(const ReagentBarcode &record, QString *message);
+     bool saveBatch(const ReagentBatch &record, QString *message);
+-    bool saveBatchGroupEnabled(const ReagentProject &project, bool enabled, QString *message);
++    bool saveBatchGroupEnabled(const ReagentProject &project, bool enabled, QString *message,
++        OriginalProjectSaveNotice *result = nullptr, const std::function<bool()> &claim = {},
++        const std::function<void(const OriginalProjectSaveNotice &)> &committed = {});
+     bool saveHole(const ReagentHole &record, QString *message);
+     bool clearHole(const QString &name, QString *message);
+     // 调用者先核真实连接、权限、舱盖和回读处理；本方法仅准备报文及原本地资料变化。
+@@ -39,7 +41,9 @@
+     ProjectRecords projects_;
+     QMap<QString,QString> versions_;
+     bool mutate(const QString &file, const QString &expected, const std::function<bool(OriginalBusiness::Database &, QString *)> &change,
+-                QString *message);
++                QString *message, const ProjectRecord *projectSave = nullptr, const QString &groupEnabled = QString(),
++                OriginalProjectSaveNotice *result = nullptr, const std::function<bool()> &claim = {},
++                const std::function<void(const OriginalProjectSaveNotice &)> &committed = {});
+     bool saveRow(OriginalBusiness::Database &database, const QString &table, qint64 id, QVariantMap values, QString *message);
+     bool projectUses(const QString &name, bool bottle, QString *message) const;
+ };
+--- a/06_programs/sn100_host/reagents/original_reagent_store.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_store.cpp
+@@ -1,6 +1,7 @@
+ #include "reagent_store.h"
+ #include "original_reagent_editor.h"
+ #include <QThread>
++#include <QTimer>
+ 
+ void ReagentStore::setOriginalDeviceOperationContext(quint64 connection,QStringList operations)
+ {
+@@ -219,18 +220,112 @@
+     emit originalPriorityReplyProcessed(request,connection,committed,loaded,fingerprint,message);
+ }
+ 
++void ReagentStore::setOriginalProjectSaveAdmissionEnabled(bool enabled)
++{
++    if (QThread::currentThread()!=thread()) return;
++    projectSaveAdmissionEnabled_=enabled;
++    if (!enabled) cancelPendingOriginalGroupSave(QStringLiteral("组开关保存登记消费者已关闭，尚未写库，草稿保留。"));
++}
++
++void ReagentStore::cancelPendingOriginalGroupSave(QString message)
++{
++    if (!pendingOriginalGroupSave_.ticket) return;
++    const auto pending=pendingOriginalGroupSave_; pendingOriginalGroupSave_=PendingOriginalGroupSave();
++    if (projectSaveAdmissionTimer_) projectSaveAdmissionTimer_->stop();
++    emit originalProjectSaveAdmissionCancelled(pending.ticket,QStringLiteral("reagentGroupEnabled"));
++    emit error(QStringLiteral("保存试剂组开关"),message);
++}
++
+ void ReagentStore::saveOriginalBatchGroupEnabled(ReagentProject project, bool enabled)
+ {
++    // 与普通项目一致：仅从本存储槽开始处理计时，不冒称覆盖GUI排队时间。
++    const qint64 sourceDeadline=originalProjectSaveMonotonicNow()+10000;
+     const QString operation=QStringLiteral("保存试剂组开关");
+     if (!originalMayEdit(operation)) return;
+-    QString message;
+-    const bool success=originalEditor_->saveBatchGroupEnabled(project,enabled,&message);
+-    if (success)
++    if (pendingOriginalGroupSave_.ticket)
++    { emit error(operation,QStringLiteral("另一项组开关保存仍在预检，尚未提交，草稿保留。")); return; }
++    if (!projectSaveAdmissionEnabled_) { commitOriginalGroupSave(project,enabled); return; }
++    pendingOriginalGroupSave_.ticket=nextOriginalProjectSaveTicket();
++    pendingOriginalGroupSave_.project=project; pendingOriginalGroupSave_.enabled=enabled;
++    pendingOriginalGroupSave_.actor=session_; pendingOriginalGroupSave_.deadline=sourceDeadline;
++    if (!projectSaveAdmissionTimer_)
++    {
++        projectSaveAdmissionTimer_=new QTimer(this); projectSaveAdmissionTimer_->setSingleShot(true);
++        connect(projectSaveAdmissionTimer_,&QTimer::timeout,this,[this]()
++        { cancelPendingOriginalGroupSave(QStringLiteral("组开关保存预检10秒未完成，尚未写库，草稿保留。")); });
++    }
++    projectSaveAdmissionTimer_->start(static_cast<int>(qMax<qint64>(1,sourceDeadline-originalProjectSaveMonotonicNow())));
++    OriginalProjectSaveNotice proposal;
++    proposal.source=QStringLiteral("reagentGroupEnabled"); proposal.writeRequest=static_cast<qint64>(pendingOriginalGroupSave_.ticket);
++    proposal.root=project.originalRoot; proposal.originalFileName=project.originalFileName;
++    proposal.projectId=project.id; proposal.projectName=project.name; proposal.beforeFingerprint=project.originalFingerprint;
++    emit originalProjectSaveAdmissionRequested(pendingOriginalGroupSave_.ticket,proposal,sourceDeadline);
++}
++
++void ReagentStore::finishOriginalProjectSaveAdmission(OriginalProjectSaveAdmission admission)
++{
++    if (QThread::currentThread()!=thread() || admission.proposal.source!=QStringLiteral("reagentGroupEnabled")) return;
++    if (!pendingOriginalGroupSave_.ticket || admission.ticket!=pendingOriginalGroupSave_.ticket)
++    {
++        if (admission.permit) admission.permit->revoke();
++        emit originalProjectSaveAdmissionCancelled(admission.ticket,QStringLiteral("reagentGroupEnabled"));
++        return;
++    }
++    const auto pending=pendingOriginalGroupSave_; pendingOriginalGroupSave_=PendingOriginalGroupSave();
++    if (projectSaveAdmissionTimer_) projectSaveAdmissionTimer_->stop();
++    QString reason;
++    if (!admission.allowed || !admission.permit) reason=admission.message;
++    else if (!projectSaveAdmissionEnabled_ || !sameOriginalProjectSaveActor(pending.actor,session_) ||
++        pending.deadline<=originalProjectSaveMonotonicNow() || admission.sourceDeadline!=pending.deadline ||
++        admission.permit->sourceDeadline!=pending.deadline || admission.permit->expired() || !originalEditor_ || pending.project.originalRoot!=originalEditor_->root() ||
++        admission.permit->ticket!=admission.ticket || !sameOriginalProjectSave(admission.proposal,admission.permit->proposal) ||
++        admission.proposal.writeRequest!=static_cast<qint64>(pending.ticket) || admission.proposal.root!=pending.project.originalRoot ||
++        admission.proposal.originalFileName!=pending.project.originalFileName || admission.proposal.projectId!=pending.project.id ||
++        admission.proposal.beforeFingerprint!=pending.project.originalFingerprint)
++        reason=QStringLiteral("组开关预检已过期或账户、文件、版本已变化，尚未写库，草稿保留。");
++    if (!reason.isEmpty() || !admission.allowed || !admission.permit)
++    {
++        if (admission.permit) admission.permit->revoke();
++        emit originalProjectSaveAdmissionCancelled(admission.ticket,QStringLiteral("reagentGroupEnabled"));
++        emit error(QStringLiteral("保存试剂组开关"),reason.isEmpty() ? QStringLiteral("保存未获预留，尚未提交。") : reason);
++        return;
++    }
++    if (!originalMayEdit(QStringLiteral("保存试剂组开关")))
++    {
++        admission.permit->revoke();
++        emit originalProjectSaveAdmissionCancelled(admission.ticket,QStringLiteral("reagentGroupEnabled"));
++        return;
++    }
++    commitOriginalGroupSave(pending.project,pending.enabled,admission.permit);
++}
++
++void ReagentStore::commitOriginalGroupSave(ReagentProject project,bool enabled,
++    const std::shared_ptr<OriginalProjectSavePermit> &permit)
++{
++    const QString operation=QStringLiteral("保存试剂组开关");
++    QString message; OriginalProjectSaveNotice result;
++    const auto claim=[permit]() { return permit->claim(permit->proposal); };
++    const auto post=[this,permit](OriginalProjectSaveNotice notice)
++    {
++        notice.source=QStringLiteral("reagentGroupEnabled"); notice.writeRequest=permit->proposal.writeRequest;
++        permit->committed(notice);
++        emit originalProjectSaveCommitted(notice);
++    };
++    const bool success=originalEditor_->saveBatchGroupEnabled(project,enabled,&message,permit ? &result : nullptr,
++        permit ? std::function<bool()>(claim) : std::function<bool()>(),
++        permit ? std::function<void(const OriginalProjectSaveNotice &)>(post) : std::function<void(const OriginalProjectSaveNotice &)>());
++    if (permit && !result.commitSeen)
++    {
++        permit->releaseUncommitted();
++        emit originalProjectSaveAdmissionCancelled(permit->ticket,QStringLiteral("reagentGroupEnabled"));
++    }
++    if (success || result.commitSeen)
+     {
+         project.originalFingerprint.clear();
+         project.originalGroupEnabled=enabled ? QStringLiteral("1") : QStringLiteral("0");
+         emit originalProjectGroupEnableCommitted(project);
+     }
++    if (result.commitSeen && !success) message=QStringLiteral("组开关已经提交，但提交后快照未核实；设备参数尚未确认：")+message;
+     finishOriginal(operation,success,message);
+ }
+ 
+--- a/06_programs/sn100_host/reagents/reagent_store.cpp
++++ b/06_programs/sn100_host/reagents/reagent_store.cpp
+@@ -24,6 +24,8 @@
+ void ReagentStore::registerTypes()
+ {
+     qRegisterMetaType<AccountSession>();
++    qRegisterMetaType<OriginalProjectSaveNotice>();
++    qRegisterMetaType<OriginalProjectSaveAdmission>();
+     qRegisterMetaType<ReagentRecord>();
+     qRegisterMetaType<ReagentBottle>();
+     qRegisterMetaType<ReagentBatch>();
+@@ -206,7 +208,11 @@
+ void ReagentStore::setSession(AccountSession session)
+ {
+     if (onWorker(QStringLiteral("试剂权限")))
++    {
++        if (!sameOriginalProjectSaveActor(session_,session))
++            cancelPendingOriginalGroupSave(QStringLiteral("账户身份已改变，本次尚未开始写库，草稿保留。"));
+         session_ = session;
++    }
+ }
+ QString ReagentStore::validateBatchMetadata(QString isiValue, QString normalValue)
+ {
+@@ -892,6 +898,7 @@
+ }
+ void ReagentStore::close()
+ {
++    if (QThread::currentThread()==thread()) cancelPendingOriginalGroupSave(QStringLiteral("原试剂资料已关闭或切换，尚未开始写库，草稿保留。"));
+     setOriginalDeviceOperationContext(0,QStringList());
+     if (originalEditor_)
+     {
+--- a/06_programs/sn100_host/reagents/reagent_store.h
++++ b/06_programs/sn100_host/reagents/reagent_store.h
+@@ -9,6 +9,9 @@
+ #include <QVariant>
+ #include <memory>
+ #include <chrono>
++#include "projects/original_project_save_admission.h"
++#include <QElapsedTimer>
++class QTimer;
+ class OriginalReagentEditor;
+ 
+ // Move this object to the storage thread before initialize(). No SQL work is
+@@ -30,6 +33,8 @@
+     void initializeOriginal(QString root);
+     void setInstrumentBusy(bool busy);
+     void setSession(AccountSession session);
++    void setOriginalProjectSaveAdmissionEnabled(bool enabled);
++    void finishOriginalProjectSaveAdmission(OriginalProjectSaveAdmission admission);
+     void load();
+     void saveReagent(ReagentRecord reagent);
+     void removeReagent(qint64 id);
+@@ -55,6 +60,9 @@
+ signals:
+     void ready();
+     void originalProfileReady(QString root, ReagentProjects projects);
++    void originalProjectSaveAdmissionRequested(quint64 ticket, OriginalProjectSaveNotice proposal, qint64 sourceDeadline);
++    void originalProjectSaveAdmissionCancelled(quint64 ticket, QString source);
++    void originalProjectSaveCommitted(OriginalProjectSaveNotice notice);
+     void originalProjectGroupEnableCommitted(ReagentProject project); // 本地已提交，指纹留空，重读前状态未知。
+     void originalHoleSaved(QString holeName); // 提交成功后，新协议由主入口接Us，旧协议保持原本地保存。
+     void originalDeviceOperationPrepared(quint64 request, quint64 connection, QString operation,
+@@ -96,6 +104,19 @@
+     bool ready_ = false;
+     std::unique_ptr<OriginalReagentEditor> originalEditor_;
+     bool instrumentBusy_ = false;
++    bool projectSaveAdmissionEnabled_ = false;
++    struct PendingOriginalGroupSave
++    {
++        quint64 ticket=0;
++        ReagentProject project;
++        bool enabled=false;
++        AccountSession actor;
++        qint64 deadline=0;
++    } pendingOriginalGroupSave_;
++    QTimer *projectSaveAdmissionTimer_=nullptr;
++    void cancelPendingOriginalGroupSave(QString message);
++    void commitOriginalGroupSave(ReagentProject project, bool enabled,
++        const std::shared_ptr<OriginalProjectSavePermit> &permit = {});
+     bool originalMayEdit(const QString &operation);
+     void finishOriginal(const QString &operation, bool success, const QString &message);
+     bool loadOriginal();
+--- a/06_programs/sn100_host/samples/original_device_sync.cpp
++++ b/06_programs/sn100_host/samples/original_device_sync.cpp
+@@ -192,8 +192,16 @@
+     QSet<QString> tracked;
+     for (auto it=projectUpdates_.cbegin();it!=projectUpdates_.cend();++it) tracked.insert(it.key());
+     if (activeUpdate_) tracked.insert(activeUpdateState_.notice.originalFileName);
++    for (const auto &file : reservedProjectSaves_) tracked.insert(file);
+     if (!tracked.contains(fileName) && tracked.size()>=knownProjectFiles_.size())
+         return fail(message,QStringLiteral("已有待核对项目占满本次已读清单预算；校准草稿保留，尚未提交。"));
++    return true;
++}
++
++bool OriginalDeviceSync::reserveProjectSave(quint64 ticket, const QString &fileName, QString *message)
++{
++    if (!ticket || reservedProjectSaves_.contains(ticket) || !canRecordProjectSave(fileName,message)) return false;
++    reservedProjectSaves_.insert(ticket,fileName);
+     return true;
+ }
+ 
+--- a/06_programs/sn100_host/samples/original_device_sync.h
++++ b/06_programs/sn100_host/samples/original_device_sync.h
+@@ -27,6 +27,8 @@
+     bool parametersReady(bool linuxNew, QString *message) const;
+     void setKnownProjectFiles(const ProjectRecords &projects);
+     bool canRecordProjectSave(const QString &fileName, QString *message) const;
++    bool reserveProjectSave(quint64 ticket, const QString &fileName, QString *message);
++    void releaseProjectSave(quint64 ticket) { reservedProjectSaves_.remove(ticket); }
+     OriginalProjectUpdateState noteProjectSave(const OriginalProjectSaveNotice &notice);
+     bool prepareProjectUpdate(quint64 connection, QList<QByteArray> *packets, QString *message);
+     void projectUpdateSendResult(quint64 intent, quint64 connection, bool attempted, bool queued, const QString &message);
+@@ -52,6 +54,7 @@
+     bool linuxNew_ = false, ready_ = false, waiting_ = false, waitingForReagents_ = false;
+     bool nextProject(OriginalConfigurationStep *step, QString *message);
+     QSet<QString> knownProjectFiles_;
++    QMap<quint64,QString> reservedProjectSaves_;
+     QMap<QString, OriginalProjectUpdateState> projectUpdates_;
+     QMap<QString, QString> updateAnchors_;
+     OriginalProjectUpdateState activeUpdateState_, unsupportedUpdateState_;
+--- a/06_programs/sn100_host/samples/original_sample_store.cpp
++++ b/06_programs/sn100_host/samples/original_sample_store.cpp
+@@ -4,6 +4,8 @@
+ #include "original_device_sync.h"
+ #include <QThread>
+ #include <QTimer>
++#include <QFileInfo>
++#include <QDir>
+ 
+ void SampleStore::initializeOriginal(QString root)
+ {
+@@ -108,8 +110,106 @@
+     emit originalCalibrationParametersSaved(request, ok, message);
+ }
+ 
++void SampleStore::cleanOriginalProjectAdmissions(bool revokeUnclaimed)
++{
++    for (auto it=originalProjectAdmissions_.begin();it!=originalProjectAdmissions_.end();)
++    {
++        const auto &permit=it.value();
++        if (revokeUnclaimed || permit->expired()) permit->revoke();
++        const int state=permit->state();
++        if (state==OriginalProjectSavePermit::Released || state==OriginalProjectSavePermit::Revoked ||
++            state==OriginalProjectSavePermit::Accepted)
++        {
++            if (originalDeviceSync_) originalDeviceSync_->releaseProjectSave(it.key());
++            it=originalProjectAdmissions_.erase(it);
++        }
++        else ++it; // 已认领不能伪取消；已提交保留完整通知，等统一消费者登记。
++    }
++    bool awaitingClaim=false;
++    for (const auto &permit : originalProjectAdmissions_)
++        awaitingClaim|=permit->state()==OriginalProjectSavePermit::Granted;
++    if (originalProjectAdmissionTimer_ && !awaitingClaim) originalProjectAdmissionTimer_->stop();
++}
++
++void SampleStore::reserveOriginalProjectSave(quint64 ticket, OriginalProjectSaveNotice proposal, qint64 sourceDeadline)
++{
++    if (QThread::currentThread()!=thread()) return;
++    cleanOriginalProjectAdmissions();
++    OriginalProjectSaveAdmission reply;
++    reply.ticket=ticket; reply.proposal=proposal; reply.sourceDeadline=sourceDeadline;
++    const bool source=proposal.source==QStringLiteral("projectSave") || proposal.source==QStringLiteral("reagentGroupEnabled");
++    QString message;
++    ProjectRecords observed; ProjectUnits units; QStringList reagents,cleaners,diluents;
++    OriginalProjectRepository probe;
++    bool valid=sourceDeadline>originalProjectSaveMonotonicNow() && ticket &&
++        !originalProjectAdmissions_.contains(ticket) && source && proposal.writeRequest>0 &&
++        ready_ && originalSamples_ && originalDeviceSync_ && proposal.root==originalSamples_->root() &&
++        !proposal.originalFileName.isEmpty() && QFileInfo(proposal.originalFileName).fileName()==proposal.originalFileName &&
++        originalDeviceSync_->canRecordProjectSave(proposal.originalFileName,&message);
++    // 同一文件可多次保存，但跨线程尚未登记的值对象也必须有数量上限。
++    if (valid && originalProjectAdmissions_.size()>=originalSamples_->projects().size()+2)
++    { valid=false; message=QStringLiteral("已有项目保存正在登记，本次尚未写库，请稍后重试，草稿保留。"); }
++    if (valid) valid=probe.initialize(proposal.root,QString(),&message) &&
++        probe.load(&observed,&units,&reagents,&cleaners,&diluents,&message);
++    if (valid)
++    {
++        int matches=0;
++        for (const auto &project : observed)
++            if (project.originalFileName==proposal.originalFileName && project.id==proposal.projectId &&
++                project.originalFingerprint==proposal.beforeFingerprint) ++matches;
++        valid=matches==1;
++        if (!valid) message=QStringLiteral("实际项目文件或版本与保存草稿不一致，本次尚未提交，请重新读取。");
++    }
++    // 真实项目重读也可能耗时；预留前再次核源请求截止点，不在此重新起10秒。
++    if (sourceDeadline<=originalProjectSaveMonotonicNow())
++    { valid=false; message=QStringLiteral("源保存请求10秒内尚未认领，尚未写库，草稿保留。"); }
++    if (valid) valid=originalDeviceSync_->reserveProjectSave(ticket,proposal.originalFileName,&message);
++    if (valid)
++    {
++        reply.permit=std::make_shared<OriginalProjectSavePermit>(ticket,proposal,sourceDeadline);
++        if (reply.permit->expired())
++        {
++            originalDeviceSync_->releaseProjectSave(ticket);
++            reply.permit.reset(); valid=false;
++            message=QStringLiteral("源保存请求在预留时已到期，尚未写库，草稿保留。");
++        }
++        else
++        {
++            reply.allowed=true;
++            originalProjectAdmissions_.insert(ticket,reply.permit);
++            if (!originalProjectAdmissionTimer_)
++            {
++                originalProjectAdmissionTimer_=new QTimer(this);
++                originalProjectAdmissionTimer_->setInterval(250);
++                connect(originalProjectAdmissionTimer_,&QTimer::timeout,this,[this]() { cleanOriginalProjectAdmissions(); });
++            }
++            originalProjectAdmissionTimer_->start();
++        }
++    }
++    reply.message=valid ? QStringLiteral("已预留本次项目保存登记；尚未写库或发送设备参数。") :
++        (message.isEmpty() ? QStringLiteral("原项目保存登记后台尚未就绪或上下文无效，尚未提交，草稿保留。") : message);
++    emit originalProjectSaveAdmissionReady(reply);
++}
++
++void SampleStore::releaseOriginalProjectSave(quint64 ticket,QString source)
++{
++    if (QThread::currentThread()!=thread()) return;
++    const auto permit=originalProjectAdmissions_.value(ticket);
++    if (permit && permit->proposal.source==source) permit->revoke();
++    cleanOriginalProjectAdmissions();
++}
++
++void SampleStore::acceptOriginalProjectAdmission(const OriginalProjectSaveNotice &notice)
++{
++    for (auto it=originalProjectAdmissions_.cbegin();it!=originalProjectAdmissions_.cend();++it)
++        if (it.value()->accept(notice)) break;
++    cleanOriginalProjectAdmissions();
++}
++
+ void SampleStore::enqueueOriginalProjectUpdate(OriginalProjectSaveNotice notice)
+ {
++    if (QThread::currentThread()!=thread()) return;
++    acceptOriginalProjectAdmission(notice);
+     if (QThread::currentThread()!=thread() || !notice.commitSeen || !ready_ || !originalDeviceSync_ || !originalSamples_)
+     {
+         if (notice.commitSeen)
+--- a/06_programs/sn100_host/samples/sample_store.cpp
++++ b/06_programs/sn100_host/samples/sample_store.cpp
+@@ -276,6 +276,7 @@
+     qRegisterMetaType<SampleSnapshot>();
+     qRegisterMetaType<ProjectRecords>();
+     qRegisterMetaType<OriginalProjectSaveNotice>();
++    qRegisterMetaType<OriginalProjectSaveAdmission>();
+     qRegisterMetaType<OriginalProjectUpdateState>();
+     qRegisterMetaType<QList<QByteArray>>("QList<QByteArray>");
+ }
+@@ -947,6 +948,7 @@
+ }
+ void SampleStore::release()
+ {
++    cleanOriginalProjectAdmissions(true);
+     if (originalProjectUpdateTimeout_) originalProjectUpdateTimeout_->stop();
+     if (originalConfigurationTimeout_) originalConfigurationTimeout_->stop();
+     originalDeviceSync_.reset();
+--- a/06_programs/sn100_host/samples/sample_store.h
++++ b/06_programs/sn100_host/samples/sample_store.h
+@@ -8,6 +8,7 @@
+ #include <memory>
+ #include "projects/projects_store.h"
+ #include "projects/original_project_save_notice.h"
++#include "projects/original_project_save_admission.h"
+ class OriginalSampleRepository;
+ class OriginalDetectionSession;
+ class OriginalDeviceSync;
+@@ -34,6 +35,8 @@
+     void prepareDeviceTasks(quint64 request, bool linuxNew);
+     void cancelDeviceTaskPreparation();
+     void queryDeviceRecovery(quint64 request, quint64 connection, QString root);
++    void reserveOriginalProjectSave(quint64 ticket, OriginalProjectSaveNotice proposal, qint64 sourceDeadline);
++    void releaseOriginalProjectSave(quint64 ticket, QString source);
+     void enqueueOriginalProjectUpdate(OriginalProjectSaveNotice notice);
+     void advanceOriginalProjectUpdates(quint64 connection);
+     void originalProjectUpdateSent(quint64 intent, quint64 connection, bool attempted, bool queued, QString message);
+@@ -67,6 +70,7 @@
+     void deviceTasksPrepared(quint64 request, bool success, QString message);
+     void deviceRecoveryState(quint64 request, quint64 connection, QString root,
+                              bool known, bool unfinishedTasks, QString message);
++    void originalProjectSaveAdmissionReady(OriginalProjectSaveAdmission admission);
+     void originalProjectSaveCommitted(OriginalProjectSaveNotice notice, quint64 intent);
+     void originalProjectUpdateState(OriginalProjectUpdateState state);
+     void originalProjectUpdateBatch(QList<QByteArray> packets, quint64 connection, quint64 intent, qint64 expiresAt);
+@@ -101,6 +105,10 @@
+     std::unique_ptr<OriginalDeviceSync> originalDeviceSync_;
+     QTimer *originalConfigurationTimeout_ = nullptr;
+     QTimer *originalProjectUpdateTimeout_ = nullptr;
++    QTimer *originalProjectAdmissionTimer_ = nullptr;
++    QMap<quint64,std::shared_ptr<OriginalProjectSavePermit>> originalProjectAdmissions_;
++    void cleanOriginalProjectAdmissions(bool revokeUnclaimed = false);
++    void acceptOriginalProjectAdmission(const OriginalProjectSaveNotice &notice);
+     void publishOriginalProjectUpdateStates();
+     void sendOriginalConfigurationStep(const OriginalConfigurationStep &step);
+     bool originalRackChange(qint64 request, const QString &operation, const SampleRack &rack, qint64 id);
+--- a/06_programs/sn100_host/shell/device_control_shell.cpp
++++ b/06_programs/sn100_host/shell/device_control_shell.cpp
+@@ -373,6 +373,59 @@
+     auto *store=samples_->taskStore();
+     if (!store) return;
+     deviceTaskStore_=store;
++    const QPointer<SampleStore> admissionConsumer=store;
++    auto *projectStore=projects_->taskStore();
++    auto *reagentStore=reagents_->taskStore();
++    if (projectStore)
++    {
++        connect(projectStore,&ProjectsStore::originalProjectSaveAdmissionRequested,this,
++            [admissionConsumer](quint64 ticket,OriginalProjectSaveNotice proposal,qint64 sourceDeadline)
++        {
++            if (!admissionConsumer || proposal.source!=QStringLiteral("projectSave")) return;
++            QMetaObject::invokeMethod(admissionConsumer.data(),"reserveOriginalProjectSave",Qt::QueuedConnection,
++                Q_ARG(quint64,ticket),Q_ARG(OriginalProjectSaveNotice,proposal),Q_ARG(qint64,sourceDeadline));
++        });
++        connect(projectStore,&ProjectsStore::originalProjectSaveAdmissionCancelled,this,
++            [admissionConsumer](quint64 ticket,const QString &source)
++        {
++            if (!admissionConsumer || source!=QStringLiteral("projectSave")) return;
++            QMetaObject::invokeMethod(admissionConsumer.data(),"releaseOriginalProjectSave",Qt::QueuedConnection,
++                Q_ARG(quint64,ticket),Q_ARG(QString,source));
++        });
++        connect(store,&SampleStore::originalProjectSaveAdmissionReady,
++            projectStore,&ProjectsStore::finishOriginalProjectSaveAdmission,Qt::QueuedConnection);
++        connect(projectStore,&ProjectsStore::originalProjectSaveCommitted,this,
++            [this](const OriginalProjectSaveNotice &notice)
++        { if (notice.source==QStringLiteral("projectSave")) acceptOriginalProjectSave(notice,0,true); });
++        QMetaObject::invokeMethod(projectStore,"setOriginalProjectSaveAdmissionEnabled",Qt::QueuedConnection,Q_ARG(bool,true));
++        connect(store,&QObject::destroyed,projectStore,[projectStore]()
++        { projectStore->setOriginalProjectSaveAdmissionEnabled(false); },Qt::QueuedConnection);
++    }
++    if (reagentStore)
++    {
++        connect(reagentStore,&ReagentStore::originalProjectSaveAdmissionRequested,this,
++            [admissionConsumer](quint64 ticket,OriginalProjectSaveNotice proposal,qint64 sourceDeadline)
++        {
++            if (!admissionConsumer || proposal.source!=QStringLiteral("reagentGroupEnabled")) return;
++            QMetaObject::invokeMethod(admissionConsumer.data(),"reserveOriginalProjectSave",Qt::QueuedConnection,
++                Q_ARG(quint64,ticket),Q_ARG(OriginalProjectSaveNotice,proposal),Q_ARG(qint64,sourceDeadline));
++        });
++        connect(reagentStore,&ReagentStore::originalProjectSaveAdmissionCancelled,this,
++            [admissionConsumer](quint64 ticket,const QString &source)
++        {
++            if (!admissionConsumer || source!=QStringLiteral("reagentGroupEnabled")) return;
++            QMetaObject::invokeMethod(admissionConsumer.data(),"releaseOriginalProjectSave",Qt::QueuedConnection,
++                Q_ARG(quint64,ticket),Q_ARG(QString,source));
++        });
++        connect(store,&SampleStore::originalProjectSaveAdmissionReady,
++            reagentStore,&ReagentStore::finishOriginalProjectSaveAdmission,Qt::QueuedConnection);
++        connect(reagentStore,&ReagentStore::originalProjectSaveCommitted,this,
++            [this](const OriginalProjectSaveNotice &notice)
++        { if (notice.source==QStringLiteral("reagentGroupEnabled")) acceptOriginalProjectSave(notice,0,true); });
++        QMetaObject::invokeMethod(reagentStore,"setOriginalProjectSaveAdmissionEnabled",Qt::QueuedConnection,Q_ARG(bool,true));
++        connect(store,&QObject::destroyed,reagentStore,[reagentStore]()
++        { reagentStore->setOriginalProjectSaveAdmissionEnabled(false); },Qt::QueuedConnection);
++    }
+     connect(store,&SampleStore::originalProjectSaveCommitted,this,
+         [this](const OriginalProjectSaveNotice &notice,quint64 intent) { acceptOriginalProjectSave(notice,intent,intent==0); });
+     connect(store,&SampleStore::originalProjectUpdateState,this,&frmMain::applyOriginalProjectUpdateState);

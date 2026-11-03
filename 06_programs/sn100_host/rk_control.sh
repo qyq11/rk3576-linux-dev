@@ -7,7 +7,7 @@ umask 077
 usage()
 {
     printf 'Usage: bash sn100.sh {start|stop|status}\n'
-    printf 'start: 打开SN100（匿名测试管理员，无自动关闭时间）\n'
+    printf 'start: 按当前资料配置打开上位机，无自动关闭时间\n'
     printf 'stop: 正常关闭SN100，保留已保存数据\n'
     printf 'status: 查看程序状态\n'
 }
@@ -40,7 +40,11 @@ fi
 mkdir -p -- "$base/control_logs"
 log=$(mktemp "$base/control_logs/${action}_$(date +%Y%m%d_%H%M%S).XXXXXXXX.log")
 arguments=("$action" "$base")
-[[ $action != start ]] || arguments+=(0 offlineAdmin)
+if [[ $action == start ]]; then
+    arguments+=(0)
+    # 原资料使用原账户和登录设置，不能再追加匿名测试管理员。
+    [[ -f $base/original_project_root ]] || arguments+=(offlineAdmin)
+fi
 set +e
 bash "$release/rk_board.sh" "${arguments[@]}" > "$log" 2>&1
 code=$?

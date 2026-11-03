@@ -1,0 +1,71 @@
+[identity_after_reboot]
+8314b1e8ffd0321f
+53e37a87-d395-42bb-bde7-4835645b3bcb
+Linux localhost 6.1.99-rt36-tspi #2 SMP PREEMPT_RT Fri Oct 30 21:07:55 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+1
+
+[password_login_services]
+active
+TERMINAL=tty1
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --noclear - $TERM ; ignore_errors=yes ; start_time=[Mon 2026-11-02 17:20:41 CST] ; stop_time=[n/a] ; pid=1915 ; code=(null) ; status=0/0 }
+   1915 agetty          /sbin/agetty --noclear - linux
+WAITING_FOR_LOGIN_tty1=PASS
+active
+TERMINAL=ttyFIQ0
+{ path=/sbin/agetty ; argv[]=/sbin/agetty --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[Mon 2026-11-02 17:20:41 CST] ; stop_time=[n/a] ; pid=1912 ; code=(null) ; status=0/0 }
+   1912 agetty          /sbin/agetty --noclear ttyFIQ0 1500000 linux
+WAITING_FOR_LOGIN_ttyFIQ0=PASS
+
+[local_sessions]
+root     pts/0        2026-11-02 17:21 (192.168.100.200)
+
+[screen_login_prompt]
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                
+SCREEN_LOGIN_PROMPT=PASS
+
+[preserved_interface_settings]
+3: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0  allmulti 0 minmtu 0 maxmtu 0 
+    can <FD> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0 
+	  rk3576_canfd: tseg1 1..128 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 2
+	  rk3576_canfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 2
+	  clock 297000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus platform parentdev 2ac00000.can 
+fbda3263837bcfbe1c2b12e9111a100c47f373c6f2b33b61f0b2e89a40dcff79  /boot/overlays/overlays.ini
+0a3a28657c9c3f01c60e37a0ee5dc07b09ac9abfea743dd30a2e314a684c0f44  /boot/overlays/.ubootenv
+
+[configuration_files]
+51865bcf86198e56796aa56a207420b1e1b6cde90829bb83294ffb70ab4decb5  /etc/systemd/system/getty@tty1.service.d/zz-board-b-password-login.conf
+d5f765189c4a84515c1fe3e449519f4a23cc7224400d4a7ab4dc1d610e0f7aac  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-b-password-login.conf
+1b12ee238e4193a1c811ac5ceafba0627f44674e218b6fe0db7af0366529a203  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+permitrootlogin yes
+pubkeyauthentication yes
+
+verify_exit=0
+board_b_wifi_503
+2e1ef016-7e35-4008-95a0-bc6f4cd0f2af
+yes
+
+default
+
+GENERAL.STATE:                          100 (connected)
+IP4.ADDRESS[1]:                         192.168.3.59/24
+PING 192.168.3.1 (192.168.3.1) from 192.168.3.59 wlan0: 56(84) bytes of data.
+64 bytes from 192.168.3.1: icmp_seq=1 ttl=64 time=3.63 ms
+64 bytes from 192.168.3.1: icmp_seq=2 ttl=64 time=7.27 ms
+64 bytes from 192.168.3.1: icmp_seq=3 ttl=64 time=8.47 ms
+
+--- 192.168.3.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 3.633/6.459/8.473/2.057 ms
+2026-11-02T17:22:18+08:00
+2026-11-02
+09:22:18

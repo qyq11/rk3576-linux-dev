@@ -45,6 +45,10 @@ public:
     explicit DeviceControl(QObject *parent = nullptr);
     const DeviceControlState &state() const { return state_; }
     quint64 connectionGeneration() const { return transport_.generation(); }
+    // 连接/等待重连时原按钮可取消；禁用重连后的失败允许直接再次连接。
+    bool connectionRequested() const
+    { return connectionRequested_ && (connecting_ || state_.connected || reconnectTimer_.isActive()); }
+    void setReconnectOptions(bool enabled, int milliseconds);
     bool open(const QString &address, quint16 port);
     void close();
     bool query(Sn100Protocol::ReadOnlyQuery query);
@@ -67,6 +71,8 @@ signals:
     void changed(DeviceControlState state);
     void error(QString message);
     void wireActivity(QString direction, QByteArray bytes);
+    // 需核对请求归属的接收者使用到达原代次；旧信号保留给现有显示入口。
+    void payloadReceivedForConnection(QByteArray payload, quint64 connection);
     void payloadReceived(QByteArray payload);
     void startAccepted(bool success);
 
@@ -74,7 +80,12 @@ private:
     DeviceTransport transport_;
     DeviceControlState state_;
     QElapsedTimer clock_;
-    QTimer timer_;
+    QTimer timer_, reconnectTimer_;
+    bool connectionRequested_ = false, connecting_ = false, reconnectEnabled_ = false;
+    int reconnectMilliseconds_ = 3000;
+    quint64 connectionIntent_ = 0, retryIntent_ = 0, retryGeneration_ = 0;
+    // 新连接的Qj不能代替操作者确认旧连接上结果未知的控制动作。
+    bool uncertainAcrossConnection_ = false;
     qint64 statusAt_ = -1, queryAt_ = -1, pendingAt_ = -1;
     QSet<QString> blockingAlarmCodes_;
     bool alarmPolicyAvailable_ = false;
@@ -83,8 +94,11 @@ private:
     qint64 lastMaintenanceAt_ = -1;
     bool send(const QByteArray &payload, const QString &pending = QString());
     bool reject(const QString &message);
-    void receive(const QByteArray &message);
+    void receive(const QByteArray &message, quint64 connection);
     void tick();
+    bool beginConnection(quint64 intent);
+    void rememberConnectionLoss();
+    void scheduleReconnect();
     void publish(const QString &message = QString());
 };
 

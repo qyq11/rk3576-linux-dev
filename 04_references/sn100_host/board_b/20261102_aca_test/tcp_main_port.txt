@@ -1,0 +1,13 @@
+
+/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/05_tools/tests/sn100_host/ACA_V1.0OffLineD-500:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+00000000004b9600 <TCPServer_init()+0x1b8>:
+  4b9600:	52827100 	mov	w0, #0x1388                	// #5000
+  4b9604:	910263b4 	add	x20, x29, #0x98
+  4b9608:	97fffea2 	bl	4b9090 <tcp_open(int)>
+  4b960c:	2a0003f6 	mov	w22, w0
+  4b9610:	7100001f 	cmp	w0, #0x0
+  4b9614:	54000bac 	b.gt	4b9788 <TCPServer_init()+0x340>

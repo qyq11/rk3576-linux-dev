@@ -15,3 +15,5 @@ RESOURCES += $$PWD/../projects/projects_resources.qrc $$PWD/../shell/account_res
 # 直接使用项目存储的独立目标沿用同一原库适配实现。
 SOURCES += $$PWD/../projects/projects_current_format.cpp $$PWD/../projects/original_project_repository.cpp
 HEADERS += $$PWD/../projects/project_current_format.h $$PWD/../projects/original_project_repository.h
+SOURCES += $$PWD/../projects/original_project_copy.cpp
+HEADERS += $$PWD/../projects/original_project_copy.h

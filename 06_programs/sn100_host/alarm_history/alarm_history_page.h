@@ -44,6 +44,7 @@ signals:
     void finishedView(bool complete,qint64 shown,qint64 matching);
     void appendTurnApplied(int rows); // Private consumer observability, no SQL/device effect.
 public slots:
+    void originalEventsCommitted(AlarmHistory::Rows rows);
     void queryInterval();
     void cancelCurrent();
     void reject() override;
@@ -67,6 +68,8 @@ private:
     bool sourceReady_ = false,opening_ = false,active_ = false,cancelling_ = false;
     bool sourceClosing_ = false,closingDialog_ = false,forceClose_ = false;
     bool complete_ = false,terminalPending_ = false,localAbort_ = false,lastBusy_ = false,closedSignal_ = false;
+    bool originalRefreshPending_ = false, originalRefreshScheduled_ = false;
+    void refreshCommittedEventsWhenIdle();
     AlarmHistory::Scope nextOpenScope_ = AlarmHistory::Scope::LatestToday20;
     void beginQuery(AlarmHistory::Scope scope);
     void advanceLater();

@@ -40,6 +40,7 @@ struct Snapshot
     QString datasetId; // 未来只能取质控库已有dataset_uuid，不能从名称或行号生成。
     QList<Control> controls;
     QList<Project> projects; // 已提交项目列表的顺序；不是临床测试顺序。
+    QString originalRoot; // 非空时为原资料库；原表没有UUID，不能套用本地catalog的身份协议。
 };
 struct SelectedProject
 {

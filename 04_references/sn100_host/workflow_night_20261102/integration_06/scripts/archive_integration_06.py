@@ -1,0 +1,129 @@
+"""保存第06批已构建程序和匹配源码；只新建本批归档，不保存运行数据库。"""
+from pathlib import Path, PurePosixPath
+from datetime import datetime
+import hashlib
+import io
+import json
+import os
+import re
+import shutil
+import stat
+import tarfile
+
+TASK = Path(__file__).resolve().parent
+ROOT = TASK.parents[2]
+WORK = TASK / "integration_06"
+PROGRAM = ROOT / "06_programs/sn100_host"
+
+
+def sha(path):
+    if not stat.S_ISREG(path.lstat().st_mode):
+        raise RuntimeError("不是普通归档输入：" + str(path))
+    value = hashlib.sha256()
+    with path.open("rb") as source:
+        for block in iter(lambda: source.read(1024 * 1024), b""):
+            value.update(block)
+    return value.hexdigest()
+
+
+def local_path(value):
+    if os.name == "nt" and value.startswith("/mnt/c/"):
+        value = "C:/" + value[7:]
+    return Path(value)
+
+
+def main():
+    complete = json.loads((WORK / "build_complete.json").read_text(encoding="utf-8"))
+    inputs = json.loads((WORK / "input_verification.json").read_text(encoding="utf-8"))
+    progress = json.loads((TASK / "integration_06_review/promotion_progress.json").read_text(encoding="utf-8"))
+    if ((WORK / "build_exit.txt").read_text().strip() != "0"
+            or "ARM64_INTEGRATION_06_BUILD_AND_PACKAGE_PASSED=1" not in (WORK / "logs/build.log").read_text(encoding="utf-8")
+            or complete.get("format") != "sn100-integration-06-build-complete-v1"
+            or complete.get("arm64_build_and_package_passed") is not True
+            or progress.get("complete") is not True or progress.get("phase") != "complete"
+            or complete.get("promotion_progress_sha256") != sha(TASK / "integration_06_review/promotion_progress.json")
+            or (WORK / "merge_inputs.json").read_bytes() != (TASK / "integration_06_review/promotion_progress.json").read_bytes()):
+        raise RuntimeError("本批完整晋级/构建/打包没有成功，不归档为发布输入。")
+    if sha(WORK / "source_snapshot.json") != complete["source_snapshot_sha256"]:
+        raise RuntimeError("构建源码清单已变化。")
+    recovery = progress.get("attribute_alignment_recovery")
+    if recovery is not None:
+        recorded = complete.get("attribute_alignment_recovery", {})
+        if (recovery.get("complete") is not True
+                or recorded.get("audit_metadata_sha256") != recovery["audit_metadata"]["sha256"]
+                or recorded.get("completion_evidence_sha256") != recovery["completion_evidence"]["sha256"]):
+            raise RuntimeError("编译终态没有核准本次失败后的恢复证据。")
+        for name in ("audit_metadata", "original_failed_progress", "diagnosis", "resume_script", "completion_evidence", "blocked_prebuild_preservation"):
+            item = recovery[name]
+            path = ROOT / item["path"]
+            path.resolve().relative_to(TASK.resolve())
+            if sha(path) != item["sha256"]:
+                raise RuntimeError("恢复证据已变化：" + name)
+    snapshot = json.loads((WORK / "source_snapshot.json").read_text(encoding="utf-8"))
+    if snapshot != progress["final_source_files"] or len(snapshot) != complete["source_count"]:
+        raise RuntimeError("源码不等于已审晋级结果。")
+    package = local_path((WORK / "packages/latest_package").read_text(encoding="utf-8").strip())
+    package.resolve().relative_to((WORK / "packages").resolve())
+    matched = re.fullmatch(r"sn100_shell_([a-f0-9]{64})\.tar\.gz", package.name)
+    if (not matched or complete["package"] != package.name or sha(package) != complete["package_sha256"]
+            or sha(WORK / "dependencies/dependency_report.json") != complete["dependency_report_sha256"]):
+        raise RuntimeError("已完成的程序包或依赖证据已变化。")
+    for name, wanted in complete["binaries"].items():
+        if name not in ("sn100_shell", "sn100_report_renderer") or sha(WORK / "build" / name) != wanted:
+            raise RuntimeError("主程序或报表程序指纹不符。")
+    for name, wanted in snapshot.items():
+        relative = PurePosixPath(name)
+        if (relative.is_absolute() or any(x in ("", ".", "..") for x in name.split("/"))
+                or "\\" in name or ":" in name):
+            raise RuntimeError("源码相对路径越界。")
+        path = PROGRAM / name
+        path.resolve().relative_to(PROGRAM.resolve())
+        if sha(path) != wanted:
+            raise RuntimeError("源码已变化，未生成混合归档：" + name)
+    release = matched.group(1)
+    destination = ROOT / "07_backups/sn100_host/board_b/workflow_integration_20261102/integration_06"
+    if destination.exists() or destination.is_symlink() or (WORK / "archive_path.txt").exists():
+        raise RuntimeError("已有06归档或归档记录，请人工核查；不覆盖或自动重跑。")
+    destination.mkdir(parents=True, exist_ok=False)
+    source_archive = destination / ("sn100_sources_" + release + ".tar.gz")
+    with tarfile.open(source_archive, "x:gz") as bundle:
+        for name, wanted in sorted(snapshot.items()):
+            content = (PROGRAM / name).read_bytes()
+            if hashlib.sha256(content).hexdigest() != wanted:
+                raise RuntimeError("归档期间源码发生变化：" + name)
+            item = tarfile.TarInfo("06_programs/sn100_host/" + name)
+            item.size, item.mode = len(content), 0o644
+            bundle.addfile(item, io.BytesIO(content))
+    shutil.copyfile(package, destination / package.name)
+    if sha(destination / package.name) != complete["package_sha256"]:
+        raise RuntimeError("程序包复制后指纹不符。")
+    for name in ("source_snapshot.json", "build_complete.json", "input_verification.json"):
+        shutil.copyfile(WORK / name, destination / name)
+    shutil.copyfile(WORK / "dependencies/dependency_report.json", destination / "dependency_report.json")
+    provenance = {
+        "created_at": datetime.now().astimezone().isoformat(), "batch": "integration_06", "release_id": release,
+        "intended_board": "board_b", "serial": "8314b1e8ffd0321f", "source_files": len(snapshot),
+        "unique_build_inputs": inputs["unique_build_inputs"], "changed_files": len(progress["changed_files"]),
+        "added_files": len(progress["added_files"]), "deleted_files": len(progress["deleted_files"]),
+        "application_sha256": complete["binaries"]["sn100_shell"],
+        "report_renderer_sha256": complete["binaries"]["sn100_report_renderer"],
+        "package_sha256": sha(destination / package.name), "source_archive_sha256": sha(source_archive),
+        "source_snapshot_sha256": complete["source_snapshot_sha256"],
+        "promotion_progress_sha256": complete["promotion_progress_sha256"],
+        "build_and_dependencies": "passed", "board_activation": "not_performed",
+        "rk_function": "pending_rk_validation", "instrument": "not_verified", "runtime_data_included": False,
+    }
+    if recovery is not None:
+        provenance["promotion_history"] = "initial_failed_at_patch4_then_attribute_alignment_resume5_to8"
+        provenance["attribute_alignment_recovery"] = complete["attribute_alignment_recovery"]
+    (destination / "provenance.json").write_text(json.dumps(provenance, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    rows = [sha(path) + "  " + path.name for path in sorted(destination.iterdir()) if path.is_file()]
+    (destination / "SHA256SUMS").write_text("\n".join(rows) + "\n", encoding="ascii")
+    with (WORK / "archive_path.txt").open("x", encoding="utf-8") as output:
+        output.write(str(destination) + "\n")
+    print("ARCHIVE=" + str(destination))
+    print(json.dumps(provenance, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

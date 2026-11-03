@@ -37,6 +37,7 @@ void frmMain::attachLisPage(frmLisSetting *page)
 void frmMain::updateLisStatus()
 {
     if (!lisPage() || currentMainPage() != 6 || currentUserPage() != 4) return;
+    if (deviceControl_) { updateDeviceStatusDisplay(); return; }
     const QString state = lisStatusError_ ? tr("脱机／失败")
         : lisPage()->isBusy() ? tr("脱机／处理中")
         : lisPage()->isDirty() ? tr("脱机／未保存") : tr("脱机／就绪");

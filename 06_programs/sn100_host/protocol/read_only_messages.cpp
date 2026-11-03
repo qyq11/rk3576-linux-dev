@@ -116,9 +116,10 @@ bool parseChannels(const QStringList &fields, QJsonObject *data, QString *error)
     {
         return false;
     }
-    if (fields.size() != 1 + count * 2)
+    // 原pcQueryAD只要求前count对齐全；只消费这些对，额外尾字段不加入通道map。
+    if (fields.size() < 1 + count * 2)
     {
-        return fail(error, QStringLiteral("message.count: Qq通道字段数与声明数量不一致"));
+        return fail(error, QStringLiteral("message.count: Qq声明的通道字段不足"));
     }
     QMap<QString, QString> channels;
     int duplicates = 0;

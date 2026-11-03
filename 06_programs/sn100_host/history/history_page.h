@@ -59,6 +59,8 @@ signals:
                           HistoryIds selectedIds, QString path);
     void operationFinished(QString operation, bool success);
     void statusChanged(QString message);
+    // 包含数据库、报告和字典弹窗的综合忙状态，供主窗安排登录重试。
+    void busyChanged(bool busy);
     void reportPreviewRequested(HistoryReport report);
 
 protected:
@@ -71,6 +73,10 @@ private:
     void displaySelectedResults(int row);
     void openQuery();
     void openDetail();
+    void requestDetailReport(qint64 reportId);
+    void moveDetailRow(int delta);
+    void continueDetailNavigation(const HistoryFilter &filter, const HistoryReports &reports, qint64 total);
+    void acceptDetailNavigation(const HistoryReport &report);
     void showDetail(const HistoryReport &report);
     void fillDetail(const HistoryReport &report);
     void savePatient();
@@ -113,6 +119,16 @@ private:
     HistoryFilter m_filter;
     HistoryReports m_reports;
     HistoryReport m_detailReport;
+    // 切换成功前保留原明细和主表选择；跨页查询只暂存候选，不写患者资料。
+    struct DetailNavigation
+    {
+        int step = 0;
+        HistoryFilter filter;
+        HistoryReports reports;
+        qint64 total = 0;
+        qint64 reportId = 0;
+    };
+    DetailNavigation m_detailNavigation;
     QPointer<HistoryCurrentDisplayState> m_currentDisplayState;
     HistoryCurrentFormatSource m_currentSource;
     HistoryFilter m_currentPendingFilter;
@@ -141,5 +157,6 @@ private:
     // Original SystemCommon::isOpenAverage defaults to true. The independent
     // slice does not read the reference application's runtime configuration.
     bool m_averageEnabled = true;
+    bool m_lastReportedBusy = false;
 };
 #endif

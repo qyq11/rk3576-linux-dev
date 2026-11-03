@@ -275,6 +275,12 @@ void SampleStore::registerTypes()
     qRegisterMetaType<SampleCombination>();
     qRegisterMetaType<SampleSnapshot>();
     qRegisterMetaType<ProjectRecords>();
+    qRegisterMetaType<OriginalTaskReagents::RuntimeBasis>();
+    qRegisterMetaType<OriginalTaskReagents::Commit>();
+    qRegisterMetaType<OriginalProjectSaveNotice>();
+    qRegisterMetaType<OriginalProjectSaveAdmission>();
+    qRegisterMetaType<OriginalProjectUpdateState>();
+    qRegisterMetaType<QList<QByteArray>>("QList<QByteArray>");
 }
 bool SampleStore::canEdit(const AccountSession &session)
 {
@@ -306,6 +312,12 @@ bool SampleStore::check(qint64 request, const QString &operation, bool write)
     }
     return true;
 }
+void SampleStore::configureLayout(int ordinary, int emergency)
+{
+    Q_ASSERT(!ready_ && ordinary>=1 && ordinary<=128 && emergency>=1 && emergency<=128);
+    ordinaryHoles_=ordinary; emergencyHoles_=emergency; layoutConfigured_=true;
+}
+
 void SampleStore::initialize(QString directory)
 {
     if (QThread::currentThread() != thread())
@@ -461,6 +473,29 @@ void SampleStore::initialize(QString directory)
         {
             break;
         }
+    }
+    if (ok && layoutConfigured_)
+    {
+        QSqlQuery racks(database_);
+        ok=racks.exec("SELECT id,emergency FROM sample_local_rack");
+        while (ok && racks.next())
+        {
+            const qint64 rack=racks.value(0).toLongLong();
+            const int holes=racks.value(1).toBool() ? emergencyHoles_ : ordinaryHoles_;
+            QSqlQuery occupied(database_);
+            occupied.prepare("SELECT COUNT(*) FROM sample_local_hole h WHERE h.rack_id=? AND h.number>? AND "
+                "(h.sample_id<>'' OR EXISTS(SELECT 1 FROM sample_local_task t WHERE t.rack_id=h.rack_id AND t.hole_number=h.number) "
+                "OR EXISTS(SELECT 1 FROM sample_local_hole_state s WHERE s.rack_id=h.rack_id AND s.hole_number=h.number AND s.revise=0))");
+            occupied.addBindValue(rack); occupied.addBindValue(holes);
+            ok=occupied.exec() && occupied.next();
+            if (!ok || occupied.value(0).toInt()>0)
+            { ok=false; message=QStringLiteral("新孔位范围之外仍有样本或任务，未删数据；请先整理该样本架。"); break; }
+            ok=execute(database_,"DELETE FROM sample_local_hole WHERE rack_id=? AND number>?",{rack,holes},&message);
+            for (int hole=1;ok && hole<=holes;++hole)
+                ok=execute(database_,"INSERT OR IGNORE INTO sample_local_hole VALUES(?,?,'',1)",{rack,hole},&message);
+        }
+        if (ok) ok=execute(database_,"INSERT OR REPLACE INTO catalog_metadata VALUES('sample_layout_source',?)",
+            {QStringLiteral("theme_config.ini ordinary=%1 emergency=%2").arg(ordinaryHoles_).arg(emergencyHoles_)},&message);
     }
     if (ok) ok = initializeCombinationModes(database_, &message);
     if (ok) ok = initializeQualitySchema(&message);
@@ -690,7 +725,7 @@ QString SampleStore::validateRack(const SampleRack &rack)
     {
         return schema;
     }
-    const int holes = rack.emergency ? 3 : 8; // Source defaults, explicitly not instrument discovery.
+    const int holes = rack.emergency ? emergencyHoles_ : ordinaryHoles_;
     static const QRegularExpression rackName("^S(0[1-9]|[1-8][0-9]|9[0-8])$");
     if ((rack.emergency && rack.name != "Emergency") ||
         (!rack.emergency && !rackName.match(rack.name).hasMatch()))
@@ -915,6 +950,8 @@ void SampleStore::removeCombination(qint64 request, qint64 id)
 }
 void SampleStore::release()
 {
+    cleanOriginalProjectAdmissions(true);
+    if (originalProjectUpdateTimeout_) originalProjectUpdateTimeout_->stop();
     if (originalConfigurationTimeout_) originalConfigurationTimeout_->stop();
     originalDeviceSync_.reset();
     originalDetection_.reset();

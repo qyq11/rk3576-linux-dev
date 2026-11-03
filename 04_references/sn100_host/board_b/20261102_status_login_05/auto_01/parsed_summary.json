@@ -1,0 +1,204 @@
+{
+  "mode": "auto",
+  "release_id": "e31491a11e2e51764ab49c2c4435ce2f6f1f136223a76323d508ed613a758270",
+  "wrapper_exit": 0,
+  "application_wait_exit": 0,
+  "automatic_check_exit": 0,
+  "application_exit_lines": [
+    "EXIT code= 0"
+  ],
+  "software_checks_passed": true,
+  "complete_startup_to_exit_tx": [
+    {
+      "line": 997,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1017,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1028,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1033,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1048,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1056,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    },
+    {
+      "line": 1061,
+      "hex": "02 03 00 06 00 00 00 01 51 6a 3a 04 05"
+    }
+  ],
+  "observed_complete_message_commands": [
+    "Qj"
+  ],
+  "scope_errors": [],
+  "original_login_sync_authorized": false,
+  "shutdown_markers": {
+    "SHELL_READY": true,
+    "HOSPITAL_STORE_CLOSED": true,
+    "ACCOUNT_STORE_CLOSED": true,
+    "HISTORY_STORE_CLOSED": true,
+    "PROJECT_STORE_CLOSED": true,
+    "REAGENT_STORE_CLOSED": true,
+    "SAMPLE_STORE_CLOSED": true,
+    "MAINTENANCE_STORE_CLOSED": true,
+    "PRINTER_SETTINGS_CLOSED": true,
+    "LIS_SETTINGS_CLOSED": true,
+    "QUALITY_CONTROL_STORE_CLOSED": true,
+    "CALIBRATION_STORE_CLOSED": true,
+    "ALARM_HISTORY_WORKER_STOPPED true": true,
+    "ORIGINAL_ALARM_WORKER_STOPPED true": true,
+    "THREADS_STOPPED true": true
+  },
+  "ini_hashes_unchanged": true,
+  "original_alarm_shutdown_unconfirmed": false,
+  "review_window_close_unconfirmed": false,
+  "same_controller_alive": true,
+  "resource_scope": "limited_window_no_pass_budget_or_control_deadline_claim",
+  "resources": {
+    "samples": 4,
+    "cpu_percent_one_core_mean": 101.26992192538358,
+    "cpu_percent_one_core_max": 144.37499999996717,
+    "rss_kib_max": 448656,
+    "pss_kib_max": 446094
+  },
+  "physical_input_screen_verified": false,
+  "administrator_credentials_verified": false,
+  "normal_ui_close_reopen_verified": false,
+  "real_testing_green_verified": false,
+  "mechanical_or_detection_functions_verified": false,
+  "probe_result": {
+    "actual_status_text": "未就绪",
+    "administrator_password_login": "pending_user_real_credentials",
+    "board": "board_b",
+    "checks": [
+      {
+        "name": "原配置启动后自动打开可输入的登录卡，并收到实际主控状态",
+        "passed": true
+      },
+      {
+        "name": "当前实际连接为SN500",
+        "passed": true
+      },
+      {
+        "name": "RK的GIF解码组件可用",
+        "passed": true
+      },
+      {
+        "name": "原启动GIF已成功读取，数据就绪后结束",
+        "passed": true
+      },
+      {
+        "name": "机型下方状态有文字，控件高度容纳Linux中文字体",
+        "passed": true
+      },
+      {
+        "name": "登录卡完整位于当前窗口对象范围内",
+        "passed": true
+      },
+      {
+        "name": "程序内取消后登录卡关闭",
+        "passed": true
+      },
+      {
+        "name": "取消后继续处理页面通知1.2秒，没有旧启动意图重新弹卡",
+        "passed": true
+      },
+      {
+        "name": "实际断开后显示等待连接，灰灯两次控件渲染不同；完整明暗周期和实屏仍需人工核对",
+        "passed": true
+      },
+      {
+        "name": "取消后可程序内触发控件头像重新打开登录卡",
+        "passed": true
+      },
+      {
+        "name": "原窗口空口令建立配置默认Guest会话，未创建或修改账户，权限保持0",
+        "passed": true
+      },
+      {
+        "name": "程序内触发控件注销后账户回读完成，自动重开可输入的登录卡",
+        "passed": true
+      },
+      {
+        "name": "注销已清除实际身份",
+        "passed": true
+      },
+      {
+        "name": "访客可进入原仪器状态页",
+        "passed": true
+      },
+      {
+        "name": "访客未显示管理员端口、功能、通信及板卡专属入口",
+        "passed": true
+      },
+      {
+        "name": "恢复原INI中的实际主控连接，收到新状态",
+        "passed": true
+      },
+      {
+        "name": "切换八个主页后仪器状态仍显示，未被本地业务提示覆盖",
+        "passed": true
+      },
+      {
+        "name": "仪器页面的机型、子系统数、主控周期与实际Qj字段相同",
+        "passed": true
+      },
+      {
+        "name": "当前主控未发子系统时，环境温度明确显示未上报",
+        "passed": true
+      },
+      {
+        "name": "就绪后观察区间发送字节均为Qj；完整启动起TX另由日志审核",
+        "passed": true
+      }
+    ],
+    "completed": true,
+    "event_loop_probe": {
+      "interval_max_ms": 507,
+      "interval_p95_ms": 220,
+      "period_ms": 20,
+      "samples": 123
+    },
+    "evidence_scope": "production_objects_programmatic_widget_events_and_widget_grab",
+    "failed": 0,
+    "led_status": 1,
+    "main_status": 0,
+    "normal_window_close_reopen_verified": false,
+    "operation_response_ms": [
+      {
+        "action": "avatar_click_to_login_input_ready",
+        "ms": 448
+      },
+      {
+        "action": "configured_guest_login_to_dialog_closed",
+        "ms": 505
+      },
+      {
+        "action": "logout_click_to_login_input_ready",
+        "ms": 896
+      }
+    ],
+    "physical_mouse_keyboard_verified": false,
+    "physical_screen_verified": false,
+    "platform": "eglfs",
+    "qt": "5.15.13",
+    "release_id": "e31491a11e2e51764ab49c2c4435ce2f6f1f136223a76323d508ed613a758270",
+    "status_font_height": 20,
+    "status_label_height": 22,
+    "subsystems": 0,
+    "testing_green_animation": "pending_actual_testing_state",
+    "window_height": 1080,
+    "window_width": 1920
+  }
+}

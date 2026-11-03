@@ -196,7 +196,21 @@ supervise() {
     }
     trap supervisor_exit EXIT
     trap 'supervisor_close=1' TERM INT HUP
-    local seed=() actor=() original_arguments=()
+    local seed=() actor=() original_arguments=() instrument_arguments=()
+    if [[ -e $base/instrument_configuration_file ]]; then
+        [[ -f $base/instrument_configuration_file && ! -L $base/instrument_configuration_file ]] || die 'Instrument configuration pointer must be a regular file.'
+        local instrument_configuration
+        IFS= read -r instrument_configuration < "$base/instrument_configuration_file"
+        [[ $instrument_configuration == /* && -f $instrument_configuration && ! -L $instrument_configuration ]] || die 'Instrument configuration must be an existing absolute regular file.'
+        instrument_arguments=(--instrument-control --instrument-config "$instrument_configuration")
+    fi
+    if [[ -e $base/theme_configuration_file ]]; then
+        [[ -f $base/theme_configuration_file && ! -L $base/theme_configuration_file ]] || die 'Theme configuration pointer must be a regular file.'
+        local theme_configuration
+        IFS= read -r theme_configuration < "$base/theme_configuration_file"
+        [[ $theme_configuration == /* && -f $theme_configuration && ! -L $theme_configuration ]] || die 'Theme configuration must be an existing absolute regular file.'
+        instrument_arguments+=(--theme-config "$theme_configuration")
+    fi
     if [[ -e $base/original_project_root ]]; then
         [[ -f $base/original_project_root && ! -L $base/original_project_root ]] || die 'Original project root pointer must be a regular file.'
         IFS= read -r original_root < "$base/original_project_root"
@@ -225,7 +239,8 @@ KMS
         printf 'PREEMPT_RT='; cat /sys/kernel/realtime 2>/dev/null || printf 'unavailable\n'
         printf 'RELEASE_ID=%s\n' "${release##*/}"
         printf 'APP_SHA256='; sha256sum "$release/sn100_shell" | cut -d' ' -f1
-        printf 'MODE=offline\nQPA=eglfs\nSOFT_DEADLINE_SECONDS=%s\n' "$seconds"
+        if [[ ${#instrument_arguments[@]} != 0 ]]; then printf 'MODE=configured_instrument\n'; else printf 'MODE=offline\n'; fi
+        printf 'QPA=eglfs\nSOFT_DEADLINE_SECONDS=%s\n' "$seconds"
     } > "$run/runtime.txt"
     printf '%s\n' "${release##*/}" > "$run/release_id"
     cd -- "$release"
@@ -243,7 +258,7 @@ KMS
         printf 'ORIGINAL_DB_ROOT=%s\n' "$original_root" >> "$run/runtime.txt"
     fi
     "$release/sn100_shell" --offline --accounts --history --catalog --samples --instrument --password-login "${printer_arguments[@]}" "${lis_arguments[@]}" "${quality_arguments[@]}" "${calibration_arguments[@]}" "${alarm_history_arguments[@]}" --data-dir "$data" --viewport 1600x900 \
-        "${seed[@]}" "${actor[@]}" "${original_arguments[@]}" > "$run/app.log" 2>&1 &
+        "${seed[@]}" "${actor[@]}" "${original_arguments[@]}" "${instrument_arguments[@]}" > "$run/app.log" 2>&1 &
     child=$!
     printf '%s\n' "$child" > "$run/app.pid"
     printf '%s\n' "$release/sn100_shell" > "$run/app.exe"

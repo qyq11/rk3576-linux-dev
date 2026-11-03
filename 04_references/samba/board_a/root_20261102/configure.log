@@ -1,0 +1,86 @@
+Unix username:        root
+NT username:          
+Account Flags:        [U          ]
+User SID:             S-1-5-21-437457908-1819803033-579396487-1001
+Primary Group SID:    S-1-5-21-437457908-1819803033-579396487-513
+Full Name:            root
+Home Directory:       \\LOCALHOST\root
+HomeDir Drive:        
+Logon Script:         
+Profile Path:         \\LOCALHOST\root\profile
+Domain:               LOCALHOST
+Account desc:         
+Workstations:         
+Munged dial:          
+Logon time:           0
+Logoff time:          Wed, 06 Feb 2036 23:06:39 CST
+Kickoff time:         Wed, 06 Feb 2036 23:06:39 CST
+Password last set:    Mon, 02 Nov 2026 14:23:26 CST
+Password can change:  Mon, 02 Nov 2026 14:23:26 CST
+Password must change: never
+Last bad password   : 0
+Bad password count  : 0
+Logon hours         : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+board=board_a
+serial=3bf8222fe1417f6a
+2026-11-02T14:23:27+08:00
+SYSTEM_PASSWORDS_UNCHANGED=PASS
+OLD_SAMBA_ACCOUNT_UNCHANGED=PASS
+SHARE_LOGIN_ACCOUNT=root
+SHARE_PATH=/home/rkshare
+bcbb1a8a51ccc3032d806981838e6e87ac2943aef9edc1b248fac154c76389b5  /etc/samba/smb.conf
+active
+lckfb:1000:lckfb
+root:0:root
+# Global parameters
+[global]
+	log file = /var/log/samba/log.%m
+	logging = file
+	map to guest = Bad User
+	max log size = 1000
+	obey pam restrictions = Yes
+	pam password change = Yes
+	panic action = /usr/share/samba/panic-action %d
+	passwd chat = *Enter\snew\s*\spassword:* %n\n *Retype\snew\s*\spassword:* %n\n *password\supdated\ssuccessfully* .
+	passwd program = /usr/bin/passwd %u
+	server role = standalone server
+	server string = %h server (Samba, Ubuntu)
+	unix password sync = Yes
+	usershare allow guests = Yes
+	idmap config * : backend = tdb
+
+
+[printers]
+	browseable = No
+	comment = All Printers
+	create mask = 0700
+	path = /var/tmp
+	printable = Yes
+
+
+[print$]
+	comment = Printer Drivers
+	path = /var/lib/samba/printers
+
+
+[rkshare]
+	create mask = 0600
+	directory mask = 0700
+	path = /home/rkshare
+	read only = No
+	valid users = root
+CONFIGURATION=PASS
+Load smb config files from /etc/samba/.smb.conf.root.AZhrwr
+Loaded services file OK.
+Weak crypto is allowed by GnuTLS (e.g. NTLM as a compatibility fallback)
+
+Server role: ROLE_STANDALONE
+
+Load smb config files from /etc/samba/smb.conf
+Loaded services file OK.
+Weak crypto is allowed by GnuTLS (e.g. NTLM as a compatibility fallback)
+
+Server role: ROLE_STANDALONE
+
+
+[SSH_EXIT]=0

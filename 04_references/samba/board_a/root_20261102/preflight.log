@@ -1,0 +1,55 @@
+board=board_a
+serial=3bf8222fe1417f6a
+2026-11-02T14:22:59+08:00
+012ae2e409e2f3f388e5e38d1c36bb3d28184c887a2056e628b7b1757f04bbe0  /etc/samba/smb.conf
+active
+Load smb config files from /etc/samba/smb.conf
+Loaded services file OK.
+Weak crypto is allowed by GnuTLS (e.g. NTLM as a compatibility fallback)
+
+# Global parameters
+[global]
+	log file = /var/log/samba/log.%m
+	logging = file
+	map to guest = Bad User
+	max log size = 1000
+	obey pam restrictions = Yes
+	pam password change = Yes
+	panic action = /usr/share/samba/panic-action %d
+	passwd chat = *Enter\snew\s*\spassword:* %n\n *Retype\snew\s*\spassword:* %n\n *password\supdated\ssuccessfully* .
+	passwd program = /usr/bin/passwd %u
+	server role = standalone server
+	server string = %h server (Samba, Ubuntu)
+	unix password sync = Yes
+	usershare allow guests = Yes
+	idmap config * : backend = tdb
+
+
+[printers]
+	browseable = No
+	comment = All Printers
+	create mask = 0700
+	path = /var/tmp
+	printable = Yes
+
+
+[print$]
+	comment = Printer Drivers
+	path = /var/lib/samba/printers
+
+
+[rkshare]
+	create mask = 0600
+	directory mask = 0700
+	path = /home/rkshare
+	read only = No
+	valid users = lckfb
+Server role: ROLE_STANDALONE
+
+lckfb:1000:lckfb
+drwxrwxrwx lckfb:root /home/rkshare
+drwxrwxrwx lckfb:lckfb /home/rkshare/lckfb
+
+Service      pid     Machine       Connected at                     Encryption   Signing     
+---------------------------------------------------------------------------------------------
+

@@ -86,6 +86,7 @@ frmAccountSetting::frmAccountSetting(AccountStore *store, QWidget *parent) :
     connect(store, &AccountStore::sessionChanged, this, [this](const AccountSession &session)
     {
         session_ = session;
+        if (deviceActionReadyObserved_) session_.actionReady = deviceActionReady_;
         if (!session_.authenticated)
         {
             resetForLogout();
@@ -325,7 +326,8 @@ void frmAccountSetting::frmGetAccount(const AccountRows &rows)
         }
         const int index = ui->tbl_Account->rowCount();
         ui->tbl_Account->insertRow(index);
-        const QStringList values = {QString::number(index + 1), AccountStore::roleName(row.role), row.name};
+        const QString roleLabel = row.roleLabel.isEmpty() ? AccountStore::roleName(row.role) : row.roleLabel;
+        const QStringList values = {QString::number(index + 1), roleLabel, row.name};
         for (int column = 0; column < values.size(); ++column)
         {
             auto *item = new QTableWidgetItem(values[column]);
@@ -413,6 +415,13 @@ void frmAccountSetting::on_btnAdd_clicked()
     reportStatus(tr("正在保存账户…"));
     emit requestAdd(ui->ldtUserNameAdd->text(), ui->ldtPasswordAdd->text(),
                     ui->ldtPasswordAgainAdd->text(), selectedRole(ui->cbxTypeSelectAdd));
+}
+
+void frmAccountSetting::setDeviceActionReady(bool actionReady)
+{
+    deviceActionReadyObserved_ = true;
+    deviceActionReady_ = actionReady;
+    session_.actionReady = actionReady;
 }
 
 void frmAccountSetting::on_btnDel_clicked()

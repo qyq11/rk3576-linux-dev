@@ -1,0 +1,10 @@
+--- a/06_programs/sn100_host/samples/original_sample_repository.cpp
++++ b/06_programs/sn100_host/samples/original_sample_repository.cpp
+@@ -296,6 +296,7 @@
+     }
+     QLockFile lock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+     if (!lock.tryLock(0)) return fail(message, QStringLiteral("原项目正在由其他操作保存，请保留校准草稿后重试。"));
++    if (!projectRepository_.writesAllowed(message)) return false;
+     {
+         OriginalBusiness::Database database;
+         if (!database.open(root_, QStringLiteral("project/") + target.originalFileName, true, message) || !database.begin(message)) return false;

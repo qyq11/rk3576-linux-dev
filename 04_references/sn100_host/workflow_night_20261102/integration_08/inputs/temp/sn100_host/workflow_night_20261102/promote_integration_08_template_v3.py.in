@@ -1,0 +1,339 @@
+"""第08批普通晋级：显式根SHA、同WSL Git回演、逐片在途；失败不自动恢复。"""
+from pathlib import Path, PurePosixPath
+import getpass
+import hashlib
+import json
+import os
+import re
+import stat
+import subprocess
+import sys
+import uuid
+
+PREFIX = "06_programs/sn100_host/"
+BASE_SHA256 = "fd5614ad0673ab6896eeea1f7502ac09ec8a4ac4f98a338f5967a4ad3717fdaf"
+ARCHIVE_SHA256 = "18eaa7fb091d82cddee883c52ac8d6d50d2d86d9d65cd6f25cff99cd74520b41"
+ATTRIBUTES_SHA256 = "ac7fd8f4c639db19a3f6192a1cf4205bcc4ef06a573a29a2a98653fd19ae3bf8"
+FINAL_REVIEW_SHA256 = "__ROOT_FINAL_REVIEW_SHA256__"
+task = Path(__file__).resolve().parent
+root = task.parents[2]
+review_dir = task / "integration_08_review"
+review_file = review_dir / "final_merge_review.json"
+progress_file = review_dir / "promotion_progress.json"
+stage = None
+GIT = ["/usr/bin/git", "-c", "core.autocrlf=false", "-c", "core.safecrlf=false", "-c", "core.whitespace=cr-at-eol"]
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def safe_relative(name):
+    if (not isinstance(name, str) or not name or "\\" in name or ":" in name or '"' in name
+            or any(ord(char) < 32 for char in name) or any(part in {"", ".", ".."} for part in name.split("/"))
+            or PurePosixPath(name).is_absolute()):
+        raise RuntimeError("路径不是可核对的项目相对路径：" + str(name))
+    return name
+
+
+def target_path(container, name):
+    safe_relative(name)
+    if not name.startswith(PREFIX) or name == PREFIX.rstrip("/"):
+        raise RuntimeError("补丁或清单路径越出sn100_host：" + name)
+    path = container / name
+    path.resolve().relative_to((container / PREFIX.rstrip("/")).resolve())
+    for entry in (path, *path.parents):
+        if entry.is_symlink() or (hasattr(entry, "is_junction") and entry.is_junction()):
+            raise RuntimeError("目标路径经过链接，未继续：" + str(entry))
+        if entry == container:
+            break
+    return path
+
+
+def read_regular(path):
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode):
+        raise RuntimeError("需要普通文件：" + str(path))
+    return path.read_bytes()
+
+
+def verify_files(container, expected):
+    for name, wanted in expected.items():
+        path = target_path(container, name)
+        if wanted is None:
+            if path.exists() or path.is_symlink():
+                raise RuntimeError("应不存在的目标已有文件，未覆盖：" + name)
+        elif digest(read_regular(path)) != wanted:
+            raise RuntimeError("输入或应用结果发生变化：" + name)
+
+
+def compare_review(container, expected):
+    verify_files(container, expected)
+    verify_files(stage, expected)
+    for name, wanted in expected.items():
+        if wanted is not None and read_regular(target_path(container, name)) != read_regular(target_path(stage, name)):
+            raise RuntimeError("与隔离副本逐字节不同：" + name)
+
+
+def parse_patch(data):
+    lines = data.decode("utf-8").splitlines()
+    operations, metadata = [], set()
+    for index, line in enumerate(lines):
+        if line.startswith(("GIT binary patch", "Binary files ", "rename from ", "rename to ", "copy from ", "copy to ", "old mode ", "new mode ")):
+            raise RuntimeError("本工具只接受已审文本窄片，不处理二进制、改名、复制或模式变更。")
+        if re.search(r"\b(?:120000|160000)\b", line) and line.startswith(("index ", "new file mode ", "deleted file mode ")):
+            raise RuntimeError("不允许链接或子模块目标。")
+        if line.startswith("diff --git "):
+            fields = line.split(" ")
+            if len(fields) != 4 or not fields[2].startswith("a/") or not fields[3].startswith("b/"):
+                raise RuntimeError("无法明确识别diff路径。")
+            for field in fields[2:]:
+                name = field[2:]
+                target_path(root, name)
+                metadata.add(name)
+        if not line.startswith("--- "):
+            continue
+        if index + 1 >= len(lines) or not lines[index + 1].startswith("+++ "):
+            raise RuntimeError("补丁文件头不完整。")
+        names = []
+        for value, prefix in ((line[4:], "a/"), (lines[index + 1][4:], "b/")):
+            value = value.split("\t", 1)[0]
+            if value == "/dev/null":
+                names.append(None)
+            else:
+                if not value.startswith(prefix):
+                    raise RuntimeError("补丁文件头缺少明确a/b前缀。")
+                name = value[2:]
+                target_path(root, name)
+                names.append(name)
+        before, after = names
+        if (before is None and after is None) or (before is not None and after is not None and before != after):
+            raise RuntimeError("不接受空目标或隐含改名。")
+        operations.append((before, after))
+    targets = [before or after for before, after in operations]
+    if not targets or len(targets) != len(set(targets)) or (metadata and metadata != set(targets)):
+        raise RuntimeError("补丁目标为空、重复或与diff元信息不符。")
+    return operations
+
+
+def sync_parent(path):
+    if os.name != "nt":
+        descriptor = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+
+
+def save_progress(value, first=False):
+    data = (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    temporary = progress_file if first else progress_file.with_name(progress_file.name + "." + uuid.uuid4().hex + ".tmp")
+    with temporary.open("xb") as output:
+        output.write(data)
+        output.flush()
+        os.fsync(output.fileno())
+    if not first:
+        os.replace(temporary, progress_file)
+    sync_parent(progress_file)
+
+
+def reference_path(name):
+    safe_relative(name)
+    path = root / name
+    path.resolve().relative_to(root.resolve())
+    for entry in (path, *path.parents):
+        if entry.is_symlink() or (hasattr(entry, "is_junction") and entry.is_junction()):
+            raise RuntimeError("输入路径经过链接：" + str(entry))
+        if entry == root:
+            break
+    return path
+
+
+def load_reference(entry):
+    path = reference_path(entry["path"])
+    data = read_regular(path)
+    if not re.fullmatch(r"[a-f0-9]{64}", entry["sha256"]) or digest(data) != entry["sha256"]:
+        raise RuntimeError("固定引用指纹已变化：" + entry["path"])
+    return data
+
+
+def apply_patch(patch, wanted, directory=None):
+    data = read_regular(patch)
+    if digest(data) != wanted:
+        raise RuntimeError("实际补丁指纹已变化。")
+    cwd = root if directory is None else directory
+    subprocess.run(GIT + ["apply", "--check"], input=data, cwd=cwd, check=True)
+    subprocess.run(GIT + ["apply"], input=data, cwd=cwd, check=True)
+
+
+def attributes(container, names):
+    result = subprocess.run(GIT + ["check-attr", "-z", "--all", "--", *sorted(names)],
+                            cwd=container, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    return result.stdout
+
+
+def check_inputs(review, patch_rows):
+    if digest(read_regular(review_file)) != FINAL_REVIEW_SHA256:
+        raise RuntimeError("最终五片清单已变化。")
+    if digest(read_regular(root / ".gitattributes")) != ATTRIBUTES_SHA256:
+        raise RuntimeError("正式路径属性已变化。")
+    for entry in (review["source07_archive"], review["source07_snapshot"], review["root_attributes"],
+                  review["cross_patch_review"], review["single_stage_application"], review["final_source_snapshot"],
+                  *review["fixed_inputs"], *review["attribute_files"], *review["historical_failed_checks"]):
+        load_reference(entry)
+    for row in patch_rows:
+        if digest(read_regular(reference_path(row["patch"]))) != row["sha256"]:
+            raise RuntimeError("正式写入前固定补丁已变化：" + row["patch"])
+        load_reference(row["before_checkpoint"])
+        load_reference(row["after_checkpoint"])
+
+
+def main():
+    global stage
+    if not re.fullmatch(r"[a-f0-9]{64}", FINAL_REVIEW_SHA256):
+        raise RuntimeError("仅为未固化模板，必须先由根显式SHA生成。")
+    if (os.name != "posix" or sys.platform != "linux" or os.environ.get("WSL_DISTRO_NAME") != "Ubuntu-24.04"
+            or getpass.getuser() != "qyq" or os.geteuid() == 0 or not Path("/usr/bin/git").is_file()):
+        raise RuntimeError("仅允许同一Ubuntu-24.04/qyq的WSL Git，不改用Windows默认Git。")
+    eol = subprocess.run(GIT + ["config", "--get", "core.eol"], cwd=root, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if eol.returncode != 1 or eol.stdout:
+        raise RuntimeError("实际core.eol不是回演时的未设置状态，未写正式。")
+    if progress_file.exists() or progress_file.is_symlink():
+        raise RuntimeError("已有08晋级记录，先人工核对；不自动重跑/恢复/回滚。")
+    own_script_sha256 = digest(read_regular(Path(__file__)))
+    review_raw = read_regular(review_file)
+    if digest(review_raw) != FINAL_REVIEW_SHA256:
+        raise RuntimeError("不是根显式固定的最终五片metadata。")
+    review = json.loads(review_raw)
+    if (review.get("format") != "sn100-integration-08-final-merge-v1" or review.get("formal_modified") is not False
+            or review.get("compiled") is not False or review.get("product_executed") is not False):
+        raise RuntimeError("最终清单状态不符。")
+    if (review["source07_snapshot"]["sha256"] != BASE_SHA256 or review["source07_archive"]["sha256"] != ARCHIVE_SHA256
+            or review["root_attributes"] != {"path": ".gitattributes", "sha256": ATTRIBUTES_SHA256}):
+        raise RuntimeError("不是官方07源码及原根属性底稿。")
+    cfg = review["git_apply_config"]
+    if (cfg["implementation"] != GIT[0] or cfg["flags"] != GIT[1:] or cfg["core_eol"] != "unset"
+            or cfg["wsl_distribution"] != "Ubuntu-24.04" or cfg["user"] != "qyq"):
+        raise RuntimeError("最终清单的Git实现/行尾配置不是实际回演参数。")
+    base = review["base_source_files"]
+    saved = review["final_source_files"]
+    if json.loads(load_reference(review["source07_snapshot"])) != base or len(base) != review["base_count"] or len(saved) != review["source_count"]:
+        raise RuntimeError("源表与官方/最终快照不等。")
+    if json.loads(load_reference(review["final_source_snapshot"])) != saved:
+        raise RuntimeError("隔离五片回演的最终全源表不等。")
+    replay = json.loads(load_reference(review["single_stage_application"]))
+    if (replay.get("format") != "sn100-integration-08-single-isolated-application-v1"
+            or replay.get("complete") is not True or replay.get("five_standard_checks_and_applies_passed") is not True
+            or replay.get("root674_map_and_default_seven_after_bytes_equal") is not True
+            or replay.get("independent_second_replay_executed") is not False):
+        raise RuntimeError("五片实际完整回演未通过。")
+    stage = reference_path(review["stage_directory"])
+    stage.resolve().relative_to(task.resolve())
+    if not stage.is_dir() or read_regular(stage / ".gitattributes") != read_regular(root / ".gitattributes"):
+        raise RuntimeError("隔离stage及路径属性镜像不可用。")
+    names = {PREFIX + name for name in base} | {PREFIX + name for name in saved}
+    initial = {name: base.get(name[len(PREFIX):]) for name in names}
+    final = {name: saved.get(name[len(PREFIX):]) for name in names}
+    for name in names:
+        target_path(root, name)
+        for value in (initial[name], final[name]):
+            if value is not None and not re.fullmatch(r"[a-f0-9]{64}", value):
+                raise RuntimeError("源表SHA格式错误。")
+    rows = review["patches"]
+    if len(rows) != review["patch_count"] or [row["index"] for row in rows] != list(range(1, len(rows) + 1)):
+        raise RuntimeError("补丁动态顺序不完整。")
+    checkpoints, previous, changed_targets = [], initial, set()
+    for row in rows:
+        path = reference_path(row["patch"])
+        if digest(read_regular(path)) != row["sha256"]:
+            raise RuntimeError("固定补丁漂移。")
+        before = json.loads(load_reference(row["before_checkpoint"]))
+        after = json.loads(load_reference(row["after_checkpoint"]))
+        operations = parse_patch(read_regular(path))
+        targets = {a or b for a, b in operations}
+        if set(before) != names or set(after) != names or before != previous or not targets.issubset(names):
+            raise RuntimeError("检查点不覆盖完整源表或不连续。")
+        if any(after[name] != before[name] for name in names - targets):
+            raise RuntimeError("检查点包含本片以外变化。")
+        for a, b in operations:
+            if ((a is None and before[b] is not None) or (a is not None and before[a] is None)
+                    or (b is None and after[a] is not None) or (b is not None and after[b] is None)):
+                raise RuntimeError("新增/删除/修改状态不符。")
+        previous = after
+        checkpoints.append(after)
+        changed_targets.update(targets)
+    if previous != final:
+        raise RuntimeError("最后检查点不等最终全源。")
+    check_inputs(review, rows)  # 全部固定引用和补丁在任何正式写入之前完整核过。
+    verify_files(root, initial)
+    verify_files(stage, final)
+    for name in changed_targets:
+        path = target_path(root, name)
+        if path.exists() and path.lstat().st_nlink != 1:
+            raise RuntimeError("正式修改目标不是单链接文件。")
+    progress = {"format": "sn100-integration-08-promotion-v1", "phase": "preflight", "complete": False,
+        "source_snapshot_sha256": BASE_SHA256, "final_merge_review_sha256": FINAL_REVIEW_SHA256,
+        "merge_review_sha256": FINAL_REVIEW_SHA256, "base_source_files": base, "final_source_files": saved,
+        "patches": rows, "preflight_applied": [], "applied": [], "current_patch": None,
+        "formal_write_may_have_started": False, "compiled": False, "program_executed": False,
+        "git_apply_config": cfg, "root_attributes": review["root_attributes"],
+        "promotion_script_sha256": own_script_sha256}
+    save_progress(progress, first=True)
+    try:
+        preflight = review_dir / ("promotion_preflight_" + uuid.uuid4().hex)
+        preflight.mkdir(exist_ok=False)
+        progress["preflight"] = preflight.relative_to(root).as_posix()
+        save_progress(progress)
+        for name, wanted in initial.items():
+            if wanted is not None:
+                path = target_path(preflight, name)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with path.open("xb") as output:
+                    output.write(read_regular(target_path(root, name)))
+        (preflight / ".gitattributes").write_bytes(read_regular(root / ".gitattributes"))
+        subprocess.run(GIT + ["init", "-q"], cwd=preflight, check=True)
+        if attributes(root, names) != attributes(preflight, names) or attributes(root, names) != attributes(stage, names):
+            raise RuntimeError("正式/预演/stage实际Git属性作用结果不同。")
+        for index, row in enumerate(rows):
+            verify_files(preflight, initial if index == 0 else checkpoints[index - 1])
+            apply_patch(reference_path(row["patch"]), row["sha256"], preflight)
+            verify_files(preflight, checkpoints[index])
+            progress["preflight_applied"].append(index + 1)
+            save_progress(progress)
+        compare_review(preflight, final)
+        verify_files(root, initial)
+        check_inputs(review, rows)  # 临正式第一写之前再次完整核所有补丁，不能仅检查当前片。
+        progress["phase"] = "applying"
+        for index, row in enumerate(rows):
+            verify_files(root, initial if index == 0 else checkpoints[index - 1])
+            check_inputs(review, rows)
+            if digest(read_regular(Path(__file__))) != own_script_sha256:
+                raise RuntimeError("晋级工具在执行中已变化，停止后续正式写入。")
+            progress["current_patch"] = {"index": index + 1, "patch": row["patch"], "sha256": row["sha256"]}
+            progress["formal_write_may_have_started"] = True
+            save_progress(progress)
+            apply_patch(reference_path(row["patch"]), row["sha256"])
+            verify_files(root, checkpoints[index])
+            progress["applied"].append(progress["current_patch"])
+            progress["current_patch"] = None
+            save_progress(progress)
+        compare_review(root, final)
+        check_inputs(review, rows)
+        if digest(read_regular(Path(__file__))) != own_script_sha256:
+            raise RuntimeError("晋级工具在执行中已变化，未登记完整完成。")
+        progress.update({"phase": "complete", "complete": True, "verified_source_paths": len(final),
+            "changed_files": sorted(name for name in final if final[name] != initial[name]),
+            "added_files": sorted(name for name in final if initial[name] is None and final[name] is not None),
+            "deleted_files": sorted(name for name in final if initial[name] is not None and final[name] is None),
+            "promotion_script_sha256": own_script_sha256})
+        save_progress(progress)
+        print("FORMAL_PATCHES_APPLIED=" + str(len(rows)) + "\nFORMAL_PATHS_MATCH_REVIEW=" + str(len(final)) + "\nPROMOTION_COMPLETE=1\nPRODUCT_EXECUTED=0")
+    except BaseException as error:
+        progress["phase"] = "failed_requires_review"
+        progress["complete"] = False
+        progress["error"] = str(error)
+        save_progress(progress)
+        raise
+
+
+if __name__ == "__main__":
+    main()

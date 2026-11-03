@@ -343,6 +343,14 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
             invalidateCurrentResultFormat(tr("本次查询缺少配对显示设置，未安装结果。"));
             return;
         }
+        if (m_detailNavigation.step != 0)
+        {
+            m_currentColumnsRequest = 0;
+            m_currentPendingColumns.clear();
+            m_currentPendingDefaults.clear();
+            continueDetailNavigation(m_currentPendingFilter, reports, total);
+            return;
+        }
         m_currentSource = m_currentDisplayState->source();
         m_currentQueryValid = true;
         m_currentDetailValid = false;
@@ -365,7 +373,8 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
     {
         if (!m_localResultsMode || id != m_pending || m_operation != QStringLiteral("detail")) return;
         if (!m_currentDisplayState || report.id != m_currentDetailRequestReport
-            || !hasCurrentRow() || m_reports.at(ui->tableResultReportOne->currentRow()).id != report.id)
+            || (m_detailNavigation.step == 0
+                && (!hasCurrentRow() || m_reports.at(ui->tableResultReportOne->currentRow()).id != report.id)))
         {
             invalidateCurrentResultFormat(tr("报告选择已改变，未打开迟到明细。"));
             return;
@@ -373,6 +382,7 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
         m_currentSource = m_currentDisplayState->source();
         m_currentQueryValid = false;
         m_currentDetailValid = true;
+        acceptDetailNavigation(report);
         showDetail(report);
         finish(QStringLiteral("detail"), true);
     });
@@ -479,7 +489,12 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
     });
     connect(store, &HistoryStore::queryReady, this,
             [this](qint64 id, HistoryFilter filter, HistoryReports reports, qint64 total) {
-        if (m_localResultsMode || id != m_pending) return;
+        if (m_localResultsMode || id != m_pending || m_operation != QStringLiteral("query")) return;
+        if (m_detailNavigation.step != 0)
+        {
+            continueDetailNavigation(filter, reports, total);
+            return;
+        }
         m_filter = filter;
         m_reports = reports;
         m_total = total;
@@ -488,7 +503,14 @@ HistoryPage::HistoryPage(HistoryStore *store, QWidget *parent) :
         finish(QStringLiteral("query"), true);
     });
     connect(store, &HistoryStore::detailReady, this, [this](qint64 id, HistoryReport report) {
-        if (m_localResultsMode || id != m_pending) return;
+        if (m_localResultsMode || id != m_pending || m_operation != QStringLiteral("detail")) return;
+        if (report.id != m_currentDetailRequestReport)
+        {
+            status(tr("明细回复与本次报告不匹配，未替换当前明细。"));
+            finish(QStringLiteral("detail"), false);
+            return;
+        }
+        acceptDetailNavigation(report);
         showDetail(report);
         finish(QStringLiteral("detail"), true);
     });
@@ -933,15 +955,32 @@ void HistoryPage::setBusy(bool busy)
         m_detailUi->btnClose->setEnabled(!busy);
         m_detailUi->page_4->setEnabled(!busy);
         m_detailUi->btnPrinter->setEnabled(m_reportPreviewEnabled && m_ready && !busy);
+        int detailRow = -1;
+        for (int row = 0; row < m_reports.size(); ++row)
+            if (m_reports.at(row).id == m_detailReport.id) { detailRow = row; break; }
+        const qint64 position = qint64(m_filter.offset) + detailRow;
+        const bool canMove = m_ready && !busy && detailRow >= 0;
+        m_detailUi->btnUpRow->setEnabled(canMove && position > 0);
+        m_detailUi->btnNextRow->setEnabled(canMove && position + 1 < m_total);
     }
     if (m_localResultsMode && !busy) scheduleCurrentResultRefresh();
+    // 子状态先改变再进入setBusy，因此要与上一次已通知的综合状态比较。
+    const bool currentBusy = isBusy();
+    if (m_lastReportedBusy != currentBusy)
+    {
+        m_lastReportedBusy = currentBusy;
+        emit busyChanged(currentBusy);
+    }
 }
 
 void HistoryPage::finish(const QString &operation, bool success)
 {
-    if (m_localResultsMode && m_operation == operation
-        && (operation == QStringLiteral("query") || operation == QStringLiteral("detail")))
+    // 错误回调可能直接传入m_operation；先保留名称，清理后仍回报真实操作。
+    const QString finishedOperation = operation;
+    if (m_operation == finishedOperation
+        && (finishedOperation == QStringLiteral("query") || finishedOperation == QStringLiteral("detail")))
     {
+        m_detailNavigation = DetailNavigation();
         m_pending = 0;
         m_operation.clear();
         m_currentDetailRequestReport = 0;
@@ -950,7 +989,7 @@ void HistoryPage::finish(const QString &operation, bool success)
         m_currentPendingDefaults.clear();
     }
     setBusy(false);
-    emit operationFinished(operation, success);
+    emit operationFinished(finishedOperation, success);
 }
 
 void HistoryPage::refresh()
@@ -1267,11 +1306,16 @@ void HistoryPage::openDetail()
         return;
     }
     const qint64 reportId = m_reports.at(ui->tableResultReportOne->currentRow()).id;
+    requestDetailReport(reportId);
+}
+
+void HistoryPage::requestDetailReport(qint64 reportId)
+{
     m_pending = ++m_serial;
     m_operation = QStringLiteral("detail");
+    m_currentDetailRequestReport = reportId;
     if (m_localResultsMode)
     {
-        m_currentDetailRequestReport = reportId;
         if (!m_currentDisplayState || !m_currentDisplayState->expectDetail(m_pending))
         {
             clearCurrentResultPresentation(tr("当前格式状态已关闭或明细请求无效。"));
@@ -1281,6 +1325,77 @@ void HistoryPage::openDetail()
     }
     setBusy(true);
     emit requestDetail(m_pending, reportId);
+}
+
+void HistoryPage::moveDetailRow(int delta)
+{
+    if (!m_ready || isBusy() || !m_detailDialog || !m_detailDialog->isVisible()
+        || (delta != -1 && delta != 1) || (m_localResultsMode && m_currentClosing)) return;
+    int row = -1;
+    for (int index = 0; index < m_reports.size(); ++index)
+        if (m_reports.at(index).id == m_detailReport.id) { row = index; break; }
+    const qint64 position = qint64(m_filter.offset) + row + delta;
+    if (row < 0 || position < 0 || position >= m_total) return;
+    if (!confirmLeave(tr("切换报告")) || !m_ready || isBusy()
+        || (m_localResultsMode && m_currentClosing)) return;
+
+    m_detailNavigation.step = delta;
+    m_detailNavigation.filter = m_filter;
+    m_detailNavigation.reports = m_reports;
+    m_detailNavigation.total = m_total;
+    const int nextRow = row + delta;
+    if (nextRow >= 0 && nextRow < m_reports.size())
+    {
+        m_detailNavigation.reportId = m_reports.at(nextRow).id;
+        requestDetailReport(m_detailNavigation.reportId);
+        return;
+    }
+
+    // 原版按当前查询条件跨页；只改变查询偏移，不扩大日期或条码范围。
+    m_detailNavigation.filter.offset += delta * 20;
+    m_detailNavigation.filter.limit = 20;
+    m_pending = ++m_serial;
+    m_operation = QStringLiteral("query");
+    if (m_localResultsMode)
+    {
+        m_currentPendingFilter = m_detailNavigation.filter;
+        if (!m_currentDisplayState || !m_currentDisplayState->expectQuery(m_pending))
+        {
+            clearCurrentResultPresentation(tr("当前格式状态已关闭，未切换报告。"));
+            finish(QStringLiteral("query"), false);
+            return;
+        }
+    }
+    setBusy(true);
+    status(tr("正在读取相邻页报告…"));
+    emit requestQuery(m_pending, m_detailNavigation.filter);
+}
+
+void HistoryPage::continueDetailNavigation(const HistoryFilter &filter, const HistoryReports &reports, qint64 total)
+{
+    if (filter.offset != m_detailNavigation.filter.offset || reports.isEmpty())
+    {
+        status(tr("相邻页已变化或为空，保留原报告；关闭明细后可重新查询。"));
+        finish(QStringLiteral("query"), false);
+        return;
+    }
+    m_detailNavigation.filter = filter;
+    m_detailNavigation.reports = reports;
+    m_detailNavigation.total = total;
+    m_detailNavigation.reportId = (m_detailNavigation.step < 0 ? reports.last() : reports.first()).id;
+    // 查询只找相邻报告身份；明细成功后才一起更新主表页码和选择。
+    requestDetailReport(m_detailNavigation.reportId);
+}
+
+void HistoryPage::acceptDetailNavigation(const HistoryReport &report)
+{
+    if (m_detailNavigation.step == 0) return;
+    m_filter = m_detailNavigation.filter;
+    m_reports = m_detailNavigation.reports;
+    m_total = m_detailNavigation.total;
+    displayReports();
+    for (int row = 0; row < m_reports.size(); ++row)
+        if (m_reports.at(row).id == report.id) { selectRow(row); break; }
 }
 
 void HistoryPage::showDetail(const HistoryReport &report)
@@ -1325,8 +1440,10 @@ void HistoryPage::showDetail(const HistoryReport &report)
         const QString reason = tr("待 O04 后续切片接入原始曲线/算法/设备/LIS/打印模板；本页不执行该动作。");
         for (QWidget *control : QList<QWidget *>{m_detailUi->btnPrinter, m_detailUi->btnUpdateLis,
                                 m_detailUi->btn_recal, m_detailUi->cbxLightType, m_detailUi->cbxYaixsType,
-                                m_detailUi->tableResultSelect, m_detailUi->btnUpRow, m_detailUi->btnNextRow})
+                                m_detailUi->tableResultSelect})
             disableControl(control, reason);
+        m_detailUi->btnUpRow->setToolTip(tr("读取当前查询条件下的上一条报告。"));
+        m_detailUi->btnNextRow->setToolTip(tr("读取当前查询条件下的下一条报告。"));
         m_detailUi->wgtChart->setToolTip(reason);
         m_detailUi->ldtSmapleID->setReadOnly(true);
         m_detailUi->ldtReportDate->setReadOnly(true);
@@ -1355,6 +1472,8 @@ void HistoryPage::showDetail(const HistoryReport &report)
         connect(m_detailUi->btnMenuResultInfo, &QPushButton::clicked, dialog, [this]() { m_detailUi->stkTestInfo->setCurrentIndex(0); });
         connect(m_detailUi->btnMenuErrorInfo, &QPushButton::clicked, dialog, [this]() { m_detailUi->stkTestInfo->setCurrentIndex(1); });
         connect(m_detailUi->btnSave, &QPushButton::clicked, this, &HistoryPage::savePatient);
+        connect(m_detailUi->btnUpRow, &QPushButton::clicked, this, [this]() { moveDetailRow(-1); });
+        connect(m_detailUi->btnNextRow, &QPushButton::clicked, this, [this]() { moveDetailRow(1); });
         connect(m_detailUi->btnPrinter, &QPushButton::clicked, this, [this]() { printReport(true); });
         connect(m_detailUi->btnCancel, &QPushButton::clicked, dialog, [this, dialog]() {
             fillDetail(m_detailReport); // Explicit Cancel discards the editor draft.

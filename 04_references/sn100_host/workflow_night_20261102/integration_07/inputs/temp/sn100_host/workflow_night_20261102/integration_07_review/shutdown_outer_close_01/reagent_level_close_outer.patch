@@ -1,0 +1,13 @@
+diff --git a/06_programs/sn100_host/shell/reagent_level_shell.cpp b/06_programs/sn100_host/shell/reagent_level_shell.cpp
+--- a/06_programs/sn100_host/shell/reagent_level_shell.cpp
++++ b/06_programs/sn100_host/shell/reagent_level_shell.cpp
+@@ -292,7 +292,8 @@
+             reviewReagentLevelSource(reagents_->property("originalRoot").toString(),context.connection);
+         if (!reagentLevelClosing_) updateOriginalDeviceSync();
+         updateDeviceControlActions();
+-        if (reagentLevelClosing_ && !reagentLevelWorker_->isBusy()) QTimer::singleShot(0,this,[this](){close();});
++        // 保存收尾后重试关闭外层窗口，使首次被拦的外层关闭流程继续执行。
++        if (reagentLevelClosing_ && !reagentLevelWorker_->isBusy()) QTimer::singleShot(0,this,[this](){window()->close();});
+     });
+     connect(receiver,&OriginalLevels::ObservationWorker::presentationReady,this,[this](const OriginalLevels::ObservationPresentation &presentation)
+     {

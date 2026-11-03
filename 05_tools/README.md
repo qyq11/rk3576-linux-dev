@@ -1,6 +1,6 @@
 # 本机工具与独立硬件实验
 
-本目录的安装包/工具本体只在本地保留。正式应用源码在06_programs；这里的tests用于独立验证某个接口或系统能力。
+本目录的安装包/工具本体只在本地保留。正式应用源码在06_programs；这里的tests用于接口、系统能力和上位机测试。
 
 [返回上级说明](../README.md)
 
@@ -8,7 +8,7 @@
 
 | 文件或目录 | 用途 |
 | --- | --- |
-| [tests/](tests/README.md) | GPIO、UART和实时内核实验源码/脚本，随Git保存。 |
+| [tests/](tests/README.md) | GPIO、UART、CAN、实时内核和上位机测试；源码、脚本及说明随Git保存，用户提供的已编译工具本体仅在本地保留。 |
 | [drivers/](drivers/README.md) | 电脑侧驱动相关本地工具。 |
 | [flash/](flash/README.md) | 烧录工具。 |
 | [terminal/](terminal/README.md) | SSH、串口和终端相关工具。 |

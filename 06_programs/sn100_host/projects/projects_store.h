@@ -9,6 +9,9 @@
 #include <QObject>
 #include <QSqlDatabase>
 #include <memory>
+#include "original_project_save_admission.h"
+#include <QElapsedTimer>
+class QTimer;
 
 class OriginalProjectRepository;
 
@@ -75,6 +78,8 @@ struct ProjectRecord
     ProjectSampleRates sampleRates;
     ProjectAdvanced advanced; // 可选测试方案；保存它不会发送设备命令。
     ProjectAlgorithm algorithm; // 仅保存参数，不代表完整计算算法已实现或已应用。
+    // 原项目的六项默认校准设置；只维护原库已有键，不改变已生成的校准曲线。
+    QMap<QString, QString> defaultCalibrationValues;
     QString originalFileName; // 原库模式的相对文件名；空值表示既有catalog模式。
     QString originalRoot; // 与草稿绑定的原工作根，拒绝迟到请求写入另一个目录。
     QMap<QString, QString> originalBaseValues; // 全部原project_base键值，未编辑项不丢失。
@@ -110,6 +115,8 @@ class ProjectsStore : public QObject
     void importOriginalFile(qint64 requestId, QString filePath);
     void exportOriginalBundle(qint64 requestId, qint64 projectId, QString targetDirectory);
     void setSession(AccountSession session);
+    void setOriginalProjectSaveAdmissionEnabled(bool enabled);
+    void finishOriginalProjectSaveAdmission(OriginalProjectSaveAdmission admission);
     void load(qint64 requestId);
     // Read-only, explicitly marked source profile; never creates its metadata.
     void loadCurrentResultFormat(qint64 requestId);
@@ -137,11 +144,15 @@ class ProjectsStore : public QObject
   signals:
     void ready(QString databasePath);
     void sourceProfileChanged(QString root, bool original);
+    void originalCopyRecoveryPending(qint64 requestId, bool pending);
     void snapshotReady(qint64 requestId, ProjectRecords projects, ProjectUnits units);
     void currentResultFormatReady(qint64 requestId, ProjectCurrentFormatSnapshot snapshot);
     void currentProjectFormatReady(qint64 requestId, ProjectRecord project, ProjectCurrentFormatSnapshot snapshot);
     void reagentOptionsReady(QStringList reagentNames, QStringList cleanerNames);
     void diluentOptionsReady(QStringList diluentNames);
+    void originalProjectSaveAdmissionRequested(quint64 ticket, OriginalProjectSaveNotice proposal, qint64 sourceDeadline);
+    void originalProjectSaveAdmissionCancelled(quint64 ticket, QString source);
+    void originalProjectSaveCommitted(OriginalProjectSaveNotice notice);
     void succeeded(qint64 requestId, QString operation, qint64 projectId);
     void error(qint64 requestId, QString operation, QString message);
     void closed();
@@ -173,5 +184,18 @@ class ProjectsStore : public QObject
     qint64 m_lastOriginalWriteRequest = 0;
     QString m_referenceCatalogDirectory;
     bool m_preparingAuxiliary = false;
+    bool m_projectSaveAdmissionEnabled = false;
+    struct PendingOriginalSave
+    {
+        quint64 ticket=0;
+        qint64 request=0;
+        ProjectRecord project;
+        AccountSession actor;
+        qint64 deadline=0;
+    } m_pendingOriginalSave;
+    QTimer *m_projectSaveAdmissionTimer=nullptr;
+    void cancelPendingOriginalSave(QString message);
+    void commitOriginalSave(qint64 request, const ProjectRecord &project,
+                            const std::shared_ptr<OriginalProjectSavePermit> &permit = {});
 };
 #endif

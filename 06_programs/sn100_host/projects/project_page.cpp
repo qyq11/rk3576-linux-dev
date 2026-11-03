@@ -1,5 +1,6 @@
 #include "project_page.h"
 #include "project_format_dialog.h"
+#include "original_project_copy_dialog.h"
 #include "../history/history_current_display_state.h"
 #include <QMenu>
 #include <QAction>
@@ -136,11 +137,22 @@ ProjectPage::ProjectPage(ProjectsStore *store, QWidget *parent)
     ui->btnScan->hide();
     ui->label_32->hide();
     ui->is_related->hide();
-    for (QPushButton *tab : {ui->btnCalibrate})
+    ui->btnCalibrate->setToolTip(tr("编辑当前原项目的默认校准参数；保存不执行曲线拟合。"));
+    for (QComboBox *combo : {ui->calibration_mode, ui->repeat_number, ui->calculate_select,
+                             ui->point_number, ui->x_change, ui->y_change})
     {
-        tab->setEnabled(false);
-        tab->setToolTip(tr("校准计算设置尚未验收；本页仅保存本地测试方案资料。"));
+        combo->setView(new QListView(combo));
+        QStringList choices;
+        for (int index = 0; index < combo->count(); ++index) choices.append(combo->itemText(index));
+        combo->setProperty("defaultCalibrationChoices", choices);
+        connect(combo, &QComboBox::currentTextChanged, this, [this](const QString &) { markDirty(); });
     }
+    connect(ui->calibration_mode, &QComboBox::currentTextChanged, this, [this](const QString &mode)
+    {
+        const bool manual = mode != tr("自动稀释");
+        ui->point_number->setVisible(manual);
+        ui->lblpoint_number->setVisible(manual);
+    });
     ui->ckxMdaUsed->setEnabled(false);
     const QList<QPair<CusCheckBox *, QString>> resultSwitches = {
         {ui->ckxCalibrationUsed, QStringLiteral("Calibration")},
@@ -184,6 +196,10 @@ ProjectPage::ProjectPage(ProjectsStore *store, QWidget *parent)
     connect(ui->btnBaseInfo, &QPushButton::clicked, this, [this]() { ui->stkPanel->setCurrentIndex(0); });
     connect(ui->btnSampleAdd, &QPushButton::clicked, this, [this]() { ui->stkPanel->setCurrentIndex(1); });
     connect(ui->btnReagentAdd, &QPushButton::clicked, this, [this]() { ui->stkPanel->setCurrentIndex(2); });
+    connect(ui->btnCalibrate, &QPushButton::clicked, this, [this]()
+    {
+        if (m_originalProfile && m_selectedId > 0 && !m_busy) ui->stkPanel->setCurrentIndex(3);
+    });
     for (QLineEdit *edit : {ui->project_cn_name, ui->project_en_name, ui->project_lis_code})
     {
         connect(edit, &QLineEdit::textChanged, this, &ProjectPage::markDirty);
@@ -226,6 +242,7 @@ ProjectPage::ProjectPage(ProjectsStore *store, QWidget *parent)
     {
         const bool changed = original != m_originalProfile || root != m_originalRoot;
         m_originalProfile = original;
+        m_copyRecoveryPending = false;
         m_originalRoot = original ? root : QString();
         setProperty("originalProfile", original);
         setProperty("originalRoot", m_originalRoot);
@@ -280,6 +297,10 @@ ProjectPage::ProjectPage(ProjectsStore *store, QWidget *parent)
     });
     connect(store, &ProjectsStore::reagentOptionsReady, m_advanced, &ProjectAdvancedEditor::setReagentChoices);
     connect(store, &ProjectsStore::diluentOptionsReady, m_advanced, &ProjectAdvancedEditor::setDiluentChoices);
+    connect(store,&ProjectsStore::originalCopyRecoveryPending,this,[this](qint64 request,bool pending) {
+        if (request==m_request && (m_pendingOperation==QStringLiteral("load") || m_pendingOperation==QStringLiteral("copy")))
+            m_copyRecoveryPending=pending;
+    });
     connect(
         store, &ProjectsStore::snapshotReady, this,
         [this](qint64 request, ProjectRecords projects, ProjectUnits units)
@@ -328,7 +349,8 @@ ProjectPage::ProjectPage(ProjectsStore *store, QWidget *parent)
             }
             else
             {
-                report(m_originalProfile ? tr("原项目DB及单位已读回；保存将直接写回对应原库，未发送仪器动作。") :
+                report(m_copyRecoveryPending ? tr("原项目仍可查看；未提交复制已从列表排除并保留待核，原项目修改暂不可用。") :
+                       m_originalProfile ? tr("原项目DB及单位已读回；保存将直接写回对应原库，未发送仪器动作。") :
                        tr("项目/单位已读取；当前仅保存本地配置，未同步仪器。"));
             }
             emit operationFinished(QStringLiteral("load"), true);
@@ -384,6 +406,7 @@ ProjectPage::ProjectPage(ProjectsStore *store, QWidget *parent)
                     return;
                 }
                 m_pendingOperation.clear();
+                if (m_originalProfile && operation==QStringLiteral("load")) m_refreshRequired=true;
                 setBusy(false);
                 report(message);
                 emit currentFormatInvalidated(message);
@@ -490,7 +513,7 @@ void ProjectPage::updateActions()
 {
     const bool available = m_ready && m_store && !m_busy && !m_refreshRequired && !m_promptOpen &&
                            m_formatDialog.isNull() && m_auxiliaryDialog.isNull();
-    const bool writable = available && (m_selectedId > 0 || m_creating) && ProjectsStore::canEdit(m_session);
+    const bool writable = available && !m_copyRecoveryPending && (m_selectedId > 0 || m_creating) && ProjectsStore::canEdit(m_session);
     ui->btnChange->setEnabled(m_store && !m_busy && !m_promptOpen &&
                               m_formatDialog.isNull() && m_auxiliaryDialog.isNull());
     ui->btnSave->setEnabled(writable && (m_dirty || m_creating));
@@ -503,6 +526,7 @@ void ProjectPage::updateActions()
     if (!m_ready) ui->btnSave->setToolTip(tr("项目库尚未就绪，请先核对加载错误。"));
     else if (!ProjectsStore::canEdit(m_session)) ui->btnSave->setToolTip(tr("须登录可操作的工程师或管理员账户后维护项目。"));
     else if (m_busy) ui->btnSave->setToolTip(tr("正在等待当前操作回执，请稍后。"));
+    else if (m_copyRecoveryPending) ui->btnSave->setToolTip(tr("有未提交复制保留待核，原项目暂只读；核对完成后重新读取。"));
     else if (m_refreshRequired) ui->btnSave->setToolTip(tr("写入后读取失败，请从项目管理重新读取再编辑。"));
     else if (!m_selectedId && !m_creating) ui->btnSave->setToolTip(tr("请先从项目管理新建或导入项目。"));
     else if (!m_dirty && !m_creating) ui->btnSave->setToolTip(tr("当前没有新的未保存修改，不会重复写入。"));
@@ -538,12 +562,17 @@ void ProjectPage::updateActions()
     m_advanced->setWritable(writable);
     ui->btnSampleAdd->setEnabled(available && (m_selectedId > 0 || m_creating));
     ui->btnReagentAdd->setEnabled(available && (m_selectedId > 0 || m_creating));
+    ui->btnCalibrate->setEnabled(available && m_originalProfile && m_selectedId > 0 && !m_creating);
+    for (QComboBox *combo : {ui->calibration_mode, ui->repeat_number, ui->calculate_select,
+                             ui->point_number, ui->x_change, ui->y_change})
+        combo->setEnabled(writable && m_originalProfile &&
+                          m_draftProject.defaultCalibrationValues.contains(combo->objectName()));
 }
 bool ProjectPage::canStartOperation(bool requireProject) const
 {
     return m_ready && m_store && !m_busy && !m_refreshRequired && !m_promptOpen &&
            m_formatDialog.isNull() && m_auxiliaryDialog.isNull() &&
-           ProjectsStore::canEdit(m_session) && (!requireProject || (m_selectedId > 0 && !m_creating));
+           !m_copyRecoveryPending && ProjectsStore::canEdit(m_session) && (!requireProject || (m_selectedId > 0 && !m_creating));
 }
 qint64 ProjectPage::beginOperation(const QString &operation)
 {
@@ -593,6 +622,23 @@ void ProjectPage::showProject(qint64 id)
         }
     }
     m_draftProject = project;
+    for (QComboBox *combo : {ui->calibration_mode, ui->repeat_number, ui->calculate_select,
+                             ui->point_number, ui->x_change, ui->y_change})
+    {
+        // 不把未知原串显示成首项，也不让缺失键沿用上一个项目的控件值。
+        const QSignalBlocker blocker(combo);
+        combo->clear();
+        combo->addItems(combo->property("defaultCalibrationChoices").toStringList());
+        const bool present = m_originalProfile && project.defaultCalibrationValues.contains(combo->objectName());
+        const QString value = project.defaultCalibrationValues.value(combo->objectName());
+        if (present && combo->findText(value, Qt::MatchExactly) < 0) combo->addItem(value);
+        combo->setCurrentIndex(present ? combo->findText(value, Qt::MatchExactly) : -1);
+        combo->setToolTip(present ? tr("沿用原项目选项保存；未编辑的旧值保持原样，不执行拟合。") :
+                                   tr("当前资料没有这个原参数键，本页不猜默认值或自动补入。"));
+    }
+    const bool manualCalibration = ui->calibration_mode->currentText() != tr("自动稀释");
+    ui->point_number->setVisible(manualCalibration);
+    ui->lblpoint_number->setVisible(manualCalibration);
     ui->project_en_name->setText(project.name);
     ui->project_cn_name->setText(project.fullName);
     ui->project_lis_code->setText(project.lisCode);
@@ -802,6 +848,11 @@ ProjectRecord ProjectPage::editedProject() const
     project.fullName = ui->project_cn_name->text();
     project.lisCode = ui->project_lis_code->text();
     project.enabled = ui->is_used->isChecked();
+    if (m_originalProfile)
+        for (QComboBox *combo : {ui->calibration_mode, ui->repeat_number, ui->calculate_select,
+                                 ui->point_number, ui->x_change, ui->y_change})
+            if (project.defaultCalibrationValues.contains(combo->objectName()))
+                project.defaultCalibrationValues[combo->objectName()] = combo->currentText();
     // 原库可能有未选用的旧默认及未映射列。未编辑高级区时直接保留其原快照，
     // 不能因另改一个名称或系数，就用控件的格式化值重写全部动作参数。
     if (!m_originalProfile || m_advancedEdited)
@@ -905,6 +956,8 @@ void ProjectPage::updateResultSelection(const QString &type, bool used)
             result.display = answer == QMessageBox::Yes;
         }
         result.used = used;
+        // 原项目页仅在用户点击浓度启用项时联动校准区，不据加载值新增保存拒绝。
+        if (type == QStringLiteral("Calibration")) ui->wgtCalibration->setDisabled(!used);
         CusCheckBox *checkbox = type == QStringLiteral("Calibration") ? ui->ckxCalibrationUsed :
                                type == QStringLiteral("Rate") ? ui->ckxRUsed : ui->ckxINRUsed;
         checkbox->setText(resultSwitchText(type));
@@ -1289,7 +1342,7 @@ void ProjectPage::manageUnits()
     message->setWordWrap(true);
     layout->addWidget(message);
     const auto writable = [this]()
-    { return m_ready && m_store && !m_busy && !m_refreshRequired && !m_promptOpen && ProjectsStore::canEdit(m_session); };
+    { return m_ready && m_store && !m_busy && !m_refreshRequired && !m_promptOpen && !m_copyRecoveryPending && ProjectsStore::canEdit(m_session); };
     const auto updateControls = [=]()
     {
         add->setEnabled(writable());
@@ -1473,8 +1526,17 @@ void ProjectPage::copy()
     {
         QScopedValueRollback<bool> promptGuard(m_promptOpen, true);
         updateActions();
-        name = QInputDialog::getText(this, tr("复制项目"), tr("新项目名称（1至16字符）："), QLineEdit::Normal,
-                                    ui->project_en_name->text().left(11) + QStringLiteral("_copy"), &accepted);
+        if (m_originalProfile)
+        {
+            QStringList existing;
+            for (const ProjectRecord &project : m_projects) existing << project.name;
+            OriginalProjectCopyDialog dialog(m_draftProject.name,existing,this);
+            accepted = dialog.exec() == QDialog::Accepted;
+            if (accepted) name = dialog.projectName();
+        }
+        else
+            name = QInputDialog::getText(this, tr("复制项目"), tr("新项目名称（1至16字符）："), QLineEdit::Normal,
+                                        ui->project_en_name->text().left(11) + QStringLiteral("_copy"), &accepted);
     }
     updateActions();
     if (!accepted || !canStartOperation(true))

@@ -9,6 +9,11 @@
 #include "history/history_page.h"
 #include "history/report_controller.h"
 #include "instrument/instrument_page.h"
+#include "original_files/theme_configuration.h"
+#include "reagents/reagents_page.h"
+#include "samples/sample_page.h"
+#include "reagents/cusreagenthole.h"
+#include <QTableWidget>
 
 #include <QButtonGroup>
 #include <QCloseEvent>
@@ -106,6 +111,8 @@ frmMain::frmMain(HospitalStore *store, QWidget *parent, AccountStore *accounts) 
     ui->label_2->setGeometry(43,18,82,82);
     ui->label_2->setStyleSheet(QStringLiteral(
         "QLabel { border-image: url(:/shell/logo/sn_logo_2.png); }"));
+    // Linux中文字体的字形高于原16px文本框，只增加框高，保留原位置和字号。
+    ui->lblDivState->setFixedHeight(qMax(ui->lblDivState->height(), ui->lblDivState->fontMetrics().height() + 2));
     configureOfflineStatus();
     connect(ui->btnShutDown, &CusBadgeButton::clicked, this, [this]() { requestShutdown(); });
 
@@ -116,6 +123,8 @@ frmMain::frmMain(HospitalStore *store, QWidget *parent, AccountStore *accounts) 
         // do not run the manual logout guard or discard hospital drafts then.
         connect(accounts, &AccountStore::sessionChanged,
                 this, &frmMain::applyAccountSession);
+        connect(accounts, &AccountStore::deviceActionReadyChanged,
+                this, &frmMain::applyDeviceActionReadiness);
         connect(accounts, &AccountStore::error, this,
                 [this](const QString &operation, const QString &)
         {
@@ -165,6 +174,7 @@ frmMain::frmMain(HospitalStore *store, QWidget *parent, AccountStore *accounts) 
 
 frmMain::~frmMain()
 {
+    invalidateReagentLevels();
     // Also covers startup failure or an external app.exit while a render runs.
     // Reap the helper before destroying the pages and their status receivers.
     delete reports_;
@@ -174,6 +184,11 @@ frmMain::~frmMain()
 
 void frmMain::updateHospitalStatus()
 {
+    if (deviceControl_)
+    {
+        updateDeviceStatusDisplay();
+        return;
+    }
     if (calibration_ && currentMainPage() == 3)
     {
         updateCalibrationStatus();
@@ -215,6 +230,46 @@ void frmMain::updateHospitalStatus()
         : QStringLiteral("QLabel { color: rgb(170,170,170); }"));
     ui->lblDivState->setToolTip(hospitalStatus_);
     ui->statusArea->setToolTip(tr("脱机；仪器状态未知。医院信息：%1").arg(hospitalStatus_));
+}
+
+void frmMain::applyThemeConfiguration(const OriginalRuntime::ThemeOptions &theme)
+{
+    setProperty("configuredCompanyName", theme.shortName);
+    ui->lblDivType->setText(theme.driverModel);
+    ui->lblDivType->setToolTip(tr("配置文件中的机型；连接后以主控实际返回为准。"));
+    const QColor base=themeColour(theme,"leftBaseColor",QColor(28,28,28));
+    const QColor active=themeColour(theme,"leftBtnColor",QColor(232,51,35,200));
+    const QColor font=themeColour(theme,"leftBtnFontColor",Qt::white);
+    setProperty("devicePauseColour", themeColour(theme,"kBtnNormalColor",QColor(42,118,242)));
+    ui->wgtLogoBg->setBackgroundColor(base);
+    ui->menuArea->setBackgroundColor(base);
+    for (auto *button : findChildren<CusMenuButton*>()) button->setOriginalColours(base,font,active);
+    const QStringList size=theme.logoSize.split('x');
+    if (size.size()==2)
+        ui->label_2->setGeometry((ui->wgtLogoBg->width()-size[0].toInt())/2,
+            (ui->wgtLogoBg->height()-size[1].toInt())/2,size[0].toInt(),size[1].toInt());
+    if (reagents_) reagents_->configureLayout(theme.reagentPositions);
+    if (samples_) samples_->setRackSelectedColour(themeColour(theme,"kSampleSetWidget",QColor(183,215,255)));
+    for (auto *hole : findChildren<cusReagentHole*>())
+        hole->setSelectedColour(themeColour(theme,"kReagentHoleSelectedColor",QColor(42,118,242)));
+    for (auto *table : findChildren<QTableWidget*>())
+    {
+        // 原报告页三张表共用报告选中色；患者表不能因名字不同而落入通用列表色。
+        const QString key=(table->objectName().contains("ResultReport") || table->objectName()=="tablePatientInfo")
+            ? QStringLiteral("kReportRowSelected")
+            : table->objectName()=="tblSetting" ? QStringLiteral("kSampleSetRowSelected") : QStringLiteral("kListWidgetRowSelected");
+        const QColor selected=themeColour(theme,key,QColor(183,215,255));
+        table->setStyleSheet(table->styleSheet()+QStringLiteral("QTableWidget::item:selected{background:rgba(%1,%2,%3,%4);}")
+            .arg(selected.red()).arg(selected.green()).arg(selected.blue()).arg(selected.alpha()));
+    }
+    setProperty("configuredReagentPositions",theme.reagentPositions);
+    setProperty("configuredSampleHoles",theme.sampleHoles);
+    setProperty("configuredEmergencyHoles",theme.emergencyHoles);
+    setProperty("configuredTestChannels",theme.testChannels);
+    setProperty("configuredReportTableType",theme.reportTableType);
+    qInfo().noquote()<<"THEME_CONFIGURATION_APPLIED"<<theme.driverModel<<"reagents="<<theme.reagentPositions
+        <<"sample_holes="<<theme.sampleHoles<<"emergency_holes="<<theme.emergencyHoles<<"channels="<<theme.testChannels
+        <<"report_table_type="<<theme.reportTableType;
 }
 
 void frmMain::configureOfflineStatus()
@@ -313,8 +368,7 @@ void frmMain::updateAccountStatus()
     {
         return;
     }
-    // The original user-name region is narrow. Preserve its geometry and show
-    // the complete anonymous actor/role plus simulation boundary in a tooltip.
+    // 原用户名区域较窄，完整账户、角色和认证来源保留在提示中。
     const QString name = session_.authenticated ? session_.name : QStringLiteral("Guest");
     const bool original = !property("originalDataRoot").toString().isEmpty() || !session_.originalPolicySource.isEmpty();
     const QString role = original && !session_.roleLabel.isEmpty() ? session_.roleLabel
@@ -338,25 +392,32 @@ void frmMain::updateAccountStatus()
     ui->btnLoginOut->setEnabled(session_.authenticated && idle);
     ui->btnLoginOut->setToolTip(logoutPending_ ? tr("正在清除本地会话…")
         : tr("注销本地会话；数据处理中不可用，未保存更改需先确认。"));
+    resumeLoginAfterLogout();
+    resumeStartupLogin();
 }
 
 void frmMain::applyAccountSession(const AccountSession &session)
 {
     const bool wasAuthenticated = session_.authenticated;
     session_ = session;
+    // 账户认证可能已排队；旧身份回执不能覆盖随后收到的实际设备状态。
+    if (deviceActionReadyObserved_) session_.actionReady = deviceActionReady_;
     logoutPending_ = false;
     updateAccountStatus();
     emit sessionChanged(session_);
     if (wasAuthenticated && !session_.authenticated)
     {
-        // Store::sessionChanged is emitted after clearing its actual identity.
-        // The page receives that same event first and clears its edit caches.
+        // 对应原on_btnLoginOut_clicked：清除身份后重新登录，不能沿用旧权限。
+        loginAfterLogoutPending_ = passwordLoginEnabled_ && (!loginDialog_ || !loginDialog_->isVisible());
         emit loggedOut();
+        resumeLoginAfterLogout();
     }
 }
 
 bool frmMain::requestLogout()
 {
+    // 注销是新的用户意图，不让尚未显示的启动登录在稍后补弹。
+    cancelStartupLogin();
     if (rejectLoginNavigation())
     {
         return false;
@@ -365,8 +426,7 @@ bool frmMain::requestLogout()
     {
         return false;
     }
-    // Guard all pages even when the hospital draft is currently hidden. An
-    // automatic account-commit logout bypasses this manual navigation path.
+    // 先处理所有页面的未保存内容；账户修改成功导致的注销由会话通知处理。
     if (!requestAlarmHistoryLeave(tr("注销")) || !requestCalibrationLeave(tr("注销")) || !requestQualityLeave(tr("注销")) || !requestInstrumentLeave(tr("注销")) || !requestCatalogLeave(tr("注销")) || !requestHistoryLeave(tr("注销")) || !userSet_->requestLeave(tr("注销")))
     {
         return false;
@@ -379,7 +439,7 @@ bool frmMain::requestLogout()
     {
         logoutPending_ = false;
         updateAccountStatus();
-        emit navigationRejected(tr("无法提交匿名会话注销请求。"));
+        emit navigationRejected(tr("无法提交账户注销请求，请稍后重试。"));
     }
     return queued;
 }
@@ -547,9 +607,11 @@ bool frmMain::requestShutdown()
         if (result != QDialog::Accepted)
         {
             qInfo() << "EXIT_BUTTON_CANCELLED";
+            updateAccountStatus();
             return;
         }
         shutdownClosing_ = true;
+        cancelStartupLogin();
         // 业务窗可能嵌在滚动宿主中，关闭子窗只会隐藏页面，必须关闭真正的外层窗。
         const bool accepted = window()->close();
         qInfo() << (accepted ? "EXIT_BUTTON_ACCEPTED" : "EXIT_BUTTON_REJECTED_BY_PAGE_GUARD");
@@ -561,6 +623,9 @@ bool frmMain::requestShutdown()
 
 void frmMain::closeEvent(QCloseEvent *event)
 {
+    enterTaskReagentCloseAttempt();
+    // 已发起关闭就撤销启动自动弹窗，即使业务保护拒绝退出也不打断使用者。
+    cancelStartupLogin();
     if (shutdownDialog_)
     {
         shutdownDialog_->raise();
@@ -585,7 +650,18 @@ void frmMain::closeEvent(QCloseEvent *event)
         event->ignore();
         return;
     }
-    if (!requestCalibrationLeave(tr("退出")) || !requestQualityLeave(tr("退出")) || !requestInstrumentLeave(tr("退出")) || !requestCatalogLeave(tr("退出")) || !requestHistoryLeave(tr("退出")) || !userSet_->requestLeave(tr("退出")))
+    if (!requestCalibrationLeave(tr("退出")) || !requestQualityLeave(tr("退出")) || !requestInstrumentLeave(tr("退出")))
+    {
+        event->ignore();
+        return;
+    }
+    if (!requestCatalogLeave(tr("退出")))
+    {
+        deferTaskReagentCatalogClose();
+        event->ignore();
+        return;
+    }
+    if (!requestHistoryLeave(tr("退出")) || !userSet_->requestLeave(tr("退出")))
     {
         event->ignore();
         return;
@@ -595,6 +671,21 @@ void frmMain::closeEvent(QCloseEvent *event)
         event->ignore();
         return;
     }
+    if (!requestOriginalAlarmShutdown())
+    {
+        event->ignore();
+        return;
+    }
     // 不关闭外部拥有的存储或终止线程；入口在事件循环返回后按序清理。
+    if (!requestTaskReagentShutdown())
+    {
+        event->ignore();
+        return;
+    }
+    if (!requestReagentLevelShutdown())
+    {
+        event->ignore();
+        return;
+    }
     event->accept();
 }

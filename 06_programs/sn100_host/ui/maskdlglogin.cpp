@@ -115,6 +115,12 @@ bool MaskDlgLogin::isBusy() const
     return busy_ || closing_ || !message_.isNull();
 }
 
+void MaskDlgLogin::setCompanyName(const QString &name)
+{
+    // 原SystemCommon::kCompanyName来自theme/name，完整公司名另用于报告。
+    ui->label_3->setText(name);
+}
+
 void MaskDlgLogin::setBusy(bool busy)
 {
     busy_ = busy;

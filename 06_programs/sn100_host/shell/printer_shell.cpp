@@ -37,6 +37,7 @@ void frmMain::attachPrinterPage(frmPrinterSetting *page)
 void frmMain::updatePrinterStatus()
 {
     if (!printerPage() || currentMainPage() != 6 || currentUserPage() != 3) return;
+    if (deviceControl_) { updateDeviceStatusDisplay(); return; }
     const QString state = printerStatusError_ ? tr("脱机／失败")
         : printerPage()->isBusy() ? tr("脱机／处理中")
         : printerPage()->isDirty() ? tr("脱机／未保存") : tr("脱机／就绪");

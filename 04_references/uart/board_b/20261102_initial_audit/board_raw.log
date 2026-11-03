@@ -1,0 +1,532 @@
+
+[identity]
+2026-10-12T07:56:22Z
+Linux localhost 6.1.99-rt36-tspi #2 SMP PREEMPT_RT Fri Oct 30 21:07:55 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+uid=1000(lckfb) gid=1000(lckfb) groups=1000(lckfb),4(adm),6(disk),24(cdrom),27(sudo),29(audio),44(video),46(plugdev),100(users),107(netdev),992(render),993(kvm),995(input)
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.5 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
+BUILD_INFO="root@qyq Fri Oct 30 21:50:28 CST 2026"
+BUILD_INFO="root@qyq Fri Oct 30 21:53:09 CST 2026"
+BUILD_INFO="root@qyq Fri Oct 30 21:56:31 CST 2026"
+ID_LIKE="ubuntu"
+RK_BUILD_INFO="root@qyq Fri Oct 30 21:56:49 CST 2026"
+model: LCKFB TaishanPi 3M RK3576 Board
+compatible: lckfb,tspi-3m-rk3576rockchip,rk3576
+serial-number: 8314b1e8ffd0321f
+dummy0: 32:0d:05:ef:e3:6b
+end0: f6:ff:fb:6c:79:a1
+lo: 00:00:00:00:00:00
+wlan0: 40:fd:f3:25:31:8a
+256 SHA256:S4ihaw0V/Z8w7v3VlJOQEFLEH3Hp6nr3KjiUTxanwPg root@localhost (ED25519)
+
+[console_and_serial_nodes]
+storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal  androidboot.verifiedbootstate=orange rw rootwait earlycon=uart8250,mmio32,0x2ad40000 console=ttyFIQ0 root=PARTUUID=614e0000-0000 rcupdate.rcu_expedited=1 rcu_nocbs=all #q-10/30/2026 androidboot.fwver=ddr-v1.09-2f85f4b2d4,bl31-v1.14,bl32-v1.05,uboot-3fcd713
+ttyFIQ0
+crw------- 1 lckfb tty     253,  0 Oct 12 15:36 /dev/ttyFIQ0
+crw-rw---- 1 root  dialout   4, 68 Oct 12 15:36 /dev/ttyS4
+crw-rw---- 1 root  dialout   4, 70 Oct 12 15:36 /dev/ttyS6
+serinfo:1.0 driver revision:
+4: uart:16550A mmio:0x2AD70000 irq:46 tx:0 rx:0
+6: uart:16550A mmio:0x2AD90000 irq:47 tx:74896 rx:3319 RTS|CTS|DTR
+  UNIT                         LOAD   ACTIVE SUB     DESCRIPTION
+  serial-getty@ttyFIQ0.service loaded active running Serial Getty on ttyFIQ0
+
+Legend: LOAD   鈫?Reflects whether the unit definition was properly loaded.
+        ACTIVE 鈫?The high-level unit activation state, i.e. generalization of SUB.
+        SUB    鈫?The low-level unit activation state, values depend on unit type.
+
+1 loaded units listed.
+To show all installed unit files use 'systemctl list-unit-files'.
+
+[target_uart_bindings]
+
+UART3
+alias: /serial@2ad60000
+status: disabled
+compatible: rockchip,rk3576-uartsnps,dw-apb-uart
+pinctrl-names: default
+pinctrl-0 bytes (big endian):  00 00 01 8a
+ttyS3/device: ttyS3/device/driver: ttyS3/device/of_node: 
+UART4
+alias: /serial@2ad70000
+status: okay
+compatible: rockchip,rk3576-uartsnps,dw-apb-uart
+pinctrl-names: default
+pinctrl-0 bytes (big endian):  00 00 01 8b
+ttyS4/device: /sys/devices/platform/2ad70000.serial
+ttyS4/device/driver: /sys/bus/platform/drivers/dw-apb-uart
+ttyS4/device/of_node: /sys/firmware/devicetree/base/serial@2ad70000
+
+UART7
+alias: /serial@2ada0000
+status: disabled
+compatible: rockchip,rk3576-uartsnps,dw-apb-uart
+pinctrl-names: default
+pinctrl-0 bytes (big endian):  00 00 01 8f
+ttyS7/device: ttyS7/device/driver: ttyS7/device/of_node: 
+UART8
+alias: /serial@2adb0000
+status: disabled
+compatible: rockchip,rk3576-uartsnps,dw-apb-uart
+pinctrl-names: default
+pinctrl-0 bytes (big endian):  00 00 01 90
+ttyS8/device: ttyS8/device/driver: ttyS8/device/of_node: 
+UART9
+alias: /serial@2adc0000
+status: disabled
+compatible: rockchip,rk3576-uartsnps,dw-apb-uart
+pinctrl-names: default
+pinctrl-0 bytes (big endian):  00 00 01 91
+ttyS9/device: ttyS9/device/driver: ttyS9/device/of_node: 
+[serial_process_owners]
+Specified filename /dev/ttyS3 does not exist.
+Specified filename /dev/ttyS7 does not exist.
+Specified filename /dev/ttyS8 does not exist.
+Specified filename /dev/ttyS9 does not exist.
+
+[runtime_pin_owners]
+
+FILE /sys/kernel/debug/pinctrl/pinctrl-rockchip-pinctrl/pinmux-pins
+Pinmux settings per pin
+Format: pin (name): mux_owner gpio_owner hog?
+pin 0 (gpio0-0): (MUX UNCLAIMED) gpio0:0
+pin 1 (gpio0-1): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 2 (gpio0-2): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 3 (gpio0-3): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 4 (gpio0-4): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 5 (gpio0-5): 2-0051 (GPIO UNCLAIMED) function hym8563 group hym8563-int
+pin 6 (gpio0-6): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 7 (gpio0-7): 2a310000.mmc (GPIO UNCLAIMED) function sdmmc0 group sdmmc0-det
+pin 8 (gpio0-8): wireless-wlan (GPIO UNCLAIMED) function wireless-wlan group wifi-host-wake-irq
+pin 9 (gpio0-9): (MUX UNCLAIMED) gpio0:9
+pin 10 (gpio0-10): 2ac40000.i2c (GPIO UNCLAIMED) function i2c1 group i2c1m0-xfer
+pin 11 (gpio0-11): 2ac40000.i2c (GPIO UNCLAIMED) function i2c1 group i2c1m0-xfer
+pin 12 (gpio0-12): 2-0022 (GPIO UNCLAIMED) function usb-typec group fusb302-int
+pin 13 (gpio0-13): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 14 (gpio0-14): vcc5v0-typec-vbus gpio0:14 function usb-typec group typec-vbus-en
+pin 15 (gpio0-15): 2ac50000.i2c (GPIO UNCLAIMED) function i2c2 group i2c2m0-xfer
+pin 16 (gpio0-16): 2ac50000.i2c (GPIO UNCLAIMED) function i2c2 group i2c2m0-xfer
+pin 17 (gpio0-17): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 18 (gpio0-18): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 19 (gpio0-19): vcc5v0-usb30-host gpio0:19 function usb-host group usb30-host-pwr-en
+pin 20 (gpio0-20): (MUX UNCLAIMED) gpio0:20
+pin 21 (gpio0-21): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 22 (gpio0-22): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 23 (gpio0-23): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 24 (gpio0-24): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 25 (gpio0-25): (MUX UNCLAIMED) gpio0:25
+pin 26 (gpio0-26): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 27 (gpio0-27): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 28 (gpio0-28): fiq-debugger (GPIO UNCLAIMED) function uart0 group uart0m0-xfer
+pin 29 (gpio0-29): fiq-debugger (GPIO UNCLAIMED) function uart0 group uart0m0-xfer
+pin 30 (gpio0-30): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 31 (gpio0-31): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 32 (gpio1-0): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 33 (gpio1-1): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 34 (gpio1-2): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 35 (gpio1-3): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 36 (gpio1-4): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 37 (gpio1-5): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 38 (gpio1-6): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 39 (gpio1-7): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 40 (gpio1-8): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 41 (gpio1-9): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 42 (gpio1-10): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 43 (gpio1-11): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 44 (gpio1-12): 2a320000.mmc (GPIO UNCLAIMED) function sdmmc1 group sdmmc1m0-bus4
+pin 45 (gpio1-13): 2a320000.mmc (GPIO UNCLAIMED) function sdmmc1 group sdmmc1m0-bus4
+pin 46 (gpio1-14): 2a320000.mmc (GPIO UNCLAIMED) function sdmmc1 group sdmmc1m0-bus4
+pin 47 (gpio1-15): 2a320000.mmc (GPIO UNCLAIMED) function sdmmc1 group sdmmc1m0-bus4
+pin 48 (gpio1-16): 2a320000.mmc (GPIO UNCLAIMED) function sdmmc1 group sdmmc1m0-cmd
+pin 49 (gpio1-17): 2a320000.mmc (GPIO UNCLAIMED) function sdmmc1 group sdmmc1m0-clk
+pin 50 (gpio1-18): 2ac90000.i2c (GPIO UNCLAIMED) function i2c6 group i2c6m1-xfer
+pin 51 (gpio1-19): 2ac90000.i2c (GPIO UNCLAIMED) function i2c6 group i2c6m1-xfer
+pin 52 (gpio1-20): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 53 (gpio1-21): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 54 (gpio1-22): sdio-pwrseq gpio1:54 function wireless-wlan group wifi-poweren-gpio
+pin 55 (gpio1-23): (MUX UNCLAIMED) gpio1:55
+pin 56 (gpio1-24): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 57 (gpio1-25): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 58 (gpio1-26): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 59 (gpio1-27): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 60 (gpio1-28): (MUX UNCLAIMED) gpio1:60
+pin 61 (gpio1-29): (MUX UNCLAIMED) gpio1:61
+pin 62 (gpio1-30): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 63 (gpio1-31): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 64 (gpio2-0): 2a310000.mmc (GPIO UNCLAIMED) function sdmmc0 group sdmmc0-bus4
+pin 65 (gpio2-1): 2a310000.mmc (GPIO UNCLAIMED) function sdmmc0 group sdmmc0-bus4
+pin 66 (gpio2-2): 2a310000.mmc (GPIO UNCLAIMED) function sdmmc0 group sdmmc0-bus4
+pin 67 (gpio2-3): 2a310000.mmc (GPIO UNCLAIMED) function sdmmc0 group sdmmc0-bus4
+pin 68 (gpio2-4): 2a310000.mmc (GPIO UNCLAIMED) function sdmmc0 group sdmmc0-cmd
+pin 69 (gpio2-5): 2a310000.mmc (GPIO UNCLAIMED) function sdmmc0 group sdmmc0-clk
+pin 70 (gpio2-6): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 71 (gpio2-7): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 72 (gpio2-8): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 73 (gpio2-9): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 74 (gpio2-10): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 75 (gpio2-11): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 76 (gpio2-12): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 77 (gpio2-13): vcc5v0-usb20-host gpio2:77 function usb-host group usb20-host-pwr-en
+pin 78 (gpio2-14): 2acb0000.i2c (GPIO UNCLAIMED) function i2c8 group i2c8m2-xfer
+pin 79 (gpio2-15): 2acb0000.i2c (GPIO UNCLAIMED) function i2c8 group i2c8m2-xfer
+pin 80 (gpio2-16): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 81 (gpio2-17): 2ad00000.spi (GPIO UNCLAIMED) function spi1 group spi1m1-csn1
+pin 82 (gpio2-18): 2ad00000.spi (GPIO UNCLAIMED) function spi1 group spi1m1-pins
+pin 83 (gpio2-19): 2ad00000.spi (GPIO UNCLAIMED) function spi1 group spi1m1-pins
+pin 84 (gpio2-20): 2ad00000.spi (GPIO UNCLAIMED) function spi1 group spi1m1-csn0
+pin 85 (gpio2-21): 2ad00000.spi (GPIO UNCLAIMED) function spi1 group spi1m1-pins
+pin 86 (gpio2-22): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 87 (gpio2-23): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 88 (gpio2-24): 2ad70000.serial (GPIO UNCLAIMED) function uart4 group uart4m0-xfer
+pin 89 (gpio2-25): 2ad70000.serial (GPIO UNCLAIMED) function uart4 group uart4m0-xfer
+pin 90 (gpio2-26): 2ad90000.serial (GPIO UNCLAIMED) function uart6 group uart6m1-xfer
+pin 91 (gpio2-27): 2ad90000.serial (GPIO UNCLAIMED) function uart6 group uart6m1-xfer
+pin 92 (gpio2-28): wireless-bluetooth gpio2:92 function uart6 group uart6m1-rtsn
+pin 93 (gpio2-29): 2ad90000.serial (GPIO UNCLAIMED) function uart6 group uart6m1-ctsn
+pin 94 (gpio2-30): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 95 (gpio2-31): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 96 (gpio3-0): 2aca0000.i2c (GPIO UNCLAIMED) function i2c7 group i2c7m1-xfer
+pin 97 (gpio3-1): 2aca0000.i2c (GPIO UNCLAIMED) function i2c7 group i2c7m1-xfer
+pin 98 (gpio3-2): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 99 (gpio3-3): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 100 (gpio3-4): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 101 (gpio3-5): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-miim
+pin 102 (gpio3-6): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-miim
+pin 103 (gpio3-7): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rx_bus2
+pin 104 (gpio3-8): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-mclk
+pin 105 (gpio3-9): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rx_bus2
+pin 106 (gpio3-10): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rx_bus2
+pin 107 (gpio3-11): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-tx_bus2
+pin 108 (gpio3-12): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-tx_bus2
+pin 109 (gpio3-13): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-tx_bus2
+pin 110 (gpio3-14): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rgmii_clk
+pin 111 (gpio3-15): 2ac70000.i2c (GPIO UNCLAIMED) function i2c4 group i2c4m3-xfer
+pin 112 (gpio3-16): 2ac70000.i2c (GPIO UNCLAIMED) function i2c4 group i2c4m3-xfer
+pin 113 (gpio3-17): 2ac80000.i2c (GPIO UNCLAIMED) function i2c5 group i2c5m3-xfer
+pin 114 (gpio3-18): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rgmii_bus
+pin 115 (gpio3-19): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rgmii_bus
+pin 116 (gpio3-20): 2ac80000.i2c (GPIO UNCLAIMED) function i2c5 group i2c5m3-xfer
+pin 117 (gpio3-21): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 118 (gpio3-22): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 119 (gpio3-23): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 120 (gpio3-24): 2ade3000.pwm (GPIO UNCLAIMED) function pwm2 group pwm2m3-ch3
+pin 121 (gpio3-25): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rgmii_clk
+pin 122 (gpio3-26): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rgmii_bus
+pin 123 (gpio3-27): 2a220000.ethernet (GPIO UNCLAIMED) function eth0 group eth0m0-rgmii_bus
+pin 124 (gpio3-28): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 125 (gpio3-29): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 126 (gpio3-30): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 127 (gpio3-31): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 128 (gpio4-0): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 129 (gpio4-1): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 130 (gpio4-2): 3-0011 (GPIO UNCLAIMED) function sai1 group sai1m0-mclk
+pin 131 (gpio4-3): 2a610000.sai (GPIO UNCLAIMED) function sai1 group sai1m0-sclk
+pin 132 (gpio4-4): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 133 (gpio4-5): 2a610000.sai (GPIO UNCLAIMED) function sai1 group sai1m0-lrck
+pin 134 (gpio4-6): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 135 (gpio4-7): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 136 (gpio4-8): es8388-sound gpio4:136 function headphone group hp-det
+pin 137 (gpio4-9): 2a610000.sai (GPIO UNCLAIMED) function sai1 group sai1m0-sdo2
+pin 138 (gpio4-10): (MUX UNCLAIMED) gpio4:138
+pin 139 (gpio4-11): 2a610000.sai (GPIO UNCLAIMED) function sai1 group sai1m0-sdi0
+pin 140 (gpio4-12): 2ac60000.i2c (GPIO UNCLAIMED) function i2c3 group i2c3m0-xfer
+pin 141 (gpio4-13): 2ac60000.i2c (GPIO UNCLAIMED) function i2c3 group i2c3m0-xfer
+pin 142 (gpio4-14): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 143 (gpio4-15): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 144 (gpio4-16): 27da0000.hdmi (GPIO UNCLAIMED) function hdmi_tx group hdmi_txm0-pins
+pin 145 (gpio4-17): 27da0000.hdmi (GPIO UNCLAIMED) function hdmi_tx group hdmi_txm0-pins
+pin 146 (gpio4-18): 27da0000.hdmi (GPIO UNCLAIMED) function hdmi_tx group hdmi-tx-scl
+pin 147 (gpio4-19): 27da0000.hdmi (GPIO UNCLAIMED) function hdmi_tx group hdmi-tx-sda
+pin 148 (gpio4-20): (MUX UNCLAIMED) gpio4:148
+pin 149 (gpio4-21): (MUX UNCLAIMED) gpio4:149
+pin 150 (gpio4-22): (MUX UNCLAIMED) gpio4:150
+pin 151 (gpio4-23): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 152 (gpio4-24): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 153 (gpio4-25): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 154 (gpio4-26): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 155 (gpio4-27): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 156 (gpio4-28): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 157 (gpio4-29): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 158 (gpio4-30): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 159 (gpio4-31): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+
+FILE /sys/kernel/debug/pinctrl/rk806-pinctrl.1.auto-rk806-pinctrl/pinmux-pins
+Pinmux settings per pin
+Format: pin (name): mux_owner gpio_owner hog?
+pin 0 (gpio_pwrctrl1): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 1 (gpio_pwrctrl2): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 2 (gpio_pwrctrl3): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+
+FILE /sys/kernel/debug/pinctrl/pinctrl-rockchip-pinctrl/pinconf-pins
+Pin config settings per pin
+Format: pin (name): configs
+pin 0 (gpio0-0): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 1 (gpio0-1): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 2 (gpio0-2): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 3 (gpio0-3): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 4 (gpio0-4): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 5 (gpio0-5): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 6 (gpio0-6): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 7 (gpio0-7): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 8 (gpio0-8): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 9 (gpio0-9): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 10 (gpio0-10): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 11 (gpio0-11): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 12 (gpio0-12): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 14 (gpio0-14): input bias disabled, output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 15 (gpio0-15): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 16 (gpio0-16): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 17 (gpio0-17): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 18 (gpio0-18): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 19 (gpio0-19): input bias disabled, output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 20 (gpio0-20): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 21 (gpio0-21): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 22 (gpio0-22): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 23 (gpio0-23): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 24 (gpio0-24): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 25 (gpio0-25): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 26 (gpio0-26): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 27 (gpio0-27): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 28 (gpio0-28): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 29 (gpio0-29): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 30 (gpio0-30): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 31 (gpio0-31): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 32 (gpio1-0): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 33 (gpio1-1): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 34 (gpio1-2): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 35 (gpio1-3): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 36 (gpio1-4): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 37 (gpio1-5): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 38 (gpio1-6): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 39 (gpio1-7): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 40 (gpio1-8): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 41 (gpio1-9): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 42 (gpio1-10): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 43 (gpio1-11): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 44 (gpio1-12): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 45 (gpio1-13): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 46 (gpio1-14): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 47 (gpio1-15): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 48 (gpio1-16): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 49 (gpio1-17): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 50 (gpio1-18): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 51 (gpio1-19): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 52 (gpio1-20): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 53 (gpio1-21): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 54 (gpio1-22): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 55 (gpio1-23): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 56 (gpio1-24): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 57 (gpio1-25): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 58 (gpio1-26): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 59 (gpio1-27): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 60 (gpio1-28): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 61 (gpio1-29): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 62 (gpio1-30): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 63 (gpio1-31): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 64 (gpio2-0): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 65 (gpio2-1): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 66 (gpio2-2): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 67 (gpio2-3): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 68 (gpio2-4): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 69 (gpio2-5): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 70 (gpio2-6): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 71 (gpio2-7): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 72 (gpio2-8): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 73 (gpio2-9): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 74 (gpio2-10): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 75 (gpio2-11): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 76 (gpio2-12): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 77 (gpio2-13): input bias disabled, output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 78 (gpio2-14): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 79 (gpio2-15): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 80 (gpio2-16): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 81 (gpio2-17): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 82 (gpio2-18): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 83 (gpio2-19): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 84 (gpio2-20): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 85 (gpio2-21): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 86 (gpio2-22): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 87 (gpio2-23): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 88 (gpio2-24): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 89 (gpio2-25): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 90 (gpio2-26): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 91 (gpio2-27): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 92 (gpio2-28): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 93 (gpio2-29): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 94 (gpio2-30): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 95 (gpio2-31): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 96 (gpio3-0): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 97 (gpio3-1): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 98 (gpio3-2): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 99 (gpio3-3): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 100 (gpio3-4): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 101 (gpio3-5): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 102 (gpio3-6): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 103 (gpio3-7): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 104 (gpio3-8): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 105 (gpio3-9): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 106 (gpio3-10): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 107 (gpio3-11): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 108 (gpio3-12): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 109 (gpio3-13): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 110 (gpio3-14): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 111 (gpio3-15): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 112 (gpio3-16): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 113 (gpio3-17): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 114 (gpio3-18): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 115 (gpio3-19): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 116 (gpio3-20): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 117 (gpio3-21): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 118 (gpio3-22): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 119 (gpio3-23): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 120 (gpio3-24): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 121 (gpio3-25): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 122 (gpio3-26): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 123 (gpio3-27): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 124 (gpio3-28): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 125 (gpio3-29): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 126 (gpio3-30): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 127 (gpio3-31): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 128 (gpio4-0): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 129 (gpio4-1): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 130 (gpio4-2): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 131 (gpio4-3): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 132 (gpio4-4): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 133 (gpio4-5): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 134 (gpio4-6): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 135 (gpio4-7): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 136 (gpio4-8): input bias pull up (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 137 (gpio4-9): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 138 (gpio4-10): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 139 (gpio4-11): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 140 (gpio4-12): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 141 (gpio4-13): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 142 (gpio4-14): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 143 (gpio4-15): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 144 (gpio4-16): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 145 (gpio4-17): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 146 (gpio4-18): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 147 (gpio4-19): input bias disabled, output drive strength (8 mA), input schmitt enabled
+pin 148 (gpio4-20): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 149 (gpio4-21): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 150 (gpio4-22): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 151 (gpio4-23): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 152 (gpio4-24): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled
+pin 153 (gpio4-25): input bias pull down (1 ohms), output drive strength (4 mA), input schmitt enabled
+pin 154 (gpio4-26): input bias disabled, output drive strength (2 mA), input schmitt enabled, pin output (0 level)
+pin 155 (gpio4-27): input bias disabled, output drive strength (2 mA), input schmitt enabled, pin output (0 level)
+pin 156 (gpio4-28): input bias disabled, output drive strength (2 mA), input schmitt enabled, pin output (0 level)
+pin 157 (gpio4-29): input bias disabled, output drive strength (2 mA), input schmitt enabled, pin output (0 level)
+pin 158 (gpio4-30): input bias disabled, output drive strength (2 mA), input schmitt enabled, pin output (0 level)
+pin 159 (gpio4-31): input bias disabled, output drive strength (2 mA), input schmitt enabled, pin output (0 level)
+
+FILE /sys/kernel/debug/pinctrl/rk806-pinctrl.1.auto-rk806-pinctrl/pinconf-pins
+Pin config settings per pin
+Format: pin (name): configs
+pin 0 (gpio_pwrctrl1): 
+pin 1 (gpio_pwrctrl2): 
+pin 2 (gpio_pwrctrl3): 
+
+FILE /sys/kernel/debug/gpio
+gpiochip0: GPIOs 0-31, parent: platform/27320000.gpio, gpio0:
+ gpio-0   (                    |work                ) out hi ACTIVE LOW
+ gpio-9   (                    |bt_default_wake_host) in  hi IRQ 
+ gpio-14  (                    |vcc5v0-typec-vbus   ) out lo 
+ gpio-19  (                    |vcc5v0-usb30-host   ) out hi 
+ gpio-20  (                    |vcc-1v2-mipi-csi    ) out hi 
+ gpio-25  (                    |rkwifi_wlan_vbat    ) out hi 
+
+gpiochip1: GPIOs 32-63, parent: platform/2ae10000.gpio, gpio1:
+ gpio-54  (                    |reset               ) out hi ACTIVE LOW
+ gpio-55  (                    |bt_default_reset    ) out hi 
+ gpio-60  (                    |bt_default_wake     ) out hi 
+ gpio-61  (                    |vcc3v3-sata0        ) out hi 
+
+gpiochip2: GPIOs 64-95, parent: platform/2ae20000.gpio, gpio2:
+ gpio-77  (                    |vcc5v0-usb20-host   ) out hi 
+ gpio-92  (                    |bt_default_rts      ) out lo 
+
+gpiochip3: GPIOs 96-127, parent: platform/2ae30000.gpio, gpio3:
+
+gpiochip4: GPIOs 128-159, parent: platform/2ae40000.gpio, gpio4:
+ gpio-136 (                    |hp-det              ) in  lo IRQ 
+ gpio-138 (                    |hp-con              ) out lo 
+ gpio-148 (                    |sbu1-dc             ) out lo 
+ gpio-149 (                    |sbu2-dc             ) out hi 
+ gpio-150 (                    |enable              ) out hi 
+
+gpiochip5: GPIOs 509-511, parent: platform/rk806-pinctrl.1.auto, rk806-gpio, can sleep:
+
+[relevant_kernel_messages]
+[    4.829820] 2ad70000.serial: ttyS4 at MMIO 0x2ad70000 (irq = 46, base_baud = 11718) is a 16550A
+
+[uart_kernel_options]
+CONFIG_OF_OVERLAY=y
+CONFIG_SERIAL_8250=y
+CONFIG_SERIAL_8250_DEPRECATED_OPTIONS=y
+CONFIG_SERIAL_8250_16550A_VARIANTS=y
+CONFIG_SERIAL_8250_CONSOLE=y
+CONFIG_SERIAL_8250_DMA=y
+CONFIG_SERIAL_8250_NR_UARTS=32
+CONFIG_SERIAL_8250_RUNTIME_UARTS=15
+CONFIG_SERIAL_8250_DWLIB=y
+CONFIG_SERIAL_8250_FSL=y
+CONFIG_SERIAL_8250_DW=y
+CONFIG_SERIAL_8250_PERICOM=y
+CONFIG_SERIAL_OF_PLATFORM=y
+CONFIG_PINCTRL_ROCKCHIP=y
+CONFIG_DEBUG_FS=y
+CONFIG_DEBUG_FS_ALLOW_ALL=y
+
+[boot_configuration]
+Root privileges required. Please run with sudo
+
+[live_device_tree_begin]
+dtc unavailable
+uart3m0_xfer: /pinctrl/uart3/uart3m0-xfer
+phandle bytes:  00 00 01 8a
+rockchip,pins bytes:  00 00 00 03 00 00 00 01 00 00 00 09 00 00 01 be
+ 00 00 00 03 00 00 00 00 00 00 00 09 00 00 01 be
+uart4m0_xfer: /pinctrl/uart4/uart4m0-xfer
+phandle bytes:  00 00 01 8b
+rockchip,pins bytes:  00 00 00 02 00 00 00 19 00 00 00 09 00 00 01 be
+ 00 00 00 02 00 00 00 18 00 00 00 09 00 00 01 be
+uart7m0_xfer: /pinctrl/uart7/uart7m0-xfer
+phandle bytes:  00 00 01 8f
+rockchip,pins bytes:  00 00 00 02 00 00 00 0f 00 00 00 09 00 00 01 be
+ 00 00 00 02 00 00 00 0e 00 00 00 09 00 00 01 be
+uart8m1_xfer: /pinctrl/uart8/uart8m1-xfer
+phandle bytes:  00 00 01 90
+rockchip,pins bytes:  00 00 00 02 00 00 00 07 00 00 00 09 00 00 01 be
+ 00 00 00 02 00 00 00 06 00 00 00 09 00 00 01 be
+uart9m0_xfer: /pinctrl/uart9/uart9m0-xfer
+phandle bytes:  00 00 01 91
+rockchip,pins bytes:  00 00 00 02 00 00 00 10 00 00 00 09 00 00 01 be
+ 00 00 00 02 00 00 00 11 00 00 00 09 00 00 01 be
+i2c7m1_xfer: /pinctrl/i2c7/i2c7m1-xfer
+phandle bytes:  00 00 01 78
+rockchip,pins bytes:  00 00 00 03 00 00 00 00 00 00 00 0b 00 00 01 bd
+ 00 00 00 03 00 00 00 01 00 00 00 0b 00 00 01 bd
+i2c8m2_xfer: /pinctrl/i2c8/i2c8m2-xfer
+phandle bytes:  00 00 01 79
+rockchip,pins bytes:  00 00 00 02 00 00 00 0e 00 00 00 0b 00 00 01 bd
+ 00 00 00 02 00 00 00 0f 00 00 00 0b 00 00 01 bd
+spi1m1_csn1: /pinctrl/spi1/spi1m1-csn1
+phandle bytes:  00 00 01 7e
+rockchip,pins bytes:  00 00 00 02 00 00 00 11 00 00 00 0a 00 00 01 bb
+
+[live_device_tree_end]
+
+audit_exit=0
+Connection to 192.168.100.123 closed.

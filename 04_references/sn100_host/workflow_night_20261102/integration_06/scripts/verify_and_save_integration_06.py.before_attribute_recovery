@@ -1,0 +1,207 @@
+"""逐份核第06批源码/程序包和板B暂存证据，再新建本批证据目录。"""
+from pathlib import Path
+from datetime import datetime
+import hashlib
+import json
+import re
+import shutil
+import tarfile
+
+TASK = Path(__file__).resolve().parent
+ROOT = TASK.parents[2]
+WORK = TASK / "integration_06"
+REVIEWS = (
+    "integration_06_review/merge_review.json", "integration_06_review/cross_patch_review.md",
+    "integration_06_review/cross_patch_source_snapshot.json", "integration_06_review/cross_patch_build_inputs.tsv",
+    "integration_06_bridges/README.md", "integration_06_bridges/independent_review.md",
+    "report_lis/channel_switch_candidate_v2/handoff.md", "report_lis/channel_switch_candidate_v2/independent_fix_review.md",
+    "report_lis/channel_switch_candidate_v2/verification_result.md", "report_lis/channel_switch_candidate_v2/patches.sha256",
+    "project_update_intents/handoff.md", "project_update_intents/interface_contract.md",
+    "project_update_intents/candidate_manifest.json", "project_update_intents/final_independent_review.md",
+    "project_update_intents_v2/handoff.md", "project_update_intents_v2/candidate_manifest.json",
+    "project_update_intents_v2/independent_fix_review.md",
+    "report_lis/qq_actual_count_review/handoff.md", "report_lis/qq_actual_count_review/source_review.md",
+    "report_lis/qq_actual_count_review/independent_review.md", "report_lis/qq_actual_count_review/handoff_files.sha256",
+    "project_copy_v2/handoff.md", "project_copy_v2/proof_contract.md", "project_copy_v2/reader_boundaries.md",
+    "project_copy_v2/review_manifest.json", "project_copy_v2/independent_recovery_review.md", "project_copy_v2/patches.sha256",
+)
+SCRIPTS = (
+    "prepare_integration_06_promotion.py", "promote_integration_06_template.py.in", "promote_integration_06_review.py",
+    "build_integration_06.sh", "verify_integration_06_inputs.py", "archive_integration_06.py",
+    "stage_board_b_release_06.py", "stage_board_b_release_06.sh", "verify_and_save_integration_06.py",
+    "finish_integration_06_archive.py", "integration_06_tools_handoff.md",
+)
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def safe(name):
+    if (not name or "\\" in name or ":" in name or name.startswith("/")
+            or any(x in ("", ".", "..") for x in name.split("/"))):
+        raise RuntimeError("归档路径越界。")
+    return name
+
+
+def checksums(directory):
+    rows = []
+    for path in sorted(directory.rglob("*")):
+        if path.is_symlink():
+            raise RuntimeError("归档中出现链接，停止：" + str(path))
+        if path.is_file() and path.name != "SHA256SUMS":
+            rows.append(digest(path.read_bytes()) + "  " + path.relative_to(directory).as_posix())
+    (directory / "SHA256SUMS").write_text("\n".join(rows) + "\n", encoding="ascii")
+    for row in rows:
+        expected, name = row.split("  ", 1)
+        if digest((directory / name).read_bytes()) != expected:
+            raise RuntimeError("归档逐份复算失败：" + name)
+    return len(rows)
+
+
+def main():
+    archive = ROOT / "07_backups/sn100_host/board_b/workflow_integration_20261102/integration_06"
+    recorded = Path((WORK / "archive_path.txt").read_text(encoding="utf-8").strip())
+    # 根可能在Windows归档，路径记录仅作对照；实际读写位置始终是固定06目录。
+    if recorded.name != "integration_06" or archive.is_symlink():
+        raise RuntimeError("不是本批固定归档目录。")
+    for row in (archive / "SHA256SUMS").read_text(encoding="ascii").splitlines():
+        wanted, name = row.split("  ", 1)
+        if digest((archive / safe(name)).read_bytes()) != wanted:
+            raise RuntimeError("原归档指纹不符：" + name)
+    provenance = json.loads((archive / "provenance.json").read_text(encoding="utf-8"))
+    snapshot = json.loads((archive / "source_snapshot.json").read_text(encoding="utf-8"))
+    complete = json.loads((archive / "build_complete.json").read_text(encoding="utf-8"))
+    progress = json.loads((WORK / "merge_inputs.json").read_text(encoding="utf-8"))
+    if (WORK / "merge_inputs.json").read_bytes() != (TASK / "integration_06_review/promotion_progress.json").read_bytes():
+        raise RuntimeError("构建后逐片晋级记录已变化。")
+    release = provenance["release_id"]
+    if not re.fullmatch(r"[a-f0-9]{64}", release):
+        raise RuntimeError("发布标识无效。")
+    source = archive / ("sn100_sources_" + release + ".tar.gz")
+    if digest(source.read_bytes()) != provenance["source_archive_sha256"]:
+        raise RuntimeError("源码包指纹不符。")
+    seen = set()
+    with tarfile.open(source, "r:gz") as bundle:
+        for member in bundle:
+            prefix = "06_programs/sn100_host/"
+            if not member.isfile() or not member.name.startswith(prefix):
+                raise RuntimeError("源码包包含非预期条目。")
+            name = safe(member.name[len(prefix):])
+            if name in seen or name not in snapshot or digest(bundle.extractfile(member).read()) != snapshot[name]:
+                raise RuntimeError("源码条目重复、缺失或指纹不符：" + name)
+            seen.add(name)
+    if seen != set(snapshot) or snapshot != progress["final_source_files"]:
+        raise RuntimeError("源码恢复包未覆盖全批审阅结果。")
+    package = archive / ("sn100_shell_" + release + ".tar.gz")
+    if digest(package.read_bytes()) != provenance["package_sha256"]:
+        raise RuntimeError("程序包指纹不符。")
+    files, special = {}, {}
+    with tarfile.open(package, "r:gz") as bundle:
+        for member in bundle:
+            name = safe(member.name)
+            if member.isdir():
+                continue
+            if not member.isfile() or name in files:
+                raise RuntimeError("程序包有重复或非普通条目。")
+            data = bundle.extractfile(member).read()
+            files[name] = digest(data)
+            if name in ("SHA256SUMS", "release_id", "release.json"):
+                special[name] = data
+    if digest(special["SHA256SUMS"]) != release or special["release_id"].decode("ascii").strip() != release:
+        raise RuntimeError("程序包内发布标识不符。")
+    wanted_files = {}
+    for row in special["SHA256SUMS"].decode("ascii").splitlines():
+        wanted, name = row.split("  ", 1)
+        name = safe(name)
+        if name in wanted_files or not re.fullmatch(r"[a-f0-9]{64}", wanted):
+            raise RuntimeError("程序包清单重复或格式无效。")
+        wanted_files[name] = wanted
+    if {name: value for name, value in files.items() if name not in ("SHA256SUMS", "release_id")} != wanted_files:
+        raise RuntimeError("程序包逐份解包后的清单不符。")
+    metadata = json.loads(special["release.json"])
+    if (metadata["sources"] != snapshot or metadata["binary_sha256"] != provenance["application_sha256"]
+            or metadata["renderer_sha256"] != provenance["report_renderer_sha256"]
+            or metadata["dependencies_sha256"] != complete["dependency_report_sha256"]
+            or files["sn100_shell"] != provenance["application_sha256"]
+            or files["sn100_report_renderer"] != provenance["report_renderer_sha256"]):
+        raise RuntimeError("程序包内源码/二进制/依赖身份不符。")
+    if (WORK / "board_b_stage.exit").read_text().strip() != "0" or (WORK / "upload.exit").read_text().strip() != "0":
+        raise RuntimeError("板B上传或独立版本暂存未成功。")
+    started = json.loads((WORK / "stage_started.json").read_text(encoding="utf-8"))
+    if (started.get("batch") != "integration_06" or started.get("release_id") != release
+            or started.get("package_sha256") != provenance["package_sha256"]
+            or started.get("stage_script_sha256") != digest((TASK / "stage_board_b_release_06.sh").read_bytes())):
+        raise RuntimeError("板B保存的实际脚本或程序包身份不符。")
+    board_log = (WORK / "logs/board_b_stage.log").read_text(encoding="utf-8")
+    for expected in ("BOARD=board_b", "SERIAL=8314b1e8ffd0321f", "STAGE_BATCH=integration_06",
+                     "STAGED_RELEASE=" + release, "ACTIVATED=0", "PROGRAM_STARTED=0",
+                     "PACKAGE_SHA256=" + provenance["package_sha256"]):
+        if expected not in board_log.splitlines():
+            raise RuntimeError("板B日志缺少准确身份/范围：" + expected)
+    for name, expected in (("sn100_shell", provenance["application_sha256"]),
+                           ("sn100_report_renderer", provenance["report_renderer_sha256"])):
+        pattern = re.escape(expected) + r"\s+" + re.escape("/home/rkshare/programs/sn100_shell/releases/" + release + "/" + name)
+        if not re.search(r"(?m)^" + pattern + r"$", board_log):
+            raise RuntimeError("板B实际程序指纹不符：" + name)
+    if "not found" in board_log:
+        raise RuntimeError("板B实际动态库缺失。")
+    current = [line[len("CURRENT_RELEASE="):] for line in board_log.splitlines() if line.startswith("CURRENT_RELEASE=")]
+    if len(current) != 1:
+        raise RuntimeError("板B日志未明确保存时的current。")
+    destination = ROOT / "04_references/sn100_host/workflow_night_20261102/integration_06"
+    if destination.exists() or destination.is_symlink():
+        raise RuntimeError("已有06证据目录，请人工核查，不覆盖。")
+    copies = {
+        WORK / "logs/build.log": "build.log", WORK / "build_exit.txt": "build_exit.txt",
+        WORK / "build_inputs.tsv": "build_inputs.tsv", WORK / "merge_inputs.json": "merge_inputs.json",
+        WORK / "input_verification.json": "input_verification.json", WORK / "build_complete.json": "build_complete.json",
+        TASK / "integration_06_review/promotion_progress.json": "promotion_progress.json",
+        WORK / "logs/board_b_stage.log": "board_b_stage.log", WORK / "board_b_stage.exit": "board_b_stage.exit",
+        WORK / "logs/upload.log": "upload.log", WORK / "upload.exit": "upload.exit", WORK / "stage_started.json": "stage_started.json",
+        archive / "source_snapshot.json": "source_snapshot.json", archive / "dependency_report.json": "dependency_report.json",
+    }
+    for path in [*copies, *(TASK / name for name in REVIEWS), *(TASK / name for name in SCRIPTS)]:
+        if not path.is_file() or path.is_symlink():
+            raise RuntimeError("缺少固定证据原文：" + str(path))
+    for item in progress["patches"]:
+        if digest((TASK / safe(item["patch"])).read_bytes()) != item["sha256"]:
+            raise RuntimeError("补丁已漂移，未保存混合证据。")
+    destination.mkdir(parents=True, exist_ok=False)
+    for original, name in copies.items():
+        shutil.copyfile(original, destination / name)
+    for name in REVIEWS:
+        target = destination / "source_review" / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(TASK / name, target)
+    for item in progress["patches"]:
+        target = destination / "patches" / item["patch"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(TASK / item["patch"], target)
+    (destination / "scripts").mkdir()
+    for name in SCRIPTS:
+        shutil.copyfile(TASK / name, destination / "scripts" / name)
+    provenance.update({"board_staging": "passed_manifest_sha256_and_runtime_dependencies",
+                       "source_archive_readback_files": len(seen), "package_archive_readback_files": len(files),
+                       "current_release_at_staging": current[0]})
+    text = json.dumps(provenance, ensure_ascii=False, indent=2) + "\n"
+    (archive / "provenance.json").write_text(text, encoding="utf-8")
+    (destination / "provenance.json").write_text(text, encoding="utf-8")
+    verification = {
+        "captured_at": datetime.now().astimezone().isoformat(), "batch": "integration_06", "release_id": release,
+        "arm64_build_exit": 0, "source_count": len(snapshot), "unique_build_inputs": complete["unique_build_inputs"],
+        "compiled_objects": len(list((WORK / "arm64_build").glob("obj_*.o"))),
+        "helper_objects": len(list((WORK / "arm64_build").glob("helper_*.o"))),
+        "source_archive_readback_files": len(seen), "package_archive_readback_files": len(files),
+        "board": "board_b", "serial": "8314b1e8ffd0321f", "board_stage_exit": 0,
+        "current_release_changed": False, "new_program_executed": False, "controller_restarted": False,
+        "rk_function_verified": False, "instrument_verified": False, "runtime_data_or_credentials_archived": False,
+    }
+    (destination / "verification.json").write_text(json.dumps(verification, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print("BACKUP_CHECKSUM_FILES=" + str(checksums(archive)))
+    print("EVIDENCE_CHECKSUM_FILES=" + str(checksums(destination)))
+    print(json.dumps(verification, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

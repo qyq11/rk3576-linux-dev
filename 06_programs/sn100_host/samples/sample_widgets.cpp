@@ -3,6 +3,8 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
+#include <QElapsedTimer>
+#include <QTimer>
 class LocalSampleHoleView : public QWidget
 {
   public:
@@ -36,6 +38,28 @@ SampleRackView::SampleRackView(const SampleRack &rack, int index, bool selected,
     ui->lblRackId->setText(rack.emergency ? QStringLiteral("急诊")
                                           : QStringLiteral("预设%1:%2").arg(index).arg(rack.name));
     ui->lblLeftTime->setText(QStringLiteral("剩余时间:--:--:--"));
+    bool testing=false, hasError=false;
+    for (const auto &hole : rack.holes)
+    {
+        testing=testing || sampleHoleState(sampleHoleTaskStates(hole))==SampleHoleState::Testing;
+        hasError=hasError || sampleHoleTaskStates(hole).contains(SampleTaskState::Error);
+    }
+    if (hasError)
+        ui->lblLeftTime->setStyleSheet(QStringLiteral("QLabel{background-color:white;color:#FF0000;border-radius:1px;border:1px solid white;}"));
+    if (testing && rack.remainingSeconds>0)
+    {
+        auto *timer=new QTimer(this);
+        const auto update=[this,rack]()
+        {
+            QElapsedTimer clock; clock.start();
+            const qint64 elapsed=qMax(qint64(0),clock.msecsSinceReference()-rack.remainingAtMs)/1000;
+            const qint64 seconds=qMax(qint64(1),qint64(rack.remainingSeconds)-elapsed);
+            ui->lblLeftTime->setText(QStringLiteral("剩余时间:%1:%2:%3")
+                .arg(seconds/3600,2,10,QLatin1Char('0')).arg(seconds/60%60,2,10,QLatin1Char('0')).arg(seconds%60,2,10,QLatin1Char('0')));
+        };
+        connect(timer,&QTimer::timeout,this,update);
+        timer->start(1000); update();
+    }
     ui->btnEdit->setVisible(!rack.emergency);
     connect(ui->btnEdit, &QPushButton::clicked, this, [this]() { emit renameRequested(id_); });
     int x = 20;

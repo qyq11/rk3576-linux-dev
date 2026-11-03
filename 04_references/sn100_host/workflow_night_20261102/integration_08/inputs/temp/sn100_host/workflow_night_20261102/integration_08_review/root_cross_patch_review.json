@@ -1,0 +1,61 @@
+{
+  "format": "sn100-integration-08-root-cross-patch-review-v1",
+  "created_at_utc": "2026-11-03T04:44:20.540097+00:00",
+  "source_only_approved_for_promotion": true,
+  "reviewed_source_count": 674,
+  "reviews": [
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/final_page_provider_review.md",
+      "sha256": "2a14bbf28962c92b291b29352f0a3f6e8b95b8ee34bcb1bdfd87d361ca3528d7"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/final_page_provider_review_v2.md",
+      "sha256": "c9e1892b1689b337067f51b5328a36245b3697fc7d7f8884fe88bf5bc6c8da66"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/final_root_routing_review.md",
+      "sha256": "fed1b0ea0a6b91099ed867e26f40b02faec4718daf9c757148c7f4e50687b9de"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/final_root_routing_review_v2.md",
+      "sha256": "310ed82162926e72a2031e95000f06e42ed4c9a15e3ceb093455a927ee9557ee"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/promotion_tools_review_v3.md",
+      "sha256": "ee72f1e4a5bdc2362624ab805a1ddd5d251ee64cd458464644324dc2a2b24b33"
+    },
+    {
+      "path": "temp/sn100_host/workflow_night_20261102/default_sample_container_candidate_20261103/independent_review.md",
+      "sha256": "a4601449c22b75f41ef245bb7cb423f42e459ee5616fea1fe41b4274361a3621"
+    }
+  ],
+  "stage_metadata": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/stage_02/integration_metadata_candidate.json",
+    "sha256": "decaee0e5c346131fe0d2b8fba6ff6313ea4c20b65dc4b9fdb98d6f7b69a28c6"
+  },
+  "single_stage_application": {
+    "path": "temp/sn100_host/workflow_night_20261102/integration_08_review/stage_02/single_stage_application_result.json",
+    "sha256": "de01b312c19e8081b72551998d79b3f568e811346d4ef08c0d1d10c1b78730d2"
+  },
+  "resolved_issue": "原事务提交未确认只遮住任务前可信孔，可能漏掉后来恢复来源的孔；第二版改为整盘待核。两份独立窄审确认该修点，旧问题报告保留。",
+  "cross_patch_findings": [
+    "五片按后台、数据转接、页面、主窗口第二版、默认容器顺序普通应用。累计主窗口补丁与其修点差片只选累计补丁，未重复应用。",
+    "实际提交事实先缓存，等同包后台处理结束再排页面读取；原任务回应不等待页面回执。真正读取完成由后台同队列哨兵归还，页面超时不代替读取结束。",
+    "显示来源待核与事务提交待核分别保存；原始Ur或手工来源可恢复显示资料，不能清除尚未核清的事务事实。",
+    "默认容器只使用当前实际配置决定新建样本的试管或样本杯；原有记录、手选与复制不被统一改写。七份文件的完整前像和写后字节均与交付相符。"
+  ],
+  "blocking_findings_in_reviewed_scope": [],
+  "pending_validation": [
+    "完整ARM64链接、板B实际运行及真实仪器任务、退任务、N读取交错和退出恢复。",
+    "真实显示量与次数、默认容器其他分支、原界面对照、响应资源、长期运行及同板主控影响。",
+    "事务待核目前仅在当前进程保留，跨重启核清尚未完成。",
+    "原版g6与移植版g15、逐步骤与最终按孔累计、可用次数与选孔时机的差异另开已记录切片；本批未修改冻结后台补丁，未宣称完整Windows业务一致。",
+    "管理员登录菜单和注销重登等待用户能操作板B；用户已要求先继续其他工作。"
+  ],
+  "compiled": false,
+  "product_executed": false,
+  "database_opened": false,
+  "network_used": false,
+  "independent_second_replay_executed": false,
+  "next": "晋升工具在正式写入前另建目录实际重放五片、核对全部674份字节后，再逐片应用到正式源码。"
+}

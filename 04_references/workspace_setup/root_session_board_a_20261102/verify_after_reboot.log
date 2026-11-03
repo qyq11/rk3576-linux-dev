@@ -1,0 +1,72 @@
+[identity_after_reboot]
+3bf8222fe1417f6a
+c6a6264d-80d4-4593-b808-2f3fd4a308c9
+Linux localhost 6.1.99-rt36-tspi #1 SMP PREEMPT_RT Thu Oct 22 11:35:54 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+1
+
+[real_local_login_sessions]
+root     ttyFIQ0      2026-11-02 11:25
+root     tty1         2026-11-02 11:25
+c1 0 root seat0 tty1    active no -
+c2 0 root -     ttyFIQ0 active no -
+c5 0 root -     -       active no -
+
+TERMINAL=tty1
+SHELL_PID=2062
+Name:	bash
+Uid:	0	0	0	0
+Gid:	0	0	0	0
+SHELL_CWD=/root
+HOME=/root
+USER=root
+LOGNAME=root
+HOME=/root
+LOCAL_ROOT_CHECK_tty1=PASS
+
+TERMINAL=ttyFIQ0
+SHELL_PID=2065
+Name:	bash
+Uid:	0	0	0	0
+Gid:	0	0	0	0
+SHELL_CWD=/root
+HOME=/root
+USER=root
+LOGNAME=root
+HOME=/root
+LOCAL_ROOT_CHECK_ttyFIQ0=PASS
+
+[root_ssh_login]
+uid=0(root) gid=0(root) groups=0(root)
+PWD=/root
+HOME=/root
+
+[login_configuration]
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin root --noclear - $TERM ; ignore_errors=yes ; start_time=[Mon 2026-11-02 11:25:05 CST] ; stop_time=[n/a] ; pid=1859 ; code=(null) ; status=0/0 }
+Id=getty@tty1.service
+ActiveState=active
+DropInPaths=/etc/systemd/system/getty@tty1.service.d/zz-board-a-root-autologin.conf
+
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin root --noclear ttyFIQ0 1500000 linux ; ignore_errors=yes ; start_time=[Mon 2026-11-02 11:25:05 CST] ; stop_time=[n/a] ; pid=1854 ; code=(null) ; status=0/0 }
+Id=serial-getty@ttyFIQ0.service
+ActiveState=active
+DropInPaths=/etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-root-autologin.conf
+3faa620d81d93d788d8efb57a251ddde254ea3020c8b4522257e56c52fcb904e  /etc/systemd/system/getty@tty1.service.d/zz-board-a-root-autologin.conf
+85d3ad67f808e7e82ea381470fb3aba0b731962a13cf587ea40bf5e203abfeaa  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/zz-board-a-root-autologin.conf
+1b12ee238e4193a1c811ac5ceafba0627f44674e218b6fe0db7af0366529a203  /etc/systemd/system/serial-getty@ttyFIQ0.service.d/autologin.conf
+
+[interface_configuration_preserved]
+crw-rw---- 1 root dialout 4, 67 Nov  2 11:25 /dev/ttyS3
+crw-rw---- 1 root dialout 4, 68 Nov  2 11:25 /dev/ttyS4
+crw-rw---- 1 root dialout 4, 71 Nov  2 11:25 /dev/ttyS7
+crw-rw---- 1 root dialout 4, 72 Nov  2 11:25 /dev/ttyS8
+crw-rw---- 1 root dialout 4, 73 Nov  2 11:25 /dev/ttyS9
+3: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0  allmulti 0 minmtu 0 maxmtu 0 
+    can <FD> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0 
+	  rk3576_canfd: tseg1 1..128 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 2
+	  rk3576_canfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 2
+	  clock 297000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus platform parentdev 2ac00000.can 
+fbda3263837bcfbe1c2b12e9111a100c47f373c6f2b33b61f0b2e89a40dcff79  /boot/overlays/overlays.ini
+0a3a28657c9c3f01c60e37a0ee5dc07b09ac9abfea743dd30a2e314a684c0f44  /boot/overlays/.ubootenv
+
+verify_exit=0

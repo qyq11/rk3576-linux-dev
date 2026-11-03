@@ -1,6 +1,8 @@
 #include "frmmain.h"
 #include "ui_frmmain.h"
 #include "alarm_history/alarm_history_host.h"
+#include "alarm_history/original_alarm_receiver.h"
+#include "instrument/device_control.h"
 #include <QDate>
 #include <QDebug>
 #include <QDir>
@@ -81,4 +83,76 @@ bool frmMain::requestAlarmHistoryLeave(const QString &action)
     if (!alarmHistory_ || alarmHistory_->requestLeave(action)) return true;
     emit navigationRejected(tr("本地历史仍在关闭/等待提示确认，请在只读来源和窗口释放后再%1。").arg(action));
     return false;
+}
+
+bool frmMain::enableOriginalAlarmReceiver(AlarmHistory::OriginalAlarmReceiver *receiver)
+{
+    if (!receiver || originalAlarmReceiver_ || !deviceControl_) return false;
+    originalAlarmReceiver_ = receiver;
+    connect(deviceControl_, &DeviceControl::payloadReceived, this, [this](const QByteArray &payload)
+    {
+        if (!originalAlarmReceiver_) return;
+        // 原userRoleName存的是登录账户名；接收时捕获，SQL排队期间注销不改归属。
+        const QString user = session_.name.isEmpty() ? QStringLiteral("Guest") : session_.name;
+        originalAlarmReceiver_->receivePayload(payload, user, QDateTime::currentDateTime());
+    });
+    connect(receiver, &AlarmHistory::OriginalAlarmReceiver::newEventsReceived, this,
+            [](quint64 requestId, const AlarmHistory::Rows &rows)
+    {
+        qInfo() << "ORIGINAL_ALARM_NEW_EVENTS" << requestId << "rows=" << rows.size()
+                << "history_saved=false";
+    });
+    connect(receiver, &AlarmHistory::OriginalAlarmReceiver::historyCommitted, this,
+            [this](quint64 requestId, const AlarmHistory::Rows &rows)
+    {
+        qInfo() << "ORIGINAL_ALARM_HISTORY_COMMITTED" << requestId << "rows=" << rows.size();
+        if (alarmHistory_) alarmHistory_->originalEventsCommitted(rows);
+    });
+    connect(receiver, &AlarmHistory::OriginalAlarmReceiver::historyFailed, this,
+            [](quint64 requestId, const AlarmHistory::Rows &rows, bool submitted, const QString &message)
+    {
+        qWarning().noquote() << "ORIGINAL_ALARM_HISTORY_FAILED" << requestId
+            << "rows=" << rows.size() << "submitted_to_store=" << submitted << message;
+    });
+    connect(receiver, &AlarmHistory::OriginalAlarmReceiver::recoveryFinished, this,
+            [](quint64 requestId, const QString &savedFile, const QString &error)
+    {
+        if (!error.isEmpty())
+            qCritical().noquote() << "ORIGINAL_ALARM_RECOVERY_SAVE_FAILED" << requestId << error;
+        else
+            qWarning().noquote() << "ORIGINAL_ALARM_RECOVERY_SAVED" << requestId << savedFile
+                                << "automatic_replay=false";
+    });
+    connect(receiver, &AlarmHistory::OriginalAlarmReceiver::storageError, this,
+            [this](const QString &message)
+    {
+        ui->btnAbnormal->setToolTip(message);
+        emit navigationRejected(message);
+    });
+    connect(receiver, &AlarmHistory::OriginalAlarmReceiver::stopped, this, [this]()
+    {
+        if (!originalAlarmShutdownPending_) return;
+        originalAlarmShutdownPending_ = false;
+        QTimer::singleShot(0, this, [this]() { window()->close(); });
+    });
+    return true;
+}
+
+bool frmMain::requestOriginalAlarmShutdown()
+{
+    if (!originalAlarmReceiver_ || originalAlarmReceiver_->isStopped()) return true;
+    if (!originalAlarmShutdownPending_)
+    {
+        originalAlarmShutdownPending_ = true;
+        // 之前所有草稿守卫已通过；停止新设备输入后，等已有批次确认才退出事件循环。
+        setEnabled(false);
+        if (deviceControl_) deviceControl_->close();
+        originalAlarmReceiver_->requestStop();
+    }
+    return false;
+}
+
+bool frmMain::originalAlarmShutdownComplete() const
+{
+    return !originalAlarmReceiver_ || originalAlarmReceiver_->isStopped();
 }

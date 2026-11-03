@@ -1,0 +1,48 @@
+AP_CANDIDATES
+*:503:18\:70\:3B\:B1\:93\:88:5745 MHz:39:WPA1 WPA2
+ :503:68\:A0\:3E\:1C\:47\:7C:5745 MHz:35:WPA2
+ :503:94\:D0\:0D\:51\:FB\:98:2437 MHz:27:WPA2
+ :503:94\:D0\:0D\:51\:FB\:9C:5745 MHz:25:WPA2
+ :503:18\:70\:3B\:B1\:93\:84:2437 MHz:24:WPA1 WPA2
+ :503:68\:A0\:3E\:1C\:47\:78:2462 MHz:22:WPA2
+ACTUAL_WIFI_LINK
+Connected to 18:70:3b:b1:93:88 (on wlan0)
+	SSID: 503
+	freq: 5745.0
+	RX: 29618 bytes (335 packets)
+	TX: 25313 bytes (1017 packets)
+	signal: -79 dBm
+	rx bitrate: 58.5 MBit/s
+	tx bitrate: 195.0 MBit/s
+PROFILE_STORAGE_NAMES
+root:root 600 /etc/NetworkManager/system-connections/rk3576-direct.nmconnection
+root:root 600 /run/NetworkManager/system-connections/netplan-NM-2e1ef016-7e35-4008-95a0-bc6f4cd0f2af-503.nmconnection
+root:root 600 /run/NetworkManager/system-connections/netplan-end0.nmconnection
+root:root 600 /run/NetworkManager/system-connections/lo.nmconnection
+root:root 600 /etc/netplan/90-rk3576-image.yaml
+root:root 600 /etc/netplan/90-NM-2e1ef016-7e35-4008-95a0-bc6f4cd0f2af.yaml
+root:root 644 /etc/netplan/01-network.yaml
+IP_STATE
+GENERAL.STATE:                          100 (connected)
+GENERAL.CONNECTION:                     board_b_wifi_503
+IP4.ADDRESS[1]:                         192.168.3.59/24
+INITIAL_DHCP_EVENTS
+Nov 02 17:10:18 localhost NetworkManager[1639]: <info>  [1793610618.2282] device (wlan0): Activation: starting connection 'board_b_wifi_503' (2e1ef016-7e35-4008-95a0-bc6f4cd0f2af)
+Nov 02 17:10:18 localhost NetworkManager[1639]: <info>  [1793610618.2326] device (wlan0): Activation: (wifi) access point 'board_b_wifi_503' has security, but secrets are required.
+Nov 02 17:10:18 localhost NetworkManager[1639]: <warn>  [1793610618.2361] device (wlan0): Activation: failed for connection 'board_b_wifi_503'
+Nov 02 17:10:18 localhost NetworkManager[1639]: <info>  [1793610618.2488] device (wlan0): supplicant interface state: disconnected -> scanning
+Nov 02 17:10:18 localhost NetworkManager[1639]: <info>  [1793610618.2910] device (wlan0): Activation: starting connection 'board_b_wifi_503' (2e1ef016-7e35-4008-95a0-bc6f4cd0f2af)
+Nov 02 17:10:18 localhost NetworkManager[1639]: <info>  [1793610618.2945] device (wlan0): Activation: (wifi) access point 'board_b_wifi_503' has security, but secrets are required.
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.4857] device (wlan0): supplicant interface state: scanning -> disconnected
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.4901] device (wlan0): supplicant interface state: disconnected -> scanning
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.5025] device (wlan0): Activation: (wifi) connection 'board_b_wifi_503' has security, and secrets exist.  No new secrets needed.
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.5490] device (wlan0): supplicant interface state: scanning -> associating
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.6273] device (wlan0): supplicant interface state: associating -> 4way_handshake
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.6521] device (wlan0): supplicant interface state: 4way_handshake -> completed
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.6522] device (wlan0): Activation: (wifi) Stage 2 of 5 (Device Configure) successful. Connected to wireless network "503"
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.6528] device (wlan0): state change: config -> ip-config (reason 'none', sys-iface-state: 'managed')
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.6553] dhcp4 (wlan0): activation: beginning transaction (timeout in 45 seconds)
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.7276] dhcp4 (wlan0): state changed new lease, address=192.168.3.59, acd pending
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.8930] dhcp4 (wlan0): state changed new lease, address=192.168.3.59
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.9334] device (wlan0): state change: ip-config -> ip-check (reason 'none', sys-iface-state: 'managed')
+Nov 02 17:10:19 localhost NetworkManager[1639]: <info>  [1793610619.9630] device (wlan0): Activation: successful, device activated.

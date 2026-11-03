@@ -30,3 +30,8 @@ bool AlarmHistoryHost::requestLeave(QString action)
     {emit statusChanged(tr("历史日志正在取消/关闭，请等只读来源释放后再%1；长SQL取消时延未获保证。").arg(action),false);return false;}
     return page_.isNull();
 }
+
+void AlarmHistoryHost::originalEventsCommitted(AlarmHistory::Rows rows)
+{
+    if (page_) page_->originalEventsCommitted(rows);
+}

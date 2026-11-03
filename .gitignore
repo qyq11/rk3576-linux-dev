@@ -6,6 +6,8 @@
 !/05_tools/tests/**/
 !/05_tools/tests/**/*.c
 !/05_tools/tests/**/*.h
+# 串口只读状态采集脚本随工程保存。
+!/05_tools/tests/uart/inspect_uart_pinmux.sh
 # PREEMPT_RT 实测原始脚本、本机作图程序及源码校验清单。
 !/05_tools/tests/preempt_rt/*.sh
 !/05_tools/tests/preempt_rt/*.py
@@ -33,7 +35,7 @@
 # 临时文件、系统缓存与本地凭据。
 /temp/
 
-# 系统工程的可变WSL工作盘；正式源码归档和镜像另放07_backups。
+# 旧工作盘目录继续忽略；实际WSL工作磁盘已迁到D:\WSL\RK3576-Build-22.04。
 /06_programs/rk3576_system/wsl_workspace/
 
 # 可直接烧录的展开镜像留在正式目录；同内容压缩归档使用Git LFS保存，可按指纹恢复。

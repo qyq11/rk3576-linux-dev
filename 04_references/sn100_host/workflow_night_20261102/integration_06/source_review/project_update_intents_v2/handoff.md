@@ -1,0 +1,31 @@
+# 单项目同步终审两项P2：v2交接
+
+原250b补丁、65c32清单及13个源码、9个对象保持不动。本目录仅修最终独立审查指出的两项P2，不改正式、06review、copyv2或新producer业务。所有验证仍是源码/指纹/ARM64对象编译，没有运行产品、真实DB、模拟、网络、UI、RK或主控。
+
+固定累计片 `e66eda425bb8097e979161b14d1daf20d05b78ce29c15381b2ba8a750b8162e1`（77014字节）；四目标delta `68b5f47ece7f544a8200a792ec15ee8baaff2876a9de93911f9ce3139eb9bfd9`（9539字节）；清单 `17a18965d2205911ca2ed979833f708aedeced4cf6d6631b62f64c9a9fb23a4d`。累计对captured重连v2底稿、delta对250b候选的适用及空白检查均0。4个对象小端AArch64编译退出0，后续仅sync负回执防守增量退出0，每轮输入前后指纹一致；见patch_checks.log和compile日志。
+
+## 确实未尝试发送的晚回执
+
+冻结批次增加三个独立事实：是否收到入队结论、是否可能已发送、当前unknown是否仅因等待入队结论超时。新批次全部重置，断线仍撤原等待，原单调期限和Root发送期限保持。
+
+同intent、同当前连接，只在prepared尚无结论，或unknown明确来自无入队结论超时，才接收权威attempted=false、queued=false。它可晚于10秒：Root尚未调用任何send已经证明没有发送，不能丢为永久unknown。记录not-attempted-proof后，旧批回not-sent；有新的明确保存时可取代旧冻结并继续最新意图。没有新保存仍停not-sent，不自动重试旧请求。
+
+收到attempted=true先记录可能已发送。晚正回执不恢复waiting；真实发送未知、等待UP超时、匹配/版本/保存失败等unknown不接受false来解除。矛盾的attempted=false且queued=true也不作证明。迟到Up和UP仍不能通过原期限，没放宽设备确认。
+
+Root仅以proof的intent、连接、root/file、来源/源请求和前后SHA全部匹配，结清该批originalProjectUpdateUnknown来由。proof不确认参数、不改新保存等待、不动Us/priority未知或预设引用待核。它不是新的人工解除按钮。
+
+源码分支已追：定时器先到再negative、negative先处理但elapsed已超时、新保存后negative、真实attempted后假negative、UP超时后negative及错intent/conn均按上述边界。这里是静态分支核对，不是运行用例。
+
+## 初始UP已提交但后续失败
+
+OriginalConfigurationStep增加commitSeen。projectReply无论锁内快照是否核实，都带回DeviceRepo实际commit结果；成功后nextProject重置step时也恢复这个事实，覆盖“本项目已提交、下一项目失败”的路径。
+
+Store只要commitSeen就尝试重读样本项目快照，并发originalProjectsChanged让其他读者尝试读取；本线程重读失败也不藏已提交事实。success原本为false就继续false，刷新成功不冒充UP确认，不继续发送下一步；错误明确“UP已经提交，完整同步仍未完成”。编号变化的独立引用待核继续保留，不随刷新、普通ready或新连接解除。
+
+## 补丁/编译边界
+
+相对250b只改4个目标：samples/original_device_sync.h/.cpp、samples/original_sample_store.cpp、shell/device_control_shell.cpp。累计片仍是相对captured reconnectv2 overlay的13目标；Root的06temp已经有250b时只用delta，不重复应用累计，不整文件覆盖05/复制保护或后续producer。
+
+3个实际变动cpp及SampleStore.cpp依赖对象编译：后者依赖新增class字段及Step布局，不是新增业务修改。没有Qt槽/信号/值对象接口变化，未重编原整套9对象。另只因否定回执互相矛盾检查重编sync单对象。每轮输入前后指纹一致。原警告保留，编译不代表RK功能通过。
+
+普通项目/组开关producer跨Store预检仍下一片。本片不调用未合copyv2的writesAllowed/noPending；这两处既定窄守卫继续由Root串叠，不覆盖已有新签名和锁内快照结果。

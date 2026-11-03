@@ -1,0 +1,26 @@
+board_before.dtb: OK
+overlays.ini.before: OK
+ubootenv.before: OK
+tspi-3m-can0-m2.dtbo: OK
+tspi-3m-uart-header-five.dtbo: OK
+ovtree: OK
+uart_access_check: OK
+	linux-vdso.so.1 (0x0000007fa4429000)
+	libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000007fa4200000)
+	/lib/ld-linux-aarch64.so.1 (0x0000007fa43ec000)
+启用: CAN0（40针7脚接收、11脚发送） (tspi-3m-can0-m2.dtbo)
+启用: 40针排针五组串口 (tspi-3m-uart-header-five.dtbo)
+overlays=tspi-3m-can0-m2.dtbo tspi-3m-uart-header-five.dtbo
+已启用的设备树插件：
+  ● CAN0（40针7脚接收、11脚发送） (tspi-3m-can0-m2.dtbo)
+  ● 40针排针五组串口 (tspi-3m-uart-header-five.dtbo)
+
+配置文件: /boot/overlays/.ubootenv
+fbda3263837bcfbe1c2b12e9111a100c47f373c6f2b33b61f0b2e89a40dcff79  /boot/overlays/overlays.ini
+0a3a28657c9c3f01c60e37a0ee5dc07b09ac9abfea743dd30a2e314a684c0f44  /boot/overlays/.ubootenv
+92c1bdcfecb719bd1e9e04d75cee90dbb994a735fbf8e691ecc3259f4e1d7280  /boot/overlays/tspi-3m-can0-m2.dtbo
+4479c74d7462b03da69eef3a57420e3ef1ddfa7eefd57d4e44c04827c550e319  /boot/overlays/tspi-3m-dsi-c41409463.dtbo
+67dd1e85993831344c1cc0bd9e7a8c6e37aec6b1500bfcd08be87dc5c89be7a9  /boot/overlays/tspi-3m-dsi-c42388916.dtbo
+9e720d81dfa456d9824403cd6a02e8f6e9899a9eecf375e0d51226e129ea92a4  /boot/overlays/tspi-3m-uart-header-five.dtbo
+96461f74b561a6b35565d07f95039325581b388a3316e409ef9a3cc46b826868  /usr/local/bin/ovtree
+configuration_exit=0

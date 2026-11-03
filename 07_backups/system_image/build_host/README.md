@@ -12,4 +12,4 @@
 
 在WSL中进入本目录后运行`sha256sum -c SHA256SUMS`检查完整性。专用环境导入、依赖安装和Go准备的实际过程见[操作记录](../../../02_records/20261030_system_image.md)，原依赖准备脚本见[prepare_build_host.sh](../../../04_references/system_image/20261030/prepare_build_host.sh)。准备脚本针对新建编译环境，不用于改造已有的日常WSL。
 
-正在使用的系统源码和构建数据在[系统工程](../../../06_programs/rk3576_system/README.md)的Linux工作磁盘内；本目录保存的是可重新安装的输入，不包含密码或私人密钥。
+正在使用的系统源码和构建数据在专用WSL的Linux工作磁盘内，磁盘现位于`D:\WSL\RK3576-Build-22.04\ext4.vhdx`，操作入口见[系统工程](../../../06_programs/rk3576_system/README.md)。本目录保存的是可重新安装的输入，不包含密码或私人密钥。

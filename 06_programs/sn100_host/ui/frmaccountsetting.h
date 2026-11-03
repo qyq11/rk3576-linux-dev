@@ -47,6 +47,8 @@ signals:
 
 public slots:
     void slotUserChanged();
+    // 不清用户名、密码输入或编辑草稿，只更新原版运行时删除/修改守卫。
+    void setDeviceActionReady(bool actionReady);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -65,6 +67,8 @@ private:
     Ui::frmAccountSetting *ui;
     AccountRows displayedRows_;
     AccountSession session_;
+    bool deviceActionReadyObserved_ = false;
+    bool deviceActionReady_ = false;
     QString status_;
     QString pendingOperation_;
     QString successMessage_;

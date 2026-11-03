@@ -14,13 +14,87 @@
 | 按内容分类的现场照片、截图、可编辑圈注 | [03_photos分类目录](03_photos/README.md) |
 | 板级资料、日志、测试清单与测量证据 | [04_references说明](04_references/README.md) |
 | 安装/烧录/终端工具、独立GPIO和串口实验 | [05_tools说明](05_tools/README.md) |
+| 上位机测试程序、测试流程文件 | [上位机测试目录](05_tools/tests/sn100_host/README.md) |
 | 自己维护的程序源码与构建入口 | [06_programs说明](06_programs/README.md) |
 | 安装、恢复与回退所需输入 | [07_backups说明](07_backups/README.md) |
 | AI使用的项目移植与文件管理流程 | [.agents说明](.agents/README.md) |
 
 根目录其余文件：`AGENTS.md`是项目工作约定；`.gitignore`控制默认不纳入版本管理的本机文件；`.gitattributes`控制脚本换行、固定证据字节和大文件存储。`.git/`是Git内部历史，不作为业务目录编辑。`temp/`是本机构建、日志和可变运行数据，不随Git保存；其中可能有唯一依赖或尚需保留的数据，清理前须核查。
 
+## 两块板的用途与记录
+
+2026-11-02确认：两块RK3576都在本项目中维护，配置和验证结果分别记录。
+
+| 标记 | 用途 | 已有记录怎么归属 |
+| --- | --- | --- |
+| 板A，`board_a` | 现有Qt上位机用板 | 此前Qt环境、SN100上位机部署及原板验证；历史串口回环仍只属于板A。 |
+| 板B，`board_b` | 当前新增SN100上位机测试用途，后续用途另定 | 2026-11-02另一块板的五组串口、CAN0及本次上位机部署分别记录。 |
+
+后续配置、安装、部署、备份和测试都注明板A或板B，同一事项涉及两板时分节写。即使沿用同一IP地址，也先核对实际板卡；一块板通过的结果不能算另一块也通过。[完整记录规则与身份依据](02_records/20261021_ai_workflow.md#two-board-records)。
+
+**已有记录已补简短归属标记。** [核查表及待确认项](02_records/20261021_ai_workflow.md#historical-board-audit)。
+
+**本次板A重新配置怎样完成：**[按顺序阅读板卡确认、备份、串口/CAN配置、重启核对和root登录](02_records/20261021_TTL串口调试验证.md#board-a-configuration-process-20261102)。其中分开说明已经通过的配置检查、CAN接收超时及仍需接线验证的项目。
+
 ## 当前项目状态
+
+**板B第八轮`08bc43a7`原资料软件检查24个基础项通过、0失败，可选项0项未评估。**修订02完整构建、依赖/打包、独立保存和归档均实际0，674份源码、381项输入、284个主对象及2个报告辅助对象。14:34:39—14:35:01唯一自动专项四类退出0、19项启动/关闭记录齐全；6条发送仅查询主控状态（Qj），96格文字及上报标记与原回包一致，均65535只说明显示一致。14:35:49结束后选择的程序版本仍为08，应用/检查器已退出，原主控4550及5000监听保持，7份配置（6INI+1CFG）不变。可选项因启动前文件指纹清单仅root可读、运行检查器的普通用户lckfb无权读取而未执行，不是INI变化；任务下发和液面回报只有空闲关闭记录，真实在途、默认容器初建、真人及资源仍待验。[实际结果与边界](02_records/20261022_sn100_host_migration.md#integration-08-live-20261103) · [固定专项证据](04_references/sn100_host/board_b/20261103_status_login_08/collection_scope.md) · [构建证据](04_references/sn100_host/workflow_night_20261102/integration_08/README.md) · [程序与源码](07_backups/sn100_host/board_b/workflow_integration_20261102/integration_08/README.md)。
+
+**本轮已收尾，用户将自行新开总管理窗口。**下一步先由新总控解决公开文件指纹清单的最小读取权限并同版复测，再按依赖独立审主控启动/暂停入口（QB）、扣退量、实验室信息系统（LIS）和告警候选；不直接大合并，算法最后。[唯一总控交接与窗口分工](02_records/20261022_sn100_host_migration.md#root-manager-handoff-20261103)。以下保留第07轮及早前08准备时点，旧“待构建/未运行”由本轮实际结果承接，不作当前状态。
+
+**板B第七轮`94d1b979`原资料联机软件检查24项通过、0失败。**11:03保存第六轮指针后切换；96格文字及上报标记与本次原回包逐格一致，18项启动/关闭记录齐全，四类退出码全0，7次发送仅状态查询。程序已正常关闭，11:09原主控仍运行、七份配置指纹不变。液面真实保存、任务/明确保存下发、在途N退出、真人实屏及资源预算仍待验，[固定专项证据](04_references/sn100_host/board_b/20261103_status_login_07/collection_scope.md)已归档。[本轮实际结果与边界](02_records/20261022_sn100_host_migration.md#integration-07-live-20261103) · [构建证据](04_references/sn100_host/workflow_night_20261102/integration_07/README.md) · [程序与源码](07_backups/sn100_host/board_b/workflow_integration_20261102/integration_07/README.md)。
+
+**第八批任务后剩余量和新孔默认容器已完成源码收口。**五片在独立副本普通检查、应用实际退出0，674份源码与已审输入一致；提交未确认时已改为整盘待核。正式合入流程进行中，本次登记仍在预检查、尚无正式写入，完整构建及RK/真实仪器验证未通过；第七轮实际结果保持原范围。[第八批进度及边界](02_records/20261022_sn100_host_migration.md#integration-08-source-close-20261103)。
+
+**前轮`14ce9714`原资料软件专项24项通过。**01:44先保留旧e314程序指针，再用同版267个正式对象连接原主控；24路共96格原读数及本次上报标记与新连接回包逐格一致，四类退出码均0，17项启动/关闭记录齐全，全程7条发送仅状态查询。程序已关闭，01:46原主控仍运行；65535只说明原值显示一致，物理有效性、真实密码/实屏、复制和校准同步等业务仍待验。[实际专项记录](02_records/20261022_sn100_host_migration.md#integration-06-live-20261103) · [构建及恢复证据](04_references/sn100_host/workflow_night_20261102/integration_06/README.md) · [程序与匹配源码](07_backups/sn100_host/board_b/workflow_integration_20261102/integration_06/README.md)。下列较早批次按各自时点理解。
+
+**前轮`e31491a1`的原配置状态/登录软件专项20项通过。**23:58:52保留旧7c指针后启用，23:59:26–23:59:45四类结果码均0，全程7条发送仅状态查询。该轮AD因25/26计数差异被拒收，后由06按原版处理修复并核96格；真实密码、实体键鼠/实屏、红色退出重开、绿灯和该批均值/主题/重连/批组操作继续分别待验。[原专项证据](04_references/sn100_host/board_b/20261102_status_login_05/README.md) · [构建证据](04_references/sn100_host/workflow_night_20261102/integration_05/README.md) · [程序与源码](07_backups/sn100_host/board_b/workflow_integration_20261102/integration_05/README.md)。
+
+**2026-11-02 23:21板B原主控已恢复。**按用户“我没关，继续排查并恢复原主控”的授权，沿原脚本和配置启动，独立于SSH会话；两次断开启动连接后的检查均确认唯一正确进程和5000监听。退出原因仍未确定，原硬件/校准警告保留；上位机current未切、尚未启动新版。[排查、恢复及查看日志方法](04_references/sn100_host/board_b/20261102_controller_restore/README.md)。
+
+**2026-11-02板B已补装数据库命令`sqlite3`。**仅新增匹配现有运行库的`3.45.1-1ubuntu2.8`工具包，未升级已有包；原定标/默认试剂库的只读字段和匿名数量检查通过，未修改业务库。[安装与核对证据](04_references/sn100_host/workflow_night_20261102/sqlite3_20261102/README.md) · [安装包](07_backups/sn100_host/board_b/sqlite3_20261102/README.md)。这项检查不代表项目复制功能通过。
+
+**2026-11-02 SN100先补流程，算法最后。**本轮源码复查确认试剂操作、任务错误回传、原校准/质控任务、LIS和实时告警仍有正式接线缺口；普通任务下发、部分试剂同步/扣量、校准审核/批组绑定及固定维护命令已有代码，不能全部重列为未实现。用户要求今晚分聊天持续推进并反复核对，实际分工和验收见[当前执行卡](01_docs/plans/sn100_host_migration_plan.md#workflow-night-20261102)，具体断点见[源码复查](01_docs/knowledge/sn100_host_function_and_porting_review.md#workflow-gaps-20261102)。本条不新增编译、板端或真实仪器通过结论。
+
+**第三批流程修补`4e6c321f`已完整编译并保存到板B，未切换运行。**八份窄补丁包含优先使用、项目默认定标参数、原权限、校准并发保护、启动登录及直接入口单实例；26文件变动、完整链接/依赖/打包、639项匹配源码及板B独立目录指纹/动态库检查通过。[证据](04_references/sn100_host/workflow_night_20261102/integration_04/README.md) · [程序与源码](07_backups/sn100_host/board_b/workflow_integration_20261102/integration_04/README.md)。RK实际功能、仪器及资源待验，current仍`7c4abe30`，主控已恢复；后续均值/主题、重连和通道等继续按[当前卡](01_docs/plans/sn100_host_migration_plan.md#workflow-night-20261102)准备。
+
+**第二批流程版本`d71e4cf4`已完整编译并保存到板B，尚未启用。**261个ARM64对象、主程序及报告程序链接、依赖、打包、639项匹配源码恢复核对和板B独立目录指纹/动态库检查通过。范围为质控/定标任务、通道读数、试剂只读显示和LIS基础，设备动作与真实LIS未开放。[固定证据](04_references/sn100_host/workflow_night_20261102/integration_03/README.md) · [程序与源码](07_backups/sn100_host/board_b/workflow_integration_20261102/integration_03/README.md)。current仍为`7c4abe30`，当时主控未恢复；目前已另窗恢复，RK功能、仪器及资源待验。
+
+**20:36第一批流程版本`3cfcea34`已完整编译并暂存板B，尚未启用。**报告翻条、同步/任务错误恢复、实际运行状态到资料权限、新告警保存/退出排空、项目保存前旧版本备份已合入；251个ARM64对象、主程序和报告程序链接、依赖、打包及板B上传指纹/动态库检查通过。622项匹配源码恢复包已核对。[本批证据](04_references/sn100_host/workflow_night_20261102/integration_02/README.md) · [正式程序与源码](07_backups/sn100_host/board_b/workflow_integration_20261102/integration_02/README.md)。板端current仍为`7c4abe30`；当时主控已退出、恢复待确认；目前已恢复，RK功能与真实仪器未通过。
+
+**2026-11-02板B旧脱机资料已删除，后续不再做脱机测试。**18:13:32仅删除原备用目录中的16份旧测试文件，约520 KB；当前原资料、启动器、上位机及主控文件前后指纹一致。后续使用原配置连接主控验证，遇到控制/运行异常先查INI；旧测试资料切回方式停用。[本次记录](02_records/20261022_sn100_host_migration.md#remove-offline-data-20261102)。
+
+**SN100后续测试先检查INI配置（2026-11-02用户确认）。**控制主控和执行运行前，需要按测试场景修改并确认程序实际读取的`.ini`配置；遇到连接、控制或运行异常，首先核对这项配置及是否生效，再依据日志和实际收发继续排查。[开发记录与检查顺序](02_records/20261022_sn100_host_migration.md#control-ini-check-first-20261102)。
+
+**2026-11-02板B已按用户SN500配置连接主控。**完整原资料继续放在上位机`runtime/data`；新主题SN500、42试剂位、普通5孔/急诊5孔、24通道、报告方式1已读取。修复原试剂负历史剩余量导致的启动失败后，正式发布`eb9d9ae6`在RK专项17/0、实际退出0；完整程序启动、127.0.0.1:5000实际收发、正常关闭退出0及重开通过，初始两轮141份原工作文件指纹均一致。随后用户手动操作并关闭上位机，试剂库已更新，项目同步回包不对应仍待核；主控继续运行并返回试剂位48及归位失败，完整检测、暂停恢复和真实仪器尚未验收。[配置对比、启动及日志](04_references/sn100_host/board_b/20261102_sn500_connection/README.md) · [同一移植记录](02_records/20261022_sn100_host_migration.md#board-b-sn500-connection-20261102)。
+
+**2026-11-02板B已删除三个厂家音视频测试素材。**仅删除`/userdata`下的H.264视频、1080p测试图和MP3音频，共270,744字节；`lost+found`、`shared`及隐藏标记文件保留，删除前后内容和属性核对一致。[清理范围与结果](02_records/20261021_workspace_setup.md#board-b-userdata-samples-20261102)。
+
+**2026-11-02板B已统一root登录并接入WiFi。**开机在屏幕/三针调试口输入root与本轮指定的小写密码，进入`/root`；远程密码登录及root共享实际通过。已连接503，无线共享地址为`\\192.168.3.59\rkshare`，有线仍是`\\192.168.100.123\rkshare`；无线地址由路由器分配，后续可能变化。两次重启分别核登录、时间保持和WiFi自动连接，无线共享重启前后双向读写均通过；前期重连超时和恢复均留证。最后恢复打开原上位机，未接仪器。[板B登录/WiFi记录](04_references/workspace_setup/root_login_board_b_20261102/README.md) · [共享读写证据](04_references/samba/board_b/root_20261102/README.md)。
+
+**2026-11-02已新增WindTerm板B入口`LCKFB-B`。**双击后通过有线`192.168.100.123:22`直接进入root，沿用本电脑已有密钥；板B独立身份核对、保存参数实际连接及`/root`均通过，原6个会话保留。WindTerm界面首次双击由用户确认。[连接方法和范围](04_references/workspace_setup/windterm_board_b_20261102/README.md)。
+
+**2026-11-02更正后的主控已在板B持续运行。**用户最终提供的`ACA_V1(1).0OffLineD-500`已按要求去掉`(1)`，替换为`/userdata/shared/ACA_V1.0OffLineD-500`、设755；17:38:07启动后持续输出实时日志并监听5000，已与新上位机连接。此前两个文件的key.ini退出255保留为历史；当前仍有原空流程CSV、校准资料和归位失败提示，不能算完整检测通过。[主控启动及实时日志](04_references/sn100_host/board_b/20261102_aca_test/correct_05/README.md)。
+
+**2026-11-02板B已部署上位机并实际显示运行。**板B序列号`8314b1e8ffd0321f`，复用正式版本`ef294a92`，文件指纹、运行库、字体和权限检查通过；两轮屏幕启动及正常退出、再次打开通过，用户确认画面正常、鼠标可操作。程序使用板B独立匿名测试资料，真实仪器通信和检测未验证。系统时间及硬件时钟已校正，随后两次重启保持正确，断电保持另验。[本次结果和启动方法](04_references/sn100_host/board_b/20261102_deployment/README.md) · [当前测试安排](01_docs/plans/sn100_host_migration_plan.md#board-b-deployment-20261102)。
+
+**2026-11-02板A已允许其他电脑用root系统密码远程登录。**WindTerm选SSH、端口22、用户名root、密码认证，输入已有系统密码；有线`192.168.100.123`及无线当前`192.168.3.38`均已通过纯密码登录、root身份和主目录核对。原密钥连接也通过；没有重设密码或重启板卡，新电脑实际界面重连由用户核对。[使用方法与结果](02_records/20261021_workspace_setup.md#board-a-ssh-password-20261102) · [有限恢复输入](07_backups/root_session/board_a_ssh_password_20261102/README.md)。
+
+**板A共享的资源管理器入口已实际打开核对。**在地址栏粘贴`\\192.168.100.123\rkshare`，开头是两个反斜杠；当前已显示共享中的5个条目。用户截图所示单反斜杠路径不符合网络共享地址格式。[同日排查结果](02_records/20261021_Samba共享文件夹.md#board-a-root-share-20261102)。
+
+**2026-11-02板A的Samba共享已改用root登录。**地址仍为`\\192.168.100.123\rkshare`，共享密码使用用户指定值；Windows实际登录、列目录及双向传文件核对通过。共享目录和原文件保留，系统root密码及原lckfb账号记录未变；未重启板卡。后续通过共享新建的文件归root。[使用方法与结果](02_records/20261021_Samba共享文件夹.md#board-a-root-share-20261102) · [有限恢复输入](07_backups/samba/board_a_root_20261102/README.md)。
+
+**2026-11-02板A已按最新要求改为开机输入root账户和密码。**屏幕和三针调试口重启后均等待登录，不再自动进入命令行；用户指定的root密码已设置，实际密码提示登录后用户编号0及`/root`核对通过。WindTerm“lckfb-板A”保留现有密钥连接；Qt应用、普通用户目录及串口/CAN设置保留。密码仅在本机项目外加密记录。[当前使用方法与实际结果](04_references/workspace_setup/root_password_login_board_a_20261102/README.md) · [有限恢复输入](07_backups/root_session/board_a_password_login_20261102/README.md)。
+
+**2026-11-02板A已按板B方案配置五组串口和CAN0，并完成一次重启核对。**板A序列号`3bf8222fe1417f6a`；`ttyS3/4/7/8/9`及CAN0共12根引脚分配正确，root打开五个串口通过。CAN三帧本机发送确认一致；关闭本机回送后接收超时，实际接收仍待验。最终CAN已停止、回环已关闭；实际串口排针及外设收发待接线。板A原设置、配置工具和两份小配置独立归档，没有更换内核或覆盖Qt应用数据。[板A结果](04_references/interfaces/board_a/20261102_configuration/README.md) · [板A恢复输入](07_backups/interfaces/board_a_20261102/README.md)。
+
+**2026-11-02系统镜像编译环境已迁到D盘并核对通过。**41.84 GB工作盘现位于`D:\WSL\RK3576-Build-22.04\ext4.vhdx`。迁移前后完整磁盘指纹一致，WSL名称、用户、源码和配置保留；C/C++的ARM64编译链接、设备树编译及Windows源码入口检查通过。项目、正式源码归档和镜像继续留在原位置，构建命令不变；本次没有重新构建整机镜像或验证RK硬件。[迁移记录与结果](02_records/20261030_system_image.md#wsl-move-d-20261102)。
+
+**2026-11-02板B五组串口配置、重启与root访问检查通过，实际收发待接线。**按用户要求使用root直接连接，已启用`ttyS3/4/7/8/9`，10根收发引脚的内核分配与开发图一致；释放I²C7/8及SPI第二路片选，保留SPI第一路和CAN配置。root打开及读取参数5项通过，未发送业务数据。用户要求逐路核对实际引脚通信，但当前不方便接线，五路全部待验；回环工具已编译上传，未运行。[配置证据](04_references/uart/board_b/20261102_configuration/README.md) · [逐路接线与待验表](04_references/uart/board_b/20261102_header_loopback_pending/README.md) · [恢复输入](07_backups/uart/board_b_20261102/README.md)。
+
+**2026-11-02新板CAN0已启用并完成重启核对。**排针7脚接收、11脚发送、9脚地；新增小配置后`can0`出现，两脚已归CAN0，未烧录分区镜像。3帧本机发送确认一致、退出0；关闭本机回送后接收超时、退出1，不能算硬件接收通过。外部收发器/轴卡尚未连接，正式速率和协议待确认；最终接口已停止、回环已关闭，有限备份及全部结果已保存。[记录与引脚说明](02_records/20261102_can.md) · [当前实施项](01_docs/plans/development_plan.md#can0-m2-20261102)。
+
+**2026-11-02板B五组串口只读检查完成。**用户确认当前是另一块同型号板子，后续按板A/板B分开保存日志。板B仅UART4启用；UART3、7、8、9未启用，3/5脚被I²C7、27/28脚被I²C8、26脚被SPI1第二路片选占用，37/40脚未申请；还需处理普通用户串口权限和两组RS485收发方向。只读取状态，没有配置或收发验证，板A历史回环结论不套用。[板B结果与原始日志](04_references/uart/board_b/20261102_initial_audit/README.md) · [后续配置项](01_docs/plans/development_plan.md#board-b-uart-config-20261102)。
 
 **2026-11-02中间文件清理完成，按用户要求提交推送。**逐文件清理Windows和专用WSL中的编译对象、内部打包文件、旧候选镜像及缓存，合计约10.76 GB；正式镜像、源码、匹配模块、依赖和运行数据保留。41项归档指纹核对通过，源码状态与内核配置未变。本次保存新镜像和此前已完成RK软件验证的SN100更新，不新增板端或仪器通过结论。[清理范围](04_references/workspace_setup/cleanup_20261102/README.md) · [Git结果](02_records/20261030_system_image.md#cleanup-and-push-20261102)。
 

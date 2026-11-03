@@ -1,0 +1,39 @@
+{
+  "scope": "integration_03",
+  "source_snapshot": "source_snapshot.json",
+  "source_files": 639,
+  "build_inputs_covered": 348,
+  "patch_inputs": [
+    {
+      "path": "report_lis/qq_ad_display/qq_ad_display.patch",
+      "sha256": "4616ca6aa32fd70b7fedbb9bcc6aa29768e5321d2066969f62ac565d6c58f276"
+    },
+    {
+      "path": "report_lis/qq_ad_wiring/qq_ad_wiring.patch",
+      "sha256": "dbd8a07520cb1cf8c4d6486de351d21e47a5d14333ddd3d802bf613fef2f349c"
+    },
+    {
+      "path": "qc_calibration_tasks/candidate_patch.diff",
+      "sha256": "373680f9abcd6c5d89ebef6883446306088655b137e03df18e0aaa3b05405087"
+    },
+    {
+      "path": "reagent_candidate.patch",
+      "sha256": "da7acc5946a71e0046df0c59d3c3f986fb3f110248aa88c028830b332902c589"
+    },
+    {
+      "path": "reagent_integration_wiring/wiring.patch",
+      "sha256": "da023a80c2df061ded1d82aa121dafaa8a972cacecd630d7141c7f55c2a1c3c6"
+    },
+    {
+      "path": "report_lis/lis_transport_candidate/lis_tcp_foundation.patch",
+      "sha256": "e587f2a855dda4866b2a2213e1f4e2d1b5aa7b152f370c17c041b96c0cdd3a28"
+    }
+  ],
+  "extra_change": "shell/package_arm64.py: 将新lis_transport业务目录纳入源码指纹清单",
+  "excluded_candidates": [
+    "priority_connection_20261102",
+    "project_default_calibration",
+    "calibration_application_permissions",
+    "startup_login_followup"
+  ]
+}

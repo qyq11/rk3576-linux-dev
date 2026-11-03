@@ -16,13 +16,17 @@
 | `verify_image_files.py` | 只读访问实际根文件系统镜像，逐文件核对关键配置、程序和全部157个模块。 |
 | `restore_update.ps1` | 在Windows中从正式压缩归档恢复可烧录的`update.img`，先后核对压缩包和解压文件的指纹。 |
 | `configs/` | 当前实时内核与系统配置；暂停时的旧配置另存本次资料目录。 |
+| `configs/uart_header_five.dts` | 按开发图启用五组串口收发引脚，释放I²C7/8和SPI第二路片选；板A、板B分别重启及root打开通过，实际排针收发待接线。独立叠加配置，未加入既有整机镜像。[板A](../../04_references/interfaces/board_a/20261102_configuration/README.md) · [板B](../../04_references/uart/board_b/20261102_configuration/README.md)。 |
+| `configs/can0_m2.dts` | 单独启用排针7/11脚的CAN0小配置；板A、板B配置及重启分别通过，独立接收和真实硬件通信仍待验；未加入既有整机镜像。[进度](../../02_records/20261102_can.md)。 |
 | `patches/ubuntu_identity.patch` | 本轮镜像首次启动准备的实际源码差异。 |
-| `wsl_workspace/` | 已保存专用WSL的工作磁盘，里面包含实际系统源码和构建数据。它是可继续使用的工作环境，不能随意清理。 |
+| `D:\WSL\RK3576-Build-22.04\ext4.vhdx` | 专用WSL的实际工作磁盘，已于2026-11-02迁出本项目，里面保存Linux编译环境、实际源码和构建数据。 |
 | `open_system_sources.lnk` | 双击后在资源管理器中打开实际编译用的系统源码。 |
 | [官方源码原始归档](../../07_backups/system_image/sources/README.md) | 已保存官方源码的9个分卷、固定版本清单及文件指纹。 |
 | `07_backups/system_image/ubuntu24_server/` | 已保存完整`update.img`及压缩归档、匹配模块、启动文件、配置和恢复说明。 |
 
-实际源码需要Linux文件系统的权限、设备文件和符号链接，因此放在专用WSL的Linux磁盘内；源码目录为`/home/qyq/TaishanPi-3-Linux`。Windows资源管理器也可直接打开`\\wsl.localhost\RK3576-Build-22.04\home\qyq\TaishanPi-3-Linux`。工作磁盘已从临时区域迁移到本目录的`wsl_workspace/`。大工作磁盘不直接纳入Git；正式源码原始归档、版本清单、配置和最终镜像按事项保存。
+实际源码需要Linux文件系统的权限、设备文件和符号链接，因此放在专用WSL的Linux磁盘内；源码目录为`/home/qyq/TaishanPi-3-Linux`。Windows资源管理器也可直接打开`\\wsl.localhost\RK3576-Build-22.04\home\qyq\TaishanPi-3-Linux`，或双击本目录`open_system_sources.lnk`。工作磁盘现位于`D:\WSL\RK3576-Build-22.04\ext4.vhdx`，不再存放于项目内；旧`wsl_workspace/`只剩空目录，已无磁盘文件。大工作磁盘不纳入Git；正式源码原始归档、版本清单、配置和最终镜像继续按事项保存。
+
+2026-11-02迁移前后，在停机及首次启动前计算的41.84 GB完整磁盘文件指纹一致。迁移后普通用户启动、10个关键文件、5个仓库状态及7项工具版本与迁移前一致；从C盘项目读取源码，实际完成C/C++的ARM64编译链接及设备树编译，源码快捷方式可访问。[迁移记录与验证范围](../../02_records/20261030_system_image.md#wsl-move-d-20261102)。本次验证电脑端环境，没有重新构建完整系统，也没有运行ARM64程序或操作RK板。
 
 构建入口沿用官方Server配置，增加实时内核片段；默认使用CPU0至CPU7，并在生成配置中选择Ubuntu国内镜像站。可通过`RK_SYSTEM_CPUSET`指定其他CPU范围，通过`RK_SYSTEM_UBUNTU_MIRROR`指定Ubuntu软件源主机名。实际编译结果以[操作记录](../../02_records/20261030_system_image.md)为准。
 

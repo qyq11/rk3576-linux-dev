@@ -1,6 +1,10 @@
 # 给新板准备Ubuntu 24.04整机镜像
 
+**范围：电脑编译的新板镜像；是否已烧录到板 B待确认。**
+
 2026-10-30｜立创泰山派3M RK3576｜目标系统：Ubuntu 24.04 Server / ARM64
+
+**2026-11-02位置更新：**专用WSL工作盘已迁到`D:\WSL\RK3576-Build-22.04\ext4.vhdx`，环境名称和Linux内部源码路径不变；整盘指纹、源码/工具对照及交叉编译检查均通过。[迁移过程与验证范围](#wsl-move-d-20261102)。
 
 **当前状态：完整编译、最终打包、镜像内容与归档恢复核对全部通过，正式`update.img`已保存。**实际系统为Ubuntu 24.04.5 LTS Server、`6.1.99-rt36-tspi`实时内核，预装固定地址`192.168.100.123`、SSH/Samba、共享及主目录和必要检查工具；不加入上位机。系统内容51项、实际镜像文件170项检查通过，包含157个匹配模块。[镜像与首次使用说明](../07_backups/system_image/ubuntu24_server/README.md)。板子当前不在身边，本轮未烧录，板端启动和服务功能待拿到板子后验证。[实施清单](../01_docs/plans/development_plan.md#system-image-new-board-20261030)
 
@@ -55,7 +59,7 @@ wsl.exe --import RK3576-Build-22.04 temp\system_image_20261030\wsl_ubuntu22 07_b
 
 ## 已完成：下载官方SDK与系统基础包
 
-普通用户下载脚本返回`SDK_SOURCE_SYNC_EXIT=0`，71个源码项目同步完成。源码位置为新WSL内`/home/qyq/TaishanPi-3-Linux`。对应虚拟磁盘随后迁移到正式工程的`06_programs/rk3576_system/wsl_workspace/`；在资源管理器中双击[源码打开入口](../06_programs/rk3576_system/open_system_sources.lnk)即可查看源码。迁移时遇到WSL磁盘占用，停止空闲WSL实例后迁移成功；原WSL版本及内容不变。
+普通用户下载脚本返回`SDK_SOURCE_SYNC_EXIT=0`，71个源码项目同步完成。源码位置为新WSL内`/home/qyq/TaishanPi-3-Linux`。2026-10-30当时将虚拟磁盘迁移到工程的`06_programs/rk3576_system/wsl_workspace/`，遇到WSL磁盘占用，停止空闲实例后成功；原WSL版本及内容不变。该工作盘随后已于2026-11-02迁到D盘，当前位置见上方更新；在资源管理器中双击[源码打开入口](../06_programs/rk3576_system/open_system_sources.lnk)仍可查看源码。
 
 各子仓库的实际提交已写入[固定版本清单](../04_references/system_image/20261030/manifest_pinned.xml)。3个使用Git LFS大文件的仓库均下载完整，内容与记录的文件指纹核对通过；结果保存在[lfs_verification.log](../04_references/system_image/20261030/lfs_verification.log)。
 
@@ -122,7 +126,7 @@ wsl.exe -d RK3576-Build-22.04 -u qyq -- bash /mnt/c/Users/52400/Desktop/internsh
 | 匹配的恢复输入 | 同目录保存启动文件、ARM64内核、设备树、157个模块的压缩包、系统/内核配置、源码版本清单及环境说明。具体恢复范围见[目录说明](../07_backups/system_image/ubuntu24_server/README.md)。 |
 | 文件指纹和版本 | 同目录`SHA256SUMS`和`image_manifest.json`；[编译输出原始指纹](../04_references/system_image/20261030/compiled_image_source.json)另存证据。 |
 | 官方原始源码 | `07_backups/system_image/sources/`的9个分卷、固定版本及Ubuntu ARM64基础包，均已核对。 |
-| 实际可继续修改的工程 | 专用WSL内`/home/qyq/TaishanPi-3-Linux`，工作盘存于`06_programs/rk3576_system/wsl_workspace/`，Windows中可双击[源码入口](../06_programs/rk3576_system/open_system_sources.lnk)。 |
+| 实际可继续修改的工程 | 专用WSL内`/home/qyq/TaishanPi-3-Linux`，工作盘现位于`D:\WSL\RK3576-Build-22.04\ext4.vhdx`，Windows中可双击[源码入口](../06_programs/rk3576_system/open_system_sources.lnk)。 |
 
 最终`update.img`的SHA-256为：
 
@@ -166,3 +170,55 @@ cd680eda3a96ff9dc6dbb4e3ceea6924474e68ce8b39702b4a78b4d662375a4c
 **Git结果已核对：**主体成果提交为[`a059b57`](https://github.com/qyq11/rk3576-linux-dev/commit/a059b5789d4496a6f4ff582e51913c7ce56f3f43)，已推送到`origin/main`，命令退出0。22个需要上传的LFS对象全部完成；随后直接查询远端，完整提交号与本地一致。本地新增23个LFS对象也重新读取计算指纹，全部正确，没有损坏；其中已有对象由远端复用。[Git核对结果](../04_references/workspace_setup/cleanup_20261102/git_delivery.json)和[推送完成输出](../04_references/workspace_setup/cleanup_20261102/push_work_commit.txt)保留。
 
 上传期间其他窗口新增了CAN与板B串口工作。本次补记只提交清理和交付结果，不将这些新的进行中改动混入，也没有覆盖或清理它们；工作区可能因此继续显示未提交内容。该补记随后单独提交并推送，不增加功能或硬件通过结论。
+
+<a id="wsl-move-d-20261102"></a>
+## 2026-11-02：Linux编译环境迁移到D盘
+
+用户明确要求把41.84 GB的Linux编译环境工作盘迁到D盘，并更新路径、确认还能使用。核对时`RK3576-Build-22.04`没有编译或用户任务，D盘是独立NVMe固态盘，目标目录尚不存在。操作只改变这套WSL的存放位置及其登记路径；C盘项目、正式源码备份、镜像及其他窗口的未提交工作保留原样。
+
+| 项目 | 迁移结果 |
+| --- | --- |
+| 原工作盘 | `C:\Users\52400\Desktop\internship\seerain\20260907_RK3576_Linux\06_programs\rk3576_system\wsl_workspace\ext4.vhdx`，原磁盘文件已移走；旧目录只剩空文件夹。 |
+| 新工作盘 | `D:\WSL\RK3576-Build-22.04\ext4.vhdx`，41,840,279,552字节。 |
+| WSL环境与用户 | 名称仍为`RK3576-Build-22.04`，Ubuntu 22.04，继续以普通用户`qyq`工作；登记标识及原默认用户设置保留。 |
+| Linux内的实际源码 | `/home/qyq/TaishanPi-3-Linux`，没有改名或重新解压。 |
+| Windows源码入口 | `\\wsl.localhost\RK3576-Build-22.04\home\qyq\TaishanPi-3-Linux`，原`open_system_sources.lnk`入口实际可访问，未改写快捷方式。 |
+| 项目与正式归档 | 项目继续在C盘，`07_backups/system_image/sources/`和`ubuntu24_server/`位置不变；原构建命令继续使用。 |
+
+使用本机已支持的WSL管理功能迁移，没有手工修改登记位置。实际命令依次为：
+
+```powershell
+wsl.exe --terminate RK3576-Build-22.04
+```
+
+```powershell
+wsl.exe --manage RK3576-Build-22.04 --move D:\WSL\RK3576-Build-22.04
+```
+
+首次停止后，Windows尚未释放磁盘文件句柄，读取指纹被占用保护拒绝，当时没有开始移动；随后重试通过。迁移完成后、首次启动前，完整磁盘文件大小及SHA-256文件指纹与源文件一致：
+
+```text
+db7c7f9219c43a8b525ae2fbdc3fdf580a49ad385071b471b8a5817f4065ec7b
+```
+
+这份指纹用于证明本次搬运没有改变磁盘字节。启动后Linux会正常写入日志等数据，不能把运行中的磁盘继续当成上述停机快照比较。
+
+迁移后实际检查结果：
+
+- [x] WSL从D盘启动成功，`qyq`身份、主目录及Ubuntu版本与迁移前一致。
+- [x] 10个关键文件的内容、5个源码仓库的提交和修改状态、7项工具版本均与迁移前一致，包括实时内核配置、SDK系统配置、环境脚本及SDK中的最终整机镜像。
+- [x] 用原SDK中的GCC/G++分别完成C和C++程序的交叉编译与链接，检查产物均为ARM64，即板子的64位处理器架构；没有在电脑上执行这些ARM64程序。
+- [x] 用原SDK的设备树工具编译独立检查用的小配置，输出格式正确；没有将其应用到板子。
+- [x] 从D盘WSL访问C盘项目、读取源码并写出编译结果成功；原Windows源码快捷方式目标可访问。
+
+[迁移证据与校验清单](../04_references/system_image/wsl_move_20261102/README.md)保存停机指纹、迁移结果、环境前后对照、编译结果和当次脚本。验证范围是电脑端编译环境；本次没有重编完整系统、烧录镜像、运行板端程序或新增硬件验收结论。
+
+工程说明、根README、AGENTS、计划、归档说明与当前路径表已更新。旧工作盘忽略规则保留并注明已迁出，防止旧位置意外放回大磁盘文件后纳入Git。清理旧空目录的收尾命令被自动策略拦截，因此保留空目录；它不再含有工作盘，也不影响迁移后的环境。
+
+以后需要打开这套环境，在Windows终端执行：
+
+```powershell
+wsl.exe -d RK3576-Build-22.04 -u qyq
+```
+
+若以后需要回迁，先停止这套WSL，再用同一`--manage ... --move`命令指定一个尚不存在的目标目录，并重复核对路径、源码和工具。无需改Linux内部源码路径；相关说明随实际新位置更新。本次仅按要求迁移和更新记录，没有自动提交或推送Git。

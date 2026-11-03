@@ -1,0 +1,3787 @@
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level.h b/06_programs/sn100_host/reagents/original_reagent_level.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level.h
+@@ -0,0 +1,93 @@
++#ifndef SN100_ORIGINAL_REAGENT_LEVEL_H
++#define SN100_ORIGINAL_REAGENT_LEVEL_H
++
++#include "reagents/original_reagent_repository.h"
++#include "projects/projects_store.h"
++#include "original_files/original_reagent_capacity.h"
++#include <functional>
++#include <limits>
++
++namespace OriginalLevels
++{
++enum class PacketKind { Reagent, SampleIgnored };
++enum class MaximumSource { Unknown, InitialBottleByName, ConfirmedUr, ManualHoleSave, FilledHole, ClearedHole };
++
++struct ReceivedPacket
++{
++    PacketKind kind = PacketKind::Reagent;
++    bool linuxNew = false;
++    QByteArray payload;
++    QList<QByteArray> rawFields;
++    QStringList fields;
++    QString hole, reagent, area, bottle, sendIndex;
++    QString reportedDiameter, reportedAngle, reportedVolume;
++    int needle = 0;
++    double rawHeightMm = std::numeric_limits<double>::quiet_NaN();
++};
++
++// 原控件的独立运行快照，不能从孔库max_ul或整数显示模型冒充。
++// 来源、三库版本及revision由提供者核实；Unknown/不可用时不允许N写库。
++struct CurrentHoleRuntime
++{
++    bool available = false;
++    QString root, hole, reagent, bottle, area, reagentType, state;
++    QString settingFingerprint, bottleFingerprint, informationFingerprint;
++    quint64 revision = 0;
++    MaximumSource maximumSource = MaximumSource::Unknown;
++    double maximumMicrolitres = std::numeric_limits<double>::quiet_NaN();
++    double amountMicrolitres = std::numeric_limits<double>::quiet_NaN();
++    double usedMicrolitres = std::numeric_limits<double>::quiet_NaN();
++};
++
++struct Context
++{
++    quint64 packetId = 0; // 本地接收序号，不是N.sendIndex或设备请求号。
++    quint64 connection = 0; // transport到达时的原代次，不在后台重贴当前代次。
++    quint64 permissionRevision = 0;
++    QString root, actualModel, configuredModel, themeFingerprint, protocolToken;
++    QString capacityRelativeFile, capacityFingerprint;
++    OriginalRuntime::ReagentCapacityFileState capacityFileState = OriginalRuntime::ReagentCapacityFileState::Unknown;
++    bool linuxNew = false;
++    int configuredPositions = 0, reportedPositions = 0, mainStatus = -1;
++    bool capacityCalibrationActive = false;
++};
++
++struct ProjectSnapshot
++{
++    bool orderVerified = false;
++    ProjectRecords records; // 原全部项目及每个试剂步骤，已按原加载顺序排列。
++    QMap<QString,QString> versions; // project/<原文件名>及实际用于排序的config.ini。
++};
++
++struct PreparedObservation
++{
++    Context context;
++    ReceivedPacket received;
++    CurrentHoleRuntime before, after;
++    OriginalReagentState observed;
++    ProjectSnapshot projects;
++    OriginalRuntime::ReagentCapacityInput capacityInput;
++    OriginalRuntime::ReagentCapacityResult capacity;
++    qint64 holeId = 0;
++    QString formulaText, amountText, previousUsedText, usedText;
++    int amountInteger = 0;
++    bool updateUsed = false;
++    ReagentTestCount selectedHoleTests;
++};
++
++bool decodePacket(const QByteArray &payload, bool linuxNew, ReceivedPacket *result, QString *message);
++// 沿原项目外层排序与project_reagent无ORDER BY读取；只读，不调用检测计算。
++bool readProjectSnapshot(const QString &root, ProjectSnapshot *result, QString *message);
++// 只准备换算和原字段/显示变化，不发送或写库；runtime及项目顺序未核实时明确拒绝。
++bool prepareObservation(const OriginalReagentState &state, const ReceivedPacket &packet,
++                        const Context &context, const CurrentHoleRuntime &runtime,
++                        const ProjectSnapshot &projects, PreparedObservation *result, QString *message);
++// 只写formula_level/amount_uL，以及非Testing时的used_ul；已提交事实与返回成功分开。
++bool saveObservation(const PreparedObservation &prepared, const std::function<bool()> &stillCurrent,
++                     bool *committed, QString *savedFingerprint, QString *message);
++}
++
++Q_DECLARE_METATYPE(OriginalLevels::Context)
++Q_DECLARE_METATYPE(OriginalLevels::CurrentHoleRuntime)
++
++#endif
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_packet.cpp b/06_programs/sn100_host/reagents/original_reagent_level_packet.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_packet.cpp
+@@ -0,0 +1,82 @@
++#include "original_reagent_level.h"
++#include "protocol/frame_codec.h"
++#include <QTextCodec>
++#include <cmath>
++
++namespace OriginalLevels
++{
++namespace
++{
++bool fail(QString *message, const QString &reason)
++{
++    if (message) *message=reason;
++    return false;
++}
++}
++
++bool decodePacket(const QByteArray &payload, bool linuxNew, ReceivedPacket *result, QString *message)
++{
++    if (message) message->clear();
++    if (!result) return fail(message,QStringLiteral("N液位返回的输出为空。"));
++    *result=ReceivedPacket();
++    if (payload.size()<2 || payload.size()>Sn100Protocol::kMaxMessageBytes || payload[0]!='N')
++        return fail(message,QStringLiteral("不是完整的顶层N液位返回，或超过原通信本地读取上限。"));
++    QTextCodec *utf8=QTextCodec::codecForName("UTF-8");
++    if (!utf8) return fail(message,QStringLiteral("UTF-8解码器不可用，未猜测N字段编码。"));
++    ReceivedPacket read;
++    read.linuxNew=linuxNew;
++    read.payload=payload;
++    for (int cursor=1;cursor<payload.size();)
++    {
++        if (payload[cursor++]!='[')
++            return fail(message,QStringLiteral("N液位返回字段缺少左括号或含尾随内容。"));
++        const int end=payload.indexOf(']',cursor);
++        if (end<cursor || end-cursor>4096 || read.rawFields.size()>=4096)
++            return fail(message,QStringLiteral("N液位返回字段不完整或超过本地读取上限。"));
++        const QByteArray raw=payload.mid(cursor,end-cursor);
++        for (unsigned char character : raw)
++            if (character<32 || character=='[')
++                return fail(message,QStringLiteral("N液位返回含控制字符或未定义的嵌套括号。"));
++        QTextCodec::ConverterState conversion;
++        const QString text=utf8->toUnicode(raw.constData(),raw.size(),&conversion);
++        if (conversion.invalidChars || conversion.remainingChars)
++            return fail(message,QStringLiteral("N液位返回字段不是完整有效的原UTF-8文字。"));
++        read.rawFields.append(raw);
++        read.fields.append(text);
++        cursor=end+1;
++    }
++    if (read.fields.isEmpty()) return fail(message,QStringLiteral("N液位返回没有孔位字段。"));
++    read.hole=read.fields[0];
++    // 原Sample按首项contains判断，不能把其架号/孔号解释成试剂的9或10字段。
++    if (read.hole.contains(QStringLiteral("Sample")))
++    {
++        if (read.fields.size()<4)
++            return fail(message,QStringLiteral("N样本液位返回少于原分支所需的4项，未进入试剂处理。"));
++        read.kind=PacketKind::SampleIgnored;
++        *result=read;
++        return true;
++    }
++    const int expected=linuxNew ? 10 : 9;
++    if (read.fields.size()!=expected)
++        return fail(message,QStringLiteral("N试剂液位字段数与已确认的新旧协议不符，未按长度猜测协议。"));
++    read.reagent=read.fields[1];
++    read.area=read.fields[2];
++    read.sendIndex=read.fields[4]; // 原含义未核实，保留原文，不作为设备请求号。
++    read.bottle=read.fields[5];
++    read.reportedDiameter=read.fields[6];
++    read.reportedAngle=read.fields[7];
++    if (linuxNew) read.reportedVolume=read.fields[8];
++    if (read.hole.isEmpty() || read.reagent.isEmpty() || read.area.isEmpty() || read.bottle.isEmpty())
++        return fail(message,QStringLiteral("N试剂液位缺少孔位、试剂、区域或瓶型身份。"));
++    bool needleOk=false, heightOk=false;
++    read.needle=read.fields[3].toInt(&needleOk);
++    read.rawHeightMm=read.fields[linuxNew ? 9 : 8].toDouble(&heightOk);
++    // 本接收切片仅开放实际确认的三根针；不改变纯容量函数的1/2/其余映射。
++    if (!needleOk || read.needle<1 || read.needle>3)
++        return fail(message,QStringLiteral("N针号不是已确认的1至3整数；本接收入口保护性拒绝，未改成默认样本针。"));
++    if (!heightOk || !std::isfinite(read.rawHeightMm) || read.rawHeightMm<0 || read.rawHeightMm>=0xff00)
++        return fail(message,QStringLiteral("N毫米高度无效或达到原错误高度标记，未改写为0后继续保存。"));
++    *result=read;
++    return true;
++}
++}
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_model.cpp b/06_programs/sn100_host/reagents/original_reagent_level_model.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_model.cpp
+@@ -0,0 +1,276 @@
++#include "original_reagent_level.h"
++#include <QRegularExpression>
++#include <QSet>
++#include <cmath>
++#include <limits>
++
++namespace OriginalLevels
++{
++namespace
++{
++const QString informationFile=QStringLiteral("db/userSet/reagent_Information.db");
++const QString bottleFile=QStringLiteral("db/systemInfo/reagent_Bottle_Type.db");
++const QString settingFile=QStringLiteral("db/userSet/reagent_Setting.db");
++
++bool fail(QString *message, const QString &reason)
++{
++    if (message) *message=reason;
++    return false;
++}
++
++bool finiteNumber(const QVariant &value, double *number)
++{
++    bool ok=false;
++    *number=value.toString().toDouble(&ok);
++    return ok && std::isfinite(*number);
++}
++
++QString canonicalArea(const QString &area)
++{
++    if (area==QStringLiteral("0") || area==QStringLiteral("s_area")) return QStringLiteral("s_area");
++    if (area==QStringLiteral("1") || area==QStringLiteral("r_area")) return QStringLiteral("r_area");
++    return QString();
++}
++
++QString canonicalBottle(const QString &bottle)
++{
++    const QStringList aliases{QStringLiteral("7mL"),QStringLiteral("10mL"),QStringLiteral("15mL"),
++                              QStringLiteral("30mL"),QStringLiteral("50mL")};
++    for (int i=0;i<aliases.size();++i) if (bottle==QString::number(i+1)) return aliases[i];
++    bool numeric=false;
++    bottle.toDouble(&numeric);
++    return numeric ? QString() : bottle;
++}
++
++bool knownMaximumSource(MaximumSource source)
++{
++    switch (source)
++    {
++    case MaximumSource::InitialBottleByName:
++    case MaximumSource::ConfirmedUr:
++    case MaximumSource::ManualHoleSave:
++    case MaximumSource::FilledHole:
++    case MaximumSource::ClearedHole: return true;
++    case MaximumSource::Unknown: return false;
++    }
++    return false;
++}
++
++bool samePacket(const ReceivedPacket &first, const ReceivedPacket &second)
++{
++    return first.kind==second.kind && first.linuxNew==second.linuxNew && first.payload==second.payload &&
++        first.rawFields==second.rawFields && first.fields==second.fields && first.hole==second.hole &&
++        first.reagent==second.reagent && first.area==second.area && first.bottle==second.bottle &&
++        first.sendIndex==second.sendIndex && first.reportedDiameter==second.reportedDiameter &&
++        first.reportedAngle==second.reportedAngle && first.reportedVolume==second.reportedVolume &&
++        first.needle==second.needle && first.rawHeightMm==second.rawHeightMm;
++}
++
++bool verifiedProjects(const ProjectSnapshot &projects, const QString &root, QString *message)
++{
++    if (!projects.orderVerified || projects.versions.value(QStringLiteral("config.ini")).isEmpty())
++        return fail(message,QStringLiteral("原项目步骤/项目顺序尚未核实，或排序配置版本缺失。"));
++    QSet<QString> files, names;
++    QSet<int> orders;
++    for (const auto &project : projects.records)
++    {
++        const QString key=QStringLiteral("project/")+project.originalFileName;
++        bool orderOk=false;
++        const int order=project.originalBaseValues.value(QStringLiteral("xuhao")).toInt(&orderOk);
++        if (project.originalRoot!=root || project.originalFileName.isEmpty() || files.contains(project.originalFileName) ||
++            project.originalFingerprint.isEmpty() || projects.versions.value(key)!=project.originalFingerprint ||
++            project.name.isEmpty() || project.originalBaseValues.value(QStringLiteral("project_en_name"))!=project.name ||
++            !orderOk || project.id!=order || names.contains(project.name) || orders.contains(order))
++            return fail(message,QStringLiteral("原项目快照的工作根、文件身份或版本不完整，未猜测项目用量。"));
++        files.insert(project.originalFileName);
++        names.insert(project.name); orders.insert(order);
++    }
++    return true;
++}
++
++double limitedDisplay(double amount, double maximum)
++{
++    // 对应原N界面的先上限、后下限判断，不把这个数当作数据库原探测量。
++    if (amount>maximum) return maximum;
++    if (amount<0) return 0;
++    return amount;
++}
++
++ReagentTestCount selectedTests(const ProjectSnapshot &projects, const QString &name,
++                              double amount, double minimum)
++{
++    ReagentTestCount result;
++    QString text;
++    for (const auto &project : projects.records)
++    {
++        for (const auto &step : project.advanced.reagents)
++            if (step.value(QStringLiteral("reagent_name"))==name)
++            {
++                text=step.value(QStringLiteral("reagent_amount_ul"));
++                break; // 原版每个项目只看首个同名步骤，空文字才接着看下一项目。
++            }
++        if (!text.isEmpty()) break;
++    }
++    double use=0;
++    if (!finiteNumber(text,&use) || use<=0)
++    {
++        result.reason=QStringLiteral("没有可确认的首个同名项目单次用量，剩余次数未知。匹配不到用量不等于0次。");
++        return result;
++    }
++    const double tests=std::floor((amount-minimum)/use);
++    if (!std::isfinite(tests) || tests>std::numeric_limits<int>::max())
++    {
++        result.reason=QStringLiteral("按原项目用量得到的次数超出整数范围，未截断显示。");
++        return result;
++    }
++    result.available=true;
++    result.tests=tests<=0 ? 0 : static_cast<int>(tests);
++    return result;
++}
++}
++
++bool prepareObservation(const OriginalReagentState &state, const ReceivedPacket &packet,
++                        const Context &context, const CurrentHoleRuntime &runtime,
++                        const ProjectSnapshot &projects, PreparedObservation *result, QString *message)
++{
++    if (message) message->clear();
++    if (!result) return fail(message,QStringLiteral("N液位准备结果输出为空。"));
++    *result=PreparedObservation();
++    if (!context.packetId || !context.connection || !context.permissionRevision || context.root.isEmpty() ||
++        context.actualModel.isEmpty() || context.actualModel!=context.configuredModel || context.themeFingerprint.isEmpty() ||
++        context.linuxNew!=(context.protocolToken==QStringLiteral("LinuxNew")) ||
++        (context.configuredPositions!=20 && context.configuredPositions!=42) ||
++        context.configuredPositions!=context.reportedPositions || context.mainStatus<0 || context.mainStatus>6 ||
++        context.capacityCalibrationActive)
++        return fail(message,QStringLiteral("N到达连接、许可、机型、20/42孔配置、当前状态或标定模式尚未核实。"));
++    const QString expectedTable=context.configuredPositions==20 ? QStringLiteral("reagent_setting") : QStringLiteral("reagent_setting_6600");
++    if (state.root!=context.root || state.settingTable!=expectedTable || runtime.root!=context.root ||
++        packet.linuxNew!=context.linuxNew)
++        return fail(message,QStringLiteral("N快照工作根、原孔位表或新旧协议与接收上下文不一致。"));
++    ReceivedPacket verified;
++    if (!decodePacket(packet.payload,context.linuxNew,&verified,message)) return false;
++    if (verified.kind!=PacketKind::Reagent)
++        return fail(message,QStringLiteral("N样本液位已经分流，不进入试剂换算或保存。"));
++    if (!samePacket(packet,verified))
++        return fail(message,QStringLiteral("N已解析字段与保留的原报文不一致，未使用漂移的输入。"));
++    const QRegularExpression visible(context.configuredPositions==42 ?
++        QStringLiteral("^([A-F]_[1-7]|SD_[1-4])$") : QStringLiteral("^(R_([1-9]|1[0-9]|20)|SD_[1-4])$"));
++    if (!visible.match(packet.hole).hasMatch())
++        return fail(message,QStringLiteral("N孔位不属于当前实际20或42位页面，未处理表中额外行。"));
++    if (!runtime.available || !runtime.revision || !knownMaximumSource(runtime.maximumSource) ||
++        !std::isfinite(runtime.maximumMicrolitres) || runtime.maximumMicrolitres<0 ||
++        runtime.maximumMicrolitres>std::numeric_limits<int>::max() ||
++        !std::isfinite(runtime.amountMicrolitres) || !std::isfinite(runtime.usedMicrolitres))
++        return fail(message,QStringLiteral("本孔独立运行快照、最大量来源或版本未确认，不能借用孔库max_ul。"));
++    if (state.versions.value(informationFile).isEmpty() || state.versions.value(bottleFile).isEmpty() ||
++        state.versions.value(settingFile).isEmpty() ||
++        runtime.informationFingerprint!=state.versions.value(informationFile) ||
++        runtime.bottleFingerprint!=state.versions.value(bottleFile) ||
++        runtime.settingFingerprint!=state.versions.value(settingFile))
++        return fail(message,QStringLiteral("N运行快照与原试剂、瓶型、孔位三库版本不一致。"));
++    if (!verifiedProjects(projects,context.root,message)) return false;
++    const OriginalBusiness::Row *hole=nullptr;
++    for (const auto &row : state.holes)
++        if (row.value(QStringLiteral("hole_name")).toString()==packet.hole)
++        {
++            if (hole) return fail(message,QStringLiteral("原孔位表有重名孔，未合并N液位。"));
++            hole=&row;
++        }
++    if (!hole) return fail(message,QStringLiteral("N试剂孔位不存在于当前原孔位表。"));
++    bool idOk=false;
++    const qint64 holeId=hole->value(QStringLiteral("id")).toLongLong(&idOk);
++    const QString reagent=hole->value(QStringLiteral("reagent_name")).toString();
++    const QString bottle=hole->value(QStringLiteral("bottle_type")).toString();
++    const QString area=hole->value(QStringLiteral("area")).toString();
++    if (!idOk || holeId<=0 || !hole->contains(QStringLiteral("used_ul")) ||
++        reagent!=packet.reagent || bottle.isEmpty() || bottle!=canonicalBottle(packet.bottle) ||
++        area.isEmpty() || area!=canonicalArea(packet.area) ||
++        runtime.hole!=packet.hole || runtime.reagent!=reagent || runtime.bottle!=bottle || runtime.area!=area ||
++        runtime.reagentType!=hole->value(QStringLiteral("reagent_type")).toString())
++        return fail(message,QStringLiteral("N孔位、试剂、瓶型或区域与当前原库及独立运行快照不对应。"));
++    const QStringList states{QStringLiteral("r_none"),QStringLiteral("r_normal"),QStringLiteral("r_warning"),
++                              QStringLiteral("r_useout"),QStringLiteral("r_unknown"),QStringLiteral("r_outdate")};
++    if (!states.contains(runtime.state))
++        return fail(message,QStringLiteral("本孔当前界面状态未识别，未猜测N更新前状态。"));
++    const OriginalBusiness::Row *definition=nullptr, *geometry=nullptr;
++    for (const auto &row : state.reagents)
++        if (row.value(QStringLiteral("reagent_name")).toString()==reagent)
++        {
++            if (definition) return fail(message,QStringLiteral("原试剂资料存在重名定义，未猜测液量阈值。"));
++            definition=&row;
++        }
++    if (!definition) return fail(message,QStringLiteral("N当前试剂没有原reagent_list定义。"));
++    double out=0, warning=0;
++    if (!finiteNumber(definition->value(QStringLiteral("out_ul")),&out) ||
++        !finiteNumber(definition->value(QStringLiteral("warning_ul")),&warning))
++        return fail(message,QStringLiteral("当前原试剂的缺量或警告阈值不是有限数。"));
++    for (const auto &row : state.bottles)
++        if (row.value(QStringLiteral("bottle_type_name")).toString()==bottle && row.value(QStringLiteral("area")).toString()==area)
++        {
++            if (geometry) return fail(message,QStringLiteral("当前区域的原瓶型有重名资料，未猜测几何参数。"));
++            geometry=&row;
++        }
++    PreparedObservation prepared;
++    prepared.context=context; prepared.received=verified; prepared.before=runtime; prepared.after=runtime;
++    prepared.observed=state; prepared.projects=projects; prepared.holeId=holeId;
++    auto &input=prepared.capacityInput;
++    input.hole=packet.hole; input.needle=packet.needle; input.area=packet.area;
++    input.reportedBottle=packet.bottle; input.rawHeightMm=packet.rawHeightMm;
++    input.configuredBottle.hole=packet.hole; input.configuredBottle.name=bottle; input.configuredBottle.area=area;
++    input.configuredBottle.maximumMicrolitres=runtime.maximumMicrolitres;
++    // 几何缺项保持NaN；有效矩阵不需要它们，真正几何后备由v2明确检查。
++    double number=0;
++    if (geometry && finiteNumber(geometry->value(QStringLiteral("bottom_diameter")),&number))
++        input.configuredBottle.bottomDiameterMm=number;
++    if (geometry && finiteNumber(geometry->value(QStringLiteral("angle")),&number))
++        input.configuredBottle.angleDegrees=number;
++    if (!OriginalRuntime::calculateReagentCapacity(context.root,context.actualModel,input,&prepared.capacity,message)) return false;
++    if (context.capacityRelativeFile!=prepared.capacity.relativeFile || context.capacityFileState!=prepared.capacity.fileState ||
++        context.capacityFingerprint!=prepared.capacity.fingerprint)
++        return fail(message,QStringLiteral("N到达时绑定的容量资料状态或版本已变化，未给旧观测换用新参数。"));
++    const double measured=prepared.capacity.volumeMicrolitres;
++    if (!prepared.capacity.available || !std::isfinite(measured))
++        return fail(message,QStringLiteral("N容量结果不可用，未准备默认0液量。"));
++    prepared.formulaText=QString::number(packet.rawHeightMm);
++    prepared.amountText=QString::number(measured);
++    double stored=0;
++    if (!finiteNumber(prepared.amountText,&stored) || stored<std::numeric_limits<int>::min() || stored>std::numeric_limits<int>::max())
++        return fail(message,QStringLiteral("N原默认精度液量文本超出原整数amount_uL范围，未截断溢出。"));
++    prepared.amountInteger=static_cast<int>(stored);
++    prepared.previousUsedText=hole->value(QStringLiteral("used_ul")).toString();
++    prepared.updateUsed=context.mainStatus!=5;
++    prepared.usedText=prepared.updateUsed ? prepared.amountText : prepared.previousUsedText;
++    double displayed=measured;
++    if (!prepared.updateUsed)
++    {
++        // 原Testing从原探测量依次减所有项目每个同名步骤；不能再套assignTask扣量。
++        for (const auto &project : projects.records)
++            for (const auto &step : project.advanced.reagents)
++                if (step.value(QStringLiteral("reagent_name"))==reagent)
++                {
++                    double use=0;
++                    if (!finiteNumber(step.value(QStringLiteral("reagent_amount_ul")),&use) || use<0)
++                        return fail(message,QStringLiteral("测试态同名项目步骤用量无效，未猜测N界面扣量。"));
++                    displayed-=use;
++                    if (!std::isfinite(displayed)) return fail(message,QStringLiteral("测试态N界面扣量超出有限数范围。"));
++                    displayed=displayed>=0 ? displayed : 0.0;
++                }
++        displayed=limitedDisplay(displayed,runtime.maximumMicrolitres);
++        prepared.after.amountMicrolitres=displayed;
++        if (runtime.usedMicrolitres>displayed) prepared.after.usedMicrolitres=displayed;
++    }
++    else
++    {
++        displayed=limitedDisplay(displayed,runtime.maximumMicrolitres);
++        prepared.after.amountMicrolitres=displayed;
++        prepared.after.usedMicrolitres=displayed;
++    }
++    prepared.after.state=displayed<=out ? QStringLiteral("r_useout") :
++        displayed<=warning ? QStringLiteral("r_warning") : QStringLiteral("r_normal");
++    // 原N只重判控件状态；数据库state不在保存字段中，提交前不伪造新setting版本。
++    prepared.after.settingFingerprint.clear();
++    prepared.selectedHoleTests=selectedTests(projects,reagent,displayed,out);
++    *result=prepared;
++    return true;
++}
++}
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_projects.cpp b/06_programs/sn100_host/reagents/original_reagent_level_projects.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_projects.cpp
+@@ -0,0 +1,120 @@
++#include "original_reagent_level.h"
++#include "original_files/original_ini.h"
++#include "projects/original_project_repository.h"
++#include "projects/original_project_copy.h"
++#include <QDir>
++#include <QFileInfo>
++#include <QSqlError>
++#include <QSqlQuery>
++#include <QSqlRecord>
++#include <QSet>
++#include <algorithm>
++#include <limits>
++
++namespace OriginalLevels
++{
++namespace
++{
++bool fail(QString *message,const QString &reason)
++{
++    if (message) *message=reason;
++    return false;
++}
++}
++
++bool readProjectSnapshot(const QString &root,ProjectSnapshot *result,QString *message)
++{
++    if (!result) return fail(message,QStringLiteral("N项目快照输出为空。"));
++    *result=ProjectSnapshot();
++    if (!OriginalBusiness::workingRoot(root,message)) return false;
++    // 复制清单未解除时，不能把未提交或未知状态的克隆当成普通项目。
++    if (!OriginalProjectCopy::noPending(root,message)) return false;
++    ProjectSnapshot loaded;
++    const QString config=QDir(root).filePath(QStringLiteral("config.ini"));
++    const QString configVersion=OriginalProjectRepository::databaseFingerprint(config,message);
++    OriginalIni::Settings settings;
++    QString actualKey;
++    if (configVersion.isEmpty() || !OriginalIni::read(config,&settings,message) ||
++        !OriginalIni::resolveKey(settings,QStringLiteral("sendConfig/sendSequence"),&actualKey,message)) return false;
++    const QStringList sequence=actualKey.isEmpty() ? QStringList() : settings.values.value(actualKey).toStringList();
++    loaded.versions.insert(QStringLiteral("config.ini"),configVersion);
++    QDir directory(QDir(root).filePath(QStringLiteral("project")));
++    if (!directory.exists() || !directory.isReadable() || QFileInfo(directory.absolutePath()).isSymLink())
++        return fail(message,QStringLiteral("原项目目录不存在或为符号链接，未推定没有项目。"));
++    directory.setFilter(QDir::Files|QDir::NoSymLinks);
++    directory.setNameFilters({QStringLiteral("*.db")});
++    const QStringList listing=directory.entryList();
++    if (listing.size()>128) return fail(message,QStringLiteral("N所需项目清单超过128文件，未截断。"));
++    int totalSteps=0;
++    QSet<QString> projectNames;
++    QSet<int> projectOrders;
++    for (const QString &name : listing)
++    {
++        if (name.contains(QStringLiteral("formula"))) continue;
++        const QString relative=QStringLiteral("project/")+name;
++        const QString version=OriginalProjectRepository::databaseFingerprint(QDir(root).filePath(relative),message);
++        if (version.isEmpty()) return false;
++        OriginalBusiness::Database database;
++        if (!database.open(root,relative,false,message)) return false;
++        ProjectRecord project;
++        project.originalRoot=root; project.originalFileName=name; project.originalFingerprint=version;
++        QSqlQuery base(database.db);
++        if (!base.exec(QStringLiteral("SELECT name,value FROM project_base"))) return fail(message,base.lastError().text());
++        int baseRows=0;
++        while (base.next())
++        {
++            if (++baseRows>100000) return fail(message,QStringLiteral("原项目基础键超过读取上限。"));
++            const QString key=base.value(0).toString();
++            if (project.originalBaseValues.contains(key)) return fail(message,QStringLiteral("原项目基础键重复，未猜测优先值。"));
++            project.originalBaseValues.insert(key,base.value(1).toString());
++        }
++        if (base.lastError().isValid()) return fail(message,base.lastError().text());
++        project.name=project.originalBaseValues.value(QStringLiteral("project_en_name"));
++        bool orderOk=false;
++        const int order=project.originalBaseValues.value(QStringLiteral("xuhao")).toInt(&orderOk);
++        if (project.name.isEmpty() || !orderOk) return fail(message,QStringLiteral("原项目名称或xuhao顺序无效。"));
++        const QString nameIdentity=project.name;
++        if (projectNames.contains(nameIdentity) || projectOrders.contains(order))
++            return fail(message,QStringLiteral("N项目实际名称或xuhao重复，未按文件名区分克隆或重复扣显示量。"));
++        project.id=order;
++        projectNames.insert(nameIdentity); projectOrders.insert(order);
++        QSqlQuery steps(database.db);
++        // 原SqlBase::getData使用select *而无ORDER BY；不能复用另一读口的xuhao,rowid排序。
++        if (!steps.exec(QStringLiteral("SELECT * FROM project_reagent"))) return fail(message,steps.lastError().text());
++        const QSqlRecord columns=steps.record();
++        const int reagentColumn=columns.indexOf(QStringLiteral("reagent_name"));
++        const int amountColumn=columns.indexOf(QStringLiteral("reagent_amount_ul"));
++        if (reagentColumn<0 || amountColumn<0) return fail(message,QStringLiteral("原项目试剂表缺少名称或单次用量列。"));
++        while (steps.next())
++        {
++            if (++totalSteps>32768) return fail(message,QStringLiteral("N项目试剂步骤超过32768行，未截断。"));
++            ProjectActionFields step;
++            step.insert(QStringLiteral("reagent_name"),steps.value(reagentColumn).toString());
++            step.insert(QStringLiteral("reagent_amount_ul"),steps.value(amountColumn).toString());
++            project.advanced.reagents.append(step);
++        }
++        if (steps.lastError().isValid()) return fail(message,steps.lastError().text());
++        loaded.records.append(project); loaded.versions.insert(relative,version);
++    }
++    std::sort(loaded.records.begin(),loaded.records.end(),[](const ProjectRecord &a,const ProjectRecord &b)
++    { return a.originalBaseValues.value(QStringLiteral("xuhao")).toInt()<b.originalBaseValues.value(QStringLiteral("xuhao")).toInt(); });
++    if (!sequence.isEmpty())
++    {
++        const auto rank=[&sequence](const QString &name)
++        {
++            for (int i=0;i<sequence.size();++i) if (name.startsWith(sequence[i],Qt::CaseInsensitive)) return i;
++            return std::numeric_limits<int>::max();
++        };
++        std::stable_sort(loaded.records.begin(),loaded.records.end(),[&rank](const ProjectRecord &a,const ProjectRecord &b)
++        { return rank(a.name)<rank(b.name); });
++    }
++    if (listing!=directory.entryList()) return fail(message,QStringLiteral("读取N项目快照期间文件清单变化。"));
++    for (auto it=loaded.versions.cbegin();it!=loaded.versions.cend();++it)
++        if (it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root).filePath(it.key()),message))
++            return fail(message,QStringLiteral("读取N项目快照期间资料版本变化。"));
++    if (!OriginalProjectCopy::noPending(root,message)) return false;
++    loaded.orderVerified=true; // 表示按原SQL/排序读取，不代表已经做过实际设备运行核对。
++    *result=loaded;
++    return true;
++}
++}
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_repository.cpp b/06_programs/sn100_host/reagents/original_reagent_level_repository.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_repository.cpp
+@@ -0,0 +1,268 @@
++#include "original_reagent_level.h"
++#include "projects/original_project_repository.h"
++#include "projects/original_project_copy.h"
++#include "original_files/original_ini.h"
++#include <QDir>
++#include <QFileInfo>
++#include <QLockFile>
++#include <QSet>
++#include <cmath>
++
++namespace OriginalLevels
++{
++namespace
++{
++const QString informationFile=QStringLiteral("db/userSet/reagent_Information.db");
++const QString bottleFile=QStringLiteral("db/systemInfo/reagent_Bottle_Type.db");
++const QString settingFile=QStringLiteral("db/userSet/reagent_Setting.db");
++
++bool fail(QString *message, const QString &reason)
++{
++    if (message) *message=reason;
++    return false;
++}
++
++bool sameNumber(double first, double second)
++{
++    return first==second || (std::isnan(first) && std::isnan(second));
++}
++
++bool sameCapacity(const OriginalRuntime::ReagentCapacityResult &first,
++                  const OriginalRuntime::ReagentCapacityResult &second)
++{
++    return first.available && second.available && first.source==second.source &&
++        first.fileState==second.fileState && first.matrixState==second.matrixState &&
++        first.actualModel==second.actualModel && first.relativeFile==second.relativeFile &&
++        first.fingerprint==second.fingerprint && sameNumber(first.rawHeightMm,second.rawHeightMm) &&
++        first.quantizedHeightHundredths==second.quantizedHeightHundredths &&
++        sameNumber(first.quantizedHeightMm,second.quantizedHeightMm) &&
++        first.adjustedHeightAvailable==second.adjustedHeightAvailable &&
++        (!first.adjustedHeightAvailable || sameNumber(first.adjustedHeightMm,second.adjustedHeightMm)) &&
++        first.matrixMaximumMicrolitres==second.matrixMaximumMicrolitres &&
++        sameNumber(first.matrixVolumeMicrolitres,second.matrixVolumeMicrolitres) &&
++        sameNumber(first.volumeMicrolitres,second.volumeMicrolitres) &&
++        sameNumber(first.displayVolumeMicrolitres,second.displayVolumeMicrolitres);
++}
++
++bool sameCapacityInput(const OriginalRuntime::ReagentCapacityInput &first,
++                       const OriginalRuntime::ReagentCapacityInput &second)
++{
++    const auto &a=first.configuredBottle;
++    const auto &b=second.configuredBottle;
++    return first.hole==second.hole && first.needle==second.needle && first.area==second.area &&
++        first.reportedBottle==second.reportedBottle && sameNumber(first.rawHeightMm,second.rawHeightMm) &&
++        a.hole==b.hole && a.name==b.name && a.area==b.area &&
++        sameNumber(a.bottomDiameterMm,b.bottomDiameterMm) && sameNumber(a.angleDegrees,b.angleDegrees) &&
++        sameNumber(a.maximumMicrolitres,b.maximumMicrolitres);
++}
++
++bool sameRuntime(const CurrentHoleRuntime &first, const CurrentHoleRuntime &second)
++{
++    return first.available==second.available && first.root==second.root && first.hole==second.hole &&
++        first.reagent==second.reagent && first.bottle==second.bottle && first.area==second.area &&
++        first.reagentType==second.reagentType && first.state==second.state &&
++        first.settingFingerprint==second.settingFingerprint && first.bottleFingerprint==second.bottleFingerprint &&
++        first.informationFingerprint==second.informationFingerprint && first.revision==second.revision &&
++        first.maximumSource==second.maximumSource &&
++        sameNumber(first.maximumMicrolitres,second.maximumMicrolitres) &&
++        sameNumber(first.amountMicrolitres,second.amountMicrolitres) &&
++        sameNumber(first.usedMicrolitres,second.usedMicrolitres);
++}
++
++bool samePreparedResult(const PreparedObservation &first, const PreparedObservation &second)
++{
++    return first.holeId==second.holeId && first.formulaText==second.formulaText &&
++        first.amountText==second.amountText && first.amountInteger==second.amountInteger &&
++        first.previousUsedText==second.previousUsedText && first.usedText==second.usedText &&
++        first.updateUsed==second.updateUsed && sameCapacityInput(first.capacityInput,second.capacityInput) &&
++        sameCapacity(first.capacity,second.capacity) && sameRuntime(first.before,second.before) &&
++        sameRuntime(first.after,second.after) &&
++        first.selectedHoleTests.available==second.selectedHoleTests.available &&
++        first.selectedHoleTests.tests==second.selectedHoleTests.tests &&
++        first.selectedHoleTests.reason==second.selectedHoleTests.reason;
++}
++
++bool fingerprintMatches(const QString &root, const QString &relative, const QString &expected, QString *message)
++{
++    if (expected.isEmpty()) return fail(message,QStringLiteral("N保存缺少原文件版本：")+relative);
++    const QString current=OriginalProjectRepository::databaseFingerprint(QDir(root).filePath(relative),message);
++    if (current.isEmpty()) return false;
++    return current==expected || fail(message,QStringLiteral("N到达后原资料已变化，未用旧观测覆盖：")+relative);
++}
++
++bool themeMatches(const Context &context, QString *message)
++{
++    const QString file=QStringLiteral("theme_config.ini");
++    if (!fingerprintMatches(context.root,file,context.themeFingerprint,message)) return false;
++    OriginalIni::Settings settings;
++    QString modelKey, countKey;
++    if (!OriginalIni::read(QDir(context.root).filePath(file),&settings,message) ||
++        !OriginalIni::resolveKey(settings,QStringLiteral("theme/DriverModel"),&modelKey,message) ||
++        !OriginalIni::resolveKey(settings,QStringLiteral("theme/ReagentPanelChannelCount"),&countKey,message)) return false;
++    bool ok=false;
++    // 原仓库在缺孔数键时选择20位；机型仍须来自已经核实的显式主题值。
++    const int count=(countKey.isEmpty() ? QVariant(20) : settings.values.value(countKey)).toInt(&ok);
++    if (modelKey.isEmpty() || settings.values.value(modelKey).toString()!=context.configuredModel ||
++        !ok || count!=context.configuredPositions)
++        return fail(message,QStringLiteral("N对应的主题机型或试剂位配置已不一致，未选择其他表保存。"));
++    return fingerprintMatches(context.root,file,context.themeFingerprint,message);
++}
++
++bool projectsMatch(const PreparedObservation &prepared, QString *message)
++{
++    const auto &snapshot=prepared.projects;
++    const QString &root=prepared.context.root;
++    // 已持项目、试剂写锁；提交前的每次复核都不能绕过待核复制。
++    if (!OriginalProjectCopy::noPending(root,message)) return false;
++    if (!snapshot.orderVerified || snapshot.versions.value(QStringLiteral("config.ini")).isEmpty())
++        return fail(message,QStringLiteral("N保存缺少已核实的原项目顺序或排序配置版本。"));
++    QSet<QString> expectedFiles, expectedKeys, projectNames;
++    QSet<int> projectOrders;
++    expectedKeys.insert(QStringLiteral("config.ini"));
++    for (const auto &project : snapshot.records)
++    {
++        const QString file=project.originalFileName;
++        const QString key=QStringLiteral("project/")+file;
++        bool orderOk=false;
++        const int order=project.originalBaseValues.value(QStringLiteral("xuhao")).toInt(&orderOk);
++        if (file.isEmpty() || file!=QFileInfo(file).fileName() || file.contains('/') || file.contains('\\') ||
++            file.contains(QStringLiteral("formula")) || expectedFiles.contains(file) ||
++            project.originalRoot!=root || project.originalFingerprint.isEmpty() ||
++            snapshot.versions.value(key)!=project.originalFingerprint ||
++            project.name.isEmpty() || project.originalBaseValues.value(QStringLiteral("project_en_name"))!=project.name ||
++            !orderOk || project.id!=order || projectNames.contains(project.name) || projectOrders.contains(order))
++            return fail(message,QStringLiteral("N保存的原项目文件集合、工作根或文件版本不完整。"));
++        expectedFiles.insert(file);
++        expectedKeys.insert(key);
++        projectNames.insert(project.name); projectOrders.insert(order);
++    }
++    if (snapshot.versions.size()!=expectedKeys.size())
++        return fail(message,QStringLiteral("N项目版本表不对应本次完整项目集合，未忽略额外或缺失文件。"));
++    for (auto version=snapshot.versions.cbegin();version!=snapshot.versions.cend();++version)
++        if (!expectedKeys.contains(version.key()) || version.value().isEmpty())
++            return fail(message,QStringLiteral("N项目版本表包含未确认的路径或空版本。"));
++
++    const QString directoryPath=QDir(root).filePath(QStringLiteral("project"));
++    const QFileInfo directoryInfo(directoryPath);
++    const QDir directory(directoryPath);
++    if (directoryInfo.isSymLink() || !directoryInfo.isDir() || !directory.isReadable())
++        return fail(message,QStringLiteral("原项目目录不可读或类型不符，未把读取失败当作空项目集合。"));
++    QSet<QString> actualFiles;
++    // 与原loadAllProject一致：仅*.db普通文件、排除符号链接和formula专用库。
++    const QStringList entries=directory.entryList({QStringLiteral("*.db")},QDir::Files|QDir::NoSymLinks,QDir::Name);
++    for (const auto &file : entries)
++        if (!file.contains(QStringLiteral("formula"))) actualFiles.insert(file);
++    if (actualFiles!=expectedFiles)
++        return fail(message,QStringLiteral("N到达后原项目文件有增删，未沿用旧项目步骤或顺序保存。"));
++    for (auto version=snapshot.versions.cbegin();version!=snapshot.versions.cend();++version)
++        if (!fingerprintMatches(root,version.key(),version.value(),message)) return false;
++    return true;
++}
++
++bool capacityMatches(const PreparedObservation &prepared, QString *message)
++{
++    OriginalRuntime::ReagentCapacityResult current;
++    if (!OriginalRuntime::calculateReagentCapacity(prepared.context.root,prepared.context.actualModel,
++                                                   prepared.capacityInput,&current,message)) return false;
++    // 容量指纹是v2读取的原字节SHA，不能与包含SQLite旁文件的通用指纹混比。
++    if (!sameCapacity(prepared.capacity,current))
++        return fail(message,QStringLiteral("N准备后容量文件存在状态、版本或换算结果已变化，未改用其他模型保存。"));
++    return true;
++}
++}
++
++bool saveObservation(const PreparedObservation &prepared, const std::function<bool()> &stillCurrent,
++                     bool *committed, QString *savedFingerprint, QString *message)
++{
++    if (message) message->clear();
++    if (committed) *committed=false;
++    if (savedFingerprint) savedFingerprint->clear();
++    if (!committed || !savedFingerprint)
++        return fail(message,QStringLiteral("N保存的提交事实或保存指纹输出为空，未写入。"));
++    const auto &context=prepared.context;
++    const auto &observed=prepared.observed;
++    const QStringList files{informationFile,bottleFile,settingFile};
++    const QString table=context.configuredPositions==20 ? QStringLiteral("reagent_setting") : QStringLiteral("reagent_setting_6600");
++    if (!context.packetId || !context.connection || !context.permissionRevision || context.root.isEmpty() ||
++        !QDir::isAbsolutePath(context.root) || context.actualModel.isEmpty() ||
++        context.actualModel!=context.configuredModel || context.themeFingerprint.isEmpty() ||
++        (context.configuredPositions!=20 && context.configuredPositions!=42) ||
++        context.configuredPositions!=context.reportedPositions || context.mainStatus<0 || context.mainStatus>6 ||
++        context.capacityCalibrationActive || prepared.received.kind!=PacketKind::Reagent ||
++        prepared.received.linuxNew!=context.linuxNew || observed.root!=context.root || observed.settingTable!=table ||
++        observed.versions.size()!=files.size() || prepared.holeId<=0 ||
++        prepared.updateUsed!=(context.mainStatus!=5))
++        return fail(message,QStringLiteral("N保存的连接、原工作根、机型、状态、目标表或三库版本合同不完整。"));
++    for (const auto &file : files)
++        if (observed.versions.value(file).isEmpty())
++            return fail(message,QStringLiteral("N保存缺少到达时原库版本：")+file);
++    const auto permitted=[&]()
++    {
++        return (stillCurrent && stillCurrent()) ||
++            fail(message,QStringLiteral("N到达时的连接、运行快照或保存许可已失效，未继续写入。"));
++    };
++    const auto versionsMatch=[&](bool includeSetting)
++    {
++        if (!permitted()) return false;
++        for (const auto &file : files)
++            if ((includeSetting || file!=settingFile) &&
++                !fingerprintMatches(context.root,file,observed.versions.value(file),message)) return false;
++        if (!themeMatches(context,message) || !projectsMatch(prepared,message)) return false;
++        return permitted();
++    };
++    if (!permitted() || !OriginalBusiness::workingRoot(context.root,message)) return false;
++    QLockFile projectLock(QDir(context.root).filePath(QStringLiteral(".sn100-original-project-write.lock")));
++    QLockFile reagentLock(QDir(context.root).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
++    projectLock.setStaleLockTime(0); reagentLock.setStaleLockTime(0);
++    if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
++        return fail(message,QStringLiteral("原项目或试剂正在保存，N观测未覆盖当前操作。"));
++    if (!versionsMatch(true) || !capacityMatches(prepared,message)) return false;
++
++    OriginalBusiness::Database database;
++    if (!database.open(context.root,settingFile,true,message) || !database.begin(message)) return false;
++    const auto rollback=[&]() { database.rollback(); return false; };
++    if (!versionsMatch(true)) return rollback();
++    OriginalReagentRepository repository;
++    OriginalReagentState current;
++    if (!repository.initialize(context.root,message) || !repository.load(&current,message)) return rollback();
++    if (current.root!=context.root || current.settingTable!=table || current.versions!=observed.versions)
++    {
++        fail(message,QStringLiteral("进入N写事务后原试剂表或版本已变化，未保存旧观测。"));
++        return rollback();
++    }
++    PreparedObservation verified;
++    if (!prepareObservation(current,prepared.received,context,prepared.before,prepared.projects,&verified,message)) return rollback();
++    if (!samePreparedResult(prepared,verified))
++    {
++        fail(message,QStringLiteral("N事务内复核结果与准备时的字段、容量或运行快照不一致，未保存。"));
++        return rollback();
++    }
++    if (!versionsMatch(true)) return rollback();
++
++    // 原Table路径把默认精度液量文本转成整数amount_uL；used_ul仍保留原液量文本。
++    QString assignments=QStringLiteral("formula_level=?,amount_uL=?");
++    QVariantList arguments{verified.formulaText,verified.amountInteger};
++    if (verified.updateUsed)
++    {
++        assignments+=QStringLiteral(",used_ul=?");
++        arguments.append(verified.usedText);
++    }
++    arguments.append(verified.holeId);
++    arguments.append(verified.received.hole);
++    if (!database.execute(QStringLiteral("UPDATE \"%1\" SET %2 WHERE id=? AND hole_name=?").arg(table,assignments),
++                          arguments,message,1)) return rollback();
++    // 本事务已经改孔位库，提交前不把自身脏页当外部冲突；其他依赖继续核原版本。
++    if (!versionsMatch(false) || !capacityMatches(prepared,message) || !permitted()) return rollback();
++    if (!database.commit(message)) return rollback();
++    *committed=true;
++    database.db.close();
++    QString fingerprintError;
++    *savedFingerprint=OriginalProjectRepository::databaseFingerprint(QDir(context.root).filePath(settingFile),&fingerprintError);
++    if (savedFingerprint->isEmpty())
++        return fail(message,QStringLiteral("N观测已提交，但保存后的孔位指纹无法核对；不能按失败假定未写入：")+fingerprintError);
++    if (!stillCurrent || !stillCurrent())
++        return fail(message,QStringLiteral("N观测已提交，但连接或运行快照在提交期间变化，页面及当前设备结果仍待核对。"));
++    if (message) *message=QStringLiteral("N观测指定字段已提交并取得保存指纹，页面重读及运行快照更新另行核对；未发送设备命令。");
++    return true;
++}
++}
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_runtime.h b/06_programs/sn100_host/reagents/original_reagent_level_runtime.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_runtime.h
+@@ -0,0 +1,36 @@
++#ifndef SN100_ORIGINAL_REAGENT_LEVEL_RUNTIME_H
++#define SN100_ORIGINAL_REAGENT_LEVEL_RUNTIME_H
++
++#include "original_reagent_level.h"
++
++namespace OriginalLevels
++{
++// 只维护已知的孔位运行值；单线程使用，不开库、不发命令。
++// 连接/身份许可由调用者核对，失效时须invalidate，不能给旧包重贴新revision。
++class RuntimeProvider
++{
++public:
++    void observeSnapshot(const ReagentSnapshot &snapshot);
++    CurrentHoleRuntime current(const QString &hole) const;
++    QString diagnostic(const QString &hole) const;
++    void invalidate(const QString &hole = QString());
++    bool confirmUr(const QByteArray &payload, bool linuxNew, const ReagentSnapshot &snapshot, QString *message);
++    bool confirmManualHole(const QString &hole, const ReagentSnapshot &snapshot, QString *message);
++    // 仅供已确认committed的展示入口：after须绑定保存指纹，revision须为可信前版+1。
++    // 纯prepare的空保存指纹不是提交凭据；本入口不替代writer或外层连接/许可核对。
++    // 接受后current(hole)可能因全局时钟取得更高revision；后续发布须读current，不能重贴after。
++    bool acceptObservation(const QString &beforeSettingFingerprint, const CurrentHoleRuntime &after,
++                           const ReagentSnapshot &persistedSnapshot, QString *message);
++
++private:
++    void put(CurrentHoleRuntime runtime, const QString &reason);
++    ReagentSnapshot snapshot_, previousSnapshot_;
++    QMap<QString, CurrentHoleRuntime> runtimes_, previousRuntimes_;
++    QMap<QString, quint64> previousTransitionRevisions_;
++    QMap<QString, quint64> acceptedObservationRevisions_; // 每孔最后消费的N输入revision，拒绝重复重用前版。
++    QMap<QString, QString> diagnostics_;
++    quint64 revision_ = 0;
++    bool observed_ = false, snapshotValid_ = false, previousValid_ = false;
++};
++}
++#endif
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp b/06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_runtime.cpp
+@@ -0,0 +1,573 @@
++#include "original_reagent_level_runtime.h"
++#include <QSet>
++#include <cmath>
++#include <limits>
++
++namespace OriginalLevels
++{
++namespace
++{
++struct Versions
++{
++    QString setting, bottle, information;
++};
++
++bool fail(QString *message, const QString &reason)
++{
++    if (message) *message=reason;
++    return false;
++}
++
++bool finiteNumber(const QVariant &value, double *number, bool emptyIsZero=false)
++{
++    const QString text=value.toString();
++    if (emptyIsZero && text.isEmpty()) { *number=0; return true; }
++    bool ok=false;
++    *number=text.toDouble(&ok);
++    return ok && std::isfinite(*number);
++}
++
++bool integerText(const QString &text, int *number)
++{
++    bool ok=false;
++    *number=text.toInt(&ok);
++    return ok;
++}
++
++bool sameValue(const QVariant &first, const QVariant &second)
++{
++    return first.userType()==second.userType() && first.isNull()==second.isNull() && first==second;
++}
++
++bool sameRow(const QVariantMap &first, const QVariantMap &second, const QSet<QString> &ignored={})
++{
++    if (first.keys()!=second.keys()) return false;
++    for (auto it=first.cbegin();it!=first.cend();++it)
++        if (!ignored.contains(it.key()) && !sameValue(it.value(),second.value(it.key()))) return false;
++    return true;
++}
++
++bool collect(const QString &fingerprint, QString *version)
++{
++    if (fingerprint.isEmpty() || (!version->isEmpty() && *version!=fingerprint)) return false;
++    *version=fingerprint;
++    return true;
++}
++
++const ReagentHole *findHole(const ReagentSnapshot &snapshot, const QString &name)
++{
++    for (const auto &hole : snapshot.holes) if (hole.name==name) return &hole;
++    return nullptr;
++}
++
++const QStringList &states()
++{
++    static const QStringList values{"r_none","r_normal","r_warning","r_useout","r_unknown","r_outdate"};
++    return values;
++}
++
++bool inspect(const ReagentSnapshot &snapshot, Versions *versions, QString *message)
++{
++    *versions=Versions();
++    if (!snapshot.originalProfile || snapshot.originalRoot.isEmpty())
++        return fail(message,QStringLiteral("不是已读取的原资料快照，运行值不可用。"));
++    QSet<QString> names;
++    const QStringList required{"id","hole_name","area","reagent_type","reagent_name","reagent_batch",
++        "bottle_type","amount_uL","used_ul","state","priority","datetime","out_date","formula_level",
++        "out_ul","warning_ul","max_ul"};
++    for (const auto &hole : snapshot.holes)
++    {
++        bool idOk=false;
++        const auto &row=hole.originalValues;
++        const qint64 id=row.value("id").toLongLong(&idOk);
++        if (!idOk || id<=0 || id!=hole.id || hole.name.isEmpty() || hole.name!=row.value("hole_name").toString() ||
++            names.contains(hole.name) || !collect(hole.originalFingerprint,&versions->setting))
++            return fail(message,QStringLiteral("原孔位身份、唯一性或孔库指纹不完整。"));
++        for (const auto &key : required)
++            if (!row.contains(key)) return fail(message,QStringLiteral("孔位快照缺少原字段：")+key);
++        names.insert(hole.name);
++    }
++    for (const auto &bottle : snapshot.bottles)
++        if (bottle.originalValues.isEmpty() || !collect(bottle.originalFingerprint,&versions->bottle))
++            return fail(message,QStringLiteral("原瓶型行或瓶型库指纹不完整。"));
++    for (const auto &reagent : snapshot.reagents)
++        if (reagent.originalValues.isEmpty() || !collect(reagent.originalFingerprint,&versions->information))
++            return fail(message,QStringLiteral("原试剂行或试剂库指纹不完整。"));
++    for (const auto &batch : snapshot.batches)
++        if (!collect(batch.originalFingerprint,&versions->information))
++            return fail(message,QStringLiteral("原批组与试剂库指纹不一致。"));
++    for (const auto &barcode : snapshot.barcodes)
++        if (!collect(barcode.originalFingerprint,&versions->information))
++            return fail(message,QStringLiteral("原条码与试剂库指纹不一致。"));
++    if (versions->setting.isEmpty() || versions->bottle.isEmpty() || versions->information.isEmpty())
++        return fail(message,QStringLiteral("快照没有足够原始行证明试剂、瓶型及孔位三库版本。"));
++    return true;
++}
++
++void bindVersions(CurrentHoleRuntime *runtime, const Versions &versions)
++{
++    runtime->settingFingerprint=versions.setting;
++    runtime->bottleFingerprint=versions.bottle;
++    runtime->informationFingerprint=versions.information;
++}
++
++CurrentHoleRuntime identity(const ReagentSnapshot &snapshot, const ReagentHole &hole, const Versions &versions)
++{
++    CurrentHoleRuntime runtime;
++    const auto &row=hole.originalValues;
++    runtime.root=snapshot.originalRoot; runtime.hole=hole.name;
++    runtime.reagent=row.value("reagent_name").toString(); runtime.bottle=row.value("bottle_type").toString();
++    runtime.area=row.value("area").toString(); runtime.reagentType=row.value("reagent_type").toString();
++    runtime.state=row.value("state").toString();
++    bindVersions(&runtime,versions);
++    return runtime;
++}
++
++bool configuredIdentity(const CurrentHoleRuntime &runtime)
++{
++    static const QStringList types{" ","r_reagent","s_ibs","cleaner","s_control","s_calibrator","s_Factor"};
++    return !runtime.hole.isEmpty() && !runtime.reagent.isEmpty() && runtime.reagent!=QStringLiteral("none") &&
++        !runtime.bottle.isEmpty() && (runtime.area==QStringLiteral("r_area") || runtime.area==QStringLiteral("s_area")) &&
++        types.contains(runtime.reagentType) && states().contains(runtime.state) &&
++        runtime.state!=QStringLiteral("r_none") && runtime.state!=QStringLiteral("r_unknown");
++}
++
++bool sameIdentity(const CurrentHoleRuntime &first, const CurrentHoleRuntime &second)
++{
++    return first.root==second.root && first.hole==second.hole && first.reagent==second.reagent &&
++        first.bottle==second.bottle && first.area==second.area && first.reagentType==second.reagentType;
++}
++
++QList<QVariantMap> bottleEvidence(const ReagentSnapshot &snapshot, const QString &name)
++{
++    QList<QVariantMap> rows;
++    for (const auto &bottle : snapshot.bottles)
++        if (bottle.originalValues.value("bottle_type_name").toString()==name) rows.append(bottle.originalValues);
++    return rows;
++}
++
++bool sameBottles(const ReagentSnapshot &first, const ReagentSnapshot &second, const QString &name)
++{
++    const auto a=bottleEvidence(first,name), b=bottleEvidence(second,name);
++    if (a.size()!=b.size()) return false;
++    for (int i=0;i<a.size();++i) if (!sameRow(a[i],b[i])) return false;
++    return true;
++}
++
++bool bottleMaximum(const ReagentSnapshot &snapshot, const QString &name, const QString &area,
++                   bool useArea, double *maximum, QString *message)
++{
++    // 原表id是INTEGER PRIMARY KEY AUTOINCREMENT，但getBottleTypeHash是无ORDER BY的SELECT *。
++    // 不把Linux的ORDER BY id当任意资料的原序保证；同名最大量一致时才无上限选择歧义。
++    bool found=false;
++    for (const auto &bottle : snapshot.bottles)
++    {
++        const auto &row=bottle.originalValues;
++        if (row.value("bottle_type_name").toString()!=name || (useArea && row.value("area").toString()!=area)) continue;
++        double amount=0;
++        if (!finiteNumber(row.value("max_amount_ul"),&amount) || amount<0 || amount>std::numeric_limits<int>::max())
++            return fail(message,QStringLiteral("原瓶型最大量不是可确认的有限非负值。"));
++        if (found && amount!=*maximum)
++            return fail(message,useArea ? QStringLiteral("同区域同名瓶型最大量不同，手工保存来源尚未确认。") :
++                QStringLiteral("同名瓶型最大量不同，原SELECT无排序，不能按Linux行序或区域猜初始化上限；待已核Ur。"));
++        if (!found) *maximum=amount;
++        found=true;
++    }
++    return found || fail(message,QStringLiteral("没有可确认的原瓶型最大量，不采用控件默认5000。"));
++}
++
++const ReagentRecord *definition(const ReagentSnapshot &snapshot, const QString &name)
++{
++    const ReagentRecord *found=nullptr;
++    for (const auto &record : snapshot.reagents)
++        if (record.originalValues.value("reagent_name").toString()==name)
++        {
++            if (found) return nullptr;
++            found=&record;
++        }
++    return found;
++}
++
++QString initialRuntime(const ReagentSnapshot &snapshot, const ReagentHole &hole, CurrentHoleRuntime *runtime)
++{
++    if (!configuredIdentity(*runtime)) return QStringLiteral("清孔、未知孔或孔位配置身份不完整，没有可信运行来源。");
++    QString reason;
++    if (!bottleMaximum(snapshot,runtime->bottle,runtime->area,false,&runtime->maximumMicrolitres,&reason)) return reason;
++    if (!finiteNumber(hole.originalValues.value("amount_uL"),&runtime->amountMicrolitres) ||
++        !finiteNumber(hole.originalValues.value("used_ul"),&runtime->usedMicrolitres,true))
++        return QStringLiteral("原amount或used不是有限数，不能建立初始化运行快照。");
++    runtime->amountMicrolitres=qMin(runtime->amountMicrolitres,runtime->maximumMicrolitres);
++    const auto *reagent=definition(snapshot,runtime->reagent);
++    if (!reagent) return QStringLiteral("没有唯一原试剂定义，初始化阈值状态不可确认。");
++    double out=0, warning=0;
++    if (!finiteNumber(reagent->originalValues.value("out_ul"),&out) ||
++        !finiteNumber(reagent->originalValues.value("warning_ul"),&warning))
++        return QStringLiteral("初始化试剂阈值不是有限数。");
++    if (runtime->amountMicrolitres<=out) runtime->state=QStringLiteral("r_useout");
++    else if (runtime->amountMicrolitres<=warning) runtime->state=QStringLiteral("r_warning");
++    runtime->available=true; runtime->maximumSource=MaximumSource::InitialBottleByName;
++    return hole.originalValues.value("used_ul").toString().isEmpty()
++        ? QStringLiteral("原used_ul为空，按原initPanel转换为0；不是amount回退，也不是设备测量。")
++        : QStringLiteral("按原初始化的同名瓶型上限建立运行值，未使用孔库max_ul。");
++}
++
++bool decodeUr(const QByteArray &payload, QList<QStringList> *rows, bool *single, QString *message)
++{
++    if (!payload.startsWith("Ur") || payload.size()>128000)
++        return fail(message,QStringLiteral("不是完整的原Ur资料回读。"));
++    QStringList fields;
++    for (int cursor=2;cursor<payload.size();)
++    {
++        if (payload[cursor++]!='[') return fail(message,QStringLiteral("Ur字段缺少左括号。"));
++        const int end=payload.indexOf(']',cursor);
++        if (end<cursor || end-cursor>4096 || fields.size()>=4096)
++            return fail(message,QStringLiteral("Ur字段不完整或超过上限。"));
++        const QByteArray raw=payload.mid(cursor,end-cursor);
++        for (unsigned char ch : raw)
++            if (ch<32 || ch=='[') return fail(message,QStringLiteral("Ur字段含控制字符或嵌套括号。"));
++        fields.append(QString::fromLatin1(raw)); cursor=end+1;
++    }
++    int count=0;
++    if (fields.size()<2 || !integerText(fields.first(),&count) || count<0 || count>128 ||
++        (fields.size()!=1+15*count && fields.size()!=2+15*count))
++        return fail(message,QStringLiteral("Ur孔数与完整15字段清单不对应。"));
++    const bool hasMarker=fields.size()==2+15*count;
++    if (hasMarker && fields.last()!=QStringLiteral("0") && fields.last()!=QStringLiteral("1"))
++        return fail(message,QStringLiteral("Ur完整/单孔标记未知。"));
++    *single=hasMarker && fields.last()==QStringLiteral("1");
++    rows->clear(); QSet<QString> names;
++    for (int i=0;i<count;++i)
++    {
++        const QStringList row=fields.mid(1+15*i,15);
++        int state=0, maximum=0, out=0, warning=0, priority=0;
++        double amount=0, used=0;
++        if (row[0].isEmpty() || names.contains(row[0]) || !integerText(row[9],&state) || state<0 || state>=states().size() ||
++            !integerText(row[13],&maximum) || maximum<0 || !integerText(row[6],&out) || out<0 ||
++            !integerText(row[12],&warning) || warning<0 || !integerText(row[8],&priority) || priority<0 ||
++            !finiteNumber(row[7],&amount) || amount<0 || (!row[14].isEmpty() && (!finiteNumber(row[14],&used) || used<0)))
++            return fail(message,QStringLiteral("Ur孔位重复或整数/液量字段无效，未沿原弱转换默认为0。"));
++        names.insert(row[0]); rows->append(row);
++    }
++    return true;
++}
++
++bool matchesStoredUr(const QStringList &wire, const QVariantMap &stored, QString *message)
++{
++    static const QStringList columns{"hole_name","reagent_type","reagent_name","reagent_batch","bottle_type",
++        "formula_level","out_ul","amount_uL","priority","state","datetime","out_date","warning_ul","max_ul","used_ul"};
++    const QSet<int> numeric{6,7,8,12,13};
++    for (int i=0;i<columns.size();++i)
++    {
++        if (i==14 && wire[i].isEmpty()) continue; // 当前Repo此项不写，原setter也保留旧运行used。
++        if (numeric.contains(i))
++        {
++            double first=0,second=0;
++            if (!finiteNumber(wire[i],&first) || !finiteNumber(stored.value(columns[i]),&second) || first!=second)
++                return fail(message,QStringLiteral("Ur数值与已保存原行不对应：")+columns[i]);
++        }
++        else
++        {
++            const QString expected=i==9 ? states()[wire[i].toInt()] : wire[i];
++            if (!stored.contains(columns[i]) || stored.value(columns[i]).toString()!=expected)
++                return fail(message,QStringLiteral("Ur字段与已保存原行不对应：")+columns[i]);
++        }
++    }
++    return true;
++}
++
++bool knownSource(MaximumSource source)
++{
++    return source==MaximumSource::InitialBottleByName || source==MaximumSource::ConfirmedUr ||
++        source==MaximumSource::ManualHoleSave || source==MaximumSource::FilledHole || source==MaximumSource::ClearedHole;
++}
++}
++
++void RuntimeProvider::put(CurrentHoleRuntime runtime, const QString &reason)
++{
++    if (revision_==std::numeric_limits<quint64>::max())
++    {
++        runtime.available=false; runtime.maximumSource=MaximumSource::Unknown;
++        runtime.revision=revision_; diagnostics_[runtime.hole]=QStringLiteral("运行revision已耗尽，必须更换提供器，未回绕旧版本。");
++    }
++    else { runtime.revision=++revision_; diagnostics_[runtime.hole]=reason; }
++    runtimes_[runtime.hole]=runtime;
++}
++
++CurrentHoleRuntime RuntimeProvider::current(const QString &hole) const
++{
++    return runtimes_.value(hole);
++}
++
++QString RuntimeProvider::diagnostic(const QString &hole) const
++{
++    return diagnostics_.value(hole,QStringLiteral("当前孔没有已确认的运行快照。"));
++}
++
++void RuntimeProvider::invalidate(const QString &hole)
++{
++    const QStringList names=hole.isEmpty() ? runtimes_.keys() : QStringList{hole};
++    for (const auto &name : names)
++    {
++        CurrentHoleRuntime runtime=runtimes_.value(name); runtime.hole=name;
++        runtime.available=false; runtime.maximumSource=MaximumSource::Unknown;
++        put(runtime,QStringLiteral("运行来源或外层身份/连接许可已失效，普通重读不自动恢复。"));
++        previousRuntimes_.remove(name); previousTransitionRevisions_.remove(name);
++    }
++    if (hole.isEmpty()) previousValid_=false;
++}
++
++void RuntimeProvider::observeSnapshot(const ReagentSnapshot &snapshot)
++{
++    Versions versions; QString reason;
++    const bool valid=inspect(snapshot,&versions,&reason);
++    const bool initial=!observed_ || snapshot.originalRoot!=snapshot_.originalRoot;
++    if (!valid)
++    {
++        invalidate(); snapshot_=snapshot; snapshotValid_=false; previousValid_=false;
++        for (const auto &hole : snapshot.holes)
++        {
++            CurrentHoleRuntime runtime=identity(snapshot,hole,versions);
++            put(runtime,reason);
++        }
++        return;
++    }
++    if (initial)
++    {
++        runtimes_.clear(); diagnostics_.clear(); previousRuntimes_.clear(); previousTransitionRevisions_.clear(); previousValid_=false;
++        for (const auto &hole : snapshot.holes)
++        {
++            CurrentHoleRuntime runtime=identity(snapshot,hole,versions);
++            const QString explanation=initialRuntime(snapshot,hole,&runtime);
++            put(runtime,explanation);
++        }
++    }
++    else
++    {
++        Versions before; QString ignored;
++        const bool changed=!snapshotValid_ || !inspect(snapshot_,&before,&ignored) || before.setting!=versions.setting ||
++            before.bottle!=versions.bottle || before.information!=versions.information;
++        if (changed)
++        {
++            previousSnapshot_=snapshot_; previousRuntimes_=runtimes_;
++            previousValid_=snapshotValid_; previousTransitionRevisions_.clear();
++        }
++        QSet<QString> present;
++        for (const auto &hole : snapshot.holes)
++        {
++            present.insert(hole.name);
++            const auto *old=findHole(snapshot_,hole.name);
++            CurrentHoleRuntime runtime=runtimes_.value(hole.name);
++            const auto readIdentity=identity(snapshot,hole,versions);
++            if (!old || !sameRow(old->originalValues,hole.originalValues) || !sameIdentity(runtime,readIdentity) ||
++                !sameBottles(snapshot_,snapshot,runtime.bottle))
++            {
++                runtime=readIdentity;
++                put(runtime,QStringLiteral("孔原始行、身份或本瓶型资料变化，未取得确认来源，运行值已失效。"));
++            }
++            else if (runtime.settingFingerprint!=versions.setting || runtime.bottleFingerprint!=versions.bottle ||
++                     runtime.informationFingerprint!=versions.information)
++            {
++                bindVersions(&runtime,versions);
++                put(runtime,diagnostic(hole.name));
++            }
++            if (changed) previousTransitionRevisions_[hole.name]=runtimes_.value(hole.name).revision;
++        }
++        for (const auto &name : runtimes_.keys()) if (!present.contains(name))
++        {
++            invalidate(name);
++            diagnostics_[name]=QStringLiteral("孔位不再属于当前快照，运行值不可用。");
++        }
++    }
++    snapshot_=snapshot; snapshotValid_=true; observed_=true;
++}
++
++bool RuntimeProvider::confirmUr(const QByteArray &payload, bool linuxNew, const ReagentSnapshot &snapshot, QString *message)
++{
++    if (message) message->clear();
++    observeSnapshot(snapshot);
++    const auto reject=[&](const QString &reason) { invalidate(); return fail(message,reason); };
++    if (!linuxNew) return reject(QStringLiteral("旧协议Ur运行来源尚未核实，本片不猜其setter或保存映射。"));
++    Versions versions; QString error;
++    if (!snapshotValid_ || !inspect(snapshot,&versions,&error)) return reject(error.isEmpty() ? QStringLiteral("Ur快照无效。") : error);
++    QList<QStringList> incoming; bool single=false;
++    if (!decodeUr(payload,&incoming,&single,&error)) return reject(error);
++    QMap<QString,CurrentHoleRuntime> proposed;
++    QSet<QString> received;
++    for (const auto &wire : incoming)
++    {
++        const auto *hole=findHole(snapshot,wire[0]);
++        if (!hole || !matchesStoredUr(wire,hole->originalValues,&error))
++            return reject(error.isEmpty() ? QStringLiteral("Ur孔不在已保存快照中。") : error);
++        received.insert(wire[0]);
++        CurrentHoleRuntime runtime=identity(snapshot,*hole,versions);
++        if (!configuredIdentity(runtime))
++        {
++            // 完整Ur常含空孔：该孔失效，不使其他已确认孔永远无法建立运行来源。
++            proposed.insert(runtime.hole,runtime);
++            continue;
++        }
++        runtime.state=states()[wire[9].toInt()]; runtime.maximumMicrolitres=wire[13].toInt();
++        runtime.amountMicrolitres=wire[7].toDouble();
++        if (!wire[14].isEmpty()) runtime.usedMicrolitres=wire[14].toDouble();
++        else
++        {
++            CurrentHoleRuntime previous=runtimes_.value(runtime.hole);
++            if ((!previous.available || !sameIdentity(previous,runtime)) && previousValid_)
++                previous=previousRuntimes_.value(runtime.hole);
++            if (!previous.available || previous.root!=runtime.root || previous.hole!=runtime.hole ||
++                !std::isfinite(previous.usedMicrolitres))
++                return reject(QStringLiteral("Ur used为空，原setter保留旧运行used，但本孔旧值无可信来源。"));
++            if (single)
++            {
++                const auto *old=findHole(previousSnapshot_,runtime.hole);
++                const auto *currentBefore=findHole(snapshot_,runtime.hole);
++                const auto *basis=previousValid_ && old ? old : currentBefore;
++                if (!basis || basis->originalValues.value("used_ul").toString()!=hole->originalValues.value("used_ul").toString())
++                    return reject(QStringLiteral("单孔Ur空used与保存时保留的原used文本不符。"));
++            }
++            else if (hole->originalValues.value("used_ul").toString()!=QStringLiteral("0"))
++                return reject(QStringLiteral("整盘Ur空used与当前Repo清盘保存的0不符。"));
++            runtime.usedMicrolitres=previous.usedMicrolitres;
++        }
++        runtime.available=true; runtime.maximumSource=MaximumSource::ConfirmedUr; proposed.insert(runtime.hole,runtime);
++    }
++    if (!single)
++        for (const auto &hole : snapshot.holes) if (!received.contains(hole.name))
++        {
++            const auto &row=hole.originalValues;
++            double amount=0;
++            if (row.value("reagent_name").toString()!=QStringLiteral("none") || row.value("reagent_type").toString()!=QStringLiteral(" ") ||
++                !row.value("reagent_batch").toString().isEmpty() || !row.value("bottle_type").toString().isEmpty() ||
++                row.value("state").toString()!=QStringLiteral("r_none") || row.value("used_ul").toString()!=QStringLiteral("0") ||
++                !finiteNumber(row.value("amount_uL"),&amount) || amount!=0)
++                return reject(QStringLiteral("整盘Ur未列出的孔不符合当前Repo实际清盘映射。"));
++        }
++    if (!single) invalidate();
++    for (auto it=proposed.cbegin();it!=proposed.cend();++it)
++        put(it.value(),it.value().available ?
++            QStringLiteral("Ur完整字段已与当前Repo保存行核对；采用原运行setter，空used时保留已知旧运行值。Ur库formula/amount等与Windows信号回写已有差异，本片未修改；此来源不表示设备动作完成。") :
++            QStringLiteral("Ur已对应当前保存行，但该孔已清空、未知或无完整身份，未建立可用N运行来源。"));
++    previousValid_=false; previousRuntimes_.clear(); previousTransitionRevisions_.clear();
++    if (message) *message=QStringLiteral("Ur保存关联已核，已配置孔的运行来源已更新；清孔/未知孔仍不可用，连接/许可及动作完成由外层判断。");
++    return true;
++}
++
++bool RuntimeProvider::confirmManualHole(const QString &name, const ReagentSnapshot &snapshot, QString *message)
++{
++    if (message) message->clear();
++    observeSnapshot(snapshot);
++    const auto reject=[&](const QString &reason) { invalidate(name); return fail(message,reason); };
++    Versions versions; QString error;
++    if (!snapshotValid_ || !inspect(snapshot,&versions,&error)) return reject(error.isEmpty() ? QStringLiteral("手工保存快照无效。") : error);
++    const auto *hole=findHole(snapshot,name);
++    if (!hole) return reject(QStringLiteral("手工保存孔不在当前快照中。"));
++    CurrentHoleRuntime runtime=identity(snapshot,*hole,versions);
++    if (!configuredIdentity(runtime) || runtime.state!=QStringLiteral("r_normal"))
++        return reject(QStringLiteral("手工保存结果为清孔/未知孔或非normal，运行来源仍不可用。"));
++    double maximum=0;
++    if (!bottleMaximum(snapshot,runtime.bottle,runtime.area,true,&maximum,&error)) return reject(error);
++    const auto *reagent=definition(snapshot,runtime.reagent);
++    if (!reagent || reagent->originalValues.value("reagent_type").toString()!=runtime.reagentType)
++        return reject(QStringLiteral("手工孔类型与唯一原试剂定义不对应。"));
++    const auto &row=hole->originalValues;
++    double amount=0, maxStored=0, out=0, warning=0, expectedOut=0, expectedWarning=0;
++    double formattedMaximum=0;
++    if (!finiteNumber(QString::number(maximum),&formattedMaximum) || formattedMaximum>std::numeric_limits<int>::max() ||
++        !finiteNumber(row.value("amount_uL"),&amount) || amount!=static_cast<int>(formattedMaximum) ||
++        !finiteNumber(row.value("max_ul"),&maxStored) || maxStored!=maximum ||
++        row.value("used_ul").toString()!=QString::number(maximum) || row.value("datetime").toString().isEmpty() ||
++        !finiteNumber(row.value("out_ul"),&out) || !finiteNumber(row.value("warning_ul"),&warning) ||
++        !finiteNumber(reagent->originalValues.value("out_ul"),&expectedOut) ||
++        !finiteNumber(reagent->originalValues.value("warning_ul"),&expectedWarning) || out!=expectedOut || warning!=expectedWarning)
++        return reject(QStringLiteral("已保存孔字段不符合原手工设置的满瓶量、独立max和试剂阈值，未猜运行来源。"));
++    runtime.available=true; runtime.maximumSource=MaximumSource::ManualHoleSave;
++    runtime.maximumMicrolitres=maximum; runtime.amountMicrolitres=maximum; runtime.usedMicrolitres=maximum;
++    put(runtime,QStringLiteral("本地手工保存字段与本孔区域瓶型及试剂资料对应；不是设备已执行或实测液面。"));
++    previousRuntimes_.remove(name); previousTransitionRevisions_.remove(name);
++    return true;
++}
++
++bool RuntimeProvider::acceptObservation(const QString &beforeSettingFingerprint, const CurrentHoleRuntime &after,
++                                      const ReagentSnapshot &persistedSnapshot, QString *message)
++{
++    if (message) message->clear();
++    const auto consumed=acceptedObservationRevisions_.constFind(after.hole);
++    if (consumed!=acceptedObservationRevisions_.cend() && after.revision<=consumed.value())
++        return fail(message,QStringLiteral("本孔N运行输入revision已消费或更旧，未重复采用旧前版；当前运行值保持。"));
++    const auto reject=[&](const QString &reason) { invalidate(after.hole); return fail(message,reason); };
++    Versions saved; QString error;
++    if (!snapshotValid_ || !inspect(persistedSnapshot,&saved,&error) || beforeSettingFingerprint.isEmpty())
++        return reject(error.isEmpty() ? QStringLiteral("N提交后的快照或前版指纹不完整。") : error);
++    Versions currentVersions;
++    if (!inspect(snapshot_,&currentVersions,&error)) return reject(error);
++    const ReagentSnapshot *basis=&snapshot_;
++    const QMap<QString,CurrentHoleRuntime> *basisRuntimes=&runtimes_;
++    if (currentVersions.setting!=beforeSettingFingerprint)
++    {
++        Versions previous;
++        if (currentVersions.setting!=saved.setting || !previousValid_ || !inspect(previousSnapshot_,&previous,&error) ||
++            previous.setting!=beforeSettingFingerprint ||
++            previousTransitionRevisions_.value(after.hole)!=runtimes_.value(after.hole).revision)
++            return reject(QStringLiteral("当前运行值既不是N前版，也不是其刚保存的版本，未恢复旧观察。"));
++        basis=&previousSnapshot_; basisRuntimes=&previousRuntimes_;
++    }
++    Versions before;
++    if (!inspect(*basis,&before,&error)) return reject(error);
++    const CurrentHoleRuntime prior=basisRuntimes->value(after.hole);
++    const auto *beforeHole=findHole(*basis,after.hole), *savedHole=findHole(persistedSnapshot,after.hole);
++    if (!prior.available || !after.available || !prior.revision ||
++        prior.revision==std::numeric_limits<quint64>::max() || after.revision!=prior.revision+1 ||
++        !knownSource(after.maximumSource) || after.maximumSource!=prior.maximumSource || !sameIdentity(prior,after) ||
++        after.root!=persistedSnapshot.originalRoot || after.root!=basis->originalRoot ||
++        prior.settingFingerprint!=before.setting || prior.bottleFingerprint!=before.bottle || prior.informationFingerprint!=before.information ||
++        before.information!=saved.information || before.bottle!=saved.bottle ||
++        after.informationFingerprint!=saved.information || after.bottleFingerprint!=saved.bottle ||
++        after.settingFingerprint.isEmpty() || after.settingFingerprint!=saved.setting ||
++        after.maximumMicrolitres!=prior.maximumMicrolitres || !std::isfinite(after.amountMicrolitres) ||
++        !std::isfinite(after.usedMicrolitres) || after.amountMicrolitres<0 || after.amountMicrolitres>prior.maximumMicrolitres ||
++        !states().contains(after.state) || !beforeHole || !savedHole || basis->holes.size()!=persistedSnapshot.holes.size())
++        return reject(QStringLiteral("N运行结果的来源、身份、revision或三库版本与前版/已保存行不对应。"));
++    const CurrentHoleRuntime savedIdentity=identity(persistedSnapshot,*savedHole,saved);
++    if (!sameIdentity(after,savedIdentity)) return reject(QStringLiteral("N保存后的孔身份发生变化。"));
++    const QSet<QString> nColumns{QStringLiteral("formula_level"),QStringLiteral("amount_uL"),QStringLiteral("used_ul")};
++    for (const auto &old : basis->holes)
++    {
++        const auto *persisted=findHole(persistedSnapshot,old.name);
++        if (!persisted || !sameRow(old.originalValues,persisted->originalValues,old.name==after.hole ? nColumns : QSet<QString>()))
++            return reject(QStringLiteral("N提交还改变了其他孔或不属于本N的字段，运行覆盖未应用。"));
++    }
++    if (!sameBottles(*basis,persistedSnapshot,after.bottle))
++        return reject(QStringLiteral("N提交期间本瓶型原行改变。"));
++    double formula=0, amount=0, storedUsed=0;
++    if (!finiteNumber(savedHole->originalValues.value("formula_level"),&formula) || formula<0 || formula>=0xff00 ||
++        !finiteNumber(savedHole->originalValues.value("amount_uL"),&amount) || amount!=std::trunc(amount) ||
++        amount<std::numeric_limits<int>::min() || amount>std::numeric_limits<int>::max() ||
++        !finiteNumber(savedHole->originalValues.value("used_ul"),&storedUsed,true) ||
++        (after.usedMicrolitres!=after.amountMicrolitres &&
++         (after.usedMicrolitres!=prior.usedMicrolitres || prior.usedMicrolitres>after.amountMicrolitres)))
++        return reject(QStringLiteral("N已保存列或UI used变化不符合可确认的观察结果。"));
++    const auto *reagent=definition(persistedSnapshot,after.reagent);
++    double out=0, warning=0;
++    if (!reagent || !finiteNumber(reagent->originalValues.value("out_ul"),&out) ||
++        !finiteNumber(reagent->originalValues.value("warning_ul"),&warning) ||
++        after.state!=(after.amountMicrolitres<=out ? QStringLiteral("r_useout") :
++            after.amountMicrolitres<=warning ? QStringLiteral("r_warning") : QStringLiteral("r_normal")))
++        return reject(QStringLiteral("N界面状态与已保存版本的试剂阈值不对应。"));
++    // 调用者已经确认writer提交；这里只接运行覆盖，不能由after重构Testing的数据库原计算量。
++    observeSnapshot(persistedSnapshot);
++    CurrentHoleRuntime adopted=after; bindVersions(&adopted,saved);
++    const quint64 floor=qMax(revision_,runtimes_.value(after.hole).revision);
++    if (floor==std::numeric_limits<quint64>::max())
++        return reject(QStringLiteral("N已保存，但运行revision已耗尽，未回绕或降低版本采用展示。"));
++    // 重读可能已经推进其他孔及全局时钟；采用版本不能被通用put改小，也不能低于输入after。
++    adopted.revision=qMax(after.revision,floor+1);
++    revision_=adopted.revision;
++    runtimes_[adopted.hole]=adopted;
++    diagnostics_[adopted.hole]=QStringLiteral("N已提交版本与前版字段范围核对，保留独立UI量/used/state；不把该覆盖当设备完成。")+
++        (savedHole->originalValues.value("used_ul").toString().isEmpty()
++            ? QStringLiteral(" 原used_ul文本仍为空，运行used沿已知来源保留，不按amount回退。") : QString());
++    acceptedObservationRevisions_[after.hole]=after.revision;
++    previousValid_=false; previousRuntimes_.clear(); previousTransitionRevisions_.clear();
++    return true;
++}
++}
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_worker.h b/06_programs/sn100_host/reagents/original_reagent_level_worker.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_worker.h
+@@ -0,0 +1,75 @@
++#ifndef SN100_ORIGINAL_REAGENT_LEVEL_WORKER_H
++#define SN100_ORIGINAL_REAGENT_LEVEL_WORKER_H
++
++#include "original_reagent_level.h"
++#include <QObject>
++#include <atomic>
++#include <memory>
++#include <mutex>
++
++namespace OriginalLevels
++{
++struct ObservationPresentation
++{
++    Context context;
++    ReagentSnapshot snapshot;
++    ReagentProjects projects;
++    CurrentHoleRuntime after;
++    ReagentTestCount selectedHoleTests;
++    OriginalRuntime::ReagentCapacityResult capacity;
++    QString previousSettingFingerprint;
++    QString savedFingerprint;
++};
++
++// 构造后由调用者移到既有ReagentStore线程；本对象不创建线程或设备连接。
++// 普通public方法仅操作内存或纯报文解码；prepareSource槽须排入所属存储线程。
++class ObservationWorker : public QObject
++{
++    Q_OBJECT
++public:
++    explicit ObservationWorker(QObject *parent=nullptr);
++    ~ObservationWorker() override;
++
++    // 仅实际有效Qj的提供者调用。相同语义只续新鲜期限，不给旧报文更换连接代次。
++    bool setObservationContext(Context context, int freshMs, QString *message=nullptr);
++    void revoke();
++    // runtime须来自独立原控件快照；不能从max_ul或整数显示模型临时补造。
++    bool publishRuntime(quint64 arrivalConnection, const CurrentHoleRuntime &runtime, QString *message=nullptr);
++    void invalidateRuntime(quint64 arrivalConnection, const QString &hole=QString());
++    bool submit(quint64 arrivalConnection, quint64 localPacketId, QByteArray payload, QString *message=nullptr);
++    bool isBusy() const;
++    bool isContextCurrent(const Context &context) const; // GUI消费排队展示前再次核真实单调期限。
++    // 原Ur等待只关闭N写入，实际Qj的到达语义仍供Ur来源认证；本方法不读库。
++    void setReagentReadbackPending(quint64 connection, bool pending);
++
++public slots:
++    // 只预读主题及选定容量版本，不签发Qj许可；结果按request交调用者核对。
++    void prepareSource(quint64 request, QString root);
++
++signals:
++    void sourceReady(quint64 request, OriginalLevels::Context source, QString message);
++    // loaded仅表示后台重读核对通过；排队展示仍须核当前permissionRevision、连接和前/后指纹。
++    void processed(OriginalLevels::Context context, bool committed, bool loaded, QString fingerprint, QString message);
++    void presentationReady(OriginalLevels::ObservationPresentation presentation);
++
++private:
++    struct Permit;
++    struct Job;
++    mutable std::mutex mutex_;
++    std::shared_ptr<Permit> permit_;
++    QMap<QString,std::shared_ptr<const CurrentHoleRuntime>> runtimes_;
++    std::shared_ptr<const Job> pending_;
++    quint64 idConnection_=0, lastAcceptedPacket_=0;
++    quint64 readbackConnection_=0;
++    bool readbackPending_=true;
++
++    bool currentLocked(const std::shared_ptr<const Job> &job) const;
++    bool current(const std::shared_ptr<const Job> &job) const;
++    void invalidateRelatedLocked(const std::shared_ptr<const Job> &job, const QString &savedFingerprint, bool committed);
++    void process(const std::shared_ptr<const Job> &job);
++};
++}
++
++Q_DECLARE_METATYPE(OriginalLevels::ObservationPresentation)
++
++#endif
+diff --git a/06_programs/sn100_host/reagents/original_reagent_level_worker.cpp b/06_programs/sn100_host/reagents/original_reagent_level_worker.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/original_reagent_level_worker.cpp
+@@ -0,0 +1,471 @@
++#include "original_reagent_level_worker.h"
++#include "reagents/original_reagent_editor.h"
++#include "projects/original_project_repository.h"
++#include "projects/original_project_copy.h"
++#include "original_files/theme_configuration.h"
++#include <QDir>
++#include <QMetaObject>
++#include <QLockFile>
++#include <QRegularExpression>
++#include <QThread>
++#include <chrono>
++#include <cmath>
++
++namespace OriginalLevels
++{
++namespace
++{
++const QString informationFile=QStringLiteral("db/userSet/reagent_Information.db");
++const QString bottleFile=QStringLiteral("db/systemInfo/reagent_Bottle_Type.db");
++const QString settingFile=QStringLiteral("db/userSet/reagent_Setting.db");
++
++bool fail(QString *message, const QString &reason)
++{
++    if (message) *message=reason;
++    return false;
++}
++
++qint64 monotonicNanoseconds()
++{
++    return std::chrono::duration_cast<std::chrono::nanoseconds>(
++        std::chrono::steady_clock::now().time_since_epoch()).count();
++}
++
++bool sameContext(const Context &first, const Context &second)
++{
++    // packetId属于每次到达，不属于Qj许可的语义。
++    return first.connection==second.connection && first.permissionRevision==second.permissionRevision &&
++        first.root==second.root && first.actualModel==second.actualModel &&
++        first.configuredModel==second.configuredModel && first.themeFingerprint==second.themeFingerprint &&
++        first.capacityRelativeFile==second.capacityRelativeFile && first.capacityFileState==second.capacityFileState &&
++        first.capacityFingerprint==second.capacityFingerprint &&
++        first.protocolToken==second.protocolToken && first.linuxNew==second.linuxNew && first.configuredPositions==second.configuredPositions &&
++        first.reportedPositions==second.reportedPositions && first.mainStatus==second.mainStatus &&
++        first.capacityCalibrationActive==second.capacityCalibrationActive;
++}
++
++bool sameVersions(const CurrentHoleRuntime &first, const CurrentHoleRuntime &second)
++{
++    return first.root==second.root && first.settingFingerprint==second.settingFingerprint &&
++        first.bottleFingerprint==second.bottleFingerprint && first.informationFingerprint==second.informationFingerprint;
++}
++
++bool sameRuntime(const CurrentHoleRuntime &first, const CurrentHoleRuntime &second)
++{
++    return sameVersions(first,second) && first.available==second.available && first.hole==second.hole &&
++        first.reagent==second.reagent && first.bottle==second.bottle && first.area==second.area &&
++        first.reagentType==second.reagentType && first.state==second.state && first.revision==second.revision &&
++        first.maximumSource==second.maximumSource && first.maximumMicrolitres==second.maximumMicrolitres &&
++        first.amountMicrolitres==second.amountMicrolitres && first.usedMicrolitres==second.usedMicrolitres;
++}
++
++bool knownMaximum(MaximumSource source)
++{
++    switch (source)
++    {
++    case MaximumSource::InitialBottleByName:
++    case MaximumSource::ConfirmedUr:
++    case MaximumSource::ManualHoleSave:
++    case MaximumSource::FilledHole:
++    case MaximumSource::ClearedHole: return true;
++    case MaximumSource::Unknown: return false;
++    }
++    return false;
++}
++
++bool savedFieldsMatch(const ReagentSnapshot &snapshot, const PreparedObservation &prepared,
++                      const QString &fingerprint, QString *message)
++{
++    if (!snapshot.originalProfile || snapshot.originalRoot!=prepared.context.root || fingerprint.isEmpty())
++        return fail(message,QStringLiteral("N已提交，但重读的页面资料工作根或保存指纹不符。"));
++    int matches=0;
++    for (const auto &hole : snapshot.holes)
++        if (hole.id==prepared.holeId && hole.name==prepared.received.hole)
++        {
++            ++matches;
++            const auto &row=hole.originalValues;
++            bool amountOk=false;
++            const qlonglong amount=row.value(QStringLiteral("amount_uL")).toString().toLongLong(&amountOk);
++            if (hole.originalFingerprint!=fingerprint || !row.contains(QStringLiteral("formula_level")) ||
++                !row.contains(QStringLiteral("amount_uL")) || !row.contains(QStringLiteral("used_ul")) ||
++                row.value(QStringLiteral("formula_level")).toString()!=prepared.formulaText ||
++                !amountOk || amount!=prepared.amountInteger ||
++                row.value(QStringLiteral("used_ul")).toString()!=prepared.usedText)
++                return fail(message,QStringLiteral("N已提交，但目标孔重读的高度、整数液量或used_ul未对应本次保存。"));
++        }
++    return matches==1 || fail(message,QStringLiteral("N已提交，但重读未取得唯一目标孔，未报告展示就绪。"));
++}
++}
++
++struct ObservationWorker::Permit
++{
++    explicit Permit(const Context &value) : context(value) {}
++    const Context context;
++    std::atomic<qint64> freshUntil{0};
++};
++
++struct ObservationWorker::Job
++{
++    Context context;
++    ReceivedPacket packet;
++    std::shared_ptr<Permit> permit;
++    std::shared_ptr<const CurrentHoleRuntime> runtime;
++};
++
++ObservationWorker::ObservationWorker(QObject *parent) : QObject(parent)
++{
++    qRegisterMetaType<Context>("OriginalLevels::Context");
++    qRegisterMetaType<ObservationPresentation>("OriginalLevels::ObservationPresentation");
++}
++
++ObservationWorker::~ObservationWorker()
++{
++    revoke();
++}
++
++void ObservationWorker::prepareSource(quint64 request, QString root)
++{
++    Context source;
++    source.root=root;
++    if (QThread::currentThread()!=thread())
++    {
++        emit sourceReady(request,source,QStringLiteral("N来源预读必须排入所属存储线程，未在调用线程读取资料。"));
++        return;
++    }
++    if (root.isEmpty() || !QDir::isAbsolutePath(root))
++    {
++        emit sourceReady(request,source,QStringLiteral("N来源工作根必须是已选择的绝对路径。"));
++        return;
++    }
++    QString message;
++    if (!OriginalProjectCopy::noPending(root,&message))
++    {
++        emit sourceReady(request,source,QStringLiteral("N项目复制仍待核，观测来源保持关闭：")+message);
++        return;
++    }
++    const QString themePath=QDir(root).filePath(QStringLiteral("theme_config.ini"));
++    const QString before=OriginalProjectRepository::databaseFingerprint(themePath,&message);
++    OriginalRuntime::ThemeOptions theme;
++    if (before.isEmpty() || !loadThemeConfiguration(themePath,&theme,&message))
++    {
++        emit sourceReady(request,source,QStringLiteral("N来源主题读取失败：")+
++            (message.isEmpty() ? QStringLiteral("未取得有效主题及版本。") : message));
++        return;
++    }
++    OriginalRuntime::ReagentCapacityResult capacity;
++    if (!OriginalRuntime::readReagentCapacityVersion(root,theme.driverModel,&capacity,&message))
++    {
++        emit sourceReady(request,source,QStringLiteral("N来源容量版本读取失败：")+
++            (message.isEmpty() ? QStringLiteral("未取得选定容量文件的存在状态与版本。") : message));
++        return;
++    }
++    const QString after=OriginalProjectRepository::databaseFingerprint(themePath,&message);
++    if (after.isEmpty() || after!=before)
++    {
++        emit sourceReady(request,source,QStringLiteral("N来源预读期间主题版本变化或无法复核：")+
++            (message.isEmpty() ? QStringLiteral("请重新读取来源。") : message));
++        return;
++    }
++    if (!OriginalProjectCopy::noPending(root,&message))
++    {
++        emit sourceReady(request,source,QStringLiteral("N来源预读期间出现待核项目复制，未发布来源：")+message);
++        return;
++    }
++    source.configuredModel=theme.driverModel;
++    source.configuredPositions=theme.reagentPositions;
++    source.themeFingerprint=before;
++    source.capacityRelativeFile=capacity.relativeFile;
++    source.capacityFileState=capacity.fileState;
++    source.capacityFingerprint=capacity.fingerprint;
++    // 连接、actualModel和permissionRevision仍未知；这里只回交已读来源，不签发许可。
++    emit sourceReady(request,source,QString());
++}
++
++bool ObservationWorker::setObservationContext(Context context, int freshMs, QString *message)
++{
++    if (message) message->clear();
++    if (freshMs<=0 || freshMs>3000 || !context.connection || !context.permissionRevision ||
++        context.root.isEmpty() || !QDir::isAbsolutePath(context.root) || context.actualModel.isEmpty() ||
++        context.actualModel!=context.configuredModel || context.themeFingerprint.isEmpty() ||
++        context.linuxNew!=(context.protocolToken==QStringLiteral("LinuxNew")) ||
++        context.capacityRelativeFile!=(context.actualModel==QStringLiteral("SN450") ? QStringLiteral("calibrationFile/ReagentAmount_450.json") : QStringLiteral("calibrationFile/ReagentAmount_600.json")) ||
++        context.capacityFileState==OriginalRuntime::ReagentCapacityFileState::Unknown ||
++        (context.capacityFileState==OriginalRuntime::ReagentCapacityFileState::Present && context.capacityFingerprint.isEmpty()) ||
++        (context.capacityFileState==OriginalRuntime::ReagentCapacityFileState::Missing && !context.capacityFingerprint.isEmpty()) ||
++        (context.configuredPositions!=20 && context.configuredPositions!=42) ||
++        context.configuredPositions!=context.reportedPositions || context.mainStatus<0 || context.mainStatus>6 ||
++        context.capacityCalibrationActive)
++    {
++        revoke();
++        return fail(message,QStringLiteral("实际Qj上下文或1至3000ms新鲜期限无效，N保存许可已撤销。"));
++    }
++    context.packetId=0;
++    const qint64 deadline=monotonicNanoseconds()+qint64(freshMs)*1000000;
++    std::lock_guard<std::mutex> lock(mutex_);
++    if (!permit_ || !sameContext(permit_->context,context))
++    {
++        permit_.reset();
++        runtimes_.clear();
++        if (idConnection_!=context.connection)
++        {
++            idConnection_=context.connection;
++            lastAcceptedPacket_=0;
++        }
++        permit_=std::make_shared<Permit>(context);
++    }
++    permit_->freshUntil.store(deadline,std::memory_order_release);
++    // 旧job仍占在途名额，直到它在所属线程结束；不能因换许可并排接收第二条。
++    return true;
++}
++
++bool ObservationWorker::isContextCurrent(const Context &context) const
++{
++    std::lock_guard<std::mutex> lock(mutex_);
++    return permit_ && sameContext(permit_->context,context) &&
++        monotonicNanoseconds()<permit_->freshUntil.load(std::memory_order_acquire);
++}
++
++void ObservationWorker::revoke()
++{
++    std::lock_guard<std::mutex> lock(mutex_);
++    permit_.reset();
++    runtimes_.clear();
++}
++
++bool ObservationWorker::publishRuntime(quint64 arrivalConnection, const CurrentHoleRuntime &runtime, QString *message)
++{
++    if (message) message->clear();
++    const QStringList states{QStringLiteral("r_none"),QStringLiteral("r_normal"),QStringLiteral("r_warning"),
++                            QStringLiteral("r_useout"),QStringLiteral("r_unknown"),QStringLiteral("r_outdate")};
++    if (!runtime.available || !runtime.revision || runtime.revision==std::numeric_limits<quint64>::max() ||
++        !knownMaximum(runtime.maximumSource) || runtime.settingFingerprint.isEmpty() ||
++        runtime.bottleFingerprint.isEmpty() || runtime.informationFingerprint.isEmpty() ||
++        !std::isfinite(runtime.maximumMicrolitres) || runtime.maximumMicrolitres<0 ||
++        runtime.maximumMicrolitres>std::numeric_limits<int>::max() || !std::isfinite(runtime.amountMicrolitres) ||
++        !std::isfinite(runtime.usedMicrolitres) || !states.contains(runtime.state) || runtime.bottle.isEmpty() ||
++        (runtime.area!=QStringLiteral("r_area") && runtime.area!=QStringLiteral("s_area")))
++        return fail(message,QStringLiteral("本孔独立运行快照缺少有效来源、版本、revision或数值，未发布N保存依据。"));
++    std::lock_guard<std::mutex> lock(mutex_);
++    if (!permit_ || !arrivalConnection || arrivalConnection!=permit_->context.connection ||
++        runtime.root!=permit_->context.root || monotonicNanoseconds()>=permit_->freshUntil.load(std::memory_order_acquire))
++        return fail(message,QStringLiteral("运行快照不属于当前新鲜连接，未改贴连接代次。"));
++    const QRegularExpression visible(permit_->context.configuredPositions==42 ?
++        QStringLiteral("^([A-F]_[1-7]|SD_[1-4])$") : QStringLiteral("^(R_([1-9]|1[0-9]|20)|SD_[1-4])$"));
++    if (!visible.match(runtime.hole).hasMatch())
++        return fail(message,QStringLiteral("运行快照孔位不属于当前20或42位面板。"));
++    const auto before=runtimes_.value(runtime.hole);
++    if (before)
++    {
++        if (sameRuntime(*before,runtime)) return true;
++        if (runtime.revision<=before->revision)
++            return fail(message,QStringLiteral("运行快照revision没有前进，未用旧值替换当前N依据。"));
++    }
++    for (auto entry=runtimes_.begin();entry!=runtimes_.end();)
++        if (!sameVersions(*entry.value(),runtime)) entry=runtimes_.erase(entry);
++        else ++entry;
++    runtimes_.insert(runtime.hole,std::make_shared<const CurrentHoleRuntime>(runtime));
++    return true;
++}
++
++void ObservationWorker::invalidateRuntime(quint64 arrivalConnection, const QString &hole)
++{
++    std::lock_guard<std::mutex> lock(mutex_);
++    if (!permit_ || arrivalConnection!=permit_->context.connection) return;
++    if (hole.isEmpty()) runtimes_.clear();
++    else runtimes_.remove(hole);
++}
++
++bool ObservationWorker::submit(quint64 arrivalConnection, quint64 localPacketId, QByteArray payload, QString *message)
++{
++    if (message) message->clear();
++    std::shared_ptr<Permit> permit;
++    {
++        std::lock_guard<std::mutex> lock(mutex_);
++        if (readbackPending_ || !arrivalConnection || readbackConnection_!=arrivalConnection)
++            return fail(message,QStringLiteral("原试剂回读/准备占用，或尚未由新Qj重核开放N写入门，未排队。"));
++        permit=permit_;
++        if (!permit || !arrivalConnection || arrivalConnection!=permit->context.connection ||
++            monotonicNanoseconds()>=permit->freshUntil.load(std::memory_order_acquire))
++            return fail(message,QStringLiteral("N没有到达原连接的新鲜保存许可，未排队。"));
++    }
++    ReceivedPacket packet;
++    if (!decodePacket(payload,permit->context.linuxNew,&packet,message)) return false;
++    if (packet.kind!=PacketKind::Reagent)
++        return fail(message,QStringLiteral("本入口只被动保存试剂N，样本N已忽略。"));
++    std::shared_ptr<const Job> job;
++    {
++        std::lock_guard<std::mutex> lock(mutex_);
++        if (readbackPending_ || readbackConnection_!=arrivalConnection || permit_!=permit ||
++            monotonicNanoseconds()>=permit->freshUntil.load(std::memory_order_acquire))
++            return fail(message,QStringLiteral("解码期间N许可变化，未排队。"));
++        if (pending_) return fail(message,QStringLiteral("已有一条N正在处理，本条未保存或合并，请保留接收记录。"));
++        if (!localPacketId || idConnection_!=arrivalConnection || localPacketId<=lastAcceptedPacket_)
++            return fail(message,QStringLiteral("N本地接收序号无效或已过期，未重复保存。"));
++        const auto runtime=runtimes_.value(packet.hole);
++        if (!runtime) return fail(message,QStringLiteral("本孔没有当前独立运行快照，N未排队保存。"));
++        if (runtime->revision==std::numeric_limits<quint64>::max())
++            return fail(message,QStringLiteral("本孔运行revision已用尽，N未排队或溢出后重用旧编号。"));
++        auto next=std::make_shared<Job>();
++        next->context=permit->context; next->context.packetId=localPacketId;
++        next->packet=packet; next->permit=permit; next->runtime=runtime;
++        job=next; pending_=job; lastAcceptedPacket_=localPacketId;
++    }
++    if (!QMetaObject::invokeMethod(this,[this,job]() { process(job); },Qt::QueuedConnection))
++    {
++        std::lock_guard<std::mutex> lock(mutex_);
++        if (pending_==job) pending_.reset();
++        return fail(message,QStringLiteral("N未能排入所属存储线程；接收序号已消费，不自动重试。"));
++    }
++    return true;
++}
++
++bool ObservationWorker::isBusy() const
++{
++    std::lock_guard<std::mutex> lock(mutex_);
++    return bool(pending_);
++}
++
++void ObservationWorker::setReagentReadbackPending(quint64 connection,bool pending)
++{
++    std::lock_guard<std::mutex> lock(mutex_);
++    // 清掉在途依据，使短暂关门后也不能让旧N恢复；不改变真实Qj或Ur到达语义。
++    if (pending || connection!=readbackConnection_) runtimes_.clear();
++    readbackConnection_=connection;
++    readbackPending_=pending || !connection;
++}
++
++bool ObservationWorker::currentLocked(const std::shared_ptr<const Job> &job) const
++{
++    return job && !readbackPending_ && readbackConnection_==job->context.connection &&
++        pending_==job && permit_==job->permit && sameContext(permit_->context,job->context) &&
++        job->context.connection==job->permit->context.connection &&
++        monotonicNanoseconds()<job->permit->freshUntil.load(std::memory_order_acquire) &&
++        runtimes_.value(job->packet.hole)==job->runtime && job->runtime->revision!=0;
++}
++
++bool ObservationWorker::current(const std::shared_ptr<const Job> &job) const
++{
++    std::lock_guard<std::mutex> lock(mutex_);
++    return currentLocked(job);
++}
++
++void ObservationWorker::invalidateRelatedLocked(const std::shared_ptr<const Job> &job,
++                                                const QString &savedFingerprint, bool committed)
++{
++    if (!committed)
++    {
++        // 无法确认依赖版本时不保留这一许可下的其他旧依据；新上下文的快照不受旧job影响。
++        if (permit_==job->permit) runtimes_.clear();
++        return;
++    }
++    // 已提交会改变全孔位库版本；只使同根、同资料版的旧/本次写入相关快照失效。
++    for (auto entry=runtimes_.begin();entry!=runtimes_.end();)
++    {
++        const auto &runtime=*entry.value();
++        if (runtime.root==job->runtime->root && runtime.informationFingerprint==job->runtime->informationFingerprint &&
++            runtime.bottleFingerprint==job->runtime->bottleFingerprint &&
++            (runtime.settingFingerprint==job->runtime->settingFingerprint ||
++             (!savedFingerprint.isEmpty() && runtime.settingFingerprint==savedFingerprint)))
++            entry=runtimes_.erase(entry);
++        else ++entry;
++    }
++}
++
++void ObservationWorker::process(const std::shared_ptr<const Job> &job)
++{
++    bool committed=false, loaded=false;
++    QString fingerprint, message;
++    PreparedObservation prepared;
++    ObservationPresentation presentation;
++    do
++    {
++        if (QThread::currentThread()!=thread())
++        { message=QStringLiteral("N处理未在所属存储线程执行，未读取资料或写库。"); break; }
++        if (!current(job))
++        { message=QStringLiteral("N排队期间连接、许可、新鲜期限或运行快照变化，未写入。"); break; }
++        OriginalReagentRepository repository;
++        OriginalReagentState state;
++        ProjectSnapshot projects;
++        if (!repository.initialize(job->context.root,&message) || !repository.load(&state,&message) ||
++            !readProjectSnapshot(job->context.root,&projects,&message)) break;
++        if (!current(job))
++        { message=QStringLiteral("N资料读取期间许可变化，未写入。"); break; }
++        if (!prepareObservation(state,job->packet,job->context,*job->runtime,projects,&prepared,&message)) break;
++        const auto stillCurrent=[this,job]() { return current(job); };
++        const bool accepted=saveObservation(prepared,stillCurrent,&committed,&fingerprint,&message);
++        if (!committed) break;
++
++        // 提交后即使失效仍重读；失败也不能把已经写入的事实说成回滚。
++        QLockFile projectLock(QDir(job->context.root).filePath(QStringLiteral(".sn100-original-project-write.lock")));
++        QLockFile reagentLock(QDir(job->context.root).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
++        projectLock.setStaleLockTime(0); reagentLock.setStaleLockTime(0);
++        if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
++        { message=QStringLiteral("N已提交，但重读所需原项目或试剂锁正被占用，页面结果待核。"); break; }
++        // 06编辑器的共享项目初始化可触发复制恢复；本链持锁并先拒pending，不由N做恢复。
++        QString pendingError;
++        if (!OriginalProjectCopy::noPending(job->context.root,&pendingError))
++        { message=QStringLiteral("N已提交，但项目复制仍待核，未进入共享编辑器恢复/重读：")+pendingError; break; }
++        OriginalReagentEditor editor;
++        ReagentSnapshot snapshot;
++        ReagentProjects choices;
++        QString reloadError;
++        if (!editor.initialize(job->context.root,&reloadError) || !editor.load(&snapshot,&choices,&reloadError))
++        { message=QStringLiteral("N已提交，但原资料重读失败：")+reloadError; break; }
++        const auto versions=editor.deviceVersions();
++        if (fingerprint.isEmpty() || versions.value(settingFile)!=fingerprint ||
++            versions.value(informationFile)!=prepared.observed.versions.value(informationFile) ||
++            versions.value(bottleFile)!=prepared.observed.versions.value(bottleFile))
++        { message=QStringLiteral("N已提交，但重读的孔位或关联资料版本已变化，未发布当前运行快照。"); break; }
++        if (!savedFieldsMatch(snapshot,prepared,fingerprint,&message)) break;
++        ProjectSnapshot displayedProjects;
++        if (!readProjectSnapshot(job->context.root,&displayedProjects,&reloadError) ||
++            displayedProjects.versions!=prepared.projects.versions ||
++            OriginalProjectRepository::databaseFingerprint(QDir(job->context.root).filePath(QStringLiteral("theme_config.ini")),&reloadError)
++                !=job->context.themeFingerprint)
++        { message=QStringLiteral("N已提交，但项目顺序或主题在重读时变化，页面数据待核对。 ")+reloadError; break; }
++        if (!accepted || !current(job))
++        { message=QStringLiteral("N已提交且已重读，但保存后的许可核对未通过；当前运行值与页面仍待核对。 ")+message; break; }
++        presentation.context=job->context;
++        presentation.snapshot=snapshot; presentation.projects=choices;
++        presentation.after=prepared.after;
++        presentation.after.settingFingerprint=fingerprint;
++        presentation.after.revision=job->runtime->revision+1;
++        presentation.selectedHoleTests=prepared.selectedHoleTests;
++        presentation.capacity=prepared.capacity;
++        presentation.previousSettingFingerprint=prepared.before.settingFingerprint;
++        presentation.savedFingerprint=fingerprint;
++        loaded=true;
++    } while (false);
++
++    {
++        std::lock_guard<std::mutex> lock(mutex_);
++        if (loaded && !currentLocked(job))
++        {
++            loaded=false;
++            message=QStringLiteral("N已提交，但发布前连接或运行快照变化，未把旧展示排入页面。");
++        }
++        if (loaded)
++        {
++            for (auto entry=runtimes_.begin();entry!=runtimes_.end();)
++            {
++                if (sameVersions(*entry.value(),*job->runtime))
++                {
++                    // 自有N只改目标孔；其他孔仅推进全库版本，保留其真实运行值和revision。
++                    auto advanced=std::make_shared<CurrentHoleRuntime>(*entry.value());
++                    advanced->settingFingerprint=fingerprint;
++                    entry.value()=advanced;
++                    ++entry;
++                }
++                else entry=runtimes_.erase(entry);
++            }
++            runtimes_.insert(job->packet.hole,std::make_shared<const CurrentHoleRuntime>(presentation.after));
++            message=QStringLiteral("N指定字段已提交并重读核对，运行值已绑定保存版本；页面是否接受由专用展示入口另核。");
++        }
++        else invalidateRelatedLocked(job,fingerprint,committed);
++        if (pending_==job) pending_.reset();
++    }
++    // 解锁后仅通知不可变结果；页面仍须按原连接、许可及前/后指纹核对，不能普通loaded覆盖。
++    if (loaded) emit presentationReady(presentation);
++    emit processed(job->context,committed,loaded,fingerprint,message);
++}
++}
+diff --git a/06_programs/sn100_host/reagents/reagents_page_level.cpp b/06_programs/sn100_host/reagents/reagents_page_level.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/reagents/reagents_page_level.cpp
+@@ -0,0 +1,443 @@
++#include "reagents_page.h"
++#include "original_reagent_level_runtime.h"
++#include "original_reagent_level_worker.h"
++#include "cusreagenthole.h"
++#include "ui_frmreagentmaterial.h"
++#include <QTimer>
++#include <QMetaObject>
++#include <cmath>
++#include <limits>
++
++namespace
++{
++QString settingVersion(const ReagentSnapshot &snapshot,const QString &hole)
++{
++    for (const auto &row : snapshot.holes) if (row.name==hole) return row.originalFingerprint;
++    return QString();
++}
++
++QString runtimeSource(const OriginalLevels::CurrentHoleRuntime &runtime)
++{
++    using OriginalLevels::MaximumSource;
++    QString source;
++    switch (runtime.maximumSource)
++    {
++    case MaximumSource::InitialBottleByName: source=QStringLiteral("本地原资料初始化的同名瓶型"); break;
++    case MaximumSource::ConfirmedUr: source=QStringLiteral("已保存并核对的Ur回读"); break;
++    case MaximumSource::ManualHoleSave: source=QStringLiteral("已核对的本地手工保存"); break;
++    case MaximumSource::FilledHole: source=QStringLiteral("已核对的本地充满资料"); break;
++    case MaximumSource::ClearedHole: source=QStringLiteral("已核对的清孔运行值"); break;
++    case MaximumSource::Unknown: source=QStringLiteral("尚未确认"); break;
++    }
++    // maximumSource只证明独立上限的来源，不能据此把所有当前量说成本次探测实测。
++    return QStringLiteral("当前孔独立运行量；最大量来源：%1。amount与预留used分开保留，不表示本次设备液面实测或动作完成。")
++        .arg(source);
++}
++
++bool displayInteger(double amount, QString *text)
++{
++    if (!std::isfinite(amount) || amount<std::numeric_limits<int>::min() || amount>std::numeric_limits<int>::max())
++    { *text=QStringLiteral("待核"); return false; }
++    *text=QString::number(static_cast<int>(amount));
++    return true;
++}
++
++bool finiteInput(const QVariant &value, double *number)
++{
++    bool ok=false;
++    *number=value.toString().toDouble(&ok);
++    return ok && std::isfinite(*number);
++}
++
++bool existingCountInputMatches(const ReagentSnapshot &snapshot, const OriginalLevels::CurrentHoleRuntime &runtime)
++{
++    const ReagentHole *hole=nullptr;
++    for (const auto &row : snapshot.holes) if (row.name==runtime.hole)
++    {
++        if (hole) return false;
++        hole=&row;
++    }
++    if (!hole || hole->originalValues.value("bottle_type").toString()!=runtime.bottle) return false;
++    double amount=0;
++    if (!finiteInput(hole->originalValues.value("amount_uL"),&amount)) return false;
++    // 只核已有displayHoleTests的实际液量输入，不重算次数，也不按区域换瓶型。
++    for (const auto &bottle : snapshot.bottles)
++        if (bottle.originalValues.value("bottle_type_name").toString()==runtime.bottle)
++        {
++            double maximum=0;
++            return bottle.originalFingerprint==runtime.bottleFingerprint &&
++                finiteInput(bottle.originalValues.value("max_amount_ul"),&maximum) &&
++                runtime.amountMicrolitres==qMin(amount,maximum);
++        }
++    return false; // 无首个同名瓶型时不以构造缺省值证明次数来源。
++}
++
++bool projectVersions(const ReagentProjects &projects, const QString &root, QVariantMap *versions)
++{
++    versions->clear();
++    for (const auto &project : projects)
++    {
++        if (project.originalRoot!=root || project.originalFileName.isEmpty() || project.originalFingerprint.isEmpty() ||
++            versions->contains(project.originalFileName)) return false;
++        versions->insert(project.originalFileName,project.originalFingerprint);
++    }
++    return true;
++}
++}
++
++OriginalLevels::CurrentHoleRuntime ReagentsPage::originalLevelRuntime(const QString &hole) const
++{
++    return originalLevelRuntime_ ? originalLevelRuntime_->current(hole) : OriginalLevels::CurrentHoleRuntime();
++}
++
++QString ReagentsPage::originalLevelRuntimeReason(const QString &hole) const
++{
++    return originalLevelRuntime_ ? originalLevelRuntime_->diagnostic(hole) : QStringLiteral("原孔位运行快照尚未建立。");
++}
++
++void ReagentsPage::notifyOriginalLevel(const QString &message)
++{
++    setProperty("originalLevelMessage",message);
++    emit operationMessage(QStringLiteral("液位回报"),message);
++}
++
++void ReagentsPage::originalLevelReloadFailed(const QString &problem)
++{
++    const auto pending=pendingOriginalLevelPresentation_;
++    const bool hasUr=!pendingOriginalLevelUr_.isEmpty();
++    const auto manual=pendingOriginalLevelManual_;
++    if (!pending && !hasUr && manual.isEmpty()) return;
++    originalLevelProjectCountsVerified_=false;
++    originalLevelViews_.clear();
++    if (pending && !failedOriginalLevelHoles_.contains(pending->after.hole)) failedOriginalLevelHoles_.append(pending->after.hole);
++    pendingOriginalLevelPresentation_.reset();
++    pendingOriginalLevelUr_.clear(); pendingOriginalLevelManual_.clear();
++    if (originalLevelRuntime_)
++    {
++        if (hasUr) { originalLevelRuntime_->invalidate(); originalLevelViews_.clear(); }
++        else
++        {
++            for (const auto &hole : manual)
++            { originalLevelRuntime_->invalidate(hole); originalLevelViews_.remove(hole); }
++            if (pending)
++            { originalLevelRuntime_->invalidate(pending->after.hole); originalLevelViews_.remove(pending->after.hole); }
++        }
++    }
++    const QString message=(pending ? QStringLiteral("N已经保存，但页面资料重读失败，未报告显示完成：") :
++        QStringLiteral("Ur或本地保存后的来源重读失败，等待清单已撤销，相关运行值待重新确认："))+problem;
++    notifyOriginalLevel(message);
++    renderOriginalLevelViews();
++    emit originalLevelRuntimeChanged();
++    if (pending)
++        emit originalLevelPresentationFinished(pending->context.packetId,pending->context.connection,
++            pending->context.permissionRevision,false,pending->savedFingerprint,message);
++}
++
++void ReagentsPage::rejectOriginalLevelObservation(const QString &hole,bool committed,const QString &message)
++{
++    originalLevelProjectCountsVerified_=false;
++    originalLevelViews_.clear();
++    if (!hole.isEmpty() && !failedOriginalLevelHoles_.contains(hole)) failedOriginalLevelHoles_.append(hole);
++    if (committed && originalLevelRuntime_ && !hole.isEmpty()) originalLevelRuntime_->invalidate(hole);
++    notifyOriginalLevel(message);
++    renderOriginalLevelViews();
++    emit originalLevelRuntimeChanged();
++    // 已提交后只标待核；普通读取可触发06复制恢复，不能由失败N自动安排。
++}
++
++void ReagentsPage::setOriginalLevelContext(quint64 connection,quint64 permissionRevision)
++{
++    const bool changed=connection!=originalLevelConnection_ || permissionRevision!=originalLevelPermissionRevision_;
++    const bool hadSources=!pendingOriginalLevelUr_.isEmpty() || !pendingOriginalLevelManual_.isEmpty();
++    bool runtimeChanged=false;
++    if (pendingOriginalLevelPresentation_ && changed)
++    {
++        const auto pending=pendingOriginalLevelPresentation_;
++        pendingOriginalLevelPresentation_.reset();
++        const QString message=QStringLiteral("N已在后台保存，但连接或观测许可已变，未把排队旧展示应用到新上下文。");
++        notifyOriginalLevel(message);
++        emit originalLevelPresentationFinished(pending->context.packetId,pending->context.connection,
++            pending->context.permissionRevision,false,pending->savedFingerprint,message);
++    }
++    if (changed)
++    {
++        pendingOriginalLevelUr_.clear(); pendingOriginalLevelManual_.clear();
++        originalLevelViews_.clear();
++        // 独立运行值不属于许可：Ready→Testing/许可续签保留已确认值；仅撤未确认来源。
++        if (originalLevelRuntime_ && hadSources)
++        { originalLevelRuntime_->invalidate(); runtimeChanged=true; }
++        if (connection && connection!=originalLevelConnection_)
++        { originalLevelRuntime_.reset(); runtimeChanged=true; }
++        if (hadSources) notifyOriginalLevel(QStringLiteral("连接或观测许可已变化，待重读的Ur/本地来源已撤销，未认证到新上下文。"));
++    }
++    // 0表示暂撤观测许可；记住最近真实连接代次，Qj恢复同代次时不重建运行值。
++    if (connection) originalLevelConnection_=connection;
++    originalLevelPermissionRevision_=permissionRevision;
++    originalLevelFreshUntil_=permissionRevision ? std::chrono::steady_clock::now()+std::chrono::milliseconds(3000) :
++        std::chrono::steady_clock::time_point();
++    if (!originalLevelRuntime_ && snapshot_.originalProfile)
++    {
++        originalLevelRuntime_.reset(new OriginalLevels::RuntimeProvider);
++        originalLevelRuntime_->observeSnapshot(snapshot_);
++        runtimeChanged=true;
++    }
++    renderOriginalLevelViews();
++    if (runtimeChanged) emit originalLevelRuntimeChanged();
++}
++
++void ReagentsPage::confirmOriginalLevelUr(const QByteArray &payload,bool linuxNew,quint64 connection)
++{
++    if (!connection || connection!=originalLevelConnection_ || !originalLevelRuntime_ || !originalLevelPermissionRevision_ ||
++        std::chrono::steady_clock::now()>=originalLevelFreshUntil_)
++    { notifyOriginalLevel(QStringLiteral("Ur来源没有当前连接的有效观测许可，未排队认证运行值。")); return; }
++    int bytes=payload.size();
++    for (const auto &pending : pendingOriginalLevelUr_) bytes+=pending.first.size();
++    if (pendingOriginalLevelUr_.size()>=32 || bytes>1048576)
++    {
++        originalLevelRuntime_->invalidate();
++        originalLevelViews_.clear(); pendingOriginalLevelUr_.clear(); pendingOriginalLevelManual_.clear();
++        notifyOriginalLevel(QStringLiteral("Ur运行来源待重读清单超过32包或1MiB，未静默合并；N保存保持关闭，需重新核对资料。"));
++        renderOriginalLevelViews(); emit originalLevelRuntimeChanged();
++        return;
++    }
++    pendingOriginalLevelUr_.append(qMakePair(payload,linuxNew));
++    reloadOriginal();
++}
++
++void ReagentsPage::confirmOriginalLevelManual(const QString &hole,quint64 connection)
++{
++    if (!connection || connection!=originalLevelConnection_ || !originalLevelRuntime_ || !originalLevelPermissionRevision_ ||
++        std::chrono::steady_clock::now()>=originalLevelFreshUntil_)
++    { notifyOriginalLevel(QStringLiteral("本地孔位来源没有当前连接的有效观测许可，未排队认证运行值。")); return; }
++    if (pendingOriginalLevelManual_.size()>=32)
++    {
++        originalLevelRuntime_->invalidate(hole);
++        originalLevelViews_.remove(hole);
++        notifyOriginalLevel(QStringLiteral("本地孔位来源待核清单已满，未补造当前最大量。"));
++        renderOriginalLevelViews(); emit originalLevelRuntimeChanged();
++        return;
++    }
++    pendingOriginalLevelManual_.append(hole);
++    reloadOriginal();
++}
++
++bool ReagentsPage::enqueueOriginalLevelPresentation(const OriginalLevels::ObservationPresentation &presentation,QString *message)
++{
++    const auto &context=presentation.context;
++    const auto reject=[&](const QString &reason)
++    { if (message) *message=reason; notifyOriginalLevel(reason); return false; };
++    if (!originalProfile_ || !ready_ || context.connection!=originalLevelConnection_ ||
++        !originalLevelPermissionRevision_ || std::chrono::steady_clock::now()>=originalLevelFreshUntil_ || context.permissionRevision!=originalLevelPermissionRevision_ ||
++        context.root!=snapshot_.originalRoot || presentation.savedFingerprint.isEmpty() ||
++        presentation.after.settingFingerprint!=presentation.savedFingerprint ||
++        settingVersion(presentation.snapshot,presentation.after.hole)!=presentation.savedFingerprint)
++        return reject(QStringLiteral("N已保存，但展示来源、连接、工作根或许可不属于当前页面，未覆盖页面。"));
++    if (pendingOriginalLevelPresentation_)
++        return reject(QStringLiteral("上一份N仍等待页面重读，未把它静默合并或替换为新展示。"));
++    if (busy_ || dirty_ || pendingOriginalReload_)
++        return reject(QStringLiteral("N已保存，但页面正忙或有草稿，未排入旧普通重读或复用详情。"));
++    pendingOriginalLevelPresentation_=std::make_shared<const OriginalLevels::ObservationPresentation>(presentation);
++    notifyOriginalLevel(QStringLiteral("N已保存且后台已核对，等待试剂后台和页面同版本重读；未报告探测完成。"));
++    // 更新同一编辑器缓存，但N走持锁且拒pending的专用读口；不发保存或设备完成信号。
++    setBusy(true);
++    if (!QMetaObject::invokeMethod(store_,"loadOriginalLevelObservation",Qt::QueuedConnection,Q_ARG(QString,context.root)))
++    {
++        setBusy(false);
++        originalLevelReloadFailed(QStringLiteral("N专用页面重读未能排入存储线程。"));
++        return false;
++    }
++    return true;
++}
++
++void ReagentsPage::consumeOriginalLevelSnapshot()
++{
++    if (!snapshot_.originalProfile)
++    {
++        originalLevelRuntime_.reset(); originalLevelViews_.clear();
++        pendingOriginalLevelUr_.clear(); pendingOriginalLevelManual_.clear();
++        const auto pending=pendingOriginalLevelPresentation_; pendingOriginalLevelPresentation_.reset();
++        renderOriginalLevelViews(); emit originalLevelRuntimeChanged();
++        if (pending)
++        {
++            const QString reason=QStringLiteral("N已提交，但页面已离开原资料上下文，未应用旧展示。");
++            notifyOriginalLevel(reason);
++            emit originalLevelPresentationFinished(pending->context.packetId,pending->context.connection,
++                pending->context.permissionRevision,false,pending->savedFingerprint,reason);
++        }
++        return;
++    }
++    if (!originalLevelRuntime_) originalLevelRuntime_.reset(new OriginalLevels::RuntimeProvider);
++    const auto pending=pendingOriginalLevelPresentation_;
++    bool accepted=false;
++    QString message;
++    const bool sourceOverlap=!pendingOriginalLevelUr_.isEmpty() || !pendingOriginalLevelManual_.isEmpty();
++    if (pending && sourceOverlap)
++        message=QStringLiteral("N已提交，但同轮还有Ur或本地来源待确认，保守拒绝本次N展示，未报告页面应用成功。");
++    if (pending && !sourceOverlap && pending->context.connection==originalLevelConnection_ &&
++        std::chrono::steady_clock::now()<originalLevelFreshUntil_ &&
++        pending->context.permissionRevision==originalLevelPermissionRevision_ &&
++        pending->context.root==snapshot_.originalRoot &&
++        settingVersion(snapshot_,pending->after.hole)==pending->savedFingerprint)
++        accepted=originalLevelRuntime_->acceptObservation(pending->previousSettingFingerprint,pending->after,snapshot_,&message);
++    const auto pendingUr=pendingOriginalLevelUr_;
++    pendingOriginalLevelUr_.clear();
++    if (!pendingUr.isEmpty()) originalLevelViews_.clear();
++    const bool sourcesCurrent=originalLevelConnection_ && originalLevelPermissionRevision_ &&
++        std::chrono::steady_clock::now()<originalLevelFreshUntil_;
++    for (const auto &entry : pendingUr)
++    {
++        if (!sourcesCurrent)
++        {
++            originalLevelRuntime_->invalidate();
++            notifyOriginalLevel(QStringLiteral("Ur等待重读期间观测许可已失效，未认证该排队来源。"));
++            break;
++        }
++        QString problem;
++        if (!originalLevelRuntime_->confirmUr(entry.first,entry.second,snapshot_,&problem)) notifyOriginalLevel(problem);
++    }
++    const auto pendingManual=pendingOriginalLevelManual_;
++    pendingOriginalLevelManual_.clear();
++    for (const QString &hole : pendingManual)
++    {
++        originalLevelViews_.remove(hole);
++        if (!sourcesCurrent)
++        {
++            originalLevelRuntime_->invalidate(hole);
++            notifyOriginalLevel(QStringLiteral("本地孔位等待重读期间观测许可已失效，未认证该排队来源。"));
++            continue;
++        }
++        QString problem;
++        if (!originalLevelRuntime_->confirmManualHole(hole,snapshot_,&problem)) notifyOriginalLevel(problem);
++    }
++    if (!accepted) originalLevelRuntime_->observeSnapshot(snapshot_);
++    if (pending)
++    {
++        pendingOriginalLevelPresentation_.reset();
++        if (!accepted) originalLevelViews_.remove(pending->after.hole);
++        if (accepted)
++        {
++            failedOriginalLevelHoles_.removeAll(pending->after.hole);
++            originalLevelProjectCountsVerified_=true; // 新N已独立核完项目来源，不能由普通重读或Qj解除。
++            QVariantMap view;
++            view.insert(QStringLiteral("amount"),pending->after.amountMicrolitres);
++            view.insert(QStringLiteral("used"),pending->after.usedMicrolitres);
++            view.insert(QStringLiteral("maximum"),pending->after.maximumMicrolitres);
++            view.insert(QStringLiteral("state"),pending->after.state);
++            view.insert(QStringLiteral("testsAvailable"),pending->selectedHoleTests.available);
++            view.insert(QStringLiteral("tests"),pending->selectedHoleTests.tests);
++            view.insert(QStringLiteral("testsReason"),pending->selectedHoleTests.reason);
++            QVariantMap testVersions;
++            view.insert(QStringLiteral("testProjectVersionsAvailable"),projectVersions(pending->projects,pending->after.root,&testVersions));
++            view.insert(QStringLiteral("testProjectVersions"),testVersions);
++            // 只比较已有原项目顺序记录，不用新顺序重新猜首个项目或重算旧N次数。
++            view.insert(QStringLiteral("testProjectOrder"),pending->snapshot.originalProjectOrder);
++            view.insert(QStringLiteral("connection"),QVariant::fromValue(pending->context.connection));
++            view.insert(QStringLiteral("permission"),QVariant::fromValue(pending->context.permissionRevision));
++            view.insert(QStringLiteral("root"),pending->after.root);
++            view.insert(QStringLiteral("reagent"),pending->after.reagent);
++            view.insert(QStringLiteral("bottle"),pending->after.bottle);
++            view.insert(QStringLiteral("area"),pending->after.area);
++            const auto source=pending->capacity.source;
++            const QString sourceText=source==OriginalRuntime::ReagentCapacitySource::Geometry ? QStringLiteral("本孔瓶型几何后备") :
++                source==OriginalRuntime::ReagentCapacitySource::Matrix ? QStringLiteral("原标定矩阵") : QStringLiteral("零高度分支的原矩阵结果");
++            view.insert(QStringLiteral("source"),QStringLiteral("最近已保存N回报：高度%1mm，采用%2；显示量与数据库预留量分别保留，不表示整次探测完成。")
++                .arg(QString::number(pending->capacity.rawHeightMm),sourceText));
++            originalLevelViews_.insert(pending->after.hole,view);
++            message=QStringLiteral("N指定字段已保存并重读，页面已应用对应运行量；设备动作完成仍须原独立回执。");
++        }
++        else if (message.isEmpty()) message=QStringLiteral("N已提交，但页面重读版本或上下文已改变，未报告显示完成。");
++        notifyOriginalLevel(message);
++        emit originalLevelPresentationFinished(pending->context.packetId,pending->context.connection,
++            pending->context.permissionRevision,accepted,pending->savedFingerprint,message);
++    }
++    renderOriginalLevelViews();
++    emit originalLevelRuntimeChanged();
++}
++
++void ReagentsPage::renderOriginalLevelViews()
++{
++    if (!originalLevelProjectCountsVerified_)
++        for (int row=0;row<ui->projectUseageTable->rowCount();++row)
++            if (auto *item=ui->projectUseageTable->item(row,1))
++            {
++                item->setText(QStringLiteral("待核"));
++                item->setToolTip(QStringLiteral("项目来源未核实，旧项目次数不复用；等待新的有效N。"));
++            }
++    // selectHole之外的撤许可/失败路径也必须刷新详情，不能留下上一份N文字或tooltip。
++    if (snapshot_.originalProfile)
++    {
++        ui->lblAmount->setText(QStringLiteral("待核"));
++        ui->lblTests->setText(QStringLiteral("待核"));
++        ui->lblAmount->setToolTip(originalLevelRuntimeReason(selectedHole_));
++        ui->lblTests->setToolTip(QStringLiteral("当前孔运行来源尚未确认，不以预留used冒充原显示量或0次。"));
++    }
++    for (auto *widget : ui->reagentPanel->findChildren<cusReagentHole*>())
++    {
++        widget->setProperty("originalNView",false);
++        widget->setProperty("originalLevelUnavailable",snapshot_.originalProfile);
++        widget->setProperty("originalNTestsAvailable",false); widget->setProperty("originalNTests",0);
++        widget->setToolTip(QString());
++        if (!snapshot_.originalProfile) { widget->update(); continue; }
++        const QString hole=widget->objectName();
++        if (failedOriginalLevelHoles_.contains(hole))
++        {
++            const QString reason=QStringLiteral("本孔最近N未完成核对，旧详情未作为本次结果；等待来源重核后的新Qj和新N。");
++            widget->setToolTip(reason); widget->update();
++            if (hole==selectedHole_) { ui->lblAmount->setToolTip(reason); ui->lblTests->setToolTip(reason); }
++            continue;
++        }
++        const auto view=originalLevelViews_.value(hole);
++        const auto runtime=originalLevelRuntime(hole);
++        if (!runtime.available || runtime.root!=snapshot_.originalRoot ||
++            runtime.settingFingerprint!=settingVersion(snapshot_,hole) || !std::isfinite(runtime.amountMicrolitres) ||
++            !std::isfinite(runtime.maximumMicrolitres) || runtime.maximumMicrolitres<0)
++        { widget->setToolTip(originalLevelRuntimeReason(hole)); widget->update(); continue; }
++        const bool nView=!view.isEmpty() && originalLevelPermissionRevision_ &&
++            view.value(QStringLiteral("connection")).toULongLong()==originalLevelConnection_ &&
++            view.value(QStringLiteral("permission")).toULongLong()==originalLevelPermissionRevision_ &&
++            view.value(QStringLiteral("root")).toString()==runtime.root &&
++            view.value(QStringLiteral("reagent")).toString()==runtime.reagent &&
++            view.value(QStringLiteral("bottle")).toString()==runtime.bottle && view.value(QStringLiteral("area")).toString()==runtime.area &&
++            runtime.amountMicrolitres==view.value(QStringLiteral("amount")).toDouble() &&
++            runtime.usedMicrolitres==view.value(QStringLiteral("used")).toDouble() &&
++            runtime.maximumMicrolitres==view.value(QStringLiteral("maximum")).toDouble() &&
++            runtime.state==view.value(QStringLiteral("state")).toString();
++        const QString source=nView ? view.value(QStringLiteral("source")).toString() :
++            runtimeSource(runtime)+QStringLiteral(" ")+originalLevelRuntimeReason(hole);
++        // 量相同才能复用原库估算；N次数还必须绑定原项目文件版本。
++        const auto existing=snapshot_.holeTestCounts.value(hole);
++        QVariantMap currentTestVersions;
++        const bool nProjectsMatch=nView && !busy_ && !pendingOriginalReload_ &&
++            view.value(QStringLiteral("testProjectVersionsAvailable")).toBool() &&
++            projectVersions(projects_,runtime.root,&currentTestVersions) &&
++            currentTestVersions==view.value(QStringLiteral("testProjectVersions")).toMap() &&
++            snapshot_.originalProjectOrder==view.value(QStringLiteral("testProjectOrder")).toStringList();
++        const bool existingInputMatches=!nView && existingCountInputMatches(snapshot_,runtime);
++        const bool testsAvailable=originalLevelProjectCountsVerified_ && (nView ?
++            nProjectsMatch && view.value(QStringLiteral("testsAvailable")).toBool() : existing.available && existingInputMatches);
++        const int tests=nView ? view.value(QStringLiteral("tests")).toInt() : existing.tests;
++        const QString testsReason=!originalLevelProjectCountsVerified_ ?
++            QStringLiteral("N项目来源尚未重新核对，旧次数不复用；需新Qj及新的有效N，不重放失败观测。") : nView ? (nProjectsMatch ? view.value(QStringLiteral("testsReason")).toString() :
++            QStringLiteral("N次数所用项目文件、版本或已记录顺序不再对应当前项目，液量保留，次数待核；未重新猜首个项目。")) :
++            (!existingInputMatches ? QStringLiteral("当前运行量与已有次数估算的原库液量输入不对应或无法核实，次数待核；未重复计算。") : existing.reason);
++        widget->setProperty("originalLevelUnavailable",false);
++        widget->setProperty("originalNView",true);
++        widget->setProperty("originalNAmount",runtime.amountMicrolitres);
++        widget->setProperty("originalNMaximum",runtime.maximumMicrolitres);
++        widget->setProperty("originalNState",runtime.state);
++        widget->setProperty("originalNTestsAvailable",testsAvailable);
++        widget->setProperty("originalNTests",tests);
++        widget->setToolTip(source);
++        widget->update();
++        if (hole==selectedHole_)
++        {
++            QString amountText;
++            const bool amountAvailable=displayInteger(runtime.amountMicrolitres,&amountText);
++            ui->lblAmount->setText(amountText);
++            ui->lblAmount->setToolTip(amountAvailable ? source : QStringLiteral("运行液量超出原详情int显示范围，保留原double，未截断溢出。"));
++            ui->lblTests->setText(!testsAvailable ? QStringLiteral("待核") : !tests ? QStringLiteral("-") :
++                tests>999 ? QStringLiteral(">999") : QString::number(tests));
++            ui->lblTests->setToolTip(testsAvailable ? source : testsReason);
++        }
++    }
++}
+diff --git a/06_programs/sn100_host/reagents/reagents_page.h b/06_programs/sn100_host/reagents/reagents_page.h
+--- a/06_programs/sn100_host/reagents/reagents_page.h
++++ b/06_programs/sn100_host/reagents/reagents_page.h
+@@ -4,9 +4,12 @@
+ #include <QPointer>
+ #include <QHash>
+ #include <QWidget>
++#include <chrono>
++#include <memory>
+ class QDialog;
+ class QTimer;
+ class OriginalReagentUsageDialog;
++namespace OriginalLevels { class RuntimeProvider; struct CurrentHoleRuntime; struct ObservationPresentation; }
+ namespace Ui
+ {
+ class frmReagentMaterial;
+@@ -36,6 +39,18 @@
+     }
+     ReagentStore *taskStore() const { return store_; }
+     void configureLayout(int count);
++    OriginalLevels::CurrentHoleRuntime originalLevelRuntime(const QString &hole) const;
++    QString originalLevelRuntimeReason(const QString &hole) const;
++    void setOriginalLevelContext(quint64 connection, quint64 permissionRevision);
++    void confirmOriginalLevelUr(const QByteArray &payload, bool linuxNew, quint64 connection);
++    void confirmOriginalLevelManual(const QString &hole, quint64 connection);
++    bool enqueueOriginalLevelPresentation(const OriginalLevels::ObservationPresentation &presentation, QString *message);
++    bool hasPendingOriginalLevelPresentation() const { return bool(pendingOriginalLevelPresentation_); }
++    bool hasUnconfirmedOriginalLevelRuntime() const
++    { return hasPendingOriginalLevelPresentation() || !pendingOriginalLevelUr_.isEmpty() || !pendingOriginalLevelManual_.isEmpty(); }
++    void notifyOriginalLevel(const QString &message);
++    void originalLevelReloadFailed(const QString &message);
++    void rejectOriginalLevelObservation(const QString &hole, bool committed, const QString &message);
+ public slots:
+     void setProjects(ReagentProjects projects);
+     void setSession(AccountSession session);
+@@ -54,6 +69,9 @@
+     void updateOriginalDeviceKey(quint64 connection, QString key);
+     void finishOriginalUsageImport(quint64 connection, bool success);
+ signals:
++    void originalLevelRuntimeChanged(); // 原运行来源改变时立即撤销在途N的旧依据。
++    void originalLevelPresentationFinished(quint64 packetId, quint64 connection, quint64 permissionRevision,
++                                         bool shown, QString fingerprint, QString message);
+     void snapshotChanged(ReagentSnapshot snapshot);
+     void readyChanged(bool ready);
+     void busyChanged(bool busy);
+@@ -82,6 +100,17 @@
+     void closeEvent(QCloseEvent* event) override;
+ 
+ private:
++    std::unique_ptr<OriginalLevels::RuntimeProvider> originalLevelRuntime_;
++    std::shared_ptr<const OriginalLevels::ObservationPresentation> pendingOriginalLevelPresentation_;
++    QMap<QString,QVariantMap> originalLevelViews_;
++    QList<QPair<QByteArray,bool>> pendingOriginalLevelUr_;
++    QStringList pendingOriginalLevelManual_;
++    QStringList failedOriginalLevelHoles_;
++    bool originalLevelProjectCountsVerified_ = true;
++    quint64 originalLevelConnection_ = 0, originalLevelPermissionRevision_ = 0;
++    std::chrono::steady_clock::time_point originalLevelFreshUntil_;
++    void consumeOriginalLevelSnapshot();
++    void renderOriginalLevelViews();
+     Ui::frmReagentMaterial* ui;
+     ReagentStore *store_ = nullptr;
+     bool originalProfile_ = false;
+diff --git a/06_programs/sn100_host/reagents/reagents_page.cpp b/06_programs/sn100_host/reagents/reagents_page.cpp
+--- a/06_programs/sn100_host/reagents/reagents_page.cpp
++++ b/06_programs/sn100_host/reagents/reagents_page.cpp
+@@ -1,4 +1,5 @@
+ #include "reagents_page.h"
++#include "original_reagent_level_runtime.h"
+ #include "original_reagent_usage.h"
+ #include "cusdialogmask.h"
+ #include "cusmessagebox.h"
+@@ -252,6 +253,7 @@
+             ui->reagentPanel->setSnapshot(snapshot_);
+             selectHole(selectedHole_);
+             refreshTestCounts();
++            consumeOriginalLevelSnapshot();
+             ReagentProject savedGroupProject;
+             if (!pendingOriginalGroupCommit_.originalFileName.isEmpty())
+                 for (const auto &project : projects_)
+@@ -684,6 +686,7 @@
+     ui->lblBottleName->setText(bottle.id ? bottle.name : QStringLiteral("-"));
+     ui->lblBatch->setText(snapshot_.originalProfile ? hole.originalBatch : batch.id ? batch.batchGroup : QStringLiteral("-"));
+     ui->lblAmount->setText(hole.id ? QString::number(hole.remainingUl) : QStringLiteral("-"));
++    ui->lblAmount->setToolTip(QString());
+     ui->lblOutDate->setText(hole.expiry);
+     ui->lblKeepTime->setText("-");
+     ui->lblSetDate->setText(hole.changedAt.section('T', 0, 0));
+@@ -692,6 +695,7 @@
+     ui->lblTests->setText(!tests.available || !tests.tests ? QStringLiteral("-") :
+         tests.tests>999 ? QStringLiteral(">999") : QString::number(tests.tests));
+     ui->lblTests->setToolTip(tests.available ? QStringLiteral("按原已存液量估算，不表示本次设备液面已实测。") : tests.reason);
++    renderOriginalLevelViews();
+ }
+ void ReagentsPage::openReagentEditor()
+ {
+diff --git a/06_programs/sn100_host/reagents/cusreagenthole.cpp b/06_programs/sn100_host/reagents/cusreagenthole.cpp
+--- a/06_programs/sn100_host/reagents/cusreagenthole.cpp
++++ b/06_programs/sn100_host/reagents/cusreagenthole.cpp
+@@ -10,6 +10,9 @@
+ }
+ void cusReagentHole::setInformation(const ReagentHole& h, const ReagentRecord& r, const ReagentBottle& b)
+ {
++    setProperty("originalNView",false); // 页面随后按当前独立运行来源重新绘制，不把库中used称为实测。
++    setProperty("originalLevelUnavailable",false);
++    setProperty("originalNTestsAvailable",false);
+     hole_ = h;
+     reagent_ = r;
+     bottle_ = b;
+@@ -59,8 +62,12 @@
+     p.setPen(Qt::NoPen);
+     p.drawEllipse(all);
+     const bool hasReagent = hole_.reagentId > 0;
+-    const bool missing = hasReagent && hole_.remainingUl <= reagent_.outUl;
+-    const bool warning = hasReagent && hole_.remainingUl <= reagent_.warningUl;
++    const bool levelView=property("originalNView").toBool();
++    const bool unknownLevel=property("originalLevelUnavailable").toBool();
++    const double shownAmount=levelView ? property("originalNAmount").toDouble() : hole_.remainingUl;
++    const double shownMaximum=levelView ? property("originalNMaximum").toDouble() : bottle_.capacityUl;
++    const bool missing = hasReagent && !unknownLevel && (levelView ? property("originalNState").toString()==QStringLiteral("r_useout") : hole_.remainingUl<=reagent_.outUl);
++    const bool warning = hasReagent && !unknownLevel && (levelView ? property("originalNState").toString()==QStringLiteral("r_warning") : hole_.remainingUl<=reagent_.warningUl);
+     QPainterPath circle;
+     circle.addEllipse(all);
+     if (hasReagent)
+@@ -69,9 +76,9 @@
+         top.addRect(QRectF(x, y, side, side * .3));
+         p.setBrush(QColor(missing ? "#FFA6A6" : warning ? "#FFE1A6" : "#D8D8D8"));
+         p.drawPath(circle.intersected(top));
+-        if (!missing && bottle_.capacityUl > 0)
++        if (!unknownLevel && !missing && shownMaximum > 0)
+         {
+-            const double fraction = qBound(0.0, double(hole_.remainingUl) / bottle_.capacityUl, 1.0);
++            const double fraction = qBound(0.0, shownAmount / shownMaximum, 1.0);
+             QPainterPath water;
+             water.addRect(QRectF(x, y + side * .3 + (1 - fraction) * side * .7, side, side * .7));
+             p.setBrush(QColor("#B7D7FF"));
+@@ -94,9 +101,14 @@
+         p.drawText(rect, Qt::AlignCenter, text);
+     };
+     fittedText(QRectF(x + side * .05, y + side * .3, side * .9, side * .28), reagent_.name);
+-    QString amount = QString::number(hole_.remainingUl / 1000.0, 'f', 1) + "ml";
++    QString amount = QString::number(shownAmount / 1000.0, 'f', 1) + "ml";
++    if (unknownLevel) amount=QStringLiteral("-ml");
+     if (displayMode_ == 1)
+-        amount = QStringLiteral("- tests"); // Consumption configuration is not yet migrated.
++    {
++        const int tests=property("originalNTests").toInt();
++        amount=!property("originalNTestsAvailable").toBool() || !tests ? QStringLiteral("- tests") :
++            tests>999 ? QStringLiteral(">999 tests") : QString::number(tests)+QStringLiteral(" tests");
++    }
+     if (displayMode_ == 2)
+     {
+         const QDateTime loaded = QDateTime::fromString(hole_.changedAt, Qt::ISODate);
+diff --git a/06_programs/sn100_host/shell/reagent_level_shell.cpp b/06_programs/sn100_host/shell/reagent_level_shell.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/shell/reagent_level_shell.cpp
+@@ -0,0 +1,324 @@
++#include "frmmain.h"
++#include "instrument/device_control.h"
++#include "reagents/reagents_page.h"
++#include "reagents/original_reagent_level_worker.h"
++#include "samples/sample_page.h"
++#include "samples/sample_store.h"
++#include <QDebug>
++#include <QMetaObject>
++#include <QThread>
++#include <QTimer>
++#include <limits>
++
++namespace
++{
++bool sameLevelContext(const OriginalLevels::Context &a,const OriginalLevels::Context &b)
++{
++    return a.connection==b.connection && a.root==b.root && a.actualModel==b.actualModel &&
++        a.configuredModel==b.configuredModel && a.themeFingerprint==b.themeFingerprint &&
++        a.capacityRelativeFile==b.capacityRelativeFile && a.capacityFileState==b.capacityFileState &&
++        a.capacityFingerprint==b.capacityFingerprint && a.protocolToken==b.protocolToken && a.linuxNew==b.linuxNew &&
++        a.configuredPositions==b.configuredPositions && a.reportedPositions==b.reportedPositions &&
++        a.mainStatus==b.mainStatus && a.capacityCalibrationActive==b.capacityCalibrationActive;
++}
++}
++
++void frmMain::reportReagentLevel(const QString &message)
++{
++    setProperty("originalLevelMessage",message);
++    qInfo().noquote()<<"REAGENT_LEVEL"<<message;
++    if (reagents_) reagents_->notifyOriginalLevel(message);
++}
++
++QString frmMain::reagentLevelSyncBlocker(quint64 connection) const
++{
++    if (connection && reagentLevelRequestedUrConnection_==connection)
++        return tr("本连接已经请求Ur，尚未收到存储处理收尾；N未抢占这条回读。");
++    if (deviceRecoveryPending_ && connection==deviceRecoveryConnection_)
++        return tr("原同步正在后台核对旧任务，未并发接收N写入。");
++    if (deviceConfigurationStarted_ && (connection!=deviceConfigurationConnection_ ||
++        (reagents_ && deviceConfigurationRoot_!=reagents_->property("originalRoot").toString())))
++        return tr("原同步等待属于另一连接或资料根，N保持关闭。");
++    if (deviceConfigurationStarted_ && !deviceConfigurationBaseReady_)
++        return tr("本连接已登记初始同步，仍在后台准备或等待Ur/UP；N未抢占已请求的试剂回读。失败待明确重连，不重发。");
++    return QString();
++}
++
++bool frmMain::reagentLevelBusy() const
++{
++    return bool(reagentLevelActive_) || (reagentLevelWorker_ && reagentLevelWorker_->isBusy()) ||
++        (reagents_ && reagents_->hasPendingOriginalLevelPresentation());
++}
++
++void frmMain::invalidateReagentLevels()
++{
++    if (reagentLevelWorker_) reagentLevelWorker_->revoke();
++    reagentLevelContext_.reset();
++    reagentLevelUrContexts_.clear(); reagentLevelPriorityUrContext_.reset();
++    if (reagents_) reagents_->setOriginalLevelContext(0,0);
++}
++
++void frmMain::reviewReagentLevelSource(const QString &root,quint64 connection)
++{
++    if (!reagentLevelWorker_ || root.isEmpty() || reagentLevelClosing_) return;
++    invalidateReagentLevels();
++    reagentLevelSourceRoot_=root; reagentLevelSourceConnection_=connection;
++    reagentLevelSource_.reset();
++    if (reagentLevelSourceRequest_==std::numeric_limits<quint64>::max())
++    { reportReagentLevel(tr("容量来源重核编号已满，未复用旧结果。")); return; }
++    const quint64 request=++reagentLevelSourceRequest_;
++    if (!QMetaObject::invokeMethod(reagentLevelWorker_,"prepareSource",Qt::QueuedConnection,
++        Q_ARG(quint64,request),Q_ARG(QString,root)))
++        reportReagentLevel(tr("容量来源重核未排入存储线程，N保持关闭。"));
++}
++
++std::shared_ptr<OriginalLevels::Context> frmMain::reagentLevelUrContext(quint64 connection) const
++{
++    if (!reagentLevelContext_ || !reagentLevelWorker_ || reagentLevelClosing_ ||
++        connection!=reagentLevelContext_->connection || !reagentLevelWorker_->isContextCurrent(*reagentLevelContext_))
++        return {};
++    return std::make_shared<OriginalLevels::Context>(*reagentLevelContext_);
++}
++
++void frmMain::confirmReagentLevelUr(const QByteArray &payload,quint64 connection,
++    const std::shared_ptr<OriginalLevels::Context> &arrivalContext)
++{
++    const auto current=reagentLevelUrContext(connection);
++    if (!arrivalContext || !current || !sameLevelContext(*arrivalContext,*current) ||
++        arrivalContext->permissionRevision!=current->permissionRevision)
++    {
++        reportReagentLevel(tr("Ur已在原接收链保存，但到达时的协议、资料或许可已不可确认；未给N补造运行来源。"));
++        return;
++    }
++    reagents_->confirmOriginalLevelUr(payload,arrivalContext->linuxNew,connection);
++}
++
++bool frmMain::requestReagentLevelShutdown()
++{
++    reagentLevelClosing_=true;
++    invalidateReagentLevels();
++    if (reagentLevelActive_ || (reagentLevelWorker_ && reagentLevelWorker_->isBusy()))
++    {
++        reportReagentLevel(tr("正在撤销N观测并等待在途保存结束；不终止数据库线程或假定已回滚。"));
++        return false;
++    }
++    return true;
++}
++
++void frmMain::updateReagentLevelContext(bool validQj)
++{
++    if (!reagentLevelWorker_ || !deviceControl_ || !reagents_) return;
++    const auto &state=deviceControl_->state();
++    const quint64 connection=deviceControl_->connectionGeneration();
++    const QString root=reagents_->property("originalRoot").toString();
++    if (!root.isEmpty() && !reagentLevelClosing_ && (root!=reagentLevelSourceRoot_ ||
++        (state.connected && connection!=reagentLevelSourceConnection_)))
++    {
++        // 同根重连也重新核文件版本；读取失败不在每个Qj上无限重试。
++        reviewReagentLevelSource(root,state.connected ? connection : 0);
++    }
++    QString reason;
++    const QString synchronization=reagentLevelSyncBlocker(connection);
++    if (!state.connected || !synchronization.isEmpty())
++        reagentLevelWorker_->setReagentReadbackPending(state.connected ? connection : 0,true);
++    else if (validQj)
++        reagentLevelWorker_->setReagentReadbackPending(connection,false); // 回读收尾不伪造Qj，等实际新Qj再开N写门。
++    OriginalLevels::Context context;
++    if (reagentLevelClosing_) reason=tr("程序正在关闭，未接收新的N保存。");
++    else if (!state.connected || !state.fresh) reason=tr("主控未连接或Qj已失效，N未写库。");
++    else if (!reagents_->isReady() || !reagents_->snapshot().originalProfile || root.isEmpty())
++        reason=tr("原试剂资料尚未就绪，N未写库。");
++    else if (!reagentLevelSource_ || reagentLevelSource_->root!=root)
++        reason=tr("实际主题和容量文件版本尚未核实，N未写库。");
++    else
++    {
++        context=*reagentLevelSource_;
++        context.connection=connection;
++        context.actualModel=state.status.model;
++        context.protocolToken=state.status.generalFields.value(19);
++        context.linuxNew=context.protocolToken==QStringLiteral("LinuxNew");
++        context.mainStatus=state.status.mainStatus;
++        bool countOk=false;
++        context.reportedPositions=state.status.generalFields.value(20).toInt(&countOk);
++        if (!countOk || context.reportedPositions!=context.configuredPositions ||
++            (context.configuredPositions!=20 && context.configuredPositions!=42))
++            reason=tr("配置%1试剂位与主控%2未核对一致，N未写库，未放宽42/48对应。")
++                .arg(context.configuredPositions).arg(state.status.generalFields.value(20));
++        else if (context.actualModel.isEmpty() || context.actualModel!=context.configuredModel ||
++                 context.configuredModel!=property("configuredDeviceModel").toString() ||
++                 context.configuredPositions!=property("configuredReagentPositions").toInt())
++            reason=tr("生效主题、页面和主控机型/孔数不一致，N未写库。");
++        else if (context.mainStatus<0 || context.mainStatus>6)
++            reason=tr("主控状态不是原0至6有效状态，N未写库。");
++        else if (!deviceConfigurationRoot_.isEmpty() && deviceConfigurationRoot_!=root)
++            reason=tr("当前连接正在使用另一个原资料根，N未写库。");
++        // 当前容量标定入口尚未启用，没有原m_param批次；以后接入时必须补真实批次状态。
++        context.capacityCalibrationActive=false;
++    }
++    setProperty("originalLevelBlocker",reason.isEmpty() ? synchronization : reason);
++    if (!reason.isEmpty())
++    {
++        reagentLevelWorker_->revoke(); reagentLevelContext_.reset();
++        reagents_->setOriginalLevelContext(state.connected ? connection : 0,0);
++        return;
++    }
++    if (!validQj)
++    {
++        // changed也会由错误或其他命令触发，不能用它们续Qj新鲜期限。
++        if (reagentLevelContext_ && !sameLevelContext(context,*reagentLevelContext_)) invalidateReagentLevels();
++        return;
++    }
++    if (!reagentLevelContext_ || !sameLevelContext(context,*reagentLevelContext_))
++    {
++        if (reagentLevelPermissionRevision_==std::numeric_limits<quint64>::max())
++        { invalidateReagentLevels(); reportReagentLevel(tr("N许可编号已满，未复用旧编号。")); return; }
++        context.permissionRevision=++reagentLevelPermissionRevision_;
++    }
++    else context.permissionRevision=reagentLevelContext_->permissionRevision;
++    QString message;
++    if (!reagentLevelWorker_->setObservationContext(context,3000,&message))
++    { invalidateReagentLevels(); reportReagentLevel(message); return; }
++    reagentLevelContext_=std::make_shared<OriginalLevels::Context>(context);
++    reagents_->setOriginalLevelContext(connection,context.permissionRevision);
++}
++
++void frmMain::attachReagentLevels()
++{
++    if (reagentLevelWorker_ || !deviceControl_ || !reagents_ || !reagents_->taskStore() || !samples_ || !samples_->taskStore()) return;
++    auto *receiver=new OriginalLevels::ObservationWorker;
++    reagentLevelWorker_=receiver;
++    receiver->moveToThread(reagents_->taskStore()->thread());
++    connect(receiver->thread(),&QThread::finished,receiver,&QObject::deleteLater);
++    connect(reagents_->taskStore(),&ReagentStore::closed,receiver,[receiver](){receiver->revoke();});
++    connect(receiver,&OriginalLevels::ObservationWorker::sourceReady,this,
++        [this](quint64 request,OriginalLevels::Context source,const QString &message)
++    {
++        if (request!=reagentLevelSourceRequest_ || reagentLevelClosing_ || source.root!=reagentLevelSourceRoot_ ||
++            source.root!=reagents_->property("originalRoot").toString()) return;
++        if (!message.isEmpty())
++        {
++            reagentLevelSource_.reset();
++            reagents_->rejectOriginalLevelObservation(QString(),false,message);
++            reportReagentLevel(message);
++        }
++        else reagentLevelSource_=std::make_shared<OriginalLevels::Context>(source);
++        updateReagentLevelContext(false);
++    });
++    connect(deviceControl_,&DeviceControl::changed,this,[this](const DeviceControlState &){updateReagentLevelContext(false);});
++    connect(reagents_,&ReagentsPage::snapshotChanged,this,[this](const ReagentSnapshot &){updateReagentLevelContext(false);});
++    connect(reagents_,&ReagentsPage::busyChanged,this,[this](bool busy)
++    {
++        if (busy || reagentLevelClosing_) return;
++        // pending可先于专用读取结束被撤销；真正归还Page忙碌时再补一次继续，不依赖下条Qj。
++        QTimer::singleShot(0,this,[this]()
++        { if (!reagentLevelClosing_) updateOriginalDeviceSync(); });
++    });
++    connect(reagents_,&ReagentsPage::originalLevelRuntimeChanged,this,[this]()
++    {
++        if (reagentLevelRuntimeHole_.isEmpty() || !reagentLevelWorker_ || !deviceControl_) return;
++        const quint64 connection=deviceControl_->connectionGeneration();
++        const auto runtime=reagents_->originalLevelRuntime(reagentLevelRuntimeHole_);
++        QString problem;
++        if (!runtime.available || !reagentLevelContext_ || !reagentLevelWorker_->publishRuntime(connection,runtime,&problem))
++        {
++            reagentLevelWorker_->invalidateRuntime(connection,reagentLevelRuntimeHole_);
++            if (!problem.isEmpty()) reportReagentLevel(problem);
++        }
++    });
++    connect(reagents_->taskStore(),&ReagentStore::error,reagents_,[this](const QString &operation,const QString &message)
++    { if (operation==QStringLiteral("读取原试剂")) reagents_->originalLevelReloadFailed(message); });
++    connect(reagents_->taskStore(),&ReagentStore::originalHoleSaved,this,[this](const QString &hole)
++    { reagents_->confirmOriginalLevelManual(hole,deviceControl_->connectionGeneration()); });
++    // 此绑定在旧泛接收绑定之前建立，先取唯一队列中的原Ur，旧槽随后才take。
++    connect(samples_->taskStore(),&SampleStore::devicePacketProcessed,this,
++        [this](quint64 packet,quint64 connection,const QByteArray &command,bool success,const QString &)
++    {
++        const auto arrivalContext=reagentLevelUrContexts_.take(packet);
++        if (command!="Ur" || !success || connection!=deviceControl_->connectionGeneration()) return;
++        const QByteArray payload=devicePackets_.value(packet);
++        if (payload.isEmpty()) { reportReagentLevel(tr("Ur已保存但原包不在唯一队列，未补造运行最大量。")); return; }
++        confirmReagentLevelUr(payload,connection,arrivalContext);
++    });
++    connect(deviceControl_,&DeviceControl::payloadReceivedForConnection,this,[this](const QByteArray &payload,quint64 arrival)
++    {
++        if (arrival!=deviceControl_->connectionGeneration()) return;
++        if (payload.startsWith("Qj")) { updateReagentLevelContext(true); return; }
++        if (!payload.startsWith('N')) return;
++        QString message;
++        if (!reagentLevelContext_ || reagentLevelClosing_)
++        { reportReagentLevel(property("originalLevelBlocker").toString()); return; }
++        const QString synchronization=reagentLevelSyncBlocker(arrival);
++        if (!synchronization.isEmpty()) { reportReagentLevel(synchronization); return; }
++        if (reagentLevelBusy() || reagents_->hasUnconfirmedOriginalLevelRuntime() || reagents_->isBusy() ||
++            reagents_->hasUnsavedChanges() || reagentPriorityRequest_ || deviceTaskPreparing_ ||
++            !devicePackets_.isEmpty() || !deviceReagentUpdateHole_.isEmpty())
++        { reportReagentLevel(tr("N到达时资料、其他回读或展示仍在处理；未并发写库、换版本或合并旧N。")); return; }
++        OriginalLevels::ReceivedPacket packet;
++        if (!OriginalLevels::decodePacket(payload,reagentLevelContext_->linuxNew,&packet,&message))
++        { reportReagentLevel(message); return; }
++        if (packet.kind==OriginalLevels::PacketKind::SampleIgnored) return;
++        const auto runtime=reagents_->originalLevelRuntime(packet.hole);
++        if (!runtime.available)
++        { reportReagentLevel(reagents_->originalLevelRuntimeReason(packet.hole)); return; }
++        if (!reagentLevelWorker_->publishRuntime(arrival,runtime,&message))
++        { reportReagentLevel(message); return; }
++        if (reagentLevelPacket_==std::numeric_limits<quint64>::max())
++        { reportReagentLevel(tr("N本地接收编号已满，未复用旧编号。")); return; }
++        const quint64 packetId=++reagentLevelPacket_;
++        if (!reagentLevelWorker_->submit(arrival,packetId,payload,&message))
++        { reportReagentLevel(message); return; }
++        reagentLevelActive_=std::make_shared<OriginalLevels::Context>(*reagentLevelContext_);
++        reagentLevelActive_->packetId=packetId;
++        reagentLevelRuntimeHole_=packet.hole;
++        qInfo().noquote()<<"REAGENT_LEVEL_ACCEPTED"<<packetId<<arrival<<payload.toHex(' ');
++        reportReagentLevel(tr("N已进入现有存储线程，尚未保存或报告页面完成。"));
++        updateDeviceControlActions();
++    });
++    connect(receiver,&OriginalLevels::ObservationWorker::processed,this,
++        [this](OriginalLevels::Context context,bool committed,bool loaded,const QString &fingerprint,const QString &message)
++    {
++        qInfo().noquote()<<"REAGENT_LEVEL_PROCESSED"<<context.packetId<<context.connection<<committed<<loaded<<fingerprint<<message;
++        if (!reagentLevelActive_ || context.packetId!=reagentLevelActive_->packetId ||
++            context.permissionRevision!=reagentLevelActive_->permissionRevision || !sameLevelContext(context,*reagentLevelActive_))
++        { reportReagentLevel(tr("收到不属于当前N等待的后台收尾，保留提交记录，未撤销另一条N许可。")); return; }
++        const QString hole=reagentLevelRuntimeHole_;
++        reagentLevelActive_.reset();
++        reagentLevelRuntimeHole_.clear();
++        if (!loaded) reagents_->rejectOriginalLevelObservation(hole,committed,message);
++        reportReagentLevel(message);
++        // 保存失败后仅重新核来源，不重放N或发送探测；下一次真实Qj才可重新签发许可。
++        if (!loaded && !reagentLevelClosing_ && context.connection==deviceControl_->connectionGeneration())
++            reviewReagentLevelSource(reagents_->property("originalRoot").toString(),context.connection);
++        if (!reagentLevelClosing_) updateOriginalDeviceSync();
++        updateDeviceControlActions();
++        if (reagentLevelClosing_ && !reagentLevelWorker_->isBusy()) QTimer::singleShot(0,this,[this](){close();});
++    });
++    connect(receiver,&OriginalLevels::ObservationWorker::presentationReady,this,[this](const OriginalLevels::ObservationPresentation &presentation)
++    {
++        if (!reagentLevelActive_ || presentation.context.packetId!=reagentLevelActive_->packetId ||
++            presentation.context.connection!=reagentLevelActive_->connection ||
++            !reagentLevelContext_ || reagentLevelClosing_ || !reagentLevelWorker_->isContextCurrent(presentation.context) || !sameLevelContext(presentation.context,*reagentLevelContext_) ||
++            presentation.context.permissionRevision!=reagentLevelContext_->permissionRevision)
++        { reportReagentLevel(tr("N已保存，但GUI收到展示时上下文已变，未把旧展示归给当前连接。")); return; }
++        QString message;
++        if (!reagents_->enqueueOriginalLevelPresentation(presentation,&message))
++        {
++            reagents_->rejectOriginalLevelObservation(presentation.after.hole,true,message);
++            reportReagentLevel(message);
++            if (reagentLevelContext_ && reagentLevelContext_->connection==presentation.context.connection)
++                reviewReagentLevelSource(reagents_->property("originalRoot").toString(),presentation.context.connection);
++        }
++        updateDeviceControlActions();
++    });
++    connect(reagents_,&ReagentsPage::originalLevelPresentationFinished,this,
++        [this](quint64 packet,quint64 connection,quint64 permission,bool shown,const QString &fingerprint,const QString &message)
++    {
++        qInfo().noquote()<<"REAGENT_LEVEL_DISPLAY"<<packet<<connection<<permission<<shown<<fingerprint<<message;
++        reportReagentLevel(message); updateDeviceControlActions();
++        if (!shown && reagentLevelContext_ && permission==reagentLevelContext_->permissionRevision &&
++            !reagentLevelClosing_ && connection==deviceControl_->connectionGeneration())
++            reviewReagentLevelSource(reagents_->property("originalRoot").toString(),connection);
++        if (!reagentLevelClosing_) updateOriginalDeviceSync(); // 显示成功或失败都已归还N等待，继续原同步准备。
++    });
++    updateReagentLevelContext(false);
++}
+diff --git a/06_programs/sn100_host/shell/frmmain.h b/06_programs/sn100_host/shell/frmmain.h
+--- a/06_programs/sn100_host/shell/frmmain.h
++++ b/06_programs/sn100_host/shell/frmmain.h
+@@ -6,6 +6,7 @@
+ #include <QMap>
+ #include <QSet>
+ #include <QElapsedTimer>
++#include <memory>
+ #include "data/account_store.h"
+ #include "history/report_document.h"
+ #include "original_files/original_runtime_settings.h"
+@@ -22,6 +23,7 @@
+ class HistoryReportController;
+ class ProjectPage;
+ class ReagentsPage;
++namespace OriginalLevels { class ObservationWorker; struct Context; }
+ class SamplePage;
+ class SampleStore;
+ class InstrumentPage;
+@@ -124,6 +126,27 @@
+     void closeEvent(QCloseEvent *event) override;
+ 
+ private:
++    QPointer<OriginalLevels::ObservationWorker> reagentLevelWorker_;
++    std::shared_ptr<OriginalLevels::Context> reagentLevelContext_, reagentLevelSource_, reagentLevelActive_;
++    QString reagentLevelSourceRoot_;
++    QString reagentLevelRuntimeHole_;
++    quint64 reagentLevelSourceConnection_ = 0;
++    quint64 reagentLevelRequestedUrConnection_ = 0;
++    QMap<quint64,std::shared_ptr<OriginalLevels::Context>> reagentLevelUrContexts_;
++    std::shared_ptr<OriginalLevels::Context> reagentLevelPriorityUrContext_;
++    quint64 reagentLevelSourceRequest_ = 0, reagentLevelPermissionRevision_ = 0, reagentLevelPacket_ = 0;
++    bool reagentLevelClosing_ = false;
++    void attachReagentLevels();
++    void updateReagentLevelContext(bool validQj=false);
++    void reviewReagentLevelSource(const QString &root, quint64 connection);
++    std::shared_ptr<OriginalLevels::Context> reagentLevelUrContext(quint64 connection) const;
++    void confirmReagentLevelUr(const QByteArray &payload, quint64 connection,
++                              const std::shared_ptr<OriginalLevels::Context> &arrivalContext);
++    void invalidateReagentLevels();
++    bool reagentLevelBusy() const;
++    QString reagentLevelSyncBlocker(quint64 connection) const;
++    bool requestReagentLevelShutdown();
++    void reportReagentLevel(const QString &message);
+     Ui::frmMain *ui;
+     frmUserSet *userSet_;
+     QButtonGroup *menuButtons_;
+diff --git a/06_programs/sn100_host/shell/frmmain.cpp b/06_programs/sn100_host/shell/frmmain.cpp
+--- a/06_programs/sn100_host/shell/frmmain.cpp
++++ b/06_programs/sn100_host/shell/frmmain.cpp
+@@ -174,6 +174,7 @@
+ 
+ frmMain::~frmMain()
+ {
++    invalidateReagentLevels();
+     // Also covers startup failure or an external app.exit while a render runs.
+     // Reap the helper before destroying the pages and their status receivers.
+     delete reports_;
+@@ -664,5 +665,10 @@
+         return;
+     }
+     // 不关闭外部拥有的存储或终止线程；入口在事件循环返回后按序清理。
++    if (!requestReagentLevelShutdown())
++    {
++        event->ignore();
++        return;
++    }
+     event->accept();
+ }
+diff --git a/06_programs/sn100_host/shell/device_control_shell.cpp b/06_programs/sn100_host/shell/device_control_shell.cpp
+--- a/06_programs/sn100_host/shell/device_control_shell.cpp
++++ b/06_programs/sn100_host/shell/device_control_shell.cpp
+@@ -54,6 +54,7 @@
+     if (instrument_) instrument_->attachDeviceControl(deviceControl_, connectAtStartup);
+     connect(deviceControl_, &DeviceControl::changed, this, [this](const DeviceControlState &state)
+     {
++        if (!state.connected) reagentLevelRequestedUrConnection_=0;
+         updateDeviceActionReadiness();
+         updateDeviceStatusDisplay();
+         setProperty("instrumentConnected", state.connected);
+@@ -184,7 +185,7 @@
+         qInfo().noquote() << "DEVICE_ACTION_STATE" << actionState;
+     }
+     ui->btnCloseBeep->setToolTip(tr("按原Windows命令关闭主控报警蜂鸣器。"));
+-    if (reagents_) reagents_->setInstrumentBusy(deviceTaskPreparing_ ||
++    if (reagents_) reagents_->setInstrumentBusy(reagentLevelBusy() || deviceTaskPreparing_ ||
+         (!deviceReagentUpdateHole_.isEmpty() && !reagentPriorityRequest_) ||
+         deviceReagentUpdateUnknown_ || deviceReagentRecoveryRequired_ || deviceRecoveryPending_ || deviceRecoveryUnfinished_ ||
+         (deviceConfigurationStarted_ && !deviceConfigurationBaseReady_) ||
+@@ -213,6 +214,7 @@
+ 
+ QString frmMain::detectionStartBlocker() const
+ {
++    if (reagentLevelBusy()) return tr("N正在保存或等待页面读回，未并发开始新的任务。");
+     if (!session_.authenticated) return tr("请先登录后开始测试。");
+     const QString projectUpdate=originalProjectUpdateBlocker();
+     if (!projectUpdate.isEmpty()) return projectUpdate;
+@@ -273,6 +275,8 @@
+ 
+ void frmMain::invalidateDeviceTaskContext()
+ {
++    invalidateReagentLevels();
++    reagentLevelRequestedUrConnection_=0;
+     // 清理的是本次等待，不是设备执行事实。普通Us尚无独立入队回执，等待时保守保留。
+     const bool priorityNotSent=reagentPriorityRequest_ &&
+         reagentPriorityStage_==ReagentPriorityStage::Preparing && !reagentPriorityMayHaveQueued_;
+@@ -315,6 +319,7 @@
+ void frmMain::updateOriginalDeviceSync()
+ {
+     attachDeviceTaskStore();
++    if (reagentLevelBusy()) return;
+     advanceOriginalProjectUpdates();
+     if (!deviceControl_ || !deviceTaskStore_) return;
+     const auto &state=deviceControl_->state();
+@@ -358,7 +363,10 @@
+     if (!deviceRecoveryBlocker().isEmpty()) return;
+     // 每连接只启动一次；超时/拒绝不会因下次Qj而自动重发参数。
+     deviceConfigurationStarted_=true; deviceConfigurationReady_=false;
++    deviceConfigurationBaseReady_=false;
+     deviceConfigurationConnection_=connection; deviceConfigurationRoot_=root;
++    // 先登记真实同步等待，再撤销N许可，覆盖begin尚在SampleStore队列中的空隙。
++    updateReagentLevelContext(false);
+     const bool linuxNew=state.status.generalFields.value(19)==QStringLiteral("LinuxNew");
+     QMetaObject::invokeMethod(deviceTaskStore_,"beginOriginalDeviceSync",Qt::QueuedConnection,
+         Q_ARG(quint64,connection),Q_ARG(bool,linuxNew));
+@@ -369,6 +377,7 @@
+ {
+     if (!deviceControl_ || !samples_ || !reagents_ || !projects_) return;
+     attachReagentPriority();
++    attachReagentLevels();
+     if (deviceTaskStore_) return;
+     auto *store=samples_->taskStore();
+     if (!store) return;
+@@ -461,6 +470,8 @@
+         deviceConfigurationBaseReady_=ready;
+         if (ready && projectUpdateNotices_.isEmpty()) projectUpdateReady_=true;
+         updateOriginalProjectReadiness();
++        // 同步完成只撤/核旧许可；新的N许可仍等下一条实际Qj签发。
++        updateReagentLevelContext(false);
+         setProperty("originalConfigurationMessage",message);
+         ui->lblDivState->setToolTip(message);
+         updateDeviceControlActions();
+@@ -483,8 +494,17 @@
+             updateDeviceControlActions();
+             return;
+         }
++        // 原初始同步确实发送纯Ur；先登记实际发送等待，不能被迟到ready布尔值放行N。
++        const bool reagentQuery=payload==QByteArrayLiteral("Ur");
++        if (reagentQuery)
++        {
++            reagentLevelRequestedUrConnection_=connection;
++            updateReagentLevelContext(false);
++        }
+         if (!deviceControl_->sendOriginalConfiguration(payload))
+         {
++            if (reagentQuery && reagentLevelRequestedUrConnection_==connection)
++                reagentLevelRequestedUrConnection_=0;
+             deviceConfigurationReady_=false;
+             QMetaObject::invokeMethod(store,"invalidateOriginalDeviceSync",Qt::QueuedConnection);
+             reportDeviceTaskError(tr("原配置未能进入当前连接发送队列；请核对收发记录后重新连接。"));
+@@ -526,6 +546,11 @@
+         // 优先使用的Ur由同一入口唯一分流；不得先让旧SampleStore路径提交再核归属。
+         if (payload.startsWith("Ur") && routeReagentPriorityReply(payload,connection)) return;
+         const QByteArray command=payload.left(2);
++        if (command=="Ur" && reagentLevelBusy())
++        {
++            reportReagentLevel(tr("N正在保存或等待页面读回，未并发保存Ur；请核对原收发和资料后恢复。"));
++            return;
++        }
+         if (command!="Tt" && command!="TD" && command!="Tr" && command!="TR" && command!="TB" &&
+             payload!="TF" && payload!="TK" && command!="Ur" && command!="UP" && payload!="Tu") return;
+         if (devicePackets_.size()>=32 || devicePacketBytes_+payload.size()>1048576)
+@@ -534,6 +559,7 @@
+             deviceControl_->close(); return;
+         }
+         const quint64 packet=++devicePacket_;
++        if (command=="Ur") reagentLevelUrContexts_.insert(packet,reagentLevelUrContext(connection));
+         devicePackets_.insert(packet,payload); devicePacketBytes_+=payload.size();
+         QMetaObject::invokeMethod(store,"receiveDevicePacket",Qt::QueuedConnection,Q_ARG(QByteArray,payload),
+             Q_ARG(quint64,connection),Q_ARG(quint64,packet));
+@@ -542,6 +568,12 @@
+         [this](quint64 packet,quint64 connection,const QByteArray &command,bool success,const QString &message)
+     {
+         const QByteArray payload=devicePackets_.take(packet); devicePacketBytes_-=payload.size();
++        if (command=="Ur" && !payload.isEmpty() && reagentLevelRequestedUrConnection_==connection)
++        {
++            // 成败均结束这次已处理回包的等待；超时没有processed时保留到明确重连。
++            reagentLevelRequestedUrConnection_=0;
++            updateReagentLevelContext(false);
++        }
+         if (connection!=deviceControl_->connectionGeneration()) return;
+         if (!success) { reportDeviceTaskError(message); return; }
+         if (command=="Ur" && !deviceReagentUpdateHole_.isEmpty() && reagentReplyContains(payload,deviceReagentUpdateHole_))
+@@ -589,6 +621,7 @@
+ 
+ QString frmMain::reagentPriorityBlocker(bool ownPageBusy) const
+ {
++    if (reagentLevelBusy()) return tr("N正在保存或等待页面读回，未并发发送优先使用。");
+     if (!deviceControl_ || !reagents_ || !reagents_->taskStore() || !deviceTaskStore_)
+         return tr("试剂页或原资料后台尚未接通，未发送优先使用。");
+     const auto &state=deviceControl_->state();
+@@ -713,6 +746,7 @@
+         reagentPriorityReplyDigests_.insert(QCryptographicHash::hash(reagentPriorityReply_,QCryptographicHash::Sha256));
+     reagentPriorityRequest_=0; reagentPriorityConnection_=0; reagentPriorityStage_=ReagentPriorityStage::None;
+     reagentPriorityMayHaveQueued_=false; reagentPrioritySent_.clear(); reagentPriorityReply_.clear();
++    reagentLevelPriorityUrContext_.reset();
+     reagentPrioritySavedFingerprint_.clear(); ++deviceReagentUpdateRequest_;
+     deviceReagentUpdateHole_.clear(); deviceReagentUpdateUnknown_=resultUnknown;
+     setProperty("originalReagentUpdateMessage",message);
+@@ -759,6 +793,7 @@
+         return true; // 无关、满盘或坏包不续时、不改库，也不伪报成功。
+     }
+     reagentPriorityReply_=payload; reagentPriorityStage_=ReagentPriorityStage::SavingReply;
++    reagentLevelPriorityUrContext_=reagentLevelUrContext(connection);
+     if (!QMetaObject::invokeMethod(reagents_->taskStore(),"saveOriginalPriorityReply",Qt::QueuedConnection,
+         Q_ARG(quint64,reagentPriorityRequest_),Q_ARG(quint64,connection),Q_ARG(QByteArray,payload)))
+         finishReagentPriority(false,tr("对应Ur未能排入数据库线程，设备优先级和本地资料仍待核对。"),true);
+@@ -847,6 +882,8 @@
+             finishReagentPriority(false,message,true);
+             return;
+         }
++        confirmReagentLevelUr(reagentPriorityReply_,connection,reagentLevelPriorityUrContext_);
++        reagentLevelPriorityUrContext_.reset();
+         reagentPrioritySavedFingerprint_=fingerprint; reagentPriorityStage_=ReagentPriorityStage::WaitingPage;
+         reagents_->deviceOperationProgress(request,connection,tr("对应Ur已保存，正在核对试剂页是否读到同一资料版本。"));
+         finishReagentPriorityIfDisplayed();
+diff --git a/06_programs/sn100_host/reagents/reagents.pri b/06_programs/sn100_host/reagents/reagents.pri
+--- a/06_programs/sn100_host/reagents/reagents.pri
++++ b/06_programs/sn100_host/reagents/reagents.pri
+@@ -26,3 +26,11 @@
+ # 独立试剂入口也会显示用量窗口，带齐滚动条；统一程序与样本页只编一次。
+ SOURCES *= $$clean_path($$PWD/../samples/material/qtmaterialscrollbar.cpp) $$clean_path($$PWD/../samples/material/qtmaterialscrollbar_internal.cpp)
+ HEADERS *= $$clean_path($$PWD/../samples/material/qtmaterialscrollbar.h) $$clean_path($$PWD/../samples/material/qtmaterialscrollbar_p.h) $$clean_path($$PWD/../samples/material/qtmaterialscrollbar_internal.h)
++
++# 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
++SOURCES *= $$PWD/original_reagent_level_packet.cpp $$PWD/original_reagent_level_model.cpp $$PWD/original_reagent_level_projects.cpp $$PWD/original_reagent_level_repository.cpp $$PWD/original_reagent_level_runtime.cpp $$PWD/original_reagent_level_worker.cpp $$PWD/reagents_page_level.cpp
++HEADERS *= $$PWD/original_reagent_level.h $$PWD/original_reagent_level_runtime.h $$PWD/original_reagent_level_worker.h
++SOURCES *= $$clean_path($$PWD/../original_files/original_reagent_capacity.cpp)
++HEADERS *= $$clean_path($$PWD/../original_files/original_reagent_capacity.h)
++SOURCES *= $$clean_path($$PWD/../original_files/theme_configuration.cpp)
++HEADERS *= $$clean_path($$PWD/../original_files/theme_configuration.h)
+diff --git a/06_programs/sn100_host/reagents/build.sh b/06_programs/sn100_host/reagents/build.sh
+--- a/06_programs/sn100_host/reagents/build.sh
++++ b/06_programs/sn100_host/reagents/build.sh
+@@ -52,6 +52,10 @@
+ for form in "$program_dir/alarm_history/cusmaskcalendar.ui" "$program_dir/alarm_history/calendar/cuscalendar.ui"; do
+     /usr/lib/qt5/bin/uic "$form" -o "$build_dir/ui_$(basename -- "${form%.ui}").h"
+ done
++
++# 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
++sources+=("$module_dir/original_reagent_level_packet.cpp" "$module_dir/original_reagent_level_model.cpp" "$module_dir/original_reagent_level_projects.cpp" "$module_dir/original_reagent_level_repository.cpp" "$module_dir/original_reagent_level_runtime.cpp" "$module_dir/original_reagent_level_worker.cpp" "$module_dir/reagents_page_level.cpp" "$program_dir/original_files/original_reagent_capacity.cpp" "$program_dir/original_files/theme_configuration.cpp")
++headers+=("$module_dir/original_reagent_level.h" "$module_dir/original_reagent_level_runtime.h" "$module_dir/original_reagent_level_worker.h")
+ for header in "${headers[@]}"; do
+     if grep -q Q_OBJECT "$header"; then
+         generated=$build_dir/moc_$(basename -- "${header%.h}").cpp
+diff --git a/06_programs/sn100_host/shell/shell.pri b/06_programs/sn100_host/shell/shell.pri
+--- a/06_programs/sn100_host/shell/shell.pri
++++ b/06_programs/sn100_host/shell/shell.pri
+@@ -110,3 +110,6 @@
+ # 原Ql/QL新告警只在原资料联机模式启用，当前Qk/QK查询不写历史。
+ SOURCES += $$PWD/../alarm_history/original_alarm_receiver.cpp
+ HEADERS += $$PWD/../alarm_history/original_alarm_receiver.h
++
++# 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
++SOURCES *= $$PWD/reagent_level_shell.cpp
+diff --git a/06_programs/sn100_host/shell/build.sh b/06_programs/sn100_host/shell/build.sh
+--- a/06_programs/sn100_host/shell/build.sh
++++ b/06_programs/sn100_host/shell/build.sh
+@@ -239,6 +239,9 @@
+     esac
+     return 1
+ }
++# 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
++sources+=("$program_dir/reagents/original_reagent_level_packet.cpp" "$program_dir/reagents/original_reagent_level_model.cpp" "$program_dir/reagents/original_reagent_level_projects.cpp" "$program_dir/reagents/original_reagent_level_repository.cpp" "$program_dir/reagents/original_reagent_level_runtime.cpp" "$program_dir/reagents/original_reagent_level_worker.cpp" "$program_dir/reagents/reagents_page_level.cpp" "$program_dir/original_files/original_reagent_capacity.cpp" "$module_dir/reagent_level_shell.cpp")
++headers+=("$program_dir/reagents/original_reagent_level.h" "$program_dir/reagents/original_reagent_level_runtime.h" "$program_dir/reagents/original_reagent_level_worker.h" "$program_dir/original_files/original_reagent_capacity.h")
+ for input in "${sources[@]}" "${forms[@]}" "${headers[@]}" "${resource_files[@]}" "${helper_sources[@]}"; do
+     [[ -f $input ]] || { echo "Required ARM64 build input missing: $input" >&2; exit 1; }
+ done
+diff --git a/06_programs/sn100_host/reagents/reagent_store.h b/06_programs/sn100_host/reagents/reagent_store.h
+--- a/06_programs/sn100_host/reagents/reagent_store.h
++++ b/06_programs/sn100_host/reagents/reagent_store.h
+@@ -31,6 +31,7 @@
+     void setInstrumentBusy(bool busy);
+     void setSession(AccountSession session);
+     void load();
++    void loadOriginalLevelObservation(QString root); // N专用重读：持原两锁并拒pending，不触发复制恢复。
+     void saveReagent(ReagentRecord reagent);
+     void removeReagent(qint64 id);
+     void saveBottle(ReagentBottle bottle);
+diff --git a/06_programs/sn100_host/reagents/original_reagent_store.cpp b/06_programs/sn100_host/reagents/original_reagent_store.cpp
+--- a/06_programs/sn100_host/reagents/original_reagent_store.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_store.cpp
+@@ -1,5 +1,8 @@
+ #include "reagent_store.h"
+ #include "original_reagent_editor.h"
++#include "projects/original_project_copy.h"
++#include <QDir>
++#include <QLockFile>
+ #include <QThread>
+ 
+ void ReagentStore::setOriginalDeviceOperationContext(quint64 connection,QStringList operations)
+@@ -60,6 +63,23 @@
+     if (instrumentBusy_)
+     { emit error(operation,QStringLiteral("仪器正在检测或有待核对命令，不能修改检测所用试剂。")); return false; }
+     return true;
++}
++
++void ReagentStore::loadOriginalLevelObservation(QString root)
++{
++    const QString operation=QStringLiteral("读取原试剂");
++    if (!onWorker(operation)) return;
++    if (!ready_ || !originalEditor_ || root!=originalEditor_->root())
++    { emit error(operation,QStringLiteral("N专用重读的原资料根未就绪或已变化。")); return; }
++    QLockFile project(QDir(root).filePath(QStringLiteral(".sn100-original-project-write.lock")));
++    QLockFile reagent(QDir(root).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
++    project.setStaleLockTime(0); reagent.setStaleLockTime(0);
++    QString message;
++    if (!project.tryLock(0) || !reagent.tryLock(0))
++    { emit error(operation,QStringLiteral("N页面重读所需项目或试剂锁被占用，未复用旧详情。")); return; }
++    if (!OriginalProjectCopy::noPending(root,&message))
++    { emit error(operation,QStringLiteral("N页面重读遇到待核复制，未由N触发恢复：")+message); return; }
++    loadOriginal(); // 两锁覆盖共享编辑器读取及快照发出，N不调用复制恢复入口。
+ }
+ 
+ bool ReagentStore::loadOriginal()
+diff --git a/06_programs/sn100_host/original_files/original_reagent_capacity.h b/06_programs/sn100_host/original_files/original_reagent_capacity.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/original_files/original_reagent_capacity.h
+@@ -0,0 +1,69 @@
++#ifndef SN100_ORIGINAL_REAGENT_CAPACITY_H
++#define SN100_ORIGINAL_REAGENT_CAPACITY_H
++
++#include <QString>
++#include <limits>
++
++namespace OriginalRuntime
++{
++// ZeroHeight仅说明原始高度为0；原矩阵仍计算，不在这里把其容量结果强制改为0。
++enum class ReagentCapacitySource { Unavailable, Matrix, Geometry, ZeroHeight };
++enum class ReagentCapacityFileState { Unknown, Missing, Present };
++enum class ReagentCapacityMatrixState { NotChecked, Available, CoverageMissing, Invalid };
++
++// 孔位身份来自当前孔；底径和角度来自该孔/区域的原瓶型表，不能填顶层N中的几何值。
++struct ReagentCapacityConfiguredBottle
++{
++    QString hole;
++    QString name;
++    QString area; // 原本地孔位区域：r_area或s_area。
++    double bottomDiameterMm = std::numeric_limits<double>::quiet_NaN();
++    double angleDegrees = std::numeric_limits<double>::quiet_NaN();
++    double maximumMicrolitres = std::numeric_limits<double>::quiet_NaN(); // 独立取原hole->getMaxVol()快照。
++};
++
++struct ReagentCapacityInput
++{
++    QString hole;
++    int needle = 0; // 已由调用者成功解析的整数；原1→N1、2→N2、其余→S1，不把坏文本默认成0。
++    QString area; // 原报文0/s_area对应样本区，1/r_area对应试剂区。
++    QString reportedBottle; // 原报文瓶型名或1至5的数字别名。
++    double rawHeightMm = std::numeric_limits<double>::quiet_NaN();
++    ReagentCapacityConfiguredBottle configuredBottle;
++};
++
++struct ReagentCapacityResult
++{
++    bool available = false;
++    ReagentCapacitySource source = ReagentCapacitySource::Unavailable;
++    ReagentCapacityFileState fileState = ReagentCapacityFileState::Unknown;
++    ReagentCapacityMatrixState matrixState = ReagentCapacityMatrixState::NotChecked;
++    QString actualModel;
++    QString relativeFile;
++    QString fingerprint; // 实际读到的原文件字节SHA-256；Missing时为空。
++    QString matrixFailureReason;
++    QString failureReason;
++    double rawHeightMm = std::numeric_limits<double>::quiet_NaN();
++    int quantizedHeightHundredths = 0; // 原int(rawHeightMm * 100)，向0截断。
++    double quantizedHeightMm = std::numeric_limits<double>::quiet_NaN();
++    bool adjustedHeightAvailable = false;
++    double adjustedHeightMm = std::numeric_limits<double>::quiet_NaN();
++    int matrixMaximumMicrolitres = 0; // 原矩阵函数的int最大量。
++    double matrixVolumeMicrolitres = std::numeric_limits<double>::quiet_NaN();
++    double volumeMicrolitres = std::numeric_limits<double>::quiet_NaN(); // 原dectVol，几何结果不先限幅。
++    double displayVolumeMicrolitres = std::numeric_limits<double>::quiet_NaN(); // 按本孔double最大量另算显示值。
++};
++
++// actualModel必须由调用者核实；精确SN450读450，其余非空原机型读600，不互换资料。
++// 仅在Linux/RK读取原工作根及原容量文件；沿现workingRoot检查读取已存在的许可标记，
++// 不创建文件、不改数据库/容量资料，不发设备命令。失败时available=false且容量不是默认0。
++bool calculateReagentCapacity(const QString &root, const QString &actualModel,
++                              const ReagentCapacityInput &input, ReagentCapacityResult *result,
++                              QString *message);
++// 仅加载实际机型容量文件的存在状态/原字节指纹，不造高度或执行换算。
++// 返回true不表示容量可用，result.available仍为false；供到达时版本绑定使用。
++bool readReagentCapacityVersion(const QString &root, const QString &actualModel,
++                                ReagentCapacityResult *result, QString *message);
++}
++
++#endif
+diff --git a/06_programs/sn100_host/original_files/original_reagent_capacity.cpp b/06_programs/sn100_host/original_files/original_reagent_capacity.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/original_files/original_reagent_capacity.cpp
+@@ -0,0 +1,414 @@
++#include "original_reagent_capacity.h"
++#include "original_business_database.h"
++#include <QCryptographicHash>
++#include <QDir>
++#include <QFile>
++#include <QJsonArray>
++#include <QJsonDocument>
++#include <QJsonObject>
++#include <QVector>
++#include <algorithm>
++#include <cerrno>
++#include <cmath>
++#include <cstring>
++#include <fcntl.h>
++#include <sys/stat.h>
++#include <unistd.h>
++
++namespace OriginalRuntime
++{
++namespace
++{
++bool fail(QString *message, const QString &reason)
++{
++    if (message) *message=reason;
++    return false;
++}
++
++QString ioError(int code)
++{
++    return QString::fromLocal8Bit(std::strerror(code));
++}
++
++struct ReadDescriptor
++{
++    explicit ReadDescriptor(int descriptor) : value(descriptor) {}
++    ~ReadDescriptor() { if (value>=0) ::close(value); }
++    ReadDescriptor(const ReadDescriptor &)=delete;
++    ReadDescriptor &operator=(const ReadDescriptor &)=delete;
++    int value;
++};
++
++bool sameIdentity(const struct stat &before, const struct stat &after)
++{
++    return before.st_dev==after.st_dev && before.st_ino==after.st_ino &&
++        before.st_mode==after.st_mode && before.st_size==after.st_size &&
++        before.st_mtim.tv_sec==after.st_mtim.tv_sec && before.st_mtim.tv_nsec==after.st_mtim.tv_nsec &&
++        before.st_ctim.tv_sec==after.st_ctim.tv_sec && before.st_ctim.tv_nsec==after.st_ctim.tv_nsec;
++}
++
++// 只把系统明确的ENOENT当作缺文件；权限、坏路径和其他读取错误不能变成几何后备。
++bool loadOriginalCapacity(const QString &root, ReagentCapacityResult *result,
++                          QJsonObject *document, QString *message)
++{
++    const QString directory=QDir(root).filePath(QStringLiteral("calibrationFile"));
++    const QByteArray directoryName=QFile::encodeName(directory);
++    const QByteArray rootName=QFile::encodeName(root);
++    const QByteArray fileName=QFile::encodeName(result->relativeFile.section('/',-1));
++    struct stat rootBefore;
++    if (::lstat(rootName.constData(),&rootBefore)!=0)
++    {
++        const int code=errno;
++        return fail(message,QStringLiteral("无法核对原资料工作根：")+ioError(code));
++    }
++    if (!S_ISDIR(rootBefore.st_mode)) return fail(message,QStringLiteral("原资料工作根不是普通目录。"));
++    const auto rootUnchanged=[&]()
++    {
++        QString problem;
++        if (!OriginalBusiness::workingRoot(root,&problem)) return fail(message,problem);
++        struct stat current;
++        if (::lstat(rootName.constData(),&current)!=0)
++        {
++            const int code=errno;
++            return fail(message,QStringLiteral("无法再次核对原资料工作根：")+ioError(code));
++        }
++        if (!sameIdentity(rootBefore,current))
++            return fail(message,QStringLiteral("读取期间原资料工作根变化，未采用其他目录的容量资料。"));
++        return true;
++    };
++    ReadDescriptor directoryFd(::open(directoryName.constData(),O_RDONLY|O_CLOEXEC|O_DIRECTORY|O_NOFOLLOW|O_NONBLOCK));
++    if (directoryFd.value<0)
++    {
++        const int code=errno;
++        if (code!=ENOENT) return fail(message,QStringLiteral("原容量目录打开失败：")+ioError(code));
++        struct stat current;
++        if (::lstat(directoryName.constData(),&current)==0)
++            return fail(message,QStringLiteral("核对期间原容量目录已出现或被替换，请重新读取。"));
++        const int checkedCode=errno;
++        if (checkedCode!=ENOENT) return fail(message,QStringLiteral("无法确认原容量目录缺失：")+ioError(checkedCode));
++        if (!rootUnchanged()) return false;
++        result->fileState=ReagentCapacityFileState::Missing;
++        return true;
++    }
++    struct stat directoryBefore;
++    if (::fstat(directoryFd.value,&directoryBefore)!=0)
++    {
++        const int code=errno;
++        return fail(message,QStringLiteral("无法核对已打开的容量目录：")+ioError(code));
++    }
++    if (!S_ISDIR(directoryBefore.st_mode)) return fail(message,QStringLiteral("已打开的原容量路径不是目录。"));
++    const auto directoryUnchanged=[&]()
++    {
++        if (!rootUnchanged()) return false;
++        struct stat opened, named;
++        if (::fstat(directoryFd.value,&opened)!=0 || ::lstat(directoryName.constData(),&named)!=0)
++        {
++            const int code=errno;
++            return fail(message,QStringLiteral("无法再次核对原容量目录：")+ioError(code));
++        }
++        if (!sameIdentity(directoryBefore,opened) || !sameIdentity(opened,named))
++            return fail(message,QStringLiteral("读取期间原容量目录被替换或修改，未采用旧目录快照。"));
++        return true;
++    };
++    // 目录由已打开的fd固定；即使目标随后变成FIFO，非阻塞打开也不会等写入方。
++    ReadDescriptor fileFd(::openat(directoryFd.value,fileName.constData(),O_RDONLY|O_CLOEXEC|O_NOFOLLOW|O_NONBLOCK));
++    if (fileFd.value<0)
++    {
++        const int code=errno;
++        if (code!=ENOENT) return fail(message,QStringLiteral("原容量文件读取失败：")+ioError(code));
++        struct stat current;
++        if (::fstatat(directoryFd.value,fileName.constData(),&current,AT_SYMLINK_NOFOLLOW)==0)
++            return fail(message,QStringLiteral("核对期间原容量文件已出现或被替换，请重新读取。"));
++        const int checkedCode=errno;
++        if (checkedCode!=ENOENT) return fail(message,QStringLiteral("无法确认原容量文件缺失：")+ioError(checkedCode));
++        if (!directoryUnchanged()) return false;
++        result->fileState=ReagentCapacityFileState::Missing;
++        return true;
++    }
++    result->fileState=ReagentCapacityFileState::Present;
++    struct stat before;
++    if (::fstat(fileFd.value,&before)!=0)
++    {
++        const int code=errno;
++        return fail(message,QStringLiteral("无法核对已打开的容量文件：")+ioError(code));
++    }
++    const qint64 maximumBytes=8*1024*1024;
++    if (!S_ISREG(before.st_mode) || before.st_size<0 || before.st_size>maximumBytes)
++        return fail(message,QStringLiteral("原容量文件类型不符或超过8MB，未读取半份资料。"));
++    QFile file;
++    if (!file.open(fileFd.value,QIODevice::ReadOnly,QFileDevice::DontCloseHandle))
++        return fail(message,QStringLiteral("无法读取已打开的原容量文件。"));
++    const QByteArray bytes=file.read(maximumBytes+1);
++    if (file.error()!=QFile::NoError || bytes.size()!=before.st_size || bytes.size()>maximumBytes || !file.atEnd())
++        return fail(message,QStringLiteral("原容量文件读取不完整或超过8MB。"));
++    struct stat after;
++    if (::fstat(fileFd.value,&after)!=0 || !sameIdentity(before,after))
++        return fail(message,QStringLiteral("读取期间原容量文件变化，未使用可能混合的资料。"));
++    result->fingerprint=QString::fromLatin1(QCryptographicHash::hash(bytes,QCryptographicHash::Sha256).toHex());
++    QByteArray json=bytes;
++    if (json.startsWith("\xef\xbb\xbf")) json.remove(0,3);
++    // Qt5文档只直接容纳object/array；包装只用于严格识别原版可读的根null，不改原字节。
++    QJsonParseError error;
++    const auto parsed=QJsonDocument::fromJson('['+json+']',&error);
++    if (error.error!=QJsonParseError::NoError || !parsed.isArray() || parsed.array().size()!=1)
++        return fail(message,QStringLiteral("原容量文件不是完整有效的JSON；空文件或白文件不算缺文件。"));
++    const QJsonValue value=parsed.array().first();
++    if (!value.isObject() && !value.isNull())
++        return fail(message,QStringLiteral("原容量JSON根不是对象或null，未把错误类型当作缺矩阵。"));
++    struct stat named;
++    if (::fstatat(directoryFd.value,fileName.constData(),&named,AT_SYMLINK_NOFOLLOW)!=0 ||
++        !sameIdentity(after,named))
++        return fail(message,QStringLiteral("读取后原容量文件路径已变化，未把旧文件快照当作当前文件。"));
++    if (!directoryUnchanged()) return false;
++    *document=value.toObject(); // 合法null和空对象按原缺区域路径处理；不要求CONFIG。
++    return true;
++}
++
++enum class NodeState { Found, Missing, Invalid };
++NodeState readNode(const QJsonObject &root, const QStringList &path, QJsonValue *value, QString *reason)
++{
++    *value=root;
++    for (const QString &key : path)
++    {
++        if (!value->isObject())
++        {
++            *reason=QStringLiteral("原容量路径的中间节点不是对象：")+path.join('/');
++            return NodeState::Invalid;
++        }
++        const QJsonObject object=value->toObject();
++        if (!object.contains(key))
++        {
++            *reason=QStringLiteral("原容量资料缺键：")+path.join('/');
++            return NodeState::Missing;
++        }
++        *value=object.value(key);
++    }
++    return NodeState::Found;
++}
++
++bool finiteJson(const QJsonValue &value, double *number)
++{
++    if (!value.isDouble() || !std::isfinite(value.toDouble())) return false;
++    *number=value.toDouble();
++    return true;
++}
++
++bool missingMatrix(ReagentCapacityResult *result, const QString &reason)
++{
++    result->matrixState=ReagentCapacityMatrixState::CoverageMissing;
++    result->matrixVolumeMicrolitres=0;
++    result->matrixFailureReason=reason;
++    return true;
++}
++
++bool badMatrix(ReagentCapacityResult *result, QString *message, const QString &reason)
++{
++    result->matrixState=ReagentCapacityMatrixState::Invalid;
++    result->matrixFailureReason=reason;
++    return fail(message,reason);
++}
++
++bool matrixVolume(const QJsonObject &document, const ReagentCapacityInput &input,
++                  const QString &region, const QString &bottle, ReagentCapacityResult *result,
++                  QString *message)
++{
++    QJsonValue area;
++    QString reason;
++    NodeState state=readNode(document,{region},&area,&reason);
++    if (state==NodeState::Missing) return missingMatrix(result,reason);
++    if (state==NodeState::Invalid || !area.isObject())
++        return badMatrix(result,message,QStringLiteral("原容量区域不是对象。"));
++    QString subArea;
++    QJsonObject matrix;
++    bool found=false;
++    const QJsonObject areas=area.toObject();
++    for (auto it=areas.begin();it!=areas.end();++it)
++    {
++        if (!it.value().isObject()) return badMatrix(result,message,QStringLiteral("原容量子区域不是对象。"));
++        QJsonValue candidate;
++        state=readNode(it.value().toObject(),{"BASE",bottle,input.hole},&candidate,&reason);
++        if (state==NodeState::Missing) continue;
++        if (state==NodeState::Invalid || !candidate.isObject())
++            return badMatrix(result,message,QStringLiteral("原孔位容量矩阵不是对象。"));
++        subArea=it.key(); matrix=candidate.toObject(); found=true; break;
++    }
++    if (!found) return missingMatrix(result,QStringLiteral("此区域、瓶型和孔位没有原BASE矩阵。"));
++    QVector<QPair<double,double>> points{{0.0,0.0}};
++    for (auto it=matrix.begin();it!=matrix.end();++it)
++    {
++        bool amountOk=false;
++        const double amount=it.key().toDouble(&amountOk);
++        double height=0;
++        if (!amountOk || !std::isfinite(amount) || !finiteJson(it.value(),&height))
++            return badMatrix(result,message,QStringLiteral("原容量矩阵的容量键或高度不是有限数。"));
++        points.append({height,amount});
++    }
++    const QString needle=input.needle==1 ? QStringLiteral("N1") : input.needle==2 ? QStringLiteral("N2") : QStringLiteral("S1");
++    QJsonValue offsets;
++    state=readNode(document,{region,subArea,needle,bottle},&offsets,&reason);
++    if (state==NodeState::Missing) return missingMatrix(result,reason);
++    if (state==NodeState::Invalid || !offsets.isObject() || offsets.toObject().isEmpty())
++        return badMatrix(result,message,QStringLiteral("原针补偿集合不是非空对象，未解引用空首项。"));
++    const QJsonObject offsetHoles=offsets.toObject();
++    const auto offsetHole=offsetHoles.begin();
++    if (!offsetHole.value().isObject() || offsetHole.value().toObject().isEmpty())
++        return badMatrix(result,message,QStringLiteral("原针补偿首孔没有有效容量点。"));
++    const QJsonObject marks=offsetHole.value().toObject();
++    const auto mark=marks.begin();
++    double needleHeight=0, referenceHeight=0;
++    if (matrix.contains(mark.key()) && !finiteJson(mark.value(),&needleHeight))
++        return badMatrix(result,message,QStringLiteral("原针补偿首点不是有限高度。"));
++    QJsonValue reference;
++    state=readNode(document,{region,subArea,"BASE",bottle,offsetHole.key(),mark.key()},&reference,&reason);
++    if (state==NodeState::Missing) return missingMatrix(result,reason);
++    if (state==NodeState::Invalid || !finiteJson(reference,&referenceHeight))
++        return badMatrix(result,message,QStringLiteral("原针补偿引用的BASE点不是有限高度。"));
++    double height=result->quantizedHeightMm;
++    // 原版只有目标孔含补偿容量键才读取针测高；缺这个键时针测高按0参与补偿。
++    const double usedNeedleHeight=matrix.contains(mark.key()) ? needleHeight : 0.0;
++    if (height>0) height+=referenceHeight-usedNeedleHeight;
++    if (!std::isfinite(height)) return badMatrix(result,message,QStringLiteral("原针补偿后的高度不是有限数。"));
++    result->adjustedHeightMm=height;
++    result->adjustedHeightAvailable=true;
++    // 空BASE对象在原版有显式return0；但前面的坏针集合不能因此被吞掉。
++    if (points.size()<=1) return missingMatrix(result,QStringLiteral("原孔位BASE为空对象，没有可换算的容量点。"));
++    std::stable_sort(points.begin(),points.end(),[](const QPair<double,double> &a,const QPair<double,double> &b)
++    { return a.first<b.first; });
++    int segment=points.size()-2;
++    if (height<points.first().first) segment=0;
++    else if (height>points[points.size()-2].first) segment=points.size()-2;
++    else
++        for (int i=0;i+1<points.size();++i)
++            if (points[i].first<=height && height<=points[i+1].first) { segment=i; break; }
++    const auto left=points[segment], right=points[segment+1];
++    const double slope=(right.second-left.second)/(right.first-left.first+1e-12);
++    const double intercept=left.second-slope*left.first;
++    double volume=slope*height+intercept;
++    if (!std::isfinite(slope) || !std::isfinite(intercept) || !std::isfinite(volume))
++        return badMatrix(result,message,QStringLiteral("原分段容量换算不是有限数。"));
++    if (volume<=0) volume=0;
++    else if (volume>=result->matrixMaximumMicrolitres) volume=result->matrixMaximumMicrolitres;
++    result->matrixVolumeMicrolitres=volume;
++    result->matrixState=ReagentCapacityMatrixState::Available;
++    return true;
++}
++
++bool geometryVolume(const ReagentCapacityInput &input, double *volume, QString *message)
++{
++    // 原版只在真正改走几何时读取底径和角度；未参与计算的几何缺项不拒绝矩阵/零高度。
++    if (!std::isfinite(input.configuredBottle.bottomDiameterMm) || input.configuredBottle.bottomDiameterMm<=0 ||
++        !std::isfinite(input.configuredBottle.angleDegrees))
++        return fail(message,QStringLiteral("本孔原瓶型的底径或角度无效，未采用默认几何参数。"));
++    const double pi=3.14159265358979323846;
++    const double diameter=input.configuredBottle.bottomDiameterMm;
++    const double angle=input.configuredBottle.angleDegrees*pi/180;
++    const double height=input.rawHeightMm;
++    if (!std::isfinite(angle)) return fail(message,QStringLiteral("原配置角度转弧度后不是有限数。"));
++    const double section=pi*std::pow(diameter*std::cos(angle)+diameter*std::sin(angle)*std::tan(angle),2)/4;
++    const double threshold=diameter*std::sin(angle);
++    const double calculated=height<=threshold ? section*height/2
++        : section*height*3/2-section*diameter*std::sin(angle);
++    if (!std::isfinite(section) || !std::isfinite(threshold) || !std::isfinite(calculated))
++        return fail(message,QStringLiteral("原配置瓶型的几何换算不是有限数。"));
++    *volume=calculated;
++    return true;
++}
++
++QString canonicalArea(const QString &area)
++{
++    if (area==QStringLiteral("0") || area==QStringLiteral("s_area")) return QStringLiteral("s_area");
++    if (area==QStringLiteral("1") || area==QStringLiteral("r_area")) return QStringLiteral("r_area");
++    return QString();
++}
++
++QString canonicalBottle(const QString &bottle)
++{
++    const QStringList aliases{QStringLiteral("7mL"),QStringLiteral("10mL"),QStringLiteral("15mL"),QStringLiteral("30mL"),QStringLiteral("50mL")};
++    for (int index=0;index<aliases.size();++index)
++        if (bottle==QString::number(index+1)) return aliases[index];
++    bool numeric=false;
++    bottle.toDouble(&numeric);
++    // 原atoi对部分非整数数字文本也会给别名；本只读接口不为放行扩大这类未确认映射。
++    return numeric ? QString() : bottle;
++}
++}
++
++bool readReagentCapacityVersion(const QString &root,const QString &actualModel,
++                                ReagentCapacityResult *result,QString *message)
++{
++    if (message) message->clear();
++    if (!result) return fail(message,QStringLiteral("容量版本输出为空。"));
++    *result=ReagentCapacityResult();
++    if (actualModel.isEmpty()) return fail(message,QStringLiteral("实际机型尚未确认，未选择容量资料。"));
++    result->actualModel=actualModel;
++    result->relativeFile=actualModel==QStringLiteral("SN450") ? QStringLiteral("calibrationFile/ReagentAmount_450.json")
++        : QStringLiteral("calibrationFile/ReagentAmount_600.json");
++    if (!OriginalBusiness::workingRoot(root,message)) return false;
++    QJsonObject document;
++    return loadOriginalCapacity(root,result,&document,message);
++}
++
++bool calculateReagentCapacity(const QString &root, const QString &actualModel,
++                              const ReagentCapacityInput &input, ReagentCapacityResult *result,
++                              QString *message)
++{
++    if (message) message->clear();
++    if (!result) return fail(message,QStringLiteral("容量换算输出为空。"));
++    *result=ReagentCapacityResult();
++    result->actualModel=actualModel;
++    result->rawHeightMm=input.rawHeightMm;
++    QString error;
++    const auto reject=[&](const QString &reason)
++    {
++        result->failureReason=reason;
++        return fail(message,reason);
++    };
++    if (actualModel.isEmpty()) return reject(QStringLiteral("实际机型尚未确认，未选择容量资料。"));
++    result->relativeFile=actualModel==QStringLiteral("SN450") ? QStringLiteral("calibrationFile/ReagentAmount_450.json")
++        : QStringLiteral("calibrationFile/ReagentAmount_600.json");
++    const auto &configured=input.configuredBottle;
++    const QString area=canonicalArea(input.area), bottle=canonicalBottle(input.reportedBottle);
++    if (input.hole.isEmpty() || input.hole!=configured.hole || area.isEmpty() || area!=configured.area ||
++        bottle.isEmpty() || bottle!=configured.name)
++        return reject(QStringLiteral("探测孔位、区域或报文瓶型与本孔原配置不对应。"));
++    if (!std::isfinite(input.rawHeightMm) || input.rawHeightMm<0 || input.rawHeightMm>=0xff00)
++        return reject(QStringLiteral("原始毫米高度无效；本次明确拒绝，不沿原弱校验改写为0。"));
++    // 最大量独立采用原hole->getMaxVol()快照，底径/角度只由几何分支校验。
++    if (!std::isfinite(configured.maximumMicrolitres) || configured.maximumMicrolitres<0 ||
++        configured.maximumMicrolitres>std::numeric_limits<int>::max())
++        return reject(QStringLiteral("原孔位最大量无效，未进行容量换算。"));
++    result->quantizedHeightHundredths=static_cast<int>(input.rawHeightMm*100);
++    result->quantizedHeightMm=result->quantizedHeightHundredths/100.0;
++    result->matrixMaximumMicrolitres=static_cast<int>(configured.maximumMicrolitres);
++    if (!OriginalBusiness::workingRoot(root,&error)) return reject(error);
++    QJsonObject document;
++    if (!loadOriginalCapacity(root,result,&document,&error)) return reject(error);
++    if (result->fileState==ReagentCapacityFileState::Missing)
++        missingMatrix(result,QStringLiteral("对应实际机型的原容量文件明确不存在。"));
++    else if (!matrixVolume(document,input,area==QStringLiteral("s_area") ? QStringLiteral("Area_S1") : QStringLiteral("Area_R1"),bottle,result,&error))
++        return reject(error);
++    if (input.rawHeightMm==0)
++    {
++        result->source=ReagentCapacitySource::ZeroHeight;
++        // 原零高度仍保留矩阵运算结果，只跳过几何；不能额外强制容量为0。
++        result->volumeMicrolitres=result->matrixVolumeMicrolitres;
++    }
++    else if (result->matrixVolumeMicrolitres==0)
++    {
++        if (result->matrixFailureReason.isEmpty())
++            result->matrixFailureReason=QStringLiteral("原矩阵已计算且结果为0，按原非零高度条件改用本孔瓶型几何。");
++        double volume=0;
++        if (!geometryVolume(input,&volume,&error)) return reject(error);
++        result->source=ReagentCapacitySource::Geometry;
++        result->volumeMicrolitres=volume;
++    }
++    else
++    {
++        result->source=ReagentCapacitySource::Matrix;
++        result->volumeMicrolitres=result->matrixVolumeMicrolitres;
++    }
++    result->displayVolumeMicrolitres=qMax(0.0,qMin(configured.maximumMicrolitres,result->volumeMicrolitres));
++    result->available=true;
++    return true;
++}
++}
