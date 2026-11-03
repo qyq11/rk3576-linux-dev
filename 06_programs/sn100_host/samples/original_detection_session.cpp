@@ -7,6 +7,7 @@
 #include "original_result_codec.h"
 #include <QCryptographicHash>
 #include <QDateTime>
+#include <QDebug>
 #include <QDir>
 #include <QFileInfo>
 #include <QFile>
@@ -22,6 +23,12 @@
 
 using namespace OriginalTasks;
 using OriginalBusiness::Database;
+using OriginalReagentAllocation::AllocationResult;
+using OriginalReagentAllocation::AmountWork;
+using OriginalReagentAllocation::Mode;
+using OriginalReagentAllocation::SelectionContext;
+using OriginalReagentAllocation::SkipScope;
+using OriginalReagentAllocation::Status;
 namespace
 {
 bool fail(QString *message, const QString &text)
@@ -108,6 +115,124 @@ bool calibrationGroupsReady(const QString &root, const OriginalReagentState &obs
     }
     return true;
 }
+
+void recordAllocation(const Task &task, const AllocationResult &allocation)
+{
+    if (allocation.status!=Status::Selected || !allocation.limitations.isEmpty())
+        qInfo().noquote()<<"TASK_REAGENT_ALLOCATION"<<allocation.scopeId<<int(allocation.status)
+            <<int(allocation.skipScope)<<task.rack<<task.hole<<task.project.name<<task.repeatIndex<<allocation.reason;
+    for (const auto &limitation : allocation.limitations)
+        qInfo().noquote()<<"TASK_REAGENT_ALLOCATION_LIMIT"<<allocation.scopeId<<task.rack
+            <<task.hole<<task.project.name<<task.repeatIndex<<limitation;
+}
+
+bool reservationWorkMatches(const OriginalReagentState &observed,const QList<Task> &tasks,
+                            const AmountWork &work,QString *message)
+{
+    if (!work.initialized || work.root!=observed.root || work.versions!=observed.versions)
+        return fail(message,QStringLiteral("任务逻辑余量不属于本次原资料和版本，未保存旧分配结果。"));
+    QSet<qint64> touched;
+    for (const auto &task : tasks)
+        for (auto entry=task.reservedReagentVolumes.cbegin();entry!=task.reservedReagentVolumes.cend();++entry)
+        {
+            if (entry.key()<0 || !std::isfinite(entry.value()) || entry.value()<0)
+                return fail(message,QStringLiteral("任务原配置量账本的孔或数值无效，未以余额净差补账。"));
+            touched.insert(entry.key());
+        }
+    QSet<qint64> textHoles;
+    for (auto text=work.finalUsedText.cbegin();text!=work.finalUsedText.cend();++text) textHoles.insert(text.key());
+    if (touched!=work.touched || touched!=textHoles)
+        return fail(message,QStringLiteral("任务实际触及孔、配置量账本和末次保存文本不一致，未改写未选孔。"));
+    for (const auto id : touched)
+    {
+        const OriginalBusiness::Row *row=nullptr;
+        for (const auto &candidate : observed.holes)
+            if (candidate.value(QStringLiteral("id")).toLongLong()==id)
+            {
+                if (row) return fail(message,QStringLiteral("任务触及的原孔编号不唯一，未保存。"));
+                row=&candidate;
+            }
+        if (!row || !work.initialUsed.contains(id) || !work.remaining.contains(id))
+            return fail(message,QStringLiteral("任务触及孔缺少真实原行、初值或逻辑写后值。"));
+        const QVariant original=row->value(QStringLiteral("used_ul"));
+        const QVariant initial=work.initialUsed.value(id);
+        if (initial.userType()!=original.userType() || initial.isNull()!=original.isNull() || initial!=original)
+            return fail(message,QStringLiteral("任务逻辑初值不同于本次原WHERE值，未格式化旧值来绕过版本核对。"));
+        bool beforeOk=false,textOk=false;
+        const double previous=original.toString().toDouble(&beforeOk);
+        const QString text=work.finalUsedText.value(id);
+        const double amount=text.toDouble(&textOk);
+        if (!beforeOk || !std::isfinite(previous) || previous<0 || text.isEmpty() || !textOk ||
+            !std::isfinite(amount) || amount<0 || !std::isfinite(work.remaining.value(id)) || amount!=work.remaining.value(id))
+            return fail(message,QStringLiteral("任务原量或末次逻辑保存文本不是对应的有限非负值。"));
+        // 已核步骤在分配器内按原下界及g6更新；末次文本可因舍入略增，不能再按净差拒绝。
+    }
+    return true;
+}
+
+bool refundTexts(const OriginalReagentState &observed,const QList<Task> &pending,
+                 const QSet<qint64> &added,const QMap<qint64,OriginalBusiness::Rows> &reservedRows,
+                 QMap<qint64,QString> *finalUsedText,QString *message)
+{
+    QMap<qint64,double> working;
+    QMap<qint64,QString> texts;
+    for (const auto &task : pending)
+    {
+        if (added.contains(task.taskId)) continue; // 原TD8整任务标记，不推断物理逐步已加量。
+        QMap<QString,QPair<qint64,double>> taskHoles;
+        for (auto entry=task.reservedReagentVolumes.cbegin();entry!=task.reservedReagentVolumes.cend();++entry)
+        {
+            const OriginalBusiness::Row *before=nullptr,*current=nullptr;
+            const auto reserved=reservedRows.constFind(task.taskId);
+            if (reserved!=reservedRows.cend())
+                for (const auto &row : reserved.value())
+                    if (row.value(QStringLiteral("id")).toLongLong()==entry.key())
+                    {
+                        if (before) return fail(message,QStringLiteral("任务原配置量账对应的保存孔编号重复。"));
+                        before=&row;
+                    }
+            for (const auto &row : observed.holes)
+                if (row.value(QStringLiteral("id")).toLongLong()==entry.key())
+                {
+                    if (current) return fail(message,QStringLiteral("退量当前孔编号重复，未合并原行。"));
+                    current=&row;
+                }
+            if (!before || !current || !std::isfinite(entry.value()) || entry.value()<0)
+                return fail(message,QStringLiteral("缺少任务原配置量账、原孔或有限非负量，未推算退量。"));
+            for (const auto &key : {"hole_name","reagent_name","reagent_type","reagent_batch","bottle_type","datetime","area"})
+                if (before->value(QLatin1String(key))!=current->value(QLatin1String(key)))
+                    return fail(message,QStringLiteral("任务下发后试剂瓶资料变化，未向其他瓶退量。"));
+            const QString name=current->value(QStringLiteral("hole_name")).toString();
+            if (name.isEmpty() || taskHoles.contains(name))
+                return fail(message,QStringLiteral("任务退量孔名为空或不唯一，未按编号猜原孔顺序。"));
+            taskHoles.insert(name,qMakePair(entry.key(),entry.value()));
+            if (!working.contains(entry.key()))
+            {
+                bool ok=false;
+                const double previous=current->value(QStringLiteral("used_ul")).toDouble(&ok);
+                if (!ok || !std::isfinite(previous))
+                    return fail(message,QStringLiteral("退量前的原试剂余量不是有限数，未用默认0补齐。"));
+                working.insert(entry.key(),previous);
+            }
+        }
+        // 原getRgInSingleTesting先在本测试汇总同孔配置量，restore再按孔名QMap顺序写g6。
+        for (auto hole=taskHoles.cbegin();hole!=taskHoles.cend();++hole)
+        {
+            const qint64 id=hole->first;
+            const double raw=working.value(id)+hole->second;
+            if (!std::isfinite(raw)) return fail(message,QStringLiteral("任务逐次退量溢出，未截断或夹到瓶上限。"));
+            const QString text=QString::number(raw>0.0 ? raw : 0.0);
+            bool ok=false;
+            const double rounded=text.toDouble(&ok);
+            if (!ok || !std::isfinite(rounded) || rounded<0)
+                return fail(message,QStringLiteral("任务退量g6文本无法对应有限非负读回值。"));
+            working[id]=rounded;
+            texts[id]=text; // 选中的0配置量仍保留写入意图；同孔后一个任务承接本次g6读值。
+        }
+    }
+    *finalUsedText=texts;
+    return true;
+}
 }
 
 bool OriginalDetectionSession::initialize(OriginalSampleRepository *samples, QString *message)
@@ -128,18 +253,25 @@ bool OriginalDetectionSession::initialize(OriginalSampleRepository *samples, QSt
     const QString report = theme.values.value(QStringLiteral("theme/ReportTableType"), QStringLiteral("0")).toString();
     if (report != QStringLiteral("0") && report != QStringLiteral("1")) return fail(message, QStringLiteral("原报告排版配置不是0或1。"));
     horizontalReport_ = report == QStringLiteral("0");
+    // 原main.cpp:163/181从同一config.ini取QStringList；不新增键或人工拆分逗号。
+    multiBottleExceptions_=settings.values.value(QStringLiteral("Reagent/exMultil"),QVariant()).toStringList();
     return true;
 }
 
 bool OriginalDetectionSession::tasksForRack(const SampleRack &rack, const RackRequest *request,
                                           const OriginalReagentState &reagents, QList<Task> *tasks,
-                                          QMap<qint64, double> *remaining, QString *message) const
+                                          AmountWork *work, QString *message) const
 {
+    if (!tasks || !work) return fail(message,QStringLiteral("原任务列表或逻辑余量输出为空。"));
     QList<Task> result;
     // 原slotSendRackTasks先按项目发送CAL，再发送普通/质控；CAL不经普通条码筛选。
     for (const auto &project : projects_)
+    {
+        SelectionContext selection;
+        bool skipProject=false;
         for (const auto &hole : rack.holes)
         {
+            if (skipProject) break;
             if (hole.sampleType != 1 || !hole.revise || sampleHoleState(sampleHoleTaskStates(hole)) != SampleHoleState::Ready) continue;
             if (!samples_->validateControlHole(hole, rack.holes.size(), message)) return false;
             for (const auto &preset : hole.tasks)
@@ -160,23 +292,29 @@ bool OriginalDetectionSession::tasksForRack(const SampleRack &rack, const RackRe
                     task.calibration = hole.calibration; task.calibrationPoint = preset.calibrationPoint;
                     task.calibrationConcentration = preset.calibrationConcentration;
                     for (const auto &unit : units_) task.unitRatios.insert(unit.name, QString::number(unit.ratio, 'g', 17));
-                    const auto before = *remaining;
-                    if (!OriginalControlTasks::assignCalibration(reagents_, reagents, linuxNew_, &task, remaining, message)) return false;
-                    for (const auto &row : reagents.holes)
+                    if (!selection.initialized && !reagents_.beginSelectionScope(reagents,projects_,QStringList{project.name},
+                        Mode::Calibration,linuxNew_,QStringLiteral("%1/cal:%2:%3").arg(rack.name).arg(project.id).arg(project.originalFileName),
+                        multiBottleExceptions_,*work,&selection,message)) return false;
+                    const auto allocation=OriginalControlTasks::assignCalibration(reagents_,reagents,linuxNew_,&task,&selection,work);
+                    recordAllocation(task,allocation);
+                    if (allocation.status==Status::Fatal)
+                        return fail(message,allocation.reason.isEmpty() ? QStringLiteral("原校准试剂分配失败。") : allocation.reason);
+                    if (allocation.status==Status::OriginalSkipped)
                     {
-                        const qint64 id = row.value(QStringLiteral("id")).toLongLong();
-                        if (!remaining->contains(id)) continue;
-                        const double previous = before.contains(id) ? before.value(id) : row.value(QStringLiteral("used_ul")).toDouble();
-                        const double amount = previous - remaining->value(id);
-                        if (amount > 0) task.reservedReagentVolumes.insert(id, amount);
+                        if (allocation.skipScope==SkipScope::Project) { skipProject=true; break; }
+                        if (allocation.skipScope==SkipScope::Test) continue;
+                        return fail(message,QStringLiteral("原校准跳过结果未给出明确范围，未编码空任务。"));
                     }
+                    task.reservedReagentVolumes=allocation.configuredVolumes;
                     QStringList fields;
                     if (!taskFields(task, linuxNew_, &fields, message)) return false;
                     result.append(task);
                     if (result.size() > 4096) return fail(message, QStringLiteral("本架校准任务超过4096条，未截断。"));
                 }
+                if (skipProject) break;
             }
         }
+    }
     // 原sendTaskByRowID先遍历同一报告行的重复次数，再按项目表顺序整理项目。
     int repetitions = 1;
     if (sendByReportRow_)
@@ -196,8 +334,14 @@ bool OriginalDetectionSession::tasksForRack(const SampleRack &rack, const RackRe
             const QStringList invalid{QStringLiteral("None"),QStringLiteral("none"),QStringLiteral("empty"),QStringLiteral("Empty"),QStringLiteral("Null"),QString()};
             if (!invalid.contains(code, Qt::CaseInsensitive)) sample = code;
         }
+        SelectionContext selection;
+        if (!reagents_.beginSelectionScope(reagents,projects_,QStringList(),Mode::Normal,linuxNew_,
+            QStringLiteral("%1/sample:%2").arg(rack.name).arg(hole.number),multiBottleExceptions_,*work,&selection,message)) return false;
+        QSet<QString> skippedProjects;
         for (int round = 0; round < repetitions; ++round)
             for (const auto &project : projects_)
+            {
+                if (skippedProjects.contains(project.name)) continue;
                 for (const auto &preset : hole.tasks)
                 {
                     if (preset.projectId != project.id) continue;
@@ -227,22 +371,26 @@ bool OriginalDetectionSession::tasksForRack(const SampleRack &rack, const RackRe
                         for (const auto &unit : units_) task.unitRatios.insert(unit.name, QString::number(unit.ratio,'g',17));
                         task.rate = preset.rate;
                         task.prolonged = preset.prolonged;
-                        const auto before=*remaining;
-                        if (!reagents_.assignTask(reagents, &task, remaining, message)) return false;
-                        for (const auto &row : reagents.holes)
+                        // SampleTask目前无原多瓶标记，页面多瓶组合尚未接；不按QC类型补true。
+                        const auto allocation=reagents_.assignTask(reagents,&task,&selection,work);
+                        recordAllocation(task,allocation);
+                        if (allocation.status==Status::Fatal)
+                            return fail(message,allocation.reason.isEmpty() ? QStringLiteral("原试剂分配失败。") : allocation.reason);
+                        if (allocation.status==Status::OriginalSkipped)
                         {
-                            const qint64 id=row.value(QStringLiteral("id")).toLongLong();
-                            if (!remaining->contains(id)) continue;
-                            const double previous=before.contains(id) ? before.value(id) : row.value(QStringLiteral("used_ul")).toDouble();
-                            const double amount=previous-remaining->value(id);
-                            if (amount>0) task.reservedReagentVolumes.insert(id,amount);
+                            if (allocation.skipScope==SkipScope::Project) { skippedProjects.insert(project.name); break; }
+                            if (allocation.skipScope==SkipScope::Test) continue;
+                            return fail(message,QStringLiteral("原试剂跳过结果未给出明确范围，未编码空任务。"));
                         }
+                        task.reservedReagentVolumes=allocation.configuredVolumes;
                         QStringList fields;
                         if (!taskFields(task, linuxNew_, &fields, message)) return false;
                         result.append(task);
                         if (result.size() > 4096) return fail(message, QStringLiteral("本架任务超过4096条，未截断下发。"));
                     }
+                    if (skippedProjects.contains(project.name)) break;
                 }
+            }
     }
     *tasks = result;
     return true;
@@ -263,7 +411,8 @@ bool OriginalDetectionSession::prepare(bool linuxNew, QString *message)
     if (!reagents_.load(&observed, message) || !reagents_.cleanerReady(observed, message)) return false;
     int count = 0;
     QList<Task> allTasks;
-    QMap<qint64, double> remaining;
+    AmountWork work;
+    if (!reagents_.initializeAmountWork(observed,&work,message)) return false;
     for (const auto &rack : snapshot_.racks)
     {
         if (issuedRacks_.contains(rack.id))
@@ -276,7 +425,7 @@ bool OriginalDetectionSession::prepare(bool linuxNew, QString *message)
         }
         if (issuedRacks_.contains(rack.id)) continue;
         QList<Task> tasks;
-        if (!tasksForRack(rack, nullptr, observed, &tasks, &remaining, message)) return false;
+        if (!tasksForRack(rack, nullptr, observed, &tasks, &work, message)) return false;
         count += tasks.size();
         allTasks.append(tasks);
     }
@@ -295,7 +444,7 @@ void OriginalDetectionSession::cancelUnsent()
 }
 
 bool OriginalDetectionSession::reserve(const OriginalReagentState &observed, QList<Task> *tasks,
-                                      const QMap<qint64, double> &remaining, QString *message, const QByteArray &request,
+                                      const AmountWork &work, QString *message, const QByteArray &request,
                                       const OriginalTaskReagents::RuntimeBasis &basis, OriginalTaskReagents::Commit *result,
                                       OriginalTaskReagents::CommitHandler committed)
 {
@@ -303,10 +452,14 @@ bool OriginalDetectionSession::reserve(const OriginalReagentState &observed, QLi
     QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
     projectLock.setStaleLockTime(0); reagentLock.setStaleLockTime(0);
     OriginalTaskReagents::ReceiptWriter receipt(OriginalTaskReagents::Action::RackReservation,root_,request,basis,result,committed);
-    if (!tasks || tasks->isEmpty()) return true;
+    if (!tasks) return fail(message,QStringLiteral("原任务保存列表为空。"));
+    if (tasks->isEmpty())
+        return (work.touched.isEmpty() && work.finalUsedText.isEmpty()) ||
+            fail(message,QStringLiteral("空任务仍有逻辑扣量，未保存无法归属的余额。"));
     if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
         return fail(message,QStringLiteral("原项目或试剂正在保存，任务尚未预留，未自动重发，请保留原请求核对。"));
     if (!OriginalProjectCopy::noPending(root_,message) || !versionMatches(observed, message)) return false;
+    if (!reservationWorkMatches(observed,*tasks,work,message)) return false;
     QList<Task> assigned;
     {
         Database database;
@@ -392,15 +545,12 @@ bool OriginalDetectionSession::reserve(const OriginalReagentState &observed, QLi
         for (const auto &hole : observed.holes)
         {
             const qint64 id = hole.value(QStringLiteral("id")).toLongLong();
-            if (!remaining.contains(id)) continue;
-            bool ok = false;
-            const double previous = hole.value(QStringLiteral("used_ul")).toString().toDouble(&ok);
-            const double volume = remaining.value(id);
-            if (!ok || !std::isfinite(volume) || volume < 0 || volume > previous) return fail(message, QStringLiteral("原试剂预留量非法。"));
-            if (volume == previous) continue;
+            if (!work.touched.contains(id)) continue;
+            // 包含已选0；直接绑定最后逻辑g6文本，不二次格式化或因数值相等跳过。
+            const QString usedText=work.finalUsedText.value(id);
             if (!database.execute(QStringLiteral("UPDATE original_reagents.\"%1\" SET used_ul=? WHERE id=? AND used_ul=?").arg(observed.settingTable),
-                {QString::number(volume, 'g', 15), id, hole.value(QStringLiteral("used_ul"))}, message, 1)) return false;
-            receipt.matchedUsedWrite(hole,QString::number(volume,'g',15));
+                {usedText, id, hole.value(QStringLiteral("used_ul"))}, message, 1)) return false;
+            receipt.matchedUsedWrite(hole,usedText);
         }
         QByteArray validated;
         if (!rackPayload(assigned.first().rack, assigned, linuxNew_, &validated, message)) return false;
@@ -445,10 +595,11 @@ bool OriginalDetectionSession::answerRackRequest(const QByteArray &payload, QByt
     OriginalReagentState observed;
     if (!reagents_.load(&observed, message)) return false;
     QList<Task> tasks;
-    QMap<qint64, double> remaining;
-    if (!tasksForRack(*selected, &request, observed, &tasks, &remaining, message)) return false;
+    AmountWork work;
+    if (!reagents_.initializeAmountWork(observed,&work,message)) return false;
+    if (!tasksForRack(*selected, &request, observed, &tasks, &work, message)) return false;
     if (!reagents_.auxiliaryVolumesReady(observed, tasks, message) || !calibrationGroupsReady(root_, observed, tasks, message)) return false;
-    if (!reserve(observed, &tasks, remaining, message,payload,basis,receipt,committed)) return false;
+    if (!reserve(observed, &tasks, work, message,payload,basis,receipt,committed)) return false;
     if (!rackPayload(selected->name, tasks, linuxNew_, response, message)) return false;
     if (!tasks.isEmpty())
     {
@@ -745,26 +896,8 @@ bool OriginalDetectionSession::receiveTaskErrors(const QByteArray &payload, QStr
     if (!OriginalProjectCopy::noPending(root_,message)) return false;
     OriginalReagentState observed;
     if (!reagents_.load(&observed,message)) return false;
-    QMap<qint64,double> refunds;
-    for (const auto &task : pending)
-    {
-        if (addedReagentTasks_.contains(task.taskId)) continue;
-        for (auto i=task.reservedReagentVolumes.cbegin();i!=task.reservedReagentVolumes.cend();++i)
-        {
-            const OriginalBusiness::Row *before=nullptr,*current=nullptr;
-            const auto reserved=reservedReagentRows_.constFind(task.taskId);
-            if (reserved!=reservedReagentRows_.cend())
-                for (const auto &row : reserved.value()) if (row.value(QStringLiteral("id")).toLongLong()==i.key()) before=&row;
-            for (const auto &row : observed.holes)
-                if (row.value(QStringLiteral("id")).toLongLong()==i.key()) current=&row;
-            if (!before || !current || !std::isfinite(i.value()) || i.value()<=0)
-                return fail(message,QStringLiteral("缺少任务实际预留记录，未推算或退还试剂。"));
-            for (const auto &key : {"hole_name","reagent_name","reagent_type","reagent_batch","bottle_type","datetime","area"})
-                if (before->value(QLatin1String(key))!=current->value(QLatin1String(key)))
-                    return fail(message,QStringLiteral("任务下发后试剂瓶资料变化，未向其他瓶退量。"));
-            refunds[i.key()]+=i.value();
-        }
-    }
+    QMap<qint64,QString> finalUsedText;
+    if (!refundTexts(observed,pending,addedReagentTasks_,reservedReagentRows_,&finalUsedText,message)) return false;
     for (const auto &task : pending)
     {
         auto origin=OriginalTaskReagents::taskOrigin(task);
@@ -811,15 +944,11 @@ bool OriginalDetectionSession::receiveTaskErrors(const QByteArray &payload, QStr
         for (const auto &row : observed.holes)
         {
             const qint64 id=row.value(QStringLiteral("id")).toLongLong();
-            if (!refunds.contains(id)) continue;
-            bool ok=false;
-            const double previous=row.value(QStringLiteral("used_ul")).toDouble(&ok);
-            const double amount=qMax(0.0,previous+refunds.value(id));
-            if (!ok || !std::isfinite(previous) || !std::isfinite(amount))
-                return fail(message,QStringLiteral("退量前后的试剂余量不是有效数值。"));
+            if (!finalUsedText.contains(id)) continue;
+            const QString usedText=finalUsedText.value(id);
             if (!database.execute(QStringLiteral("UPDATE original_reagents.\"%1\" SET used_ul=? WHERE id=? AND used_ul=?").arg(observed.settingTable),
-                {QString::number(amount,'g',15),id,row.value(QStringLiteral("used_ul"))},message,1)) return false;
-            receipt.matchedUsedWrite(row,QString::number(amount,'g',15));
+                {usedText,id,row.value(QStringLiteral("used_ul"))},message,1)) return false;
+            receipt.matchedUsedWrite(row,usedText);
         }
         receipt.captureTransactionAfter(database.db); // 真实亲和转换/typeof先在原事务内取证。
         if (!database.commit(message)) { receipt.commitFailed(); return false; }
@@ -838,6 +967,6 @@ bool OriginalDetectionSession::receiveTaskErrors(const QByteArray &payload, QStr
         if (!samples_->updateDeviceTask(task,error.reason==0 ? SampleTaskState::Reset : SampleTaskState::Error,message)) return false;
         releaseFinishedRack(task.rack);
     }
-    if (message) *message=QStringLiteral("TR已按原原因更新报告和任务；仅退还未加样的实际预留量，未重发任务。");
+    if (message) *message=QStringLiteral("TR已按原原因更新报告和任务；仅对尚未标记TD8的任务按原配置量退账，未重发任务。");
     return true;
 }

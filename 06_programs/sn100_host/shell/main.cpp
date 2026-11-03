@@ -15,6 +15,7 @@
 #include <QToolTip>
 #include <QVBoxLayout>
 #include <memory>
+#include <limits>
 #include <QMessageBox>
 #if defined(Q_OS_WIN)
 #ifndef NOMINMAX
@@ -55,7 +56,7 @@
 #include "data/printer_settings_store.h"
 #include "ui/frmprintersetting.h"
 #include "data/lis_settings_store.h"
-#include "lis_transport/lis_tcp_transport.h"
+#include "lis_transport/lis_connection_controller.h"
 #include "ui/frmlissetting.h"
 #include "quality_control/quality_control_page.h"
 #include "quality_control/qc_store.h"
@@ -273,7 +274,7 @@ int main(int argc, char *argv[])
     parser.addOption({QStringLiteral("accounts"), QStringLiteral("O03-2：接入O02账户页，默认Guest；使用独立子目录")});
     parser.addOption({QStringLiteral("password-login"), QStringLiteral("O02-2：启用原版本地密码登录卡；需要--accounts，默认仍为Guest")});
     parser.addOption({QStringLiteral("printer-settings"), QStringLiteral("原打印机本地设置；已提交设备用于原报告单次确认打印，不改系统默认设备")});
-    parser.addOption({QStringLiteral("lis-settings"), QStringLiteral("O10-2：原LIS本地设置；只保存意图，不连接或打开串口")});
+    parser.addOption({QStringLiteral("lis-settings"), QStringLiteral("原LIS设置；原资料按原启动/保存规则打开TCP，串口待接入")});
     parser.addOption({QStringLiteral("lis-raw-inbox"), QStringLiteral("离线原报文导入查看；需要--accounts和--lis-settings，未映射、不应用检测任务")});
     parser.addOption({QStringLiteral("quality-control"), QStringLiteral("原质控品/项目/批次本地页面；需要--catalog，不执行检测或失控判定")});
     parser.addOption({QStringLiteral("calibration"), QStringLiteral("原校准记录/原始点本地页面；需要--catalog，不拟合、审核或应用曲线")});
@@ -620,6 +621,7 @@ int main(int argc, char *argv[])
     QThread lisThread;
     lisThread.setObjectName(QStringLiteral("O10LisSettings"));
     auto *lis = withLisSettings ? new LisSettingsStore : nullptr;
+    Sn100Lis::LisConnectionController *lisConnection = nullptr;
     if (lis)
     {
         lis->moveToThread(&lisThread);
@@ -701,6 +703,11 @@ int main(int argc, char *argv[])
         QObject::connect(&originalAlarmThread, &QThread::finished, originalAlarmWriter, &QObject::deleteLater);
         originalAlarmReceiver = new AlarmHistory::OriginalAlarmReceiver(originalAlarmWriter, originalAlarmProfile.alarms, originalDbRoot, shell);
         shell->enableOriginalAlarmReceiver(originalAlarmReceiver);
+        if (alarmHistory && !shell->enableOriginalCurrentAlarms(originalAlarmProfile))
+        {
+            qCritical() << "ORIGINAL_CURRENT_ALARM_ENABLE_FAILED";
+            return 3;
+        }
         QObject::connect(&originalAlarmThread, &QThread::started, originalAlarmReceiver,
             [originalAlarmReceiver, originalDbRoot]() { originalAlarmReceiver->openOriginal(originalDbRoot); }, Qt::QueuedConnection);
     }
@@ -751,7 +758,9 @@ int main(int argc, char *argv[])
                 qInfo() << "ALARM_HISTORY_ENABLED local_history_only=true source_opened=false live_alarms_unknown=true";
             }
             if (withPrinterSettings) qInfo() << "PRINTER_SETTINGS_READY local_only=true print_job=false";
-            if (withLisSettings) qInfo() << "LIS_SETTINGS_READY local_only=true communication=false";
+            if (withLisSettings) qInfo() << "LIS_SETTINGS_READY"
+                << "original_connection_policy=" << withOriginalProjects
+                << "business_download_upload=false serial=false";
             if (withLisRawInbox)
             {
                 // 所有启动失败分支结束后才启用异步辅助窗口；不在aboutToQuit里关线程。
@@ -1429,32 +1438,74 @@ int main(int argc, char *argv[])
     {
         auto *page = new frmLisSetting(lis);
         shell->attachLisPage(page);
-        auto *transport = new Sn100Lis::LisTcpTransport(&app);
-        transport->setObjectName(QStringLiteral("originalLisTcpTransport"));
-        // 只采用worker已经读到/保存成功的值；草稿和保存失败不能更换端点。
-        // 实际LIS地址尚待核对，本切片只准备配置，不恢复原版启动/保存即连接。
-        const bool reconnect = originalRuntimeConfiguration.debug.reconnect;
-        const int reconnectMilliseconds = originalRuntimeConfiguration.debug.reconnectMilliseconds;
-        const auto configureTransport = [transport, reconnect, reconnectMilliseconds](const LisSettings &settings, const QStringList &)
+        lisConnection = new Sn100Lis::LisConnectionController(lis,
+            originalRuntimeConfiguration.debug.reconnect,
+            originalRuntimeConfiguration.debug.reconnectMilliseconds, &app);
+        lisConnection->setObjectName(QStringLiteral("originalLisConnectionController"));
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::stateChanged,
+                         shell, &frmMain::setLisConnectionState);
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::stateChanged, &app,
+                         [](const Sn100Lis::ConnectionState &state)
         {
-            QString message;
-            if (!transport->configure(settings, reconnect, reconnectMilliseconds, &message))
-                qWarning().noquote() << "LIS_TCP_CONFIGURATION_REJECTED" << message;
-            else qInfo() << "LIS_TCP_CONFIGURATION_PREPARED" << "response_mode=" << settings.link
-                         << "connection_started=false";
-        };
-        QObject::connect(lis, &LisSettingsStore::loaded, transport, configureTransport);
-        QObject::connect(lis, &LisSettingsStore::saved, transport, configureTransport);
-        QObject::connect(lis, &LisSettingsStore::closed, transport,
-                         [transport]() { transport->stop(QStringLiteral("LIS设置后台已关闭。")); });
-        QObject::connect(&app, &QCoreApplication::aboutToQuit, transport,
-                         [transport]() { transport->stop(QStringLiteral("应用正在退出。")); });
-        QObject::connect(transport, &Sn100Lis::LisTcpTransport::stateChanged, &app,
-                         [](const QString &state, quint64 generation, int peers)
-        { qInfo() << "LIS_TCP_STATE" << state << "generation=" << generation << "peers=" << peers; });
-        QObject::connect(transport, &Sn100Lis::LisTcpTransport::error, &app,
-                         [](const QString &operation, quint64 generation, quint64 peer, const QString &message)
-        { qWarning().noquote() << "LIS_TCP_ERROR" << operation << generation << peer << message; });
+            qInfo() << "LIS_CONNECTION_STATE" << state.state << "revision=" << state.configuration.revision
+                    << "generation=" << state.generation << "peers=" << state.connectedPeers;
+        });
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::error, &app,
+                         [shell, lisConnection](const Sn100Lis::ConfigurationIdentity &configuration,
+                         const QString &operation, quint64 generation, quint64 peer, const QString &detail)
+        {
+            qWarning().noquote() << "LIS_CONNECTION_ERROR" << operation << "revision=" << configuration.revision
+                << "generation=" << generation << "peer=" << peer << detail;
+            auto state = lisConnection->state();
+            if (state.configuration.revision == configuration.revision && state.generation == generation)
+            { state.detail = detail; shell->setLisConnectionState(state); }
+        });
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::messageReceived, &app,
+                         [shell, lisConnection](const Sn100Lis::ReceivedMessage &message)
+        {
+            // 这里真实接到完整正文和值身份。任务/上传消费者下一片接，不据此回成功ACK。
+            // 默认日志仅记来源与长度；正文可能含患者资料，不自动写入公共app.log。
+            qWarning() << "LIS_MESSAGE_NOT_APPLIED" << "revision=" << message.configuration.revision
+                << "generation=" << message.generation << "peer=" << message.peer
+                << "body_bytes=" << message.body.size() << "ack_sent=false task_saved=false";
+            auto state = lisConnection->state();
+            state.detail = QObject::tr("已收到完整LIS消息（连接代次%1、对端%2）；业务保存与确认尚未接入。")
+                .arg(message.generation).arg(message.peer);
+            shell->setLisConnectionState(state);
+        });
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::sendFinished, &app,
+                         [](const Sn100Lis::SendOutcome &result)
+        {
+            qInfo() << "LIS_SEND_OUTCOME" << result.request << "revision=" << result.configuration.revision
+                    << "generation=" << result.generation << "peer=" << result.peer << result.outcome
+                    << "business_acknowledged=false";
+        });
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::messageDiscarded, &app,
+                         [](const Sn100Lis::ConfigurationIdentity &configuration,
+                         quint64 generation, quint64 peer, int count, const QString &reason)
+        { qWarning().noquote() << "LIS_MESSAGE_DISCARDED" << configuration.revision << generation << peer << count << reason; });
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::wireBytes, shell,
+                         [shell](const Sn100Lis::ConfigurationIdentity &, const QString &direction,
+                         quint64, quint64, const QByteArray &bytes)
+        {
+            // 完整字节由有身份的wireBytes接口供获准诊断使用，此处只做有界计数。
+            const char *property = direction == QStringLiteral("RX") ? "lisReceivedBytes" : "lisSubmittedBytes";
+            const qulonglong previous = shell->property(property).toULongLong();
+            const qulonglong maximum = std::numeric_limits<qulonglong>::max();
+            shell->setProperty(property, QVariant::fromValue(previous > maximum - qulonglong(bytes.size())
+                ? maximum : previous + qulonglong(bytes.size())));
+        });
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::businessTimeoutTick, shell,
+                         [shell](const Sn100Lis::ConfigurationIdentity &, quint64, qint64 elapsed)
+        {
+            // 仅交接原第三拍时间。当前没有查询在途身份，不补造超时业务或重发。
+            shell->setProperty("lisLastBusinessTick", elapsed);
+        });
+        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::stopped, &app,
+                         []() { qInfo() << "LIS_CONNECTION_STOPPED"; });
+        QObject::connect(&app, &QCoreApplication::aboutToQuit, lisConnection,
+                         &Sn100Lis::LisConnectionController::shutdown);
+        shell->setLisConnectionState(lisConnection->state());
         const QString settingsDir = QDir(dataDir).filePath(QStringLiteral("settings"));
         QObject::connect(&lisThread, &QThread::started, lis,
                          [lis, settingsDir, withOriginalProjects, originalDbRoot]()
@@ -1546,6 +1597,15 @@ int main(int argc, char *argv[])
                       << "platform=" << QGuiApplication::platformName()
                       << "logical_canvas=1920x1080 viewport=" << viewportSize << "data_dir=" << dataDir;
     int result = app.exec();
+    if (lisConnection)
+    {
+        lisConnection->shutdown(); // 先停新收发，再关闭原Store线程。
+        if (!lisConnection->isStopped())
+        {
+            qCritical() << "LIS_CONNECTION_SHUTDOWN_UNCONFIRMED";
+            result = 3;
+        }
+    }
     if (originalChannelReceiver)
     {
         if (!originalChannelReceiver->isStopped())

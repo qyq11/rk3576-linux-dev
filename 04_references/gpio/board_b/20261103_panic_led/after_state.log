@@ -1,0 +1,87 @@
+serial=8314b1e8ffd0321f
+2026-11-03T16:18:49+08:00
+6.1.99-rt36-tspi
+boot_id=0cdf9f3f-bf8d-4697-9835-38b2bba7e563
+kernel.panic = 0
+kernel.panic_on_oops = 0
+kernel.sysrq = 176
+LED_TRIGGER=none rfkill-any rfkill-none kbd-scrolllock kbd-numlock kbd-capslock kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock [heartbeat] mmc2 mmc0 rfkill0 tcpm-source-psy-2-0022-online mmc1 rfkill1 rfkill2 rfkill3
+LED_INVERT=0
+CURRENT=releases/08bc43a73a9e8e4826a559f501829355357a46a999799e8b662ebd1feae1a0ef
+
+CONFIG_SHA256_BEGIN
+58374e000baaa65c58bb4d3cf1bb84458b4a4de7348e4f54371f2e957fa4b963  /home/rkshare/programs/sn100_shell/runtime/data/config_Debug.ini
+216f4ad918600ae0f99b2fa689228ab810fd71b43736a1b57d084f630d443374  /home/rkshare/programs/sn100_shell/runtime/data/config.ini
+029605f35924de646b5402f1e377c93cb26e01952e0daa5fda300fe47f7feed7  /home/rkshare/programs/sn100_shell/runtime/data/theme_config.ini
+8b62bdfd565a38dbae844806c1e1ca43f56ad0f93ad5a827118cf21e40cc74fe  /userdata/shared/config_linux.ini
+967dfbbde3771201b4cc33b07e9e4f1e37e9359a737bf90bb66441d840822e25  /userdata/shared/consume.ini
+9470414d5f95a6b965a5d89e7594fb73ea99fb0743bf2a97bd3bf818d103d86f  /userdata/shared/GL4A_config.cfg
+1c6cbb1f065c8eaf0a7701613ea2209320fdd604fb56371e93bf25795aafe116  /userdata/shared/number.ini
+CONFIG_SHA256_END
+
+USER_PROCESSES
+    PID    PPID COMMAND
+      1       0 systemd
+      2       0 kthreadd
+    421       1 systemd-journal
+    449       1 rkaiq_3A_server
+    450       1 logger
+    495       1 systemd-udevd
+    784       1 log-guardian
+    787     784 sleep
+   1044       1 systemd-resolve
+   1541       1 usbdevice
+   1543    1541 adbd
+   1591       1 dbus-daemon
+   1593       1 input-event-dae
+   1594       1 irqbalance
+   1597       1 networkd-dispat
+   1598       1 polkitd
+   1601       1 power-key.sh
+   1611       1 systemd-logind
+   1614    1601 inotifywait
+   1633       1 NetworkManager
+   1635       1 wpa_supplicant
+   1750       1 ModemManager
+   1767       1 brcm_patchram_p
+   1863       1 bluetoothd
+   1897       1 agetty
+   1902       1 agetty
+   1905       1 sshd
+   1918       1 chronyd
+   1919    1918 chronyd
+   1969       1 nmbd
+   1976       1 smbd
+   1981    1976 smbd-notifyd
+   1982    1976 smbd-cleanupd
+   2085    1633 nm-daemon-helpe
+   2091     495 (udev-worker)
+   2092    1905 sshd
+   2098       1 systemd
+   2102    2098 (sd-pam)
+   2162    2092 bash
+   2165    2162 bash
+   2179    2165 ps
+   2180    2165 awk
+
+LISTENERS
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                                                 
+LISTEN 0      0            0.0.0.0:22        0.0.0.0:*    users:(("sshd",pid=1905,fd=3),("systemd",pid=1,fd=155))
+LISTEN 0      0            0.0.0.0:139       0.0.0.0:*    users:(("smbd",pid=1976,fd=31))                        
+LISTEN 0      0            0.0.0.0:445       0.0.0.0:*    users:(("smbd",pid=1976,fd=30))                        
+LISTEN 0      0          127.0.0.1:4894      0.0.0.0:*    users:(("rkaiq_3A_server",pid=449,fd=28))              
+LISTEN 0      0         127.0.0.54:53        0.0.0.0:*    users:(("systemd-resolve",pid=1044,fd=16))             
+LISTEN 0      0         127.0.0.53:53        0.0.0.0:*    users:(("systemd-resolve",pid=1044,fd=14))             
+LISTEN 0      0                  *:22              *:*    users:(("sshd",pid=1905,fd=4),("systemd",pid=1,fd=156))
+LISTEN 0      0                  *:139             *:*    users:(("smbd",pid=1976,fd=29))                        
+LISTEN 0      0                  *:445             *:*    users:(("smbd",pid=1976,fd=28))                        
+LISTEN 0      0                  *:5555            *:*    users:(("adbd",pid=1543,fd=12))                        
+
+FILESYSTEMS
+
+CURRENT_PSTORE
+a0fb17a53eea46ff9ce5fa736ddc9c1dfa2dd928b1987c101d5d4100acb02d4e  /var/lib/systemd/pstore/console-ramoops-0
+57a6175062998b7261b850edd351b44e30afdebc469040824d4b042d3651c6b9  /var/lib/systemd/pstore/dmesg-ramoops-0
+
+DISK_ERRORS
+SSH_EXIT=0

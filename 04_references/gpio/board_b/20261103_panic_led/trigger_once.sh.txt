@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# 仅本次已获准的板B内核崩溃实验；每次运行还需匹配预检的启动标识。
+# 此脚本会使整块板暂停运行，约60秒后由内核尝试自动重启。
+set -Eeuo pipefail
+test "$(id -u)" = 0
+test "$(tr -d '\000' </proc/device-tree/serial-number)" = 8314b1e8ffd0321f
+test "$#" = 1
+test "$(cat /proc/sys/kernel/random/boot_id)" = "$1"
+grep -Fq '[heartbeat]' /sys/class/leds/work/trigger
+if ps -eo comm= | grep -Ei 'sn100|^ACA'; then
+    printf 'ABORT: a business application is running\n' >&2
+    exit 2
+fi
+if ss -lntH | awk '{print $4}' | grep -Eq ':5000$'; then
+    printf 'ABORT: controller port 5000 is in use\n' >&2
+    exit 2
+fi
+test -w /proc/sysrq-trigger
+original_panic=$(cat /proc/sys/kernel/panic)
+trap 'printf "%s\n" "$original_panic" >/proc/sys/kernel/panic' EXIT
+printf 'BOARD=board_b\nEXPECTED_BOOT_ID=%s\n' "$1"
+date -Is
+# 只改本次内存中的参数，不写任何持久系统配置。
+sysctl -w kernel.panic=60
+test "$(cat /proc/sys/kernel/panic)" = 60
+logger -t led-panic-experiment 'USER_AUTHORIZED board_b heartbeat LED experiment; one SysRq c; reboot after 60 seconds'
+journalctl --sync
+sync
+printf 'SYNC_DONE; panic will be triggered in 10 seconds; observe G0A0 LED now\n'
+sleep 10
+# 再核对一次，避免等待期间板卡已重启或新业务已启动。
+test "$(cat /proc/sys/kernel/random/boot_id)" = "$1"
+if ps -eo comm= | grep -Ei 'sn100|^ACA'; then exit 2; fi
+date -Is
+printf 'TRIGGER_SYSRQ_C_NOW\n'
+printf c >/proc/sysrq-trigger
+printf 'ERROR: crash trigger unexpectedly returned\n' >&2
+exit 3

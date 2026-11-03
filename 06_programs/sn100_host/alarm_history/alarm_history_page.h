@@ -1,6 +1,8 @@
 #ifndef SN100_PRIVATE_ALARM_HISTORY_PAGE_H
 #define SN100_PRIVATE_ALARM_HISTORY_PAGE_H
 #include "alarm_history_store.h"
+#include "original_current_alarm_state.h"
+#include <QSet>
 #include <QDialog>
 #include <QPointer>
 
@@ -23,7 +25,14 @@ public:
     };
     explicit AlarmHistoryPage(AlarmHistory::Store *store,QWidget *parent=nullptr);
     ~AlarmHistoryPage() override;
-    bool openExistingHistory(QString absolutePath,QDate capturedToday);
+    bool openExistingHistory(QString absolutePath,QDate capturedToday,bool showHistory=true);
+    // 当前页沿用原表；此入口只绑定历史路径，尚未打开SQL来源。
+    void enableCurrentAlarms(QString historyPath, QDate today);
+    void showCurrentRows(QVector<AlarmHistory::CurrentAlarmRow> rows, QString message,
+                         bool activeBeforeDelivery,bool error=false);
+    void queueCurrentHistoryRefresh();
+    void setCurrentStatus(QString message, bool error);
+    void showHistoricalRecords();
     bool requestClose();
     bool isBusy() const;
     bool isClosing() const { return closingDialog_; }
@@ -33,6 +42,7 @@ public:
     // Explicit private test/measurement candidate; cannot change during a query.
     bool setDisplayBudget(DisplayBudget budget);
 signals:
+    void currentDisplayRejected(QString reason);
     void requestOpen(QString absolutePath);
     void requestBegin(AlarmHistory::Request request);
     void requestAdvance(AlarmHistory::Key key,quint64 continuationStep);
@@ -69,6 +79,20 @@ private:
     bool sourceClosing_ = false,closingDialog_ = false,forceClose_ = false;
     bool complete_ = false,terminalPending_ = false,localAbort_ = false,lastBusy_ = false,closedSignal_ = false;
     bool originalRefreshPending_ = false, originalRefreshScheduled_ = false;
+    bool currentEnabled_ = false, currentError_ = false, historyError_ = false;
+    bool historySourceRequested_ = false, currentAppendQueued_ = false;
+    bool currentHistoryRefreshPending_ = false, currentHistoryRefreshQueued_ = false;
+    QString currentStatus_;
+    QVector<AlarmHistory::CurrentAlarmRow> currentPending_;
+    QSet<QString> currentDescriptions_;
+    int currentPendingIndex_ = 0;
+    qint64 currentRetainedBytes_ = 0;
+    quint64 currentDisplayGeneration_ = 0;
+    void clearCurrentDisplay();
+    void appendCurrentLater();
+    void appendCurrentTurn();
+    void renderStatus();
+    void refreshCurrentHistoryWhenIdle();
     void refreshCommittedEventsWhenIdle();
     AlarmHistory::Scope nextOpenScope_ = AlarmHistory::Scope::LatestToday20;
     void beginQuery(AlarmHistory::Scope scope);

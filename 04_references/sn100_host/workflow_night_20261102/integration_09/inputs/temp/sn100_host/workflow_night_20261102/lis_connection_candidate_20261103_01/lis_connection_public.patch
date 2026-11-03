@@ -1,0 +1,390 @@
+diff --git a/06_programs/sn100_host/lis_transport/lis_transport.pri b/06_programs/sn100_host/lis_transport/lis_transport.pri
+index 82142e5..816c244 100644
+--- a/06_programs/sn100_host/lis_transport/lis_transport.pri
++++ b/06_programs/sn100_host/lis_transport/lis_transport.pri
+@@ -2,3 +2,5 @@ QT += network
+ INCLUDEPATH += $$PWD/..
+ SOURCES += $$PWD/lis_mllp_codec.cpp $$PWD/lis_tcp_transport.cpp
+ HEADERS += $$PWD/lis_mllp_codec.h $$PWD/lis_tcp_transport.h
++SOURCES += $$PWD/lis_connection_controller.cpp
++HEADERS += $$PWD/lis_connection_controller.h $$PWD/lis_connection_values.h
+diff --git a/06_programs/sn100_host/shell/build.sh b/06_programs/sn100_host/shell/build.sh
+index 321145c..94a0809 100644
+--- a/06_programs/sn100_host/shell/build.sh
++++ b/06_programs/sn100_host/shell/build.sh
+@@ -96,7 +96,7 @@ sources+=("$module_dir/instrument_shell.cpp" "$program_dir/instrument/instrument
+ sources+=("$module_dir/login_shell.cpp" "$program_dir/ui/maskdlglogin.cpp")
+ sources+=("$module_dir/printer_shell.cpp" "$module_dir/printer_report_shell.cpp" "$program_dir/ui/frmprintersetting.cpp" "$program_dir/data/printer_settings_store.cpp")
+ sources+=("$module_dir/lis_shell.cpp" "$program_dir/ui/frmlissetting.cpp" "$program_dir/data/lis_settings_store.cpp" "$program_dir/data/serial_port_catalog.cpp")
+-sources+=("$program_dir/lis_transport/lis_mllp_codec.cpp" "$program_dir/lis_transport/lis_tcp_transport.cpp")
++sources+=("$program_dir/lis_transport/lis_mllp_codec.cpp" "$program_dir/lis_transport/lis_tcp_transport.cpp" "$program_dir/lis_transport/lis_connection_controller.cpp")
+ # 原报文辅助窗口只有文件/本地SQL；不引入LIS网络、ACK或任务映射。
+ sources+=("$module_dir/lis_raw_inbox_shell.cpp" "$program_dir/lis_raw_inbox/lis_dsr_raw.cpp"
+           "$program_dir/lis_raw_inbox/lis_inbox_store.cpp" "$program_dir/lis_raw_inbox/lis_inbox_page.cpp"
+@@ -173,7 +173,7 @@ headers+=("$program_dir/instrument/instrument_page.h" "$program_dir/instrument/o
+ headers+=("$program_dir/ui/maskdlglogin.h")
+ headers+=("$module_dir/printer_report_shell.h" "$program_dir/ui/frmprintersetting.h" "$program_dir/data/printer_settings_store.h"
+            "$program_dir/ui/frmlissetting.h" "$program_dir/data/lis_settings_store.h" "$program_dir/data/serial_port_catalog.h")
+-headers+=("$program_dir/lis_transport/lis_tcp_transport.h")
++headers+=("$program_dir/lis_transport/lis_tcp_transport.h" "$program_dir/lis_transport/lis_mllp_codec.h" "$program_dir/lis_transport/lis_connection_controller.h" "$program_dir/lis_transport/lis_connection_values.h")
+ headers+=("$program_dir/quality_control/qc_store.h" "$program_dir/quality_control/quality_control_page.h"
+           "$program_dir/quality_control/qc_history_core.h" "$program_dir/quality_control/qc_history_reply.h"
+           "$program_dir/quality_control/cus_quality_chart.h" "$program_dir/quality_control/qualitychart.h"
+diff --git a/06_programs/sn100_host/shell/frmmain.h b/06_programs/sn100_host/shell/frmmain.h
+index 6992268..c4dfac3 100644
+--- a/06_programs/sn100_host/shell/frmmain.h
++++ b/06_programs/sn100_host/shell/frmmain.h
+@@ -11,6 +11,7 @@
+ #include "history/report_document.h"
+ #include "original_files/original_runtime_settings.h"
+ #include "projects/original_project_save_notice.h"
++#include "lis_transport/lis_connection_values.h"
+ 
+ class HospitalStore;
+ class frmHospInfoSetting;
+@@ -70,6 +71,7 @@ public:
+     frmPrinterSetting *printerPage() const;
+     void attachLisPage(frmLisSetting *page);
+     frmLisSetting *lisPage() const;
++    void setLisConnectionState(Sn100Lis::ConnectionState state);
+     bool enableLisRawInbox(const QString &absoluteDirectory);
+     void openLisRawInbox();
+     bool lisRawInboxShutdownComplete() const;
+diff --git a/06_programs/sn100_host/shell/lis_shell.cpp b/06_programs/sn100_host/shell/lis_shell.cpp
+index 92b9fd6..b6f4cf3 100644
+--- a/06_programs/sn100_host/shell/lis_shell.cpp
++++ b/06_programs/sn100_host/shell/lis_shell.cpp
+@@ -47,5 +47,34 @@ void frmMain::updateLisStatus()
+         ? QStringLiteral("QLabel { color: #E83323; }")
+         : QStringLiteral("QLabel { color: rgb(170,170,170); }"));
+     ui->lblDivState->setToolTip(lisStatus_);
+-    ui->statusArea->setToolTip(tr("LIS本地设置；未建立通信或打开串口。%1").arg(lisStatus_));
++    ui->statusArea->setToolTip(tr("LIS设置：%1；通信状态请查看顶部LIS图标。").arg(lisStatus_));
++}
++
++void frmMain::setLisConnectionState(Sn100Lis::ConnectionState state)
++{
++    // LIS有自己的原图标，不占用仪器状态、灯或设置保存状态。
++    const bool connected = !state.closing && state.connectedPeers > 0;
++    const QString image = connected ? QStringLiteral("lison") : QStringLiteral("lisoff");
++    ui->btnLis->setNormalBgImage(QStringLiteral(":/shell/main_state/%1_normal.png").arg(image));
++    ui->btnLis->setHoverBgImage(QStringLiteral(":/shell/main_state/%1_hover.png").arg(image));
++    ui->btnLis->setPressedBgImage(QStringLiteral(":/shell/main_state/%1_pressed.png").arg(image));
++    ui->btnLis->setText(connected ? QStringLiteral("on") : QStringLiteral("off"));
++    ui->btnLis->setEnabled(true); // 只恢复原图标效果；原点击没有连接/断开业务。
++    const QMap<QString, QString> names{
++        {QStringLiteral("Unconfigured"), tr("配置未就绪")},
++        {QStringLiteral("Configured"), tr("配置已准备，尚未打开")},
++        {QStringLiteral("LocalSettingsOnly"), tr("仅保存独立本地设置")},
++        {QStringLiteral("SerialPending"), tr("当前为串口配置，通信待接入")},
++        {QStringLiteral("SettingsUnconfirmed"), tr("配置待重新读取，连接已停止")},
++        {QStringLiteral("Listening"), tr("正在监听，尚无对端连接")},
++        {QStringLiteral("Connecting"), tr("正在连接")},
++        {QStringLiteral("Connected"), tr("已有对端连接")},
++        {QStringLiteral("ReconnectWaiting"), tr("等待重新连接")},
++        {QStringLiteral("Disconnected"), tr("连接已断开")},
++        {QStringLiteral("Failed"), tr("连接失败")},
++        {QStringLiteral("Stopped"), tr("通信已停止")}
++    };
++    const QString text = names.value(state.state, state.state);
++    ui->btnLis->setToolTip(tr("LIS：%1；配置版本%2，连接代次%3，已连接对端%4。%5")
++        .arg(text).arg(state.configuration.revision).arg(state.generation).arg(state.connectedPeers).arg(state.detail));
+ }
+diff --git a/06_programs/sn100_host/shell/main.cpp b/06_programs/sn100_host/shell/main.cpp
+index 13c8a3f..73f83c4 100644
+--- a/06_programs/sn100_host/shell/main.cpp
++++ b/06_programs/sn100_host/shell/main.cpp
+@@ -15,6 +15,7 @@
+ #include <QToolTip>
+ #include <QVBoxLayout>
+ #include <memory>
++#include <limits>
+ #include <QMessageBox>
+ #if defined(Q_OS_WIN)
+ #ifndef NOMINMAX
+@@ -55,7 +56,7 @@
+ #include "data/printer_settings_store.h"
+ #include "ui/frmprintersetting.h"
+ #include "data/lis_settings_store.h"
+-#include "lis_transport/lis_tcp_transport.h"
++#include "lis_transport/lis_connection_controller.h"
+ #include "ui/frmlissetting.h"
+ #include "quality_control/quality_control_page.h"
+ #include "quality_control/qc_store.h"
+@@ -273,7 +274,7 @@ int main(int argc, char *argv[])
+     parser.addOption({QStringLiteral("accounts"), QStringLiteral("O03-2：接入O02账户页，默认Guest；使用独立子目录")});
+     parser.addOption({QStringLiteral("password-login"), QStringLiteral("O02-2：启用原版本地密码登录卡；需要--accounts，默认仍为Guest")});
+     parser.addOption({QStringLiteral("printer-settings"), QStringLiteral("原打印机本地设置；已提交设备用于原报告单次确认打印，不改系统默认设备")});
+-    parser.addOption({QStringLiteral("lis-settings"), QStringLiteral("O10-2：原LIS本地设置；只保存意图，不连接或打开串口")});
++    parser.addOption({QStringLiteral("lis-settings"), QStringLiteral("原LIS设置；原资料按原启动/保存规则打开TCP，串口待接入")});
+     parser.addOption({QStringLiteral("lis-raw-inbox"), QStringLiteral("离线原报文导入查看；需要--accounts和--lis-settings，未映射、不应用检测任务")});
+     parser.addOption({QStringLiteral("quality-control"), QStringLiteral("原质控品/项目/批次本地页面；需要--catalog，不执行检测或失控判定")});
+     parser.addOption({QStringLiteral("calibration"), QStringLiteral("原校准记录/原始点本地页面；需要--catalog，不拟合、审核或应用曲线")});
+@@ -620,6 +621,7 @@ int main(int argc, char *argv[])
+     QThread lisThread;
+     lisThread.setObjectName(QStringLiteral("O10LisSettings"));
+     auto *lis = withLisSettings ? new LisSettingsStore : nullptr;
++    Sn100Lis::LisConnectionController *lisConnection = nullptr;
+     if (lis)
+     {
+         lis->moveToThread(&lisThread);
+@@ -751,7 +753,9 @@ int main(int argc, char *argv[])
+                 qInfo() << "ALARM_HISTORY_ENABLED local_history_only=true source_opened=false live_alarms_unknown=true";
+             }
+             if (withPrinterSettings) qInfo() << "PRINTER_SETTINGS_READY local_only=true print_job=false";
+-            if (withLisSettings) qInfo() << "LIS_SETTINGS_READY local_only=true communication=false";
++            if (withLisSettings) qInfo() << "LIS_SETTINGS_READY"
++                << "original_connection_policy=" << withOriginalProjects
++                << "business_download_upload=false serial=false";
+             if (withLisRawInbox)
+             {
+                 // 所有启动失败分支结束后才启用异步辅助窗口；不在aboutToQuit里关线程。
+@@ -1429,32 +1433,74 @@ int main(int argc, char *argv[])
+     {
+         auto *page = new frmLisSetting(lis);
+         shell->attachLisPage(page);
+-        auto *transport = new Sn100Lis::LisTcpTransport(&app);
+-        transport->setObjectName(QStringLiteral("originalLisTcpTransport"));
+-        // 只采用worker已经读到/保存成功的值；草稿和保存失败不能更换端点。
+-        // 实际LIS地址尚待核对，本切片只准备配置，不恢复原版启动/保存即连接。
+-        const bool reconnect = originalRuntimeConfiguration.debug.reconnect;
+-        const int reconnectMilliseconds = originalRuntimeConfiguration.debug.reconnectMilliseconds;
+-        const auto configureTransport = [transport, reconnect, reconnectMilliseconds](const LisSettings &settings, const QStringList &)
++        lisConnection = new Sn100Lis::LisConnectionController(lis,
++            originalRuntimeConfiguration.debug.reconnect,
++            originalRuntimeConfiguration.debug.reconnectMilliseconds, &app);
++        lisConnection->setObjectName(QStringLiteral("originalLisConnectionController"));
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::stateChanged,
++                         shell, &frmMain::setLisConnectionState);
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::stateChanged, &app,
++                         [](const Sn100Lis::ConnectionState &state)
+         {
+-            QString message;
+-            if (!transport->configure(settings, reconnect, reconnectMilliseconds, &message))
+-                qWarning().noquote() << "LIS_TCP_CONFIGURATION_REJECTED" << message;
+-            else qInfo() << "LIS_TCP_CONFIGURATION_PREPARED" << "response_mode=" << settings.link
+-                         << "connection_started=false";
+-        };
+-        QObject::connect(lis, &LisSettingsStore::loaded, transport, configureTransport);
+-        QObject::connect(lis, &LisSettingsStore::saved, transport, configureTransport);
+-        QObject::connect(lis, &LisSettingsStore::closed, transport,
+-                         [transport]() { transport->stop(QStringLiteral("LIS设置后台已关闭。")); });
+-        QObject::connect(&app, &QCoreApplication::aboutToQuit, transport,
+-                         [transport]() { transport->stop(QStringLiteral("应用正在退出。")); });
+-        QObject::connect(transport, &Sn100Lis::LisTcpTransport::stateChanged, &app,
+-                         [](const QString &state, quint64 generation, int peers)
+-        { qInfo() << "LIS_TCP_STATE" << state << "generation=" << generation << "peers=" << peers; });
+-        QObject::connect(transport, &Sn100Lis::LisTcpTransport::error, &app,
+-                         [](const QString &operation, quint64 generation, quint64 peer, const QString &message)
+-        { qWarning().noquote() << "LIS_TCP_ERROR" << operation << generation << peer << message; });
++            qInfo() << "LIS_CONNECTION_STATE" << state.state << "revision=" << state.configuration.revision
++                    << "generation=" << state.generation << "peers=" << state.connectedPeers;
++        });
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::error, &app,
++                         [shell, lisConnection](const Sn100Lis::ConfigurationIdentity &configuration,
++                         const QString &operation, quint64 generation, quint64 peer, const QString &detail)
++        {
++            qWarning().noquote() << "LIS_CONNECTION_ERROR" << operation << "revision=" << configuration.revision
++                << "generation=" << generation << "peer=" << peer << detail;
++            auto state = lisConnection->state();
++            if (state.configuration.revision == configuration.revision && state.generation == generation)
++            { state.detail = detail; shell->setLisConnectionState(state); }
++        });
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::messageReceived, &app,
++                         [shell, lisConnection](const Sn100Lis::ReceivedMessage &message)
++        {
++            // 这里真实接到完整正文和值身份。任务/上传消费者下一片接，不据此回成功ACK。
++            // 默认日志仅记来源与长度；正文可能含患者资料，不自动写入公共app.log。
++            qWarning() << "LIS_MESSAGE_NOT_APPLIED" << "revision=" << message.configuration.revision
++                << "generation=" << message.generation << "peer=" << message.peer
++                << "body_bytes=" << message.body.size() << "ack_sent=false task_saved=false";
++            auto state = lisConnection->state();
++            state.detail = QObject::tr("已收到完整LIS消息（连接代次%1、对端%2）；业务保存与确认尚未接入。")
++                .arg(message.generation).arg(message.peer);
++            shell->setLisConnectionState(state);
++        });
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::sendFinished, &app,
++                         [](const Sn100Lis::SendOutcome &result)
++        {
++            qInfo() << "LIS_SEND_OUTCOME" << result.request << "revision=" << result.configuration.revision
++                    << "generation=" << result.generation << "peer=" << result.peer << result.outcome
++                    << "business_acknowledged=false";
++        });
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::messageDiscarded, &app,
++                         [](const Sn100Lis::ConfigurationIdentity &configuration,
++                         quint64 generation, quint64 peer, int count, const QString &reason)
++        { qWarning().noquote() << "LIS_MESSAGE_DISCARDED" << configuration.revision << generation << peer << count << reason; });
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::wireBytes, shell,
++                         [shell](const Sn100Lis::ConfigurationIdentity &, const QString &direction,
++                         quint64, quint64, const QByteArray &bytes)
++        {
++            // 完整字节由有身份的wireBytes接口供获准诊断使用，此处只做有界计数。
++            const char *property = direction == QStringLiteral("RX") ? "lisReceivedBytes" : "lisSubmittedBytes";
++            const qulonglong previous = shell->property(property).toULongLong();
++            const qulonglong maximum = std::numeric_limits<qulonglong>::max();
++            shell->setProperty(property, QVariant::fromValue(previous > maximum - qulonglong(bytes.size())
++                ? maximum : previous + qulonglong(bytes.size())));
++        });
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::businessTimeoutTick, shell,
++                         [shell](const Sn100Lis::ConfigurationIdentity &, quint64, qint64 elapsed)
++        {
++            // 仅交接原第三拍时间。当前没有查询在途身份，不补造超时业务或重发。
++            shell->setProperty("lisLastBusinessTick", elapsed);
++        });
++        QObject::connect(lisConnection, &Sn100Lis::LisConnectionController::stopped, &app,
++                         []() { qInfo() << "LIS_CONNECTION_STOPPED"; });
++        QObject::connect(&app, &QCoreApplication::aboutToQuit, lisConnection,
++                         &Sn100Lis::LisConnectionController::shutdown);
++        shell->setLisConnectionState(lisConnection->state());
+         const QString settingsDir = QDir(dataDir).filePath(QStringLiteral("settings"));
+         QObject::connect(&lisThread, &QThread::started, lis,
+                          [lis, settingsDir, withOriginalProjects, originalDbRoot]()
+@@ -1546,6 +1592,15 @@ int main(int argc, char *argv[])
+                       << "platform=" << QGuiApplication::platformName()
+                       << "logical_canvas=1920x1080 viewport=" << viewportSize << "data_dir=" << dataDir;
+     int result = app.exec();
++    if (lisConnection)
++    {
++        lisConnection->shutdown(); // 先停新收发，再关闭原Store线程。
++        if (!lisConnection->isStopped())
++        {
++            qCritical() << "LIS_CONNECTION_SHUTDOWN_UNCONFIRMED";
++            result = 3;
++        }
++    }
+     if (originalChannelReceiver)
+     {
+         if (!originalChannelReceiver->isStopped())
+diff --git a/06_programs/sn100_host/shell/resources/main_state/lison_hover.png b/06_programs/sn100_host/shell/resources/main_state/lison_hover.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..340dd080fe13aa2a13ffd194ae7f85c87b5ee147
+GIT binary patch
+literal 1633
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/06_programs/sn100_host/shell/resources/main_state/lison_normal.png b/06_programs/sn100_host/shell/resources/main_state/lison_normal.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa59344581ff05d8c5b524682cf1bc8c4d404211
+GIT binary patch
+literal 1651
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/06_programs/sn100_host/shell/resources/main_state/lison_pressed.png b/06_programs/sn100_host/shell/resources/main_state/lison_pressed.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..fffe85e3e00fcd74c01bddf577a321b985487d66
+GIT binary patch
+literal 1424
+zcmV;B1#kL^P)<h;3K|Lk000e1NJLTq001-q001-y1^@s6#dsU*00001b5ch_0Itp)
+z=>Px)N=ZaPRA@upntg~=RTRK~=e^n88FyA)j7&sHEZM?cof$PmO#~sq2#Sy(`pZCc
+zMWK(svXCN#EXs5z>=XJUp+5wJq)014wEP%ZNklQkzRW~d9rwf8nS0{Bw>!J-?##UT
+z*c|5mH}md2_x#>D@7#0Gy+VyO85f?<?hn#4xdoLLL}nt=1R4gpgK84tD(E>RbC&g|
+z|EZ)7l>^!xn@w7uL3Aa`Vvq)Zit2eRIRJdcmBe>!#rPXHcCYe)6k%87DJ<CpECb4u
+zhyH=`DZ$hZo<DQF6tL12h{sl=x(#S8W#R&3lBn#Uj%}<v*;9=C;(^|cO(V$r7=5~!
+ziAw9M7eO}Ap7_S^_~L*%Vk=Oy2a&0MC#XO_1-5f_;wx<ZF<nTWf1r4@9c2e#7ZN&7
+z&kqvpev-B4lKJHO1ByqsfV_?q1ny>2PC#H48;@PfrAA=|J0dTFynQ!0M$CPjp7aV{
+zKHWW*PWgd$Mb{v@2gIr(AV-z2xte%ltTih)(5`uN5bGpJxXNG#)!9OO;?0q|jSaLr
+zR!3TY0-{w4<EWKJ^-(sSIyzj(v4P@|7f^YpieWs}gih{B#8^XSP}k8wA3ZXaRR4Kk
+zVqTzLgMG9cxzZ2LN>PbsgLyEBnI8hHaJ(9T+Q^1PM{b~abUVsRh4ixzCOw#OXeK%V
+z(-QP2S-4F4)+{z%xZ@dZc#F3-qji^nro7Vn41v8j(E9>p7FRZA1oq!V8!a-cCiw&M
+zDAutd@!@Eoj@V|<_X<gpYiaCnZ=uuc$Slv#UP#u+=YhRl?qBJrnu{5Fn)bxJF@U1S
+zfQ5x5RUr^qRx9gI{4(TnJKJVq2Y&UF-c%(J@&@fEUmF7Ih^z(qxR7;RvyODRv?ARG
+z4GGi_Bo)blNZMpWN|CNK8nj?i{@k`imjm<&?WdLu0mY-AqdZp%ko?_`{e2R%XaeQ|
+zFFM)#Z-P<G(lFM6B$D!CyLl*xiA=~jP02t)3R{|oSt!~Gv{f2Nr`2Pf>m#!)j3hId
+zne`CPZKaZd+_$I;Js@XW5RW?9YpBvdW^M@kNH<z9=!|;I+#ocL6OhQW9?<UCG}8K)
+zADFSep?ofvd3-W*xgYC7AM$%YI@!j|cU(@P!9p7ZLKfJbDrH$n^;J*G&R7eUo-G@w
+zHHgk^aF=WA@NMrKTGZ$QIVp{OD2d$4VA?`hr+Tx~WgeS|P6<>1i0uPFkp)<Cyj-B{
+z_>iCtmJ6iQ>#@%EWgnT=kQ*56eK(Lh3UxweWfR(50U*&2Dgs2xAYIvn*Gnu1qPO$r
+z<$4-!8`KHe17X`b(~H&F>jI%lW=YtEFU#eIfXZ_@zn1+^zkbE)>_O)Qu?{6M4~Nj%
+z4dnsBTNMckB>}n7RYAmEc&T$%Y$+FLOL<{?N&wU5GtKu&Z6EG-3uQ$nr=Ij|*miz&
+z6u+?g)Uo((K`9L=yRbS_7L)pPrLlj=Tkk6#V%P{LLS|MMu^)1+Gb;7*pPZJZ?YIpd
+znVkCAKFCFPm;1jqy|)e;{geeqZXaB?i~Wr1qFfpWz9{L)rmPoWmW44h>I=&lwZU@(
+zL;fvz6$9nif)^-~R4q`>B8eC6a+a|IUv@#dQboAJUgY%1Eca5PoGot|%NdoY&?uKu
+zSihzGX;Oh+8WhZe#{4I@LV-e~Yo%H$1v@}BSFCrSYU(&;(En@dz-thyrj8^Bp=#>T
+zI15!v$NE|KtEGz<gHSbfHD>tgUo)4NhC>ZqFWU?(E&qBMf1>)y-ML;iGFL0-0-$gZ
+ek$si80QfKSQ=%L<QXmch0000<MNUMnLSTZ9|D3G=
+
+literal 0
+HcmV?d00001
+
+diff --git a/06_programs/sn100_host/shell/resources.qrc b/06_programs/sn100_host/shell/resources.qrc
+index 5c245a9..76e8f9c 100644
+--- a/06_programs/sn100_host/shell/resources.qrc
++++ b/06_programs/sn100_host/shell/resources.qrc
+@@ -29,6 +29,9 @@
+     <file alias="main_state/lisoff_hover.png">resources/main_state/lisoff_hover.png</file>
+     <file alias="main_state/lisoff_normal.png">resources/main_state/lisoff_normal.png</file>
+     <file alias="main_state/lisoff_pressed.png">resources/main_state/lisoff_pressed.png</file>
++    <file alias="main_state/lison_normal.png">resources/main_state/lison_normal.png</file>
++    <file alias="main_state/lison_hover.png">resources/main_state/lison_hover.png</file>
++    <file alias="main_state/lison_pressed.png">resources/main_state/lison_pressed.png</file>
+     <file alias="main_state/status_off.png">resources/main_state/status_off.png</file>
+     <file alias="main_state/status_ready.png">resources/main_state/status_ready.png</file>
+     <file alias="main_state/status_warming.png">resources/main_state/status_warming.png</file>

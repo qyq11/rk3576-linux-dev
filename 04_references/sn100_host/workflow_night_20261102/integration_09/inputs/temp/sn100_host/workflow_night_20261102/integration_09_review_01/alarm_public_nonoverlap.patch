@@ -1,0 +1,208 @@
+diff --git a/06_programs/sn100_host/alarm_history/alarm_history_page.pri b/06_programs/sn100_host/alarm_history/alarm_history_page.pri
+--- a/06_programs/sn100_host/alarm_history/alarm_history_page.pri
++++ b/06_programs/sn100_host/alarm_history/alarm_history_page.pri
+@@ -1,7 +1,8 @@
+ QT += core gui widgets sql
+ INCLUDEPATH += $$PWD $$PWD/calendar $$PWD/.. $$PWD/../ui \
+                $$PWD/../samples/material $$PWD/../shell/widgets/material
+-SOURCES += $$PWD/alarm_history_page.cpp $$PWD/alarm_history_host.cpp
++SOURCES += $$PWD/alarm_history_page.cpp $$PWD/alarm_history_host.cpp \
++           $$PWD/alarm_history_page_current.cpp
+ SOURCES *= $$clean_path($$PWD/calendar/cuscalendar.cpp)
+ HEADERS += $$PWD/alarm_history_page.h $$PWD/alarm_history_host.h
+ HEADERS *= $$clean_path($$PWD/calendar/cuscalendar.h)
+diff --git a/06_programs/sn100_host/shell/alarm_current_shell.cpp b/06_programs/sn100_host/shell/alarm_current_shell.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/shell/alarm_current_shell.cpp
+@@ -0,0 +1,96 @@
++#include "frmmain.h"
++#include "ui_frmmain.h"
++#include "alarm_history/alarm_history_host.h"
++#include "alarm_history/original_alarm_receiver.h"
++#include "alarm_history/original_current_alarm_state.h"
++#include "instrument/device_control.h"
++#include <QDebug>
++#include <QTimer>
++
++bool frmMain::enableOriginalCurrentAlarms(const OriginalRuntime::SystemProfile &profile,
++                                        int queryWaitMilliseconds)
++{
++    if(currentAlarmState_||!deviceControl_||!alarmHistory_||!originalAlarmReceiver_||
++        queryWaitMilliseconds<1||queryWaitMilliseconds>60000||
++        !alarmHistory_->enableCurrentAlarms(alarmHistoryPath_))return false;
++    currentAlarmWaitMilliseconds_=queryWaitMilliseconds;
++    auto *observer=new AlarmHistory::OriginalCurrentAlarmState(profile.alarms,this);
++    currentAlarmState_=observer;
++    connect(observer,&AlarmHistory::OriginalCurrentAlarmState::stateChanged,this,
++        [this](AlarmHistory::CurrentAlarmQueryState state)
++    {
++        if(alarmHistory_)alarmHistory_->setCurrentStatus(state.message,!state.valid);
++        ui->btnAbnormal->setToolTip(state.message);
++        qInfo().noquote()<<"ORIGINAL_CURRENT_ALARM_STATE"<<"connection="<<state.connection
++            <<"valid_observation="<<state.valid<<"refresh_pending="<<state.refreshPending
++            <<"local_refresh="<<state.refreshId<<state.message;
++    });
++    connect(observer,&AlarmHistory::OriginalCurrentAlarmState::currentObserved,this,
++        [this](AlarmHistory::CurrentAlarmObservation observation)
++    {
++        if(!currentAlarmState_||!deviceControl_||
++            observation.connection!=deviceControl_->connectionGeneration()||!deviceControl_->state().connected)return;
++        qInfo()<<"ORIGINAL_CURRENT_ALARM_OBSERVED"<<observation.command<<"rows="<<observation.rows.size()
++               <<"connection="<<observation.connection<<"history_append=false";
++        if(alarmHistory_)alarmHistory_->showCurrentObservation(observation);
++    });
++    connect(alarmHistory_,&AlarmHistoryHost::currentDisplayRejected,this,[this](const QString &reason)
++    {
++        if(currentAlarmState_&&deviceControl_)
++            currentAlarmState_->invalidateCurrent(deviceControl_->connectionGeneration(),reason);
++    });
++    connect(deviceControl_,&DeviceControl::changed,this,[this](const DeviceControlState &state)
++    {
++        if(currentAlarmState_&&deviceControl_)
++            currentAlarmState_->setConnection(deviceControl_->connectionGeneration(),state.connected);
++    });
++    connect(deviceControl_,&DeviceControl::payloadReceivedForConnection,this,
++        [this](const QByteArray &payload,quint64 connection)
++    {
++        if(currentAlarmState_)currentAlarmState_->receivePayload(payload,connection,QDateTime::currentDateTime());
++    });
++    connect(originalAlarmReceiver_,&AlarmHistory::OriginalAlarmReceiver::newEventsReceived,this,
++        [this](quint64 request,const AlarmHistory::Rows &rows)
++    {
++        if(!alarmHistory_||!deviceControl_||!deviceControl_->state().connected)return;
++        QVector<AlarmHistory::CurrentAlarmRow> display;
++        display.reserve(rows.size());
++        for(const auto &row:rows)
++            display.append({row.errorCode,row.description,row.measure,row.dateTime});
++        alarmHistory_->showReceivedEvents(display,
++            tr("收到新告警事件%1条；历史是否保存以存储回执为准，当前全量状态未由事件确认。").arg(rows.size()));
++        qInfo()<<"ORIGINAL_ALARM_EVENTS_DISPLAYED"<<request<<"rows="<<display.size()<<"history_saved=false";
++    });
++    connect(originalAlarmReceiver_,&AlarmHistory::OriginalAlarmReceiver::emptyBoardNotificationReceived,this,[this]()
++    {
++        if(alarmHistory_&&deviceControl_&&deviceControl_->state().connected)
++            alarmHistory_->showReceivedEvents({},tr("收到完整QL新异常空通知；没有新增历史行，不代表全部正常。"));
++    });
++    observer->setConnection(deviceControl_->connectionGeneration(),deviceControl_->state().connected);
++    return true;
++}
++
++void frmMain::queryCurrentAlarms()
++{
++    if(!currentAlarmState_||!alarmHistory_||!deviceControl_)return;
++    const quint64 connection=deviceControl_->connectionGeneration();
++    const DeviceControlState state=deviceControl_->state();
++    currentAlarmState_->setConnection(connection,state.connected);
++    // 原入口先空刷新并打开当前页，再判断设备是否已连接；禁止关闭过程中重开。
++    if(!alarmHistory_->showCurrent())return;
++    if(!state.connected||!state.fresh||state.status.ledStatus==0)
++    {
++        currentAlarmState_->invalidateCurrent(connection,
++            tr("尚无有效的主控连接状态，当前告警未查询；旧显示仅供核对。"));
++        return;
++    }
++    const quint64 request=currentAlarmState_->beginRefresh(connection);
++    if(!request)return;
++    const bool queued=deviceControl_->query(Sn100Protocol::ReadOnlyQuery::Alarm);
++    if(!currentAlarmState_)return;
++    currentAlarmState_->finishRefreshQueue(connection,request,queued);
++    if(!queued)return;
++    // 仅解除本地等待并提示未知，不发重试、不构造ACK；线上无请求编号，迟到包只记接收事实。
++    QTimer::singleShot(currentAlarmWaitMilliseconds_,this,[this,connection,request]()
++    {if(currentAlarmState_)currentAlarmState_->refreshTimedOut(connection,request);});
++}
+diff --git a/06_programs/sn100_host/shell/alarm_shell.cpp b/06_programs/sn100_host/shell/alarm_shell.cpp
+--- a/06_programs/sn100_host/shell/alarm_shell.cpp
++++ b/06_programs/sn100_host/shell/alarm_shell.cpp
+@@ -2,6 +2,7 @@
+ #include "ui_frmmain.h"
+ #include "alarm_history/alarm_history_host.h"
+ #include "alarm_history/original_alarm_receiver.h"
++#include "alarm_history/original_current_alarm_state.h"
+ #include "instrument/device_control.h"
+ #include <QDate>
+ #include <QDebug>
+@@ -18,7 +19,7 @@
+     connect(alarmHistory_, &AlarmHistoryHost::statusChanged, this,
+             [this](const QString &message, bool error)
+     {
+-        ui->btnAbnormal->setToolTip(message + tr("；实时告警、严重度及设备处置未知。"));
++        ui->btnAbnormal->setToolTip(message + tr("；此为历史读取状态，不代表当前告警或设备处置完成。"));
+         qInfo().noquote() << (error ? "ALARM_HISTORY_ERROR" : "ALARM_HISTORY_STATUS") << message;
+         updateAccountStatus();
+     });
+@@ -55,7 +56,8 @@
+     connect(ui->btnAbnormal, &CusBadgeButton::clicked, this, [this]()
+     {
+         if (!alarmHistoryAvailable_ || rejectLoginNavigation() || logoutPending_) return;
+-        alarmHistory_->showExistingHistory(alarmHistoryPath_, QDate::currentDate());
++        if (currentAlarmState_) queryCurrentAlarms();
++        else alarmHistory_->showExistingHistory(alarmHistoryPath_, QDate::currentDate());
+     });
+     setAlarmHistoryAvailable(false);
+     return true;
+diff --git a/06_programs/sn100_host/shell/build.sh b/06_programs/sn100_host/shell/build.sh
+--- a/06_programs/sn100_host/shell/build.sh
++++ b/06_programs/sn100_host/shell/build.sh
+@@ -218,7 +218,12 @@
+           "$program_dir/samples/original_project_device_repository.cpp"
+           "$program_dir/projects/original_project_codec.cpp")
+ headers+=("$program_dir/reagents/original_reagent_editor.h" "$program_dir/reagents/original_reagent_usage.h")
+-headers+=("$program_dir/alarm_history/original_alarm_receiver.h")
++headers+=("$program_dir/alarm_history/original_alarm_receiver.h"
++          "$program_dir/alarm_history/original_current_alarm_state.h")
++# 当前告警只读观察与原页面显示，必须在输入清单出口之前登记。
++sources+=("$program_dir/alarm_history/original_current_alarm_state.cpp"
++          "$program_dir/alarm_history/alarm_history_page_current.cpp"
++          "$module_dir/alarm_current_shell.cpp")
+ # One stable name for each QRC prevents basename collisions with other modules.
+ resource_names=(shell_resources account_resources report_resources imagesRpt projects_resources reagents_resources samples_resources instrument_resources qc_history_resources)
+ resource_files=("$module_dir/resources.qrc" "$module_dir/account_resources.qrc"
+diff --git a/06_programs/sn100_host/shell/frmmain.h b/06_programs/sn100_host/shell/frmmain.h
+--- a/06_programs/sn100_host/shell/frmmain.h
++++ b/06_programs/sn100_host/shell/frmmain.h
+@@ -40,7 +40,7 @@
+ class AlarmHistoryHost;
+ class LisInboxPageHost;
+ class QAction;
+-namespace AlarmHistory { class Store; class OriginalAlarmReceiver; }
++namespace AlarmHistory { class Store; class OriginalAlarmReceiver; class OriginalCurrentAlarmState; }
+ namespace Sn100Protocol { struct ReplayState; struct LoopbackStatusState; }
+ namespace OriginalRuntime { struct RuntimeSettings; struct SystemProfile; }
+ 
+@@ -74,6 +74,9 @@
+     void openLisRawInbox();
+     bool lisRawInboxShutdownComplete() const;
+     bool enableOriginalAlarmReceiver(AlarmHistory::OriginalAlarmReceiver *receiver);
++    // 只挂当前观察；等待毫秒数是本地提示门槛，不是设备回执期限或自动重试周期。
++    bool enableOriginalCurrentAlarms(const OriginalRuntime::SystemProfile &profile,
++                                     int queryWaitMilliseconds = 10000);
+     bool originalAlarmShutdownComplete() const;
+     void attachQualityControlPage(QualityControlPage *page);
+     QualityControlPage *qualityControlPage() const { return qualityControl_; }
+@@ -244,6 +247,9 @@
+     bool alarmHistoryShutdownPending_ = false;
+     bool alarmHistoryShutdownRetryQueued_ = false;
+     QPointer<AlarmHistory::OriginalAlarmReceiver> originalAlarmReceiver_;
++    QPointer<AlarmHistory::OriginalCurrentAlarmState> currentAlarmState_;
++    int currentAlarmWaitMilliseconds_ = 10000;
++    void queryCurrentAlarms();
+     bool originalAlarmShutdownPending_ = false;
+     bool requestOriginalAlarmShutdown();
+     bool readOnlyStatusEnabled_ = false;
+diff --git a/06_programs/sn100_host/shell/main.cpp b/06_programs/sn100_host/shell/main.cpp
+--- a/06_programs/sn100_host/shell/main.cpp
++++ b/06_programs/sn100_host/shell/main.cpp
+@@ -701,6 +701,11 @@
+         QObject::connect(&originalAlarmThread, &QThread::finished, originalAlarmWriter, &QObject::deleteLater);
+         originalAlarmReceiver = new AlarmHistory::OriginalAlarmReceiver(originalAlarmWriter, originalAlarmProfile.alarms, originalDbRoot, shell);
+         shell->enableOriginalAlarmReceiver(originalAlarmReceiver);
++        if (alarmHistory && !shell->enableOriginalCurrentAlarms(originalAlarmProfile))
++        {
++            qCritical() << "ORIGINAL_CURRENT_ALARM_ENABLE_FAILED";
++            return 3;
++        }
+         QObject::connect(&originalAlarmThread, &QThread::started, originalAlarmReceiver,
+             [originalAlarmReceiver, originalDbRoot]() { originalAlarmReceiver->openOriginal(originalDbRoot); }, Qt::QueuedConnection);
+     }

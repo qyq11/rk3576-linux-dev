@@ -52,6 +52,8 @@ public slots:
 signals:
     void sourceReadyChanged(bool ready);
     void newEventsReceived(quint64 requestId, AlarmHistory::Rows rows);
+    // 原QL[0]仍触发空显示；这个信号不提交SQL，也不表示已有历史保存。
+    void emptyBoardNotificationReceived();
     void historyCommitted(quint64 requestId, AlarmHistory::Rows rows);
     // 包含未确认写入的原行，调用方可保留失败证据；失败不会自动重发。
     void historyFailed(quint64 requestId, AlarmHistory::Rows rows, bool submittedToStore, QString message);

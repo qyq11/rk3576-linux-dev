@@ -1,7 +1,8 @@
 QT += core gui widgets sql
 INCLUDEPATH += $$PWD $$PWD/calendar $$PWD/.. $$PWD/../ui \
                $$PWD/../samples/material $$PWD/../shell/widgets/material
-SOURCES += $$PWD/alarm_history_page.cpp $$PWD/alarm_history_host.cpp
+SOURCES += $$PWD/alarm_history_page.cpp $$PWD/alarm_history_host.cpp \
+           $$PWD/alarm_history_page_current.cpp
 SOURCES *= $$clean_path($$PWD/calendar/cuscalendar.cpp)
 HEADERS += $$PWD/alarm_history_page.h $$PWD/alarm_history_host.h
 HEADERS *= $$clean_path($$PWD/calendar/cuscalendar.h)

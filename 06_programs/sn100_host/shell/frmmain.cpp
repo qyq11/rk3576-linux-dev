@@ -17,6 +17,7 @@
 
 #include <QButtonGroup>
 #include <QCloseEvent>
+#include <QScopedValueRollback>
 #include <QDateTime>
 #include <QDebug>
 #include <QFontMetrics>
@@ -416,6 +417,8 @@ void frmMain::applyAccountSession(const AccountSession &session)
 
 bool frmMain::requestLogout()
 {
+    // 页面离开检查可能先弹草稿确认；整个调用期间挡住设备操作，返回时恢复原标记。
+    QScopedValueRollback<bool> interaction(deviceUserInteractionPending_,true);
     // 注销是新的用户意图，不让尚未显示的启动登录在稍后补弹。
     cancelStartupLogin();
     if (rejectLoginNavigation())
@@ -623,6 +626,8 @@ bool frmMain::requestShutdown()
 
 void frmMain::closeEvent(QCloseEvent *event)
 {
+    // 外层窗口也会直接调用close；在第一次页面检查之前登记，取消/拒绝自动恢复。
+    QScopedValueRollback<bool> interaction(deviceUserInteractionPending_,true);
     enterTaskReagentCloseAttempt();
     // 已发起关闭就撤销启动自动弹窗，即使业务保护拒绝退出也不打断使用者。
     cancelStartupLogin();

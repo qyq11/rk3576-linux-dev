@@ -1,0 +1,28 @@
+
+PSTORE FILES
+/var/lib/systemd/pstore/console-ramoops-0 123960 bytes
+/var/lib/systemd/pstore/dmesg-ramoops-0 147263 bytes
+
+PANIC PROOF
+/var/lib/systemd/pstore/console-ramoops-0:[  323.078452] sysrq: Trigger a crash
+/var/lib/systemd/pstore/console-ramoops-0:[  323.078530] Kernel panic - not syncing: sysrq triggered crash
+/var/lib/systemd/pstore/console-ramoops-0:[  323.078610]  sysrq_reset_seq_param_set+0x0/0x90
+/var/lib/systemd/pstore/console-ramoops-0:[  323.078618]  __handle_sysrq+0x94/0x1a0
+/var/lib/systemd/pstore/console-ramoops-0:[  323.078624]  write_sysrq_trigger+0x74/0xac
+/var/lib/systemd/pstore/console-ramoops-0:[  323.078699] SMP: stopping secondary CPUs
+/var/lib/systemd/pstore/dmesg-ramoops-0:<6>[  323.078452] sysrq: Trigger a crash
+/var/lib/systemd/pstore/dmesg-ramoops-0:<0>[  323.078530] Kernel panic - not syncing: sysrq triggered crash
+/var/lib/systemd/pstore/dmesg-ramoops-0:<4>[  323.078610]  sysrq_reset_seq_param_set+0x0/0x90
+/var/lib/systemd/pstore/dmesg-ramoops-0:<4>[  323.078618]  __handle_sysrq+0x94/0x1a0
+/var/lib/systemd/pstore/dmesg-ramoops-0:<4>[  323.078624]  write_sysrq_trigger+0x74/0xac
+/var/lib/systemd/pstore/dmesg-ramoops-0:<2>[  323.078699] SMP: stopping secondary CPUs
+
+BOOT HEALTH
+running
+
+MOUNTS
+/      rw,relatime
+/userdata rw,relatime
+
+USER CONFIG POINTER
+releases/08bc43a73a9e8e4826a559f501829355357a46a999799e8b662ebd1feae1a0ef

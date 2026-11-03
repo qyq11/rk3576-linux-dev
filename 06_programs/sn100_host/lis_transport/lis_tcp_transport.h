@@ -30,7 +30,8 @@ public:
     QString state() const { return state_; }
     bool isActive() const { return armed_; }
     bool openConfirmed(const QString &expectedConfigurationToken, QString *error);
-    bool sendMessage(quint64 messageId, quint64 expectedGeneration, const QString &body, QString *error);
+    bool sendMessage(quint64 messageId, quint64 expectedGeneration, const QString &body, QString *error,
+                     QSet<quint64> *acceptedPeers = nullptr);
     void stop(const QString &reason = QString());
 
 signals:

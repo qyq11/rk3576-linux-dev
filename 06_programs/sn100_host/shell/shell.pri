@@ -110,6 +110,8 @@ HEADERS *= $$clean_path($$PWD/../original_files/original_business_database.h) \
 # 原Ql/QL新告警只在原资料联机模式启用，当前Qk/QK查询不写历史。
 SOURCES += $$PWD/../alarm_history/original_alarm_receiver.cpp
 HEADERS += $$PWD/../alarm_history/original_alarm_receiver.h
+SOURCES += $$PWD/alarm_current_shell.cpp $$PWD/../alarm_history/original_current_alarm_state.cpp
+HEADERS += $$PWD/../alarm_history/original_current_alarm_state.h
 
 # 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
 SOURCES *= $$PWD/reagent_level_shell.cpp
@@ -117,3 +119,5 @@ SOURCES *= $$PWD/reagent_level_shell.cpp
 # 任务提交后的主窗口接续；仅接原动作，不增加设备命令。
 SOURCES *= $$PWD/task_reagent_shell.cpp $$PWD/task_reagent_source.cpp $$PWD/../samples/original_task_reagent_receipt_writer.cpp
 HEADERS *= $$PWD/task_reagent_context.h $$PWD/../samples/original_task_reagent_receipt_writer.h $$PWD/../samples/original_task_reagent_receipt.h
+# 原任务选择/金额接口与ARM只列输入清单同步，头文件不另建一套规则。
+HEADERS *= $$PWD/../reagents/original_reagent_repository.h $$PWD/../samples/original_detection_session.h $$PWD/../samples/original_task_codec.h

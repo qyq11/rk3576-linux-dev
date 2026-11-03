@@ -244,7 +244,8 @@ void LisTcpTransport::readPeer(quint64 id)
     receivedBytes_+=added;
 }
 
-bool LisTcpTransport::sendMessage(quint64 id, quint64 expectedGeneration, const QString &body, QString *detail)
+bool LisTcpTransport::sendMessage(quint64 id, quint64 expectedGeneration, const QString &body, QString *detail,
+    QSet<quint64> *acceptedPeers)
 {
     if (detail) detail->clear();
     if (!checkThread(detail)) return false;
@@ -262,6 +263,8 @@ bool LisTcpTransport::sendMessage(quint64 id, quint64 expectedGeneration, const 
         || queuedBytes_+message.frame.size()>MaximumQueueBytes)
         return reject(tr("LIS发送超过单帧1MiB、64条或4MiB本地预算，未截断或覆盖旧消息。"));
     lastMessage_=id; queuedBytes_+=message.frame.size(); sends_.enqueue(message);
+    // 回传本次真正固定的广播目标，供业务逐对端结清本地发送；不改变线上路由。
+    if (acceptedPeers) *acceptedPeers=message.targets;
     return true; // 仅排队；每个对端之后分别报告WrittenToSocket/NotSent/OutcomeUnknown。
 }
 

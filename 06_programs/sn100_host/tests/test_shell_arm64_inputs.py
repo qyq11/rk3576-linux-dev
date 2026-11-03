@@ -269,8 +269,13 @@ class ShellArm64InputsTest(unittest.TestCase):
         self.assertIn("local_lis_settings", ast.literal_eval(fields["capabilities"]))
         self.assertIn("--lis-settings", ast.literal_eval(fields["startup_feature_arguments"]))
         self.assertEqual(ast.literal_eval(fields["lis_settings_scope"]), {
-            "storage": "explicit_isolated_settings_directory", "communication": False,
-            "serial_device_open": False, "auto_flags": "intent_only"})
+            "storage": "original_config_ini_or_explicit_isolated_settings_directory", "communication": True,
+            "serial_device_open": False, "auto_flags": "original_profile_startup_link_save_always"})
+        self.assertIn("lis_tcp_connection_handoff", ast.literal_eval(fields["capabilities"]))
+        self.assertEqual(ast.literal_eval(fields["lis_connection_scope"]), {
+            "transport": "tcp_client_or_server", "local_settings_communication": False,
+            "complete_message_handoff": True, "task_download": False, "ordinary_result_upload": False,
+            "qc_result_upload": False, "business_ACK": False, "serial": "pending", "verified_with_real_peer": False})
 
     def test_report_helper_keeps_only_rendering_and_readonly_value_text(self):
         expected = {PROGRAM / "history" / name for name in (

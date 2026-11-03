@@ -4,6 +4,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QUrl>
+#include <cmath>
 #include <limits>
 
 namespace OriginalControlTasks
@@ -23,32 +24,38 @@ bool query(QSqlQuery *query, const QString &sql, const QVariantList &bindings, Q
 bool assignCalibration(const OriginalReagentRepository &repository, const OriginalReagentState &state,
                        bool linuxNew, OriginalTasks::Task *task, QMap<qint64, double> *remaining, QString *message)
 {
-    if (!task || task->type != QStringLiteral("CAL")) return fail(message, QStringLiteral("不是已确认的校准任务。"));
-    const QString selectedGroup = task->calibration.reagentBatchGroup;
-    if (selectedGroup.isEmpty()) return fail(message, QStringLiteral("原校准任务没有试剂组。"));
-    OriginalReagentState allocation = state;
-    const bool related = task->project.originalBaseValues.value(QStringLiteral("is_related")).toInt() > 0;
-    if (!linuxNew && related && selectedGroup != QStringLiteral("Default"))
+    if (!task || !remaining) return fail(message, QStringLiteral("原校准分配输入为空。"));
+    OriginalReagentAllocation::AmountWork work;
+    if (!repository.initializeAmountWork(state, &work, message)) return false;
+    for (auto it = remaining->cbegin(); it != remaining->cend(); ++it)
     {
-        QSet<QString> needed;
-        for (const auto &step : task->project.advanced.reagents) needed.insert(step.value(QStringLiteral("reagent_name")));
-        for (int index = allocation.holes.size() - 1; index >= 0; --index)
-        {
-            const auto &hole = allocation.holes[index];
-            if (hole.value("area").toString() != QStringLiteral("r_area") || !needed.contains(hole.value("reagent_name").toString())) continue;
-            const QString batch = hole.value("reagent_batch").toString();
-            // 原旧协议用contains，而非按分隔符重解释批号；空批号按Default核对。
-            if (!selectedGroup.contains(batch.isEmpty() ? QStringLiteral("Default") : batch)) allocation.holes.removeAt(index);
-        }
+        if (!work.remaining.contains(it.key()) || !std::isfinite(it.value()) || it.value() < 0)
+            return fail(message, QStringLiteral("原校准传入余量不对应有效孔位。"));
+        work.remaining[it.key()] = it.value();
     }
-    // 原LinuxNew校准无批组筛瓶，旧协议Default亦按优先级选全部瓶。
-    // 这里只修改分配用的值副本，不改项目配置或数据库。
-    const auto project = task->project;
-    task->project.originalBaseValues[QStringLiteral("is_related")] = QStringLiteral("0");
-    const bool ok = repository.assignTask(allocation, task, remaining, message);
-    task->project = project;
-    task->batchGroup = selectedGroup;
-    return ok;
+    OriginalReagentAllocation::SelectionContext selection;
+    // 兼容入口仍走Repository同一算法；实际会话传完整原项目顺序并跨校准重复复用缓存。
+    if (!repository.beginSelectionScope(state, ProjectRecords{task->project}, {task->project.name},
+        OriginalReagentAllocation::Mode::Calibration, linuxNew, QStringLiteral("legacy-single-calibration"), {}, work, &selection, message)) return false;
+    const auto result = assignCalibration(repository, state, linuxNew, task, &selection, &work);
+    if (result.status != OriginalReagentAllocation::Status::Selected) return fail(message, result.reason);
+    *remaining = work.remaining;
+    return true;
+}
+
+OriginalReagentAllocation::AllocationResult assignCalibration(const OriginalReagentRepository &repository,
+                       const OriginalReagentState &state, bool linuxNew, OriginalTasks::Task *task,
+                       OriginalReagentAllocation::SelectionContext *selection, OriginalReagentAllocation::AmountWork *work)
+{
+    if (!task || task->type != QStringLiteral("CAL") || !selection ||
+        selection->mode != OriginalReagentAllocation::Mode::Calibration || selection->linuxNew != linuxNew)
+    {
+        OriginalReagentAllocation::AllocationResult result;
+        if (selection) result.scopeId = selection->scopeId;
+        result.reason = QStringLiteral("原校准任务或协议与已采样的选择范围不符。");
+        return result;
+    }
+    return repository.assignTask(state, task, selection, work);
 }
 
 bool attachCalibration(OriginalBusiness::Database &database, const QString &root, QString *message)

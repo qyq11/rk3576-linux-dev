@@ -8,6 +8,7 @@
 #include <QRegularExpression>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 using namespace OriginalBusiness;
 namespace
@@ -216,74 +217,342 @@ bool OriginalReagentRepository::cleanerReady(const OriginalReagentState &state, 
     return true;
 }
 
-bool OriginalReagentRepository::assignTask(const OriginalReagentState &state, OriginalTasks::Task *task,
-                                         QMap<qint64, double> *remaining, QString *message) const
+bool OriginalReagentRepository::initializeAmountWork(const OriginalReagentState &state,
+        OriginalReagentAllocation::AmountWork *work, QString *message) const
 {
-    if (!task || !remaining) return fail(message, QStringLiteral("原任务试剂分配输入为空。"));
-    QMap<qint64, double> proposed = *remaining;
+    if (!work) return fail(message, QStringLiteral("原任务余量输出为空。"));
+    OriginalReagentAllocation::AmountWork read;
+    read.root = state.root;
+    read.versions = state.versions;
     for (const auto &hole : state.holes)
     {
-        const qint64 id = hole.value(QStringLiteral("id")).toLongLong();
-        if (!proposed.contains(id) && eligible(state, hole))
+        bool ok = false;
+        const qint64 id = hole.value(QStringLiteral("id")).toLongLong(&ok);
+        if (!ok || id < 0 || read.initialUsed.contains(id))
+            return fail(message, QStringLiteral("原试剂孔行号无效或重复。"));
+        read.initialUsed.insert(id, hole.value(QStringLiteral("used_ul")));
+        if (!eligible(state, hole)) continue;
+        double amount = 0;
+        // 次数函数的空used回退不用于扣量；保留既有任务输入的非负有限数校验。
+        if (!number(hole.value(QStringLiteral("used_ul")), &amount))
+            return fail(message, QStringLiteral("原试剂剩余量无效：") + text(hole, "hole_name"));
+        read.remaining.insert(id, amount);
+    }
+    read.initialized = true;
+    *work = read;
+    return true;
+}
+
+bool OriginalReagentRepository::beginSelectionScope(const OriginalReagentState &state,
+        const ProjectRecords &orderedProjects, const QStringList &scopeProjects,
+        OriginalReagentAllocation::Mode mode, bool linuxNew, const QString &scopeId,
+        const QStringList &multiBottleExceptions, const OriginalReagentAllocation::AmountWork &work,
+        OriginalReagentAllocation::SelectionContext *selection, QString *message) const
+{
+    using namespace OriginalReagentAllocation;
+    if (!selection || !work.initialized || work.root != state.root || work.versions != state.versions || scopeId.isEmpty() ||
+        (mode != Mode::Normal && mode != Mode::Calibration))
+        return fail(message, QStringLiteral("原选孔范围没有对应本次试剂资料和余量。"));
+    SelectionContext read;
+    read.root = state.root;
+    read.versions = state.versions;
+    read.scopeId = scopeId;
+    read.mode = mode;
+    read.linuxNew = linuxNew;
+    read.multiBottleExceptions = multiBottleExceptions;
+    QSet<QString> projectNames;
+    for (const auto &project : orderedProjects)
+    {
+        if (project.name.isEmpty() || projectNames.contains(project.name))
+            return fail(message, QStringLiteral("原选孔全项目资料名称为空或重复。"));
+        projectNames.insert(project.name);
+    }
+    for (const auto &name : scopeProjects)
+        if (!projectNames.contains(name)) return fail(message, QStringLiteral("原选孔项目不在完整项目顺序中：") + name);
+    for (const auto &project : orderedProjects)
+    {
+        if (!scopeProjects.isEmpty() && !scopeProjects.contains(project.name)) continue;
+        read.projectSteps.insert(project.name, project.advanced.reagents);
+        read.projectRelated.insert(project.name, project.originalBaseValues.value(QStringLiteral("is_related")));
+        auto &projectCandidates = read.candidates[project.name];
+        QSet<QString> stepNames;
+        for (const auto &step : project.advanced.reagents)
         {
-            double amount = 0;
-            if (!number(hole.value(QStringLiteral("used_ul")), &amount)) return fail(message, QStringLiteral("原试剂剩余量无效。"));
-            proposed.insert(id, amount);
+            const QString name = step.value(QStringLiteral("reagent_name"));
+            // 原getPgInfo以名称作key；重复同名步骤会令rec.size与步骤数不齐。
+            if (name.isEmpty() || stepNames.contains(name)) read.incompleteProjects.insert(project.name);
+            stepNames.insert(name);
+        }
+        if (project.advanced.reagents.isEmpty() || read.incompleteProjects.contains(project.name))
+        {
+            read.incompleteProjects.insert(project.name);
+            continue;
+        }
+        for (const auto &step : project.advanced.reagents)
+        {
+            const QString name = step.value(QStringLiteral("reagent_name"));
+            QString singleText;
+            for (const auto &source : orderedProjects)
+            {
+                for (const auto &sourceStep : source.advanced.reagents)
+                    if (sourceStep.value(QStringLiteral("reagent_name")) == name)
+                    {
+                        singleText = sourceStep.value(QStringLiteral("reagent_amount_ul"));
+                        break;
+                    }
+                if (!singleText.isEmpty()) break;
+            }
+            double single = 0, out = 0;
+            const Row *definition = named(state.reagents, QStringLiteral("reagent_name"), name);
+            if (!number(singleText, &single) || single <= 0 || !definition ||
+                !number(definition->value(QStringLiteral("out_ul")), &out))
+            {
+                read.invalidProjects[project.name] = QStringLiteral("原次数分母或冗余量无效，未猜测次数：") + name;
+                continue;
+            }
+            QList<qint64> ids;
+            for (const auto &hole : state.holes)
+            {
+                // 保留当前Linux的区域、状态、有效期保护；原次数函数本身不含这些检查。
+                if (text(hole, "area") != QStringLiteral("r_area") || !eligible(state, hole) ||
+                    text(hole, "reagent_name") != name) continue;
+                const qint64 id = hole.value(QStringLiteral("id")).toLongLong();
+                double volume = 0;
+                if (work.touched.contains(id) || !text(hole, "used_ul").isEmpty())
+                {
+                    if (!work.remaining.contains(id) || !std::isfinite(work.remaining.value(id)) || work.remaining.value(id) < 0)
+                        return fail(message, QStringLiteral("原选孔工作余量缺失或无效。"));
+                    volume = work.remaining.value(id);
+                }
+                else if (!number(hole.value(QStringLiteral("amount_uL")), &volume))
+                    return fail(message, QStringLiteral("原次数使用的空used回退量无效。"));
+                const double count = std::floor((volume - out) / single);
+                if (!std::isfinite(count) || count > std::numeric_limits<int>::max())
+                {
+                    read.invalidProjects[project.name] = QStringLiteral("原次数超出整数范围，未截断：") + name;
+                    continue;
+                }
+                if (count <= 0) continue;
+                ids.append(id);
+                read.availableTests[project.name].insert(id, static_cast<int>(count));
+            }
+            if (!ids.isEmpty()) projectCandidates.insert(name, ids);
+        }
+        if (project.advanced.reagents.isEmpty() || projectCandidates.size() != project.advanced.reagents.size())
+            read.incompleteProjects.insert(project.name);
+    }
+    read.initialized = true;
+    *selection = read;
+    return true;
+}
+
+OriginalReagentAllocation::AllocationResult OriginalReagentRepository::assignTask(const OriginalReagentState &state,
+        OriginalTasks::Task *task, OriginalReagentAllocation::SelectionContext *selection,
+        OriginalReagentAllocation::AmountWork *work) const
+{
+    using namespace OriginalReagentAllocation;
+    AllocationResult result;
+    if (selection) result.scopeId = selection->scopeId;
+    result.limitations.append(QStringLiteral("原getPgInfo次数采样不单独筛区域、状态和有效期；本候选保留既有Linux保护，used空值的次数回退不放宽扣量输入。"));
+    const auto fatal = [&result](const QString &reason) { result.reason = reason; return result; };
+    const auto skipped = [&result](SkipScope scope, const QString &reason)
+    { result.status = Status::OriginalSkipped; result.skipScope = scope; result.reason = reason; return result; };
+    if (!task || !selection || !work || !selection->initialized || !work->initialized ||
+        (selection->mode != Mode::Normal && selection->mode != Mode::Calibration) ||
+        selection->root != state.root || work->root != state.root || selection->versions != state.versions || work->versions != state.versions)
+        return fatal(QStringLiteral("原选孔缓存或余量不属于当前试剂快照。"));
+    if (!selection->projectSteps.contains(task->project.name) ||
+        selection->projectSteps.value(task->project.name) != task->project.advanced.reagents ||
+        selection->projectRelated.value(task->project.name) != task->project.originalBaseValues.value(QStringLiteral("is_related")))
+        return fatal(QStringLiteral("原任务项目步骤与采样时的项目资料不符。"));
+    if (selection->invalidProjects.contains(task->project.name)) return fatal(selection->invalidProjects.value(task->project.name));
+    if (selection->incompleteProjects.contains(task->project.name))
+        return skipped(SkipScope::Project, QStringLiteral("原项目可用试剂资料不齐，按原项目范围跳过。"));
+    auto trial = *work;
+    auto cached = *selection;
+    QMap<qint64, Row> holes;
+    for (const auto &row : state.holes) holes.insert(row.value(QStringLiteral("id")).toLongLong(), row);
+    QString error;
+    const auto ordered = [&](const QString &name)
+    {
+        auto ids = cached.candidates.value(task->project.name).value(name);
+        std::sort(ids.begin(), ids.end(), [&](qint64 a, qint64 b)
+        { return holes.value(a).value(QStringLiteral("priority")).toInt() < holes.value(b).value(QStringLiteral("priority")).toInt(); });
+        QSet<int> priorities;
+        for (qint64 id : ids)
+        {
+            const int priority = holes.value(id).value(QStringLiteral("priority")).toInt();
+            if (priorities.contains(priority))
+            {
+                const QString note = QStringLiteral("原同优先级来自控件指针QHash，本候选仅按priority比较；并列实际顺序仍待核。");
+                if (!result.limitations.contains(note)) result.limitations.append(note);
+            }
+            priorities.insert(priority);
+        }
+        return ids;
+    };
+    const auto deduct = [&](qint64 id, int index)
+    {
+        const auto &step = task->project.advanced.reagents[index];
+        double configured = 0;
+        if (!number(step.value(QStringLiteral("reagent_amount_ul")), &configured) || !trial.remaining.contains(id) ||
+            !std::isfinite(trial.remaining.value(id)) || trial.remaining.value(id) < 0)
+            return fail(&error, QStringLiteral("原步骤配置量或工作余量无效。"));
+        const double rawAfter = qMax(0.0, trial.remaining.value(id) - configured);
+        const QString usedText = QString::number(rawAfter);
+        double logicalAfter = 0;
+        if (!number(usedText, &logicalAfter)) return fail(&error, QStringLiteral("原g6余量不能重新读取。"));
+        const double configuredTotal = result.configuredVolumes.value(id) + configured;
+        if (!std::isfinite(configuredTotal)) return fail(&error, QStringLiteral("原配置量账溢出。"));
+        trial.remaining[id] = logicalAfter;
+        trial.finalUsedText[id] = usedText;
+        trial.touched.insert(id);
+        result.configuredVolumes[id] = configuredTotal;
+        StepAllocation allocation;
+        allocation.rowId = id;
+        allocation.stepIndex = index;
+        allocation.reagentName = step.value(QStringLiteral("reagent_name"));
+        allocation.configuredText = step.value(QStringLiteral("reagent_amount_ul"));
+        allocation.configuredVolume = configured;
+        allocation.usedText = usedText;
+        result.steps.append(allocation);
+        return true;
+    };
+    QList<qint64> ready;
+    QString selectedGroup = QStringLiteral("Default");
+    const bool related = task->project.originalBaseValues.value(QStringLiteral("is_related")).toInt() > 0;
+    if (cached.mode == Mode::Calibration)
+    {
+        if (task->type != QStringLiteral("CAL") || task->calibration.reagentBatchGroup.isEmpty())
+            return fatal(QStringLiteral("原校准任务类型或试剂组缺失。"));
+        selectedGroup = task->calibration.reagentBatchGroup;
+        for (int index = 0; index < task->project.advanced.reagents.size(); ++index)
+        {
+            const QString name = task->project.advanced.reagents[index].value(QStringLiteral("reagent_name"));
+            qint64 selected = 0;
+            bool found = false;
+            for (qint64 id : ordered(name))
+            {
+                QString batch = text(holes.value(id), "reagent_batch");
+                if (!cached.linuxNew && related && selectedGroup != QStringLiteral("Default"))
+                {
+                    if (batch.isEmpty())
+                    {
+                        batch = QStringLiteral("Default");
+                        const QString note = QStringLiteral("旧CAL空批号仅在本次筛选按Default；原setReagentBatch跨控件寿命的覆盖/清空副作用尚未等价，未新增整架失败。");
+                        if (!result.limitations.contains(note)) result.limitations.append(note);
+                    }
+                    if (!selectedGroup.contains(batch)) continue;
+                }
+                if (!found) { selected = id; found = true; }
+            }
+            if (!found)
+            {
+                result.limitations.append(QStringLiteral("原CAL未选到孔存在空指针/未初始化发送分支，本候选保守跳过本测试，未构造成功报文。"));
+                result.steps.clear(); result.configuredVolumes.clear();
+                return skipped(SkipScope::Test, QStringLiteral("校准缓存没有匹配试剂孔，原异常分支待核。"));
+            }
+            ready.append(selected);
+            // CAL原来每个步骤选孔后即扣量；下一步骤仍查同一份次数缓存。
+            if (!deduct(selected, index)) { result.steps.clear(); result.configuredVolumes.clear(); return fatal(error); }
         }
     }
-    auto holes = state.holes;
-    std::stable_sort(holes.begin(), holes.end(), [](const Row &a, const Row &b)
-    { return a.value(QStringLiteral("priority")).toInt() < b.value(QStringLiteral("priority")).toInt(); });
-    const bool related = task->project.originalBaseValues.value(QStringLiteral("is_related")).toInt() > 0;
-    QStringList groups;
-    if (related)
-        for (const auto &row : state.batchGroups)
-            if (text(row, "project_name") == task->project.name) groups.append(text(row, "batch_group"));
-    if (!related) groups = QStringList{QStringLiteral("Default")};
-    else if (!groups.contains(QStringLiteral("Default"))) groups.append(QStringLiteral("Default"));
-    QList<QPair<QString, QString>> chosen;
-    QString selectedGroup;
-    QMap<qint64, double> selectedRemaining;
-    for (const auto &group : groups)
+    else if (related)
     {
-        auto trial = proposed;
-        QList<QPair<QString, QString>> allocation;
-        bool ready = true;
+        QStringList groups;
+        for (const auto &row : state.batchGroups)
+            if (text(row, "project_name") == task->project.name && text(row, "batch_group") != QStringLiteral("Default") &&
+                text(row, "batch_group") != QStringLiteral("None")) groups.append(text(row, "batch_group"));
+        QStringList cantUse;
+        bool completed = false, canUseDefault = false;
+        while (!completed)
+        {
+            ready.clear(); selectedGroup.clear();
+            if (cantUse.size() == groups.size()) break;
+            const auto previousCantUse = cantUse;
+            bool unsafe = false;
+            for (const auto &step : task->project.advanced.reagents)
+            {
+                const auto ids = ordered(step.value(QStringLiteral("reagent_name")));
+                if (ids.isEmpty()) { unsafe = true; break; }
+                if (!canUseDefault)
+                {
+                    canUseDefault = true;
+                    for (qint64 id : ids)
+                    {
+                        const QString batch = text(holes.value(id), "reagent_batch");
+                        if (batch != QStringLiteral("Default") && batch != QStringLiteral("None")) { canUseDefault = false; break; }
+                    }
+                }
+                if (canUseDefault)
+                {
+                    result.limitations.append(QStringLiteral("原Normal的Default continue前已设任务号/状态；当前会话无对应控件及编号洞，未伪造该副作用。"));
+                    return skipped(SkipScope::Test, QStringLiteral("原相关批组canUseDefault分支跳过本测试，不追加Default成功兜底。"));
+                }
+                if (selectedGroup.isEmpty())
+                {
+                    bool found = false;
+                    qint64 selected = 0;
+                    for (qint64 id : ids)
+                    {
+                        const QString batch = text(holes.value(id), "reagent_batch");
+                        if (batch == QStringLiteral("Default") || batch == QStringLiteral("None")) continue;
+                        bool excluded = false;
+                        for (const auto &bad : cantUse) if (bad.contains(batch)) { excluded = true; break; }
+                        if (!excluded) { selected = id; found = true; break; }
+                    }
+                    if (!found) { unsafe = true; break; }
+                    // 原contains且无break：重叠批组可能重复append，不能改成拆分后的精确匹配。
+                    for (const auto &group : groups)
+                        if (group.contains(text(holes.value(selected), "reagent_batch")))
+                        { selectedGroup = group; ready.append(selected); }
+                }
+                else
+                {
+                    bool found = false;
+                    for (qint64 id : ids)
+                        if (selectedGroup.contains(text(holes.value(id), "reagent_batch")))
+                        { ready.append(id); found = true; break; }
+                    if (!found)
+                    {
+                        if (!cantUse.contains(selectedGroup)) cantUse.append(selectedGroup);
+                        selectedGroup.clear(); ready.clear(); break;
+                    }
+                }
+            }
+            completed = ready.size() == task->project.advanced.reagents.size();
+            if (!completed && (unsafe || previousCantUse == cantUse)) break;
+        }
+        if (!completed)
+        {
+            result.limitations.append(QStringLiteral("原相关批组的空候选、重叠批组或无进展循环未定义安全恢复；本候选不循环/不发送不完整任务，跳过本测试待核。"));
+            return skipped(SkipScope::Test, QStringLiteral("缓存未能形成完整原批组readyList。"));
+        }
+    }
+    else
+    {
         for (const auto &step : task->project.advanced.reagents)
         {
-            double volume = 0;
-            if (!number(step.value(QStringLiteral("reagent_amount_ul")), &volume))
-                return fail(message, QStringLiteral("原项目试剂加样量无效。"));
-            const Row *selected = nullptr;
-            for (const auto &hole : holes)
-            {
-                const QString batch = text(hole, "reagent_batch");
-                const bool inGroup = !related || (group == QStringLiteral("Default")
-                    ? batch == QStringLiteral("Default") || batch == QStringLiteral("None")
-                    : group.split('|', Qt::KeepEmptyParts).contains(batch));
-                if (text(hole, "area") != QStringLiteral("r_area") || !eligible(state, hole) || !inGroup ||
-                    text(hole, "reagent_name") != step.value(QStringLiteral("reagent_name"))) continue;
-                const auto *definition = named(state.reagents, QStringLiteral("reagent_name"), text(hole, "reagent_name"));
-                double minimum = 0;
-                if (!definition || !number(definition->value(QStringLiteral("out_ul")), &minimum)) continue;
-                const qint64 id = hole.value(QStringLiteral("id")).toLongLong();
-                if (trial.value(id) - minimum >= volume) { selected = &hole; break; }
-            }
-            if (!selected) { ready = false; break; }
-            QPair<QString, QString> chosenSlot;
-            if (!slot(*selected, &chosenSlot, message)) return false;
-            allocation.append(chosenSlot);
-            trial[selected->value(QStringLiteral("id")).toLongLong()] -= volume;
-        }
-        if (ready)
-        {
-            chosen = allocation;
-            selectedGroup = group;
-            selectedRemaining = trial;
-            break;
+            const QString name = step.value(QStringLiteral("reagent_name"));
+            const auto ids = ordered(name);
+            if (ids.isEmpty())
+                return skipped(SkipScope::Test, QStringLiteral("本范围的原多瓶候选已用完，未重新按余量选瓶。"));
+            ready.append(ids.first());
+            if (task->multiBottle && !cached.multiBottleExceptions.contains(name, Qt::CaseInsensitive))
+                cached.candidates[task->project.name][name].removeAll(ids.first());
         }
     }
-    if (selectedGroup.isEmpty()) return fail(message, QStringLiteral("项目%1没有足量且批组匹配的可用试剂，未下发该任务。").arg(task->project.name));
+    if (cached.mode == Mode::Normal)
+        for (int index = 0; index < ready.size(); ++index)
+            if (!deduct(ready[index], index)) { result.steps.clear(); result.configuredVolumes.clear(); return fatal(error); }
+    QList<QPair<QString, QString>> chosen;
+    for (qint64 id : ready)
+    {
+        QPair<QString, QString> position;
+        if (!holes.contains(id) || !slot(holes.value(id), &position, &error))
+        { result.steps.clear(); result.configuredVolumes.clear(); return fatal(error.isEmpty() ? QStringLiteral("缓存孔位不存在。") : error); }
+        chosen.append(position);
+    }
     QMap<QString, QPair<QString, QString>> sampleSlots, reagentSlots;
     // 原辅助清洗/稀释孔位选择：按表顺序取最后匹配项，遇priority=1则立即采用。
     for (const auto &area : {QStringLiteral("s_area"), QStringLiteral("r_area")})
@@ -296,19 +565,45 @@ bool OriginalReagentRepository::assignTask(const OriginalReagentState &state, Or
             const QString name = text(hole, "reagent_name");
             if (firstPriorityChosen.contains(name)) continue;
             QPair<QString, QString> position;
-            if (!slot(hole, &position, message)) return false;
+            if (!slot(hole, &position, &error)) { result.steps.clear(); result.configuredVolumes.clear(); return fatal(error); }
             if (hole.value(QStringLiteral("priority")).toInt() == 1) firstPriorityChosen.insert(name);
             areaSlots[name] = position;
         }
     }
     const QString diluent = task->project.originalBaseValues.value(QStringLiteral("IBS_name"));
     if (!diluent.isEmpty() && diluent != QStringLiteral("none") && !sampleSlots.contains(diluent))
-        return fail(message, QStringLiteral("原样本区未放置所选稀释液：") + diluent);
+    { result.steps.clear(); result.configuredVolumes.clear(); return fatal(QStringLiteral("原样本区未放置所选稀释液：") + diluent); }
     task->batchGroup = selectedGroup;
     task->reagentSlots = chosen;
     task->sampleAreaSlots = sampleSlots;
     task->reagentAreaSlots = reagentSlots;
-    *remaining = selectedRemaining;
+    task->reservedReagentVolumes = result.configuredVolumes;
+    *work = trial;
+    *selection = cached;
+    result.status = Status::Selected;
+    result.reason = QStringLiteral("已按原采样缓存准备选孔与逻辑g6扣量，尚未保存或发送。");
+    return result;
+}
+
+bool OriginalReagentRepository::assignTask(const OriginalReagentState &state, OriginalTasks::Task *task,
+                                         QMap<qint64, double> *remaining, QString *message) const
+{
+    if (!task || !remaining) return fail(message, QStringLiteral("原任务试剂分配输入为空。"));
+    OriginalReagentAllocation::AmountWork work;
+    if (!initializeAmountWork(state, &work, message)) return false;
+    for (auto it = remaining->cbegin(); it != remaining->cend(); ++it)
+    {
+        if (!work.remaining.contains(it.key()) || !std::isfinite(it.value()) || it.value() < 0)
+            return fail(message, QStringLiteral("原任务传入余量不对应有效孔位。"));
+        work.remaining[it.key()] = it.value();
+    }
+    OriginalReagentAllocation::SelectionContext selection;
+    // 兼容入口只拥有当前项目；实际会话用完整原项目顺序和原范围调用上面的同一算法。
+    if (!beginSelectionScope(state, ProjectRecords{task->project}, {}, OriginalReagentAllocation::Mode::Normal, false,
+                             QStringLiteral("legacy-single-task"), {}, work, &selection, message)) return false;
+    const auto result = assignTask(state, task, &selection, &work);
+    if (result.status != OriginalReagentAllocation::Status::Selected) return fail(message, result.reason);
+    *remaining = work.remaining;
     return true;
 }
 

@@ -96,7 +96,7 @@ sources+=("$module_dir/instrument_shell.cpp" "$program_dir/instrument/instrument
 sources+=("$module_dir/login_shell.cpp" "$program_dir/ui/maskdlglogin.cpp")
 sources+=("$module_dir/printer_shell.cpp" "$module_dir/printer_report_shell.cpp" "$program_dir/ui/frmprintersetting.cpp" "$program_dir/data/printer_settings_store.cpp")
 sources+=("$module_dir/lis_shell.cpp" "$program_dir/ui/frmlissetting.cpp" "$program_dir/data/lis_settings_store.cpp" "$program_dir/data/serial_port_catalog.cpp")
-sources+=("$program_dir/lis_transport/lis_mllp_codec.cpp" "$program_dir/lis_transport/lis_tcp_transport.cpp")
+sources+=("$program_dir/lis_transport/lis_mllp_codec.cpp" "$program_dir/lis_transport/lis_tcp_transport.cpp" "$program_dir/lis_transport/lis_connection_controller.cpp")
 # 原报文辅助窗口只有文件/本地SQL；不引入LIS网络、ACK或任务映射。
 sources+=("$module_dir/lis_raw_inbox_shell.cpp" "$program_dir/lis_raw_inbox/lis_dsr_raw.cpp"
           "$program_dir/lis_raw_inbox/lis_inbox_store.cpp" "$program_dir/lis_raw_inbox/lis_inbox_page.cpp"
@@ -173,7 +173,7 @@ headers+=("$program_dir/instrument/instrument_page.h" "$program_dir/instrument/o
 headers+=("$program_dir/ui/maskdlglogin.h")
 headers+=("$module_dir/printer_report_shell.h" "$program_dir/ui/frmprintersetting.h" "$program_dir/data/printer_settings_store.h"
            "$program_dir/ui/frmlissetting.h" "$program_dir/data/lis_settings_store.h" "$program_dir/data/serial_port_catalog.h")
-headers+=("$program_dir/lis_transport/lis_tcp_transport.h")
+headers+=("$program_dir/lis_transport/lis_tcp_transport.h" "$program_dir/lis_transport/lis_mllp_codec.h" "$program_dir/lis_transport/lis_connection_controller.h" "$program_dir/lis_transport/lis_connection_values.h")
 headers+=("$program_dir/quality_control/qc_store.h" "$program_dir/quality_control/quality_control_page.h"
           "$program_dir/quality_control/qc_history_core.h" "$program_dir/quality_control/qc_history_reply.h"
           "$program_dir/quality_control/cus_quality_chart.h" "$program_dir/quality_control/qualitychart.h"
@@ -218,7 +218,12 @@ sources+=("$program_dir/original_files/original_business_database.cpp"
           "$program_dir/samples/original_project_device_repository.cpp"
           "$program_dir/projects/original_project_codec.cpp")
 headers+=("$program_dir/reagents/original_reagent_editor.h" "$program_dir/reagents/original_reagent_usage.h")
-headers+=("$program_dir/alarm_history/original_alarm_receiver.h")
+headers+=("$program_dir/alarm_history/original_alarm_receiver.h"
+          "$program_dir/alarm_history/original_current_alarm_state.h")
+# 当前告警只读观察与原页面显示，必须在输入清单出口之前登记。
+sources+=("$program_dir/alarm_history/original_current_alarm_state.cpp"
+          "$program_dir/alarm_history/alarm_history_page_current.cpp"
+          "$module_dir/alarm_current_shell.cpp")
 # One stable name for each QRC prevents basename collisions with other modules.
 resource_names=(shell_resources account_resources report_resources imagesRpt projects_resources reagents_resources samples_resources instrument_resources qc_history_resources)
 resource_files=("$module_dir/resources.qrc" "$module_dir/account_resources.qrc"
@@ -251,6 +256,10 @@ headers+=("$program_dir/reagents/original_task_reagent_display.h"
           "$program_dir/samples/original_task_reagent_receipt.h"
           "$program_dir/samples/original_task_reagent_receipt_writer.h"
           "$module_dir/task_reagent_context.h")
+# 本片的选择缓存、金额工作值和任务账本接口也属于真实编译输入。
+headers+=("$program_dir/reagents/original_reagent_repository.h"
+          "$program_dir/samples/original_detection_session.h"
+          "$program_dir/samples/original_task_codec.h")
 for input in "${sources[@]}" "${forms[@]}" "${headers[@]}" "${resource_files[@]}" "${helper_sources[@]}"; do
     [[ -f $input ]] || { echo "Required ARM64 build input missing: $input" >&2; exit 1; }
 done

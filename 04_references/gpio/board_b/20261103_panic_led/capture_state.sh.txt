@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# 只读取板B身份、灯和配置指纹，供崩溃实验前后比较。
+set -eu
+serial=$(tr -d '\000' </proc/device-tree/serial-number)
+printf 'serial=%s\n' "$serial"
+test "$serial" = 8314b1e8ffd0321f
+date -Is
+uname -r
+printf 'boot_id='
+cat /proc/sys/kernel/random/boot_id
+sysctl kernel.panic kernel.panic_on_oops kernel.sysrq
+printf 'LED_TRIGGER='
+cat /sys/class/leds/work/trigger
+printf 'LED_INVERT='
+cat /sys/class/leds/work/invert
+printf 'CURRENT='
+readlink /home/rkshare/programs/sn100_shell/current
+printf '\nCONFIG_SHA256_BEGIN\n'
+find /home/rkshare/programs/sn100_shell/runtime/data /userdata/shared \
+    -maxdepth 1 -type f \( -iname '*.ini' -o -iname '*.cfg' \) -print0 \
+    | sort -z | xargs -0 -r sha256sum
+printf 'CONFIG_SHA256_END\n'
+printf '\nUSER_PROCESSES\n'
+ps -eo pid,ppid,comm | awk '$2 != 2'
+printf '\nLISTENERS\n'
+ss -lntp
+printf '\nFILESYSTEMS\n'
+findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS / /userdata /oem || true
+printf '\nCURRENT_PSTORE\n'
+find /sys/fs/pstore /var/lib/systemd/pstore -maxdepth 1 -type f -exec sha256sum {} \;
+printf '\nDISK_ERRORS\n'
+dmesg | grep -Ei 'I/O error|EXT4-fs error|read-only file system' | tail -n 10 || true

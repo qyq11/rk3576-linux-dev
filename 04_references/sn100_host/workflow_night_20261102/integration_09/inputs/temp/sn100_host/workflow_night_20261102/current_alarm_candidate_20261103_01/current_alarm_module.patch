@@ -1,0 +1,1021 @@
+diff --git a/06_programs/sn100_host/alarm_history/alarm_history_host.cpp b/06_programs/sn100_host/alarm_history/alarm_history_host.cpp
+--- a/06_programs/sn100_host/alarm_history/alarm_history_host.cpp
++++ b/06_programs/sn100_host/alarm_history/alarm_history_host.cpp
+@@ -1,5 +1,6 @@
+ #include "alarm_history_host.h"
+ #include <QApplication>
++#include <QDir>
+ #include <QThread>
+ 
+ AlarmHistoryHost::AlarmHistoryHost(AlarmHistory::Store *store,QWidget *owner,QObject *parent)
+@@ -7,6 +8,33 @@
+ {
+     if(store)connect(store,&AlarmHistory::Store::closed,this,&AlarmHistoryHost::storageClosed,Qt::QueuedConnection);
+ }
++AlarmHistoryPage *AlarmHistoryHost::createPage(QString path)
++{
++    if(!owner_)return nullptr;
++    auto *page=new AlarmHistoryPage(store_,owner_);page_=page;path_=path;
++    if(currentEnabled_)
++    {
++        page->enableCurrentAlarms(currentHistoryPath_,QDate::currentDate());
++        page->setCurrentStatus(currentMessage_,currentError_);
++    }
++    connect(page,&AlarmHistoryPage::statusChanged,this,&AlarmHistoryHost::statusChanged);
++    connect(page,&AlarmHistoryPage::currentDisplayRejected,this,&AlarmHistoryHost::currentDisplayRejected);
++    connect(page,&AlarmHistoryPage::busyChanged,this,&AlarmHistoryHost::busyChanged);
++    connect(page,&QObject::destroyed,this,[this]()
++    {page_=nullptr;path_.clear();emit busyChanged(false);emit viewClosed();});
++    return page;
++}
++
++bool AlarmHistoryHost::enableCurrentAlarms(QString historyPath)
++{
++    if(currentEnabled_||!QDir::isAbsolutePath(historyPath)||historyPath.contains(QChar::Null))return false;
++    if(page_&&(page_->isClosing()||path_!=historyPath))return false;
++    currentHistoryPath_=historyPath;currentEnabled_=true;
++    currentMessage_=tr("尚未收到本连接的完整当前告警消息。");
++    if(page_)page_->enableCurrentAlarms(historyPath,QDate::currentDate());
++    return true;
++}
++
+ bool AlarmHistoryHost::showExistingHistory(QString path,QDate today)
+ {
+     if(!store_||!owner_||!store_->thread()||store_->thread()==qApp->thread()||!store_->thread()->isRunning())
+@@ -15,13 +43,47 @@
+     {
+         if(path!=path_){emit statusChanged(tr("请先关闭已有历史来源，再切换来源。"),true);return false;}
+         if(page_->isClosing()){emit statusChanged(tr("历史页正在正常关闭，请等待来源释放。"),false);return false;}
+-        page_->raise();page_->activateWindow();return true;
++        if(currentEnabled_)page_->showHistoricalRecords();
++        // 日历或错误确认仍由原页面处理，不用raise抢走它们的焦点。
++        if(!page_->isBusy()){page_->raise();page_->activateWindow();}
++        return true;
+     }
+-    auto *page=new AlarmHistoryPage(store_,owner_);page_=page;path_=path;
+-    connect(page,&AlarmHistoryPage::statusChanged,this,&AlarmHistoryHost::statusChanged);
+-    connect(page,&AlarmHistoryPage::busyChanged,this,&AlarmHistoryHost::busyChanged);
+-    connect(page,&QObject::destroyed,this,[this](){page_=nullptr;path_.clear();emit busyChanged(false);emit viewClosed();});
+-    return page->openExistingHistory(path,today);
++    auto *page=createPage(path);
++    return page&&page->openExistingHistory(path,today);
++}
++
++bool AlarmHistoryHost::showCurrent()
++{
++    if(!currentEnabled_||!owner_||(page_&&page_->isClosing()))return false;
++    deliverRows({},currentMessage_,currentError_);
++    if(page_)page_->queueCurrentHistoryRefresh();
++    return true;
++}
++
++void AlarmHistoryHost::deliverRows(QVector<AlarmHistory::CurrentAlarmRow> rows,QString message,bool error)
++{
++    if(!currentEnabled_||!owner_||(page_&&page_->isClosing()))return;
++    // 先于create/show/raise记录活动状态，不能用弹窗后的状态反推。
++    const bool activeBeforeDelivery=page_&&page_->isActiveWindow();
++    auto *page=page_?page_.data():createPage(currentHistoryPath_);
++    if(page)page->showCurrentRows(rows,message,activeBeforeDelivery,error);
++}
++
++void AlarmHistoryHost::showCurrentObservation(AlarmHistory::CurrentAlarmObservation observation)
++{
++    deliverRows(observation.rows,currentMessage_,currentError_);
++    if(page_&&!page_->isClosing())page_->queueCurrentHistoryRefresh();
++}
++
++void AlarmHistoryHost::showReceivedEvents(QVector<AlarmHistory::CurrentAlarmRow> rows,QString message)
++{
++    deliverRows(rows,message);
++}
++
++void AlarmHistoryHost::setCurrentStatus(QString message,bool error)
++{
++    currentMessage_=message;currentError_=error;
++    if(page_)page_->setCurrentStatus(message,error);
+ }
+ bool AlarmHistoryHost::requestLeave(QString action)
+ {
+diff --git a/06_programs/sn100_host/alarm_history/alarm_history_host.h b/06_programs/sn100_host/alarm_history/alarm_history_host.h
+--- a/06_programs/sn100_host/alarm_history/alarm_history_host.h
++++ b/06_programs/sn100_host/alarm_history/alarm_history_host.h
+@@ -4,14 +4,19 @@
+ #include <QObject>
+ #include <QPointer>
+ 
+-// Thin proposed shell adapter. Root owns top badge enablement and worker thread.
+-// This QObject neither discovers/creates a DB nor maps history to current alarms.
++// 同一原对话框承载当前表和历史表；SQL及线程仍由调用方持有。
+ class AlarmHistoryHost : public QObject
+ {
+     Q_OBJECT
+ public:
+     AlarmHistoryHost(AlarmHistory::Store *store,QWidget *owner,QObject *parent=nullptr);
+     bool showExistingHistory(QString path,QDate today);
++    bool enableCurrentAlarms(QString historyPath);
++    bool showCurrent();
++    void showCurrentObservation(AlarmHistory::CurrentAlarmObservation observation);
++    // 只显示“收到的新事件”；不声明写库，也不将它当当前全量查询。
++    void showReceivedEvents(QVector<AlarmHistory::CurrentAlarmRow> rows,QString message);
++    void setCurrentStatus(QString message,bool error);
+     bool requestLeave(QString action);
+     bool isBusy() const { return page_&&page_->isBusy(); }
+     bool isOpen() const { return !page_.isNull(); }
+@@ -20,6 +25,7 @@
+     void originalEventsCommitted(AlarmHistory::Rows rows);
+ signals:
+     void statusChanged(QString text,bool error);
++    void currentDisplayRejected(QString reason);
+     void busyChanged(bool busy);
+     void storageClosed();
+     void viewClosed();
+@@ -27,6 +33,9 @@
+     QPointer<AlarmHistory::Store> store_;
+     QPointer<QWidget> owner_;
+     QPointer<AlarmHistoryPage> page_;
+-    QString path_;
++    QString path_,currentHistoryPath_,currentMessage_;
++    bool currentEnabled_=false,currentError_=false;
++    AlarmHistoryPage *createPage(QString path);
++    void deliverRows(QVector<AlarmHistory::CurrentAlarmRow> rows,QString message,bool error=false);
+ };
+ #endif
+diff --git a/06_programs/sn100_host/alarm_history/alarm_history_page.cpp b/06_programs/sn100_host/alarm_history/alarm_history_page.cpp
+--- a/06_programs/sn100_host/alarm_history/alarm_history_page.cpp
++++ b/06_programs/sn100_host/alarm_history/alarm_history_page.cpp
+@@ -16,6 +16,7 @@
+ #include <QSignalBlocker>
+ #include <QTableWidget>
+ #include <QTimer>
++#include <QThread>
+ #include <algorithm>
+ 
+ using namespace AlarmHistory;
+@@ -95,7 +96,14 @@
+     state_->setStyleSheet(QStringLiteral("color:#444444;background:transparent;border:none;"));
+     ui->stackedWidget->setCurrentIndex(1);
+     connect(ui->stackedWidget,&QStackedWidget::currentChanged,this,[this](int index)
+-    {if(index!=1){QSignalBlocker blocker(ui->stackedWidget);ui->stackedWidget->setCurrentIndex(1);}});
++    {
++        if (!currentEnabled_ && index != 1)
++        { QSignalBlocker blocker(ui->stackedWidget); ui->stackedWidget->setCurrentIndex(1); }
++        renderStatus();
++    });
++    connect(ui->btnErrorLog,&QPushButton::clicked,this,&AlarmHistoryPage::showHistoricalRecords);
++    connect(ui->btnReturn,&QPushButton::clicked,this,[this]()
++    { if(currentEnabled_&&!closingDialog_&&!warning_)ui->stackedWidget->setCurrentIndex(0); });
+     const QString unknown=tr("只读历史；当前告警、严重度、设备处置和互锁未知，功能未接入。");
+     for(QWidget *control:QList<QWidget*>{ui->tblAbnormal,ui->txtTestInfo,ui->btnReset,ui->btnReturn,ui->btnErrorLog})
+     {control->setEnabled(false);control->setToolTip(unknown);}
+@@ -157,7 +165,7 @@
+             updateControls();
+         });
+     }
+-    report(tr("未绑定历史来源；当前实时告警未知。"));updateControls();
++    report(tr("尚未打开历史来源；历史读取状态与当前告警分别显示。"));updateControls();
+ }
+ AlarmHistoryPage::~AlarmHistoryPage()
+ {
+@@ -165,7 +173,7 @@
+     if(warning_){warning_->disconnect(this);delete warning_.data();}
+     // Normal owner path waits storageClosed. This is only external-destruction
+     // cleanup; it does not prove normal close/join and never blocks the GUI.
+-    if(store_&&!closedSignal_)QMetaObject::invokeMethod(store_,"close",Qt::QueuedConnection);
++    if(store_&&historySourceRequested_&&!closedSignal_)QMetaObject::invokeMethod(store_,"close",Qt::QueuedConnection);
+     delete ui;
+ }
+ bool AlarmHistoryPage::isBusy()const
+@@ -181,25 +189,33 @@
+     {clearDisplay();report(tr("显示候选容量已改变，请重新查询；未保留超出新候选的旧结果。"));}
+     return true;
+ }
+-bool AlarmHistoryPage::openExistingHistory(QString path,QDate today)
++bool AlarmHistoryPage::openExistingHistory(QString path,QDate today,bool showHistory)
+ {
+     if(isBusy()||sourceReady_)return false;
+-    show();ui->mask->showAnimation();
+-    if(!store_||!QFileInfo(path).isAbsolute()||path.contains(QChar::Null)||!validDate(today))
++    if(showHistory)
++    {
++        ui->stackedWidget->setCurrentIndex(1);
++        show();ui->mask->showAnimation();
++    }
++    if(!store_||!store_->thread()||!store_->thread()->isRunning()||
++        store_->thread()==thread()||!QFileInfo(path).isAbsolute()||path.contains(QChar::Null)||!validDate(today))
+     {report(tr("请显式提供既有历史库绝对路径和合法当天日期；未打开或造库。"),true);showWarning(status_);return false;}
+     sourcePath_=path;today_=today;nextOpenScope_=Scope::LatestToday20;closedSignal_=false;
+     ui->ldtStartDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
+     ui->ldtEndDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
+-    clearDisplay();opening_=true;report(tr("正在只读打开历史来源；当前实时告警未知。"));updateControls();emit requestOpen(path);return true;
++    historySourceRequested_=true;
++    clearDisplay();opening_=true;report(tr("正在只读打开历史来源；该查询不确认当前告警。"));updateControls();emit requestOpen(path);return true;
+ }
+ void AlarmHistoryPage::report(QString text,bool error)
+ {
+-    status_=text;state_->setText(state_->fontMetrics().elidedText(text,Qt::ElideRight,state_->width()));
+-    state_->setToolTip(text);state_->setAccessibleName(text);ui->tlbAbnormallog->setToolTip(text);
+-    setWindowTitle(text);emit statusChanged(text,error);
++    status_=text;historyError_=error;
++    ui->tlbAbnormallog->setToolTip(text);
++    renderStatus();
++    emit statusChanged(text,error);
+ }
+ void AlarmHistoryPage::updateControls()
+ {
++    refreshCurrentHistoryWhenIdle();
+     refreshCommittedEventsWhenIdle();
+     const bool choosing=!calendar_.isNull(),warning=!warning_.isNull();
+     const bool stationary=!opening_&&!active_&&!sourceClosing_&&!closingDialog_&&!choosing&&!warning;
+@@ -208,6 +224,8 @@
+     ui->btnCalendarSetStart->setEnabled(stationary&&!sourcePath_.isEmpty());
+     ui->btnCalendarSetEnd->setEnabled(stationary&&!sourcePath_.isEmpty());
+     ui->btnClose->setEnabled(!closingDialog_&&!warning);
++    ui->btnReturn->setEnabled(currentEnabled_&&!closingDialog_&&!warning&&!choosing);
++    ui->btnErrorLog->setEnabled(currentEnabled_&&stationary&&!sourcePath_.isEmpty());
+     const bool busy=isBusy();if(busy!=lastBusy_){lastBusy_=busy;emit busyChanged(busy);}
+ }
+ void AlarmHistoryPage::showWarning(QString message)
+@@ -267,6 +285,7 @@
+     if(!sourceReady_)
+     {
+         if(sourcePath_.isEmpty())return;
++        historySourceRequested_=true;
+         nextOpenScope_=Scope::DateInterval;opening_=true;closedSignal_=false;clearDisplay();
+         report(tr("按本次操作重新只读打开显式历史来源；未自动造库。"));updateControls();emit requestOpen(sourcePath_);return;
+     }
+@@ -278,8 +297,8 @@
+     clearDisplay();++generation_;request_=Request();request_.key={sequence.fetchAndAddRelaxed(1)+1,generation_,sourceToken_};
+     request_.scope=scope;request_.first=readDate(ui->ldtStartDate);request_.last=readDate(ui->ldtEndDate);
+     request_.today=today_;request_.batchSize=128;lastCredit_=0;active_=true;cancelling_=localAbort_=false;
+-    report(scope==Scope::LatestToday20?tr("正在校验并读取当天最近20条历史；尚未完成，实时告警未知。"):
+-        tr("正在校验并读取完整日期区间；尚未完成，实时告警未知。"));updateControls();emit requestBegin(request_);
++    report(scope==Scope::LatestToday20?tr("正在校验并读取当天最近20条历史；尚未完成，不代表当前告警状态。"):
++        tr("正在校验并读取完整日期区间；尚未完成，不代表当前告警状态。"));updateControls();emit requestBegin(request_);
+ }
+ bool AlarmHistoryPage::sameRequest(const Request &reply)const
+ {
+@@ -297,7 +316,7 @@
+     if(!visibleRequest(reply))return;
+     if(!pending_.isEmpty()||credit_||step==0||step<=lastCredit_)
+     {stopWithError(tr("历史续取回执次序异常；未展示部分结果。"),true);return;}
+-    lastCredit_=credit_=step;report(tr("正在分批校验历史：已校验%1条，尚未完整；实时告警未知。").arg(validated));advanceLater();
++    lastCredit_=credit_=step;report(tr("正在分批校验历史：已校验%1条，尚未完整；不代表当前告警状态。").arg(validated));advanceLater();
+ }
+ void AlarmHistoryPage::advanceLater()
+ {
+@@ -341,7 +360,7 @@
+         }
+         table->setRowHeight(index,41);table->resizeRowToContents(index);++added;
+     }
+-    emit appendTurnApplied(added);report(tr("历史已追加%1条，仍在处理，尚未完整；实时告警未知。").arg(table->rowCount()));
++    emit appendTurnApplied(added);report(tr("历史已追加%1条，仍在处理，尚未完整；不代表当前告警状态。").arg(table->rowCount()));
+     if(pendingIndex_<pending_.size()){appendLater();return;}
+     retainedBytes_+=pendingBytes_;pendingBytes_=0;pending_.clear();pendingIndex_=0;
+     if(terminalPending_)tryComplete();else if(credit_)advanceLater();
+@@ -352,7 +371,7 @@
+     if(cancelling_||localAbort_||closingDialog_)
+     {
+         active_=false;cancelling_=false;clearDisplay();
+-        if(!localAbort_&&!closingDialog_)report(tr("历史查询已取消；未保留部分行，实时告警未知。"));
++        if(!localAbort_&&!closingDialog_)report(tr("历史查询已取消；未保留部分行，不代表当前告警状态。"));
+         updateControls();emit finishedView(false,0,matching);return;
+     }
+     if(!visibleRequest(reply))return;
+@@ -367,8 +386,8 @@
+         terminalCompletion_!=(recent?Completion::RecentTodayComplete:Completion::IntervalComplete))
+     {stopWithError(tr("历史完整回执与已显示行数/范围不符；已清空，不标完整成功。"),true);return;}
+     active_=false;complete_=true;terminalPending_=false;credit_=0;
+-    report(recent?tr("当天最近20条已完成：显示%1条，共匹配%2条；不是完整区间，实时告警未知。")
+-        .arg(terminalDelivered_).arg(terminalMatching_):tr("日期区间完整读取：%1条；实时告警未知。")
++    report(recent?tr("当天最近20条已完成：显示%1条，共匹配%2条；不是完整区间，不代表当前告警状态。")
++        .arg(terminalDelivered_).arg(terminalMatching_):tr("日期区间完整读取：%1条；不代表当前告警状态。")
+         .arg(terminalDelivered_));updateControls();emit finishedView(true,terminalDelivered_,terminalMatching_);
+ }
+ void AlarmHistoryPage::cancelCurrent()
+@@ -392,7 +411,7 @@
+ {
+     if(!inflightRequest(reply))return;
+     active_=false;cancelling_=false;clearDisplay();
+-    if(!localAbort_&&!closingDialog_)report(tr("历史查询已取消；没有完整结果，实时告警未知。"));
++    if(!localAbort_&&!closingDialog_)report(tr("历史查询已取消；没有完整结果，不代表当前告警状态。"));
+     updateControls();emit finishedView(false,0,0);
+ }
+ void AlarmHistoryPage::receivedFailed(Request reply,Error,QString message,qint64)
+@@ -427,7 +446,7 @@
+             auto *edit=first?ui->ldtStartDate:ui->ldtEndDate;
+             const QString selected=date.toString(QStringLiteral("yyyy/MM/dd"));
+             if(edit->text()!=selected)
+-            {edit->setText(selected);++generation_;clearDisplay();report(tr("日期已变更，尚未查询；先前日期结果已清空，实时告警未知。"));}
++            {edit->setText(selected);++generation_;clearDisplay();report(tr("日期已变更，尚未查询；先前日期结果已清空，不代表当前告警状态。"));}
+         }
+         popup->reject();
+     });
+@@ -441,9 +460,17 @@
+     if(warning_)return false;
+     if(closingDialog_)return false;
+     closingDialog_=true;setProperty("closingHistory",true);++generation_;clearDisplay();
++    currentHistoryRefreshPending_=false;
++    clearCurrentDisplay();
+     if(calendar_)calendar_->reject();
+     report(tr("正在关闭只读历史来源；等待SQL返回/释放，不能声明硬取消或设备动作完成。"));
+-    if(store_&&!sourceClosing_){sourceClosing_=true;emit requestSourceClose();}
++    if (!historySourceRequested_)
++    {
++        // 只看当前告警时没有打开SQL，不等待一个从未发出的开库回执。
++        closedSignal_=true;
++        if(!calendar_)ui->mask->closeAnimation();
++    }
++    else if(store_&&!sourceClosing_){sourceClosing_=true;emit requestSourceClose();}
+     else if(!store_){forceClose_=true;closingDialog_=false;QDialog::reject();}
+     updateControls();return false;
+ }
+@@ -452,7 +479,7 @@
+     const bool hadPendingView=active_;
+     ++generation_;clearDisplay();
+     sourceReady_=opening_=active_=cancelling_=sourceClosing_=false;sourceToken_.clear();closedSignal_=true;
+-    if(!closingDialog_&&!localAbort_)report(tr("历史来源已关闭并清表；没有当前查询结果，实时告警未知。"));
++    if(!closingDialog_&&!localAbort_)report(tr("历史来源已关闭并清空历史表；不代表当前告警状态。"));
+     if(hadPendingView)emit finishedView(false,0,0);
+     updateControls();emit storageClosed();
+     if(closingDialog_&&!calendar_)ui->mask->closeAnimation();
+diff --git a/06_programs/sn100_host/alarm_history/alarm_history_page.h b/06_programs/sn100_host/alarm_history/alarm_history_page.h
+--- a/06_programs/sn100_host/alarm_history/alarm_history_page.h
++++ b/06_programs/sn100_host/alarm_history/alarm_history_page.h
+@@ -1,6 +1,8 @@
+ #ifndef SN100_PRIVATE_ALARM_HISTORY_PAGE_H
+ #define SN100_PRIVATE_ALARM_HISTORY_PAGE_H
+ #include "alarm_history_store.h"
++#include "original_current_alarm_state.h"
++#include <QSet>
+ #include <QDialog>
+ #include <QPointer>
+ 
+@@ -23,7 +25,14 @@
+     };
+     explicit AlarmHistoryPage(AlarmHistory::Store *store,QWidget *parent=nullptr);
+     ~AlarmHistoryPage() override;
+-    bool openExistingHistory(QString absolutePath,QDate capturedToday);
++    bool openExistingHistory(QString absolutePath,QDate capturedToday,bool showHistory=true);
++    // 当前页沿用原表；此入口只绑定历史路径，尚未打开SQL来源。
++    void enableCurrentAlarms(QString historyPath, QDate today);
++    void showCurrentRows(QVector<AlarmHistory::CurrentAlarmRow> rows, QString message,
++                         bool activeBeforeDelivery,bool error=false);
++    void queueCurrentHistoryRefresh();
++    void setCurrentStatus(QString message, bool error);
++    void showHistoricalRecords();
+     bool requestClose();
+     bool isBusy() const;
+     bool isClosing() const { return closingDialog_; }
+@@ -33,6 +42,7 @@
+     // Explicit private test/measurement candidate; cannot change during a query.
+     bool setDisplayBudget(DisplayBudget budget);
+ signals:
++    void currentDisplayRejected(QString reason);
+     void requestOpen(QString absolutePath);
+     void requestBegin(AlarmHistory::Request request);
+     void requestAdvance(AlarmHistory::Key key,quint64 continuationStep);
+@@ -69,6 +79,20 @@
+     bool sourceClosing_ = false,closingDialog_ = false,forceClose_ = false;
+     bool complete_ = false,terminalPending_ = false,localAbort_ = false,lastBusy_ = false,closedSignal_ = false;
+     bool originalRefreshPending_ = false, originalRefreshScheduled_ = false;
++    bool currentEnabled_ = false, currentError_ = false, historyError_ = false;
++    bool historySourceRequested_ = false, currentAppendQueued_ = false;
++    bool currentHistoryRefreshPending_ = false, currentHistoryRefreshQueued_ = false;
++    QString currentStatus_;
++    QVector<AlarmHistory::CurrentAlarmRow> currentPending_;
++    QSet<QString> currentDescriptions_;
++    int currentPendingIndex_ = 0;
++    qint64 currentRetainedBytes_ = 0;
++    quint64 currentDisplayGeneration_ = 0;
++    void clearCurrentDisplay();
++    void appendCurrentLater();
++    void appendCurrentTurn();
++    void renderStatus();
++    void refreshCurrentHistoryWhenIdle();
+     void refreshCommittedEventsWhenIdle();
+     AlarmHistory::Scope nextOpenScope_ = AlarmHistory::Scope::LatestToday20;
+     void beginQuery(AlarmHistory::Scope scope);
+diff --git a/06_programs/sn100_host/alarm_history/alarm_history_page_current.cpp b/06_programs/sn100_host/alarm_history/alarm_history_page_current.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/alarm_history/alarm_history_page_current.cpp
+@@ -0,0 +1,234 @@
++#include "alarm_history_page.h"
++#include "ui_maskdlgabnormal.h"
++#include "ui/cusdialogmask.h"
++#include "qtmaterialscrollbar.h"
++#include <QLabel>
++#include <QPushButton>
++#include <QScroller>
++#include <QSignalBlocker>
++#include <QTableWidget>
++#include <QTextEdit>
++#include <QTimer>
++
++namespace
++{
++// 本地显示容量候选，与历史页同量级；不是原设备规格或已验收资源预算。
++constexpr int maximumCurrentRows = 10000;
++constexpr qint64 maximumCurrentBytes = 16 * 1024 * 1024;
++constexpr int currentRowsPerTurn = 32;
++qint64 rowBytes(const AlarmHistory::CurrentAlarmRow &row)
++{
++    return qint64(row.errorCode.toUtf8().size()) + row.dateTime.toUtf8().size()
++        + row.description.toUtf8().size() + row.measure.toUtf8().size();
++}
++}
++
++void AlarmHistoryPage::enableCurrentAlarms(QString historyPath, QDate today)
++{
++    if (currentEnabled_ || closingDialog_) return;
++    currentEnabled_ = true;
++    if (!historySourceRequested_)
++    {
++        sourcePath_ = historyPath;
++        today_ = today;
++        ui->ldtStartDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
++        ui->ldtEndDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
++    }
++    auto *table = ui->tblAbnormal;
++    table->setEnabled(true);
++    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
++    table->setSelectionBehavior(QAbstractItemView::SelectRows);
++    table->setSelectionMode(QAbstractItemView::SingleSelection);
++    table->setFocusPolicy(Qt::NoFocus);
++    table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
++    table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
++    QScroller::scroller(table)->grabGesture(table, QScroller::LeftMouseButtonGesture);
++    auto *scrollbar = new QtMaterialScrollBar(table);
++    scrollbar->setSliderColor(QColor(34,34,34,50));
++    scrollbar->setBackgroundColor(Qt::transparent);
++    scrollbar->setCanvasColor(Qt::transparent);
++    scrollbar->setHideOnMouseOut(true);
++    table->setVerticalScrollBar(scrollbar);
++    // 原版没有选行后填措施的调用，保留空白区域与原三列，不另造等级或操作。
++    ui->txtTestInfo->setEnabled(true);
++    ui->txtTestInfo->setReadOnly(true);
++    ui->txtTestInfo->clear();
++    ui->txtTestInfo->setToolTip(QString());
++    ui->btnReset->setEnabled(false);
++    ui->btnReset->setToolTip(tr("复位涉及任务和设备动作，本轮只读查询未接入。"));
++    setCurrentStatus(tr("尚未收到本连接的完整当前告警消息。"), false);
++    updateControls();
++}
++
++void AlarmHistoryPage::renderStatus()
++{
++    const bool current = currentEnabled_ && ui->stackedWidget->currentIndex() == 0;
++    QString text = current ? currentStatus_ : status_;
++    if (current && currentPendingIndex_ < currentPending_.size())
++        text += tr(" 正在分批显示；表内保留本次打开期间按说明去重的记录。");
++    state_->setText(state_->fontMetrics().elidedText(text, Qt::ElideRight, state_->width()));
++    state_->setToolTip(text);
++    state_->setAccessibleName(text);
++    // 沿用既有顶部状态区，不改变原颜色和布局；错误与来源说明保留全文提示。
++    state_->setProperty("statusError", current ? currentError_ : historyError_);
++    setWindowTitle(text);
++}
++
++void AlarmHistoryPage::setCurrentStatus(QString message, bool error)
++{
++    currentStatus_ = message;
++    currentError_ = error;
++    ui->tblAbnormal->setToolTip(message);
++    renderStatus();
++}
++
++void AlarmHistoryPage::clearCurrentDisplay()
++{
++    ++currentDisplayGeneration_;
++    currentAppendQueued_ = false;
++    currentPending_.clear();
++    currentPendingIndex_ = 0;
++    currentDescriptions_.clear();
++    currentRetainedBytes_ = 0;
++    QSignalBlocker blocker(ui->tblAbnormal);
++    ui->tblAbnormal->setRowCount(0);
++}
++
++void AlarmHistoryPage::showCurrentRows(QVector<AlarmHistory::CurrentAlarmRow> rows,
++                                      QString message, bool activeBeforeDelivery,bool error)
++{
++    if (!currentEnabled_ || closingDialog_ || forceClose_) return;
++    QVector<AlarmHistory::CurrentAlarmRow> additions;
++    QSet<QString> descriptions = activeBeforeDelivery ? currentDescriptions_ : QSet<QString>();
++    qint64 bytes = activeBeforeDelivery ? currentRetainedBytes_ : 0;
++    for (const auto &row : rows)
++    {
++        // 原refreshAbnormalTable按说明文字去重；相同说明的不同编号也只显示首条。
++        if (descriptions.contains(row.description)) continue;
++        descriptions.insert(row.description);
++        bytes += rowBytes(row);
++        additions.append(row);
++    }
++    if (descriptions.size() > maximumCurrentRows || bytes > maximumCurrentBytes)
++    {
++        const QString reason = tr("当前列表超过本地10000行或16MiB显示容量，本批未采用；旧记录仅供核对，当前状态待核。");
++        setCurrentStatus(reason, true);
++        emit currentDisplayRejected(reason);
++        return;
++    }
++    // 必须使用接收前捕获的活动状态；show/raise会改变它，不能到这里再读。
++    if (!activeBeforeDelivery)
++    {
++        clearCurrentDisplay();
++        ui->stackedWidget->setCurrentIndex(0);
++    }
++    currentDescriptions_ = descriptions;
++    currentRetainedBytes_ = bytes;
++    currentPending_ += additions;
++    setCurrentStatus(message + tr(" 表内按原规则保留本次打开期间的记录，不代表所有行此刻仍存在。"), error);
++    appendCurrentLater();
++    if (!activeBeforeDelivery && !warning_ && !calendar_)
++    {
++        show();
++        ui->mask->showAnimation();
++    }
++}
++
++void AlarmHistoryPage::appendCurrentLater()
++{
++    if (closingDialog_ || currentAppendQueued_ || currentPendingIndex_ >= currentPending_.size()) return;
++    currentAppendQueued_ = true;
++    const quint64 generation = currentDisplayGeneration_;
++    QTimer::singleShot(0, this, [this, generation]()
++    {
++        if (generation != currentDisplayGeneration_) return;
++        currentAppendQueued_ = false;
++        appendCurrentTurn();
++    });
++}
++
++void AlarmHistoryPage::appendCurrentTurn()
++{
++    if (closingDialog_ || forceClose_) return;
++    auto *table = ui->tblAbnormal;
++    const QSignalBlocker blocker(table);
++    int added = 0;
++    while (currentPendingIndex_ < currentPending_.size() && added++ < currentRowsPerTurn)
++    {
++        const auto &row = currentPending_.at(currentPendingIndex_++);
++        const int index = table->rowCount();
++        table->insertRow(index);
++        const QStringList texts = {row.errorCode, row.dateTime, row.description};
++        for (int column = 0; column < texts.size(); ++column)
++        {
++            auto *item = new QTableWidgetItem(texts.at(column));
++            QFont font=table->font();
++#ifdef Q_OS_LINUX
++            font.setFamily(QStringLiteral("Noto Sans CJK SC"));
++#else
++            font.setFamily(QStringLiteral("苹方 粗体"));
++#endif
++            font.setPointSize(13);
++            item->setFont(font);
++            item->setTextAlignment((column == 2 ? Qt::AlignLeft : Qt::AlignHCenter) | Qt::AlignVCenter);
++            if (column == 0) item->setData(Qt::UserRole, row.measure);
++            table->setItem(index, column, item);
++        }
++        table->setRowHeight(index, 41);
++    }
++    if (currentPendingIndex_ == currentPending_.size())
++    {
++        currentPending_.clear();
++        currentPendingIndex_ = 0;
++    }
++    renderStatus();
++    appendCurrentLater();
++}
++
++void AlarmHistoryPage::showHistoricalRecords()
++{
++    if (!currentEnabled_ || isBusy() || closingDialog_) return;
++    currentHistoryRefreshPending_=false;
++    ui->stackedWidget->setCurrentIndex(1);
++    const QDate today = QDate::currentDate();
++    if (!sourceReady_)
++    {
++        openExistingHistory(sourcePath_, today);
++        return;
++    }
++    // 原“日志记录”重置为今天最近20条；手动日期查询仍保留原完整区间入口。
++    today_ = today;
++    ui->ldtStartDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
++    ui->ldtEndDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
++    beginQuery(AlarmHistory::Scope::LatestToday20);
++}
++
++void AlarmHistoryPage::queueCurrentHistoryRefresh()
++{
++    if(!currentEnabled_||closingDialog_)return;
++    currentHistoryRefreshPending_=true;
++    refreshCurrentHistoryWhenIdle();
++}
++
++void AlarmHistoryPage::refreshCurrentHistoryWhenIdle()
++{
++    if(!currentHistoryRefreshPending_||currentHistoryRefreshQueued_||closingDialog_)return;
++    currentHistoryRefreshQueued_=true;
++    QTimer::singleShot(0,this,[this]()
++    {
++        currentHistoryRefreshQueued_=false;
++        if(!currentHistoryRefreshPending_||closingDialog_||isBusy())return;
++        currentHistoryRefreshPending_=false;
++        const QDate today=QDate::currentDate();
++        if(!sourceReady_)
++        {
++            // 原当前槽也会读今天最近20条；异步开库不切走用户正在看的当前页。
++            openExistingHistory(sourcePath_,today,false);
++            return;
++        }
++        today_=today;
++        ui->ldtStartDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
++        ui->ldtEndDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
++        beginQuery(AlarmHistory::Scope::LatestToday20);
++    });
++}
+diff --git a/06_programs/sn100_host/alarm_history/original_alarm_receiver.cpp b/06_programs/sn100_host/alarm_history/original_alarm_receiver.cpp
+--- a/06_programs/sn100_host/alarm_history/original_alarm_receiver.cpp
++++ b/06_programs/sn100_host/alarm_history/original_alarm_receiver.cpp
+@@ -207,7 +207,11 @@
+         return;
+     }
+     // 合法零数量通知没有历史行，不能把空批交给Store后制造写入错误。
+-    if (rows.isEmpty()) return;
++    if (rows.isEmpty())
++    {
++        if (parsed.command == "QL") emit emptyBoardNotificationReceived();
++        return;
++    }
+     if (nextRequest_ == std::numeric_limits<quint64>::max())
+     {
+         error = tr("新告警请求编号已耗尽，未复用旧编号；本批没有写入历史。");
+diff --git a/06_programs/sn100_host/alarm_history/original_alarm_receiver.h b/06_programs/sn100_host/alarm_history/original_alarm_receiver.h
+--- a/06_programs/sn100_host/alarm_history/original_alarm_receiver.h
++++ b/06_programs/sn100_host/alarm_history/original_alarm_receiver.h
+@@ -52,6 +52,8 @@
+ signals:
+     void sourceReadyChanged(bool ready);
+     void newEventsReceived(quint64 requestId, AlarmHistory::Rows rows);
++    // 原QL[0]仍触发空显示；这个信号不提交SQL，也不表示已有历史保存。
++    void emptyBoardNotificationReceived();
+     void historyCommitted(quint64 requestId, AlarmHistory::Rows rows);
+     // 包含未确认写入的原行，调用方可保留失败证据；失败不会自动重发。
+     void historyFailed(quint64 requestId, AlarmHistory::Rows rows, bool submittedToStore, QString message);
+diff --git a/06_programs/sn100_host/alarm_history/original_current_alarm_state.cpp b/06_programs/sn100_host/alarm_history/original_current_alarm_state.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/alarm_history/original_current_alarm_state.cpp
+@@ -0,0 +1,256 @@
++#include "original_current_alarm_state.h"
++#include "protocol/read_only_messages.h"
++#include <QCoreApplication>
++#include <QDebug>
++#include <QJsonArray>
++#include <QPointer>
++#include <QThread>
++#include <limits>
++#include <utility>
++
++namespace AlarmHistory
++{
++namespace
++{
++// 与当前页面共用16MiB本地文本候选上限；不是原协议或已获实测认可的资源门槛。
++constexpr qint64 maximumObservationBytes = 16 * 1024 * 1024;
++
++QString substituteDescription(QString description, const QStringList &parameters)
++{
++    // 原MaskDlgAbnormal::convertAlarm只展开1至5个非空参数，其他数量保留配置原文。
++    switch (parameters.size())
++    {
++    case 1: return description.arg(parameters[0]);
++    case 2: return description.arg(parameters[0], parameters[1]);
++    case 3: return description.arg(parameters[0], parameters[1], parameters[2]);
++    case 4: return description.arg(parameters[0], parameters[1], parameters[2], parameters[3]);
++    case 5: return description.arg(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
++    default: return description;
++    }
++}
++
++bool displayRows(const Sn100Protocol::ReadOnlyMessage &message,
++                 const QVector<OriginalRuntime::AlarmRule> &rules,
++                 const QDateTime &receivedAt, CurrentAlarmRows *result, QString *error)
++{
++    const bool fromBoard = message.command == "QK";
++    const QJsonArray input = message.data.value(QStringLiteral("alarms")).toArray();
++    CurrentAlarmRows rows;
++    rows.reserve(input.size());
++    qint64 textBytes = 0;
++    for (const QJsonValue &value : input)
++    {
++        const QJsonObject alarm = value.toObject();
++        const QString code = alarm.value(QStringLiteral("error_code")).toString();
++        CurrentAlarmRow row;
++        row.errorCode = code + (fromBoard ? QStringLiteral("*") : QString());
++        row.dateTime = receivedAt.toString(QStringLiteral("yyyy/MM/dd HH:mm:ss"));
++        if (fromBoard)
++        {
++            // 原convertAbnormal直接用主控三字段，不用本地规则替换其描述和措施。
++            row.description = alarm.value(QStringLiteral("description")).toString();
++            row.measure = alarm.value(QStringLiteral("measure")).toString();
++        }
++        else
++        {
++            const QString rawParameters = alarm.value(QStringLiteral("raw_parameters")).toString();
++            QStringList parameters = rawParameters.split(QLatin1Char('|'));
++            parameters.removeAll(QString());
++            for (const auto &rule : rules)
++            {
++                if (rule.code != code) continue;
++                row.description = substituteDescription(rule.description, parameters);
++                row.measure = rule.measure;
++                break;
++            }
++            if (row.description.isEmpty())
++            {
++                // 原未匹配或空描述时拼接输入二字段，不猜等级、解释或控制动作。
++                row.description = code + rawParameters;
++                row.measure.clear();
++            }
++        }
++        const qint64 rowBytes = qint64(row.errorCode.toUtf8().size()) +
++            row.description.toUtf8().size() + row.measure.toUtf8().size() + row.dateTime.toUtf8().size();
++        if (rowBytes > maximumObservationBytes - textBytes)
++        {
++            *error = QObject::tr("本批告警描述展开后超过16MiB本地显示候选上限，未发布部分结果。");
++            return false;
++        }
++        textBytes += rowBytes;
++        rows.append(row);
++    }
++    *result = rows;
++    return true;
++}
++}
++
++OriginalCurrentAlarmState::OriginalCurrentAlarmState(QVector<OriginalRuntime::AlarmRule> rules,
++                                                   QObject *parent)
++    : QObject(parent), rules_(std::move(rules))
++{
++    qRegisterMetaType<CurrentAlarmRow>();
++    qRegisterMetaType<CurrentAlarmRows>();
++    qRegisterMetaType<CurrentAlarmObservation>();
++    qRegisterMetaType<CurrentAlarmQueryState>();
++    state_.message = tr("当前告警尚未查询，状态未知。");
++}
++
++bool OriginalCurrentAlarmState::inGuiThread() const
++{
++    if (QThread::currentThread() == thread() && QCoreApplication::instance() &&
++        thread() == QCoreApplication::instance()->thread()) return true;
++    qWarning() << "ORIGINAL_CURRENT_ALARM_WRONG_THREAD";
++    return false;
++}
++
++bool OriginalCurrentAlarmState::publishState()
++{
++    // 先提交完整状态，再对外通知；直接槽可能断线、换连接、收新包或销毁本对象。
++    const quint64 revision = revision_;
++    const CurrentAlarmQueryState snapshot = state_;
++    QPointer<OriginalCurrentAlarmState> self(this);
++    emit stateChanged(snapshot);
++    if (!self) return false;
++    return revision_ == revision;
++}
++
++CurrentAlarmObservation OriginalCurrentAlarmState::lastObservation(const QByteArray &command) const
++{
++    if (command == "Qk") return lastQk_;
++    if (command == "QK") return lastQK_;
++    return {};
++}
++
++void OriginalCurrentAlarmState::markUnknown(const QString &message)
++{
++    state_.valid = false;
++    state_.message = message;
++    ++revision_;
++    publishState();
++}
++
++void OriginalCurrentAlarmState::setConnection(quint64 generation, bool connected)
++{
++    if (!inGuiThread()) return;
++    connected = connected && generation != 0;
++    if (state_.connection == generation && state_.connected == connected) return;
++    state_.connection = generation;
++    state_.connected = connected;
++    state_.refreshPending = false;
++    state_.refreshQueued = false;
++    state_.refreshId = 0;
++    // 最后一批原行仍可供界面保留为旧显示；不能赋新连接号后当成新结果。
++    markUnknown(connected
++        ? tr("主控连接已改变，旧显示仅供核对；当前告警待重新查询。")
++        : tr("主控未连接，旧显示已失效；当前告警状态未知。"));
++}
++
++quint64 OriginalCurrentAlarmState::beginRefresh(quint64 generation)
++{
++    if (!inGuiThread() || generation != state_.connection ||
++        !state_.connected || state_.refreshPending) return 0;
++    if (nextRefresh_ == std::numeric_limits<quint64>::max())
++    {
++        markUnknown(tr("当前告警的本地刷新编号已耗尽，未复用旧编号；请重新核对程序状态。"));
++        return 0;
++    }
++    const quint64 refreshId = ++nextRefresh_;
++    state_.valid = false;
++    state_.refreshPending = true;
++    state_.refreshQueued = false;
++    state_.refreshId = refreshId;
++    state_.message = tr("正在提交当前告警查询；旧显示保留待核对。");
++    ++revision_;
++    QPointer<OriginalCurrentAlarmState> self(this);
++    publishState();
++    if (!self) return 0;
++    // 另一类QK观察可以到达，仍保留本地Qk等待；换连接、Qk已到或新刷新则不用旧入口发送。
++    return state_.connection == generation && state_.connected && state_.refreshPending &&
++        state_.refreshId == refreshId ? refreshId : 0;
++}
++
++void OriginalCurrentAlarmState::finishRefreshQueue(quint64 generation, quint64 refreshId, bool queued)
++{
++    if (!inGuiThread() || generation != state_.connection || !state_.connected ||
++        !refreshId || refreshId != state_.refreshId || !state_.refreshPending || state_.refreshQueued) return;
++    state_.refreshQueued = queued;
++    if (!queued)
++    {
++        state_.refreshPending = false;
++        markUnknown(tr("当前告警查询未能进入发送队列；旧显示保留，当前状态未知。"));
++        return;
++    }
++    state_.message = tr("当前告警查询已进入发送队列，等待完整Qk消息；入队不代表主控已回应。");
++    ++revision_;
++    publishState();
++}
++
++void OriginalCurrentAlarmState::receivePayload(QByteArray payload, quint64 generation,
++                                              QDateTime receivedAt)
++{
++    if (!inGuiThread() || generation != state_.connection || !state_.connected) return;
++    // 新事件Ql/QL继续归原接收器和历史保存链，当前观察不接管也不重复保存。
++    const QByteArray command = payload.left(2);
++    if (command != "Qk" && command != "QK") return;
++    Sn100Protocol::ReadOnlyMessage parsed;
++    QString problem;
++    if (!Sn100Protocol::parseReadOnlyMessage(payload, &parsed, &problem))
++    {
++        markUnknown(tr("当前告警消息不完整或无效，本次未更新；旧显示保留待核对：") + problem);
++        return;
++    }
++    if (!receivedAt.isValid() || receivedAt.date().year() < 1 || receivedAt.date().year() > 9999)
++    {
++        markUnknown(tr("当前告警消息缺少有效接收时间，本次未更新；旧显示保留待核对。"));
++        return;
++    }
++    CurrentAlarmObservation observation;
++    observation.connection = generation;
++    observation.command = parsed.command;
++    observation.receivedAt = receivedAt;
++    if (!displayRows(parsed, rules_, receivedAt, &observation.rows, &problem))
++    {
++        markUnknown(problem + tr("旧显示保留待核对；当前状态未知。"));
++        return;
++    }
++    if (command == "Qk") lastQk_ = observation;
++    else lastQK_ = observation;
++    state_.valid = true;
++    if (command == "Qk")
++    {
++        state_.refreshPending = false;
++        state_.refreshQueued = false;
++        state_.message = tr("本连接收到完整Qk当前告警消息，本批%1条；这不是全部正常的结论。")
++            .arg(observation.rows.size());
++    }
++    else
++    {
++        state_.message = state_.refreshPending
++            ? tr("本连接收到完整QK当前异常消息，本批%1条；Qk仍在等待，未用QK确认本次刷新。")
++                .arg(observation.rows.size())
++            : tr("本连接收到完整QK当前异常消息，本批%1条；另一类当前告警状态未由本消息确认。")
++                .arg(observation.rows.size());
++    }
++    ++revision_;
++    if (!publishState()) return;
++    // 状态通知重入后不能继续把旧观察送入新连接或覆盖更新的显示。
++    emit currentObserved(observation);
++}
++
++void OriginalCurrentAlarmState::refreshTimedOut(quint64 generation, quint64 refreshId)
++{
++    if (!inGuiThread() || generation != state_.connection || !refreshId ||
++        refreshId != state_.refreshId || !state_.refreshPending) return;
++    state_.refreshPending = false;
++    state_.refreshQueued = false;
++    markUnknown(tr("当前告警查询等待结束，尚未收到可采用的Qk消息；旧显示保留，当前状态未知。"));
++}
++
++void OriginalCurrentAlarmState::invalidateCurrent(quint64 generation, QString reason)
++{
++    if (!inGuiThread() || generation != state_.connection) return;
++    if (reason.isEmpty()) reason = tr("当前告警显示未能采用，旧显示保留待核对；当前状态未知。");
++    markUnknown(reason);
++}
++}
+diff --git a/06_programs/sn100_host/alarm_history/original_current_alarm_state.h b/06_programs/sn100_host/alarm_history/original_current_alarm_state.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/alarm_history/original_current_alarm_state.h
+@@ -0,0 +1,91 @@
++#ifndef SN100_ORIGINAL_CURRENT_ALARM_STATE_H
++#define SN100_ORIGINAL_CURRENT_ALARM_STATE_H
++
++#include "original_files/original_system_profile.h"
++#include <QByteArray>
++#include <QDateTime>
++#include <QMetaType>
++#include <QObject>
++#include <QString>
++#include <QVector>
++
++namespace AlarmHistory
++{
++// 当前显示行与历史记录分开，不能把本批查询结果交给历史追加接口。
++struct CurrentAlarmRow
++{
++    QString errorCode;
++    QString description;
++    QString measure; // 保留原措施文字；本对象不据此显示新详情或执行设备动作。
++    QString dateTime;
++};
++using CurrentAlarmRows = QVector<CurrentAlarmRow>;
++
++// 一条完整Qk或QK所得的本批观察，不代表另一种命令或仪器全部正常。
++struct CurrentAlarmObservation
++{
++    quint64 connection = 0;
++    QByteArray command;
++    QDateTime receivedAt;
++    CurrentAlarmRows rows;
++};
++
++struct CurrentAlarmQueryState
++{
++    quint64 connection = 0;
++    bool connected = false;
++    // valid只说明最近一批观察完整且属于本连接；不代表刷新已确认或全部正常。
++    bool valid = false;
++    bool refreshPending = false;
++    bool refreshQueued = false;
++    quint64 refreshId = 0; // 仅标记本地等待，线上报文没有此编号。
++    QString message;
++};
++
++// 只在GUI所属线程调用和读取；值类型信号可以排队传递，对象本身不能跨线程使用。
++// 本对象不发命令、不读写SQL、不创建线程，也不处理Ql/QL新事件。
++class OriginalCurrentAlarmState : public QObject
++{
++    Q_OBJECT
++public:
++    explicit OriginalCurrentAlarmState(QVector<OriginalRuntime::AlarmRule> rules,
++                                       QObject *parent = nullptr);
++    CurrentAlarmQueryState queryState() const { return state_; }
++    // 两类完整观察各自保留原连接号；不存在的命令返回空值，不推断另一类已回应。
++    CurrentAlarmObservation lastObservation(const QByteArray &command) const;
++
++public slots:
++    void setConnection(quint64 generation, bool connected);
++    // 调用方先登记，再实际发送Qk；0表示未登记，非0只用于匹配本地排队和等待通知。
++    quint64 beginRefresh(quint64 generation);
++    // 只登记实际排队结果；true不是主控已收到，更不是查询或设备动作完成。
++    void finishRefreshQueue(quint64 generation, quint64 refreshId, bool queued);
++    void receivePayload(QByteArray payload, quint64 generation, QDateTime receivedAt);
++    // 本切片没有原超时门槛依据；仅由总控采用已有明确门槛后调用，不内设定时器。
++    void refreshTimedOut(quint64 generation, quint64 refreshId);
++    // 显示容量等本地失败只使状态失效，不删除原观察、不假称等待中的查询已结束。
++    void invalidateCurrent(quint64 generation, QString reason);
++
++signals:
++    void currentObserved(AlarmHistory::CurrentAlarmObservation observation);
++    void stateChanged(AlarmHistory::CurrentAlarmQueryState state);
++
++private:
++    QVector<OriginalRuntime::AlarmRule> rules_;
++    CurrentAlarmQueryState state_;
++    CurrentAlarmObservation lastQk_, lastQK_;
++    quint64 nextRefresh_ = 0;
++    quint64 revision_ = 0;
++
++    bool inGuiThread() const;
++    bool publishState();
++    void markUnknown(const QString &message);
++};
++}
++
++Q_DECLARE_METATYPE(AlarmHistory::CurrentAlarmRow)
++Q_DECLARE_METATYPE(AlarmHistory::CurrentAlarmRows)
++Q_DECLARE_METATYPE(AlarmHistory::CurrentAlarmObservation)
++Q_DECLARE_METATYPE(AlarmHistory::CurrentAlarmQueryState)
++
++#endif

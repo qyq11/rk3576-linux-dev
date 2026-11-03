@@ -3,6 +3,7 @@
 #include "original_files/original_business_database.h"
 #include "samples/original_task_codec.h"
 #include "reagents/reagent_types.h"
+#include <QSet>
 #include <functional>
 
 struct OriginalReagentState
@@ -12,6 +13,59 @@ struct OriginalReagentState
     QString settingTable;
     QMap<QString, QString> versions;
 };
+
+namespace OriginalReagentAllocation
+{
+enum class Mode { Normal, Calibration };
+enum class Status { Selected, OriginalSkipped, Fatal };
+enum class SkipScope { None, Test, Project };
+
+// 本次请求的逻辑余量；只有真正选中步骤才进入touched，最终SQL直接使用最后6位有效数字(g6)文本。
+struct AmountWork
+{
+    bool initialized = false;
+    QString root;
+    QMap<QString,QString> versions;
+    QMap<qint64,QVariant> initialUsed;
+    QMap<qint64,double> remaining;
+    QMap<qint64,QString> finalUsedText;
+    QSet<qint64> touched;
+};
+
+// 普通/质控(Normal/QC)每样本孔一份全项目资料；校准(CAL)每项目一份，次数不随扣量重算。
+struct SelectionContext
+{
+    bool initialized = false, linuxNew = false;
+    Mode mode = Mode::Normal;
+    QString root, scopeId;
+    QMap<QString,QString> versions;
+    QStringList multiBottleExceptions;
+    QMap<QString,QMap<QString,QList<qint64>>> candidates;
+    QMap<QString,QMap<qint64,int>> availableTests;
+    QSet<QString> incompleteProjects;
+    QMap<QString,QString> invalidProjects;
+    QMap<QString,QList<ProjectActionFields>> projectSteps;
+    QMap<QString,QString> projectRelated;
+};
+
+struct StepAllocation
+{
+    qint64 rowId = 0;
+    int stepIndex = 0;
+    QString reagentName, configuredText, usedText;
+    double configuredVolume = 0;
+};
+
+struct AllocationResult
+{
+    Status status = Status::Fatal;
+    SkipScope skipScope = SkipScope::None;
+    QString scopeId, reason;
+    QList<StepAllocation> steps;
+    QMap<qint64,double> configuredVolumes; // 原配置量按孔汇总，保留选中的0 key，不含舍入损益。
+    QStringList limitations; // 已保留的保护差异或尚未复原的原控件副作用，不据此伪称完全等价。
+};
+}
 // 原表原字段直接读取；任务计算用原始数值，不先压成早期显示模型的整数/外键。
 class OriginalReagentRepository
 {
@@ -21,8 +75,20 @@ public:
     bool cleanerReady(const OriginalReagentState &state, QString *message) const;
     bool auxiliaryVolumesReady(const OriginalReagentState &state, const QList<OriginalTasks::Task> &tasks,
                                QString *message) const;
+    // 旧调用兼容只持当前项目，不能证明全项目首次同名用量；正式会话使用下方缓存重载。
     bool assignTask(const OriginalReagentState &state, OriginalTasks::Task *task,
                     QMap<qint64, double> *remaining, QString *message) const;
+    bool initializeAmountWork(const OriginalReagentState &state, OriginalReagentAllocation::AmountWork *work,
+                              QString *message) const;
+    // scopeProjects为空表示完整orderedProjects；CAL传当前项目，分母仍查完整原项目顺序。
+    bool beginSelectionScope(const OriginalReagentState &state, const ProjectRecords &orderedProjects,
+                             const QStringList &scopeProjects, OriginalReagentAllocation::Mode mode,
+                             bool linuxNew, const QString &scopeId, const QStringList &multiBottleExceptions,
+                             const OriginalReagentAllocation::AmountWork &work,
+                             OriginalReagentAllocation::SelectionContext *selection, QString *message) const;
+    OriginalReagentAllocation::AllocationResult assignTask(const OriginalReagentState &state, OriginalTasks::Task *task,
+                             OriginalReagentAllocation::SelectionContext *selection,
+                             OriginalReagentAllocation::AmountWork *work) const;
     bool reagentUpdatePayload(const OriginalReagentState &state, QByteArray *payload, QString *message) const;
     bool singleReagentUpdatePayload(const OriginalReagentState &state, const QString &holeName, bool updateAmount,
                                    QByteArray *payload, QString *message) const;

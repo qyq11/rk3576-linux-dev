@@ -2,6 +2,7 @@
 #include "ui_frmmain.h"
 #include "alarm_history/alarm_history_host.h"
 #include "alarm_history/original_alarm_receiver.h"
+#include "alarm_history/original_current_alarm_state.h"
 #include "instrument/device_control.h"
 #include <QDate>
 #include <QDebug>
@@ -18,7 +19,7 @@ bool frmMain::enableAlarmHistory(AlarmHistory::Store *store, const QString &abso
     connect(alarmHistory_, &AlarmHistoryHost::statusChanged, this,
             [this](const QString &message, bool error)
     {
-        ui->btnAbnormal->setToolTip(message + tr("；实时告警、严重度及设备处置未知。"));
+        ui->btnAbnormal->setToolTip(message + tr("；此为历史读取状态，不代表当前告警或设备处置完成。"));
         qInfo().noquote() << (error ? "ALARM_HISTORY_ERROR" : "ALARM_HISTORY_STATUS") << message;
         updateAccountStatus();
     });
@@ -55,7 +56,8 @@ bool frmMain::enableAlarmHistory(AlarmHistory::Store *store, const QString &abso
     connect(ui->btnAbnormal, &CusBadgeButton::clicked, this, [this]()
     {
         if (!alarmHistoryAvailable_ || rejectLoginNavigation() || logoutPending_) return;
-        alarmHistory_->showExistingHistory(alarmHistoryPath_, QDate::currentDate());
+        if (currentAlarmState_) queryCurrentAlarms();
+        else alarmHistory_->showExistingHistory(alarmHistoryPath_, QDate::currentDate());
     });
     setAlarmHistoryAvailable(false);
     return true;

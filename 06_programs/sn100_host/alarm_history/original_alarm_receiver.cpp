@@ -207,7 +207,11 @@ void OriginalAlarmReceiver::receivePayload(QByteArray payload, QString currentUs
         return;
     }
     // 合法零数量通知没有历史行，不能把空批交给Store后制造写入错误。
-    if (rows.isEmpty()) return;
+    if (rows.isEmpty())
+    {
+        if (parsed.command == "QL") emit emptyBoardNotificationReceived();
+        return;
+    }
     if (nextRequest_ == std::numeric_limits<quint64>::max())
     {
         error = tr("新告警请求编号已耗尽，未复用旧编号；本批没有写入历史。");

@@ -10,6 +10,7 @@
 #include "instrument/instrument_page.h"
 #include <QCoreApplication>
 #include <QTimer>
+#include <QScopedValueRollback>
 
 bool frmMain::businessPagesIdle() const
 {
@@ -123,6 +124,8 @@ void frmMain::resumeLoginAfterLogout()
 
 bool frmMain::requestLogin()
 {
+    // 登录卡建立前也可能弹页面草稿确认；未显示卡片时同样保护本次账户切换尝试。
+    QScopedValueRollback<bool> interaction(deviceUserInteractionPending_,true);
     // 主动请求登录即结束启动自动请求，忙态或草稿确认拒绝后也不补弹。
     cancelStartupLogin();
     if (!passwordLoginEnabled_ || !accounts_ || logoutPending_)

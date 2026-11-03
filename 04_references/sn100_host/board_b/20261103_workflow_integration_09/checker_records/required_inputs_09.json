@@ -1,0 +1,88 @@
+{
+  "schema": "sn100-review-09-unbound-preparation-v1",
+  "state": "tools_candidate_from_promoted_source_not_built",
+  "frozen": false,
+  "compiled": false,
+  "product_executed": false,
+  "network_accessed": false,
+  "formal_sources_changed": false,
+  "public_documents_changed": false,
+  "reference_sources_not_09_inputs": [
+    {
+      "path": "04_references/sn100_host/board_b/20261103_status_login_08/checker/status_login_review_08.cpp",
+      "sha256": "6ab71d0de6009968372da7dcc2b30926e6481fc673745d36b0737ad32f8d8dbc"
+    },
+    {
+      "path": "04_references/sn100_host/board_b/20261103_status_login_08/checker/ad_wire_observer.h",
+      "sha256": "c1982e4435f5332f7103c5c5fad27dc1df9b61a6c02a872639ff0288433595a0"
+    },
+    {
+      "path": "04_references/sn100_host/board_b/20261103_status_login_08_permission/run_case_on_board.sh",
+      "sha256": "8983ed6ab54debe7f451f3bdc3e7c0cdd373b5f66ccd0e075030376c85272740"
+    }
+  ],
+  "planned_scope": {
+    "base_checks": 24,
+    "emergency_current_view": "只在本次真实条件满足时比较，实际evaluated和数组决定是否计项。",
+    "lis": "仅原配置自动连接的实际状态和正常关闭；无真实对端则连接成功与业务待验。",
+    "current_alarm": "基础Qj观察段结束后经原按钮明确查询一次Qk；仅比较真实回包，QK不是确认，10秒无重发。",
+    "allowed_device_queries": [
+      "Qj",
+      "Qk"
+    ],
+    "maximum_explicit_qk_queries": 1,
+    "create_server_or_loopback": false,
+    "fabricate_business_input": false,
+    "administrator_password_input": false,
+    "new_construction_proven": false,
+    "same_main_memory_bool_read": false,
+    "task_or_n_business_verified": false,
+    "in_flight_task_or_n_close_verified": false
+  },
+  "final_09_inputs": {
+    "release_id": null,
+    "application_sha256": null,
+    "renderer_sha256": null,
+    "package_sha256": null,
+    "source_archive_path": null,
+    "source_archive_sha256": null,
+    "source_snapshot_path": null,
+    "source_snapshot_sha256": null,
+    "approved_final_review_path": null,
+    "approved_final_review_sha256": null,
+    "successful_build_record_path": null,
+    "source_count": null,
+    "unique_build_inputs": null,
+    "main_object_count": null,
+    "helper_object_count": null,
+    "generated_file_count": null,
+    "object_binding_path": null,
+    "object_binding_sha256": null,
+    "compiler_and_flags_record": null,
+    "dependency_report_path": null,
+    "dependency_report_sha256": null,
+    "checker_source_sha256": null,
+    "checker_sha256": null,
+    "runner_sha256": null,
+    "shutdown_contract_sha256": null,
+    "required_shutdown_marker_count": null,
+    "actual_check_count": null,
+    "actual_optional_check_count": null,
+    "authorized_case_directory": null,
+    "actual_original_pointer_record": null
+  },
+  "promoted_source_reference": {
+    "root_inputs": "temp/sn100_host/workflow_night_20261102/integration_09_revision_03_review/root_actual_build_inputs.json",
+    "review_sha256": "0e5c8a4a1f29b059c3ddd19ff1112c2f9881692c192a21b5134f708e9ce393c3",
+    "source_manifest_sha256": "b0667063407c2534ece08e4063cf1e63c3a25cb8c6212066ad966a9c5d492815",
+    "source_count": 684,
+    "staged_list_input_count": 408,
+    "is_successful_arm_build": false,
+    "promotion_progress_sha256": "f73894e5dd7c61519eb7a5feed4f4292fa7cf1b65949dec83fe37273e39863aa",
+    "cumulative_patch_count": 11,
+    "current_execution_applied_patches": [
+      11
+    ]
+  },
+  "activation_path_rule": "构建工具可先存releases/integration_09/<id>；Root独占复制/激活到releases/<id>后，运行工具仍只接受正式平层路径。"
+}

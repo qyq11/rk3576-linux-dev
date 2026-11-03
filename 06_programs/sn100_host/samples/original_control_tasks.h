@@ -7,6 +7,9 @@ namespace OriginalControlTasks
 {
 bool assignCalibration(const OriginalReagentRepository &repository, const OriginalReagentState &state,
                        bool linuxNew, OriginalTasks::Task *task, QMap<qint64, double> *remaining, QString *message);
+OriginalReagentAllocation::AllocationResult assignCalibration(const OriginalReagentRepository &repository,
+                       const OriginalReagentState &state, bool linuxNew, OriginalTasks::Task *task,
+                       OriginalReagentAllocation::SelectionContext *selection, OriginalReagentAllocation::AmountWork *work);
 bool attachCalibration(OriginalBusiness::Database &database, const QString &root, QString *message);
 // 由检测会话已建立的同一个事务调用，不能自行提交或另开编号库。
 bool reserveCalibration(OriginalBusiness::Database &database, QList<OriginalTasks::Task> *tasks, QString *message);

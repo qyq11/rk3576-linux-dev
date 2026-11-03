@@ -1,0 +1,11 @@
+--- a/06_programs/sn100_host/shell/shell.pri
++++ b/06_programs/sn100_host/shell/shell.pri
+@@ -110,6 +110,8 @@
+ # 原Ql/QL新告警只在原资料联机模式启用，当前Qk/QK查询不写历史。
+ SOURCES += $$PWD/../alarm_history/original_alarm_receiver.cpp
+ HEADERS += $$PWD/../alarm_history/original_alarm_receiver.h
++SOURCES += $$PWD/alarm_current_shell.cpp $$PWD/../alarm_history/original_current_alarm_state.cpp
++HEADERS += $$PWD/../alarm_history/original_current_alarm_state.h
+ 
+ # 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
+ SOURCES *= $$PWD/reagent_level_shell.cpp

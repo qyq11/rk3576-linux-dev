@@ -1,0 +1,13 @@
+--- frozen08/run_case_on_board.sh
++++ permission_fix/run_case_on_board.sh
+@@ -86,6 +86,10 @@
+ sha256sum "$run/shutdown_contract.json" "$run/required_shutdown_markers.txt" "$run/forbidden_shutdown_markers.txt" >"$run/shutdown_contract_files.sha256"
+ date -Is >"$run/started_at.txt"
+ find "$data" -maxdepth 1 -type f -iname '*.ini' -print0 | sort -z | xargs -0 -r sha256sum >"$run/ini_before.sha256"
++chgrp lckfb "$run/ini_before.sha256"
++chmod 640 "$run/ini_before.sha256"
++runuser -u lckfb -- test -r "$run/ini_before.sha256"
++stat -c "%U:%G %a %n" "$run/ini_before.sha256" >"$run/manifest_access.txt"
+ sha256sum /userdata/shared/config_linux.ini /userdata/shared/consume.ini \
+     /userdata/shared/GL4A_config.cfg /userdata/shared/number.ini >"$run/controller_ini_before.sha256"
+ runuser -u lckfb -- bash -c 'source "$1/rk_board.sh"; preflight "$2" "$1"' _ "$release" "$base" >"$run/preflight.log" 2>&1

@@ -1,6 +1,6 @@
-# 已有告警历史的查询界面
+# 告警历史与当前告警查询
 
-用于查看已存在的告警历史。它不是完整的实时告警、蜂鸣或设备动作之间的相互限制及故障保护实现。
+本目录接告警历史和当前告警只读查询。Ql/QL新事件历史提交与Qk/QK当前观察分开，QK不是Qk查询确认，空列表不代表整机健康。复位Ma、告警配置、蜂鸣和完整动作保护仍未完成；实际验证见唯一计划与记录。
 
 [返回上级说明](../README.md)
 
@@ -11,6 +11,8 @@
 | [alarm_history_host.cpp / alarm_history_host.h](alarm_history_host.cpp) | 告警历史窗口的打开、忙状态和退出协调。 |
 | [alarm_history_page.cpp / alarm_history_page.h](alarm_history_page.cpp) | 最近当日记录、日期区间查询、分页/显示预算和取消交互。 |
 | [alarm_history_store.cpp / alarm_history_store.h](alarm_history_store.cpp) | 打开指定已有库、分段读取历史、取消和关闭。 |
+| [original_current_alarm_state.cpp / .h](original_current_alarm_state.cpp) | 当前查询状态、实际回包及原CSV规则解释，不把当前列表写成历史事件。 |
+| [alarm_history_page_current.cpp](alarm_history_page_current.cpp) | 原告警页当前列表显示和只读查询；保留复位等未接动作的限制。 |
 | [alarm_history_core.pri](alarm_history_core.pri) | 已有告警历史读取核心的构建清单。 |
 | [alarm_history_page.pri](alarm_history_page.pri) | 告警历史窗口、日期控件与资源构建清单。 |
 | [alarm_history_resources.qrc](alarm_history_resources.qrc) | 本功能资源文件与程序内资源路径的映射。 |

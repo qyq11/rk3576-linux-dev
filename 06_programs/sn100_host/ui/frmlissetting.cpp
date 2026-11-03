@@ -80,7 +80,7 @@ frmLisSetting::frmLisSetting(LisSettingsStore *store, QWidget *parent) :
     connect(store, &LisSettingsStore::saved, this, [this](LisSettings settings, QStringList ports)
     {
         render(settings, ports);
-        reportStatus(tr("LIS本地设置已保存；未连接、未打开串口，自动选项仅保存意图。"));
+        reportStatus(tr("LIS设置已保存；通信状态请查看顶部LIS图标。"));
         emit operationFinished(QStringLiteral("save"), true);
     });
     connect(store, &LisSettingsStore::error, this, [this](const QString &operation, const QString &message)
@@ -159,7 +159,7 @@ void frmLisSetting::render(LisSettings settings, QStringList ports)
     rendering_ = false;
     ready_ = true;
     setBusy(false);
-    reportStatus(tr("已读取LIS本地意图；未确认端点/串口可保留空值，未建立连接。"));
+    reportStatus(tr("LIS设置已读取；读取成功不代表连接成功。"));
 }
 
 void frmLisSetting::editDraft()
@@ -174,7 +174,7 @@ void frmLisSetting::editDraft()
     draft_.autoSend = ui->ckxAutoSend->isChecked();
     draft_.link = ui->ckxAutoLink->isChecked();
     setBusy(false);
-    if (isDirty()) reportStatus(tr("LIS设置尚未保存；保存包括两种模式的本地草稿，不执行连接。"));
+    if (isDirty()) reportStatus(tr("LIS设置尚未保存；草稿不改变当前通信配置。"));
 }
 
 void frmLisSetting::on_btnSave_clicked()

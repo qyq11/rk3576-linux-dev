@@ -1,0 +1,21 @@
+--- a/06_programs/sn100_host/shell/device_control_shell.cpp
++++ b/06_programs/sn100_host/shell/device_control_shell.cpp
+@@ -2,6 +2,7 @@
+ #include "task_reagent_context.h"
+ #include "ui_frmmain.h"
+ #include "instrument/device_control.h"
++#include "alarm_history/original_current_alarm_state.h"
+ #include "instrument/instrument_page.h"
+ #include "projects/project_page.h"
+ #include "reagents/reagents_page.h"
+@@ -100,7 +101,9 @@
+     });
+     connect(ui->btnAbnormal, &CusBadgeButton::clicked, this, [this]()
+     {
+-        if (deviceControl_->state().connected) deviceControl_->query(Sn100Protocol::ReadOnlyQuery::Alarm);
++        // 当前告警已挂接时由唯一入口发送，避免同次点击重复Qk。
++        if (!currentAlarmState_ && deviceControl_->state().connected)
++            deviceControl_->query(Sn100Protocol::ReadOnlyQuery::Alarm);
+     });
+     // main在创建设备控制之后才挂业务页；事件循环开始时再做一次幂等绑定。
+     QTimer::singleShot(0,this,[this](){ attachDeviceTaskStore(); updateOriginalDeviceSync(); });

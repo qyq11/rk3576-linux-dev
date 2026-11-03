@@ -18,6 +18,7 @@
 | `configs/` | 当前实时内核与系统配置；暂停时的旧配置另存本次资料目录。 |
 | `configs/uart_header_five.dts` | 按开发图启用五组串口收发引脚，释放I²C7/8和SPI第二路片选；板A、板B分别重启及root打开通过，实际排针收发待接线。独立叠加配置，未加入既有整机镜像。[板A](../../04_references/interfaces/board_a/20261102_configuration/README.md) · [板B](../../04_references/uart/board_b/20261102_configuration/README.md)。 |
 | `configs/can0_m2.dts` | 单独启用排针7/11脚的CAN0小配置；板A、板B配置及重启分别通过，独立接收和真实硬件通信仍待验；未加入既有整机镜像。[进度](../../02_records/20261102_can.md)。 |
+| `configs/uart3_485_gpio_pin12.dts` | 关闭排针12脚`GPIO0_B5`的PWM，供程序申请普通GPIO输入或输出，预留作UART3的485方向控制。仅板A已配置、重启并核对低→高→低读回和输入模式；不自动切换收发，板B及既有整机镜像未修改。[使用与结果](../../02_records/20261021_gpio_output.md#board-a-pin12-gpio-20261103)。 |
 | `patches/ubuntu_identity.patch` | 本轮镜像首次启动准备的实际源码差异。 |
 | `D:\WSL\RK3576-Build-22.04\ext4.vhdx` | 专用WSL的实际工作磁盘，已于2026-11-02迁出本项目，里面保存Linux编译环境、实际源码和构建数据。 |
 | `open_system_sources.lnk` | 双击后在资源管理器中打开实际编译用的系统源码。 |

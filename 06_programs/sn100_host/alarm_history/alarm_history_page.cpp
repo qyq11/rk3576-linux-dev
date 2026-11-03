@@ -16,6 +16,7 @@
 #include <QSignalBlocker>
 #include <QTableWidget>
 #include <QTimer>
+#include <QThread>
 #include <algorithm>
 
 using namespace AlarmHistory;
@@ -95,7 +96,14 @@ AlarmHistoryPage::AlarmHistoryPage(Store *store,QWidget *parent)
     state_->setStyleSheet(QStringLiteral("color:#444444;background:transparent;border:none;"));
     ui->stackedWidget->setCurrentIndex(1);
     connect(ui->stackedWidget,&QStackedWidget::currentChanged,this,[this](int index)
-    {if(index!=1){QSignalBlocker blocker(ui->stackedWidget);ui->stackedWidget->setCurrentIndex(1);}});
+    {
+        if (!currentEnabled_ && index != 1)
+        { QSignalBlocker blocker(ui->stackedWidget); ui->stackedWidget->setCurrentIndex(1); }
+        renderStatus();
+    });
+    connect(ui->btnErrorLog,&QPushButton::clicked,this,&AlarmHistoryPage::showHistoricalRecords);
+    connect(ui->btnReturn,&QPushButton::clicked,this,[this]()
+    { if(currentEnabled_&&!closingDialog_&&!warning_)ui->stackedWidget->setCurrentIndex(0); });
     const QString unknown=tr("只读历史；当前告警、严重度、设备处置和互锁未知，功能未接入。");
     for(QWidget *control:QList<QWidget*>{ui->tblAbnormal,ui->txtTestInfo,ui->btnReset,ui->btnReturn,ui->btnErrorLog})
     {control->setEnabled(false);control->setToolTip(unknown);}
@@ -157,7 +165,7 @@ AlarmHistoryPage::AlarmHistoryPage(Store *store,QWidget *parent)
             updateControls();
         });
     }
-    report(tr("未绑定历史来源；当前实时告警未知。"));updateControls();
+    report(tr("尚未打开历史来源；历史读取状态与当前告警分别显示。"));updateControls();
 }
 AlarmHistoryPage::~AlarmHistoryPage()
 {
@@ -165,7 +173,7 @@ AlarmHistoryPage::~AlarmHistoryPage()
     if(warning_){warning_->disconnect(this);delete warning_.data();}
     // Normal owner path waits storageClosed. This is only external-destruction
     // cleanup; it does not prove normal close/join and never blocks the GUI.
-    if(store_&&!closedSignal_)QMetaObject::invokeMethod(store_,"close",Qt::QueuedConnection);
+    if(store_&&historySourceRequested_&&!closedSignal_)QMetaObject::invokeMethod(store_,"close",Qt::QueuedConnection);
     delete ui;
 }
 bool AlarmHistoryPage::isBusy()const
@@ -181,25 +189,33 @@ bool AlarmHistoryPage::setDisplayBudget(DisplayBudget budget)
     {clearDisplay();report(tr("显示候选容量已改变，请重新查询；未保留超出新候选的旧结果。"));}
     return true;
 }
-bool AlarmHistoryPage::openExistingHistory(QString path,QDate today)
+bool AlarmHistoryPage::openExistingHistory(QString path,QDate today,bool showHistory)
 {
     if(isBusy()||sourceReady_)return false;
-    show();ui->mask->showAnimation();
-    if(!store_||!QFileInfo(path).isAbsolute()||path.contains(QChar::Null)||!validDate(today))
+    if(showHistory)
+    {
+        ui->stackedWidget->setCurrentIndex(1);
+        show();ui->mask->showAnimation();
+    }
+    if(!store_||!store_->thread()||!store_->thread()->isRunning()||
+        store_->thread()==thread()||!QFileInfo(path).isAbsolute()||path.contains(QChar::Null)||!validDate(today))
     {report(tr("请显式提供既有历史库绝对路径和合法当天日期；未打开或造库。"),true);showWarning(status_);return false;}
     sourcePath_=path;today_=today;nextOpenScope_=Scope::LatestToday20;closedSignal_=false;
     ui->ldtStartDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
     ui->ldtEndDate->setText(today.toString(QStringLiteral("yyyy/MM/dd")));
-    clearDisplay();opening_=true;report(tr("正在只读打开历史来源；当前实时告警未知。"));updateControls();emit requestOpen(path);return true;
+    historySourceRequested_=true;
+    clearDisplay();opening_=true;report(tr("正在只读打开历史来源；该查询不确认当前告警。"));updateControls();emit requestOpen(path);return true;
 }
 void AlarmHistoryPage::report(QString text,bool error)
 {
-    status_=text;state_->setText(state_->fontMetrics().elidedText(text,Qt::ElideRight,state_->width()));
-    state_->setToolTip(text);state_->setAccessibleName(text);ui->tlbAbnormallog->setToolTip(text);
-    setWindowTitle(text);emit statusChanged(text,error);
+    status_=text;historyError_=error;
+    ui->tlbAbnormallog->setToolTip(text);
+    renderStatus();
+    emit statusChanged(text,error);
 }
 void AlarmHistoryPage::updateControls()
 {
+    refreshCurrentHistoryWhenIdle();
     refreshCommittedEventsWhenIdle();
     const bool choosing=!calendar_.isNull(),warning=!warning_.isNull();
     const bool stationary=!opening_&&!active_&&!sourceClosing_&&!closingDialog_&&!choosing&&!warning;
@@ -208,6 +224,8 @@ void AlarmHistoryPage::updateControls()
     ui->btnCalendarSetStart->setEnabled(stationary&&!sourcePath_.isEmpty());
     ui->btnCalendarSetEnd->setEnabled(stationary&&!sourcePath_.isEmpty());
     ui->btnClose->setEnabled(!closingDialog_&&!warning);
+    ui->btnReturn->setEnabled(currentEnabled_&&!closingDialog_&&!warning&&!choosing);
+    ui->btnErrorLog->setEnabled(currentEnabled_&&stationary&&!sourcePath_.isEmpty());
     const bool busy=isBusy();if(busy!=lastBusy_){lastBusy_=busy;emit busyChanged(busy);}
 }
 void AlarmHistoryPage::showWarning(QString message)
@@ -267,6 +285,7 @@ void AlarmHistoryPage::queryInterval()
     if(!sourceReady_)
     {
         if(sourcePath_.isEmpty())return;
+        historySourceRequested_=true;
         nextOpenScope_=Scope::DateInterval;opening_=true;closedSignal_=false;clearDisplay();
         report(tr("按本次操作重新只读打开显式历史来源；未自动造库。"));updateControls();emit requestOpen(sourcePath_);return;
     }
@@ -278,8 +297,8 @@ void AlarmHistoryPage::beginQuery(Scope scope)
     clearDisplay();++generation_;request_=Request();request_.key={sequence.fetchAndAddRelaxed(1)+1,generation_,sourceToken_};
     request_.scope=scope;request_.first=readDate(ui->ldtStartDate);request_.last=readDate(ui->ldtEndDate);
     request_.today=today_;request_.batchSize=128;lastCredit_=0;active_=true;cancelling_=localAbort_=false;
-    report(scope==Scope::LatestToday20?tr("正在校验并读取当天最近20条历史；尚未完成，实时告警未知。"):
-        tr("正在校验并读取完整日期区间；尚未完成，实时告警未知。"));updateControls();emit requestBegin(request_);
+    report(scope==Scope::LatestToday20?tr("正在校验并读取当天最近20条历史；尚未完成，不代表当前告警状态。"):
+        tr("正在校验并读取完整日期区间；尚未完成，不代表当前告警状态。"));updateControls();emit requestBegin(request_);
 }
 bool AlarmHistoryPage::sameRequest(const Request &reply)const
 {
@@ -297,7 +316,7 @@ void AlarmHistoryPage::receivedContinuation(Request reply,qint64 validated,quint
     if(!visibleRequest(reply))return;
     if(!pending_.isEmpty()||credit_||step==0||step<=lastCredit_)
     {stopWithError(tr("历史续取回执次序异常；未展示部分结果。"),true);return;}
-    lastCredit_=credit_=step;report(tr("正在分批校验历史：已校验%1条，尚未完整；实时告警未知。").arg(validated));advanceLater();
+    lastCredit_=credit_=step;report(tr("正在分批校验历史：已校验%1条，尚未完整；不代表当前告警状态。").arg(validated));advanceLater();
 }
 void AlarmHistoryPage::advanceLater()
 {
@@ -341,7 +360,7 @@ void AlarmHistoryPage::appendTurn()
         }
         table->setRowHeight(index,41);table->resizeRowToContents(index);++added;
     }
-    emit appendTurnApplied(added);report(tr("历史已追加%1条，仍在处理，尚未完整；实时告警未知。").arg(table->rowCount()));
+    emit appendTurnApplied(added);report(tr("历史已追加%1条，仍在处理，尚未完整；不代表当前告警状态。").arg(table->rowCount()));
     if(pendingIndex_<pending_.size()){appendLater();return;}
     retainedBytes_+=pendingBytes_;pendingBytes_=0;pending_.clear();pendingIndex_=0;
     if(terminalPending_)tryComplete();else if(credit_)advanceLater();
@@ -352,7 +371,7 @@ void AlarmHistoryPage::receivedFinished(Request reply,Completion completion,qint
     if(cancelling_||localAbort_||closingDialog_)
     {
         active_=false;cancelling_=false;clearDisplay();
-        if(!localAbort_&&!closingDialog_)report(tr("历史查询已取消；未保留部分行，实时告警未知。"));
+        if(!localAbort_&&!closingDialog_)report(tr("历史查询已取消；未保留部分行，不代表当前告警状态。"));
         updateControls();emit finishedView(false,0,matching);return;
     }
     if(!visibleRequest(reply))return;
@@ -367,8 +386,8 @@ void AlarmHistoryPage::tryComplete()
         terminalCompletion_!=(recent?Completion::RecentTodayComplete:Completion::IntervalComplete))
     {stopWithError(tr("历史完整回执与已显示行数/范围不符；已清空，不标完整成功。"),true);return;}
     active_=false;complete_=true;terminalPending_=false;credit_=0;
-    report(recent?tr("当天最近20条已完成：显示%1条，共匹配%2条；不是完整区间，实时告警未知。")
-        .arg(terminalDelivered_).arg(terminalMatching_):tr("日期区间完整读取：%1条；实时告警未知。")
+    report(recent?tr("当天最近20条已完成：显示%1条，共匹配%2条；不是完整区间，不代表当前告警状态。")
+        .arg(terminalDelivered_).arg(terminalMatching_):tr("日期区间完整读取：%1条；不代表当前告警状态。")
         .arg(terminalDelivered_));updateControls();emit finishedView(true,terminalDelivered_,terminalMatching_);
 }
 void AlarmHistoryPage::cancelCurrent()
@@ -392,7 +411,7 @@ void AlarmHistoryPage::receivedCancelled(Request reply,qint64)
 {
     if(!inflightRequest(reply))return;
     active_=false;cancelling_=false;clearDisplay();
-    if(!localAbort_&&!closingDialog_)report(tr("历史查询已取消；没有完整结果，实时告警未知。"));
+    if(!localAbort_&&!closingDialog_)report(tr("历史查询已取消；没有完整结果，不代表当前告警状态。"));
     updateControls();emit finishedView(false,0,0);
 }
 void AlarmHistoryPage::receivedFailed(Request reply,Error,QString message,qint64)
@@ -427,7 +446,7 @@ void AlarmHistoryPage::calendar(bool first)
             auto *edit=first?ui->ldtStartDate:ui->ldtEndDate;
             const QString selected=date.toString(QStringLiteral("yyyy/MM/dd"));
             if(edit->text()!=selected)
-            {edit->setText(selected);++generation_;clearDisplay();report(tr("日期已变更，尚未查询；先前日期结果已清空，实时告警未知。"));}
+            {edit->setText(selected);++generation_;clearDisplay();report(tr("日期已变更，尚未查询；先前日期结果已清空，不代表当前告警状态。"));}
         }
         popup->reject();
     });
@@ -441,9 +460,17 @@ bool AlarmHistoryPage::requestClose()
     if(warning_)return false;
     if(closingDialog_)return false;
     closingDialog_=true;setProperty("closingHistory",true);++generation_;clearDisplay();
+    currentHistoryRefreshPending_=false;
+    clearCurrentDisplay();
     if(calendar_)calendar_->reject();
     report(tr("正在关闭只读历史来源；等待SQL返回/释放，不能声明硬取消或设备动作完成。"));
-    if(store_&&!sourceClosing_){sourceClosing_=true;emit requestSourceClose();}
+    if (!historySourceRequested_)
+    {
+        // 只看当前告警时没有打开SQL，不等待一个从未发出的开库回执。
+        closedSignal_=true;
+        if(!calendar_)ui->mask->closeAnimation();
+    }
+    else if(store_&&!sourceClosing_){sourceClosing_=true;emit requestSourceClose();}
     else if(!store_){forceClose_=true;closingDialog_=false;QDialog::reject();}
     updateControls();return false;
 }
@@ -452,7 +479,7 @@ void AlarmHistoryPage::sourceClosed()
     const bool hadPendingView=active_;
     ++generation_;clearDisplay();
     sourceReady_=opening_=active_=cancelling_=sourceClosing_=false;sourceToken_.clear();closedSignal_=true;
-    if(!closingDialog_&&!localAbort_)report(tr("历史来源已关闭并清表；没有当前查询结果，实时告警未知。"));
+    if(!closingDialog_&&!localAbort_)report(tr("历史来源已关闭并清空历史表；不代表当前告警状态。"));
     if(hadPendingView)emit finishedView(false,0,0);
     updateControls();emit storageClosed();
     if(closingDialog_&&!calendar_)ui->mask->closeAnimation();

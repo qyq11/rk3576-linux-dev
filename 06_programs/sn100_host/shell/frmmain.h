@@ -11,6 +11,7 @@
 #include "history/report_document.h"
 #include "original_files/original_runtime_settings.h"
 #include "projects/original_project_save_notice.h"
+#include "lis_transport/lis_connection_values.h"
 
 class HospitalStore;
 class frmHospInfoSetting;
@@ -40,7 +41,7 @@ class LanguageSettingPage;
 class AlarmHistoryHost;
 class LisInboxPageHost;
 class QAction;
-namespace AlarmHistory { class Store; class OriginalAlarmReceiver; }
+namespace AlarmHistory { class Store; class OriginalAlarmReceiver; class OriginalCurrentAlarmState; }
 namespace Sn100Protocol { struct ReplayState; struct LoopbackStatusState; }
 namespace OriginalRuntime { struct RuntimeSettings; struct SystemProfile; }
 
@@ -70,10 +71,14 @@ public:
     frmPrinterSetting *printerPage() const;
     void attachLisPage(frmLisSetting *page);
     frmLisSetting *lisPage() const;
+    void setLisConnectionState(Sn100Lis::ConnectionState state);
     bool enableLisRawInbox(const QString &absoluteDirectory);
     void openLisRawInbox();
     bool lisRawInboxShutdownComplete() const;
     bool enableOriginalAlarmReceiver(AlarmHistory::OriginalAlarmReceiver *receiver);
+    // 只挂当前观察；等待毫秒数是本地提示门槛，不是设备回执期限或自动重试周期。
+    bool enableOriginalCurrentAlarms(const OriginalRuntime::SystemProfile &profile,
+                                     int queryWaitMilliseconds = 10000);
     bool originalAlarmShutdownComplete() const;
     void attachQualityControlPage(QualityControlPage *page);
     QualityControlPage *qualityControlPage() const { return qualityControl_; }
@@ -244,6 +249,9 @@ private:
     bool alarmHistoryShutdownPending_ = false;
     bool alarmHistoryShutdownRetryQueued_ = false;
     QPointer<AlarmHistory::OriginalAlarmReceiver> originalAlarmReceiver_;
+    QPointer<AlarmHistory::OriginalCurrentAlarmState> currentAlarmState_;
+    int currentAlarmWaitMilliseconds_ = 10000;
+    void queryCurrentAlarms();
     bool originalAlarmShutdownPending_ = false;
     bool requestOriginalAlarmShutdown();
     bool readOnlyStatusEnabled_ = false;
@@ -269,6 +277,12 @@ private:
     void updateOriginalProjectReadiness();
     QString originalProjectUpdateBlocker() const;
     void reportDeviceTaskError(const QString &message);
+    QString deviceUserControlBlocker(quint64 connection) const;
+    void requestDeviceStart(quint64 connection, bool physicalKey);
+    void receiveDeviceStartKey(quint64 connection);
+    bool deviceStartConfirmationPending_ = false;
+    // 只保护退出/账户切换尝试的前置页面检查；不表示任务或液面读取已完成。
+    bool deviceUserInteractionPending_ = false;
     QPointer<SampleStore> deviceTaskStore_;
     bool deviceTaskPreparing_ = false;
     quint64 deviceTaskRequest_ = 0, deviceTaskConnection_ = 0;

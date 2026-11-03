@@ -1,0 +1,158 @@
+[board_a_identity]
+SERIAL=3bf8222fe1417f6a
+uid=0(root) gid=0(root) groups=0(root)
+Linux localhost 6.1.99-rt36-tspi #1 SMP PREEMPT_RT Thu Oct 22 11:35:54 CST 2026 aarch64 aarch64 aarch64 GNU/Linux
+1
+5d98c436-a8ae-4a42-a4af-7921c20f4182
+256 SHA256:xLQv5sqzTRvKbfD2fNQQLYjCbPN6WOXgkXEoUqV8Yy4 root@qyq-virtual-machine (ED25519)
+
+[boot_configuration]
+TARGET SOURCE         FSTYPE OPTIONS
+/      /dev/mmcblk0p8 ext4   rw,relatime
+total 40
+drwxr-xr-x 2 root root 4096 Nov  2 11:16 .
+drwxr-xr-x 3 root root 4096 Sep 12 11:18 ..
+-rw-r--r-- 1 root root 1444 Nov  2 11:16 overlays.ini
+-rw-r--r-- 1 root root  343 Nov  2 11:16 tspi-3m-can0-m2.dtbo
+-rw-r--r-- 1 root root 4856 Sep 12 11:18 tspi-3m-dsi-c41409463.dtbo
+-rw-r--r-- 1 root root 4296 Sep 12 11:18 tspi-3m-dsi-c42388916.dtbo
+-rw-r--r-- 1 root root 1728 Nov  2 11:16 tspi-3m-uart-header-five.dtbo
+-rw-r--r-- 1 root root  103 Nov  2 11:16 .ubootenv
+fbda3263837bcfbe1c2b12e9111a100c47f373c6f2b33b61f0b2e89a40dcff79  /boot/overlays/overlays.ini
+0a3a28657c9c3f01c60e37a0ee5dc07b09ac9abfea743dd30a2e314a684c0f44  /boot/overlays/.ubootenv
+[group:dsi-display]
+type    = group
+name_zh = DSI 显示屏
+name_en = DSI Display
+desc_zh = MIPI DSI 接口屏幕，同一时间只能使用一个
+desc_en = MIPI DSI display, only one can be active at a time
+
+[tspi-3m-dsi-c41409463.dtbo]
+enabled = false
+name_zh = 10.1寸 MIPI 屏幕
+name_en = 10.1" MIPI Display
+desc_zh = LCKFB 10.1寸触摸屏 (800x1280, 4-lane MIPI, GT9xx触控, 立创编号:C41409463)
+desc_en = LCKFB 10.1" Touchscreen (800x1280, 4-lane MIPI, GT9xx Touch, LCSC:C41409463)
+group   = dsi-display
+
+[tspi-3m-dsi-c42388916.dtbo]
+enabled = false
+name_zh = 3.1寸 MIPI 屏幕
+name_en = 3.1" MIPI Display
+desc_zh = LCKFB 3.1寸触摸屏 (480x800, 2-lane MIPI, CST128触控, 立创编号:C42388916)
+desc_en = LCKFB 3.1" Touchscreen (480x800, 2-lane MIPI, CST128 Touch, LCSC:C42388916)
+group   = dsi-display
+
+[tspi-3m-can0-m2.dtbo]
+enabled = true
+name_zh = CAN0（40针7脚接收、11脚发送）
+name_en = CAN0 M2 on header pins 7 and 11
+desc_zh = 启用CAN0和7/11脚；通信速率另行设置，不自动收发
+desc_en = `Enable CAN0 M2 only; bitrate and link startup are configured separately`
+
+[tspi-3m-uart-header-five.dtbo]
+enabled = true
+name_zh = 40针排针五组串口
+name_en = Five UARTs on 40-pin header
+desc_zh = 启用UART3/4/7/8/9收发引脚；释放I2C7、I2C8和SPI1第二片选；外设参数及RS485方向另配
+desc_en = `Enable UART3/4/7/8/9 TX and RX; release I2C7, I2C8 and SPI1 CS1; no serial data sent`
+
+[tools]
+/usr/local/bin/ovtree
+/usr/bin/gpioset
+/usr/bin/gpioget
+/usr/bin/gpioinfo
+/usr/bin/gpiodetect
+gpioset (libgpiod) v1.6.3
+Copyright (C) 2017-2018 Bartosz Golaszewski
+License: LGPLv2.1
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+gpiochip0 [gpio0] (32 lines)
+gpiochip1 [gpio1] (32 lines)
+gpiochip2 [gpio2] (32 lines)
+gpiochip3 [gpio3] (32 lines)
+gpiochip4 [gpio4] (32 lines)
+gpiochip5 [rk806-gpio] (3 lines)
+
+[gpio0_lines]
+gpiochip0 - 32 lines:
+	line   0:      unnamed       "work"  output   active-low [used]
+	line   1:      unnamed       unused   input  active-high 
+	line   2:      unnamed       unused   input  active-high 
+	line   3:      unnamed       unused   input  active-high 
+	line   4:      unnamed       unused   input  active-high 
+	line   5:      unnamed  "interrupt"   input  active-high [used]
+	line   6:      unnamed  "interrupt"   input  active-high [used]
+	line   7:      unnamed       unused   input  active-high 
+	line   8:      unnamed  "interrupt"   input  active-high [used]
+	line   9:      unnamed "bt_default_wake_host" input active-high [used]
+	line  10:      unnamed       unused   input  active-high 
+	line  11:      unnamed       unused   input  active-high 
+	line  12:      unnamed  "interrupt"   input  active-high [used]
+	line  13:      unnamed       unused   input  active-high 
+	line  14:      unnamed "vcc5v0-typec-vbus" output active-high [used]
+	line  15:      unnamed       unused   input  active-high 
+	line  16:      unnamed       unused   input  active-high 
+	line  17:      unnamed       unused   input  active-high 
+	line  18:      unnamed       unused   input  active-high 
+	line  19:      unnamed "vcc5v0-usb30-host" output active-high [used]
+	line  20:      unnamed "vcc-1v2-mipi-csi" output active-high [used]
+	line  21:      unnamed       unused   input  active-high 
+	line  22:      unnamed       unused   input  active-high 
+	line  23:      unnamed       unused   input  active-high 
+	line  24:      unnamed       unused   input  active-high 
+	line  25:      unnamed "rkwifi_wlan_vbat" output active-high [used]
+	line  26:      unnamed       unused   input  active-high 
+	line  27:      unnamed       unused   input  active-high 
+	line  28:      unnamed       unused   input  active-high 
+	line  29:      unnamed       unused   input  active-high 
+	line  30:      unnamed       unused   input  active-high 
+	line  31:      unnamed       unused   input  active-high 
+
+[pin12_pwm_and_uart3_pinmux]
+pin 13 (gpio0-13): (MUX UNCLAIMED) (GPIO UNCLAIMED)
+pin 96 (gpio3-0): 2ad60000.serial (GPIO UNCLAIMED) function uart3 group uart3m0-xfer
+pin 97 (gpio3-1): 2ad60000.serial (GPIO UNCLAIMED) function uart3 group uart3m0-xfer
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+PWM_PATH=/pwm@2add1000
+PWM_STATUS=okay
+
+[pwm_state]
+platform/2ade6000.pwm, 1 PWM device
+ pwm-0   ((null)              ): period: 0 ns duty: 0 ns polarity: normal
+
+platform/2ade3000.pwm, 1 PWM device
+ pwm-0   (pwm-fan             ): requested enabled period: 50000 ns duty: 33333 ns polarity: normal
+
+platform/2add5000.pwm, 1 PWM device
+ pwm-0   ((null)              ): period: 0 ns duty: 0 ns polarity: normal
+
+platform/2add1000.pwm, 1 PWM device
+ pwm-0   ((null)              ): period: 0 ns duty: 0 ns polarity: normal
+
+platform/27331000.pwm, 1 PWM device
+ pwm-0   ((null)              ): period: 0 ns duty: 0 ns polarity: normal
+
+[existing_interfaces]
+crw-rw---- 1 root dialout 4, 67 Jul 28 23:04 /dev/ttyS3
+crw-rw---- 1 root dialout 4, 68 Jul 28 23:04 /dev/ttyS4
+crw-rw---- 1 root dialout 4, 71 Jul 28 23:04 /dev/ttyS7
+crw-rw---- 1 root dialout 4, 72 Jul 28 23:04 /dev/ttyS8
+crw-rw---- 1 root dialout 4, 73 Jul 28 23:04 /dev/ttyS9
+3: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0  allmulti 0 minmtu 0 maxmtu 0 
+    can <FD> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0 
+	  rk3576_canfd: tseg1 1..128 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 2
+	  rk3576_canfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 2
+	  clock 297000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus platform parentdev 2ac00000.can 
+
+[running_application_names]
+
+[boot_payload_fingerprints]
+9e720d81dfa456d9824403cd6a02e8f6e9899a9eecf375e0d51226e129ea92a4  /boot/overlays/tspi-3m-uart-header-five.dtbo
+67dd1e85993831344c1cc0bd9e7a8c6e37aec6b1500bfcd08be87dc5c89be7a9  /boot/overlays/tspi-3m-dsi-c42388916.dtbo
+4479c74d7462b03da69eef3a57420e3ef1ddfa7eefd57d4e44c04827c550e319  /boot/overlays/tspi-3m-dsi-c41409463.dtbo
+92c1bdcfecb719bd1e9e04d75cee90dbb994a735fbf8e691ecc3259f4e1d7280  /boot/overlays/tspi-3m-can0-m2.dtbo
+
+preflight_exit=0

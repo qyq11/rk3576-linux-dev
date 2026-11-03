@@ -28,6 +28,8 @@ struct pin_mapping {
  * Verify gpiochip labels below against the running board before requesting.
  */
 static const struct pin_mapping mappings[] = {
+    /* 排针12脚释放PWM后，用作485方向控制；初始输出为低电平。 */
+    {12, 0, 13, "GPIO0_B5", "RS485-DIR"},
     {13, 2, 22, "GPIO2_C6", "LED-R"},
     {15, 0, 23, "GPIO0_C7", "LED-G"},
     {16, 0, 22, "GPIO0_C6", "LED-B"},
@@ -47,7 +49,7 @@ static void on_signal(int number)
 static void usage(const char *program)
 {
     printf("Usage: %s PHYSICAL_PIN\n", program);
-    puts("Supported physical pins: 13, 15, 16, 18, 22, 36, 38.");
+    puts("Supported physical pins: 12, 13, 15, 16, 18, 22, 36, 38.");
     puts("Example: sudo ./gpio_output 13");
     puts("One pin at a time. Initial output is LOW (0).");
 }

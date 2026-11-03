@@ -1,0 +1,84 @@
+[board_a_after_reboot]
+uid=0(root) gid=0(root) groups=0(root)
+6.1.99-rt36-tspi
+BOOT_ID=da1d6357-7389-4cd3-8b0c-bc0c92fc52ac
+256 SHA256:xLQv5sqzTRvKbfD2fNQQLYjCbPN6WOXgkXEoUqV8Yy4 root@qyq-virtual-machine (ED25519)
+
+[pwm_released]
+PWM_STATUS=disabled PWM_DRIVER_BOUND=no
+	line  13:      unnamed       unused   input  active-high 
+
+[unchanged_configuration_files]
+/boot/overlays/overlays.ini: OK
+/boot/overlays/.ubootenv: OK
+/boot/overlays/tspi-3m-uart-header-five.dtbo: OK
+/boot/overlays/tspi-3m-can0-m2.dtbo: OK
+/boot/overlays/tspi-3m-dsi-c41409463.dtbo: OK
+/boot/overlays/tspi-3m-dsi-c42388916.dtbo: OK
+
+[gpio_output_low_high_low]
+	line  13:      unnamed "gpio-output-test" output active-high [used]
+pin 13 (gpio0-13): (MUX UNCLAIMED) gpio0:13
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+PIN12_SET=0 KERNEL_READBACK=0
+	line  13:      unnamed "gpio-output-test" output active-high [used]
+pin 13 (gpio0-13): (MUX UNCLAIMED) gpio0:13
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (1 level)
+PIN12_SET=1 KERNEL_READBACK=1
+	line  13:      unnamed "gpio-output-test" output active-high [used]
+pin 13 (gpio0-13): (MUX UNCLAIMED) gpio0:13
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+PIN12_SET=0 KERNEL_READBACK=0
+libgpiod 1.6.3 | controller label=gpio0
+Commands: 0 + Enter = LOW; 1 + Enter = HIGH; q + Enter = exit.
+Settings are NOT measured voltages. Measure the pin against GND.
+Keep this program running while measuring; output does not blink.
+Pin 12 | RS485-DIR | GPIO0_B5 | /dev/gpiochip0 offset=13 | OUTPUT=LOW (0) | HOLDING
+gpio> Pin 12 | RS485-DIR | GPIO0_B5 | /dev/gpiochip0 offset=13 | OUTPUT=HIGH (1) | HOLDING
+gpio> Pin 12 | RS485-DIR | GPIO0_B5 | /dev/gpiochip0 offset=13 | OUTPUT=LOW (0) | HOLDING
+gpio> Pin 12 | GPIO0_B5 | OUTPUT=LOW (0) before release.
+Released. Output state after release is not guaranteed.
+gpio_output_exit=0
+
+[gpio_input_mode]
+PIN12_INPUT_READBACK=0
+	line  13:      unnamed       unused   input  active-high 
+pin 13 (gpio0-13): input bias pull down (1 ohms), output drive strength (8 mA), input schmitt enabled, pin output (0 level)
+
+[existing_serial_and_can_interfaces]
+crw-rw---- 1 root dialout 4, 67 Nov  3 16:06 /dev/ttyS3
+crw-rw---- 1 root dialout 4, 68 Nov  3 16:06 /dev/ttyS4
+crw-rw---- 1 root dialout 4, 71 Nov  3 16:06 /dev/ttyS7
+crw-rw---- 1 root dialout 4, 72 Nov  3 16:06 /dev/ttyS8
+crw-rw---- 1 root dialout 4, 73 Nov  3 16:06 /dev/ttyS9
+pin 70 (gpio2-6): 2adb0000.serial (GPIO UNCLAIMED) function uart8 group uart8m1-xfer
+pin 71 (gpio2-7): 2adb0000.serial (GPIO UNCLAIMED) function uart8 group uart8m1-xfer
+pin 78 (gpio2-14): 2ada0000.serial (GPIO UNCLAIMED) function uart7 group uart7m0-xfer
+pin 79 (gpio2-15): 2ada0000.serial (GPIO UNCLAIMED) function uart7 group uart7m0-xfer
+pin 80 (gpio2-16): 2adc0000.serial (GPIO UNCLAIMED) function uart9 group uart9m0-xfer
+pin 81 (gpio2-17): 2adc0000.serial (GPIO UNCLAIMED) function uart9 group uart9m0-xfer
+pin 88 (gpio2-24): 2ad70000.serial (GPIO UNCLAIMED) function uart4 group uart4m0-xfer
+pin 89 (gpio2-25): 2ad70000.serial (GPIO UNCLAIMED) function uart4 group uart4m0-xfer
+pin 96 (gpio3-0): 2ad60000.serial (GPIO UNCLAIMED) function uart3 group uart3m0-xfer
+pin 97 (gpio3-1): 2ad60000.serial (GPIO UNCLAIMED) function uart3 group uart3m0-xfer
+pin 132 (gpio4-4): 2ac00000.can (GPIO UNCLAIMED) function can0 group can0m2-pins
+pin 134 (gpio4-6): 2ac00000.can (GPIO UNCLAIMED) function can0 group can0m2-pins
+3: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0  allmulti 0 minmtu 0 maxmtu 0 
+    can <FD> state STOPPED (berr-counter tx 0 rx 0) restart-ms 0 
+	  rk3576_canfd: tseg1 1..128 tseg2 1..128 sjw 1..128 brp 1..256 brp_inc 2
+	  rk3576_canfd: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 1..256 dbrp_inc 2
+	  clock 297000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 parentbus platform parentdev 2ac00000.can 
+
+[boot_configuration]
+已启用的设备树插件：
+  ● CAN0（40针7脚接收、11脚发送） (tspi-3m-can0-m2.dtbo)
+  ● 40针排针五组串口 (tspi-3m-uart-header-five.dtbo)
+  ● 排针12脚普通GPIO（预留485方向控制） (tspi-3m-uart3-485-gpio-pin12.dtbo)
+
+配置文件: /boot/overlays/.ubootenv
+
+verification_exit=0

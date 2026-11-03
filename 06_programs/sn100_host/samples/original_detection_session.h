@@ -3,6 +3,7 @@
 #include "original_sample_repository.h"
 #include "reagents/original_reagent_repository.h"
 #include "original_task_reagent_receipt.h"
+#include <QStringList>
 
 // 与SampleStore同一个工作线程，准备任务和占用原报告编号后才返回待发送内容。
 class OriginalDetectionSession
@@ -41,6 +42,7 @@ private:
     bool scannerClosed_ = false, rackScannerClosed_ = false, allowMissingBarcode_ = true;
     bool sendByReportRow_ = true, horizontalReport_ = true;
     bool deleteSentTasks_ = false;
+    QStringList multiBottleExceptions_; // 原config.ini/Reagent/exMultil，沿原QVariant.toStringList读取。
     QSet<qint64> issuedRacks_;
     QList<OriginalTasks::Task> issuedTasks_;
     QSet<qint64> finishedTasks_; // 仅Tr完整保存或TR已提交；TD阶段9不在此释放占用。
@@ -54,9 +56,9 @@ private:
     void releaseFinishedRack(const QString &rack);
     bool tasksForRack(const SampleRack &rack, const OriginalTasks::RackRequest *request,
                       const OriginalReagentState &reagents, QList<OriginalTasks::Task> *tasks,
-                      QMap<qint64, double> *remaining, QString *message) const;
+                      OriginalReagentAllocation::AmountWork *work, QString *message) const;
     bool reserve(const OriginalReagentState &observed, QList<OriginalTasks::Task> *tasks,
-                 const QMap<qint64, double> &remaining, QString *message, const QByteArray &request,
+                 const OriginalReagentAllocation::AmountWork &work, QString *message, const QByteArray &request,
                  const OriginalTaskReagents::RuntimeBasis &basis, OriginalTaskReagents::Commit *receipt,
                  OriginalTaskReagents::CommitHandler committed);
 };

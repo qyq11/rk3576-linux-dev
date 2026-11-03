@@ -65,7 +65,7 @@ struct SqlHoleWrite
     qint64 rowId=0;
     QString hole;
     QVariant predicateUsed; // 原WHERE绑定值，空TEXT与NULL不互换。
-    QVariant writtenUsed; // 本次真实g15 QString绑定，不从after重算。
+    QVariant writtenUsed; // 本次真实QString绑定原文，不从after重算或再次格式化。
     QStringList columns; // 本片仅used_ul；行数匹配成功后才加入此集合。
 };
 struct RefreshHole

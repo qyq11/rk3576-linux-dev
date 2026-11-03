@@ -1,0 +1,14 @@
+Source: /home/qyq/TaishanPi-3-Linux/kernel-6.1/arch/arm64/boot/dts/rockchip/tspi-3m-rk3576.dts, lines 139-151
+	/*
+	 * User LED
+	 * Used to indicate system status
+	 */
+	leds: leds {
+		status = "okay";
+		compatible = "gpio-leds";
+
+		work_led: work {
+			linux,default-trigger = "heartbeat";
+			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
+		};
+	};

@@ -1,0 +1,29 @@
+tspi-3m-uart3-485-gpio-pin12.dtbo: OK
+gpio_output: OK
+overlays.ini.before: OK
+ubootenv.before: OK
+	line  13:      unnamed       unused   input  active-high 
+	linux-vdso.so.1 (0x0000007f9043a000)
+	libgpiod.so.2 => /lib/aarch64-linux-gnu/libgpiod.so.2 (0x0000007f903a0000)
+	libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000007f901e0000)
+	/lib/ld-linux-aarch64.so.1 (0x0000007f903fd000)
+Usage: ./gpio_output PHYSICAL_PIN
+Supported physical pins: 12, 13, 15, 16, 18, 22, 36, 38.
+Example: sudo ./gpio_output 13
+One pin at a time. Initial output is LOW (0).
+启用: 排针12脚普通GPIO（预留485方向控制） (tspi-3m-uart3-485-gpio-pin12.dtbo)
+overlays=tspi-3m-can0-m2.dtbo tspi-3m-uart-header-five.dtbo tspi-3m-uart3-485-gpio-pin12.dtbo
+已启用的设备树插件：
+  ● CAN0（40针7脚接收、11脚发送） (tspi-3m-can0-m2.dtbo)
+  ● 40针排针五组串口 (tspi-3m-uart-header-five.dtbo)
+  ● 排针12脚普通GPIO（预留485方向控制） (tspi-3m-uart3-485-gpio-pin12.dtbo)
+
+配置文件: /boot/overlays/.ubootenv
+4feffa5ae6ac7b4c4c1aa046a63038c893439619ca768e5525e2d184b8f185ed  /boot/overlays/overlays.ini
+984e5d694ebf262282b66ad62a9c2001c94ea7f00a0483aa4986df9cc32c4697  /boot/overlays/.ubootenv
+92c1bdcfecb719bd1e9e04d75cee90dbb994a735fbf8e691ecc3259f4e1d7280  /boot/overlays/tspi-3m-can0-m2.dtbo
+4479c74d7462b03da69eef3a57420e3ef1ddfa7eefd57d4e44c04827c550e319  /boot/overlays/tspi-3m-dsi-c41409463.dtbo
+67dd1e85993831344c1cc0bd9e7a8c6e37aec6b1500bfcd08be87dc5c89be7a9  /boot/overlays/tspi-3m-dsi-c42388916.dtbo
+3449ee46cdc47e1777b150a72601064e1d375a690906b58fac53c0a87e4c70d8  /boot/overlays/tspi-3m-uart3-485-gpio-pin12.dtbo
+9e720d81dfa456d9824403cd6a02e8f6e9899a9eecf375e0d51226e129ea92a4  /boot/overlays/tspi-3m-uart-header-five.dtbo
+configuration_exit=0

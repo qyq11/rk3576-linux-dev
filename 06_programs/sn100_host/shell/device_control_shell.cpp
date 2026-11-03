@@ -1,6 +1,8 @@
 #include "frmmain.h"
+#include "task_reagent_context.h"
 #include "ui_frmmain.h"
 #include "instrument/device_control.h"
+#include "alarm_history/original_current_alarm_state.h"
 #include "instrument/instrument_page.h"
 #include "projects/project_page.h"
 #include "reagents/reagents_page.h"
@@ -16,6 +18,7 @@
 #include <QCryptographicHash>
 #include <QRegularExpression>
 #include <QVariantMap>
+#include <QScopedValueRollback>
 
 namespace
 {
@@ -77,35 +80,12 @@ bool frmMain::enableDeviceControl(bool connectAtStartup)
         QTimer::singleShot(0,this,[this](){ updateOriginalDeviceSync(); updateDeviceControlActions(); });
     });
     connect(ui->btnStart, &QPushButton::clicked, this, [this]()
+    { requestDeviceStart(deviceControl_->connectionGeneration(),false); });
+    connect(deviceControl_,&DeviceControl::payloadReceivedForConnection,this,
+        [this](const QByteArray &payload,quint64 connection)
     {
-        const QString reason = deviceControl_->startBlocker().isEmpty()
-                                   ? detectionStartBlocker() : deviceControl_->startBlocker();
-        if (!reason.isEmpty())
-        {
-            CusMessageBox message(this);
-            message.showWarningBox(reason);
-            return;
-        }
-        CusMessageBox question(this);
-        question.showQuestionBox(tr("是否开始测试？"));
-        if (question.getClickButton() != QMessageBox::Yes || deviceTaskPreparing_) return;
-        // 确认框内仍可能收到断线或页面变化，正式准备前再核对。
-        if (!deviceControl_->startBlocker().isEmpty() || !detectionStartBlocker().isEmpty()) return;
-        deviceTaskPreparing_=true;
-        const quint64 request=++deviceTaskRequest_;
-        deviceTaskConnection_=deviceControl_->connectionGeneration();
-        const bool linuxNew=deviceControl_->state().status.generalFields.value(19)==QStringLiteral("LinuxNew");
-        updateDeviceControlActions();
-        QMetaObject::invokeMethod(deviceTaskStore_,"prepareDeviceTasks",Qt::QueuedConnection,
-            Q_ARG(quint64,request),Q_ARG(bool,linuxNew));
-        QTimer::singleShot(10000,this,[this,request]()
-        {
-            if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
-            deviceTaskPreparing_=false;
-            if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
-            reportDeviceTaskError(tr("样本任务准备10秒未返回，未发送开始；请核对数据和连接后重试。"));
-            updateDeviceControlActions();
-        });
+        // 原pcQueryStart忽略字段；只识别原Q/B子命令，不把附加值解释成成功或动作。
+        if (payload.startsWith("QB")) receiveDeviceStartKey(connection);
     });
     connect(ui->btnPause, &QPushButton::clicked, this, [this]()
     {
@@ -121,12 +101,121 @@ bool frmMain::enableDeviceControl(bool connectAtStartup)
     });
     connect(ui->btnAbnormal, &CusBadgeButton::clicked, this, [this]()
     {
-        if (deviceControl_->state().connected) deviceControl_->query(Sn100Protocol::ReadOnlyQuery::Alarm);
+        // 当前告警已挂接时由唯一入口发送，避免同次点击重复Qk。
+        if (!currentAlarmState_ && deviceControl_->state().connected)
+            deviceControl_->query(Sn100Protocol::ReadOnlyQuery::Alarm);
     });
     // main在创建设备控制之后才挂业务页；事件循环开始时再做一次幂等绑定。
     QTimer::singleShot(0,this,[this](){ attachDeviceTaskStore(); updateOriginalDeviceSync(); });
     updateDeviceControlActions();
     return true;
+}
+
+QString frmMain::deviceUserControlBlocker(quint64 connection) const
+{
+    if (!deviceControl_ || !connection || connection!=deviceControl_->connectionGeneration() ||
+        !deviceControl_->state().connected)
+        return tr("本次操作的设备连接已失效或改变，未转交给新连接。");
+    if (deviceUserInteractionPending_)
+        return tr("正在处理退出、登录或注销的页面确认，请先完成当前选择。");
+    if (shutdownClosing_ || !shutdownDialog_.isNull() || reagentLevelClosing_ ||
+        (taskReagentBridge_ && taskReagentBridge_->closing))
+        return tr("程序正在确认退出或等待关闭收尾，未接受新的开始或暂停操作。");
+    if (logoutPending_ || !loginDialog_.isNull() || !session_.authenticated)
+        return tr("当前会话尚未就绪或正在登录注销，未接受设备操作。");
+    if (!deviceControl_->state().fresh)
+        return tr("尚未取得当前连接的有效设备状态，未执行本次操作。");
+    return QString();
+}
+
+void frmMain::requestDeviceStart(quint64 connection,bool physicalKey)
+{
+    const auto record=[this,connection,physicalKey](const QString &message)
+    {
+        setProperty("deviceStartRequestMessage",message);
+        qInfo().noquote()<<"DEVICE_START_REQUEST"<<(physicalKey ? "QB" : "button")<<connection<<message;
+    };
+    if (deviceStartConfirmationPending_ || deviceTaskPreparing_)
+    { record(tr("已有开始确认或任务准备正在处理，未重复提交。")); return; }
+    // 确认框会运行嵌套事件循环；先登记守卫及原请求号，不能在确认后改贴新连接。
+    QScopedValueRollback<bool> confirmation(deviceStartConfirmationPending_,true);
+    const quint64 contextRequest=deviceTaskRequest_;
+    QString reason=deviceUserControlBlocker(connection);
+    if (reason.isEmpty()) reason=deviceControl_->startBlocker();
+    if (reason.isEmpty()) reason=detectionStartBlocker();
+    if (!reason.isEmpty())
+    {
+        record(reason);
+        CusMessageBox message(this);
+        message.showWarningBox(reason);
+        return;
+    }
+    CusMessageBox question(this);
+    question.showQuestionBox(tr("是否开始测试？"));
+    if (question.getClickButton()!=QMessageBox::Yes)
+    { record(tr("已取消本次开始，未发送命令。")); return; }
+    if (contextRequest!=deviceTaskRequest_)
+    { record(tr("确认期间会话或原资料上下文已撤销，旧确认未继续开始。")); return; }
+    reason=deviceUserControlBlocker(connection);
+    if (reason.isEmpty()) reason=deviceControl_->startBlocker();
+    if (reason.isEmpty()) reason=detectionStartBlocker();
+    if (!reason.isEmpty() || deviceTaskPreparing_)
+    { record(reason.isEmpty() ? tr("已有任务准备，未重复开始。") : reason); return; }
+    deviceTaskPreparing_=true;
+    const quint64 request=++deviceTaskRequest_;
+    deviceTaskConnection_=connection;
+    const bool linuxNew=deviceControl_->state().status.generalFields.value(19)==QStringLiteral("LinuxNew");
+    updateDeviceControlActions();
+    QMetaObject::invokeMethod(deviceTaskStore_,"prepareDeviceTasks",Qt::QueuedConnection,
+        Q_ARG(quint64,request),Q_ARG(bool,linuxNew));
+    QTimer::singleShot(10000,this,[this,request]()
+    {
+        if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
+        deviceTaskPreparing_=false;
+        if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
+        reportDeviceTaskError(tr("样本任务准备10秒未返回，未发送开始；请核对数据和连接后重试。"));
+        updateDeviceControlActions();
+    });
+    record(tr("已登记本次任务准备，仍待后台核对和设备实际回复；尚未确认开始。"));
+}
+
+void frmMain::receiveDeviceStartKey(quint64 connection)
+{
+    const auto record=[this,connection](const QString &action,const QString &message)
+    {
+        setProperty("physicalStartKeyMessage",message);
+        qInfo().noquote()<<"PHYSICAL_START_KEY"<<connection<<action<<message;
+    };
+    QString reason=deviceUserControlBlocker(connection);
+    if (!reason.isEmpty()) { record(QStringLiteral("rejected"),reason); return; }
+    if (deviceStartConfirmationPending_ || deviceTaskPreparing_)
+    { record(QStringLiteral("ignored"),tr("已有开始确认或任务准备，本次实体键未缓存或重放。")); return; }
+    updateDeviceControlActions();
+    reason=deviceUserControlBlocker(connection);
+    if (!reason.isEmpty()) { record(QStringLiteral("rejected"),reason); return; }
+    if (deviceStartConfirmationPending_ || deviceTaskPreparing_)
+    { record(QStringLiteral("ignored"),tr("开始处理状态已变化，未重复接受实体键。")); return; }
+    // 原slotTimeTickerOut仅在主状态3至5且灯态不是测试终止(5)时选择暂停。
+    // 先按设备原状态选动作；N/C或草稿禁用开始按钮时，不能改选为暂停。
+    const auto &status=deviceControl_->state().status;
+    const bool pauseAction=status.mainStatus>=3 && status.mainStatus<=5 && status.ledStatus!=5;
+    if (!pauseAction)
+    {
+        record(QStringLiteral("start"),tr("实体键选择开始或恢复，继续检查当前资料和设备状态。"));
+        requestDeviceStart(connection,true);
+        return;
+    }
+    if (pauseAction)
+    {
+        reason=deviceControl_->pauseBlocker();
+        if (!reason.isEmpty()) { record(QStringLiteral("rejected"),reason); return; }
+        // 原实体键暂停无确认框；不套开始专用N/C门、不准备任务或改写退量事实。
+        const bool queued=deviceControl_->pause();
+        record(queued ? QStringLiteral("pause-queued") : QStringLiteral("rejected"),
+            queued ? tr("实体键暂停命令已入队，仍等待设备实际暂停状态。") : deviceControl_->state().message);
+        return;
+    }
+    record(QStringLiteral("ignored"),tr("当前开始和暂停均不可用，未发送命令、未缓存实体键。"));
 }
 
 void frmMain::updateDeviceActionReadiness()
@@ -510,8 +599,8 @@ void frmMain::attachDeviceTaskStore()
     {
         if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
         deviceTaskPreparing_=false;
-        const QString blocker=deviceTaskConnection_!=deviceControl_->connectionGeneration()
-            ? tr("准备任务期间连接已改变，未向新连接发送开始。") : detectionStartBlocker();
+        const QString interaction=deviceUserControlBlocker(deviceTaskConnection_);
+        const QString blocker=interaction.isEmpty() ? detectionStartBlocker() : interaction;
         if (!success || !blocker.isEmpty() || !deviceControl_->start())
         {
             QMetaObject::invokeMethod(store,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
