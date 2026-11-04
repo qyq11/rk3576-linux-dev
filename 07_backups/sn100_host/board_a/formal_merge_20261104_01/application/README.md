@@ -1,0 +1,11 @@
+# 本次合入后的程序与完整源码
+
+本目录保存2026-11-04第15批基础上采用样本/LIS三文件后的ARM64程序、报告辅助程序及完整697份匹配源码。统一进度见[本次记录](../../../../../02_records/20261022_sn100_host_migration.md#formal-merge-temp-preservation-20261104)。
+
+应用包sn100_shell_88ac35f775117aeb9658478ee900006e6aaad2259fa86656ede8462a516d7c74.tar.gz的指纹为53c93457c0c022f0b6692157e554705cf471d854f560c9ab3847d04f3febce8a。应用版本为88ac35f775117aeb9658478ee900006e6aaad2259fa86656ede8462a516d7c74，主程序指纹见build_summary.json；构建、依赖检查和打包均实际退出0。source_files.tar.gz按06_programs/sn100_host原路径保存697个文件，source_snapshot_sorted.json列每份源码指纹；source_verification.json确认全部697项一致。恢复源码先解到另一空目录核对，不能覆盖用户后来修改。
+
+构建来自正式06_programs/sn100_host，而非旧temp候选整树。程序包用官方工具的source_snapshot.json，另存排序清单便于与22f15e91…对照；两表逐项路径和文件指纹相同。Qt恢复安装包仍在07_backups/qt_environment，正式源码和该归档均在temp之外。
+
+板A已按主机指纹和硬件序列号核实，并用原配置和原配套主控启动到登录窗口；初次关闭被登录窗口拦截；用户完成登录后再次正常关闭，退出0、CLEAN_SHUTDOWN=1，七配置及原主控保持。该范围仍不能称整套RK业务通过。此次新包另存板A独立release，current暂保持原0b0b9378；没有部署或启停板B。
+
+仅采用LIS患者值/仓库识别等基础支持，完整患者保存、真实等待与回复、报告及急诊来源仍未完成。其余未采用候选见07_backups/sn100_host/source_candidates/20261104_before_temp_cleanup，不能因为归档就算功能采用。本轮新增代码和归档没有自动提交推送。
