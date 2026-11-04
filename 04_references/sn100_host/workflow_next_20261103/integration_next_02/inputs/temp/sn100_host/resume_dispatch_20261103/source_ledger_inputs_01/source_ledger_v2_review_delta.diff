@@ -1,0 +1,22 @@
+--- source_ledger_candidate.py
++++ source_ledger_candidate_v2.py
+@@ -13,7 +13,7 @@
+ import re
+ import stat
+ 
+-ROOT = Path(__file__).resolve().parents[3]
++ROOT = Path(__file__).resolve().parents[4]
+ PROGRAM = ROOT / "06_programs/sn100_host"
+ SHA = re.compile(r"[a-f0-9]{64}\Z")
+ REVIEW_FORMAT = "sn100-root-real-source-final-review-v1"
+@@ -250,6 +250,10 @@
+                     "check": command_evidence(item["check"], "check", patch),
+                     "apply": command_evidence(item["apply"], "apply", patch),
+                     "acceptance": checked(item["acceptance"]), "expected_after": checked(item["expected_after"])}
++        supporting = item.get("supporting_records")
++        if supporting is not None:
++            need(isinstance(supporting, list) and supporting, "supporting_records must be a nonempty record list.")
++            evidence["supporting_records"] = [checked(rec) for rec in supporting]
+         acceptance = read_record(item["acceptance"])
+         need(acceptance.get("actual_source_equals_expected") is True and acceptance.get("source_files") == len(after),
+              "缺Root实际后像接纳结果。")

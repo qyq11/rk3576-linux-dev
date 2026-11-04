@@ -134,23 +134,14 @@ ReagentTestCount displayHoleTests(const Row &hole, const OriginalReagentState &s
 }
 
 bool orderedOriginalProjects(const QString &root, const ProjectRecords &records, ProjectRecords *projects,
-                             QString *configVersion, QString *message)
+                             const OriginalIni::InitializationSourcePtr &source, QString *message)
 {
+    if (!source || !source->current(root,message)) return false;
     *projects=records;
-    configVersion->clear();
-    const QString config=QDir(root).filePath(QStringLiteral("config.ini"));
-    const bool configExists=QFileInfo::exists(config) || QFileInfo(config).isSymLink();
     QStringList sequence;
-    if (configExists)
-    {
-        OriginalIni::Settings settings;
-        QString actualKey;
-        *configVersion=OriginalProjectRepository::databaseFingerprint(config,message);
-        if (configVersion->isEmpty() || !OriginalIni::read(config,&settings,message) ||
-            !OriginalIni::resolveKey(settings,QStringLiteral("sendConfig/sendSequence"),&actualKey,message))
-            return false;
-        else if (!actualKey.isEmpty()) sequence=settings.values.value(actualKey).toStringList();
-    }
+    QString actualKey;
+    if (!OriginalIni::resolveKey(source->normal(),QStringLiteral("sendConfig/sendSequence"),&actualKey,message)) return false;
+    if (!actualKey.isEmpty()) sequence=source->normal().values.value(actualKey).toStringList();
     // 原loadAllProject先按xuhao，再按配置中的项目名前缀稳定排序；未启用项目也保留。
     if (!sequence.isEmpty())
     {
@@ -163,7 +154,77 @@ bool orderedOriginalProjects(const QString &root, const ProjectRecords &records,
         std::stable_sort(projects->begin(),projects->end(),[&rank](const ProjectRecord &a,const ProjectRecord &b)
         { return rank(a)<rank(b); });
     }
+    return source->current(root,message);
+}
+
+bool singleProbeNeedles(const QString &root, const ProjectRecords &orderedProjects, const QString &reagent,
+                       OriginalReagentProbe::Clock::time_point deadline, QMap<QString,int> *needles, QString *message)
+{
+    if (!needles) return fail(message,QStringLiteral("单孔探测针号输出为空，未准备命令。"));
+    const auto inTime=[&]()
+    {
+        return OriginalReagentProbe::Clock::now()<deadline ||
+            fail(message,QStringLiteral("单孔探测读取原项目步骤时已过准备期限，未发布针号或发送。"));
+    };
+    QMap<QString,int> selected;
+    for (const auto &project : orderedProjects)
+    {
+        if (!inTime()) return false;
+        // 原loadAllProject只排除文件名含小写formula的项目；来源集合和版本仍完整核对。
+        if (project.originalFileName.contains(QStringLiteral("formula"),Qt::CaseSensitive)) continue;
+        Database database;
+        if (!database.open(root,QStringLiteral("project/")+project.originalFileName,false,message) || !inTime()) return false;
+        QSqlQuery query(database.db);
+        // 原loadProject/getData无ORDER BY：保留SELECT *实际返回顺序，不能改成xuhao或rowid排序。
+        if (!query.exec(QStringLiteral("SELECT * FROM project_reagent")))
+            return fail(message,QStringLiteral("单孔探测无法完整读取原项目试剂步骤：")+query.lastError().text());
+        const auto columns=query.record();
+        int nameColumn=-1, needleColumn=-1;
+        for (int column=0;column<columns.count();++column)
+        {
+            if (columns.fieldName(column)==QStringLiteral("reagent_name")) nameColumn=column;
+            if (columns.fieldName(column)==QStringLiteral("needle_select")) needleColumn=column;
+        }
+        if (nameColumn<0 || needleColumn<0)
+            return fail(message,QStringLiteral("单孔探测原项目缺少准确的试剂名或针号字段，未采用部分步骤。"));
+        int rows=0;
+        while (query.next())
+        {
+            if (!inTime()) return false;
+            if (rows>=4096) return fail(message,QStringLiteral("单孔探测原项目步骤超过4096行，未截断或发布针号。"));
+            ++rows;
+            if (query.value(nameColumn).toString()==reagent)
+                // 原loadProject先把原串1译为左针、其他译为右针；dectLV按后出现者覆盖。
+                selected[reagent]=query.value(needleColumn).toString()==QStringLiteral("1") ? 1 : 2;
+        }
+        if (query.lastError().isValid())
+            return fail(message,QStringLiteral("单孔探测原项目步骤未读完，未采用部分针号：")+query.lastError().text());
+        if (!inTime()) return false;
+    }
+    if (!inTime()) return false;
+    *needles=selected;
     return true;
+}
+
+bool probeProjectFilesMatch(const QString &root, const ProjectRecords &projects,
+                            const QMap<QString,QString> &versions, QString *message)
+{
+    QSet<QString> expected, versionFiles, actual;
+    for (const auto &project : projects)
+    {
+        if (project.originalFileName.isEmpty() || expected.contains(project.originalFileName))
+            return fail(message,QStringLiteral("探测缓存没有唯一原项目文件来源。"));
+        expected.insert(project.originalFileName);
+    }
+    for (auto it=versions.cbegin();it!=versions.cend();++it)
+        if (it.key().startsWith(QStringLiteral("project/"))) versionFiles.insert(it.key().mid(8));
+    // 与OriginalProjectRepository::readProjects相同：不过滤N的formula/128文件范围。
+    const QDir directory(QDir(root).filePath(QStringLiteral("project")));
+    const auto entries=directory.entryInfoList(QDir::Files | QDir::NoDotAndDotDot | QDir::System,QDir::Name);
+    for (const auto &entry : entries)
+        if (entry.fileName().endsWith(QStringLiteral(".db"),Qt::CaseInsensitive)) actual.insert(entry.fileName());
+    return (expected==versionFiles && versionFiles==actual) ||
+        fail(message,QStringLiteral("原项目.db集合或缓存版本集合已变化，请重读后准备；未仅核旧文件或给旧缓存续签。"));
 }
 
 QList<int> operationPanelHoles(const OriginalReagentState &state)
@@ -215,11 +276,12 @@ bool arrangeOperationPriority(OriginalReagentState *state, const QList<int> &pan
 }
 
 void loadDisplayTestCounts(const QString &root, const OriginalReagentState &state,
-                          const ProjectRecords &records, ReagentSnapshot *snapshot)
+                          const ProjectRecords &records, ReagentSnapshot *snapshot,
+                          const OriginalIni::InitializationSourcePtr &source)
 {
     ProjectRecords projects;
-    QString configVersion, orderError, message;
-    if (!orderedOriginalProjects(root,records,&projects,&configVersion,&message))
+    QString orderError, message;
+    if (!orderedOriginalProjects(root,records,&projects,source,&message))
         orderError=QStringLiteral("无法核对原项目顺序：")+message;
     for (const auto &project : projects) snapshot->originalProjectOrder.append(project.name);
 
@@ -263,10 +325,7 @@ void loadDisplayTestCounts(const QString &root, const OriginalReagentState &stat
         }
         if (allPresent) snapshot->projectTestCounts.append(qMakePair(project.name,total));
     }
-    const QString config=QDir(root).filePath(QStringLiteral("config.ini"));
-    const bool changed=orderError.isEmpty() && (configVersion.isEmpty()
-        ? QFileInfo::exists(config) || QFileInfo(config).isSymLink()
-        : configVersion!=OriginalProjectRepository::databaseFingerprint(config,&message));
+    const bool changed=orderError.isEmpty() && (!source || !source->current(root,&message));
     if (changed)
     {
         const auto unknown=unknownTestCount(QStringLiteral("读取期间原项目顺序配置变化，请重新读取次数。"));
@@ -351,20 +410,58 @@ void OriginalReagentEditor::projectSnapshot(const OriginalReagentState &observed
         h.amountUl=row.value("amount_uL").toDouble(); h.remainingUl=row.value("used_ul").toDouble(); h.priority=row.value("priority").toInt();
         h.changedAt=row.value("datetime").toString(); h.originalValues=row; h.originalFingerprint=versions.value(settingFile); result.holes.append(h);
     }
-    loadDisplayTestCounts(root_,observed,records,&result);
+    loadDisplayTestCounts(root_,observed,records,&result,initialization_);
     *snapshot=result; *choices=projectChoices;
 }
 
-bool OriginalReagentEditor::initialize(const QString &root, QString *message)
+bool OriginalReagentEditor::initialize(const QString &root, QString *message, std::shared_ptr<OriginalReagentPageMetadata> metadata)
 {
-    if (!repository_.initialize(root,message)) return false;
+    // 在任何仓库/缓存初始化之前冻结同一次原INI字节及解析值，后续只核它，不续签旧缓存。
+    initialization_=OriginalIni::InitializationSource::capture(root,message);
+    if (!initialization_ || !initialization_->current(root,message) ||
+        !repository_.initialize(root,message,initialization_) || !initialization_->current(root,message)) return false;
     root_=root;
+    pageMetadata_ = std::move(metadata);
+    repository_.setPageMetadata(pageMetadata_);
+    if (!pageMetadata_)
+    {
+        // N提交后的只读编辑器已由调用者持两锁；无盘面所有者时保留原读取路径，不递归取锁。
+        ReagentSnapshot snapshot; ReagentProjects projects;
+        return load(&snapshot,&projects,message);
+    }
+    // 原初始化可能恢复未完复制；恢复入口自行取锁，先保留它的原调用归属。
     ReagentSnapshot snapshot; ReagentProjects projects;
-    return load(&snapshot,&projects,message);
+    if (!load(&snapshot,&projects,message)) return false;
+    QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+    QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
+    if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
+        return fail(message,QStringLiteral("原资料正在保存，未重建试剂盘面批号。"));
+    if (!OriginalProjectCopy::noPending(root_,message)) return false;
+    const auto ticket = pageMetadata_->sourceTicket();
+    // 锁内只采用恢复完成后的当前来源，不拿先前读取代替重建后像。
+    if (!load(&snapshot,&projects,message)) return false;
+    return (!pageMetadata_ || pageMetadata_->overwrite(root_,state_.holes,{},true,ticket,message)) &&
+        initialization_->current(root_,message);
+}
+
+bool OriginalReagentEditor::rebuildPageMetadata(const QString &root,
+    const OriginalReagentPageMetadata::SourceTicket &expected, QString *message)
+{
+    if (!initialization_ || !initialization_->current(root_,message)) return false;
+    QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+    QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
+    if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
+        return fail(message,QStringLiteral("原资料正在保存，盘面批号重建待核。"));
+    if (!pageMetadata_) return true;
+    if (root!=root_) return fail(message,QStringLiteral("盘面重建请求属于旧资料根，未改变当前批号。"));
+    OriginalReagentState saved;
+    return repository_.load(&saved,message) && initialization_->current(root_,message) &&
+        pageMetadata_->overwrite(root_,saved.holes,{},true,expected,message) && initialization_->current(root_,message);
 }
 
 bool OriginalReagentEditor::load(ReagentSnapshot *snapshot, ReagentProjects *choices, QString *message)
 {
+    if (!initialization_ || !initialization_->current(root_,message)) return false;
     OriginalReagentState observed;
     if (!snapshot || !choices || !repository_.load(&observed,message)) return false;
     OriginalProjectRepository projects;
@@ -384,17 +481,21 @@ bool OriginalReagentEditor::load(ReagentSnapshot *snapshot, ReagentProjects *cho
     for (auto it=versions.cbegin();it!=versions.cend();++it)
         if (it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(it.key()),message))
             return fail(message,QStringLiteral("读取期间原试剂或项目资料变化，请重新读取。"));
+    if (!initialization_->current(root_,message)) return false;
     state_=observed; isiRows_=isiRows; projects_=records; versions_=versions;
     *snapshot=result; *choices=projectChoices;
     return true;
 }
 
 bool OriginalReagentEditor::mutate(const QString &file, const QString &expected,
-    const std::function<bool(Database &,QString *)> &change, QString *message, const ProjectRecord *projectSave,
+    const std::function<bool(Database &,QString *)> &change, QString *message, const QStringList &metadataOverwrites,
+    bool *databaseCommitted, const ProjectRecord *projectSave,
     const QString &groupEnabled, OriginalProjectSaveNotice *result, const std::function<bool()> &claim,
     const std::function<void(const OriginalProjectSaveNotice &)> &committed)
 {
+    if (!initialization_ || !initialization_->current(root_,message)) return false;
     if (result) *result=OriginalProjectSaveNotice();
+    if (databaseCommitted) *databaseCommitted=false;
     QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
     QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
     if (!projectLock.tryLock(0) || !reagentLock.tryLock(0)) return fail(message,QStringLiteral("原项目或试剂正在保存，请稍后重试，草稿保留。"));
@@ -403,6 +504,7 @@ bool OriginalReagentEditor::mutate(const QString &file, const QString &expected,
     for (auto it=versions_.cbegin();it!=versions_.cend();++it)
         if (it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(it.key()),message))
             return fail(message,QStringLiteral("原试剂或项目已被其他操作修改，本次没有覆盖，请重新读取。"));
+    const auto metadataTicket = pageMetadata_ ? pageMetadata_->sourceTicket() : OriginalReagentPageMetadata::SourceTicket();
     const bool reportCommit=projectSave && (result || committed);
     OriginalProjectSaveNotice notice;
     if (reportCommit)
@@ -416,9 +518,21 @@ bool OriginalReagentEditor::mutate(const QString &file, const QString &expected,
     {
         Database database;
         if (!database.open(root_,file,true,message) || !database.begin(message)) return false;
-        if (!change(database,message)) { database.rollback(); return false; }
+        if (!change(database,message) || !initialization_->current(root_,message)) { database.rollback(); return false; }
         if (!database.commit(message)) return false;
         notice.commitSeen=true;
+        if (databaseCommitted) *databaseCommitted=true;
+    }
+    if (pageMetadata_ && !metadataOverwrites.isEmpty())
+    {
+        OriginalReagentState saved;
+        if (!repository_.load(&saved,message) ||
+            !pageMetadata_->overwrite(root_,saved.holes,metadataOverwrites,false,metadataTicket,message))
+        {
+            pageMetadata_->invalidate(metadataTicket);
+            if (message) *message = QStringLiteral("本地资料已提交，但盘面批号来源未重建：") + *message;
+            return false;
+        }
     }
     if (!reportCommit) return true; // 其他试剂资料不产生项目同步意图。
     OriginalProjectRepository probe;
@@ -557,20 +671,81 @@ bool OriginalReagentEditor::saveHole(const ReagentHole &h, QString *message)
         {"bottle_type",bottle->value("bottle_type_name")},{"amount_uL",h.amountUl},{"used_ul",h.remainingUl},{"priority",h.priority},
         {"out_date",h.expiry},{"datetime",QDateTime::currentDateTime().toString("yyyy/MM/dd HH:mm:ss")},{"state","r_normal"},
         {"out_ul",reagent->value("out_ul")},{"warning_ul",reagent->value("warning_ul")},{"max_ul",bottle->value("max_amount_ul")}};
-    return mutate(settingFile,h.originalFingerprint,[&](Database &db,QString *m){ return saveRow(db,state_.settingTable,h.id,values,m); },message);
+    return mutate(settingFile,h.originalFingerprint,[&](Database &db,QString *m){ return saveRow(db,state_.settingTable,h.id,values,m); },message,{before->value("hole_name").toString()});
 }
 
 bool OriginalReagentEditor::clearHole(const QString &name, QString *message)
 {
-    qint64 id=0; QString area;
+    qint64 id=0; QString area, originalName;
     for (const auto &row : state_.holes) if (row.value("hole_name").toString().compare(name,Qt::CaseInsensitive)==0)
-    { id=row.value("id").toLongLong(); area=row.value("area").toString(); }
+    { id=row.value("id").toLongLong(); area=row.value("area").toString(); originalName=row.value("hole_name").toString(); }
     if (!id) return fail(message,QStringLiteral("原孔位不存在，未创建或删除孔位行。"));
     // 原cusReagentHole::clearHoleSet按区域保留类型，清空批号/瓶型及本孔容量阈值。
     QVariantMap values{{"reagent_type",area=="r_area" ? "r_reagent" : "s_ibs"},{"reagent_name","none"},{"reagent_batch",""},{"bottle_type",""},
         {"amount_uL","0"},{"used_ul","0"},{"state","r_none"},{"out_date",""},{"datetime",""},
         {"priority","0"},{"warning_ul","0"},{"out_ul","0"},{"max_ul","0"}};
-    return mutate(settingFile,QString(),[&](Database &db,QString *m){ return saveRow(db,state_.settingTable,id,values,m); },message);
+    return mutate(settingFile,QString(),[&](Database &db,QString *m){ return saveRow(db,state_.settingTable,id,values,m); },message,{originalName});
+}
+
+bool OriginalReagentEditor::prepareSingleProbe(const OriginalReagentProbe::Request &request,
+    OriginalReagentProbe::Prepared *prepared, QString *message)
+{
+    using namespace OriginalReagentProbe;
+    if (!prepared) return fail(message,QStringLiteral("单孔探测准备输出为空，未发送。"));
+    *prepared=Prepared(); prepared->source=request;
+    const auto current=[&](QString *error)
+    {
+        if (Clock::now()>=request.prepareUntil)
+            return fail(error,QStringLiteral("单孔探测准备期限已过，未继续准备或发送。"));
+        if (!initialization_ || !initialization_->current(root_,error)) return false;
+        if (!probeProjectFilesMatch(root_,projects_,versions_,error)) return false;
+        for (auto it=versions_.cbegin();it!=versions_.cend();++it)
+            if (it.value().isEmpty() || it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(it.key()),error))
+                return fail(error,QStringLiteral("原试剂或项目缓存已变化，未给旧资料续签探测来源。"));
+        return Clock::now()<request.prepareUntil || fail(error,QStringLiteral("单孔探测准备期限已过，未返回旧来源。"));
+    };
+    if (request.token.isEmpty() || !request.request || !request.connection || request.root!=root_ ||
+        state_.root!=root_ || versions_.isEmpty() || request.prepareUntil>Clock::now()+std::chrono::seconds(10) ||
+        !request.actor.authenticated ||
+        request.actor.role<0 || request.actor.role>5 || !current(message))
+        return fail(message,message && !message->isEmpty() ? *message : QStringLiteral("单孔探测请求、账户或资料根未就绪。"));
+    const Row *selected=nullptr;
+    for (int index : operationPanelHoles(state_))
+        if (state_.holes[index].value(QStringLiteral("hole_name")).toString()==request.hole)
+        {
+            if (selected) return fail(message,QStringLiteral("当前面板孔名重复，未猜测单孔目标。"));
+            selected=&state_.holes[index];
+        }
+    if (!selected) return fail(message,QStringLiteral("单孔探测目标不属于当前原面板。"));
+    bool validId=false;
+    const qint64 id=selected->value(QStringLiteral("id")).toLongLong(&validId);
+    const QStringList configuredStates{QStringLiteral("r_normal"),QStringLiteral("r_warning"),
+        QStringLiteral("r_useout"),QStringLiteral("r_outdate")};
+    if (!validId || id<=0 || !configuredStates.contains(selected->value(QStringLiteral("state")).toString()))
+        return fail(message,QStringLiteral("本片只准备合法已配置孔，不准备None、Unknown或未知状态。"));
+    if (!pageMetadata_) return fail(message,QStringLiteral("真实试剂盘面批号来源未绑定，未准备单孔探测。"));
+    // 批号只捕获/核当前，不发布CAL setter或元数据覆盖。
+    OriginalReagentPageMetadata::View batches;
+    if (!pageMetadata_->capture(root_,state_.holes,&batches,message)) return false;
+    ProjectRecords projects;
+    if (!orderedOriginalProjects(root_,projects_,&projects,initialization_,message)) return false;
+    QMap<QString,int> needles;
+    const QString reagent=selected->value(QStringLiteral("reagent_name")).toString();
+    if (!singleProbeNeedles(root_,projects,reagent,request.prepareUntil,&needles,message)) return false;
+    QByteArray payload;
+    if (!repository_.detectionPayload(state_,QStringList{request.hole},needles,&payload,message) ||
+        !payload.startsWith(QByteArrayLiteral("Mg[1]")) || !current(message) || !pageMetadata_->current(batches,message))
+        return fail(message,message && !message->isEmpty() ? *message : QStringLiteral("没有得到唯一单孔Mg，未发送。"));
+    Prepared result;
+    result.source=request; result.table=state_.settingTable; result.payload=payload;
+    result.originalHole=*selected; result.versions=versions_;
+    for (auto it=initialization_->versions().cbegin();it!=initialization_->versions().cend();++it)
+        result.versions.insert(it.key(),it.value());
+    result.initialization=initialization_; result.batches=batches;
+    result.success=true;
+    result.message=QStringLiteral("已准备唯一合法配置孔Mg；没有写库、发送或确认设备动作。");
+    *prepared=result;
+    return true;
 }
 
 bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, const QString &holeName,
@@ -583,6 +758,7 @@ bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, con
         return fail(message,QStringLiteral("原试剂资料尚未读取，未准备设备操作。"));
     const auto unchanged=[&](QString *error)
     {
+        if (!initialization_ || !initialization_->current(root_,error)) return false;
         if (!stillCurrent || !stillCurrent())
             return fail(error,QStringLiteral("试剂操作的连接或会话许可已经改变，未继续准备或保存。"));
         for (auto it=versions_.cbegin();it!=versions_.cend();++it)
@@ -593,6 +769,8 @@ bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, con
     if (!unchanged(message)) return false;
 
     OriginalReagentState proposed=state_;
+    OriginalReagentPageMetadata::View metadataView;
+    if (pageMetadata_ && !pageMetadata_->capture(state_.root,state_.holes,&metadataView,message)) return false;
     const QList<int> panel=operationPanelHoles(proposed);
     QSet<qint64> ids;
     for (int index : panel)
@@ -616,19 +794,11 @@ bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, con
         return fail(message,QStringLiteral("选中孔位不在当前原试剂面板中，未创建或猜测孔位。"));
     HoleChanges changes;
     QList<QByteArray> prepared;
-    QString configVersion;
-    bool checkedConfig=false;
-    const QString config=QDir(root_).filePath(QStringLiteral("config.ini"));
     const auto configUnchanged=[&](QString *error)
     {
         if (!stillCurrent || !stillCurrent())
             return fail(error,QStringLiteral("试剂操作许可已经改变，当前事务不继续提交。"));
-        if (!checkedConfig) return true;
-        const bool exists=QFileInfo::exists(config) || QFileInfo(config).isSymLink();
-        if (configVersion.isEmpty() ? exists :
-            configVersion!=OriginalProjectRepository::databaseFingerprint(config,error))
-            return fail(error,QStringLiteral("试剂探测准备期间原项目顺序配置变化，未保存或发送。"));
-        return true;
+        return initialization_ && initialization_->current(root_,error);
     };
 
     if (operation==QStringLiteral("prioritizeHole"))
@@ -636,12 +806,22 @@ bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, con
         if (linuxNew)
         {
             QByteArray payload;
-            if (!repository_.singleReagentPriorityPayload(proposed,holeName,&payload,message)) return false;
+            auto sending = proposed;
+            if (metadataView.available)
+                for (auto &row : sending.holes)
+                    row[QStringLiteral("reagent_batch")] = metadataView.batches.value(row.value(QStringLiteral("id")).toLongLong());
+            if (!repository_.singleReagentPriorityPayload(sending,holeName,&payload,message)) return false;
             prepared.append(payload);
         }
         else if (proposed.holes[selected].value("state").toString()!=QStringLiteral("r_none"))
         {
             const QString name=proposed.holes[selected].value("reagent_name").toString();
+            if (metadataView.available)
+                for (int index : panel)
+                    if (index==selected || (proposed.holes[index].value("state").toString()!=QStringLiteral("r_none") &&
+                        proposed.holes[index].value("reagent_name").toString()==name))
+                        changeOperationHole(&proposed,index,QStringLiteral("reagent_batch"),
+                            metadataView.batches.value(proposed.holes[index].value("id").toLongLong()),&changes);
             changeOperationHole(&proposed,selected,QStringLiteral("priority"),1,&changes);
             for (int index : panel)
             {
@@ -661,6 +841,9 @@ bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, con
     else if (operation==QStringLiteral("fillHole"))
     {
         const auto before=proposed.holes[selected];
+        if (metadataView.available)
+            changeOperationHole(&proposed,selected,QStringLiteral("reagent_batch"),
+                metadataView.batches.value(before.value("id").toLongLong()),&changes);
         const Row *bottle=nullptr;
         for (const auto &row : proposed.bottles)
             if (row.value("bottle_type_name").toString()==before.value("bottle_type").toString() &&
@@ -691,7 +874,11 @@ bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, con
         if (linuxNew)
         {
             QByteArray payload;
-            if (!repository_.singleReagentUpdatePayload(proposed,holeName,true,&payload,message)) return false;
+            auto sending = proposed;
+            if (metadataView.available)
+                for (auto &row : sending.holes)
+                    row[QStringLiteral("reagent_batch")] = metadataView.batches.value(row.value(QStringLiteral("id")).toLongLong());
+            if (!repository_.singleReagentUpdatePayload(sending,holeName,true,&payload,message)) return false;
             prepared.append(payload);
         }
     }
@@ -719,8 +906,7 @@ bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, con
     if (detection)
     {
         ProjectRecords projects;
-        if (!orderedOriginalProjects(root_,projects_,&projects,&configVersion,message)) return false;
-        checkedConfig=true;
+        if (!orderedOriginalProjects(root_,projects_,&projects,initialization_,message)) return false;
         QStringList holes;
         if (operation==QStringLiteral("detectAll"))
         {
@@ -756,21 +942,38 @@ bool OriginalReagentEditor::prepareDeviceOperation(const QString &operation, con
     }
 
     if (!unchanged(message) || !configUnchanged(message)) return false;
-    if (!changes.isEmpty())
+    // 原充满/旧优先级的实际落库孔继续保存当前控件批号；不为未变孔新增更新。
+    QStringList overwritten;
+    if (operation==QStringLiteral("clearPanel"))
+        for (int index : panel) overwritten.append(proposed.holes[index].value(QStringLiteral("hole_name")).toString());
+    for (auto it=changes.begin();it!=changes.end();++it)
+        for (const auto &row : state_.holes)
+            if (row.value(QStringLiteral("id")).toLongLong()==it.key())
+            {
+                const QString name=row.value(QStringLiteral("hole_name")).toString();
+                if (!overwritten.contains(name)) overwritten.append(name);
+                if (metadataView.available && operation!=QStringLiteral("clearPanel"))
+                    it.value().insert(QStringLiteral("reagent_batch"),metadataView.batches.value(it.key()));
+            }
+    if (!changes.isEmpty() || operation==QStringLiteral("clearPanel"))
     {
         // 原updateHoleInfo未传formula_level；旧TableDal全列更新把它写为空串。
         // 只在原来确实会落库的孔复现该结果，未知厂商列仍保留。
         for (auto it=changes.begin();it!=changes.end();++it) it.value().insert(QStringLiteral("formula_level"),QString());
+        bool committed=false;
         const bool saved=mutate(settingFile,versions_.value(settingFile),[&](Database &database,QString *error)
         {
-            if (!configUnchanged(error)) return false;
+            if (!configUnchanged(error) ||
+                (pageMetadata_ && !pageMetadata_->current(metadataView,error))) return false;
             for (auto it=changes.cbegin();it!=changes.cend();++it)
                 if (!saveRow(database,state_.settingTable,it.key(),it.value(),error)) return false;
             return configUnchanged(error);
-        },message);
+        },message,overwritten,&committed);
+        *localSaved=committed; // 提交后来源核对失败也保留事实；失败时仍不发送命令。
         if (!saved) return false;
-        *localSaved=true;
     }
+    if (pageMetadata_ && changes.isEmpty() && operation!=QStringLiteral("clearPanel") &&
+        !pageMetadata_->current(metadataView,message)) return false;
     *packets=prepared;
     if (message)
         *message=*localSaved ? QStringLiteral("原本地资料已保存；设备命令仅完成准备，执行及回读仍待确认。") :
@@ -849,7 +1052,7 @@ bool OriginalReagentEditor::saveBatchGroupEnabled(const ReagentProject &requeste
             if (it.key()!=file && it.value()!=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(it.key()),error))
                 return fail(error,QStringLiteral("保存期间关联试剂或项目资料已变化，本次开关没有提交，请重新读取。"));
         return true;
-    },message,project,value,result,claim,committed);
+    },message,{},nullptr,project,value,result,claim,committed);
 }
 
 bool OriginalReagentEditor::saveBatch(const ReagentBatch &b, QString *message)

@@ -235,14 +235,31 @@ bool refundTexts(const OriginalReagentState &observed,const QList<Task> &pending
 }
 }
 
-bool OriginalDetectionSession::initialize(OriginalSampleRepository *samples, QString *message)
+bool OriginalDetectionSession::initialize(OriginalSampleRepository *samples, QString *message,
+    std::shared_ptr<OriginalReagentPageMetadata> metadata,
+    OriginalIni::InitializationSourcePtr configurationSource)
 {
+    initializedConfigurationVersions_.clear();
+    configurationSource_.reset();
     if (!samples || samples->root().isEmpty()) return fail(message, QStringLiteral("原样本仓库未就绪。"));
+    // 旧接口只可复用仓库真正消费的同一来源，不能在仓库读完后另抓新版给旧缓存续签。
+    if (!configurationSource) configurationSource=samples->configurationSource();
+    if (configurationSource && (configurationSource!=samples->configurationSource() ||
+        !configurationSource->current(samples->root(),message)))
+        return fail(message,QStringLiteral("样本仓库和任务会话的初始化配置来源不一致，未采用任务缓存。"));
     samples_ = samples;
+    pageMetadata_ = std::move(metadata);
+    reagents_.setPageMetadata(pageMetadata_);
     root_ = samples->root();
-    if (!reagents_.initialize(root_, message)) return false;
+    if (!reagents_.initialize(root_, message, configurationSource)) return false;
     OriginalIni::Settings settings, debug, theme;
-    if (!OriginalIni::read(QDir(root_).filePath(QStringLiteral("config.ini")), &settings, message) ||
+    if (configurationSource)
+    {
+        if (reagents_.configurationSource()!=configurationSource)
+            return fail(message,QStringLiteral("内置试剂仓库未消费同一初始化配置，未采用任务缓存。"));
+        settings=configurationSource->normal(); debug=configurationSource->debug(); theme=configurationSource->theme();
+    }
+    else if (!OriginalIni::read(QDir(root_).filePath(QStringLiteral("config.ini")), &settings, message) ||
         !OriginalIni::read(QDir(root_).filePath(QStringLiteral("config_Debug.ini")), &debug, message) ||
         !OriginalIni::read(QDir(root_).filePath(QStringLiteral("theme_config.ini")), &theme, message)) return false;
     if (!boolean(settings, QStringLiteral("userOption/isSampleHoleScanClose"), false, &scannerClosed_, message) ||
@@ -255,7 +272,18 @@ bool OriginalDetectionSession::initialize(OriginalSampleRepository *samples, QSt
     horizontalReport_ = report == QStringLiteral("0");
     // 原main.cpp:163/181从同一config.ini取QStringList；不新增键或人工拆分逗号。
     multiBottleExceptions_=settings.values.value(QStringLiteral("Reagent/exMultil"),QVariant()).toStringList();
+    if (configurationSource)
+    {
+        if (!configurationSource->current(root_,message)) return false;
+        initializedConfigurationVersions_=configurationSource->versions();
+        configurationSource_=std::move(configurationSource);
+    }
     return true;
+}
+
+bool OriginalDetectionSession::capturePageMetadata(const OriginalReagentState &state, AmountWork *work, QString *message) const
+{
+    return !pageMetadata_ || pageMetadata_->capture(state.root,state.holes,&work->pageMetadata,message);
 }
 
 bool OriginalDetectionSession::tasksForRack(const SampleRack &rack, const RackRequest *request,
@@ -412,7 +440,7 @@ bool OriginalDetectionSession::prepare(bool linuxNew, QString *message)
     int count = 0;
     QList<Task> allTasks;
     AmountWork work;
-    if (!reagents_.initializeAmountWork(observed,&work,message)) return false;
+    if (!reagents_.initializeAmountWork(observed,&work,message) || !capturePageMetadata(observed,&work,message)) return false;
     for (const auto &rack : snapshot_.racks)
     {
         if (issuedRacks_.contains(rack.id))
@@ -437,6 +465,37 @@ bool OriginalDetectionSession::prepare(bool linuxNew, QString *message)
     return true;
 }
 
+bool OriginalDetectionSession::prepareUserOperation(const OriginalTaskReagents::RuntimeBasis &basis,bool linuxNew,QString *message)
+{
+    cancelUnsent(); // 只撤旧的未占号准备，不清已发任务或退款依据。
+    const auto matches=[&]()
+    {
+        if (!OriginalTaskReagents::taskOriginAllows(basis,OriginalTaskReagents::Action::None) ||
+            basis.source!=OriginalTaskReagents::OperationSource::UserOperation || !samples_ || basis.root!=root_ ||
+            !configurationSource_ || samples_->configurationSource()!=configurationSource_ ||
+            reagents_.configurationSource()!=configurationSource_ || initializedConfigurationVersions_.size()!=3 ||
+            basis.userOperation.configurationVersions!=initializedConfigurationVersions_ ||
+            !configurationSource_->current(root_,message)) return false;
+        SampleSnapshot current;
+        if (!samples_->load(&current,message) || OriginalTaskReagents::sampleTaskInputDigest(current)!=basis.userOperation.sampleSnapshotDigest) return false;
+        QMap<QString,QString> projects;
+        for (const auto &project : samples_->projects())
+        {
+            if (project.originalFileName.isEmpty() || project.originalFingerprint.isEmpty() || projects.contains(project.originalFileName)) return false;
+            projects.insert(project.originalFileName,project.originalFingerprint);
+        }
+        return projects==basis.userOperation.projectVersions;
+    };
+    if (!matches()) return fail(message,QStringLiteral("用户准备请求的来源、原配置或项目版本已改变，未准备任务。"));
+    bool immediate=false;
+    if (!boolean(configurationSource_->debug(),QStringLiteral("userOption/SendTaskImmediate"),false,&immediate,message)) return false;
+    if (immediate) return fail(message,QStringLiteral("原配置启用了立即下发；Emergency业务层尚未接通，未改走Ts开始命令。"));
+    const bool success=prepare(linuxNew,message);
+    if (!matches())
+    { cancelUnsent(); return fail(message,QStringLiteral("准备期间原配置或项目版本改变，旧用户请求已停止，未发送开始。")); }
+    return success;
+}
+
 void OriginalDetectionSession::cancelUnsent()
 {
     // 仅取消尚未分配设备任务号的开始准备；已占号任务不删除、不恢复试剂量。
@@ -458,7 +517,8 @@ bool OriginalDetectionSession::reserve(const OriginalReagentState &observed, QLi
             fail(message,QStringLiteral("空任务仍有逻辑扣量，未保存无法归属的余额。"));
     if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
         return fail(message,QStringLiteral("原项目或试剂正在保存，任务尚未预留，未自动重发，请保留原请求核对。"));
-    if (!OriginalProjectCopy::noPending(root_,message) || !versionMatches(observed, message)) return false;
+    if (!OriginalProjectCopy::noPending(root_,message) || !versionMatches(observed, message) ||
+        (pageMetadata_ && !pageMetadata_->current(work.pageMetadata,message))) return false;
     if (!reservationWorkMatches(observed,*tasks,work,message)) return false;
     QList<Task> assigned;
     {
@@ -572,6 +632,10 @@ bool OriginalDetectionSession::answerRackRequest(const QByteArray &payload, QByt
     OriginalTaskReagents::CommitHandler committed)
 {
     if (receipt) *receipt=OriginalTaskReagents::Commit();
+    if (basis.source!=OriginalTaskReagents::OperationSource::DevicePacket ||
+        (basis.actionId && (!OriginalTaskReagents::validTaskOrigin(basis) ||
+            basis.payloadSha256!=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex()))))
+        return fail(message,QStringLiteral("设备入口只接受原设备包来源；用户请求不得借伪Tt/TR进入事务。"));
     if (!prepared_ || !samples_ || !response) return fail(message, QStringLiteral("原样本任务尚未完成开始前准备，未回应设备任务请求。"));
     RackRequest request;
     if (!parseRackRequest(payload, &request, message)) return false;
@@ -593,11 +657,24 @@ bool OriginalDetectionSession::answerRackRequest(const QByteArray &payload, QByt
         if (project.originalFingerprint != OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(QStringLiteral("project/") + project.originalFileName), message))
             return fail(message, QStringLiteral("开始准备后的项目参数已变化，未发送旧参数，请核对并重新开始。"));
     OriginalReagentState observed;
-    if (!reagents_.load(&observed, message)) return false;
     QList<Task> tasks;
     AmountWork work;
-    if (!reagents_.initializeAmountWork(observed,&work,message)) return false;
-    if (!tasksForRack(*selected, &request, observed, &tasks, &work, message)) return false;
+    {
+        // 与Ur/手工覆盖串行到页面setter发布；释放后reserve再按原顺序取锁并复核。
+        QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+        QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
+        projectLock.setStaleLockTime(0); reagentLock.setStaleLockTime(0);
+        if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
+            return fail(message,QStringLiteral("原项目或试剂正在保存，未采用旧盘面批号生成任务。"));
+        if (!reagents_.load(&observed,message) || !reagents_.initializeAmountWork(observed,&work,message) ||
+            !capturePageMetadata(observed,&work,message)) return false;
+        // setter不属于SQL事务；未选中、随后跳过/失败也交回已经遍历的批号变化。
+        const bool allocated = tasksForRack(*selected, &request, observed, &tasks, &work, message);
+        QString metadataError;
+        if (pageMetadata_ && !pageMetadata_->publishDefaults(&work.pageMetadata,&metadataError))
+            return fail(message,metadataError);
+        if (!allocated) return false;
+    }
     if (!reagents_.auxiliaryVolumesReady(observed, tasks, message) || !calibrationGroupsReady(root_, observed, tasks, message)) return false;
     if (!reserve(observed, &tasks, work, message,payload,basis,receipt,committed)) return false;
     if (!rackPayload(selected->name, tasks, linuxNew_, response, message)) return false;
@@ -615,6 +692,10 @@ bool OriginalDetectionSession::receiveDevicePayload(const QByteArray &payload, Q
     OriginalTaskReagents::CommitHandler committed)
 {
     if (receipt) *receipt=OriginalTaskReagents::Commit();
+    if (basis.source!=OriginalTaskReagents::OperationSource::DevicePacket ||
+        (basis.actionId && (!OriginalTaskReagents::validTaskOrigin(basis) ||
+            basis.payloadSha256!=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex()))))
+        return fail(message,QStringLiteral("设备入口只接受原设备包来源；用户请求不得借伪Tt/TR进入事务。"));
     if (payload.startsWith("Ur")) return reagents_.applyDeviceReply(payload, message);
     if (payload.startsWith("TR")) return receiveTaskErrors(payload,message,basis,receipt,committed);
     if (payload.startsWith("TB"))
@@ -812,8 +893,21 @@ bool OriginalDetectionSession::receiveDevicePayload(const QByteArray &payload, Q
 
 bool OriginalDetectionSession::reagentConfiguration(QByteArray *payload, QString *message)
 {
+    QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+    QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
+    if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
+        return fail(message,QStringLiteral("原项目或试剂正在保存，未下发旧盘面资料。"));
     OriginalReagentState state;
-    return reagents_.load(&state,message) && reagents_.reagentUpdatePayload(state,payload,message);
+    if (!reagents_.load(&state,message)) return false;
+    if (pageMetadata_)
+    {
+        OriginalReagentPageMetadata::View view;
+        if (!pageMetadata_->capture(state.root,state.holes,&view,message)) return false;
+        for (auto &row : state.holes)
+            row[QStringLiteral("reagent_batch")] = view.batches.value(row.value(QStringLiteral("id")).toLongLong());
+        if (!pageMetadata_->current(view,message)) return false;
+    }
+    return reagents_.reagentUpdatePayload(state,payload,message);
 }
 
 void OriginalDetectionSession::markConnectionUncertain()

@@ -31,6 +31,7 @@ struct Action
     bool basisEligible=false, dispatched=false, processed=false, cancelled=false;
     bool observed=false, receiptAuthorized=false, receiptConflict=false, pageRequested=false, enqueueing=false, ackSeen=false, readerPending=false;
     bool displayUnknown=false, transactionUnknown=false, unscoped=false, waitWarned=false;
+    bool userSuccess=false;
     QMap<QString,qint64> unresolvedHoles;
     QString message;
     Clock::time_point arrived=Clock::now();
@@ -66,7 +67,9 @@ struct DisplayLatch
 struct TransactionFact
 {
     quint64 actionId=0, packet=0, connection=0, epoch=0;
-    QString root, receiptId, payloadSha256;
+    QString root, receiptId, payloadSha256, originDigest;
+    OriginalTaskReagents::OperationSource source=OriginalTaskReagents::OperationSource::DevicePacket;
+    OriginalTaskReagents::UserOperation userOperation;
     bool receiptAvailable=false, committed=false;
     OriginalTaskReagents::TransactionState transaction=OriginalTaskReagents::TransactionState::NotStarted;
     bool unscoped=false;
@@ -76,7 +79,9 @@ struct TransactionFact
 struct Terminal
 {
     quint64 id=0, packet=0, connection=0, epoch=0;
-    QString root, receiptId, basisToken, payloadSha256;
+    QString root, receiptId, basisToken, payloadSha256, originDigest;
+    OriginalTaskReagents::OperationSource source=OriginalTaskReagents::OperationSource::DevicePacket;
+    OriginalTaskReagents::UserOperation userOperation;
     QByteArray receiptSignature;
     QByteArray basisSignature;
     OriginalTaskReagents::Action expected=OriginalTaskReagents::Action::None;
@@ -85,9 +90,10 @@ struct Terminal
 
 struct Bridge
 {
-    QMap<quint64,Action> actions; // 仅活跃动作与原32包/1MiB合计记账，B历史不占业务包预算。
+    QMap<quint64,Action> actions; // key仅为内部actionId，packet只保存真实设备到包号； 仅活跃动作与原32包/1MiB合计记账，B历史不占业务包预算。
     QQueue<quint64> waiting;
     QMap<quint64,quint64> nReaders; // 包编号对应连接编号；只在实际液面读取结束后移除。
+    quint64 lastUserRequest=0;
     quint64 nextAction=0, epoch=1, identityRevision=0, fenceToken=0, fenceConnection=0, processedSerial=0;
     bool attached=false, closing=false, closeRetryNeeded=false, identityChanging=false, pumpQueued=false, fenceClosed=false, awaitFreshQj=false;
     bool readerCloseIntent=false, readerCloseRetryPosted=false;

@@ -8,6 +8,7 @@
 #include <memory>
 
 class DeviceControl;
+class QThread;
 
 // GUI适配器：只接被动Uh并把值交专用SQL线程；不发设备命令、不要求人工登录。
 class OriginalChannelReceiver : public QObject
@@ -19,6 +20,9 @@ public:
                             SnapshotConsumer consumer, QObject *parent = nullptr);
     ~OriginalChannelReceiver() override;
     bool start();
+    // 只读GUI镜像及构造时固定的后台身份；不打开/重读数据库、不排队或撤销真实批次。
+    QString requestReadbackBlocker(const DeviceControl *expectedControl, quint64 generation,
+                                   const QString &expectedRoot) const;
     bool isStopped() const { return stopped_; }
     int pendingBatchCount() const { return waiting_.size() + (inFlight_ ? 1 : 0); }
     // 仅在worker已释放或专用线程已停止后作异常尾清理；未收到的终态如实标待核。
@@ -55,6 +59,7 @@ private:
         OriginalRuntime::ChannelCommitPermitPtr permit;
     };
     QPointer<OriginalChannelStore> store_;
+    QPointer<QThread> storeThread_;
     QPointer<DeviceControl> control_;
     QString originalRoot_, fingerprint_;
     SnapshotConsumer consumer_;

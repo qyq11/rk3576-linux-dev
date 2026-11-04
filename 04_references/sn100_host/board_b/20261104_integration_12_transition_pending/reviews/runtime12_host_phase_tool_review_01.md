@@ -1,0 +1,41 @@
+# 第12批Host阶段整理工具：01审查与02窄补正复核
+
+结论：02的窄补正已解决本次发现的旧停九文件来源路径缺核，未见仍需阻断本工具后续使用的确定问题。01作为已实际整理metadata/生成prepare的原件保留；不回写其代码或既有记录。此结论只覆盖Host整理/生成工具，不代替各实际板端阶段及生成脚本的独立核对。
+
+固定对象在 `temp/sn100_host/resume_dispatch_20261103/runtime_batch12_01/`：01实际起止SHA-256为 `ae5ab47a56460e2a59f6fdebd281f825e7ecf0cbd6b5bdac793d6e78cefc03a9`；02实际起止为 `d3267376a00db89e73eee4d881711a537ebbd41bc1cca753129a45c802c46e81`，10809字节。只读代码、元数据及已有实际原件，做AST文字/常量检查和数据比对，没有导入或运行这两个工具、生成器、产品、测试、SQL、编译或SSH，没有修改任何输入/工具/产物，只新增本报告。
+
+## 已发现并收敛的来源缺口
+
+01的capture_stop_files原142–150行虽读取正则第3组远端路径，却未核它等于core规定的对应路径；仅有key与内容SHA等stop receipt，尚不能独立证明登记的九项确来自原run/stop日志的指定路径。原provenance也没有collector脚本和started，remote_read_only文字缺少这两个直接来源引用。该问题只影响后续旧停收集，不推翻已经实际采用的metadata或已生成prepare。
+
+Root另存02，实际完整差异只增加以下来源检查：
+
+- capture第53–55行先核started内容等规范化CRLF后的派发脚本SHA，并核派发脚本逐字等同phase的实际generated/control.sh；随后才读原log和exit、取回执。
+- 旧停采集第142–143行绑定collector实际派发脚本与started；第150–163行从同一core构造九个固定路径并逐key核第3组路径。
+- 第173–174行在provenance保存collector_script和collector_started实际record；原collector log/exit、stop receipt和九文件record继续保留。
+
+九项路径分别是旧run的result.txt、exit_code、app.pid、app.start_ticks、app.exe、boot_id，以及本轮metadata/phase_logs/stop的stdout.log、stderr.log、actual_exit，和prepare_stop_collector中的同名映射一致。严格9键、整份log完全被格式覆盖、base64严格解码及内容SHA=原输出SHA=stop receipt指定SHA的检查均保留，全部解析通过后才写九文件。02补正不生成任何旧停成功内容，未来仍须等真实stop及collector原件。
+
+## 真回执和换行归属
+
+capture只接受原外层exit确为 `0\n` 或 `0\r\n`；原log只取唯一RUNTIME_RECEIPT_SHA256标记后的完整尾部，SHA必须吻合，且回执phase、EXIT_CODE、core/auth SHA、transition和serial匹配。它不改原log或回执字节，仅将已经读到的原0退出导出为生成器要求的LF版本，并引用原log/exit/started保留来源。
+
+现存metadata实物独立核对：CAP的metadata.log逐字等Root原runtime12_metadata_01.log；唯一标记后的尾部逐字等metadata.receipt且SHA相符。原exit实际是 `0\r\n`，CAP导出实际是 `0\n`，provenance中的原log/exit/started和receipt record全等实际文件。因此这里没有把未知/失败改成0，也没有把复制回执说成再次运行metadata。
+
+capture是先保存原执行材料，再由下一阶段生成器完整核前阶段schema、boot、运行基线、回执尾部和链路；不应只看本工具打印facts就跳过原生成器的严格核对。02没有放宽这些生成器门槛。
+
+## Host执行范围和现存prepare来源
+
+工具没有SSH/scp或远端执行入口。两处subprocess分别调用固定目录的Host运行控制生成器，以及WSL的bash -n；不会执行control.sh或产品。prepare_stop_collector只写只读采集脚本文字，capture_stop_files只读Root已经收回的真实原log/exit，不自行登录板卡。collector生成文字仍只有boot/current核对、普通文件/非链接及16MiB大小检查、sha256/base64读取，没有停程序、切版或启动命令。
+
+generate把当次Root选择的phase批准另存为新文件，绑定实际core、Root范围批准和前一phase原授权/回执/退出/log，再调用已审生成器。activate及以后才要求真实stop receipt与九原件。生成器成功、原stdout/stderr/exit保存、bash-n成功、LF检查后才复制派发脚本；board_executed=false指Host生成当时，没有被用于替代其后Root执行结果。
+
+现存prepare授权确为prepare/frozen/allowed，并且四个predecessor record分别等实际metadata授权、回执、导出0退出和完整原log。实际generated prepare control SHA为 `ea28880d84ed840ccf34eab81fd03a4724d49e5510587fd0983147e3018e26cb`，与CALLS的runtime12_prepare_01.sh逐字相等；Host生成和语法检查的原退出均0。本审没有重跑它们，也没有据此宣称prepare板端已执行。
+
+## 路径和重复输出边界
+
+ROOT的parents[4]与当前实际目录层次一致；phase来自固定PHASES集合，CAP、授权、generated和CALLS均为本轮固定namespace，没有把log中路径用于任意Host文件写入。旧停解析中的远端路径现在又有逐项精确检查。
+
+所有本地写入使用open('xb')，同名授权、脚本、回执、log和来源说明不覆盖，不自动重跑远端动作或删除旧现场。它不是多文件事务：若后段发现输入缺失或某个目标已存在，会保留已经写出的部分并失败；例如capture末尾才写provenance。Root仍应把非0当失败并保留现场，不能因部分文件存在就跳过失败或继续下一阶段，也不能为重试删除原件。这是当前明确的失败保留边界，不把工具当作可随意重复的幂等整理器。
+
+本次没有取得或生成真实旧停九件、APP_EXIT/CLEAN_SHUTDOWN、新current或新启动结果；02的静态补正通过不替代这些后续实际证据。01旧记录继续归其真实使用时点，后续02使用仍需另记实际命令、退出和所指来源。

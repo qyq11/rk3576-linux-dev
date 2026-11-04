@@ -2,6 +2,7 @@
 #include "task_reagent_context.h"
 #include "ui_frmmain.h"
 #include "instrument/device_control.h"
+#include "instrument/original_channel_receiver.h"
 #include "alarm_history/original_current_alarm_state.h"
 #include "instrument/instrument_page.h"
 #include "projects/project_page.h"
@@ -19,9 +20,26 @@
 #include <QRegularExpression>
 #include <QVariantMap>
 #include <QScopedValueRollback>
+#include <QUuid>
+#include <QDir>
+#include <QThread>
+#include <limits>
 
 namespace
 {
+// 后台锁仍由Store线程拥有；所有prepared返回路径都在当前发送调用栈结束后排队归还。
+struct ProbeSourceRelease
+{
+    QPointer<ReagentStore> store;
+    QString token;
+    ~ProbeSourceRelease()
+    {
+        if (!store || token.isEmpty()) return;
+        store->revokeOriginalProbe(token);
+        if (!QMetaObject::invokeMethod(store.data(),"releaseOriginalProbeSource",Qt::QueuedConnection,Q_ARG(QString,token)))
+            qWarning()<<"REAGENT_PROBE_SOURCE_RELEASE_QUEUE_FAILED"<<token;
+    }
+};
 QString projectUpdateKey(const OriginalProjectSaveNotice &notice)
 {
     return notice.root+QChar(0)+notice.originalFileName;
@@ -40,6 +58,14 @@ bool reagentReplyContains(const QByteArray &payload, const QString &hole)
         if (QString::fromLatin1(values.value(1+i*15)).compare(hole,Qt::CaseInsensitive)==0) return true;
     return false;
 }
+
+bool sameManualIdentity(const AccountSession &left, const AccountSession &right)
+{
+    // actionReady是设备状态，不是登录代次；另用sessionChanged代次防同名重登复活旧请求。
+    return left.name==right.name && left.role==right.role && left.authenticated==right.authenticated &&
+        left.source==right.source && left.originalPolicySource==right.originalPolicySource &&
+        left.grantedPowerIds==right.grantedPowerIds;
+}
 }
 
 bool frmMain::enableDeviceControl(bool connectAtStartup)
@@ -55,8 +81,12 @@ bool frmMain::enableDeviceControl(bool connectAtStartup)
     { qInfo().noquote() << "DEVICE_WIRE" << direction << bytes.toHex(' '); });
     connectDeviceAtStartup_ = connectAtStartup;
     if (instrument_) instrument_->attachDeviceControl(deviceControl_, connectAtStartup);
+    attachManualCommunication();
     connect(deviceControl_, &DeviceControl::changed, this, [this](const DeviceControlState &state)
     {
+        if (manualCommunicationRequest_ && (!state.connected ||
+            manualCommunicationConnection_!=deviceControl_->connectionGeneration()))
+            cancelManualCommunication(tr("原设备连接已失效或换代。"));
         if (!state.connected) reagentLevelRequestedUrConnection_=0;
         updateDeviceActionReadiness();
         updateDeviceStatusDisplay();
@@ -75,6 +105,7 @@ bool frmMain::enableDeviceControl(bool connectAtStartup)
     updateDeviceStatusDisplay();
     connect(this, &frmMain::sessionChanged, this, [this](const AccountSession &)
     {
+        ++manualCommunicationSession_;
         invalidateDeviceTaskContext();
         // 页面的session槽也向后台排队；等同一轮GUI槽处理完再开始同步。
         QTimer::singleShot(0,this,[this](){ updateOriginalDeviceSync(); updateDeviceControlActions(); });
@@ -88,17 +119,9 @@ bool frmMain::enableDeviceControl(bool connectAtStartup)
         if (payload.startsWith("QB")) receiveDeviceStartKey(connection);
     });
     connect(ui->btnPause, &QPushButton::clicked, this, [this]()
-    {
-        CusMessageBox question(this);
-        question.showQuestionBox(tr("是否暂停测试？"));
-        if (question.getClickButton() == QMessageBox::Yes) deviceControl_->pause();
-    });
+    { requestDevicePauseOrSilence(deviceControl_->connectionGeneration(),true); });
     connect(ui->btnCloseBeep, &CusBadgeButton::clicked, this, [this]()
-    {
-        CusMessageBox question(this);
-        question.showQuestionBox(tr("是否关闭报警蜂鸣器？"));
-        if (question.getClickButton() == QMessageBox::Yes) deviceControl_->silenceAlarm();
-    });
+    { requestDevicePauseOrSilence(deviceControl_->connectionGeneration(),false); });
     connect(ui->btnAbnormal, &CusBadgeButton::clicked, this, [this]()
     {
         // 当前告警已挂接时由唯一入口发送，避免同次点击重复Qk。
@@ -106,12 +129,55 @@ bool frmMain::enableDeviceControl(bool connectAtStartup)
             deviceControl_->query(Sn100Protocol::ReadOnlyQuery::Alarm);
     });
     // main在创建设备控制之后才挂业务页；事件循环开始时再做一次幂等绑定。
-    QTimer::singleShot(0,this,[this](){ attachDeviceTaskStore(); updateOriginalDeviceSync(); });
+    QTimer::singleShot(0,this,[this](){ attachManualCommunication(); attachDeviceTaskStore(); updateOriginalDeviceSync(); });
     updateDeviceControlActions();
     return true;
 }
 
-QString frmMain::deviceUserControlBlocker(quint64 connection) const
+bool frmMain::attachOriginalChannelReadback(OriginalChannelReceiver *receiver,const QString &originalRoot)
+{
+    if (QThread::currentThread()!=thread() || !receiver || receiver->thread()!=thread() || !instrument_ ||
+        !QDir::isAbsolutePath(originalRoot)) return false;
+    const QString root=QDir::cleanPath(originalRoot);
+    if (originalChannelReadback_)
+        return originalChannelReadback_.data()==receiver && originalChannelReadbackRoot_==root &&
+            originalChannelReadbackPage_.data()==instrument_;
+    if (originalChannelReadbackRegistration_==std::numeric_limits<quint64>::max()) return false;
+    ++originalChannelReadbackRegistration_;
+    originalChannelReadback_=receiver; originalChannelReadbackPage_=instrument_;
+    originalChannelReadbackRoot_=root;
+    return true;
+}
+
+QString frmMain::channelReadbackRequestBlocker(quint64 connection) const
+{
+    if (!originalChannelReadback_ || !originalChannelReadbackRegistration_ ||
+        !originalChannelReadbackPage_ || originalChannelReadbackPage_.data()!=instrument_)
+        return tr("本页未登记仍有效的原通道接收器。");
+    return originalChannelReadback_->requestReadbackBlocker(deviceControl_,connection,originalChannelReadbackRoot_);
+}
+
+void frmMain::attachManualCommunication()
+{
+    // main先创建设备控制、后挂仪器页；立即、延后及状态更新都可重入本幂等入口。
+    if (!deviceControl_ || !instrument_ || manualCommunicationAttached_) return;
+    manualCommunicationAttached_=true;
+    connect(instrument_,&InstrumentPage::manualCommunicationRequested,this,&frmMain::receiveManualCommunication);
+    connect(instrument_,&InstrumentPage::manualCommunicationRevoked,this,
+        [this](quint64 request,quint64 session,quint64 connection,const QString &reason)
+    {
+        if (request==manualCommunicationRequest_ && session==manualCommunicationPageSession_ &&
+            connection==manualCommunicationConnection_) cancelManualCommunication(reason);
+    });
+    connect(instrument_,&QObject::destroyed,this,[this]()
+    {
+        instrument_=nullptr; manualCommunicationAttached_=false;
+        cancelManualCommunication(tr("通讯测试页面已销毁，旧请求不再继续。"));
+    });
+    instrument_->setManualCommunicationConsumerReady(true);
+}
+
+QString frmMain::deviceUserControlBlocker(quint64 connection,bool requireFresh) const
 {
     if (!deviceControl_ || !connection || connection!=deviceControl_->connectionGeneration() ||
         !deviceControl_->state().connected)
@@ -123,17 +189,200 @@ QString frmMain::deviceUserControlBlocker(quint64 connection) const
         return tr("程序正在确认退出或等待关闭收尾，未接受新的开始或暂停操作。");
     if (logoutPending_ || !loginDialog_.isNull() || !session_.authenticated)
         return tr("当前会话尚未就绪或正在登录注销，未接受设备操作。");
-    if (!deviceControl_->state().fresh)
+    if (requireFresh && !deviceControl_->state().fresh)
         return tr("尚未取得当前连接的有效设备状态，未执行本次操作。");
     return QString();
 }
 
-void frmMain::requestDeviceStart(quint64 connection,bool physicalKey)
+QString frmMain::reagentProbeTaskControlBlocker() const
 {
-    const auto record=[this,connection,physicalKey](const QString &message)
+    // 探测只限制新的开始/暂停；查询和消音仍走原身份、连接及关闭守卫。
+    if (reagentProbe_ || reagentProbeUnknown_)
+        return tr("单孔探测尚未收尾或执行结果待核，未接受新的开始/暂停。");
+    return QString();
+}
+
+QString frmMain::manualCommunicationBlocker(quint64 request) const
+{
+    if (!request || request!=manualCommunicationRequest_ ||
+        manualCommunicationIdentitySession_!=manualCommunicationSession_ ||
+        !sameManualIdentity(manualCommunicationIdentity_,session_))
+        return tr("手动请求的原会话已失效，不转交给新会话。");
+    if (!session_.authenticated || session_.role!=5 ||
+        (session_.source!=AccountSessionSource::Password && session_.source!=AccountSessionSource::Configured))
+        return tr("通讯测试手动请求需要当前真实管理员会话。");
+    if (!instrument_) return tr("通讯测试页面已撤销，旧请求不再继续。");
+    const QString page=instrument_->manualCommunicationRequestBlocker(request,manualCommunicationPageSession_,
+        manualCommunicationConnection_,manualCommunicationPayload_);
+    if (!page.isEmpty()) return page;
+    // 查询可用于读取已失效状态；静音也不套开始专用状态或任务条件。
+    return deviceUserControlBlocker(manualCommunicationConnection_,false);
+}
+
+void frmMain::finishManualCommunication(quint64 request, const QString &stage, const QString &message, bool terminal)
+{
+    if (!request || request!=manualCommunicationRequest_) return;
+    const quint64 pageSession=manualCommunicationPageSession_, connection=manualCommunicationConnection_;
+    QVariantMap result;
+    result.insert(QStringLiteral("request"),QVariant::fromValue(request));
+    result.insert(QStringLiteral("pageSession"),QVariant::fromValue(pageSession));
+    result.insert(QStringLiteral("identitySession"),QVariant::fromValue(manualCommunicationIdentitySession_));
+    result.insert(QStringLiteral("connection"),QVariant::fromValue(connection));
+    result.insert(QStringLiteral("payloadBytes"),manualCommunicationPayload_.size());
+    result.insert(QStringLiteral("payloadSha256"),QCryptographicHash::hash(manualCommunicationPayload_,QCryptographicHash::Sha256).toHex());
+    result.insert(QStringLiteral("sendCallAttempted"),manualCommunicationSendAttempted_);
+    result.insert(QStringLiteral("stage"),stage);
+    result.insert(QStringLiteral("message"),message);
+    if (terminal)
+    {
+        manualCommunicationRequest_=0; manualCommunicationTaskRequest_=0;
+        manualCommunicationPayload_.clear(); manualCommunicationSendAttempted_=false;
+    }
+    // 通知可重入新的用户操作；先结束旧等待，不能在通知后清掉新请求。
+    setProperty("manualCommunicationLastResult",result);
+    qInfo().noquote()<<"MANUAL_COMMUNICATION"<<request<<connection<<stage<<message;
+    if (instrument_) instrument_->receiveManualCommunicationResult(request,pageSession,connection,terminal,stage,message);
+}
+
+void frmMain::cancelManualCommunication(const QString &reason)
+{
+    const quint64 request=manualCommunicationRequest_;
+    if (!request) return;
+    const quint64 taskRequest=manualCommunicationTaskRequest_;
+    // 先按保存的原准备号撤User采用资格；即便等待bool已结束，仍不漏撤在途动作。
+    // 此调用只标取消，实际Worker/reader仍等原finished，不把手动终态当动作退休。
+    if (taskRequest) cancelUserTaskPreparation(taskRequest,reason);
+    if (taskRequest && deviceTaskPreparing_ && taskRequest==deviceTaskRequest_)
+    {
+        deviceTaskPreparing_=false; ++deviceTaskRequest_;
+        if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
+    }
+    const QString outcome=manualCommunicationSendAttempted_
+        ? tr(" 已有发送调用可能已入队，结果待核；未自动重发或清除原未知状态。")
+        : tr(" 本次尚未调用发送，旧请求不再继续。");
+    finishManualCommunication(request,QStringLiteral("revoked"),reason+outcome);
+    updateDeviceControlActions();
+}
+
+void frmMain::receiveManualCommunication(quint64 request,quint64 pageSession,quint64 connection,
+    AccountSession identity,QByteArray payload)
+{
+    if (!instrument_) return;
+    QString reason=instrument_->manualCommunicationRequestBlocker(request,pageSession,connection,payload);
+    if (reason.isEmpty() && manualCommunicationRequest_) reason=tr("已有手动请求正在处理，未重复提交。");
+    if (reason.isEmpty() && (!sameManualIdentity(identity,session_) || !session_.authenticated || session_.role!=5 ||
+        (session_.source!=AccountSessionSource::Password && session_.source!=AccountSessionSource::Configured)))
+        reason=tr("手动请求与当前真实管理员身份不符，未调用发送。");
+    if (reason.isEmpty()) reason=deviceUserControlBlocker(connection,false);
+    if (reason.isEmpty() && (payload.isEmpty() || payload.size()>Sn100Protocol::kMaxMessageBytes))
+        reason=tr("正文为空或超过当前整条预算，未调用发送。");
+    if (reason.isEmpty() && payload!="Qj" && payload!="Qk" && payload!="QH" &&
+        payload!="Ts" && payload!="Tp[0]" && payload!="Mz" && payload!="Uh")
+        reason=tr("本正文尚未接入相应业务流程，未调用发送；不是ASCII编码错误或设备拒绝。");
+    if (!reason.isEmpty())
+    { instrument_->receiveManualCommunicationResult(request,pageSession,connection,true,QStringLiteral("rejected"),reason); return; }
+    manualCommunicationRequest_=request; manualCommunicationPageSession_=pageSession;
+    manualCommunicationConnection_=connection; manualCommunicationIdentity_=identity;
+    manualCommunicationIdentitySession_=manualCommunicationSession_;
+    manualCommunicationPayload_=payload; manualCommunicationTaskRequest_=0;
+    manualCommunicationSendAttempted_=false;
+    if (payload=="Ts")
+    {
+        requestDeviceStart(connection,false,request);
+        if (request!=manualCommunicationRequest_) return;
+        if (manualCommunicationTaskRequest_)
+            finishManualCommunication(request,QStringLiteral("preparing"),
+                tr("通讯测试手动开始已进入任务准备流程，尚未确认入队或设备开始。"),false);
+        else finishManualCommunication(request,QStringLiteral("not-submitted"),property("deviceStartRequestMessage").toString());
+        return;
+    }
+    if (payload=="Tp[0]" || payload=="Mz")
+    { requestDevicePauseOrSilence(connection,payload=="Tp[0]",request); return; }
+    if (payload=="Uh")
+    {
+        // 这是主动提交身份，不是随后被动Uh的批次号或协议确认。
+        const QPointer<OriginalChannelReceiver> receiver=originalChannelReadback_;
+        const QPointer<InstrumentPage> consumer=originalChannelReadbackPage_;
+        const QString root=originalChannelReadbackRoot_;
+        const quint64 registration=originalChannelReadbackRegistration_;
+        reason=manualCommunicationBlocker(request);
+        if (reason.isEmpty()) reason=channelReadbackRequestBlocker(connection);
+        if (!reason.isEmpty())
+        { finishManualCommunication(request,QStringLiteral("rejected"),reason+tr("本次未调用Uh发送。")); return; }
+        manualCommunicationSendAttempted_=true;
+        const bool queued=deviceControl_->maintenanceCommand(payload);
+        if (request!=manualCommunicationRequest_) return;
+        reason=manualCommunicationBlocker(request);
+        if (reason.isEmpty() && (!receiver || receiver!=originalChannelReadback_ ||
+            consumer!=originalChannelReadbackPage_ || registration!=originalChannelReadbackRegistration_ ||
+            root!=originalChannelReadbackRoot_))
+            reason=tr("发送调用期间原通道消费者登记已变化。");
+        if (reason.isEmpty()) reason=channelReadbackRequestBlocker(connection);
+        if (!reason.isEmpty())
+            finishManualCommunication(request,queued ? QStringLiteral("queued-observation-unavailable") : QStringLiteral("unconfirmed"),
+                (queued ? tr("Uh命令已进入发送队列，但接收能力随后变化；") : tr("Uh发送调用未确认，可能已入队；"))+
+                reason+tr("后续真实通道批次独立处理，结果待核；未重发，不表示本次回读已完成。"));
+        else
+            finishManualCommunication(request,queued ? QStringLiteral("queued") : QStringLiteral("unconfirmed"),
+                queued ? tr("Uh命令已进入发送队列；后续真实通道回读按独立批次保存和显示，不是本请求确认。") :
+                tr("Uh发送调用未确认，可能已入队；请核对收发及独立批次结果，未自动重试。"));
+        return;
+    }
+    reason=manualCommunicationBlocker(request);
+    if (!reason.isEmpty()) { finishManualCommunication(request,QStringLiteral("rejected"),reason); return; }
+    const auto query=payload=="Qj" ? Sn100Protocol::ReadOnlyQuery::Status :
+        payload=="Qk" ? Sn100Protocol::ReadOnlyQuery::Alarm : Sn100Protocol::ReadOnlyQuery::Consumables;
+    // 入队信号可重入断线；调用前登记“已尝试”，false不能统一解释成保证从未发送。
+    manualCommunicationSendAttempted_=true;
+    const bool queued=deviceControl_->query(query);
+    finishManualCommunication(request,queued ? QStringLiteral("queued") : QStringLiteral("unconfirmed"),
+        queued ? tr("本次查询已进入发送队列，仍待实际回复；没有解除其他未知状态。") :
+        tr("本次查询发送调用未确认，可能已入队；请核对收发与连接，未自动重试。"));
+}
+
+void frmMain::requestDevicePauseOrSilence(quint64 connection,bool pause,quint64 manualRequest)
+{
+    const quint64 identitySession=manualCommunicationSession_;
+    const auto reject=[this,manualRequest](const QString &reason)
+    {
+        if (manualRequest) finishManualCommunication(manualRequest,QStringLiteral("rejected"),reason);
+        else reportDeviceTaskError(reason);
+    };
+    QString reason=deviceUserControlBlocker(connection,pause);
+    if (reason.isEmpty() && pause) reason=reagentProbeTaskControlBlocker();
+    if (reason.isEmpty() && manualRequest) reason=manualCommunicationBlocker(manualRequest);
+    if (reason.isEmpty() && pause) reason=deviceControl_->pauseBlocker();
+    if (reason.isEmpty() && deviceStartConfirmationPending_) reason=tr("已有控制确认正在处理，未叠加新的确认。");
+    if (!reason.isEmpty()) { reject(reason); return; }
+    QScopedValueRollback<bool> confirmation(deviceStartConfirmationPending_,true);
+    CusMessageBox question(this);
+    question.showQuestionBox(pause ? tr("是否暂停测试？") : tr("是否关闭报警蜂鸣器？"));
+    if (question.getClickButton()!=QMessageBox::Yes)
+    {
+        if (manualRequest) finishManualCommunication(manualRequest,QStringLiteral("cancelled"),tr("已取消本次确认，未调用发送。"));
+        return;
+    }
+    reason=identitySession==manualCommunicationSession_ ? deviceUserControlBlocker(connection,pause)
+        : tr("确认期间身份已变化，旧确认不再继续。");
+    if (reason.isEmpty() && pause) reason=reagentProbeTaskControlBlocker();
+    if (reason.isEmpty() && manualRequest) reason=manualCommunicationBlocker(manualRequest);
+    if (reason.isEmpty() && pause) reason=deviceControl_->pauseBlocker();
+    if (!reason.isEmpty()) { reject(reason); return; }
+    if (manualRequest) manualCommunicationSendAttempted_=true;
+    const bool queued=pause ? deviceControl_->pause() : deviceControl_->silenceAlarm();
+    if (manualRequest)
+        finishManualCommunication(manualRequest,queued ? QStringLiteral("queued") : QStringLiteral("unconfirmed"),
+            queued ? (pause ? tr("暂停命令已入队，仍待设备实际暂停状态。") : tr("静音命令已入队，不表示故障已解除。")) :
+            tr("发送调用未确认，可能已入队；请核对收发与连接，未自动重试。"));
+}
+
+void frmMain::requestDeviceStart(quint64 connection,bool physicalKey,quint64 manualRequest)
+{
+    const auto record=[this,connection,physicalKey,manualRequest](const QString &message)
     {
         setProperty("deviceStartRequestMessage",message);
-        qInfo().noquote()<<"DEVICE_START_REQUEST"<<(physicalKey ? "QB" : "button")<<connection<<message;
+        qInfo().noquote()<<"DEVICE_START_REQUEST"<<(manualRequest ? "communication-manual" : physicalKey ? "QB" : "button")
+            <<connection<<manualRequest<<message;
     };
     if (deviceStartConfirmationPending_ || deviceTaskPreparing_)
     { record(tr("已有开始确认或任务准备正在处理，未重复提交。")); return; }
@@ -141,6 +390,7 @@ void frmMain::requestDeviceStart(quint64 connection,bool physicalKey)
     QScopedValueRollback<bool> confirmation(deviceStartConfirmationPending_,true);
     const quint64 contextRequest=deviceTaskRequest_;
     QString reason=deviceUserControlBlocker(connection);
+    if (reason.isEmpty() && manualRequest) reason=manualCommunicationBlocker(manualRequest);
     if (reason.isEmpty()) reason=deviceControl_->startBlocker();
     if (reason.isEmpty()) reason=detectionStartBlocker();
     if (!reason.isEmpty())
@@ -157,6 +407,7 @@ void frmMain::requestDeviceStart(quint64 connection,bool physicalKey)
     if (contextRequest!=deviceTaskRequest_)
     { record(tr("确认期间会话或原资料上下文已撤销，旧确认未继续开始。")); return; }
     reason=deviceUserControlBlocker(connection);
+    if (reason.isEmpty() && manualRequest) reason=manualCommunicationBlocker(manualRequest);
     if (reason.isEmpty()) reason=deviceControl_->startBlocker();
     if (reason.isEmpty()) reason=detectionStartBlocker();
     if (!reason.isEmpty() || deviceTaskPreparing_)
@@ -164,19 +415,73 @@ void frmMain::requestDeviceStart(quint64 connection,bool physicalKey)
     deviceTaskPreparing_=true;
     const quint64 request=++deviceTaskRequest_;
     deviceTaskConnection_=connection;
+    if (manualRequest) manualCommunicationTaskRequest_=request;
     const bool linuxNew=deviceControl_->state().status.generalFields.value(19)==QStringLiteral("LinuxNew");
     updateDeviceControlActions();
-    QMetaObject::invokeMethod(deviceTaskStore_,"prepareDeviceTasks",Qt::QueuedConnection,
-        Q_ARG(quint64,request),Q_ARG(bool,linuxNew));
-    QTimer::singleShot(10000,this,[this,request]()
+    if (manualRequest)
+    {
+        reason=manualCommunicationBlocker(manualRequest);
+        if (!deviceTaskPreparing_ || request!=deviceTaskRequest_ || !reason.isEmpty())
+        {
+            if (request==deviceTaskRequest_ && deviceTaskPreparing_)
+            { deviceTaskPreparing_=false; ++deviceTaskRequest_; }
+            record(reason.isEmpty() ? tr("原手动开始已撤销，未继续排队任务准备。") : reason);
+            finishManualCommunication(manualRequest,QStringLiteral("revoked"),property("deviceStartRequestMessage").toString());
+            updateDeviceControlActions();
+            return;
+        }
+    }
+    // 普通按钮、QB和手动Ts共用真实User来源；不改回旧prepareDeviceTasks入口。
+    QString preparationMessage;
+    if (!queueUserTaskPreparation(request,connection,linuxNew,&preparationMessage))
+    {
+        deviceTaskPreparing_=false;
+        reportDeviceTaskError(preparationMessage);
+        if (manualRequest) finishManualCommunication(manualRequest,QStringLiteral("rejected"),preparationMessage);
+        updateDeviceControlActions();
+        return;
+    }
+    QTimer::singleShot(10000,this,[this,request,manualRequest]()
     {
         if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
         deviceTaskPreparing_=false;
+        cancelUserTaskPreparation(request,tr("本次用户任务准备超时；保留已经进入后台的动作，等待真实结束。"));
         if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
         reportDeviceTaskError(tr("样本任务准备10秒未返回，未发送开始；请核对数据和连接后重试。"));
+        if (manualRequest) finishManualCommunication(manualRequest,QStringLiteral("preparation-timeout"),
+            tr("任务准备10秒未返回，未调用本次开始发送；旧准备不自动重试。"));
         updateDeviceControlActions();
     });
     record(tr("已登记本次任务准备，仍待后台核对和设备实际回复；尚未确认开始。"));
+}
+
+void frmMain::finishDeviceTaskPreparation(quint64 request,bool success,const QString &detail)
+{
+    if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
+    // User桥只在真实finished及动作退休后调用；手动号只映射这次原准备号。
+    const quint64 manualRequest=manualCommunicationTaskRequest_==request ? manualCommunicationRequest_ : 0;
+    deviceTaskPreparing_=false;
+    const QString interaction=deviceUserControlBlocker(deviceTaskConnection_);
+    QString blocker=interaction.isEmpty() ? detectionStartBlocker() : interaction;
+    if (blocker.isEmpty() && manualRequest) blocker=manualCommunicationBlocker(manualRequest);
+    bool queued=false;
+    if (success && blocker.isEmpty())
+    {
+        if (manualRequest) manualCommunicationSendAttempted_=true;
+        queued=deviceControl_->start();
+    }
+    if (!success || !blocker.isEmpty() || !queued)
+    {
+        if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
+        reportDeviceTaskError(!success ? detail : !blocker.isEmpty() ? blocker : deviceControl_->state().message);
+    }
+    if (manualRequest)
+        finishManualCommunication(manualRequest,queued ? QStringLiteral("queued") :
+            (!success || !blocker.isEmpty()) ? QStringLiteral("rejected") : QStringLiteral("unconfirmed"),
+            queued ? tr("本次开始已进入发送队列，仍待设备实际接受及运行状态；不表示检测完成。") :
+            !success ? detail : !blocker.isEmpty() ? blocker :
+            tr("本次开始发送调用未确认，可能已入队；请核对收发和连接，未自动重试。"));
+    updateDeviceControlActions();
 }
 
 void frmMain::receiveDeviceStartKey(quint64 connection)
@@ -207,7 +512,8 @@ void frmMain::receiveDeviceStartKey(quint64 connection)
     }
     if (pauseAction)
     {
-        reason=deviceControl_->pauseBlocker();
+        reason=reagentProbeTaskControlBlocker();
+        if (reason.isEmpty()) reason=deviceControl_->pauseBlocker();
         if (!reason.isEmpty()) { record(QStringLiteral("rejected"),reason); return; }
         // 原实体键暂停无确认框；不套开始专用N/C门、不准备任务或改写退量事实。
         const bool queued=deviceControl_->pause();
@@ -255,15 +561,17 @@ void frmMain::applyDeviceActionReadiness(bool actionReady)
 void frmMain::updateDeviceControlActions()
 {
     if (!deviceControl_) return;
+    attachManualCommunication();
     const auto &state = deviceControl_->state();
     const bool available = !deviceTaskPreparing_ && session_.authenticated && state.connected && state.fresh &&
                            state.pending.isEmpty() && !state.outcomeUnknown;
+    const QString probeTaskBlocker=reagentProbeTaskControlBlocker();
     ui->btnStart->setBtnDisabled(!available || !detectionStartBlocker().isEmpty() || (state.status.mainStatus != 2 && state.status.mainStatus != 6));
-    ui->btnPause->setBtnDisabled(!available || state.status.mainStatus < 3 || state.status.mainStatus > 6);
+    ui->btnPause->setBtnDisabled(!available || !probeTaskBlocker.isEmpty() || state.status.mainStatus < 3 || state.status.mainStatus > 6);
     ui->btnCloseBeep->setEnabled(session_.authenticated && state.connected);
     ui->btnStart->setToolTip(deviceControl_->startBlocker().isEmpty()
                                 ? detectionStartBlocker() : deviceControl_->startBlocker());
-    ui->btnPause->setToolTip(deviceControl_->pauseBlocker());
+    ui->btnPause->setToolTip(probeTaskBlocker.isEmpty() ? deviceControl_->pauseBlocker() : probeTaskBlocker);
     const QString startReason = ui->btnStart->toolTip();
     const QString pauseReason = ui->btnPause->toolTip();
     const QString actionState = QStringLiteral("start=%1 pause=%2 start_reason=%3 pause_reason=%4")
@@ -274,7 +582,8 @@ void frmMain::updateDeviceControlActions()
         qInfo().noquote() << "DEVICE_ACTION_STATE" << actionState;
     }
     ui->btnCloseBeep->setToolTip(tr("按原Windows命令关闭主控报警蜂鸣器。"));
-    if (reagents_) reagents_->setInstrumentBusy(reagentLevelBusy() || deviceTaskPreparing_ ||
+    if (reagents_) reagents_->setInstrumentBusy(reagentProbeUnknown_ ||
+        (reagentProbe_ && reagentProbe_->stage!=ReagentProbeState::Stage::Preparing) || reagentLevelBusy() || deviceTaskPreparing_ ||
         (!deviceReagentUpdateHole_.isEmpty() && !reagentPriorityRequest_) ||
         deviceReagentUpdateUnknown_ || deviceReagentRecoveryRequired_ || deviceRecoveryPending_ || deviceRecoveryUnfinished_ ||
         (deviceConfigurationStarted_ && !deviceConfigurationBaseReady_) ||
@@ -303,6 +612,8 @@ QString frmMain::reagentPositionBlocker() const
 
 QString frmMain::detectionStartBlocker() const
 {
+    const QString probeTaskBlocker=reagentProbeTaskControlBlocker();
+    if (!probeTaskBlocker.isEmpty()) return probeTaskBlocker;
     if (reagentLevelBusy()) return tr("N正在保存或等待页面读回，未并发开始新的任务。");
     const QString taskTransaction=taskReagentTransactionBlocker();
     if (!taskTransaction.isEmpty()) return taskTransaction;
@@ -366,6 +677,8 @@ void frmMain::rememberReagentRecoveryContext()
 
 void frmMain::invalidateDeviceTaskContext()
 {
+    cancelManualCommunication(tr("连接、身份或原资料上下文已真实撤销。"));
+    cancelReagentProbe(tr("连接或账户上下文改变，单孔探测按实际阶段保留结果，未重发。"));
     cancelTaskReagentContexts(tr("连接、身份或原资料上下文已真实撤销，旧任务仍待真实后台收尾。"));
     invalidateReagentLevels();
     reagentLevelRequestedUrConnection_=0;
@@ -410,6 +723,7 @@ QString frmMain::deviceRecoveryBlocker() const
 
 void frmMain::updateOriginalDeviceSync()
 {
+    if (reagentProbe_ || reagentProbeUnknown_) return;
     attachDeviceTaskStore();
     if (reagentLevelBusy()) return;
     advanceOriginalProjectUpdates();
@@ -595,19 +909,7 @@ void frmMain::attachDeviceTaskStore()
     { updateOriginalDeviceSync(); updateDeviceControlActions(); });
     connect(samples_,&SamplePage::busyChanged,this,[this](bool){ updateDeviceControlActions(); });
     connect(projects_,&ProjectPage::busyChanged,this,[this](bool){ updateDeviceControlActions(); });
-    connect(store,&SampleStore::deviceTasksPrepared,this,[this,store](quint64 request,bool success,const QString &detail)
-    {
-        if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
-        deviceTaskPreparing_=false;
-        const QString interaction=deviceUserControlBlocker(deviceTaskConnection_);
-        const QString blocker=interaction.isEmpty() ? detectionStartBlocker() : interaction;
-        if (!success || !blocker.isEmpty() || !deviceControl_->start())
-        {
-            QMetaObject::invokeMethod(store,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
-            reportDeviceTaskError(!success ? detail : !blocker.isEmpty() ? blocker : deviceControl_->state().message);
-        }
-        updateDeviceControlActions();
-    });
+    connect(store,&SampleStore::deviceTasksPrepared,this,&frmMain::finishDeviceTaskPreparation);
     connect(deviceControl_,&DeviceControl::startAccepted,store,[store](bool accepted)
     { if (!accepted) store->cancelDeviceTaskPreparation(); },Qt::QueuedConnection);
     connect(store,&SampleStore::originalConfigurationState,this,[this](quint64 connection,bool ready,const QString &message)
@@ -692,6 +994,10 @@ void frmMain::attachDeviceTaskStore()
         // 优先使用的Ur由同一入口唯一分流；不得先让旧SampleStore路径提交再核归属。
         if (payload.startsWith("Ur") && routeReagentPriorityReply(payload,connection)) return;
         const QByteArray command=payload.left(2);
+        if (reagentProbe_ && (command=="Tt" || command=="TR" || command=="Ur" || command=="UP" || payload=="Tu"))
+            cancelReagentProbe(tr("另一业务/资料回包到达，探测来源待核；未并发接收新的探测数据。"));
+        if ((reagentProbe_ || reagentProbeUnknown_) && (command=="Tt" || command=="Ur" || command=="UP" || payload=="Tu"))
+        { reportDeviceTaskError(tr("探测尚在收尾或结果待核，该业务回包未排写入/回应；没有伪造成功。")); return; }
         if (command=="Ur" && reagentLevelBusy())
         {
             reportReagentLevel(tr("N正在保存或等待页面读回，未并发保存Ur；请核对原收发和资料后恢复。"));
@@ -770,6 +1076,7 @@ void frmMain::beginOriginalReagentWait(const QString &hole,const QString &messag
 
 QString frmMain::reagentPriorityBlocker(bool ownPageBusy) const
 {
+    if (reagentProbe_ || reagentProbeUnknown_) return tr("单孔探测尚未收尾或执行结果待核，未并发优先使用。");
     if (reagentLevelBusy()) return tr("N正在保存或等待页面读回，未并发发送优先使用。");
     if (!deviceControl_ || !reagents_ || !reagents_->taskStore() || !deviceTaskStore_)
         return tr("试剂页或原资料后台尚未接通，未发送优先使用。");
@@ -846,13 +1153,22 @@ void frmMain::updateReagentPriorityAccess()
         return;
     }
     const auto &state=deviceControl_->state();
-    reagents_->setDeviceOperations(state.connected ? connection : 0,
-        reason.isEmpty() ? QStringList{QStringLiteral("prioritizeHole")} : QStringList());
+    QStringList operations=reason.isEmpty() ? QStringList{QStringLiteral("prioritizeHole")} : QStringList();
+    if (!reagentProbe_ && !reagentProbeUnknown_ && reagents_->isReady())
+    {
+        bool available=false;
+        for (const auto &hole : reagents_->snapshot().holes)
+            if (reagentProbeBlocker(hole.name).isEmpty()) { available=true; break; }
+        if (available) operations.append(QStringLiteral("detectOne"));
+    }
+    // 在途请求仍由自己的有限permit/owner收尾，不用可点击名单给它重新签发来源。
+    reagents_->setDeviceOperations(state.connected ? connection : 0,operations);
 }
 
 void frmMain::beginReagentPriority(quint64 request,quint64 connection,const QString &operation,const QString &hole)
 {
     if (!reagents_ || !deviceControl_) return;
+    if (operation==QStringLiteral("detectOne")) { beginReagentProbe(request,connection,hole); return; }
     QString reason=operation!=QStringLiteral("prioritizeHole") ? tr("本片仅接优先使用，没有发送其他动作。") :
         reagentPriorityRequest_ ? tr("已有优先使用请求正在等待，未重复发送。") :
         connection!=deviceControl_->connectionGeneration() ? tr("确认期间连接已改变，未向新连接发送旧请求。") :
@@ -972,6 +1288,7 @@ void frmMain::attachReagentPriority()
 {
     if (reagentPriorityAttached_ || !reagents_ || !reagents_->taskStore() || !deviceControl_) return;
     reagentPriorityAttached_=true;
+    attachReagentProbe();
     connect(reagents_,&ReagentsPage::deviceOperationRequested,this,&frmMain::beginReagentPriority);
     connect(reagents_,&ReagentsPage::snapshotChanged,this,[this](const ReagentSnapshot &)
     { finishReagentPriorityIfDisplayed(); });
@@ -1171,4 +1488,340 @@ void frmMain::advanceOriginalProjectUpdates()
         projectUpdatePumpQueued_=false;
         reportDeviceTaskError(tr("已提交项目的同步准备未能排入后台，设备参数仍未确认。"));
     }
+}
+
+QString frmMain::reagentProbeBlocker(const QString &hole, bool ownPageBusy, bool executing) const
+{
+    if (reagentProbeUnknown_) return reagentProbeUnknownReason_;
+    if (!deviceControl_ || !reagents_ || !reagents_->taskStore() || !deviceTaskStore_)
+        return tr("单孔探测的页面、通信或原资料后台尚未接通。");
+    if (!session_.authenticated || session_.role<0 || session_.role>5 || logoutPending_ || !loginDialog_.isNull())
+        return tr("当前原账户身份不允许探测。");
+    if (shutdownClosing_ || !shutdownDialog_.isNull() || reagentLevelClosing_ ||
+        (taskReagentBridge_ && taskReagentBridge_->closing)) return tr("程序正在关闭，未接受新的探测阶段。");
+    if (!reagents_->isReady() || !reagents_->snapshot().originalProfile || reagents_->hasUnsavedChanges())
+        return tr("原试剂资料未就绪或有未保存输入。");
+    const QString root=reagents_->snapshot().originalRoot;
+    if (root.isEmpty() || root!=deviceConfigurationRoot_ || session_.originalPolicySource!=root ||
+        !deviceConfigurationBaseReady_ || !deviceConfigurationReady_ ||
+        deviceConfigurationConnection_!=deviceControl_->connectionGeneration()) return tr("本连接原资料/同步来源尚未确认。");
+    const auto snapshot=reagents_->snapshot();
+    const ReagentHole *selected=nullptr;
+    for (const auto &row : snapshot.holes) if (row.name==hole)
+    { if (selected) return tr("原孔位重名，未选择其中一个。"); selected=&row; }
+    if (!selected || selected->originalValues.value("reagent_name").toString().isEmpty() ||
+        selected->originalValues.value("reagent_name").toString()==QStringLiteral("none") ||
+        selected->originalValues.value("bottle_type").toString().isEmpty() ||
+        selected->originalValues.value("state").toString()==QStringLiteral("r_none") ||
+        selected->originalValues.value("state").toString()==QStringLiteral("r_unknown"))
+        return tr("本片仅支持一个已配置合法孔，None/Unknown等原分支另待核。");
+    const QString positions=reagentPositionBlocker();
+    if (!positions.isEmpty()) return positions;
+    if (property("configuredDeviceModel").toString()!=deviceControl_->state().status.model)
+        return tr("原配置和主控机型不对应，未探测。");
+    const QString control=deviceControl_->reagentProbeBlocker(selected->area,executing);
+    if (!control.isEmpty()) return control;
+    QString transaction=taskReagentTransactionBlocker();
+    if (!transaction.isEmpty() && executing && reagentProbe_ && taskReagentBridge_)
+    {
+        const auto &bridge=*taskReagentBridge_;
+        const auto &owner=*reagentProbe_;
+        const auto reader=bridge.nReaders.constFind(owner.nPacket);
+        bool onlyOwnReader=owner.nPacket && reader!=bridge.nReaders.cend() && reader.value()==owner.source.connection;
+        for (auto it=bridge.nReaders.cbegin(); it!=bridge.nReaders.cend(); ++it)
+            if (it.key()!=owner.nPacket || it.value()!=owner.source.connection) onlyOwnReader=false;
+        for (const auto &action : bridge.actions) if (!action.processed) onlyOwnReader=false;
+        // 只排除已登记的本次专读；任务事务C、其他动作/reader仍保留原门。
+        if (onlyOwnReader && !bridge.transactionOverflow && bridge.transactions.isEmpty()) transaction.clear();
+    }
+    if (!transaction.isEmpty()) return transaction;
+    if (deviceTaskPreparing_ || reagentPriorityRequest_ || !deviceReagentUpdateHole_.isEmpty() ||
+        deviceReagentUpdateUnknown_ || !deviceRecoveryBlocker().isEmpty() || !projectUpdateNotices_.isEmpty() ||
+        !devicePackets_.isEmpty()) return tr("任务、资料回读或其他操作尚未收尾，未并发探测。");
+    if (!executing)
+    {
+        const QString task=taskReagentNBlocker();
+        if (!task.isEmpty()) return task;
+        if (!session_.actionReady || !deviceActionReadyObserved_ || !deviceActionReady_ ||
+            reagentLevelBusy() || reagents_->hasUnconfirmedOriginalLevelRuntime() ||
+            (!ownPageBusy && reagents_->isBusy()) || (samples_ && samples_->isBusy()) ||
+            (projects_ && (projects_->isBusy() || projects_->hasUnsavedChanges())))
+            return tr("动作未就绪或已有资料/读者占用，未探测。");
+    }
+    if (!reagentLevelContext_ || !reagentLevelSource_ || !reagents_->originalLevelRuntime(hole).available)
+        return tr("本孔独立运行量及N容量来源尚未核实，未探测。");
+    return QString();
+}
+
+void frmMain::attachReagentProbe()
+{
+    if (reagentProbeAttached_ || !reagents_ || !reagents_->taskStore() || !deviceControl_) return;
+    reagentProbeAttached_=true;
+    qRegisterMetaType<OriginalReagentProbe::Request>();
+    qRegisterMetaType<OriginalReagentProbe::Prepared>();
+    reagentProbeTimer_=new QTimer(this);
+    reagentProbeTimer_->setInterval(100);
+    connect(reagentProbeTimer_,&QTimer::timeout,this,&frmMain::tickReagentProbe);
+    connect(reagents_->taskStore(),&ReagentStore::originalProbePrepared,this,&frmMain::preparedReagentProbe,Qt::QueuedConnection);
+    connect(deviceControl_,&DeviceControl::payloadReceivedForConnection,this,
+        [this](const QByteArray &payload,quint64 connection){routeReagentProbeReply(payload,connection);});
+    connect(reagents_,&ReagentsPage::operationFinished,this,[this](const QString &operation,bool success)
+    {
+        if (!success && operation==QStringLiteral("detectOne") && reagentProbe_ && !reagentProbe_->retiring)
+            cancelReagentProbe(tr("试剂页取消/超时或连接变化；没有停止或重发设备命令。"));
+    });
+}
+
+void frmMain::beginReagentProbe(quint64 request,quint64 connection,const QString &hole)
+{
+    if (!reagents_ || !deviceControl_) return;
+    QString reason=reagentProbe_ ? tr("已有单孔探测等待未收尾。") : reagentProbeBlocker(hole,true);
+    if (!request || connection!=deviceControl_->connectionGeneration()) reason=tr("确认后的原请求或连接已失效。");
+    if (!reason.isEmpty()) { reagents_->finishDeviceOperation(request,connection,false,reason); return; }
+    auto owner=std::make_shared<ReagentProbeState>();
+    owner->source.token=QUuid::createUuid().toString(QUuid::WithoutBraces);
+    owner->source.request=request; owner->source.connection=connection; owner->source.actor=session_;
+    owner->source.root=reagents_->snapshot().originalRoot; owner->source.hole=hole;
+    owner->source.prepareUntil=OriginalReagentProbe::Clock::now()+std::chrono::seconds(10);
+    owner->clock.start();
+    if (!reagents_->beginOriginalProbe(owner->source))
+    { reagents_->finishDeviceOperation(request,connection,false,tr("页面原请求身份不对应，未准备或发送。")); return; }
+    reagentProbe_=owner;
+    reagentProbeTimer_->start();
+    auto *store=reagents_->taskStore();
+    if (!store->authorizeOriginalProbe(owner->source) ||
+        !QMetaObject::invokeMethod(store,"prepareOriginalProbe",Qt::QueuedConnection,Q_ARG(OriginalReagentProbe::Request,owner->source)))
+    {
+        owner->prepareReturned=true;
+        cancelReagentProbe(tr("单孔准备许可或后台排队失败，尚未发送。"));
+        return;
+    }
+    qInfo().noquote()<<"REAGENT_PROBE_PREPARING"<<request<<connection<<hole;
+    updateDeviceControlActions();
+}
+
+void frmMain::preparedReagentProbe(const OriginalReagentProbe::Prepared &prepared)
+{
+    ProbeSourceRelease sourceRelease{reagents_ ? reagents_->taskStore() : nullptr,prepared.source.token};
+    if (!reagentProbe_ || !OriginalReagentProbe::sameRequest(reagentProbe_->source,prepared.source))
+    { qWarning()<<"REAGENT_PROBE_LATE_PREPARED"<<prepared.source.request<<prepared.source.connection; return; }
+    auto owner=reagentProbe_;
+    owner->prepareReturned=true;
+    if (owner->cancelled) { finishReagentProbeIfReady(); return; }
+    QString reason=prepared.success ? reagentProbeBlocker(owner->source.hole,true) : prepared.message;
+    if (reason.isEmpty() && (!prepared.initialization ||
+        !prepared.initialization->current(owner->source.root,&reason) ||
+        !reagents_->taskStore()->originalPageMetadata()->current(prepared.batches,&reason)))
+        if (reason.isEmpty()) reason=tr("准备的配置/盘面来源尚未核实。");
+    if (reason.isEmpty() && (OriginalReagentProbe::Clock::now()>=owner->source.prepareUntil ||
+        !OriginalReagentProbe::sameActor(owner->source.actor,session_) ||
+        !reagentLevelContext_ || prepared.initialization->versions().value(QStringLiteral("theme_config.ini"))!=reagentLevelContext_->themeFingerprint))
+        reason=tr("准备期限、账户或N的实际主题来源已变化，未入队。");
+    const ReagentHole *hole=nullptr;
+    const auto snapshot=reagents_->snapshot();
+    for (const auto &row : snapshot.holes) if (row.name==owner->source.hole) hole=&row;
+    if (reason.isEmpty() && (!hole || !OriginalReagentProbe::sameHoleIdentity(hole->originalValues,prepared.originalHole) ||
+        hole->originalFingerprint!=prepared.versions.value(QStringLiteral("db/userSet/reagent_Setting.db"))))
+        reason=tr("准备后页面原孔/库版本不同，未用新快照给旧请求换标签。");
+    if (reason.isEmpty() && (!sourceRelease.store || !sourceRelease.store->claimOriginalProbeSource(prepared) ||
+        !sourceRelease.store->originalProbeSourceCurrent(prepared)))
+        reason=tr("原准备的全部资料/项目集合发送许可已失效或被领取，未重新贴新来源。");
+    if (!reason.isEmpty()) { cancelReagentProbe(reason); return; }
+    owner->prepared=prepared; owner->stage=ReagentProbeState::Stage::Queuing;
+    // 两把合作写锁覆盖全部准备依赖到本次send返回；界面不做批量SQL或文件重hash。
+    if (!sourceRelease.store->originalProbeSourceCurrent(prepared))
+    { cancelReagentProbe(tr("专用发送前来源许可已失效，未发送。")); return; }
+    const bool queued=deviceControl_->sendReagentProbe(owner->source.token,owner->source.connection,prepared.payload,
+        owner->source.hole,prepared.originalHole.value(QStringLiteral("area")).toString(),owner->source.prepareUntil);
+    if (reagentProbe_!=owner) return;
+    owner->mayHaveQueued=owner->mayHaveQueued || deviceControl_->reagentProbeMayHaveQueued(owner->source.token);
+    reagents_->taskStore()->revokeOriginalProbe(owner->source.token);
+    if (!queued) { cancelReagentProbe(tr("Mg入队未确认，按是否已尝试发送保留未知，未重发。")); return; }
+    owner->stage=ReagentProbeState::Stage::Waiting; owner->clock.restart();
+    reagents_->renewDeviceOperationWait(owner->source.request,owner->source.connection);
+    reagents_->deviceOperationProgress(owner->source.request,owner->source.connection,
+        tr("单孔Mg已进入发送队列；动作回报、N保存与页面采用分别等待。"));
+    qInfo().noquote()<<"REAGENT_PROBE_QUEUED"<<owner->source.request<<owner->source.connection<<prepared.payload.toHex(' ');
+    updateDeviceControlActions();
+}
+
+void frmMain::cancelReagentProbe(const QString &message)
+{
+    if (!reagentProbe_ || reagentProbe_->retiring) return;
+    auto &owner=*reagentProbe_;
+    owner.mayHaveQueued=owner.mayHaveQueued || (deviceControl_ && deviceControl_->reagentProbeMayHaveQueued(owner.source.token));
+    if (!owner.cancelled) owner.message=message;
+    owner.cancelled=true;
+    if (reagents_)
+    {
+        auto *store=reagents_->taskStore();
+        store->revokeOriginalProbe(owner.source.token);
+        // Queuing可能由send内同步信号重入；锁只能由prepared栈退出后的finally归还。
+        if (owner.stage!=ReagentProbeState::Stage::Queuing &&
+            !QMetaObject::invokeMethod(store,"releaseOriginalProbeSource",Qt::QueuedConnection,Q_ARG(QString,owner.source.token)))
+            qWarning()<<"REAGENT_PROBE_CANCEL_RELEASE_QUEUE_FAILED"<<owner.source.token;
+        reagents_->stopOriginalProbeN(owner.source);
+    }
+    if (owner.mayHaveQueued)
+    {
+        reagentProbeUnknown_=true;
+        reagentProbeUnknownReason_=tr("单孔探测可能已执行，原连接/数据/动作收尾待核；没有自动重发或通用确认复位：")+owner.message;
+    }
+    finishReagentProbeIfReady();
+}
+
+bool frmMain::reagentProbeExecutionExpired() const
+{
+    return reagentProbe_ && reagentProbe_->stage!=ReagentProbeState::Stage::Preparing &&
+        reagentProbe_->clock.elapsed()>=60000;
+}
+
+void frmMain::tickReagentProbe()
+{
+    if (!reagentProbe_) { if (reagentProbeTimer_) reagentProbeTimer_->stop(); return; }
+    if (reagentProbe_->cancelled) { finishReagentProbeIfReady(); return; }
+    auto &owner=*reagentProbe_;
+    const bool executing=owner.stage!=ReagentProbeState::Stage::Preparing;
+    QString reason=reagentProbeBlocker(owner.source.hole,true,executing);
+    if (reason.isEmpty() && (!OriginalReagentProbe::sameActor(owner.source.actor,session_) ||
+        owner.source.connection!=deviceControl_->connectionGeneration())) reason=tr("原账户/连接改变。");
+    if (reason.isEmpty() && executing && (!owner.prepared.initialization ||
+        !owner.prepared.initialization->current(owner.source.root,&reason) ||
+        !reagents_->taskStore()->originalPageMetadata()->current(owner.prepared.batches,&reason)))
+        if (reason.isEmpty()) reason=tr("探测初始化或批号来源改变。");
+    if (reason.isEmpty() && (executing ? reagentProbeExecutionExpired() :
+        OriginalReagentProbe::Clock::now()>=owner.source.prepareUntil))
+        reason=executing ? tr("探测60秒未同时核清动作和数据结果。") : tr("准备已超过本地10秒期限。");
+    if (!reason.isEmpty()) cancelReagentProbe(reason);
+}
+
+bool frmMain::routeReagentProbeReply(const QByteArray &payload,quint64 connection)
+{
+    if (!payload.startsWith("Mg")) return false;
+    if (!reagentProbe_ || reagentProbe_->stage==ReagentProbeState::Stage::Preparing || reagentProbe_->cancelled ||
+        connection!=reagentProbe_->source.connection || connection!=deviceControl_->connectionGeneration())
+    { qWarning().noquote()<<"REAGENT_PROBE_UNOWNED_MG"<<connection<<payload.toHex(' '); return true; }
+    if (reagentProbeExecutionExpired())
+    { cancelReagentProbe(tr("Mg到达时实际60秒等待已过，未在timer之前采用过期回报。")); return true; }
+    QList<QByteArray> fields;
+    bool valid=payload.size()<=128000;
+    for (int cursor=2;valid && cursor<payload.size();)
+    {
+        if (payload[cursor++]!='[') { valid=false; break; }
+        const int end=payload.indexOf(']',cursor);
+        if (end<cursor || end-cursor>4096 || fields.size()>=4096) { valid=false; break; }
+        const auto field=payload.mid(cursor,end-cursor);
+        for (unsigned char ch : field) if (ch<32 || ch=='[') valid=false;
+        fields.append(field); cursor=end+1;
+    }
+    bool number=false;
+    const int final=fields.isEmpty() ? 0 : QString::fromLatin1(fields.last()).toInt(&number);
+    if (!valid || !number || fields.isEmpty()) { cancelReagentProbe(tr("Mg完整字段或原末项数值无效，未把弱转换当失败/成功。")); return true; }
+    auto &owner=*reagentProbe_;
+    if (owner.reported)
+    {
+        if (payload!=owner.completion) cancelReagentProbe(tr("同一等待收到不同Mg结果，未覆盖原动作事实。"));
+        return true;
+    }
+    owner.reported=true; owner.actionSuccess=final>0; owner.completion=payload;
+    reagents_->deviceOperationProgress(owner.source.request,connection,owner.actionSuccess ?
+        tr("本连接唯一等待窗收到Mg完成回报；N保存与页面采用仍分别核对，原协议无请求号。") :
+        tr("收到Mg失败回报；此前真实N不会回滚，仍等待已派读者收尾。"));
+    finishReagentProbeIfReady();
+    return true;
+}
+
+bool frmMain::reagentProbeAcceptsN(const OriginalLevels::ReceivedPacket &packet,quint64 connection) const
+{
+    if (!reagentProbe_ || reagentProbe_->cancelled || reagentProbe_->stage==ReagentProbeState::Stage::Preparing ||
+        reagentProbeExecutionExpired() || connection!=reagentProbe_->source.connection ||
+        !reagents_->originalProbeOwnBusy(reagentProbe_->source)) return false;
+    const auto &owner=*reagentProbe_;
+    const auto &row=owner.prepared.originalHole;
+    if (packet.kind!=OriginalLevels::PacketKind::Reagent || packet.hole!=owner.source.hole ||
+        packet.reagent!=row.value(QStringLiteral("reagent_name")).toString() || packet.area!=row.value(QStringLiteral("area")).toString() ||
+        packet.bottle!=row.value(QStringLiteral("bottle_type")).toString()) return false;
+    const auto fields=owner.prepared.payload.mid(3,owner.prepared.payload.size()-4).split(']');
+    if (fields.size()!=9) return false;
+    const auto field=[&fields](int i){auto value=fields[i];return value.startsWith('[') ? value.mid(1) : value;};
+    bool needleOk=false, sendOk=false, receivedOk=false;
+    const int needle=field(4).toInt(&needleOk), send=field(5).toInt(&sendOk), received=packet.sendIndex.toInt(&receivedOk);
+    return needleOk && sendOk && receivedOk && packet.needle==needle && send==received &&
+        (!owner.nPacket || owner.nFinished);
+}
+
+void frmMain::reagentProbeNStarted(quint64 packet)
+{
+    if (!reagentProbe_) return;
+    auto &owner=*reagentProbe_;
+    owner.nPacket=packet; owner.nPermission=reagentLevelContext_ ? reagentLevelContext_->permissionRevision : 0;
+    owner.nSeen=true; owner.nFinished=false; owner.nProcessed=false;
+    owner.nCommitted=owner.nLoaded=owner.nDisplayDone=owner.nShown=false; owner.nReaderReturned=true;
+    if (reagentProbeExecutionExpired())
+    { cancelReagentProbe(tr("N已派发但实际等待已到期，保留真实保存/读者，不续活过期探测。")); return; }
+    if (deviceControl_->state().status.ledStatus==2)
+    {
+        owner.clock.restart();
+        reagents_->renewDeviceOperationWait(owner.source.request,owner.source.connection);
+    }
+}
+
+void frmMain::reagentProbeNProcessed(quint64 packet,quint64 connection,bool committed,bool loaded)
+{
+    if (!reagentProbe_ || reagentProbe_->nPacket!=packet || reagentProbe_->source.connection!=connection) return;
+    auto &owner=*reagentProbe_;
+    owner.nProcessed=true; owner.nCommitted=committed; owner.nLoaded=loaded;
+    if (!loaded) { owner.nDisplayDone=true; owner.nShown=false; cancelReagentProbe(tr("真实N保存/提交或后台读回未证，保留提交事实待核。")); }
+    finishReagentProbeIfReady();
+}
+
+void frmMain::reagentProbeNPresented(quint64 packet,quint64 connection,bool shown)
+{
+    if (!reagentProbe_ || reagentProbe_->nPacket!=packet || reagentProbe_->source.connection!=connection) return;
+    reagentProbe_->nDisplayDone=true; reagentProbe_->nShown=shown;
+    if (!shown) cancelReagentProbe(tr("N可能已提交，但页面没有采用；不报告资料完成。"));
+    finishReagentProbeIfReady();
+}
+
+void frmMain::reagentProbeNReaderReturned(quint64 packet,quint64 connection)
+{
+    if (!reagentProbe_ || reagentProbe_->nPacket!=packet || reagentProbe_->source.connection!=connection) return;
+    reagentProbe_->nReaderReturned=true;
+    finishReagentProbeIfReady();
+}
+
+void frmMain::finishReagentProbeIfReady()
+{
+    if (!reagentProbe_ || reagentProbe_->retiring) return;
+    auto owner=reagentProbe_;
+    if (!owner->prepareReturned) return;
+    if (!owner->cancelled && reagentProbeExecutionExpired())
+    { cancelReagentProbe(tr("探测收尾时实际等待已过，保留真实N事实，未报告超期成功。")); return; }
+    if (owner->nPacket)
+    {
+        if (!owner->nProcessed || !owner->nDisplayDone || !owner->nReaderReturned) return;
+        reagents_->retireOriginalProbeN(owner->source,owner->nPacket);
+        owner->nFinished=true;
+    }
+    const bool failedAction=owner->reported && !owner->actionSuccess;
+    const bool complete=owner->reported && owner->actionSuccess && owner->nSeen && owner->nFinished;
+    if (!owner->cancelled && !failedAction && !complete) return;
+    const bool success=complete && !owner->cancelled && owner->nCommitted && owner->nLoaded && owner->nShown && !reagentProbeUnknown_;
+    const QString message=success ? tr("本连接等待窗的Mg回报完成；对应N已提交、页面采用且真实读者返回。原协议无业务请求号，未伪称设备回显本地token。") :
+        owner->cancelled ? owner->message+tr(" 已保留实际N/读者结果，设备与数据未共同通过。") :
+        tr("Mg报告失败，已派N按真实结果收尾；没有回滚、补Us/Ur或重发。");
+    owner->retiring=true;
+    if (!reagents_->finishOriginalProbe(owner->source,success,message))
+    { owner->retiring=false; reagentProbeUnknown_=true; reagentProbeUnknownReason_=tr("页面仍有另一份N/拥有者未归还，未伪造探测结束。"); return; }
+    const QVariantMap result{{"request",QVariant::fromValue(owner->source.request)}, {"connection",QVariant::fromValue(owner->source.connection)},
+        {"hole",owner->source.hole},{"mgReported",owner->reported},{"mgSuccess",owner->actionSuccess},{"nSeen",owner->nSeen},
+        {"nCommitted",owner->nCommitted},{"nShown",owner->nShown},{"readerReturned",owner->nReaderReturned},
+        {"unknown",reagentProbeUnknown_},{"success",success},{"message",message}};
+    setProperty("originalSingleProbeResult",result);
+    qInfo().noquote()<<"REAGENT_PROBE_FINISHED"<<result;
+    reagents_->taskStore()->revokeOriginalProbe(owner->source.token);
+    reagentProbe_.reset(); reagentProbeTimer_->stop();
+    deviceControl_->finishReagentProbe(owner->source.token,reagentProbeUnknown_);
+    updateDeviceControlActions();
+    if (reagentLevelClosing_) QTimer::singleShot(0,this,[this](){window()->close();});
 }

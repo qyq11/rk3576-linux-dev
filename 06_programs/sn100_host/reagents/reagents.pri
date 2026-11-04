@@ -37,4 +37,5 @@ HEADERS *= $$clean_path($$PWD/../original_files/theme_configuration.h)
 
 # 任务剩余量走专用重读和运行采用，不发送设备命令。
 SOURCES *= $$PWD/original_task_reagent_display.cpp $$PWD/original_reagent_level_task.cpp $$PWD/original_task_reagent_readback.cpp $$PWD/reagents_page_task.cpp
+HEADERS *= $$PWD/original_reagent_page_metadata.h $$PWD/original_reagent_probe.h
 HEADERS *= $$PWD/original_task_reagent_display.h $$clean_path($$PWD/../samples/original_task_reagent_receipt.h)

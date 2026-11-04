@@ -1,0 +1,196 @@
+--- a/instrument/instrument_page.cpp
++++ b/instrument/instrument_page.cpp
+@@ -21,11 +21,15 @@
+ #include <QMessageBox>
+ #include <QPushButton>
+ #include <QScroller>
++#include <QScrollBar>
+ #include <QSet>
+ #include <QSignalBlocker>
+ #include <QTableWidget>
+ #include <QTextBrowser>
+ #include <QTextDocument>
++#include <QTextCursor>
++#include <QTextEdit>
++#include <QToolTip>
+ #include <QThread>
+ 
+ namespace
+@@ -36,6 +40,66 @@
+     ".QPushButton:hover{background-color:rgba(42,118,242,170);}"
+     ".QPushButton:pressed{background-color:rgba(135,206,250,255);}");
+ 
++
++// ASCII是一字节一字符。先完整检查，不能用会替换字符或遇NUL截断的转换。
++bool encodeCommunicationAscii(const QString &text, QByteArray *bytes, QString *message)
++{
++    if (bytes) bytes->clear();
++    if (message) message->clear();
++    for (int index=0;index<text.size();++index)
++    {
++        if (text.at(index).unicode() <= 0x7f) continue;
++        uint code=text.at(index).unicode();
++        if (text.at(index).isHighSurrogate() && index+1<text.size() && text.at(index+1).isLowSurrogate())
++            code=QChar::surrogateToUcs4(text.at(index),text.at(index+1));
++        if (message) *message=QCoreApplication::translate("InstrumentPage",
++            "第%1个文本位置含非ASCII字符（U+%2）；ASCII转换失败，原内容已保留。")
++            .arg(index+1).arg(QString::number(code,16).toUpper().rightJustified(4,QLatin1Char('0')));
++        return false;
++    }
++    if (bytes)
++    {
++        bytes->reserve(text.size());
++        for (const QChar character : text) bytes->append(static_cast<char>(character.unicode()));
++    }
++    return true;
++}
++
++QString communicationAsciiDisplay(const QByteArray &bytes)
++{
++    static const char hex[]="0123456789ABCDEF";
++    QString text;
++    text.reserve(bytes.size()*4);
++    for (const char raw : bytes)
++    {
++        const unsigned char value=static_cast<unsigned char>(raw);
++        if (value == '\\') text+=QStringLiteral("\\\\");
++        else if (value >= 0x20 && value <= 0x7e) text+=QChar(value);
++        else
++        {
++            text+=QStringLiteral("\\x");
++            text+=QLatin1Char(hex[value>>4]);
++            text+=QLatin1Char(hex[value&0x0f]);
++        }
++    }
++    return text;
++}
++
++void appendCommunicationLine(QTextBrowser *view, const QString &line)
++{
++    // 沿原append习惯，仅原来位于底部时跟随；不移动使用者的光标或选择。
++    QScrollBar *scroll=view->verticalScrollBar();
++    const bool atBottom=scroll->value() >= scroll->maximum();
++    // 直接插入纯文本，保留连续空格，不把设备内容作为HTML解释。
++    QTextCursor cursor(view->document());
++    cursor.beginEditBlock();
++    cursor.movePosition(QTextCursor::End);
++    if (!view->document()->isEmpty()) cursor.insertBlock();
++    cursor.insertText(line);
++    cursor.endEditBlock();
++    if (atBottom) scroll->setValue(scroll->maximum());
++}
++
+ bool mayRecordManualMaintenance(const AccountSession &session)
+ {
+     if (!session.authenticated || session.role < 0 || session.role > 5) return false;
+@@ -59,6 +123,8 @@
+     applyOriginalStyle();
+     disableDeviceActions();
+     clearDeviceValues(true);
++    connect(ui->sendTextEdit,&QTextEdit::textChanged,this,&InstrumentPage::refreshCommunicationAsciiInput);
++    refreshCommunicationAsciiInput();
+     displayedValues_=OriginalInstrument::statusDisplay(displayedSnapshot_,0);
+     refreshSensors();
+ 
+@@ -546,7 +612,8 @@
+         QTextBrowser *view = direction.startsWith(QStringLiteral("TX"))
+                                  ? ui->textBrowser_SendData : ui->textBrowser_ReceiveData;
+         if (view->document()->blockCount() > 500) view->clear();
+-        view->append(direction + QStringLiteral(" hex=") + QString::fromLatin1(bytes.toHex(' ')));
++        appendCommunicationLine(view,direction + QStringLiteral(" ASCII=") + communicationAsciiDisplay(bytes) +
++            QStringLiteral(" hex=") + QString::fromLatin1(bytes.toHex(' ')));
+     });
+     connect(control,&DeviceControl::payloadReceived,this,[this](const QByteArray &payload)
+     {
+@@ -1012,30 +1079,55 @@
+     return true;
+ }
+ 
++bool InstrumentPage::prepareCommunicationAsciiPayload(QByteArray *payload, QString *message) const
++{
++    // toPlainText会先把不换行空格改为普通空格，必须先保留原字符再检查。
++    QString text=ui->sendTextEdit->document()->toRawText();
++    text.replace(QChar(QChar::ParagraphSeparator),QLatin1Char('\n'));
++    return encodeCommunicationAscii(text,payload,message);
++}
++
++void InstrumentPage::refreshCommunicationAsciiInput()
++{
++    QString message;
++    const bool valid=prepareCommunicationAsciiPayload(nullptr,&message);
++    const QString previous=ui->sendTextEdit->property("communicationAsciiInputError").toString();
++    ui->sendTextEdit->setProperty("communicationAsciiInputValid",valid);
++    ui->sendTextEdit->setProperty("communicationAsciiInputError",message);
++    ui->sendTextEdit->setAccessibleDescription(valid ? tr("通讯测试ASCII输入") : message);
++    ui->sendTextEdit->setToolTip(valid
++        ? tr("仅接受ASCII字符；回车为LF，文字形式的\\xHH按原文字保留。输入检查通过不表示命令已发送。")
++        : message);
++    if (!valid && message!=previous && ui->sendTextEdit->hasFocus())
++        QToolTip::showText(ui->sendTextEdit->mapToGlobal(QPoint(0,ui->sendTextEdit->height())),
++            message,ui->sendTextEdit);
++    else if (valid && !previous.isEmpty() && ui->sendTextEdit->hasFocus()) QToolTip::hideText();
++}
++
+ void InstrumentPage::appendOriginalCommunication(bool transmitted, const QByteArray &payload)
+ {
+     if (!showCommunication_) return;
+-    const QString text=QString::fromUtf8(payload);
+     if (!transmitted)
+     {
+-        // 原接收窗口先执行显示名单，只有未启用它时才执行屏蔽名单；发送窗口不筛名单。
++        // 仅过滤沿用旧正文解码；ASCII展示另行生成，不改变名单匹配或空项含义。
++        const QString filterText=QString::fromUtf8(payload);
+         if (showOnlyCommunication_)
+         {
+             bool found=false;
+-            for (const QString &command : shownCommunication_) if (text.contains(command)) {found=true;break;}
++            for (const QString &command : shownCommunication_) if (filterText.contains(command)) {found=true;break;}
+             if (!found) return;
+         }
+         else if (maskCommunication_)
+         {
+-            for (const QString &command : maskedCommunication_) if (text.contains(command)) return;
+-        }
+-    }
++            for (const QString &command : maskedCommunication_) if (filterText.contains(command)) return;
++        }
++    }
++    const QString text=communicationAsciiDisplay(payload);
+     QTextBrowser *view=transmitted ? ui->textBrowser_SendData : ui->textBrowser_ReceiveData;
+     const QString line=QDateTime::currentDateTime().toString(QStringLiteral("HH:mm:ss:zzz")) +
+         (transmitted ? QStringLiteral(" TX ") : QStringLiteral(" RX ")) + text +
+         QStringLiteral(" hex=") + QString::fromLatin1(payload.toHex(' '));
+-    // 当作纯文本追加，设备字段中的尖括号不会成为页面HTML；十六进制仍保留实际字节。
+-    view->append(line.toHtmlEscaped());
++    appendCommunicationLine(view,line);
+     if (transmitted) ui->label_SendCount->setText(QString::number(++sentCommunication_));
+     else ui->label_ReceiveCount->setText(QString::number(++receivedCommunication_));
+ }
+--- a/instrument/instrument_page.h
++++ b/instrument/instrument_page.h
+@@ -1,6 +1,7 @@
+ #ifndef SN100_INSTRUMENT_PAGE_H
+ #define SN100_INSTRUMENT_PAGE_H
+ 
++#include <QByteArray>
+ #include <QDate>
+ #include <QPointer>
+ #include <QWidget>
+@@ -27,6 +28,9 @@
+     bool isBusy() const { return busy_ || connectionBusy_; }
+     bool isReady() const { return ready_; }
+     bool prepareToLeave();
++    // 只读取并严格转换通讯测试输入，不发送、不检查命令权限或设备状态。
++    // 文档段换行映为LF；不解析文字形式的\xHH，失败时清空输出并说明位置。
++    bool prepareCommunicationAsciiPayload(QByteArray *payload, QString *message) const;
+     void setSession(AccountSession session);
+     bool setConnectionConfigurationFile(const QString &absoluteFile);
+     void attachDeviceControl(DeviceControl *control, bool connectAtStartup);
+@@ -98,6 +102,7 @@
+     void restoreConnectionDraft();
+     void updateDeviceButtons();
+     void appendOriginalCommunication(bool transmitted, const QByteArray &payload);
++    void refreshCommunicationAsciiInput();
+     void refreshOriginalAdChannels();
+     void clearOriginalAdValues(const QString &reason);
+ };

@@ -185,8 +185,8 @@ bool basisMatches(const Commit &commit)
     const auto &basis=commit.basis;
     const QString table=basis.configuredPositions==20 ? QStringLiteral("reagent_setting") :
         basis.configuredPositions==42 ? QStringLiteral("reagent_setting_6600") : QString();
-    if (!basis.available || !basis.actionId || !basis.arrivalPacketId || !basis.connection || !basis.basisRevision ||
-        basis.basisToken.isEmpty() || basis.root!=commit.root || basis.payloadSha256!=commit.payloadSha256 ||
+    if (!basis.available || !basis.actionId || !taskOriginAllows(basis,commit.action) || !basis.connection || !basis.basisRevision ||
+        basis.basisToken.isEmpty() || basis.root!=commit.root || basis.payloadSha256!=commit.payloadSha256 || basis.originDigest!=commit.originDigest ||
         basis.versions!=commit.beforeVersions || table!=commit.settingTable || basis.holes.isEmpty()) return false;
     QMap<qint64,const TypedRow *> indexed; QString ignored;
     if (!indexPlate(commit.beforePlate,&indexed,&ignored)) return false;
@@ -225,7 +225,20 @@ ReceiptWriter::ReceiptWriter(Action action,const QString &root,const QByteArray 
 {
     data_.receiptId=QUuid::createUuid().toString(QUuid::WithoutBraces);
     data_.action=action; data_.root=root; data_.basis=basis;
-    data_.payloadSha256=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex());
+    if (basis.source==OperationSource::DevicePacket)
+    {
+        data_.payloadSha256=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex());
+        data_.originDigest=data_.payloadSha256;
+    }
+    else
+    {
+        data_.originDigest=userOperationDigest(basis.userOperation);
+        if (!payload.isEmpty() || !taskOriginAllows(basis,action))
+        {
+            data_.originDigest.clear(); // 保留事实，但绝不能采用这份不合法的来源证明。
+            appendProblem(QStringLiteral("用户来源携带设备字节或不属于获准动作，凭据不能作为可信前版。"));
+        }
+    }
     if (result_) *result_=data_;
 }
 ReceiptWriter::~ReceiptWriter()

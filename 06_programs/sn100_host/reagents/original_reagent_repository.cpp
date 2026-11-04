@@ -141,18 +141,27 @@ bool readDeviceReply(const QByteArray &payload, Rows *rows, bool *single, QStrin
 }
 }
 
-bool OriginalReagentRepository::initialize(const QString &root, QString *message)
+bool OriginalReagentRepository::initialize(const QString &root, QString *message,
+    OriginalIni::InitializationSourcePtr configurationSource)
 {
+    configurationSource_.reset();
     if (!workingRoot(root, message)) return false;
     OriginalIni::Settings settings;
-    if (!OriginalIni::read(QDir(root).filePath(QStringLiteral("theme_config.ini")), &settings, message)) return false;
+    if (configurationSource)
+    {
+        if (!configurationSource->matchesRoot(root,message)) return false;
+        settings=configurationSource->theme();
+    }
+    else if (!OriginalIni::read(QDir(root).filePath(QStringLiteral("theme_config.ini")), &settings, message)) return false;
     bool ok = false;
     const int count = settings.values.value(QStringLiteral("theme/ReagentPanelChannelCount"), 20).toInt(&ok);
     if (!ok || (count != 20 && count != 42)) return fail(message, QStringLiteral("原试剂盘孔数未对应20或42配置，未选择其他机型表。"));
     root_ = root;
     table_ = count == 20 ? QStringLiteral("reagent_setting") : QStringLiteral("reagent_setting_6600");
     OriginalReagentState state;
-    return load(&state, message);
+    if (!load(&state, message)) return false;
+    configurationSource_=std::move(configurationSource);
+    return true;
 }
 
 bool OriginalReagentRepository::load(OriginalReagentState *state, QString *message)
@@ -372,6 +381,10 @@ OriginalReagentAllocation::AllocationResult OriginalReagentRepository::assignTas
     auto cached = *selection;
     QMap<qint64, Row> holes;
     for (const auto &row : state.holes) holes.insert(row.value(QStringLiteral("id")).toLongLong(), row);
+    const auto batchFor = [&](qint64 id)
+    {
+        return work->pageMetadata.available ? work->pageMetadata.batches.value(id) : text(holes.value(id), "reagent_batch");
+    };
     QString error;
     const auto ordered = [&](const QString &name)
     {
@@ -433,14 +446,17 @@ OriginalReagentAllocation::AllocationResult OriginalReagentRepository::assignTas
             bool found = false;
             for (qint64 id : ordered(name))
             {
-                QString batch = text(holes.value(id), "reagent_batch");
+                QString batch = batchFor(id);
                 if (!cached.linuxNew && related && selectedGroup != QStringLiteral("Default"))
                 {
                     if (batch.isEmpty())
                     {
+                        if (!work->pageMetadata.available || !work->pageMetadata.batches.contains(id))
+                            return fatal(QStringLiteral("旧CAL空批号缺少真实盘面来源，未只在本次筛选放行。"));
                         batch = QStringLiteral("Default");
-                        const QString note = QStringLiteral("旧CAL空批号仅在本次筛选按Default；原setReagentBatch跨控件寿命的覆盖/清空副作用尚未等价，未新增整架失败。");
-                        if (!result.limitations.contains(note)) result.limitations.append(note);
+                        // 原setter在匹配前逐候选执行；未选中、随后跳过或失败也不回滚此页面变化。
+                        work->pageMetadata.batches[id] = batch;
+                        work->pageMetadata.defaulted.insert(id);
                     }
                     if (!selectedGroup.contains(batch)) continue;
                 }
@@ -480,7 +496,7 @@ OriginalReagentAllocation::AllocationResult OriginalReagentRepository::assignTas
                     canUseDefault = true;
                     for (qint64 id : ids)
                     {
-                        const QString batch = text(holes.value(id), "reagent_batch");
+                        const QString batch = batchFor(id);
                         if (batch != QStringLiteral("Default") && batch != QStringLiteral("None")) { canUseDefault = false; break; }
                     }
                 }
@@ -495,7 +511,7 @@ OriginalReagentAllocation::AllocationResult OriginalReagentRepository::assignTas
                     qint64 selected = 0;
                     for (qint64 id : ids)
                     {
-                        const QString batch = text(holes.value(id), "reagent_batch");
+                        const QString batch = batchFor(id);
                         if (batch == QStringLiteral("Default") || batch == QStringLiteral("None")) continue;
                         bool excluded = false;
                         for (const auto &bad : cantUse) if (bad.contains(batch)) { excluded = true; break; }
@@ -504,14 +520,14 @@ OriginalReagentAllocation::AllocationResult OriginalReagentRepository::assignTas
                     if (!found) { unsafe = true; break; }
                     // 原contains且无break：重叠批组可能重复append，不能改成拆分后的精确匹配。
                     for (const auto &group : groups)
-                        if (group.contains(text(holes.value(selected), "reagent_batch")))
+                        if (group.contains(batchFor(selected)))
                         { selectedGroup = group; ready.append(selected); }
                 }
                 else
                 {
                     bool found = false;
                     for (qint64 id : ids)
-                        if (selectedGroup.contains(text(holes.value(id), "reagent_batch")))
+                        if (selectedGroup.contains(batchFor(id)))
                         { ready.append(id); found = true; break; }
                     if (!found)
                     {
@@ -578,6 +594,7 @@ OriginalReagentAllocation::AllocationResult OriginalReagentRepository::assignTas
     task->sampleAreaSlots = sampleSlots;
     task->reagentAreaSlots = reagentSlots;
     task->reservedReagentVolumes = result.configuredVolumes;
+    trial.pageMetadata = work->pageMetadata;
     *work = trial;
     *selection = cached;
     result.status = Status::Selected;
@@ -832,6 +849,7 @@ bool OriginalReagentRepository::applyPriorityReply(const QByteArray &payload, co
     if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
         return fail(message,QStringLiteral("原项目或试剂正在保存，优先级回读未覆盖当前编辑。"));
     if (!versionsMatch(true)) return false;
+    const auto metadataTicket = pageMetadata_ ? pageMetadata_->sourceTicket() : OriginalReagentPageMetadata::SourceTicket();
 
     Database database;
     if (!database.open(root_,settingFile,true,message) || !database.begin(message)) return false;
@@ -872,6 +890,7 @@ bool OriginalReagentRepository::applyPriorityReply(const QByteArray &payload, co
     if (!database.commit(message)) return rollback();
     *committed=true;
     database.db.close();
+    if (!publishMetadataOverwrite({holeName},false,metadataTicket,message)) return false;
     QString fingerprintError;
     *savedFingerprint=OriginalProjectRepository::databaseFingerprint(QDir(root_).filePath(settingFile),&fingerprintError);
     if (savedFingerprint->isEmpty())
@@ -958,6 +977,12 @@ bool OriginalReagentRepository::applyDeviceReply(const QByteArray &payload, QStr
     Rows incoming;
     bool single = false;
     if (!readDeviceReply(payload, &incoming, &single, message)) return false;
+    // 与手工、优先级及真实CAL采用同一顺序；提交到批号来源发布之间不让另一覆盖插入。
+    QLockFile projectLock(QDir(root_).filePath(QStringLiteral(".sn100-original-project-write.lock")));
+    QLockFile reagentLock(QDir(root_).filePath(QStringLiteral(".sn100-original-reagent-write.lock")));
+    if (!projectLock.tryLock(0) || !reagentLock.tryLock(0))
+        return fail(message,QStringLiteral("原项目或试剂正在保存，Ur未覆盖当前来源。"));
+    const auto metadataTicket = pageMetadata_ ? pageMetadata_->sourceTicket() : OriginalReagentPageMetadata::SourceTicket();
     const auto &columns = deviceReplyColumns();
     OriginalReagentState observed;
     if (!load(&observed, message)) return false;
@@ -982,5 +1007,23 @@ bool OriginalReagentRepository::applyDeviceReply(const QByteArray &payload, QStr
         arguments.append(row.value(QStringLiteral("hole_name")));
         if (!database.execute(QStringLiteral("UPDATE \"%1\" SET %2 WHERE hole_name=?").arg(table_,assignments.join(',')),arguments,message,1)) return false;
     }
-    return database.commit(message);
+    if (!database.commit(message)) return false;
+    database.db.close();
+    QStringList names;
+    for (const auto &row : incoming) names.append(text(row,"hole_name"));
+    return publishMetadataOverwrite(names,!single,metadataTicket,message);
+}
+
+bool OriginalReagentRepository::publishMetadataOverwrite(const QStringList &names, bool rebuild,
+    const OriginalReagentPageMetadata::SourceTicket &ticket, QString *message)
+{
+    if (!pageMetadata_) return true;
+    OriginalReagentState saved;
+    if (!load(&saved,message) || !pageMetadata_->overwrite(saved.root,saved.holes,names,rebuild,ticket,message))
+    {
+        pageMetadata_->invalidate(ticket);
+        if (message) *message = QStringLiteral("原数据库已提交，但盘面批号来源重建失败，未报告页面采用：") + *message;
+        return false;
+    }
+    return true;
 }

@@ -1,0 +1,30 @@
+# 第12批draft02覆盖交接（准备者自核，不是独审）
+
+2026-11-04。按Root最新指定，当前独审锁定 `root_spec_12.draft_02.json`，39699字节，SHA `0e775cbb6d30a38713fb9f86b9cebc5d8f0f9023a6924fa668aebf05f0a1a989`。配套说明 `README_02.md` SHA `ee12a63011a60eb0068740b580c1047bd27187d5705458a5d02f26774888174b`。两份保持原样，准备者不冻结、不运行ledger，也不把本覆盖检查作为另一份独立审查。
+
+本批仅汇总Root已实际采用的Uh六文件。基线为第11批356fe的真实源码包，实际SHA `d709196b4fa1f33af57c7f038abdf2134341bd5619617f3c9d94b8144055dd96`、2285866字节；归档快照原文SHA `387348d0a0dfb77cb5c1640432044d3e283dfe8f3a427e946568ba8a6352a676`、73954字节。归档688普通成员按固定工程前缀对应后逐项等归档表，也等正式采用前b078字典；原文摘要各自保留。
+
+Root原工具526239外层退出0；原check/apply均0，真实argv、仓库根cwd、stdout/stderr和actual_exit均有原件。实际after原文SHA `0e5c70ef9d5ac5fa3db34888103b4158783141aac5f90845e225c720d532ac8d`，688项，等批准期望；实际差异恰6改、0增删。当前正式源按官方snapshot的AST范围常量独立只读计算也等实际after，没有运行官方snapshot函数或v2。
+
+draft02的119项supporting_records均为唯一实存路径，末核SHA、bytes、普通单链接文件属性0不符。新派生逐一检查其原record是否已在这119项中显式覆盖，0缺失：
+
+- 两份命令canonical只补phase及派生来源；所有原键值、argv、cwd及实际整数退出0完整保留，原stdout/stderr另直接引用。
+- acceptance canonical保留全部原键值，只把真实all_after_bytes_equal映射成actual_source_equals_expected；原acceptance、expected、actual after和Root执行脚本都有显式记录。
+- 两组native_raw/canonical/path_normalization及原snapshot命令、退出、输出均显式引用；一对一路径键映射、源码SHA不变，不属于源码CRLF/LF补正，correction保持null。
+- 外层原stdout/stderr/exit及Root脚本完整存在，直接引用；没有制造原stdout或补猜失败。当前正式采用无失败，historical_failed_checks为空，不移用旧批失败故事。
+- Git只读窄采集及各真实0/1退出、原输出均保留。当前采集在采用后，不能冒称采用时采集；配置缺键返回1只是缺项事实，不是apply失败。原采用命令级core.autocrlf=false仍按原argv保存，根属性保持c46d。
+- 原私有重放、六前后像、两份Root组合独审、候选交接、基线归档及其已完成来源材料与本批正式记录分别保存；私有检查不冒充正式采用，旧11完成不借给12。
+
+原v2仍为 `source_ledger_inputs_01/source_ledger_candidate_v2.py`，末核SHA `307674360d5c24c3fe17eae04e5c7a869f7f35021fdaabecb9fd0afedbc165cd`，位置和ROOT解析不改。draft02因准备时点保持frozen=false、all_intended=false、root_approval=null；这些历史空值不表示Root后来未批准。
+
+Root实际批准已经存在：`root_source_approval_688_12_01.md`，SHA `c87fcec03442f127f051f9d462cc015e3eb61c9a93900e7c6dded47c25f1f902`，2666字节，已读。它绑定实际接纳、d709/387基线、两组合独审及采用前即时审查，不反绑未来frozen/results。无需再次请求同一批准。
+
+当前真正剩余工作由Root负责：
+
+1. 回收正在审draft02的独立Agent结论；准备者的原件/覆盖检查不顶替该独审。
+2. 另存最终冻结spec时填实际批准record、独审record及Root确认的范围/冻结标记；将批准提及的即时审查 `uh12_adoption_preflight_review_01.md`（SHA `1e4ee4030c60e7722c9df415b4a87821f273d0871897088123174cf1de38bfe3`）作为显式支持record补入。需要引用新的C7现场背景时，直接纳Root现存prebuild_live_integration12原件，不写成新包功能结果。
+3. 由Root实际运行原v2成功后，再把真实review/progress/证据清单交后续构建cfg；不预填构建、包号、切版、产品或RK结果。
+
+时序说明：Root较早要求“可纳批准”到达后，准备者已另存未冻结draft03及README03；随后Root指定继续锁定02。03没有覆盖02，也未运行任何阶段，保留作额外原件即可，不要求独审切换版本。后续停止为单项批准再生成草案；以Root锁定02和最终Root冻结文件为准。
+
+用户已将急诊可信来源列待办，急诊06保持冻结候选、保存生产入口不开；它及LIS任务保存/ACK、其他正文、算法均不纳本次Uh来源片。完成源码来源准备不表示整个SN100业务完成。

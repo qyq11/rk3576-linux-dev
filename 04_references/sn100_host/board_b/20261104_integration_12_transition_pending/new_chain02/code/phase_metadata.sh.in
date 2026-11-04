@@ -1,0 +1,23 @@
+require_phase metadata
+lock_store
+check_live_old
+check_old_release
+check_new_release
+[[ -d $base/verification && ! -L $base/verification && $(readlink -f "$base/verification") == "$base/verification" ]] || runtime_fail 'verification根不规范。'
+[[ ! -e $meta && ! -L $meta ]] || runtime_fail '本轮元数据目录已存在，不覆盖。'
+check_live_old
+mkdir -m 750 "$meta"
+chown root:lckfb "$meta"
+for name in authorizations receipts phase_logs; do mkdir -m 750 "$meta/$name"; chown root:lckfb "$meta/$name"; done
+put_frozen_file "$meta/core_inputs.json" "$core_sha256" "$core_base64"
+put_frozen_file "$meta/runtime_launch_intent.json" "$root_launch_intent_sha256" "$stable_intent_base64"
+put_frozen_file "$meta/configuration.sha256" "$configuration_manifest_sha256" "$configuration_base64"
+put_frozen_file "$meta/wait_lis_observation.sh" "$waiter_sha256" "$waiter_base64" 750
+mkdir -m 700 "$observation_dir" "$capture_parent"
+chown lckfb:lckfb "$observation_dir" "$capture_parent"
+begin_phase
+check_live_old
+check_old_release
+check_new_release
+receipt_details() { printf 'METADATA_INSTALLED=1\nCURRENT_CHANGED=0\nPROGRAM_STARTED=0\nCLOSE_REQUESTED=0\n'; }
+emit_receipt

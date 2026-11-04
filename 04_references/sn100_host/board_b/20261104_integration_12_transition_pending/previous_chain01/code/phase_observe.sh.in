@@ -1,0 +1,31 @@
+require_phase observe
+# 已活新监督器持life锁；本阶段只取store，不要求显示quiet。
+lock_store
+check_new_live
+check_new_release both
+begin_phase
+[[ ! -e $capture_leaf && ! -L $capture_leaf ]] || runtime_fail '采集叶目录已存在，不覆盖。'
+check_phase_materials
+check_new_live
+waiter_code=0
+/usr/sbin/runuser -u lckfb -- /bin/bash "$meta/wait_lis_observation.sh" \
+    --result-directory "$observation_dir" --capture-directory "$capture_leaf" \
+    --pid "$new_pid" --start-ticks "$new_ticks" --release-id "$release_id" --executable "$flat/sn100_shell" \
+    --executable-sha256 "$expected_app_sha256" --observation-id "$observation_id" \
+    --timeout-seconds "$waiter_timeout" --boot-id "$expected_boot" --board-serial 8314b1e8ffd0321f \
+    --current-link "$base/current" --expected-current-target "$flat" --release-id-file "$flat/release_id" \
+    >"$meta/phase_logs/observe/waiter.stdout.log" 2>"$meta/phase_logs/observe/waiter.stderr.log" || waiter_code=$?
+printf '%s\n' "$waiter_code" > "$meta/phase_logs/observe/waiter.actual_exit"
+# 成功或超时均先实核是否仍同一新应用；不停止、重启或回退产品。
+check_new_live
+[[ $waiter_code == 0 ]] || exit "$waiter_code"
+grep -qx 'SHELL_READY' "$new_run/app.log"
+check_new_release both
+read_product_environment > "$meta/phase_logs/observe/product_observation_environment.txt"
+systemctl show sn100-shell.service "$camera_service_unit" -p Id -p ActiveState -p SubState -p MainPID -p Type -p TTYPath -p Restart -p RuntimeMaxUSec -p KillMode > "$meta/phase_logs/observe/post_live_services.txt"
+check_new_live
+receipt_details() {
+    printf 'WAITER_ACTUAL_EXIT=0\nSHELL_READY=1\nSAME_NEW_APPLICATION_RUNNING=1\nNEW_RUN=%s\nNEW_PID=%s\nNEW_START_TICKS=%s\nCAPTURE_DIRECTORY=%s\n' "$new_run" "$new_pid" "$new_ticks" "$capture_leaf"
+    printf 'APPLICATION_EXIT=not_evaluated\nSOFTWARE_RESULT=not_evaluated_by_generator\nCLOSE_REQUESTED=0\n'
+}
+emit_receipt

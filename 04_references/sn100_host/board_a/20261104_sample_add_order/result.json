@@ -1,0 +1,102 @@
+{
+    "application_close_requested_by_checker": false,
+    "application_exit_verified": false,
+    "board": "board_a",
+    "check_exit": 1,
+    "checks": [
+        {
+            "name": "板A、原资料、实际主控连接及空闲状态已核对",
+            "passed": true
+        },
+        {
+            "name": "真实登录UI建立原配置角色0会话，未设置模拟身份",
+            "passed": true
+        },
+        {
+            "name": "总览列表与后端原快照数量一致",
+            "passed": true
+        },
+        {
+            "name": "第一次加号先新增普通空架并选中新行，仍留在总览",
+            "passed": true
+        },
+        {
+            "name": "无需先保存样本设置，即可连续新增两个不同的普通空架",
+            "passed": true
+        },
+        {
+            "name": "单击普通架只选中该行，不进入设置区",
+            "passed": true
+        },
+        {
+            "name": "双击未选中卡：首击重建退休后第二击仍打开对应新架，默认孔数/容器保持原INI",
+            "passed": true
+        },
+        {
+            "name": "未填写样本设置直接返回总览，两次新增的空架均保留",
+            "passed": true
+        },
+        {
+            "name": "编辑架按钮也能打开选中普通架，未错误进入急诊架",
+            "passed": true
+        },
+        {
+            "name": "等待当前步骤超时；保留现场，不强关、不自动放弃其他页面。",
+            "passed": false
+        }
+    ],
+    "completed": false,
+    "configuration_unchanged": true,
+    "created_racks": [
+        {
+            "id": 2,
+            "name": "S01",
+            "still_in_snapshot": true
+        },
+        {
+            "id": 3,
+            "name": "S02",
+            "still_in_snapshot": true
+        }
+    ],
+    "duration_ms": 19560,
+    "event_loop_probe": {
+        "interval_max_ms": 2210,
+        "interval_p95_ms": 164,
+        "period_ms": 25,
+        "samples": 388
+    },
+    "existing_rack_hash_scope": "含孔、任务、质控和校准身份；动态remainingSeconds/remainingAtMs不作冻结比较",
+    "expected_default_container": 1,
+    "expected_ordinary_holes": 5,
+    "failed": 1,
+    "initial_rack_count": 1,
+    "last_step": "choose_other_container_as_unsaved_draft",
+    "observed_tx_types": [
+        "Qj"
+    ],
+    "operation_response_ms": [
+        {
+            "action": "first_add_to_real_snapshot",
+            "ms": 175
+        },
+        {
+            "action": "second_add_to_real_snapshot",
+            "ms": 193
+        },
+        {
+            "action": "double_click_to_editor",
+            "ms": 691
+        }
+    ],
+    "physical_mouse_keyboard_verified": false,
+    "physical_screen_verified": false,
+    "programmatic_qttest_widget_events": true,
+    "real_instrument_detection_verified": false,
+    "reason": "等待当前步骤超时；保留现场，不强关、不自动放弃其他页面。",
+    "release_id": "d4501a69e100adbd3e3b87a4f311533ed7cfdabdd69d44f124fd822a7add4e4d",
+    "schema": "sn100-sample-add-order-review-v1",
+    "tx_observation_scope": "wireActivity中已入队的实际报文；仅Ts/Tp/Tt或M前缀触发停止；不能阻发或证明全部业务副作用不存在",
+    "tx_observation_started_ms": 47,
+    "watched_task_or_motion_tx_observed": false
+}

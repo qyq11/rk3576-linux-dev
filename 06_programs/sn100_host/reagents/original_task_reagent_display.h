@@ -28,6 +28,9 @@ struct HoleRuntimeAdoption
 
 struct RuntimeAdoption
 {
+    OperationSource source=OperationSource::DevicePacket;
+    quint64 userRequestId=0;
+    QString originDigest;
     quint64 actionId=0, arrivalPacketId=0, connection=0, permissionRevision=0;
     QString receiptId, basisToken, root, payloadSha256;
     TransactionState transaction=TransactionState::NotStarted;

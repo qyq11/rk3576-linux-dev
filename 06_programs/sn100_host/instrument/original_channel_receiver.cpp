@@ -27,7 +27,8 @@ QString outcomeName(OriginalRuntime::ChannelApplyOutcome outcome)
 
 OriginalChannelReceiver::OriginalChannelReceiver(OriginalChannelStore *store, DeviceControl *control,
     QString originalRoot, SnapshotConsumer consumer, QObject *parent)
-    : QObject(parent), store_(store), control_(control), originalRoot_(QDir::cleanPath(originalRoot)),
+    : QObject(parent), store_(store), storeThread_(store ? store->thread() : nullptr),
+      control_(control), originalRoot_(QDir::cleanPath(originalRoot)),
       consumer_(std::move(consumer))
 {
     OriginalChannelStore::registerTypes();
@@ -118,6 +119,30 @@ bool OriginalChannelReceiver::start()
     reloadPending_ = true;
     emit requestOpen(originalRoot_);
     return true;
+}
+
+QString OriginalChannelReceiver::requestReadbackBlocker(const DeviceControl *expectedControl,
+    quint64 generation, const QString &expectedRoot) const
+{
+    const auto *application=QCoreApplication::instance();
+    if (!application || QThread::currentThread()!=thread() || thread()!=application->thread())
+        return tr("通道接收能力只能在原GUI线程核对。");
+    if (!expectedControl || control_.data()!=expectedControl || expectedControl->thread()!=thread())
+        return tr("通道接收器不属于本次主控对象。");
+    if (!QDir::isAbsolutePath(expectedRoot) || QDir::cleanPath(expectedRoot)!=originalRoot_)
+        return tr("通道接收器与登记的原工作根不一致。");
+    if (!generation || generation!=generation_ || !connected_ || !control_->state().connected ||
+        control_->connectionGeneration()!=generation)
+        return tr("通道接收器尚无本次有效连接。");
+    if (stopRequested_ || closeRequested_ || sourceClosed_ || stopped_)
+        return tr("原通道接收正在停止或已经关闭。");
+    if (!started_ || !ready_ || reloadPending_ || fingerprint_.size()!=64)
+        return tr("原通道资料尚未加载或正在重读。");
+    // Store只在构造时绑定且没有替换入口；不从GUI跨线程读取它的私有就绪状态。
+    if (!store_ || !storeThread_ || storeThread_.data()==thread() || !storeThread_->isRunning())
+        return tr("原通道专用后台已失效。");
+    if (!consumer_) return tr("原通道页面消费者尚未挂接。");
+    return QString();
 }
 
 bool OriginalChannelReceiver::parse(const QByteArray &payload, OriginalChannelUpdates *updates, QString *message)

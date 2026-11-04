@@ -1,0 +1,17 @@
+# 下一批：精确Uh公共文件组合交接
+
+本候选仅补仪器操作→通讯测试的精确Uh手动发送。它不是原自由正文全部完成，也未正式采用、编译或联板。当前第11批仍编译b078的688份源码，本候选没有进入该构建；现板B仍运行C7并要求保留界面。
+
+以b078完整688表为来源，仅保存六份前像及六份组合后像，不复制整个工程。四个不重叠后像与作者已审tree逐字一致；主窗头三向0，主窗CPP三向1仅头引用冲突，Root保留QUuid及QDir/QThread/limits的并集。原stdout、stderr、真实退出和未解决原件留在merge/；没有用自动空白修复。
+
+packaging_01/ascii_uh_on_b078.patch SHA-256为d89e920d59e6fde53cb87a1290dc1a67483fb072fd38321071a9799d3ba71c15。普通私有check/apply分别0/0，六份后像逐字一致；命令和退出原件在同目录。sparse_after_6.json SHA为67d0067d5b266435c82b775f078fe17ee5367bdcbfa7a0e2a58670d819dd218f；composed_expected_after_688.json SHA为0e5c70ef9d5ac5fa3db34888103b4158783141aac5f90845e225c720d532ac8d，这是合成预期，不是正式扫描或编译结果。
+
+两份Root独立审查均未发现确定新增阻点。当前Mg专门开始/暂停门、User先撤原准备号、B1通知重入与真实完成/退休、Mg所有者/finally和底层探测期间Uh拒绝均保留。Uh只用已登记原receiver/原页面/原根/登记代次的真实能力，发送入队与被动保存批次分开，false不重试，不伪造ACK。
+
+下一步先完成第11批现有构建和独立存包/归档，期间不能改变正式源来破坏冻结依据。之后Root重新核当时前像和这六份后像，按实际批准结果串行采用、重扫完整源表、独立冻结下一批构建。真实Uh发送、回包、channel.db保存及原页面刷新仍待RK和原仪器条件验证。其他正文、机械动作、维护白名单和算法不扩。
+
+独立报告原件：
+
+- temp/sn100_host/resume_dispatch_20261103/ascii_uh_root_combined_business_review_12_01.md；SHA-256 f424f1d1a5db11c41deaf982276b8f6c4353dbdccdd6dd8d5826b631818ff32c。
+
+- temp/sn100_host/resume_dispatch_20261103/ascii_uh_root_combined_lifecycle_review_12_01.md；SHA-256 42c3fb139d3b0453bf50ca522469aab3e62370cccade730078bb794950624c3a。

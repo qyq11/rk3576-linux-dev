@@ -1,0 +1,16 @@
+# 两份候选源码的只读复核
+
+复核对象是本目录两份候选及精确base前像，不是整个SN100或真实LIS业务。两Agent没有写文件、编译、运行产品或联网。作者另执行的普通补丁检查与重放见 `verification.json`。
+
+来源复核Agent核对正式Store仍从同一原配置快照回传autoGet、序列号和已规范化的原目录；根和autoGet本来已进入effectiveKey，无需新增Store getter。候选仅保存const值，没有新增文件、路径查验或哈希。两文字各4096单元和16存活版本的拒绝边界明确；同值loaded保留原指纹，saved/有效变化建立新身份。原编码、指纹算法和通用收发许可不变。初审后作者只追加autoGet getter前的一句用途注释，Agent已重新核最终两SHA并保留审查结论。
+
+生命周期复核Agent沿真实同步调用链核查：configure抑制中间publish，成功后Configured以新profile替换旧state强引用；配置失败先reset再失信发布空profile。预算失败先reset、settingsError先失信，再由transport.stop同步stateChanged清state.profile；外层没有事后reset覆盖重入的新profile。configure/opening中重入关闭由原operation/closing路径真实stop后清state.profile，正常shutdown也先发布关闭再清active/weak。未见永久额外state强持、重复计版、容量绕过或新关闭等待依赖。外部保留旧状态副本仍作为正常存活版本计数。
+
+两Agent接受已声明的“最近发布快照”合同：state()在转换过程中可能暂时旧，profile不是授权；sendMessageWithReceipt的现实时标志、revision、generation和profile.matches仍是最终发送检查。未要求扩大到第三份头文件修改getter。
+
+最终实际核对值：
+
+- `lis_transport/lis_connection_values.h`：`41bb19561f6b3996107470107a59b04b01df1310fa1afb5abf16caf9a79b2051`。
+- `lis_transport/lis_connection_controller.cpp`：`7ca09f58d332ac20bf0f7d234c7fc4081a5acddadf646484bba11d81f69c7b61`。
+
+结论：本片两源只读审未发现确定P1/P2问题。未编译，不能以源码审查代替ARM64构建或RK/真实LIS验证。

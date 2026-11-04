@@ -1,6 +1,7 @@
 #ifndef SN100_INSTRUMENT_PAGE_H
 #define SN100_INSTRUMENT_PAGE_H
 
+#include <QByteArray>
 #include <QDate>
 #include <QPointer>
 #include <QWidget>
@@ -27,6 +28,14 @@ public:
     bool isBusy() const { return busy_ || connectionBusy_; }
     bool isReady() const { return ready_; }
     bool prepareToLeave();
+    // 只读取并严格转换通讯测试输入，不发送、不检查命令权限或设备状态。
+    // 文档段换行映为LF；不解析文字形式的\xHH，失败时清空输出并说明位置。
+    bool prepareCommunicationAsciiPayload(QByteArray *payload, QString *message) const;
+    void setManualCommunicationConsumerReady(bool ready);
+    QString manualCommunicationRequestBlocker(quint64 request, quint64 session, quint64 connection,
+                                               const QByteArray &payload) const;
+    void receiveManualCommunicationResult(quint64 request, quint64 session, quint64 connection,
+                                           bool terminal, const QString &stage, const QString &message);
     void setSession(AccountSession session);
     bool setConnectionConfigurationFile(const QString &absoluteFile);
     void attachDeviceControl(DeviceControl *control, bool connectAtStartup);
@@ -45,6 +54,10 @@ signals:
     void statusChanged(QString message);
     void busyChanged(bool busy);
     void operationFinished(QString operation, bool success);
+    // 值副本是同一点击的正文与身份；不是设备到包号或任务提交凭据。
+    void manualCommunicationRequested(quint64 request, quint64 session, quint64 connection,
+                                      AccountSession identity, QByteArray payload);
+    void manualCommunicationRevoked(quint64 request, quint64 session, quint64 connection, QString reason);
 
 private:
     Ui::frmDriverSet *ui;
@@ -64,6 +77,10 @@ private:
     QStringList blockingAlarmCodes_;
     bool alarmPolicyAvailable_ = false;
     bool originalCommunicationConfigured_ = false;
+    bool manualCommunicationConsumerReady_ = false;
+    quint64 manualCommunicationSession_ = 0;
+    quint64 manualCommunicationPending_ = 0, manualCommunicationConnection_ = 0;
+    QByteArray manualCommunicationPayload_;
     bool showCommunication_ = true, showOnlyCommunication_ = false, maskCommunication_ = false;
     QStringList shownCommunication_, maskedCommunication_;
     quint64 sentCommunication_ = 0, receivedCommunication_ = 0, communicationGeneration_ = 0;
@@ -98,6 +115,10 @@ private:
     void restoreConnectionDraft();
     void updateDeviceButtons();
     void appendOriginalCommunication(bool transmitted, const QByteArray &payload);
+    void refreshCommunicationAsciiInput();
+    void requestManualCommunication();
+    void cancelManualCommunication(const QString &reason);
+    void showManualCommunicationMessage(const QString &stage, const QString &message);
     void refreshOriginalAdChannels();
     void clearOriginalAdValues(const QString &reason);
 };

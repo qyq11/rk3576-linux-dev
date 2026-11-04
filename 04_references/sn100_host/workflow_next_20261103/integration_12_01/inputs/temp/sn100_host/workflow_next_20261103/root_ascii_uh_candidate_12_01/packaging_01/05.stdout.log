@@ -1,0 +1,241 @@
+diff --git a/06_programs/sn100_host/instrument/instrument_page.cpp b/06_programs/sn100_host/instrument/instrument_page.cpp
+index 8bcaa8cc96cf095f1b37068d4b8791aa0d808a35..5a8bb489284880b43d6a9fb50872d4154a8e7597 100644
+--- a/06_programs/sn100_host/instrument/instrument_page.cpp
++++ b/06_programs/sn100_host/instrument/instrument_page.cpp
+@@ -696,7 +696,7 @@ void InstrumentPage::updateDeviceButtons()
+         session_.source==AccountSessionSource::Configured);
+     ui->push_send_btn->setEnabled(manualCommunicationConsumerReady_ && realAdministrator && connected &&
+         !isBusy() && !connectionDirty_ && !manualCommunicationPending_);
+-    ui->push_send_btn->setToolTip(tr("本片支持精确正文Qj、Qk、QH、Ts、Tp[0]、Mz；其余正文尚未兼容。开始、暂停与静音沿主流程确认，输入不会自动改写。"));
++    ui->push_send_btn->setToolTip(tr("本片支持精确正文Qj、Qk、QH、Ts、Tp[0]、Mz、Uh；其余正文尚未兼容。开始、暂停与静音沿主流程确认；Uh会独立回读保存通道资料，入队不表示已回读完成；输入不会自动改写。"));
+ }
+ 
+ void InstrumentPage::setBusy(bool busy)
+@@ -1159,7 +1159,7 @@ void InstrumentPage::requestManualCommunication()
+     { showManualCommunicationMessage(QStringLiteral("empty"),tr("正文为空，本次未提交。")); return; }
+     if (payload.size()>Sn100Protocol::kMaxMessageBytes)
+     { showManualCommunicationMessage(QStringLiteral("length-rejected"),tr("正文超过当前128000字节整条预算，未截断或提交。")); return; }
+-    if (payload!="Qj" && payload!="Qk" && payload!="QH" && payload!="Ts" && payload!="Tp[0]" && payload!="Mz")
++    if (payload!="Qj" && payload!="Qk" && payload!="QH" && payload!="Ts" && payload!="Tp[0]" && payload!="Mz" && payload!="Uh")
+     { showManualCommunicationMessage(QStringLiteral("unsupported"),tr("ASCII编码合法，但本正文尚未接入相应业务流程，本次未提交；并非设备拒绝。")); return; }
+     const quint64 request=nextManualCommunicationRequest();
+     if (!request)
+diff --git a/06_programs/sn100_host/instrument/original_channel_receiver.cpp b/06_programs/sn100_host/instrument/original_channel_receiver.cpp
+index 93bd48c905e25139056b8042b9cc6811912d3207..e2bdaf429d425756feeb35c2349abc5a0ffca993 100644
+--- a/06_programs/sn100_host/instrument/original_channel_receiver.cpp
++++ b/06_programs/sn100_host/instrument/original_channel_receiver.cpp
+@@ -27,7 +27,8 @@ QString outcomeName(OriginalRuntime::ChannelApplyOutcome outcome)
+ 
+ OriginalChannelReceiver::OriginalChannelReceiver(OriginalChannelStore *store, DeviceControl *control,
+     QString originalRoot, SnapshotConsumer consumer, QObject *parent)
+-    : QObject(parent), store_(store), control_(control), originalRoot_(QDir::cleanPath(originalRoot)),
++    : QObject(parent), store_(store), storeThread_(store ? store->thread() : nullptr),
++      control_(control), originalRoot_(QDir::cleanPath(originalRoot)),
+       consumer_(std::move(consumer))
+ {
+     OriginalChannelStore::registerTypes();
+@@ -120,6 +121,30 @@ bool OriginalChannelReceiver::start()
+     return true;
+ }
+ 
++QString OriginalChannelReceiver::requestReadbackBlocker(const DeviceControl *expectedControl,
++    quint64 generation, const QString &expectedRoot) const
++{
++    const auto *application=QCoreApplication::instance();
++    if (!application || QThread::currentThread()!=thread() || thread()!=application->thread())
++        return tr("通道接收能力只能在原GUI线程核对。");
++    if (!expectedControl || control_.data()!=expectedControl || expectedControl->thread()!=thread())
++        return tr("通道接收器不属于本次主控对象。");
++    if (!QDir::isAbsolutePath(expectedRoot) || QDir::cleanPath(expectedRoot)!=originalRoot_)
++        return tr("通道接收器与登记的原工作根不一致。");
++    if (!generation || generation!=generation_ || !connected_ || !control_->state().connected ||
++        control_->connectionGeneration()!=generation)
++        return tr("通道接收器尚无本次有效连接。");
++    if (stopRequested_ || closeRequested_ || sourceClosed_ || stopped_)
++        return tr("原通道接收正在停止或已经关闭。");
++    if (!started_ || !ready_ || reloadPending_ || fingerprint_.size()!=64)
++        return tr("原通道资料尚未加载或正在重读。");
++    // Store只在构造时绑定且没有替换入口；不从GUI跨线程读取它的私有就绪状态。
++    if (!store_ || !storeThread_ || storeThread_.data()==thread() || !storeThread_->isRunning())
++        return tr("原通道专用后台已失效。");
++    if (!consumer_) return tr("原通道页面消费者尚未挂接。");
++    return QString();
++}
++
+ bool OriginalChannelReceiver::parse(const QByteArray &payload, OriginalChannelUpdates *updates, QString *message)
+ {
+     const auto reject = [message](const QString &text) { *message = text; return false; };
+diff --git a/06_programs/sn100_host/instrument/original_channel_receiver.h b/06_programs/sn100_host/instrument/original_channel_receiver.h
+index 90e10b55adc23ddb7af9d1d158568c0889245b49..6fbd40a4b8a44f4c19621ca7ff1162113886ec51 100644
+--- a/06_programs/sn100_host/instrument/original_channel_receiver.h
++++ b/06_programs/sn100_host/instrument/original_channel_receiver.h
+@@ -8,6 +8,7 @@
+ #include <memory>
+ 
+ class DeviceControl;
++class QThread;
+ 
+ // GUI适配器：只接被动Uh并把值交专用SQL线程；不发设备命令、不要求人工登录。
+ class OriginalChannelReceiver : public QObject
+@@ -19,6 +20,9 @@ public:
+                             SnapshotConsumer consumer, QObject *parent = nullptr);
+     ~OriginalChannelReceiver() override;
+     bool start();
++    // 只读GUI镜像及构造时固定的后台身份；不打开/重读数据库、不排队或撤销真实批次。
++    QString requestReadbackBlocker(const DeviceControl *expectedControl, quint64 generation,
++                                   const QString &expectedRoot) const;
+     bool isStopped() const { return stopped_; }
+     int pendingBatchCount() const { return waiting_.size() + (inFlight_ ? 1 : 0); }
+     // 仅在worker已释放或专用线程已停止后作异常尾清理；未收到的终态如实标待核。
+@@ -55,6 +59,7 @@ private:
+         OriginalRuntime::ChannelCommitPermitPtr permit;
+     };
+     QPointer<OriginalChannelStore> store_;
++    QPointer<QThread> storeThread_;
+     QPointer<DeviceControl> control_;
+     QString originalRoot_, fingerprint_;
+     SnapshotConsumer consumer_;
+diff --git a/06_programs/sn100_host/shell/device_control_shell.cpp b/06_programs/sn100_host/shell/device_control_shell.cpp
+index e80b47950a0cd875343c4f929658fc7578d9dd00..7da9bc258f4077811fb324fcee0b88b77423beda 100644
+--- a/06_programs/sn100_host/shell/device_control_shell.cpp
++++ b/06_programs/sn100_host/shell/device_control_shell.cpp
+@@ -2,6 +2,7 @@
+ #include "task_reagent_context.h"
+ #include "ui_frmmain.h"
+ #include "instrument/device_control.h"
++#include "instrument/original_channel_receiver.h"
+ #include "alarm_history/original_current_alarm_state.h"
+ #include "instrument/instrument_page.h"
+ #include "projects/project_page.h"
+@@ -20,6 +21,9 @@
+ #include <QVariantMap>
+ #include <QScopedValueRollback>
+ #include <QUuid>
++#include <QDir>
++#include <QThread>
++#include <limits>
+ 
+ namespace
+ {
+@@ -130,6 +134,29 @@ bool frmMain::enableDeviceControl(bool connectAtStartup)
+     return true;
+ }
+ 
++bool frmMain::attachOriginalChannelReadback(OriginalChannelReceiver *receiver,const QString &originalRoot)
++{
++    if (QThread::currentThread()!=thread() || !receiver || receiver->thread()!=thread() || !instrument_ ||
++        !QDir::isAbsolutePath(originalRoot)) return false;
++    const QString root=QDir::cleanPath(originalRoot);
++    if (originalChannelReadback_)
++        return originalChannelReadback_.data()==receiver && originalChannelReadbackRoot_==root &&
++            originalChannelReadbackPage_.data()==instrument_;
++    if (originalChannelReadbackRegistration_==std::numeric_limits<quint64>::max()) return false;
++    ++originalChannelReadbackRegistration_;
++    originalChannelReadback_=receiver; originalChannelReadbackPage_=instrument_;
++    originalChannelReadbackRoot_=root;
++    return true;
++}
++
++QString frmMain::channelReadbackRequestBlocker(quint64 connection) const
++{
++    if (!originalChannelReadback_ || !originalChannelReadbackRegistration_ ||
++        !originalChannelReadbackPage_ || originalChannelReadbackPage_.data()!=instrument_)
++        return tr("本页未登记仍有效的原通道接收器。");
++    return originalChannelReadback_->requestReadbackBlocker(deviceControl_,connection,originalChannelReadbackRoot_);
++}
++
+ void frmMain::attachManualCommunication()
+ {
+     // main先创建设备控制、后挂仪器页；立即、延后及状态更新都可重入本幂等入口。
+@@ -250,7 +277,7 @@ void frmMain::receiveManualCommunication(quint64 request,quint64 pageSession,qui
+     if (reason.isEmpty() && (payload.isEmpty() || payload.size()>Sn100Protocol::kMaxMessageBytes))
+         reason=tr("正文为空或超过当前整条预算，未调用发送。");
+     if (reason.isEmpty() && payload!="Qj" && payload!="Qk" && payload!="QH" &&
+-        payload!="Ts" && payload!="Tp[0]" && payload!="Mz")
++        payload!="Ts" && payload!="Tp[0]" && payload!="Mz" && payload!="Uh")
+         reason=tr("本正文尚未接入相应业务流程，未调用发送；不是ASCII编码错误或设备拒绝。");
+     if (!reason.isEmpty())
+     { instrument_->receiveManualCommunicationResult(request,pageSession,connection,true,QStringLiteral("rejected"),reason); return; }
+@@ -271,6 +298,36 @@ void frmMain::receiveManualCommunication(quint64 request,quint64 pageSession,qui
+     }
+     if (payload=="Tp[0]" || payload=="Mz")
+     { requestDevicePauseOrSilence(connection,payload=="Tp[0]",request); return; }
++    if (payload=="Uh")
++    {
++        // 这是主动提交身份，不是随后被动Uh的批次号或协议确认。
++        const QPointer<OriginalChannelReceiver> receiver=originalChannelReadback_;
++        const QPointer<InstrumentPage> consumer=originalChannelReadbackPage_;
++        const QString root=originalChannelReadbackRoot_;
++        const quint64 registration=originalChannelReadbackRegistration_;
++        reason=manualCommunicationBlocker(request);
++        if (reason.isEmpty()) reason=channelReadbackRequestBlocker(connection);
++        if (!reason.isEmpty())
++        { finishManualCommunication(request,QStringLiteral("rejected"),reason+tr("本次未调用Uh发送。")); return; }
++        manualCommunicationSendAttempted_=true;
++        const bool queued=deviceControl_->maintenanceCommand(payload);
++        if (request!=manualCommunicationRequest_) return;
++        reason=manualCommunicationBlocker(request);
++        if (reason.isEmpty() && (!receiver || receiver!=originalChannelReadback_ ||
++            consumer!=originalChannelReadbackPage_ || registration!=originalChannelReadbackRegistration_ ||
++            root!=originalChannelReadbackRoot_))
++            reason=tr("发送调用期间原通道消费者登记已变化。");
++        if (reason.isEmpty()) reason=channelReadbackRequestBlocker(connection);
++        if (!reason.isEmpty())
++            finishManualCommunication(request,queued ? QStringLiteral("queued-observation-unavailable") : QStringLiteral("unconfirmed"),
++                (queued ? tr("Uh命令已进入发送队列，但接收能力随后变化；") : tr("Uh发送调用未确认，可能已入队；"))+
++                reason+tr("后续真实通道批次独立处理，结果待核；未重发，不表示本次回读已完成。"));
++        else
++            finishManualCommunication(request,queued ? QStringLiteral("queued") : QStringLiteral("unconfirmed"),
++                queued ? tr("Uh命令已进入发送队列；后续真实通道回读按独立批次保存和显示，不是本请求确认。") :
++                tr("Uh发送调用未确认，可能已入队；请核对收发及独立批次结果，未自动重试。"));
++        return;
++    }
+     reason=manualCommunicationBlocker(request);
+     if (!reason.isEmpty()) { finishManualCommunication(request,QStringLiteral("rejected"),reason); return; }
+     const auto query=payload=="Qj" ? Sn100Protocol::ReadOnlyQuery::Status :
+diff --git a/06_programs/sn100_host/shell/frmmain.h b/06_programs/sn100_host/shell/frmmain.h
+index 361244e3ae93ed18c66fc91376c7aa6e5fd07fa0..4f18cff531fb383d1901cf5804fd8fce4e5213b9 100644
+--- a/06_programs/sn100_host/shell/frmmain.h
++++ b/06_programs/sn100_host/shell/frmmain.h
+@@ -34,6 +34,7 @@ class InstrumentPage;
+ class MaskDlgLogin;
+ class MaskDlgShutDown;
+ class DeviceControl;
++class OriginalChannelReceiver;
+ class frmPrinterSetting;
+ class frmLisSetting;
+ class QualityControlPage;
+@@ -94,6 +95,8 @@ public:
+     void attachSamplePage(SamplePage *samples);
+     SamplePage *samplePage() const { return samples_; }
+     void attachInstrumentPage(InstrumentPage *page);
++    // 只登记已有接收器及其原根，不取得线程/数据库/关闭控制权。
++    bool attachOriginalChannelReadback(OriginalChannelReceiver *receiver, const QString &originalRoot);
+     InstrumentPage *instrumentPage() const { return instrument_; }
+     // Requires an attached history page; all report windows belong to this shell.
+     bool enableHistoryReports(const QString &directory);
+@@ -300,6 +303,11 @@ private:
+     QByteArray manualCommunicationPayload_;
+     bool manualCommunicationSendAttempted_ = false;
+     bool manualCommunicationAttached_ = false;
++    QPointer<OriginalChannelReceiver> originalChannelReadback_;
++    QPointer<InstrumentPage> originalChannelReadbackPage_;
++    QString originalChannelReadbackRoot_;
++    quint64 originalChannelReadbackRegistration_ = 0;
++    QString channelReadbackRequestBlocker(quint64 connection) const;
+     void receiveDeviceStartKey(quint64 connection);
+     // 开始、暂停与静音共用确认占用，避免嵌套确认继续接受另一条控制操作。
+     bool deviceStartConfirmationPending_ = false;
+diff --git a/06_programs/sn100_host/shell/main.cpp b/06_programs/sn100_host/shell/main.cpp
+index 00713e206ab882847f6e69f8fc72a8870fceee9e..936e8615a73df79d51dfdcb05e1d98ecf12efd1d 100644
+--- a/06_programs/sn100_host/shell/main.cpp
++++ b/06_programs/sn100_host/shell/main.cpp
+@@ -1256,6 +1256,8 @@ int main(int argc, char *argv[])
+                 }
+                 return target->applyCommittedOriginalChannels(channels,generation,message);
+             },&app);
++            if (!shell->attachOriginalChannelReadback(originalChannelReceiver,originalDbRoot))
++                qWarning() << "ORIGINAL_CHANNEL_MANUAL_UNAVAILABLE registration_failed=true";
+             QObject::connect(&originalChannelThread,&QThread::started,originalChannelReceiver,
+                 [originalChannelReceiver,&originalChannelFailure]()
+             {

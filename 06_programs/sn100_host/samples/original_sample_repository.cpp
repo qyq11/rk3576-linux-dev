@@ -37,11 +37,24 @@ bool OriginalSampleRepository::refreshProjects(QString *message)
     return projectRepository_.load(&projects_, &units_, &reagents, &cleaners, &diluents, message);
 }
 
-bool OriginalSampleRepository::initialize(const QString &root, QString *message, bool newHoleContainerIsTube)
+bool OriginalSampleRepository::initialize(const QString &root, QString *message, bool newHoleContainerIsTube,
+    OriginalIni::InitializationSourcePtr configurationSource)
 {
-    if (!OriginalBusiness::workingRoot(root, message) || !projectRepository_.initialize(root, {}, message)) return false;
+    initialized_ = false;
+    configurationSource_.reset();
+    if (!OriginalBusiness::workingRoot(root, message)) return false;
+    if (configurationSource)
+    {
+        bool configuredTube=false;
+        if (!configurationSource->matchesRoot(root,message) ||
+            !configurationSource->defaultContainerIsTube(&configuredTube,message)) return false;
+        if (configuredTube!=newHoleContainerIsTube)
+            return fail(message,QStringLiteral("新孔容器默认值与本次初始化配置不一致，未给旧参数采用新来源。"));
+    }
+    if (!projectRepository_.initialize(root, {}, message)) return false;
     OriginalIni::Settings theme;
-    if (!OriginalIni::read(QDir(root).filePath(QStringLiteral("theme_config.ini")), &theme, message)) return false;
+    if (configurationSource) theme=configurationSource->theme();
+    else if (!OriginalIni::read(QDir(root).filePath(QStringLiteral("theme_config.ini")), &theme, message)) return false;
     bool normalOk = false, emergencyOk = false;
     ordinaryHoles_ = theme.values.value(QStringLiteral("theme/SampleHoleCount"), 8).toInt(&normalOk);
     emergencyHoles_ = theme.values.value(QStringLiteral("theme/EmergencyHoleCount"), 3).toInt(&emergencyOk);
@@ -63,7 +76,10 @@ bool OriginalSampleRepository::initialize(const QString &root, QString *message,
     snapshot_.racks.append(emergency);
     nextRackId_ = 2;
     inFlight_.clear();
-    return load(&snapshot_, message);
+    if (!load(&snapshot_, message)) return false;
+    configurationSource_=std::move(configurationSource); // 只记录本仓库真正消费并成功初始化的那一份。
+    initialized_ = true;
+    return true;
 }
 
 bool OriginalSampleRepository::load(SampleSnapshot *snapshot, QString *message)
@@ -327,6 +343,48 @@ bool OriginalSampleRepository::saveCalibrationParameters(qint64 projectId, QStri
     }
     if (result) { result->verifiedSnapshot=true; result->committedFingerprint=committed->originalFingerprint; }
     notifyCommitted();
+    return true;
+}
+
+bool OriginalSampleRepository::registerEmptyOrdinaryRack(int ordinaryHoles, bool containerIsTube, qint64 *rackId,
+                                                        SampleSnapshot *snapshot, QString *message)
+{
+    if (!initialized_ || !rackId || !snapshot || ordinaryHoles_ < 1 || ordinaryHoles_ > 128 ||
+        ordinaryHoles != ordinaryHoles_)
+        return fail(message, QStringLiteral("原样本资料尚未完成初始化或普通孔数无效，未新增样本架。"));
+    if (nextRackId_ < 2 || nextRackId_ == std::numeric_limits<qint64>::max())
+        return fail(message, QStringLiteral("样本架编号已耗尽，未新增样本架。"));
+    for (const auto &existing : snapshot_.racks)
+        if (existing.id == nextRackId_)
+            return fail(message, QStringLiteral("样本架编号重复，未覆盖已有样本架。"));
+
+    SampleRack rack;
+    for (int number = 1; number < 99; ++number)
+    {
+        const QString name = QStringLiteral("S%1").arg(number, 2, 10, QChar('0'));
+        bool exists = false;
+        for (const auto &existing : snapshot_.racks)
+            if (existing.name == name) exists = true;
+        if (!exists)
+        {
+            rack.name = name;
+            break;
+        }
+    }
+    if (rack.name.isEmpty())
+        return fail(message, QStringLiteral("普通架已达98个本地预算。"));
+    for (int number = 1; number <= ordinaryHoles_; ++number)
+    {
+        SampleHole hole;
+        hole.number = number;
+        hole.container = containerIsTube ? 0 : 1;
+        rack.holes.append(hole);
+    }
+    // 这里只能由后端构造空架；校准、质控及真实任务保存仍走原saveRack校验。
+    rack.id = nextRackId_++;
+    snapshot_.racks.append(rack);
+    *rackId = rack.id;
+    *snapshot = snapshot_;
     return true;
 }
 

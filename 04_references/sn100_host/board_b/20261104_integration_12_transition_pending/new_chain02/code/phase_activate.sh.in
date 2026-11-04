@@ -1,0 +1,43 @@
+require_phase activate
+lock_store
+check_current "$expected_current"
+check_stopped_old
+check_old_release
+check_new_release both
+begin_phase
+lock_life
+check_current "$expected_current"
+check_stopped_old
+check_old_release
+check_new_release both
+runtime_checked "$meta/receipts/stop.receipt" "$old_stop_receipt_sha256"
+[[ ! -e $audit && ! -L $audit ]] || runtime_fail '切换审计目录已存在，不覆盖。'
+mkdir -m 750 "$audit"
+chown root:lckfb "$audit"
+printf '%s\n' "$(readlink "$base/current")" > "$audit/current_before.txt"
+cp -- "$base/latest_run" "$audit/latest_run_before.txt"
+printf '%s\n' "$core_sha256" > "$audit/core_inputs.sha256"
+printf '%s\n' "$authorization_sha256" > "$audit/activation_authorization.sha256"
+printf '%s\n' "$root_launch_intent_sha256" > "$audit/stop_intent.sha256"
+printf '%s\n' "$old_stop_receipt_sha256" > "$audit/old_stop_receipt.sha256"
+temporary=$base/.current-integration_12_01-$transition_id-$$
+[[ ! -e $temporary && ! -L $temporary ]] || runtime_fail '原子切换临时路径已存在。'
+ln -s "releases/$release_id" "$temporary"
+chown -h 0:0 "$temporary"
+# 原子切前再次核本阶段全部身份，不要求已停旧PID继续活。
+check_current "$expected_current"
+check_stopped_old
+check_old_release
+check_new_release both
+runtime_checked "$meta/receipts/stop.receipt" "$old_stop_receipt_sha256"
+check_phase_materials
+mv -Tf -- "$temporary" "$base/current"
+check_current "releases/$release_id"
+[[ $(current_release "$base") == "$flat" ]] || runtime_fail 'formal helper不接受新flat current。'
+check_stopped_old
+check_new_release both
+printf '%s\n' "$(readlink "$base/current")" > "$audit/current_after.txt"
+receipt_details() { printf 'ACTIVATED=1\nPROGRAM_STARTED=0\nNESTED_PRESERVED=1\nCLOSE_REQUESTED=0\n'; }
+emit_receipt
+exec 9>&-
+exec 8>&-

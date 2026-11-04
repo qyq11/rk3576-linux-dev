@@ -248,7 +248,8 @@ bool ReagentsPage::enqueueOriginalLevelPresentation(const OriginalLevels::Observ
         return reject(QStringLiteral("N已保存，但展示来源、连接、工作根或许可不属于当前页面，未覆盖页面。"));
     if (pendingOriginalLevelPresentation_)
         return reject(QStringLiteral("上一份N仍等待页面重读，未把它静默合并或替换为新展示。"));
-    if (busy_ || dirty_ || pendingOriginalReload_)
+    const bool ownProbe=originalProbeNMatches(context.packetId,context.connection,context.root,presentation.after.hole);
+    if ((busy_ && !ownProbe) || dirty_ || pendingOriginalReload_)
         return reject(QStringLiteral("N已保存，但页面正忙或有草稿，未排入旧普通重读或复用详情。"));
     pendingOriginalLevelPresentation_=std::make_shared<const OriginalLevels::ObservationPresentation>(presentation);
     notifyOriginalLevel(QStringLiteral("N已保存且后台已核对，等待试剂后台和页面同版本重读；未报告探测完成。"));
@@ -256,7 +257,7 @@ bool ReagentsPage::enqueueOriginalLevelPresentation(const OriginalLevels::Observ
     setBusy(true);
     if (!QMetaObject::invokeMethod(store_,"loadOriginalLevelObservation",Qt::QueuedConnection,Q_ARG(QString,context.root)))
     {
-        setBusy(false);
+        setBusy(pendingDeviceRequest_!=0 || !probeOwner_.token.isEmpty());
         originalLevelReloadFailed(QStringLiteral("N专用页面重读未能排入存储线程。"));
         return false;
     }

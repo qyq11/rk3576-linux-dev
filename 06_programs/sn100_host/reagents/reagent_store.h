@@ -2,6 +2,8 @@
 #define SN100_REAGENT_STORE_H
 #include "data/account_store.h"
 #include "reagent_types.h"
+#include "original_reagent_page_metadata.h"
+#include "original_reagent_probe.h"
 #include "samples/original_task_reagent_receipt.h"
 #include <QByteArray>
 #include <QMap>
@@ -10,10 +12,13 @@
 #include <QVariant>
 #include <memory>
 #include <chrono>
+#include <atomic>
+#include <utility>
 #include "projects/original_project_save_admission.h"
 #include <QElapsedTimer>
 class QTimer;
 class OriginalReagentEditor;
+class OriginalReagentPageMetadata;
 
 // Move this object to the storage thread before initialize(). No SQL work is
 // performed in the constructor or on the widget thread.
@@ -24,11 +29,19 @@ public:
     explicit ReagentStore(QObject* parent = nullptr);
     ~ReagentStore() override;
     static void registerTypes();
+    void rebuildOriginalPageMetadata(QString root, OriginalReagentPageMetadata::SourceTicket expected);
+    std::shared_ptr<OriginalReagentPageMetadata> originalPageMetadata() const { return pageMetadata_; }
     static QString validateBatchMetadata(QString isiValue, QString normalValue);
     void configureLayout(int count) { reagentPositions_=count; }
     // 这两个入口只原子替换不可变许可，可由界面线程直接调用；不访问QObject/SQL。
     void setOriginalDeviceOperationContext(quint64 connection, QStringList operations);
     bool authorizeOriginalDeviceOperation(quint64 request, quint64 connection, const QString &operation);
+    // GUI只原子签发/撤销纯值许可，不访问SQL或工作线程的会话缓存。
+    bool authorizeOriginalProbe(OriginalReagentProbe::Request request);
+    void revokeOriginalProbe(QString token);
+    // GUI只核不可变值和原子状态；认领一次后，锁保留到实际send返回后的worker release。
+    bool claimOriginalProbeSource(const OriginalReagentProbe::Prepared &prepared);
+    bool originalProbeSourceCurrent(const OriginalReagentProbe::Prepared &prepared) const;
 public slots:
     void initialize(QString absoluteCatalogDir);
     void initializeOriginal(QString root);
@@ -57,6 +70,9 @@ public slots:
     void clearHole(QString name);
     // 主窗口先核设备状态及回读能力；此槽只准备原命令和原本地资料变化。
     void prepareOriginalDeviceOperation(quint64 request, quint64 connection, QString operation, QString holeName, bool linuxNew);
+    void prepareOriginalProbe(OriginalReagentProbe::Request request);
+    // 只排到worker，调用方须等实际send调用返回；到期/撤销不能提前替代此收尾。
+    void releaseOriginalProbeSource(QString token);
     // 仅接本次优先使用的一次Ur；数据库提交与页面重读结果分别返回。
     void saveOriginalPriorityReply(quint64 request, quint64 connection, QByteArray payload);
     void close();
@@ -71,6 +87,7 @@ signals:
     void originalDeviceOperationPrepared(quint64 request, quint64 connection, QString operation,
                                          QList<QByteArray> packets, bool localSaved);
     void originalDevicePreparationFailed(quint64 request, quint64 connection, QString operation, QString message);
+    void originalProbePrepared(OriginalReagentProbe::Prepared prepared);
     void originalPriorityReplyProcessed(quint64 request, quint64 connection, bool committed, bool loaded,
                                         QString fingerprint, QString message);
     void loaded(ReagentSnapshot snapshot);
@@ -85,11 +102,34 @@ signals:
     void batchReferencesReady(qint64 requestId, qint64 batchId, bool exists, ReagentBatchReferences references);
 
 private:
+    struct OriginalProbePermit
+    {
+        OriginalReagentProbe::Request source;
+        bool claimed=false, revoked=false;
+    };
+    std::shared_ptr<const OriginalProbePermit> probePermit_;
+    enum class OriginalProbeSourcePhase { Available, Claimed, Revoked };
+    struct OriginalProbeSourceProof
+    {
+        explicit OriginalProbeSourceProof(OriginalReagentProbe::Prepared value) : prepared(std::move(value)) {}
+        const OriginalReagentProbe::Prepared prepared;
+        mutable std::atomic<bool> live{true};
+        mutable std::atomic<OriginalProbeSourcePhase> phase{OriginalProbeSourcePhase::Available};
+    };
+    struct OriginalProbeSourceLease; // 只由工作线程持有两把QLockFile，不进入纯值头或GUI。
+    std::shared_ptr<const OriginalProbeSourceProof> probeSourceProof_;
+    std::shared_ptr<OriginalProbeSourceLease> probeSourceLease_;
+    QTimer *probeSourceTimer_=nullptr;
+    bool probeSourceCleanupAttached_=false;
+    void attachOriginalProbeSourceCleanup();
+    void expireOriginalProbeSource(bool closing=false);
+    bool originalProbeProofMatches(const OriginalReagentProbe::Prepared &prepared,
+        const std::shared_ptr<const OriginalProbeSourceProof> &proof) const;
     struct OriginalDeviceOperationPermit
     {
         quint64 connection = 0, request = 0;
         bool preparationClaimed = false;
-        std::chrono::steady_clock::time_point deadline = std::chrono::steady_clock::time_point::max();
+        std::chrono::steady_clock::time_point deadline;
         QStringList operations;
         QString operation;
     };
@@ -109,6 +149,7 @@ private:
     AccountSession session_;
     bool ready_ = false;
     std::unique_ptr<OriginalReagentEditor> originalEditor_;
+    const std::shared_ptr<OriginalReagentPageMetadata> pageMetadata_;
     bool instrumentBusy_ = false;
     bool projectSaveAdmissionEnabled_ = false;
     struct PendingOriginalGroupSave

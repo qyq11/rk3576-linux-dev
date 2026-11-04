@@ -1,0 +1,96 @@
+--- a/lis_transport/lis_connection_values.h
++++ b/lis_transport/lis_connection_values.h
+@@ -26,6 +26,10 @@
+     ~ReceiveProfile() = default;
+     const ConfigurationIdentity &configuration() const { return configuration_; }
+     const QString &sequenceNumber() const { return sequenceNumber_; }
++    // 自动查询设置只供业务选择路线，不是发送、接收或保存许可。
++    bool autoGet() const { return autoGet_; }
++    // 直接保留设置层已确认的原资料目录；这里不重新查路径或读取文件。
++    const QString &originalRoot() const { return originalRoot_; }
+     bool matches(const ConfigurationIdentity &identity) const
+     {
+         return configuration_.revision == identity.revision
+@@ -35,12 +39,16 @@
+     }
+ private:
+     friend class LisConnectionController;
+-    ReceiveProfile(const ConfigurationIdentity &identity, const QString &sequenceNumber) :
+-        configuration_(identity), sequenceNumber_(sequenceNumber) {}
++    ReceiveProfile(const ConfigurationIdentity &identity, const QString &sequenceNumber,
++                   bool autoGet, const QString &originalRoot) :
++        configuration_(identity), sequenceNumber_(sequenceNumber), autoGet_(autoGet),
++        originalRoot_(originalRoot) {}
+     ReceiveProfile(const ReceiveProfile &) = delete;
+     ReceiveProfile &operator=(const ReceiveProfile &) = delete;
+     const ConfigurationIdentity configuration_;
+     const QString sequenceNumber_;
++    const bool autoGet_;
++    const QString originalRoot_;
+ };
+ using ReceiveProfilePtr = std::shared_ptr<const ReceiveProfile>;
+ 
+@@ -62,6 +70,8 @@
+     QString state;
+     QString detail;
+     bool closing = false;
++    // 仅说明最近发布状态的配置来源；不证明已连接，也不授权查询、保存或ACK。
++    ReceiveProfilePtr profile;
+ };
+ 
+ struct ReceivedMessage
+@@ -71,7 +81,7 @@
+     quint64 peer = 0;
+     QByteArray body;
+     QString text;
+-    ReceiveProfilePtr profile; // 与configuration四项相同的原序列号快照；旧值不改读当前配置。
++    ReceiveProfilePtr profile; // 同身份的序列号、自动查询开关和原目录；旧值不读新配置。
+ };
+ 
+ struct SendOutcome
+--- a/lis_transport/lis_connection_controller.cpp
++++ b/lis_transport/lis_connection_controller.cpp
+@@ -12,6 +12,8 @@
+ // 本地资源预算，不是原LIS协议限制；仍被旧消息/回执持有的快照不静默淘汰。
+ constexpr int MaximumLiveProfiles = 16;
+ constexpr int MaximumSequenceNumberCodeUnits = 4096;
++constexpr int MaximumOriginalRootCodeUnits = 4096;
++// 每版两段文字最多8192个UTF16字值，16版合计最多256KiB文字载荷；不是进程内存上限。
+ }
+ LisConnectionController::LisConnectionController(LisSettingsStore *store, bool reconnect,
+     int reconnectMilliseconds, QObject *parent) : QObject(parent),
+@@ -106,6 +108,11 @@
+         if (detail) *detail = tr("原LIS序列号超过本地4096个UTF16字值预算，未截短或采用新配置。");
+         return false;
+     }
++    if (settings.originalRoot.size() > MaximumOriginalRootCodeUnits)
++    {
++        if (detail) *detail = tr("原资料目录超过本地4096个UTF16字值预算，未截短路径或采用新配置。");
++        return false;
++    }
+     for (auto it = profiles_.begin(); it != profiles_.end(); )
+     {
+         if (it->expired()) it = profiles_.erase(it);
+@@ -179,8 +186,9 @@
+                 tr("当前是独立本地设置，未启用原资料通信。"));
+         return;
+     }
+-    // token只在configure成功返回后确定；identity与原sequenceNumber一次建成，不原地修改。
+-    profile_ = ReceiveProfilePtr(new ReceiveProfile(configuration_, settings.sequenceNumber));
++    // 设置层已在同次读取中确认目录与配置；这里不重读，四项一次冻结且不原地修改。
++    profile_ = ReceiveProfilePtr(new ReceiveProfile(configuration_, settings.sequenceNumber,
++        settings.autoGet, settings.originalRoot));
+     profiles_.append(std::weak_ptr<const ReceiveProfile>(profile_));
+     trusted_ = true;
+     publish(QStringLiteral("Configured"), transport_->generation(), 0);
+@@ -352,6 +360,10 @@
+     state_.configuration = configuration_; state_.generation = generation;
+     state_.connectedPeers = peers; state_.state = state; state_.detail = detail;
+     state_.closing = closing_;
++    // 开启过程可同步发布状态，不能因opening_暂为true而漏掉唯一一次可信来源发布。
++    // state()仍是最近发布的值；发送前由sendMessageWithReceipt重新核实际标志与身份。
++    state_.profile = trusted_ && !applying_ && !closing_ && profile_ && profile_->matches(configuration_)
++        ? profile_ : ReceiveProfilePtr();
+     emit stateChanged(state_);
+ }
+ }

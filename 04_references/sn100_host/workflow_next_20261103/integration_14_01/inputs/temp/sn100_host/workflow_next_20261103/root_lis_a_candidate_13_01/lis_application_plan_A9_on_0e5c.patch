@@ -1,0 +1,1055 @@
+diff --git a/06_programs/sn100_host/lis_business/original_lis_application_plan.cpp b/06_programs/sn100_host/lis_business/original_lis_application_plan.cpp
+new file mode 100644
+index 0000000..7827c4a
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_application_plan.cpp
+@@ -0,0 +1,298 @@
++#include "original_lis_application_plan.h"
++#include "original_lis_download_codec.h"
++
++#include <QVector>
++#include <limits>
++#include <string>
++
++namespace Sn100Lis
++{
++namespace
++{
++class TextBudget
++{
++public:
++    explicit TextBudget(qint64 maximum) : maximum_(maximum) {}
++    bool addBytes(qint64 bytes)
++    {
++        if (bytes < 0 || bytes > maximum_ - used_) return false;
++        used_ += bytes;
++        return true;
++    }
++    bool add(const QString &text) { return addBytes(qint64(text.size()) * 2); }
++    bool replace(const QString &before, const QString &after)
++    {
++        const qint64 retained = used_ - qint64(before.size()) * 2;
++        const qint64 added = qint64(after.size()) * 2;
++        if (retained < 0 || added > maximum_ - retained) return false;
++        used_ = retained + added;
++        return true;
++    }
++    qint64 used() const { return used_; }
++private:
++    qint64 maximum_ = 0, used_ = 0;
++};
++
++bool addIdentity(TextBudget &budget, const ConfigurationIdentity &identity)
++{
++    return budget.add(identity.effectiveKey) && budget.add(identity.transportToken)
++        && budget.add(identity.sourceFingerprint);
++}
++
++bool addProfile(TextBudget &budget, const ReceiveProfilePtr &profile)
++{
++    return profile && addIdentity(budget, profile->configuration())
++        && budget.add(profile->sequenceNumber()) && budget.add(profile->originalRoot());
++}
++
++bool addPatient(TextBudget &budget, const OriginalLisPatientValue &patient)
++{
++    return budget.add(patient.bedNumber) && budget.add(patient.name) && budget.add(patient.barcode)
++        && budget.add(patient.remark) && budget.add(patient.checker) && budget.add(patient.department);
++}
++
++bool addHole(TextBudget &budget, const OriginalLisHoleValue &hole)
++{
++    return budget.add(hole.originalRoot) && budget.add(hole.rackInstance) && budget.add(hole.rack)
++        && budget.add(hole.internalSampleNumber) && budget.add(hole.barcode) && addPatient(budget, hole.patient);
++}
++
++bool addDecoded(TextBudget &budget, const OriginalLisDsrFields &decoded)
++{
++    const auto &header = decoded.header;
++    const auto &source = header.source;
++    if (!budget.addBytes(source.body.size()) || !budget.add(source.text)
++        || !addIdentity(budget, source.configuration) || !addProfile(budget, source.profile)) return false;
++    for (const auto &segment : header.segments) if (!budget.add(segment)) return false;
++    const QStringList headerText{header.sequenceNumberSnapshot, header.sendingApplication, header.messageType,
++        header.controlId, header.version, header.applicationAcknowledgmentType, header.responseCode,
++        header.responseControlId, header.error.field, header.error.detail};
++    for (const auto &text : headerText) if (!budget.add(text)) return false;
++    const auto &patient = decoded.patient;
++    const QStringList patientText{patient.patientIdentifier, patient.bedNumber, patient.name, patient.wardAndRoom,
++        patient.ward, patient.room, patient.sex, patient.ageAndUnit, patient.age, patient.ageUnit};
++    for (const auto &text : patientText) if (!budget.add(text)) return false;
++    const auto &order = decoded.order;
++    const QStringList orderText{order.barcode, order.sampleNumber, order.urgent, order.registrationTime,
++        order.repeatTimes, order.rackAndHole, order.rack, order.hole, order.dilution, order.remark,
++        order.specimenReceivedTime, order.specimenType, order.checker, order.department};
++    for (const auto &text : orderText) if (!budget.add(text)) return false;
++    if (!budget.add(decoded.declaredProjectCount) || !budget.add(decoded.projectText)
++        || !budget.add(decoded.error.field) || !budget.add(decoded.error.detail)) return false;
++    for (const auto &project : decoded.projects)
++        if (!budget.add(project.code) || !budget.add(project.countText)) return false;
++    return true;
++}
++
++bool addProject(TextBudget &budget, const OriginalLisMappingProject &project)
++{
++    if (!budget.add(project.name) || !budget.add(project.informationName) || !budget.add(project.originalFile)
++        || !budget.add(project.originalFingerprint)) return false;
++    for (const auto &code : project.resultLisCodes) if (!budget.add(code)) return false;
++    for (const auto &rate : project.sampleRates) if (!budget.add(rate.rate)) return false;
++    return true;
++}
++
++OriginalLisApplicationPlan rejected(const QString &field, const QString &detail)
++{
++    OriginalLisApplicationPlan result;
++    result.error.field = field;
++    result.error.detail = detail;
++    return result; // 不把已算出的部分患者/任务当成可应用的半份计划。
++}
++
++bool asciiSpace(ushort value)
++{
++    return value == ' ' || value == '\t' || value == '\r' || value == '\n' || value == '\f' || value == '\v';
++}
++
++bool originalAge(const QString &text, qint32 *value)
++{
++    // 原atoi对UTF8 C串只读取ASCII十进制前缀，NUL/其他字节结束；无数字为0。
++    // QString的非ASCII字符在UTF8中也不会变成ASCII数字/空白，因此不必先分配UTF8副本。
++    int index = 0;
++    while (index < text.size() && asciiSpace(text.at(index).unicode())) ++index;
++    bool negative = false;
++    if (index < text.size() && (text.at(index) == QChar('+') || text.at(index) == QChar('-')))
++    { negative = text.at(index) == QChar('-'); ++index; }
++    const quint32 limit = negative ? quint32(2147483648u) : quint32(2147483647u);
++    quint32 magnitude = 0;
++    while (index < text.size())
++    {
++        const ushort character = text.at(index).unicode();
++        if (character < '0' || character > '9') break;
++        const quint32 digit = character - '0';
++        if (magnitude > (limit - digit) / 10) return false;
++        magnitude = magnitude * 10 + digit;
++        ++index;
++    }
++    *value = qint32(negative ? -qint64(magnitude) : qint64(magnitude));
++    return true;
++}
++
++qint32 originalSampleNumber(const QString &text)
++{
++    // 原MinGW32的toULong与Qt toUInt同为32位无符号范围，失败均为0。
++    // 合法高半区按原Win32二进制补码落int32，避免ARM64 unsigned long变成64位。
++    const quint32 value = text.toUInt();
++    return value <= quint32(2147483647u) ? qint32(value) : qint32(qint64(value) - qint64(4294967296LL));
++}
++
++OriginalLisPatientChanges patientChanges(const OriginalLisPatientValue &before, const OriginalLisPatientValue &after)
++{
++    OriginalLisPatientChanges result;
++    result.bedNumber = before.bedNumber != after.bedNumber; result.name = before.name != after.name;
++    result.sex = before.sex != after.sex; result.age = before.age != after.age;
++    result.sampleNumber = before.sampleNumber != after.sampleNumber; result.barcode = before.barcode != after.barcode;
++    result.registrationTime = before.registrationTime != after.registrationTime; result.remark = before.remark != after.remark;
++    result.checker = before.checker != after.checker; result.department = before.department != after.department;
++    return result;
++}
++}
++
++OriginalLisApplicationPlan buildOriginalLisApplicationPlan(const OriginalLisDsrFields &decoded,
++    const OriginalLisHoleValue &oldHole, const OriginalLisMappingProjects &projects)
++{
++    const auto &header = decoded.header;
++    const auto &source = header.source;
++    if (decoded.state != OriginalLisDsrState::FieldsReady || header.state != OriginalLisHeaderState::Ready
++        || header.kind != OriginalLisReplyKind::Dsr || header.responseCode != QStringLiteral("OK"))
++        return rejected(QStringLiteral("decoded"), QStringLiteral("输入不是原成功DSR字段值；未把拒绝、非OK或其他消息变成空任务成功。"));
++    if (!source.profile || !source.profile->matches(source.configuration)
++        || source.profile->sequenceNumber() != header.sequenceNumberSnapshot
++        || source.profile->originalRoot() != oldHole.originalRoot)
++        return rejected(QStringLiteral("source"), QStringLiteral("字段、原配置快照或原资料根不一致；没有改读当前配置。"));
++    if (source.body.size() > OriginalLisMaximumBodyBytes || source.text.size() > OriginalLisMaximumTextCodeUnits
++        || header.segments.size() < 5 || header.segments.size() > OriginalLisMaximumSegments
++        || decoded.projects.size() > OriginalLisMaximumProjectItems)
++        return rejected(QStringLiteral("decoded"), QStringLiteral("输入超出冻结字段层的结构预算，未因FieldsReady枚举而跳过大小检查。"));
++    if (projects.size() > OriginalLisMaximumMappingProjects)
++        return rejected(QStringLiteral("projects"), QStringLiteral("有序映射项目超过本地4096项预算。"));
++    qint64 mappingItems = 0;
++    for (const auto &project : projects)
++    {
++        const qint64 items = qint64(project.resultLisCodes.size()) + qint64(project.sampleRates.size());
++        if (items > OriginalLisMaximumMappingItems - mappingItems)
++            return rejected(QStringLiteral("projects"), QStringLiteral("结果代码与稀释项合计超过本地16384项预算。"));
++        mappingItems += items;
++    }
++    // 输入一账：项目快照、旧孔、解码文字及原正文都保守累计；共享副本也按逻辑内容计费。
++    TextBudget input(OriginalLisMaximumPlanInputBytes);
++    if (!addHole(input, oldHole) || !addDecoded(input, decoded))
++        return rejected(QStringLiteral("input"), QStringLiteral("旧孔或解码输入超过本地合计4MiB文字/原正文预算。"));
++    for (const auto &project : projects)
++        if (!addProject(input, project))
++            return rejected(QStringLiteral("input"), QStringLiteral("项目快照加入后超过本地输入合计4MiB预算。"));
++
++    // 一次索引，保原名称首匹配、无名称匹配时结果代码的末匹配；索引不决定遍历顺序。
++    QMap<QString, int> nameFirst, codeLast, informationFirst;
++    QVector<QString> defaultRates(projects.size());
++    for (int index = 0; index < projects.size(); ++index)
++    {
++        const auto &project = projects.at(index);
++        if (!nameFirst.contains(project.name)) nameFirst.insert(project.name, index);
++        if (!informationFirst.contains(project.informationName)) informationFirst.insert(project.informationName, index);
++        for (const auto &code : project.resultLisCodes) codeLast.insert(code, index);
++        for (const auto &rate : project.sampleRates)
++            if (rate.defaultOption) { defaultRates[index] = rate.rate; break; }
++    }
++
++    OriginalLisApplicationPlan plan;
++    plan.configuration = source.configuration; plan.profile = source.profile;
++    plan.generation = source.generation; plan.peer = source.peer; plan.controlId = header.controlId;
++    plan.after = oldHole;
++    auto &patient = plan.after.patient;
++    patient.bedNumber = decoded.patient.bedNumber; patient.name = decoded.patient.name;
++    patient.sex = decoded.patient.sex == QStringLiteral("M") ? 0 : decoded.patient.sex == QStringLiteral("F") ? 1 : -1;
++    if (!originalAge(decoded.patient.age, &patient.age))
++        return rejected(QStringLiteral("PID.30"), QStringLiteral("年龄十进制前缀超出原int32可表示范围；原atoi无可靠成功语义，本片安全拒绝，不钳位或补0。"));
++    patient.sampleNumber = originalSampleNumber(decoded.order.sampleNumber);
++    patient.barcode = decoded.order.barcode;
++    patient.registrationTime = QDateTime::fromString(decoded.order.registrationTime);
++    patient.remark = decoded.order.remark; patient.checker = decoded.order.checker;
++    patient.department = decoded.order.department;
++    plan.patientChanged = patientChanges(oldHole.patient, patient);
++    int repeats = decoded.order.repeatTimes.toInt();
++    if (repeats < 1) repeats = 1; // 原Qt整串失败/越界返回0，也按此变成1。
++
++    // 先计实际旧孔；命中时在赋值前更换这两笔费用，全未知时不计未发生的序号/条码变化。
++    const QString returnedNumber = QString::number(patient.sampleNumber);
++    TextBudget output(OriginalLisMaximumPlanOutputBytes);
++    if (!addIdentity(output, plan.configuration) || !addProfile(output, plan.profile)
++        || !output.add(plan.controlId) || !addHole(output, plan.after))
++        return rejected(QStringLiteral("output"), QStringLiteral("患者、旧孔或来源文字超过本地输出4MiB预算。"));
++
++    std::string previousCode;
++    bool firstCode = true;
++    for (const auto &item : decoded.projects)
++    {
++        const std::string code = item.code.toStdString();
++        if (!firstCode && !(previousCode < code))
++            return rejected(QStringLiteral("DSP.3"), QStringLiteral("输入分项不是冻结codec的唯一UTF8字节顺序，未重新排序或覆盖手工改写值。"));
++        previousCode = code; firstCode = false;
++        auto named = nameFirst.constFind(item.code);
++        int selected = -1;
++        if (named != nameFirst.cend()) selected = named.value();
++        else
++        {
++            const auto coded = codeLast.constFind(item.code);
++            if (coded != codeLast.cend()) selected = coded.value();
++        }
++        if (selected < 0 || projects.at(selected).name.isEmpty())
++        { ++plan.ignoredUnknownProjects; continue; }
++        const QString &name = projects.at(selected).name;
++        if (plan.tasks.contains(name)) { ++plan.ignoredDuplicateProjects; continue; }
++        // 原另按projectBase[project_en_name]首查资料；不把它暗当project_name字段。
++        const auto foundInformation = informationFirst.constFind(name);
++        const int information = foundInformation == informationFirst.cend() ? -1 : foundInformation.value();
++        OriginalLisPlannedTask task;
++        task.projectName = name; task.repeats = repeats;
++        if (information >= 0)
++        {
++            const auto &project = projects.at(information);
++            task.projectInformationFound = true; task.projectId = project.projectId;
++            task.originalFile = project.originalFile; task.originalFingerprint = project.originalFingerprint;
++            task.defaultRate = defaultRates.at(information);
++        } // 未查到时保留原空ProjectInformation的默认稀释/元数据，不替换为别的项目。
++        if (plan.tasks.size() >= OriginalLisMaximumPlannedTasks)
++            return rejected(QStringLiteral("tasks"), QStringLiteral("输出任务计划超过本地4096项预算。"));
++        if (plan.after.internalSampleNumber != returnedNumber)
++        {
++            if (!output.replace(plan.after.internalSampleNumber, returnedNumber))
++                return rejected(QStringLiteral("output"), QStringLiteral("原孔内部序号更新后超过本地输出4MiB预算。"));
++            plan.after.internalSampleNumber = returnedNumber; plan.holeAssigned.internalSampleNumber = true;
++        }
++        if (plan.after.barcode != patient.barcode)
++        {
++            if (!output.replace(plan.after.barcode, patient.barcode))
++                return rejected(QStringLiteral("output"), QStringLiteral("原孔条码更新后超过本地输出4MiB预算。"));
++            plan.after.barcode = patient.barcode; plan.holeAssigned.barcode = true;
++        }
++        if (!output.add(name) || !output.add(task.projectName) || !output.add(task.originalFile)
++            || !output.add(task.originalFingerprint) || !output.add(task.defaultRate))
++            return rejected(QStringLiteral("output"), QStringLiteral("项目任务加入后超过本地输出4MiB文字预算。"));
++        if (plan.scalarRepeatTotal > std::numeric_limits<qint64>::max() - qint64(repeats))
++            return rejected(QStringLiteral("tasks"), QStringLiteral("重复次数标量总数不可表示，未展开或截短。"));
++        plan.tasks.insert(name, task); plan.scalarRepeatTotal += repeats;
++        // 这些赋值原本位于实际命中且未重复的循环内；全未知时一个也不发生。
++        if (header.applicationAcknowledgmentType.contains(QStringLiteral("0")))
++        { plan.after.sampleType = 0; plan.holeAssigned.sampleType = true; }
++        plan.after.needleType = 1; plan.holeAssigned.needleType = true;
++        plan.after.bottleType = 0; plan.holeAssigned.bottleType = true;
++    }
++    // 原setHoleTask始终替换，随后从新任务计算孔状态；空列表为None，非空Idle任务为Ready。
++    plan.after.taskState = plan.tasks.isEmpty() ? OriginalLisHoleTaskState::None : OriginalLisHoleTaskState::Ready;
++    plan.holeAssigned.taskState = true;
++    plan.holeChanged.sampleType = oldHole.sampleType != plan.after.sampleType;
++    plan.holeChanged.needleType = oldHole.needleType != plan.after.needleType;
++    plan.holeChanged.bottleType = oldHole.bottleType != plan.after.bottleType;
++    plan.holeChanged.internalSampleNumber = oldHole.internalSampleNumber != plan.after.internalSampleNumber;
++    plan.holeChanged.barcode = oldHole.barcode != plan.after.barcode;
++    plan.holeChanged.taskState = oldHole.taskState != plan.after.taskState;
++    plan.assignPatientFields = true; plan.replaceAllTasks = true;
++    plan.describeMaxAfterMemory = true; plan.describeAckRequestAfterMax = true;
++    plan.inputTextBytes = input.used(); plan.outputTextBytes = output.used();
++    plan.state = OriginalLisPlanState::Prepared;
++    return plan;
++}
++}
+diff --git a/06_programs/sn100_host/lis_business/original_lis_application_plan.h b/06_programs/sn100_host/lis_business/original_lis_application_plan.h
+new file mode 100644
+index 0000000..8482bfe
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_application_plan.h
+@@ -0,0 +1,109 @@
++#ifndef SN100_ORIGINAL_LIS_APPLICATION_PLAN_H
++#define SN100_ORIGINAL_LIS_APPLICATION_PLAN_H
++
++#include "original_lis_download_types.h"
++#include <QDateTime>
++#include <QMap>
++
++namespace Sn100Lis
++{
++// 新本地资源预算，不是原协议/临床范围，也不是进程RSS上限。
++constexpr int OriginalLisMaximumMappingProjects = 4096;
++constexpr int OriginalLisMaximumMappingItems = 16384; // 结果代码和稀释项合计。
++constexpr int OriginalLisMaximumPlannedTasks = 4096;
++constexpr qint64 OriginalLisMaximumPlanInputBytes = 4 * 1048576;
++constexpr qint64 OriginalLisMaximumPlanOutputBytes = 4 * 1048576;
++
++enum class OriginalLisPlanState { Rejected, Prepared };
++enum class OriginalLisHoleTaskState { None, Ready, Testing, Finished, Error };
++
++// 仅包含原DSR接收器会写的患者字段；其他报告字段由拥有者原样保留。
++struct OriginalLisPatientValue
++{
++    QString bedNumber, name;
++    int sex = -1; // 原Unknown=-1、Man=0、Woman=1。
++    qint32 age = 0, sampleNumber = 0;
++    QString barcode;
++    QDateTime registrationTime; // 原无格式fromString结果，可无效，不补当前时间。
++    QString remark, checker, department;
++};
++
++struct OriginalLisHoleValue
++{
++    QString originalRoot, rackInstance, rack;
++    int hole = 0;
++    OriginalLisPatientValue patient;
++    QString internalSampleNumber, barcode; // 与patient中的sn/条码不是同一赋值阶段。
++    int sampleType = 0; // 原普通0、校准1、质控2。
++    int needleType = 1; // 原FullNeedle=0、MicroNeedle=1。
++    int bottleType = 1; // 原Tube=0、MicroCup=1；调用方传旧实际值，不采用此默认作来源。
++    OriginalLisHoleTaskState taskState = OriginalLisHoleTaskState::None;
++};
++
++struct OriginalLisMappingRate
++{
++    QString rate;
++    int defaultOption = 0; // 保留原toInt后是否非零，不按启用状态改选。
++};
++
++// 调用方按原项目遍历顺序提供完整映射集合，不预滤enabled。
++struct OriginalLisMappingProject
++{
++    qint64 projectId = 0;
++    QString name; // 原project_name，供DSR名称/代码映射。
++    QString informationName; // 原projectBase[project_en_name]，供随后getProjectInformation首查。
++    QString originalFile, originalFingerprint;
++    QStringList resultLisCodes;
++    QList<OriginalLisMappingRate> sampleRates;
++};
++using OriginalLisMappingProjects = QList<OriginalLisMappingProject>;
++
++struct OriginalLisPatientChanges
++{
++    bool bedNumber = false, name = false, sex = false, age = false, sampleNumber = false;
++    bool barcode = false, registrationTime = false, remark = false, checker = false, department = false;
++};
++
++struct OriginalLisHoleChanges
++{
++    bool sampleType = false, needleType = false, bottleType = false;
++    bool internalSampleNumber = false, barcode = false, taskState = false;
++};
++
++struct OriginalLisPlannedTask
++{
++    qint64 projectId = 0;
++    QString projectName, originalFile, originalFingerprint, defaultRate;
++    bool projectInformationFound = false; // 原按名字查不到会用空ProjectInformation，不改为拒绝。
++    int repeats = 1; // 单个标量；原OBR-9转换，不截99，不据此分配列表或任务号。
++    // 原每次测试均Idle；实际展开和资源准入仍归任务拥有者。
++};
++
++struct OriginalLisApplicationPlan
++{
++    OriginalLisPlanState state = OriginalLisPlanState::Rejected;
++    ConfigurationIdentity configuration;
++    ReceiveProfilePtr profile;
++    quint64 generation = 0, peer = 0;
++    QString controlId;
++    OriginalLisHoleValue after;
++    OriginalLisPatientChanges patientChanged;
++    OriginalLisHoleChanges holeAssigned, holeChanged;
++    // Prepared时始终替换这些患者字段及整份任务；空任务也必须替换，最终None。
++    bool assignPatientFields = false, replaceAllTasks = false;
++    // 只描述未来原顺序，不证明内存已应用/MAX已发生，也不授权生成/发送ACK。
++    bool describeMaxAfterMemory = false, describeAckRequestAfterMax = false;
++    QMap<QString, OriginalLisPlannedTask> tasks; // 原sampleTest按QString项目名排序。
++    int ignoredUnknownProjects = 0, ignoredDuplicateProjects = 0;
++    qint64 scalarRepeatTotal = 0;
++    qint64 inputTextBytes = 0, outputTextBytes = 0;
++    OriginalLisFieldError error;
++};
++
++// 输入须为冻结codec未经改写的Ready/FieldsReady及旧孔/有序项目值。
++// 本函数只准备变化计划，不核实时首匹配/R1/claim、连接、SQL或应用资格。
++OriginalLisApplicationPlan buildOriginalLisApplicationPlan(const OriginalLisDsrFields &decoded,
++    const OriginalLisHoleValue &oldHole, const OriginalLisMappingProjects &projects);
++}
++
++#endif
+diff --git a/06_programs/sn100_host/lis_business/original_lis_download_ack.cpp b/06_programs/sn100_host/lis_business/original_lis_download_ack.cpp
+new file mode 100644
+index 0000000..d45880b
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_download_ack.cpp
+@@ -0,0 +1,69 @@
++#include "original_lis_download_ack.h"
++
++#include <QVector>
++#include <initializer_list>
++
++namespace Sn100Lis
++{
++namespace
++{
++OriginalLisDownloadAck rejected(const QString &field, const QString &detail)
++{
++    OriginalLisDownloadAck result; result.error.field = field; result.error.detail = detail;
++    return result;
++}
++
++bool originalTimestampShape(const QString &text)
++{
++    if (text.size() != 18 || text.at(14) != QChar('.')) return false;
++    for (int index = 0; index < text.size(); ++index)
++        if (index != 14 && (text.at(index) < QChar('0') || text.at(index) > QChar('9'))) return false;
++    return true; // 只核显式输入格式，不从这里证明实际时刻或应用阶段。
++}
++}
++
++OriginalLisDownloadAck buildOriginalLisDownloadAck(const ConfigurationIdentity &configuration,
++    const ReceiveProfilePtr &profile, const QString &receivedControlId, const OriginalLisDownloadAckTimes &times)
++{
++    if (!profile || !profile->matches(configuration))
++        return rejected(QStringLiteral("source"), QStringLiteral("缺少同配置身份的原快照，没有重读当前序列号。"));
++    if (!originalTimestampShape(times.messageTimestampAfterApplication))
++        return rejected(QStringLiteral("MSH.7"), QStringLiteral("调用点须显式提供应用/MAX之后的yyyyMMddHHmmss.zzz时间；没有补当前时间。"));
++    // 原ACK()为空，之后显式构造MSH/MSA；不是ACK(request)交换双方字段。
++    QVector<QString> msh(21), msa(3);
++    msh[0] = QStringLiteral("MSH"); msh[1] = QStringLiteral("|"); msh[2] = QStringLiteral("^~\\&");
++    msh[3] = profile->sequenceNumber(); msh[7] = times.messageTimestampAfterApplication;
++    msh[9] = QStringLiteral("ACK^Q03"); msh[10] = receivedControlId;
++    msh[11] = QStringLiteral("P"); msh[12] = QStringLiteral("2.3.1");
++    msh[16] = QStringLiteral("0"); msh[18] = QStringLiteral("UNICODE");
++    msa[0] = QStringLiteral("MSA"); msa[1] = QStringLiteral("AA"); msa[2] = receivedControlId;
++    qint64 codeUnits = 0;
++    for (const auto *segment : {&msh, &msa})
++    {
++        const int first = segment == &msh ? 2 : 1;
++        const qint64 fixed = qint64(segment->at(0).size()) + 1 + segment->size() - first;
++        if (fixed > OriginalLisMaximumAckTextBytes / 2 - codeUnits)
++            return rejected(QStringLiteral("ACK"), QStringLiteral("ACK正文超过本地4MiB文字预算，未截断。"));
++        codeUnits += fixed;
++        for (int index = first; index < segment->size(); ++index)
++        {
++            if (qint64(segment->at(index).size()) > OriginalLisMaximumAckTextBytes / 2 - codeUnits)
++                return rejected(QStringLiteral("ACK"), QStringLiteral("ACK字段超过本地4MiB文字预算，未截断。"));
++            codeUnits += segment->at(index).size();
++        }
++    }
++    QString body; body.reserve(int(codeUnits));
++    for (const auto *segment : {&msh, &msa})
++    {
++        const int first = segment == &msh ? 2 : 1;
++        body += segment->at(0);
++        for (int index = first; index < segment->size(); ++index)
++        { body += QChar('|'); body += segment->at(index); }
++        body += QChar('\r'); // MSH20为空也保留最后分隔符；每段只加CR，不封MLLP。
++    }
++    OriginalLisDownloadAck result;
++    result.body = QString::fromStdString(body.toStdString()); // 原UTF8往返，不加转义/编码猜测。
++    result.state = OriginalLisAckState::Prepared;
++    return result;
++}
++}
+diff --git a/06_programs/sn100_host/lis_business/original_lis_download_ack.h b/06_programs/sn100_host/lis_business/original_lis_download_ack.h
+new file mode 100644
+index 0000000..ca3b323
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_download_ack.h
+@@ -0,0 +1,31 @@
++#ifndef SN100_ORIGINAL_LIS_DOWNLOAD_ACK_H
++#define SN100_ORIGINAL_LIS_DOWNLOAD_ACK_H
++
++#include "original_lis_download_types.h"
++
++namespace Sn100Lis
++{
++constexpr qint64 OriginalLisMaximumAckTextBytes = 4 * 1048576;
++enum class OriginalLisAckState { Rejected, Prepared };
++
++struct OriginalLisDownloadAckTimes
++{
++    // 未来真实内存应用完成、MAX之后的MSH构造时刻：yyyyMMddHHmmss.zzz。
++    // 由当次调用点显式提供；这里不取当前时间，也不证明该阶段真实发生。
++    QString messageTimestampAfterApplication;
++};
++
++struct OriginalLisDownloadAck
++{
++    OriginalLisAckState state = OriginalLisAckState::Rejected;
++    QString body; // 仅原MSH/MSA正文及段CR，无MLLP、无编码或发送。
++    OriginalLisFieldError error;
++};
++
++// 与ApplicationPlan独立；不能从“计划已准备”推导调用时机或发送许可。
++OriginalLisDownloadAck buildOriginalLisDownloadAck(const ConfigurationIdentity &configuration,
++    const ReceiveProfilePtr &profile, const QString &receivedControlId,
++    const OriginalLisDownloadAckTimes &times);
++}
++
++#endif
+diff --git a/06_programs/sn100_host/lis_business/original_lis_download_codec.cpp b/06_programs/sn100_host/lis_business/original_lis_download_codec.cpp
+new file mode 100644
+index 0000000..f9ab0b1
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_download_codec.cpp
+@@ -0,0 +1,217 @@
++#include "original_lis_download_codec.h"
++
++#include <limits>
++#include <map>
++#include <stdexcept>
++#include <string>
++
++namespace Sn100Lis
++{
++namespace
++{
++void fail(OriginalLisFieldError *error, const QString &field, const QString &detail)
++{
++    error->field = field;
++    error->detail = detail;
++}
++
++bool splitSegments(const QString &text, QStringList *segments, OriginalLisFieldError *error)
++{
++    int begin = 0;
++    for (int index = 0; index <= text.size(); ++index)
++    {
++        if (index < text.size() && text.at(index) != QChar('\r') && text.at(index) != QChar('\n')) continue;
++        if (index > begin)
++        {
++            if (segments->size() >= OriginalLisMaximumSegments)
++            {
++                fail(error, QStringLiteral("message"), QStringLiteral("消息段数超过本地64段预算，未截断处理。"));
++                return false;
++            }
++            segments->append(text.mid(begin, index - begin));
++        }
++        begin = index + 1;
++    }
++    return true;
++}
++
++bool fieldsAt(const OriginalLisReplyHeader &header, int segment, int lastRequiredField,
++              QStringList *fields, OriginalLisFieldError *error)
++{
++    if (segment >= header.segments.size())
++    {
++        fail(error, QStringLiteral("segment[%1]").arg(segment), QStringLiteral("原读取位置的消息段缺失。"));
++        return false;
++    }
++    const QString &text = header.segments.at(segment);
++    QString field;
++    for (QChar character : text)
++    {
++        if (character == QChar('|'))
++        {
++            fields->append(field);
++            field.clear();
++            if (fields->size() > OriginalLisMaximumFieldsPerSegment) break;
++        }
++        else field.append(character);
++    }
++    // 原Segment只在尾项非空时再入列，不能用KeepEmptyParts多保留一个尾空项。
++    if (!field.isEmpty()) fields->append(field);
++    if (!fields->isEmpty() && fields->first() == QStringLiteral("MSH"))
++        fields->insert(1, QStringLiteral("|"));
++    if (fields->size() > OriginalLisMaximumFieldsPerSegment)
++    {
++        fail(error, QStringLiteral("segment[%1]").arg(segment), QStringLiteral("消息字段超过本地128项预算，未截断处理。"));
++        return false;
++    }
++    if (fields->size() <= lastRequiredField)
++    {
++        fail(error, QStringLiteral("segment[%1].field[%2]").arg(segment).arg(lastRequiredField),
++             QStringLiteral("原版将越界读取的字段缺失，未补空后当成功。"));
++        return false;
++    }
++    return true;
++}
++
++void splitPair(const QString &text, QString *first, QString *second)
++{
++    // 原splitStringLis保留^尾空项；空串也是一个空项，恰好两项时才采用。
++    const int separator = text.indexOf(QChar('^'));
++    if (separator >= 0 && text.indexOf(QChar('^'), separator + 1) < 0)
++    {
++        *first = text.left(separator);
++        *second = text.mid(separator + 1);
++    }
++}
++}
++
++OriginalLisReplyHeader decodeOriginalLisReplyHeader(const ReceivedMessage &message,
++                                                   const QString &sequenceNumberSnapshot)
++{
++    OriginalLisReplyHeader result;
++    result.source = message;
++    result.sequenceNumberSnapshot = sequenceNumberSnapshot;
++    if (message.body.size() > OriginalLisMaximumBodyBytes
++            || message.text.size() > OriginalLisMaximumTextCodeUnits)
++    {
++        fail(&result.error, QStringLiteral("message"), QStringLiteral("正文超过本地1MiB字节或1048576个UTF16字值预算，未拆成部分成功。"));
++        return result;
++    }
++    // 原receiver把QString转toStdString后交Message；此处保持同一UTF8往返。
++    // 不重新从body选编码，也不用QByteArray重载在本阶段另做NUL截断。
++    const QString normalized = QString::fromStdString(message.text.toStdString());
++    if (!splitSegments(normalized, &result.segments, &result.error)) return result;
++    QStringList msh;
++    if (!fieldsAt(result, 0, 16, &msh, &result.error)) return result;
++    result.sendingApplication = msh.at(3);
++    result.messageType = msh.at(9);
++    result.controlId = msh.at(10);
++    result.version = msh.at(12);
++    result.applicationAcknowledgmentType = msh.at(16);
++    if (result.version != QStringLiteral("2.3.1"))
++    {
++        fail(&result.error, QStringLiteral("MSH.12"), QStringLiteral("原接收规则要求版本逐字为2.3.1。"));
++        return result;
++    }
++    if (!sequenceNumberSnapshot.contains(result.sendingApplication))
++    {
++        fail(&result.error, QStringLiteral("MSH.3"), QStringLiteral("原配置序列号不包含收到的发送方，未反转或改成相等判断。"));
++        return result;
++    }
++    QStringList msa;
++    if (!fieldsAt(result, 1, 2, &msa, &result.error)) return result;
++    result.responseCode = msa.at(1);
++    result.responseControlId = msa.at(2);
++    if (result.messageType.contains(QStringLiteral("ACK"))) result.kind = OriginalLisReplyKind::Ack;
++    else if (result.messageType.contains(QStringLiteral("DSR"))) result.kind = OriginalLisReplyKind::Dsr;
++    result.state = OriginalLisHeaderState::Ready;
++    return result;
++}
++
++OriginalLisDsrFields decodeOriginalLisDsrFields(const OriginalLisReplyHeader &header)
++{
++    OriginalLisDsrFields result;
++    result.header = header;
++    if (header.state != OriginalLisHeaderState::Ready) return result;
++    if (header.kind != OriginalLisReplyKind::Dsr)
++    {
++        result.state = OriginalLisDsrState::NotDsr;
++        return result;
++    }
++    if (header.responseCode != QStringLiteral("OK"))
++    {
++        // 原非OK分支不读取患者/项目，也不要求五段；NF是否告警由后续业务处理。
++        result.state = OriginalLisDsrState::NegativeResponse;
++        return result;
++    }
++    result.state = OriginalLisDsrState::Rejected;
++    QStringList pid, obr, dsp;
++    // 按原段位置读，不擅自增加段名校验；OBR原resetIndex(0)，所以用直接字段号。
++    if (!fieldsAt(header, 2, 30, &pid, &result.error)
++            || !fieldsAt(header, 3, 17, &obr, &result.error)
++            || !fieldsAt(header, 4, 3, &dsp, &result.error)) return result;
++    result.patient.patientIdentifier = pid.at(3);
++    result.patient.bedNumber = pid.at(4);
++    result.patient.name = pid.at(5);
++    result.patient.wardAndRoom = pid.at(6);
++    splitPair(result.patient.wardAndRoom, &result.patient.ward, &result.patient.room);
++    result.patient.sex = pid.at(8);
++    result.patient.ageAndUnit = pid.at(30);
++    splitPair(result.patient.ageAndUnit, &result.patient.age, &result.patient.ageUnit);
++    result.order.barcode = obr.at(2);
++    result.order.sampleNumber = obr.at(3);
++    result.order.urgent = obr.at(5);
++    result.order.registrationTime = obr.at(7);
++    result.order.repeatTimes = obr.at(9);
++    result.order.rackAndHole = obr.at(10);
++    splitPair(result.order.rackAndHole, &result.order.rack, &result.order.hole);
++    result.order.dilution = obr.at(12);
++    result.order.remark = obr.at(13);
++    result.order.specimenReceivedTime = obr.at(14);
++    result.order.specimenType = obr.at(15);
++    result.order.checker = obr.at(16);
++    result.order.department = obr.at(17);
++    result.declaredProjectCount = dsp.at(2);
++    result.projectText = dsp.at(3);
++    if (result.projectText.count(QChar('^')) >= OriginalLisMaximumProjectItems)
++    {
++        fail(&result.error, QStringLiteral("DSP.3"), QStringLiteral("项目分项超过本地4096项预算，未截断或继续建任务。"));
++        return result;
++    }
++    const QStringList items = result.projectText.split(QChar('^'), Qt::KeepEmptyParts);
++    std::map<std::string, OriginalLisDspProject> projects;
++    static_assert(std::numeric_limits<int>::is_signed && std::numeric_limits<int>::digits == 31,
++                  "Original LIS DSP stoi requires a signed 32-bit int");
++    for (const QString &item : items)
++    {
++        const int separator = item.indexOf(QChar('&'));
++        if (separator < 0 || item.indexOf(QChar('&'), separator + 1) >= 0)
++        {
++            ++result.ignoredMalformedItems;
++            continue;
++        }
++        OriginalLisDspProject project;
++        // 与原&恰好拆两项相同，先数分隔符，避免异常长串生成大量临时字段。
++        project.code = item.left(separator); project.countText = item.mid(separator + 1);
++        try
++        {
++            // 原stoi允许前缀数字；重复码只有后一次成功转换才覆盖。
++            project.count = std::stoi(project.countText.toStdString());
++            projects[project.code.toStdString()] = project;
++        }
++        catch (const std::invalid_argument &)
++        {
++            ++result.ignoredInvalidCounts;
++        }
++        catch (const std::out_of_range &)
++        {
++            // 原版未捕获此异常，没有可沿用的成功规则；明确拒绝，不补0或继续建任务。
++            fail(&result.error, QStringLiteral("DSP.3"), QStringLiteral("原DSP次数超出32位stoi范围，未把原未处理异常改作正常次数。"));
++            return result;
++        }
++    }
++    for (const auto &project : projects) result.projects.append(project.second);
++    result.state = OriginalLisDsrState::FieldsReady;
++    return result;
++}
++}
+diff --git a/06_programs/sn100_host/lis_business/original_lis_download_codec.h b/06_programs/sn100_host/lis_business/original_lis_download_codec.h
+new file mode 100644
+index 0000000..1a2a28b
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_download_codec.h
+@@ -0,0 +1,22 @@
++#ifndef SN100_ORIGINAL_LIS_DOWNLOAD_CODEC_H
++#define SN100_ORIGINAL_LIS_DOWNLOAD_CODEC_H
++
++#include "original_lis_download_types.h"
++
++namespace Sn100Lis
++{
++// 本地解析预算，不是原协议字段上限；超限明确拒绝，不截断后报解码成功。
++constexpr int OriginalLisMaximumBodyBytes = 1048576;
++constexpr int OriginalLisMaximumTextCodeUnits = 1048576;
++constexpr int OriginalLisMaximumSegments = 64;
++constexpr int OriginalLisMaximumFieldsPerSegment = 128;
++constexpr int OriginalLisMaximumProjectItems = 4096;
++
++// 输入必须来自现有传输的完整ReceivedMessage，text已经按原配置解码、去MLLP边界。
++// 原业务先核消息头，再定位孔/判状态/置R1，最后才读DSR正文；两个阶段不能合成保存成功bool。
++// 本函数不选择当前连接，sequenceNumberSnapshot必须由调用方按原配置身份提供。
++OriginalLisReplyHeader decodeOriginalLisReplyHeader(const ReceivedMessage &message,
++                                                   const QString &sequenceNumberSnapshot);
++OriginalLisDsrFields decodeOriginalLisDsrFields(const OriginalLisReplyHeader &header);
++}
++#endif
+diff --git a/06_programs/sn100_host/lis_business/original_lis_download_types.h b/06_programs/sn100_host/lis_business/original_lis_download_types.h
+new file mode 100644
+index 0000000..b025b57
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_download_types.h
+@@ -0,0 +1,91 @@
++#ifndef SN100_ORIGINAL_LIS_DOWNLOAD_TYPES_H
++#define SN100_ORIGINAL_LIS_DOWNLOAD_TYPES_H
++
++#include "lis_transport/lis_connection_values.h"
++#include <QList>
++#include <QStringList>
++
++namespace Sn100Lis
++{
++// 这里只保存原消息的值，不是患者记录、孔位、任务或成功保存回执。
++enum class OriginalLisReplyKind { Other, Ack, Dsr };
++enum class OriginalLisHeaderState { Rejected, Ready };
++enum class OriginalLisDsrState { HeaderNotReady, NotDsr, NegativeResponse, Rejected, FieldsReady };
++
++struct OriginalLisFieldError
++{
++    QString field;
++    QString detail;
++};
++
++struct OriginalLisReplyHeader
++{
++    OriginalLisHeaderState state = OriginalLisHeaderState::Rejected;
++    OriginalLisReplyKind kind = OriginalLisReplyKind::Other;
++    ReceivedMessage source; // 原配置版本/令牌/指纹、generation、peer、body和text，不重贴新身份。
++    QString sequenceNumberSnapshot; // 调用方须提供与source.configuration对应的原配置值。
++    QStringList segments; // 原Message按CR/LF拆分并跳过空段后的文字。
++    QString sendingApplication; // MSH-3。
++    QString messageType; // MSH-9；原规则先contains(ACK)，再contains(DSR)。
++    QString controlId; // MSH-10；原定位依据，不是全局唯一ID。
++    QString version; // MSH-12。
++    QString applicationAcknowledgmentType; // MSH-16；保留原自定义样本标记，不改成标准推断。
++    QString responseCode; // MSA-1；DSR的OK/NF与上传AA不是同一阶段。
++    QString responseControlId; // MSA-2；原接收器读了它，但定位不用它。
++    OriginalLisFieldError error;
++};
++
++struct OriginalLisPatientFields
++{
++    QString patientIdentifier; // PID-3，仅原解析，不在DSR接收器保存。
++    QString bedNumber; // PID-4。
++    QString name; // PID-5。
++    QString wardAndRoom; // PID-6原串。
++    QString ward, room; // 恰好两个^分项才赋值；原接收器未保存。
++    QString sex; // PID-8，M/F/其他到枚举的转换留给后续原业务。
++    QString ageAndUnit; // 实际PID-30；原getPatientAge(31)内部减1。
++    QString age, ageUnit; // 恰好两个^分项才赋值；本片不做atoi或猜年龄单位。
++};
++
++struct OriginalLisOrderFields
++{
++    QString barcode; // OBR-2，不能与内部样本序号合并。
++    QString sampleNumber; // OBR-3；原Win32 toULong→int32转换尚不在本片执行。
++    QString urgent; // OBR-5，只解析，原接收器未采用。
++    QString registrationTime; // OBR-7；原无格式fromString，不在这里替换或补当前时间。
++    QString repeatTimes; // OBR-9原串；后续原业务toInt后小于1取1，没有99上限。
++    QString rackAndHole; // OBR-10原串，仅用于原日志，不能改成定位依据。
++    QString rack, hole; // 恰好两个^分项才赋值。
++    QString dilution; // OBR-12，只解析，原接收器未采用。
++    QString remark; // OBR-13。
++    QString specimenReceivedTime; // OBR-14，只解析，原接收器未采用。
++    QString specimenType; // OBR-15，只解析，原接收器未采用。
++    QString checker; // OBR-16。
++    QString department; // OBR-17。
++};
++
++struct OriginalLisDspProject
++{
++    QString code; // 未映射的原代码；不能直接当projectId或基础project_lis_code。
++    QString countText; // 最后一次成功stoi的原串，诊断保留，不改写为整数文字。
++    int count = 0; // 原DSP解析值；接收器实际建任务时不用它，而用OBR-9。
++};
++
++struct OriginalLisDsrFields
++{
++    OriginalLisDsrState state = OriginalLisDsrState::HeaderNotReady;
++    OriginalLisReplyHeader header;
++    OriginalLisPatientFields patient;
++    OriginalLisOrderFields order;
++    QString declaredProjectCount; // DSP-2原串，原读到但不核项目数量。
++    QString projectText; // DSP-3原串。
++    QList<OriginalLisDspProject> projects; // 原std::map<string>字节顺序，重复码取最后成功值。
++    int ignoredMalformedItems = 0;
++    int ignoredInvalidCounts = 0;
++    OriginalLisFieldError error;
++};
++}
++
++Q_DECLARE_METATYPE(Sn100Lis::OriginalLisReplyHeader)
++Q_DECLARE_METATYPE(Sn100Lis::OriginalLisDsrFields)
++#endif
+diff --git a/06_programs/sn100_host/lis_business/original_lis_query.cpp b/06_programs/sn100_host/lis_business/original_lis_query.cpp
+new file mode 100644
+index 0000000..6ca89ad
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_query.cpp
+@@ -0,0 +1,77 @@
++#include "original_lis_query.h"
++
++#include <QVector>
++
++namespace Sn100Lis
++{
++namespace
++{
++constexpr int MshLastField = 20;
++constexpr int QrdLastField = 19;
++constexpr int QrfLastField = 19;
++
++QString segmentText(const QVector<QString> &fields, int firstField)
++{
++    QString text = fields.at(0);
++    for (int field = firstField; field < fields.size(); ++field)
++    {
++        text += QChar('|');
++        text += fields.at(field);
++    }
++    text += QChar('\r');
++    return text;
++}
++}
++
++OriginalLisQuery buildOriginalLisQuery(QString rackId, int holeNumber,
++    const QString &sampleBarcode, const OriginalLisQueryTimes &times)
++{
++    OriginalLisQuery query;
++    // 原Windows/MinGW32的toULong及后续算术为32位无符号数。
++    // ARM64的unsigned long为64位，不能直接照写而改变失败/边界输入的结果。
++    const quint32 control = times.controlHhmmss.toUInt() * quint32(100) + quint32(holeNumber);
++    query.lisCode = QString::number(control);
++
++    // MSH是消息头：原构造补到20，序列化从2开始，字段1只表示分隔符。
++    QVector<QString> msh(MshLastField + 1);
++    msh[0] = QStringLiteral("MSH");
++    msh[1] = QStringLiteral("|");
++    msh[2] = QStringLiteral("^~\\&");
++    msh[7] = times.messageTimestamp;
++    msh[9] = QStringLiteral("QRY^Q02");
++    msh[10] = query.lisCode;
++    msh[11] = QStringLiteral("P");
++    msh[12] = QStringLiteral("2.3.1");
++    msh[16] = QStringLiteral("0");
++    msh[18] = QStringLiteral("UNICODE");
++
++    // QRD是查询条件：原查询不填写设备序列号，也不因急诊更改D/N/T。
++    QVector<QString> qrd(QrdLastField + 1);
++    qrd[0] = QStringLiteral("QRD");
++    qrd[1] = times.queryTimestamp;
++    qrd[2] = QStringLiteral("BC");
++    qrd[3] = QStringLiteral("D");
++    qrd[4] = query.lisCode;
++    qrd[7] = QStringLiteral("RD");
++    qrd[8] = sampleBarcode;
++    qrd[10] = QString::number(rackId.remove(0, 1).toInt()) + QChar('^') + QString::number(holeNumber);
++    qrd[11] = QStringLiteral("N");
++    qrd[12] = QStringLiteral("T");
++
++    // QRF是时间条件：沿原整数除乘取日首，不用日期库重新解释或修正文字。
++    const qulonglong dayStart = times.filterStartNow.toULongLong() / 1000000 * 1000000;
++    QVector<QString> qrf(QrfLastField + 1);
++    qrf[0] = QStringLiteral("QRF");
++    qrf[2] = QString::number(dayStart);
++    qrf[3] = times.filterEndNow;
++    qrf[6] = QStringLiteral("RCT");
++    qrf[7] = QStringLiteral("COR");
++    qrf[8] = QStringLiteral("ALL");
++
++    const QString body = segmentText(msh, 2) + segmentText(qrd, 1) + segmentText(qrf, 1);
++    // 原各字段toStdString后拼接，再fromStdString。保留同一UTF8往返，
++    // 不以QByteArray重载提前截断NUL，不擅加字段转义或MLLP边界。
++    query.body = QString::fromStdString(body.toStdString());
++    return query;
++}
++}
+diff --git a/06_programs/sn100_host/lis_business/original_lis_query.h b/06_programs/sn100_host/lis_business/original_lis_query.h
+new file mode 100644
+index 0000000..ee1deeb
+--- /dev/null
++++ b/06_programs/sn100_host/lis_business/original_lis_query.h
+@@ -0,0 +1,32 @@
++#ifndef SN100_ORIGINAL_LIS_QUERY_H
++#define SN100_ORIGINAL_LIS_QUERY_H
++
++#include <QString>
++
++namespace Sn100Lis
++{
++// 原查询先后读取五次时钟，跨秒/跨日时可以不同；调用者按原顺序提供文字。
++// 本对象不读取系统时间，也不把五次取时合并成一次。
++struct OriginalLisQueryTimes
++{
++    QString controlHhmmss;       // 第一次：SystemCommon::getNow("%H%M%S")。
++    QString messageTimestamp;   // 第二次：MSH构造的yyyyMMddHHmmss.zzz本地时间。
++    QString queryTimestamp;     // 第三次：QRD构造的同格式本地时间。
++    QString filterStartNow;     // 第四次：getNow()的yyyyMMddHHmmss，原整数规则取日首。
++    QString filterEndNow;       // 第五次：另一次getNow()的yyyyMMddHHmmss，原样作为终点。
++};
++
++struct OriginalLisQuery
++{
++    QString body;               // 无MLLP头尾的正文；每段末尾保留CR，交传输层只封包一次。
++    QString lisCode;            // 原MSH-10/QRD-4控制号，不是传输层的递增请求编号。
++};
++
++// 对应原LisCommSetting::genLISFromSeverInfo的正文部分。
++// sampleBarcode是主控扫码条码，不是内部样本序号；此处不选孔、不校验状态、不置T1。
++// 保留原数字转换失败得到0的行为；调用者负责按原入口提供孔号和五个取时点。
++OriginalLisQuery buildOriginalLisQuery(QString rackId, int holeNumber,
++    const QString &sampleBarcode, const OriginalLisQueryTimes &times);
++}
++
++#endif
+diff --git a/06_programs/sn100_host/shell/build.sh b/06_programs/sn100_host/shell/build.sh
+index 63c7135..632ff96 100644
+--- a/06_programs/sn100_host/shell/build.sh
++++ b/06_programs/sn100_host/shell/build.sh
+@@ -264,6 +264,16 @@ headers+=("$program_dir/reagents/original_reagent_repository.h"
+     "$program_dir/reagents/original_reagent_probe.h"
+           "$program_dir/samples/original_detection_session.h"
+           "$program_dir/samples/original_task_codec.h")
++# LIS首片仅编译纯值准备和ACK正文，不新增生产接线或Qt元对象。
++sources+=("$program_dir/lis_business/original_lis_query.cpp"
++           "$program_dir/lis_business/original_lis_download_codec.cpp"
++           "$program_dir/lis_business/original_lis_application_plan.cpp"
++           "$program_dir/lis_business/original_lis_download_ack.cpp")
++headers+=("$program_dir/lis_business/original_lis_query.h"
++           "$program_dir/lis_business/original_lis_download_types.h"
++           "$program_dir/lis_business/original_lis_download_codec.h"
++           "$program_dir/lis_business/original_lis_application_plan.h"
++           "$program_dir/lis_business/original_lis_download_ack.h")
+ for input in "${sources[@]}" "${forms[@]}" "${headers[@]}" "${resource_files[@]}" "${helper_sources[@]}"; do
+     [[ -f $input ]] || { echo "Required ARM64 build input missing: $input" >&2; exit 1; }
+ done
+diff --git a/06_programs/sn100_host/shell/package_arm64.py b/06_programs/sn100_host/shell/package_arm64.py
+index 1b4181c..4068a9c 100644
+--- a/06_programs/sn100_host/shell/package_arm64.py
++++ b/06_programs/sn100_host/shell/package_arm64.py
+@@ -15,7 +15,7 @@ def sha(path):
+ 
+ def snapshot(program):
+     paths = []
+-    for name in ("shell", "data", "ui", "history", "projects", "reagents", "samples", "instrument", "quality_control", "calibration", "alarm_history", "lis_raw_inbox", "lis_transport", "resources", "original_files", "thirdparty/qtrpt"):
++    for name in ("shell", "data", "ui", "history", "projects", "reagents", "samples", "instrument", "quality_control", "calibration", "alarm_history", "lis_raw_inbox", "lis_transport", "lis_business", "resources", "original_files", "thirdparty/qtrpt"):
+         paths.extend(p for p in (program / name).rglob("*")
+                      if p.is_file() and p.suffix not in (".md", ".pyc")
+                      and "__pycache__" not in p.parts)
+diff --git a/06_programs/sn100_host/shell/shell.pri b/06_programs/sn100_host/shell/shell.pri
+index 2a1e055..f974694 100644
+--- a/06_programs/sn100_host/shell/shell.pri
++++ b/06_programs/sn100_host/shell/shell.pri
+@@ -60,6 +60,16 @@ HEADERS += $$PWD/lis_connection_observer_09.h
+ include($$PWD/../lis_transport/lis_transport.pri)
+ include($$PWD/../lis_raw_inbox/lis_raw_inbox.pri)
+ SOURCES += $$PWD/lis_raw_inbox_shell.cpp
++# LIS首片只登记纯报文与应用计划，不接生产查询、保存或发送入口。
++SOURCES += $$PWD/../lis_business/original_lis_query.cpp \
++           $$PWD/../lis_business/original_lis_download_codec.cpp \
++           $$PWD/../lis_business/original_lis_application_plan.cpp \
++           $$PWD/../lis_business/original_lis_download_ack.cpp
++HEADERS += $$PWD/../lis_business/original_lis_query.h \
++           $$PWD/../lis_business/original_lis_download_types.h \
++           $$PWD/../lis_business/original_lis_download_codec.h \
++           $$PWD/../lis_business/original_lis_application_plan.h \
++           $$PWD/../lis_business/original_lis_download_ack.h
+ # O11本地质控；真实测量/临床规则不进入此依赖闭包。
+ include($$PWD/../quality_control/qc_core.pri)
+ include($$PWD/../quality_control/qc_widgets.pri)

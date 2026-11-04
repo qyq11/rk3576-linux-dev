@@ -1,0 +1,579 @@
+diff --git a/06_programs/sn100_host/shell/build.sh b/06_programs/sn100_host/shell/build.sh
+--- a/06_programs/sn100_host/shell/build.sh
++++ b/06_programs/sn100_host/shell/build.sh
+@@ -97,6 +97,7 @@
+ sources+=("$module_dir/printer_shell.cpp" "$module_dir/printer_report_shell.cpp" "$program_dir/ui/frmprintersetting.cpp" "$program_dir/data/printer_settings_store.cpp")
+ sources+=("$module_dir/lis_shell.cpp" "$program_dir/ui/frmlissetting.cpp" "$program_dir/data/lis_settings_store.cpp" "$program_dir/data/serial_port_catalog.cpp")
+ sources+=("$program_dir/lis_transport/lis_mllp_codec.cpp" "$program_dir/lis_transport/lis_tcp_transport.cpp" "$program_dir/lis_transport/lis_connection_controller.cpp")
++sources+=("$module_dir/lis_keep_running_observation.cpp")
+ # 原报文辅助窗口只有文件/本地SQL；不引入LIS网络、ACK或任务映射。
+ sources+=("$module_dir/lis_raw_inbox_shell.cpp" "$program_dir/lis_raw_inbox/lis_dsr_raw.cpp"
+           "$program_dir/lis_raw_inbox/lis_inbox_store.cpp" "$program_dir/lis_raw_inbox/lis_inbox_page.cpp"
+@@ -174,6 +175,7 @@
+ headers+=("$module_dir/printer_report_shell.h" "$program_dir/ui/frmprintersetting.h" "$program_dir/data/printer_settings_store.h"
+            "$program_dir/ui/frmlissetting.h" "$program_dir/data/lis_settings_store.h" "$program_dir/data/serial_port_catalog.h")
+ headers+=("$program_dir/lis_transport/lis_tcp_transport.h" "$program_dir/lis_transport/lis_mllp_codec.h" "$program_dir/lis_transport/lis_connection_controller.h" "$program_dir/lis_transport/lis_connection_values.h")
++headers+=("$module_dir/lis_connection_observer_09.h")
+ headers+=("$program_dir/quality_control/qc_store.h" "$program_dir/quality_control/quality_control_page.h"
+           "$program_dir/quality_control/qc_history_core.h" "$program_dir/quality_control/qc_history_reply.h"
+           "$program_dir/quality_control/cus_quality_chart.h" "$program_dir/quality_control/qualitychart.h"
+diff --git a/06_programs/sn100_host/shell/lis_connection_observer_09.h b/06_programs/sn100_host/shell/lis_connection_observer_09.h
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/shell/lis_connection_observer_09.h
+@@ -0,0 +1,262 @@
++#ifndef SN100_LIS_CONNECTION_OBSERVER_09_H
++#define SN100_LIS_CONNECTION_OBSERVER_09_H
++
++#include "shell/frmmain.h"
++#include "shell/widgets/cusbadgebutton.h"
++#include "shell/widgets/cusview.h"
++#include "ui/frmlissetting.h"
++#include "lis_transport/lis_connection_controller.h"
++#include <QApplication>
++#include <QCryptographicHash>
++#include <QFrame>
++#include <QJsonArray>
++#include <QJsonObject>
++#include <QPointer>
++#include <QRegularExpression>
++#include <QStringList>
++#include <QThread>
++#include <memory>
++
++// 仅观察本次已授权的LIS连接。所有调用须在GUI线程；不改变配置或通信状态。
++// 原startup检查成功后调用一次：auto observer = LisConnectionObserver09::start(shell);
++// 观察结束保存snapshot并stopObserving；快照不证明应用已经退出或正常关闭。
++class LisConnectionObserver09
++{
++public:
++    static std::shared_ptr<LisConnectionObserver09> start(frmMain *shell)
++    {
++        const auto observer = std::shared_ptr<LisConnectionObserver09>(new LisConnectionObserver09);
++        auto *app = qobject_cast<QApplication *>(QCoreApplication::instance());
++        observer->app_ = app;
++        observer->shell_ = shell;
++        if (!app || QThread::currentThread() != app->thread())
++        {
++            observer->startError_ = QStringLiteral("LIS观察必须在实际QApplication所属GUI线程开始。");
++            return observer;
++        }
++        if (!shell || shell->thread() != app->thread())
++        {
++            observer->startError_ = QStringLiteral("缺少同GUI线程的正式主窗口。");
++            return observer;
++        }
++        const auto objects = app->findChildren<Sn100Lis::LisConnectionController *>(
++            QStringLiteral("originalLisConnectionController"), Qt::FindDirectChildrenOnly);
++        if (objects.isEmpty()) return observer;
++        if (objects.size() != 1 || objects.first()->thread() != app->thread())
++        {
++            observer->startError_ = QStringLiteral("实际LIS连接对象不唯一或不属于GUI线程。");
++            return observer;
++        }
++        auto *controller = objects.first();
++        observer->controller_ = controller;
++        observer->initialState_ = stateJson(controller->state());
++        // context为qApp；闭包只保留弱引用，观察结束仅断开自己的两条订阅。
++        const std::weak_ptr<LisConnectionObserver09> weakObserver = observer;
++        observer->stateConnection_ = QObject::connect(controller, &Sn100Lis::LisConnectionController::stateChanged, app,
++            [weakObserver](const Sn100Lis::ConnectionState &state)
++            {
++                const auto target = weakObserver.lock();
++                if (target) target->append(target->states_, stateJson(state), target->statesDropped_);
++            });
++        observer->errorConnection_ = QObject::connect(controller, &Sn100Lis::LisConnectionController::error, app,
++            [weakObserver](const Sn100Lis::ConfigurationIdentity &identity, const QString &operation,
++                       quint64 generation, quint64 peer, const QString &detail)
++            {
++                const auto target = weakObserver.lock();
++                if (!target) return;
++                const QStringList operations{QStringLiteral("configure"), QStringLiteral("open"),
++                    QStringLiteral("connection"), QStringLiteral("listen"), QStringLiteral("accept"),
++                    QStringLiteral("encode"), QStringLiteral("decode"), QStringLiteral("write"),
++                    QStringLiteral("send-result")};
++                const QJsonObject event{{"operation", operations.contains(operation) ? operation : QStringLiteral("other")},
++                    {"configuration", configurationJson(identity)}, {"generation", QString::number(generation)},
++                    {"peer", QString::number(peer)}, {"detail_present", !detail.isEmpty()},
++                    {"detail_sha256", textHash(detail)}};
++                target->append(target->errors_, event, target->errorsDropped_);
++            });
++        return observer;
++    }
++
++    // 只解除本观察器的信号订阅；不停止LIS、主通信或正式界面。
++    void stopObserving()
++    {
++        if (!app_ || QThread::currentThread() != app_->thread()) return;
++        QObject::disconnect(stateConnection_);
++        QObject::disconnect(errorConnection_);
++        stateConnection_ = QMetaObject::Connection();
++        errorConnection_ = QMetaObject::Connection();
++    }
++
++    QJsonObject snapshot() const
++    {
++        if (!app_ || QThread::currentThread() != app_->thread())
++            return {{"schema", "sn100-lis-connection-observer-09-v1"}, {"status", "integration_error"},
++                {"reason", "当前不在实际GUI线程，未读取控件、连接或事件缓存。"},
++                {"connected", QJsonValue(QJsonValue::Null)}, {"state", QJsonValue(QJsonValue::Null)},
++                {"committed_configuration", QJsonValue(QJsonValue::Null)}, {"close_verified_here", false}};
++        QJsonObject result{{"schema", "sn100-lis-connection-observer-09-v1"}, {"status", "pending"},
++            {"connected", QJsonValue(QJsonValue::Null)}, {"state", QJsonValue(QJsonValue::Null)},
++            {"committed_configuration", QJsonValue(QJsonValue::Null)},
++            {"startup_events_complete", false}, {"initial_state", initialState_},
++            {"state_events", states_}, {"error_events", errors_},
++            {"state_events_dropped", QString::number(statesDropped_)},
++            {"error_events_dropped", QString::number(errorsDropped_)},
++            {"message_bodies_or_transport_bytes_recorded", false}, {"business_verified", false},
++            {"close_verified_here", false},
++            {"close_proof_source", "正常关闭后的main日志与最终合同；本快照不预判已经停止。"}};
++        const auto pending = [&result](const QString &reason)
++        { result["reason"] = reason; return result; };
++        const auto integrationError = [&result](const QString &reason)
++        { result["status"] = QStringLiteral("integration_error"); result["reason"] = reason; return result; };
++        if (!startError_.isEmpty()) return integrationError(startError_);
++        if (!shell_) return pending(QStringLiteral("正式主窗口已不可用。"));
++        if (!controller_) return pending(QStringLiteral("尚无可读取的originalLisConnectionController对象。"));
++        if (controller_->thread() != app_->thread() || shell_->thread() != app_->thread())
++            return integrationError(QStringLiteral("实际连接对象或主窗口的线程归属已经改变。"));
++
++        const auto state = controller_->state();
++        result["state"] = stateJson(state);
++        result["connected"] = !state.closing && state.connectedPeers > 0;
++        if (!knownState(state.state) || state.connectedPeers < 0)
++            return integrationError(QStringLiteral("实际LIS状态枚举或对端数不在已审接口范围内。"));
++
++        auto *page = shell_->lisPage();
++        if (!page || page->thread() != app_->thread())
++            return pending(QStringLiteral("实际LIS设置页尚不可读。"));
++        result["settings_ready"] = page->isReady();
++        result["settings_busy"] = page->isBusy();
++        result["settings_dirty"] = page->isDirty();
++        if (!page->isReady() || page->isBusy() || page->isDirty())
++            return pending(QStringLiteral("LIS设置页尚未就绪、正在操作或存在草稿；不采用草稿连接值。"));
++        const LisSettings settings = page->committedSettings();
++        result["committed_configuration"] = QJsonObject{
++            {"original_profile", settings.originalProfile}, {"type", settingToken(settings.type)},
++            {"ip", settingToken(settings.ip)}, {"port", settingToken(settings.port)},
++            {"tcp_type", settingToken(settings.tcpType)}, {"link", settings.link},
++            {"auto_get", settings.autoGet}, {"auto_send", settings.autoSend}, {"simulation", settings.simulation},
++            {"source_fingerprint", fingerprint(settings.originalFingerprint)}};
++        const bool expectedConfiguration = settings.originalProfile && settings.type == QStringLiteral("tcp")
++            && settings.tcpType == QStringLiteral("client") && settings.ip == QStringLiteral("127.0.0.1")
++            && settings.port == QStringLiteral("3800") && settings.link && !settings.autoGet
++            && !settings.autoSend && !settings.simulation;
++        result["configuration_matches_requested_context"] = expectedConfiguration;
++        result["connection_and_settings_source_fingerprint_equal"] =
++            state.configuration.sourceFingerprint.isEmpty() || settings.originalFingerprint.isEmpty()
++                ? QJsonValue(QJsonValue::Null)
++                : QJsonValue(state.configuration.sourceFingerprint == settings.originalFingerprint);
++
++        // 主窗口和设置导航都有btnLis；按原UI的实际父子路径只取顶部状态图标。
++        const auto identity = [](QWidget *widget)
++        {
++            QObject *parent = widget ? widget->parent() : nullptr;
++            return QJsonObject{{"object_name", widget ? widget->objectName() : QString()},
++                {"class", widget ? QString::fromLatin1(widget->metaObject()->className()) : QString()},
++                {"parent_object_name", parent ? parent->objectName() : QString()},
++                {"parent_class", parent ? QString::fromLatin1(parent->metaObject()->className()) : QString()}};
++        };
++        QJsonObject lookup{{"scope", "frmMain/frmBg/statusArea/btnLis"}, {"matched", false},
++            {"background_count", QJsonValue(QJsonValue::Null)},
++            {"status_area_count", QJsonValue(QJsonValue::Null)},
++            {"button_count", QJsonValue(QJsonValue::Null)}};
++        const auto backgrounds = shell_->findChildren<QWidget *>(QStringLiteral("frmBg"), Qt::FindDirectChildrenOnly);
++        lookup["background_count"] = backgrounds.size();
++        if (backgrounds.size() == 1) lookup["background"] = identity(backgrounds.first());
++        result["icon_lookup"] = lookup;
++        if (backgrounds.size() != 1 || !qobject_cast<QFrame *>(backgrounds.first()))
++            return integrationError(QStringLiteral("正式顶部状态区的frmBg缺失、不唯一或类型不符。"));
++        const auto areas = backgrounds.first()->findChildren<QWidget *>(QStringLiteral("statusArea"), Qt::FindDirectChildrenOnly);
++        lookup["status_area_count"] = areas.size();
++        if (areas.size() == 1) lookup["status_area"] = identity(areas.first());
++        result["icon_lookup"] = lookup;
++        if (areas.size() != 1 || !qobject_cast<CusView *>(areas.first()))
++            return integrationError(QStringLiteral("正式顶部statusArea缺失、不唯一或类型不符。"));
++        const auto buttons = areas.first()->findChildren<QWidget *>(QStringLiteral("btnLis"), Qt::FindDirectChildrenOnly);
++        lookup["button_count"] = buttons.size();
++        if (buttons.size() == 1) lookup["button"] = identity(buttons.first());
++        result["icon_lookup"] = lookup;
++        if (buttons.size() != 1 || !qobject_cast<CusBadgeButton *>(buttons.first()))
++            return integrationError(QStringLiteral("正式顶部CusBadgeButton/btnLis缺失、不唯一或类型不符。"));
++        lookup["matched"] = true;
++        result["icon_lookup"] = lookup;
++        const QString tooltip = buttons.first()->toolTip();
++        // 只保留实际提示的结构化状态前缀；句号后的自由错误详情不保存全文。
++        const QRegularExpression prefix(QStringLiteral(
++            "^LIS：[^；。\\r\\n]{1,60}；配置版本[0-9]+，连接代次[0-9]+，已连接对端[0-9]+。"));
++        const auto match = prefix.match(tooltip);
++        result["button_tooltip_sha256"] = textHash(tooltip);
++        result["button_tooltip_status_prefix"] = match.hasMatch()
++            ? QJsonValue(match.captured()) : QJsonValue(QJsonValue::Null);
++        result["button_tooltip_free_detail_recorded"] = false;
++        if (!expectedConfiguration)
++            return pending(QStringLiteral("当前已提交LIS配置不属于本次获准观察条件。"));
++        if (!match.hasMatch())
++            return pending(QStringLiteral("图标提示尚无可安全读取的结构化状态前缀。"));
++        if (state.configuration.revision == 0 || settings.originalFingerprint.isEmpty()
++            || state.configuration.sourceFingerprint.isEmpty())
++            return pending(QStringLiteral("连接配置身份或原设置来源尚未记录。"));
++        if (state.configuration.sourceFingerprint != settings.originalFingerprint)
++            return pending(QStringLiteral("连接与已提交设置的来源指纹不同，不能重贴来源或推断已一致。"));
++        if (state.closing || state.connectedPeers == 0)
++            return pending(QStringLiteral("当前没有可采用的真实已连接对端；LIS收发及业务继续待验。"));
++        result["status"] = QStringLiteral("observed");
++        result["reason"] = QStringLiteral("已观察到当前真实已连接对端；不表示收到业务确认或通过LIS业务验收。");
++        return result;
++    }
++
++private:
++    LisConnectionObserver09() = default;
++    QMetaObject::Connection stateConnection_, errorConnection_;
++    QPointer<QApplication> app_;
++    QPointer<frmMain> shell_;
++    QPointer<Sn100Lis::LisConnectionController> controller_;
++    QString startError_;
++    QJsonObject initialState_;
++    QJsonArray states_, errors_;
++    quint64 statesDropped_ = 0, errorsDropped_ = 0;
++
++    static QString textHash(const QString &text)
++    { return QString::fromLatin1(QCryptographicHash::hash(text.toUtf8(), QCryptographicHash::Sha256).toHex()); }
++
++    static QJsonValue fingerprint(const QString &text)
++    {
++        static const QRegularExpression hash(QStringLiteral("^[0-9a-f]{64}$"));
++        return hash.match(text).hasMatch() ? QJsonValue(text) : QJsonValue(QJsonValue::Null);
++    }
++
++    static QJsonValue settingToken(const QString &text)
++    {
++        static const QRegularExpression token(QStringLiteral("^[A-Za-z0-9_.:-]{0,1024}$"));
++        return token.match(text).hasMatch() ? QJsonValue(text) : QJsonValue(QJsonValue::Null);
++    }
++
++    static bool knownState(const QString &state)
++    {
++        const QStringList values{QStringLiteral("Unconfigured"), QStringLiteral("Configured"),
++            QStringLiteral("LocalSettingsOnly"), QStringLiteral("SerialPending"), QStringLiteral("SettingsUnconfirmed"),
++            QStringLiteral("Listening"), QStringLiteral("Connecting"), QStringLiteral("Connected"),
++            QStringLiteral("ReconnectWaiting"), QStringLiteral("Disconnected"), QStringLiteral("Failed"),
++            QStringLiteral("Stopped")};
++        return values.contains(state);
++    }
++
++    static QJsonObject configurationJson(const Sn100Lis::ConfigurationIdentity &identity)
++    {
++        return {{"revision", QString::number(identity.revision)}, {"effective_key", fingerprint(identity.effectiveKey)},
++            {"transport_token", fingerprint(identity.transportToken)}, {"source_fingerprint", fingerprint(identity.sourceFingerprint)}};
++    }
++
++    static QJsonObject stateJson(const Sn100Lis::ConnectionState &state)
++    {
++        return {{"state", knownState(state.state) ? QJsonValue(state.state) : QJsonValue(QJsonValue::Null)},
++            {"configuration", configurationJson(state.configuration)}, {"generation", QString::number(state.generation)},
++            {"connected_peers", state.connectedPeers}, {"closing", state.closing}};
++    }
++
++    void append(QJsonArray &events, const QJsonObject &event, quint64 &dropped)
++    {
++        if (events.size() == 32) { events.removeAt(0); ++dropped; }
++        events.append(event);
++    }
++};
++
++#endif
+diff --git a/06_programs/sn100_host/shell/lis_keep_running_observation.cpp b/06_programs/sn100_host/shell/lis_keep_running_observation.cpp
+new file mode 100644
+--- /dev/null
++++ b/06_programs/sn100_host/shell/lis_keep_running_observation.cpp
+@@ -0,0 +1,276 @@
++#include "lis_connection_observer_09.h"
++#include <QApplication>
++#include <QCryptographicHash>
++#include <QDebug>
++#include <QDir>
++#include <QElapsedTimer>
++#include <QFile>
++#include <QFileInfo>
++#include <QJsonDocument>
++#include <QLockFile>
++#include <QSaveFile>
++#include <QTimer>
++
++namespace
++{
++struct ObservationParameters
++{
++    QString directory, id, expectedRelease;
++};
++
++QString processStartTicks()
++{
++    QFile stat(QStringLiteral("/proc/self/stat"));
++    if (!stat.open(QIODevice::ReadOnly)) return QString();
++    const QByteArray bytes = stat.read(8192);
++    const int endOfName = bytes.lastIndexOf(')');
++    if (endOfName < 0) return QString();
++    // 括号后的第一个字段是state(3)，starttime(22)位于下标19。
++    const auto fields = bytes.mid(endOfName + 1).simplified().split(' ');
++    if (fields.size() <= 19) return QString();
++    const QString ticks = QString::fromLatin1(fields.at(19));
++    return QRegularExpression(QStringLiteral("^[0-9]+$")).match(ticks).hasMatch() ? ticks : QString();
++}
++
++bool readParameters(ObservationParameters *parameters)
++{
++    parameters->directory = qEnvironmentVariable("SN100_LIS_OBSERVATION_DIR");
++    parameters->id = qEnvironmentVariable("SN100_LIS_OBSERVATION_ID");
++    parameters->expectedRelease = qEnvironmentVariable("SN100_LIS_OBSERVATION_RELEASE");
++    // 普通启动在创建观察对象、定时器、订阅和文件之前返回。
++    if (parameters->directory.isEmpty() || parameters->id.isEmpty() || parameters->expectedRelease.isEmpty())
++        return false;
++    const QRegularExpression id(QStringLiteral("\\A[A-Za-z0-9_-]{1,64}\\z"));
++    const QRegularExpression release(QStringLiteral("\\A[0-9a-f]{64}\\z"));
++    const QFileInfo directory(parameters->directory);
++    const auto privateBits = QFile::ReadGroup | QFile::WriteGroup | QFile::ExeGroup
++        | QFile::ReadOther | QFile::WriteOther | QFile::ExeOther;
++    const bool valid = id.match(parameters->id).hasMatch() && release.match(parameters->expectedRelease).hasMatch()
++        && QDir::isAbsolutePath(parameters->directory) && directory.isDir() && !directory.isSymLink()
++        && directory.canonicalFilePath() == parameters->directory
++        && !(directory.permissions() & privateBits)
++        && QDir(parameters->directory).entryList(QDir::AllEntries | QDir::Hidden | QDir::System
++                                                | QDir::NoDotAndDotDot).isEmpty();
++    if (!valid) qWarning() << "LIS_OBSERVATION_PARAMETERS_REJECTED";
++    return valid;
++}
++
++class LisKeepRunningObservation : public QObject
++{
++public:
++    explicit LisKeepRunningObservation(const ObservationParameters &parameters, QObject *app)
++        : QObject(app), parameters_(parameters), lock_(QDir(parameters.directory).filePath(QStringLiteral("lis_observation.lock")))
++    {
++    }
++
++    bool begin()
++    {
++        lock_.setStaleLockTime(0);
++        if (!lock_.tryLock(0))
++        {
++            qWarning() << "LIS_OBSERVATION_DIRECTORY_ALREADY_CLAIMED";
++            return false;
++        }
++        // 发布号是总控运行时给定的期望值，不在这里宣称已独立核包。
++        startTicks_ = processStartTicks();
++        if (startTicks_.isEmpty())
++        {
++            qWarning() << "LIS_OBSERVATION_PROCESS_IDENTITY_UNAVAILABLE";
++            lock_.unlock();
++            return false;
++        }
++        elapsed_.start();
++        tick_ = new QTimer(this);
++        tick_->setInterval(100);
++        QObject::connect(tick_, &QTimer::timeout, this, [this]() { poll(); });
++        tick_->start();
++        return true;
++    }
++
++private:
++    ObservationParameters parameters_;
++    QLockFile lock_;
++    QTimer *tick_ = nullptr;
++    QElapsedTimer elapsed_, observing_;
++    QPointer<frmMain> shell_;
++    std::shared_ptr<LisConnectionObserver09> observer_;
++    QString startTicks_, waitingReason_ = QStringLiteral("正式界面和LIS对象尚未就绪。");
++    qint64 startupWaitMs_ = 0;
++    bool finished_ = false;
++
++    void poll()
++    {
++        // startup hook发生在QCoreApplication构造期；到事件循环再核实际GUI应用类型。
++        if (!qobject_cast<QApplication *>(QCoreApplication::instance()))
++        {
++            waitingReason_ = QStringLiteral("实际应用不是QApplication，未读取GUI对象。");
++            startupWaitMs_ = elapsed_.elapsed();
++            finish(false);
++            return;
++        }
++        if (observer_)
++        {
++            if (observing_.elapsed() >= 15000) finish(true);
++            return;
++        }
++        // 截止后不再因这一轮刚好就绪而延长观察窗口。
++        if (elapsed_.elapsed() >= 60000)
++        {
++            startupWaitMs_ = elapsed_.elapsed();
++            finish(false);
++            return;
++        }
++        QList<frmMain *> shells;
++        for (QWidget *widget : QApplication::allWidgets())
++            if (auto *shell = qobject_cast<frmMain *>(widget)) shells.append(shell);
++        if (shells.size() == 1)
++        {
++            shell_ = shells.first();
++            QWidget *host = shell_->window();
++            auto *splash = host ? host->findChild<QWidget *>(QStringLiteral("startupSplash")) : nullptr;
++            const auto controllers = qApp->findChildren<Sn100Lis::LisConnectionController *>(
++                QStringLiteral("originalLisConnectionController"), Qt::FindDirectChildrenOnly);
++            // 控件构造期间也可能处理事件；晚创建的启动画面和控制器未出现前不读lisPage()。
++            if (host && host->isVisible() && shell_->isVisible() && splash && !splash->isVisible()
++                && !controllers.isEmpty())
++            {
++                auto *page = shell_->lisPage();
++                if (page && page->isReady() && !page->isBusy() && !page->isDirty())
++                {
++                    // 页面检查也会消耗时间；开始决定与结果记录共用这一次采样。
++                    const qint64 beginWaitMs = elapsed_.elapsed();
++                    startupWaitMs_ = beginWaitMs;
++                    if (beginWaitMs >= 60000)
++                    {
++                        finish(false);
++                        return;
++                    }
++                    observer_ = LisConnectionObserver09::start(shell_);
++                    observing_.start();
++                    return;
++                }
++            }
++            waitingReason_ = QStringLiteral("正式窗口、启动画面结束、已提交LIS设置或真实连接对象尚未同时就绪。");
++        }
++        else
++        {
++            shell_.clear();
++            waitingReason_ = QStringLiteral("正式frmMain对象缺失或不唯一，未选取任意窗口观察。");
++        }
++    }
++
++    bool writeAtomically(const QString &name, const QByteArray &bytes)
++    {
++        const QString path = QDir(parameters_.directory).filePath(name);
++        if (QFileInfo::exists(path)) return false;
++        QSaveFile file(path);
++        file.setDirectWriteFallback(false);
++        if (!file.open(QIODevice::WriteOnly)) return false;
++        if (!file.setPermissions(QFile::ReadOwner | QFile::WriteOwner)
++            || file.write(bytes) != bytes.size())
++        {
++            file.cancelWriting();
++            return false;
++        }
++        return file.commit();
++    }
++
++    void finish(bool startupReady)
++    {
++        if (finished_) return;
++        finished_ = true;
++        tick_->stop();
++        QJsonObject lis;
++        const qint64 observationMs = observer_ ? observing_.elapsed() : 0;
++        if (observer_)
++        {
++            lis = observer_->snapshot();
++            observer_->stopObserving();
++            observer_.reset();
++        }
++        else
++        {
++            lis = {{"status", "pending"}, {"reason", waitingReason_},
++                {"connected", QJsonValue(QJsonValue::Null)}, {"state", QJsonValue(QJsonValue::Null)},
++                {"business_verified", false}, {"close_verified_here", false},
++                {"message_bodies_or_transport_bytes_recorded", false}};
++        }
++        const QJsonObject state = lis.value("state").toObject();
++        const QRegularExpression tooltip(QStringLiteral(
++            "^LIS：[^；。\\r\\n]{1,60}；配置版本([0-9]+)，连接代次([0-9]+)，已连接对端([0-9]+)。$"));
++        const auto match = tooltip.match(lis.value("button_tooltip_status_prefix").toString());
++        const bool tooltipMatches = match.hasMatch()
++            && match.captured(1) == state.value("configuration").toObject().value("revision").toString()
++            && match.captured(2) == state.value("generation").toString()
++            && match.captured(3) == QString::number(state.value("connected_peers").toInt(-1));
++        lis["tooltip_identity_matches_state"] = match.hasMatch()
++            ? QJsonValue(tooltipMatches) : QJsonValue(QJsonValue::Null);
++        const bool integrationError = lis.value("status").toString() == QStringLiteral("integration_error");
++        const QRegularExpression positiveRevision(QStringLiteral("\\A[1-9][0-9]*\\z"));
++        const QRegularExpression sourceHash(QStringLiteral("\\A[0-9a-f]{64}\\z"));
++        const auto configuration = state.value("configuration").toObject();
++        const bool settingsReady = lis.value("settings_ready").toBool()
++            && lis.value("settings_busy").isBool() && !lis.value("settings_busy").toBool()
++            && lis.value("settings_dirty").isBool() && !lis.value("settings_dirty").toBool();
++        const bool readable = lis.value("configuration_matches_requested_context").toBool()
++            && settingsReady
++            && lis.value("state").isObject()
++            && positiveRevision.match(configuration.value("revision").toString()).hasMatch()
++            && sourceHash.match(configuration.value("source_fingerprint").toString()).hasMatch()
++            && sourceHash.match(lis.value("committed_configuration").toObject().value("source_fingerprint").toString()).hasMatch()
++            && lis.value("connection_and_settings_source_fingerprint_equal").isBool()
++            && lis.value("icon_lookup").toObject().value("matched").toBool() && match.hasMatch();
++        const bool evaluated = integrationError || readable;
++        const bool passed = evaluated && !integrationError
++            && lis.value("connection_and_settings_source_fingerprint_equal").toBool() && tooltipMatches;
++        QJsonArray checks, pending;
++        if (evaluated)
++            checks.append(QJsonObject{{"name", "顶部LIS对象、结构提示与原配置来源可核对"}, {"passed", passed}});
++        else
++            pending.append(QStringLiteral("LIS软件观察条件不足；未执行项不记通过。"));
++        pending.append(QStringLiteral("LIS下载、上传和业务确认未验证；没有真实对端时连接仍待验。"));
++        pending.append(QStringLiteral("旧登录、注销、主通信重开、Qk及关闭检查本次未执行。"));
++        const bool windowAlive = shell_ && shell_->window();
++        const bool windowVisible = windowAlive && shell_->isVisible() && shell_->window()->isVisible();
++        QJsonObject result{{"schema", "sn100-lis-keep-running-observation-v1"},
++            {"observation_id", parameters_.id}, {"release_id", parameters_.expectedRelease},
++            {"release_identity_source", "runtime_expected_not_independently_verified_here"},
++            {"process", QJsonObject{{"pid", QString::number(QCoreApplication::applicationPid())}, {"start_ticks", startTicks_}}},
++            {"observation_complete", true}, {"completion_kind", "snapshot_saved_keep_running"},
++            {"startup_ready", startupReady}, {"startup_wait_ms", startupWaitMs_}, {"duration_ms", observationMs},
++            {"window_alive_at_snapshot", windowAlive}, {"window_visible_at_snapshot", windowVisible},
++            {"application_exit", QJsonValue(QJsonValue::Null)}, {"application_exit_evaluated", false},
++            {"shutdown_evaluated", false}, {"close_verified", false}, {"qk_query_requested", false},
++            {"software_state_evaluated", evaluated}, {"software_state_passed", passed},
++            {"checks", checks}, {"failed", evaluated && !passed ? 1 : 0}, {"pending_items", pending},
++            {"lis_connection_observation", lis}, {"physical_screen_verified", false}};
++        const QByteArray json = QJsonDocument(result).toJson();
++        bool saved = json.size() < 1024 * 1024 && writeAtomically(QStringLiteral("lis_observation.json"), json);
++        if (saved)
++        {
++            const QByteArray digest = QCryptographicHash::hash(json, QCryptographicHash::Sha256).toHex();
++            const QByteArray marker = QByteArray("SN100_LIS_OBSERVATION_READY_V1 ") + parameters_.id.toLatin1()
++                + ' ' + parameters_.expectedRelease.toLatin1() + ' '
++                + QByteArray::number(QCoreApplication::applicationPid()) + ' ' + digest + '\n';
++            saved = writeAtomically(QStringLiteral("lis_observation.ready"), marker);
++        }
++        // 成功、条件不足或写失败都只结束观察；没有观察进程退出码。
++        if (saved) qInfo() << "LIS_KEEP_RUNNING_OBSERVATION_SAVED" << parameters_.id;
++        else qCritical() << "LIS_KEEP_RUNNING_OBSERVATION_SAVE_FAILED" << parameters_.id;
++        lock_.unlock();
++        deleteLater();
++    }
++};
++
++void scheduleLisKeepRunningObservation()
++{
++    ObservationParameters parameters;
++    if (!readParameters(&parameters)) return;
++    auto *app = QCoreApplication::instance();
++    if (!app || QThread::currentThread() != app->thread()) return;
++    auto *observation = new LisKeepRunningObservation(parameters, app);
++    if (!observation->begin()) delete observation;
++}
++}
++
++Q_COREAPP_STARTUP_FUNCTION(scheduleLisKeepRunningObservation)
+diff --git a/06_programs/sn100_host/shell/shell.pri b/06_programs/sn100_host/shell/shell.pri
+--- a/06_programs/sn100_host/shell/shell.pri
++++ b/06_programs/sn100_host/shell/shell.pri
+@@ -55,6 +55,8 @@
+ # O10-2独立两QPA各17/0通过后接入本地LIS设置，不加载原活动通信类。
+ include($$PWD/../ui/lis_settings.pri)
+ SOURCES += $$PWD/lis_shell.cpp
++SOURCES += $$PWD/lis_keep_running_observation.cpp
++HEADERS += $$PWD/lis_connection_observer_09.h
+ include($$PWD/../lis_transport/lis_transport.pri)
+ include($$PWD/../lis_raw_inbox/lis_raw_inbox.pri)
+ SOURCES += $$PWD/lis_raw_inbox_shell.cpp

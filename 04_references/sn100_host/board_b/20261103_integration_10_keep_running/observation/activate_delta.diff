@@ -1,0 +1,17 @@
+--- prepare_flat_batch10_02.sh
++++ activate_new_batch10_01.sh
+@@ -1,4 +1,4 @@
+-set -- prepare-flat
++set -- activate-only
+ #!/usr/bin/env bash
+ # 供总控另行冻结的板端模板；此原件不可执行，不包含停止/启动或超时TERM。
+ set -Eeuo pipefail
+@@ -23,7 +23,7 @@
+ configuration_manifest='/home/rkshare/programs/sn100_shell/verification/integration_next_02_runtime_01/configuration.sha256'
+ configuration_manifest_sha256='ad11ae68d8ed119a5a34ed65acf98dc2d15bafba6afaa950bee5fd7d3805981c'
+ old_stop_receipt='/home/rkshare/programs/sn100_shell/verification/integration_next_02_runtime_01/old_stop_receipt.txt'
+-old_stop_receipt_sha256='0000000000000000000000000000000000000000000000000000000000000000'
++old_stop_receipt_sha256='4619885a1c8f3d5b99b034c7168ce7021a7aaefb4a154fc9ad0475a4912ebcb0'
+ root_transition_approval='/home/rkshare/programs/sn100_shell/verification/integration_next_02_runtime_01/root_approval.md'
+ root_transition_approval_sha256='20747493a79ab553d1c22e6d2d0ac9019a7f9f759d1c98be64201ca835bf6eb2'
+ root_start_owner=root

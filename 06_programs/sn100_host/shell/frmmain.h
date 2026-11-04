@@ -2,6 +2,7 @@
 #define SN100_SHELL_FRMMAIN_H
 
 #include <QWidget>
+#include "reagents/original_reagent_probe.h"
 #include <QPointer>
 #include <QMap>
 #include <QSet>
@@ -24,8 +25,8 @@ class QScrollArea;
 class HistoryReportController;
 class ProjectPage;
 class ReagentsPage;
-namespace OriginalLevels { class ObservationWorker; struct Context; }
-namespace OriginalTaskReagents { struct Commit; struct RuntimeAdoption; }
+namespace OriginalLevels { struct ReceivedPacket; class ObservationWorker; struct Context; }
+namespace OriginalTaskReagents { struct Commit; struct RuntimeAdoption; struct RuntimeBasis; }
 namespace TaskReagentRouting { struct Bridge; }
 class SamplePage;
 class SampleStore;
@@ -33,6 +34,7 @@ class InstrumentPage;
 class MaskDlgLogin;
 class MaskDlgShutDown;
 class DeviceControl;
+class OriginalChannelReceiver;
 class frmPrinterSetting;
 class frmLisSetting;
 class QualityControlPage;
@@ -93,6 +95,8 @@ public:
     void attachSamplePage(SamplePage *samples);
     SamplePage *samplePage() const { return samples_; }
     void attachInstrumentPage(InstrumentPage *page);
+    // 只登记已有接收器及其原根，不取得线程/数据库/关闭控制权。
+    bool attachOriginalChannelReadback(OriginalChannelReceiver *receiver, const QString &originalRoot);
     InstrumentPage *instrumentPage() const { return instrument_; }
     // Requires an attached history page; all report windows belong to this shell.
     bool enableHistoryReports(const QString &directory);
@@ -141,7 +145,12 @@ private:
     void observeTaskReagentCommit(const OriginalTaskReagents::Commit &receipt);
     void receiveTaskReagentAdoption(const OriginalTaskReagents::RuntimeAdoption &adoption);
     void taskReagentReadbackFinished(const OriginalTaskReagents::Commit &receipt);
-    void completeTaskReagentAction(quint64 packet);
+    void completeTaskReagentAction(quint64 actionId);
+    bool queueUserTaskPreparation(quint64 request, quint64 connection, bool linuxNew, QString *message);
+    bool userTaskOriginCurrent(const OriginalTaskReagents::RuntimeBasis &basis, QString *message) const;
+    void finishUserTaskOperation(const OriginalTaskReagents::Commit &receipt, bool success, const QString &message);
+    void cancelUserTaskPreparation(quint64 request, const QString &message);
+    void finishDeviceTaskPreparation(quint64 request, bool success, const QString &message);
     void cancelTaskReagentContexts(const QString &reason);
     void taskReagentContextChanged();
     void taskReagentSourceReviewed(bool success);
@@ -277,9 +286,30 @@ private:
     void updateOriginalProjectReadiness();
     QString originalProjectUpdateBlocker() const;
     void reportDeviceTaskError(const QString &message);
-    QString deviceUserControlBlocker(quint64 connection) const;
-    void requestDeviceStart(quint64 connection, bool physicalKey);
+    QString deviceUserControlBlocker(quint64 connection, bool requireFresh = true) const;
+    QString reagentProbeTaskControlBlocker() const;
+    void requestDeviceStart(quint64 connection, bool physicalKey, quint64 manualRequest = 0);
+    void requestDevicePauseOrSilence(quint64 connection, bool pause, quint64 manualRequest = 0);
+    void attachManualCommunication();
+    void receiveManualCommunication(quint64 request, quint64 pageSession, quint64 connection,
+                                    AccountSession identity, QByteArray payload);
+    QString manualCommunicationBlocker(quint64 request) const;
+    void finishManualCommunication(quint64 request, const QString &stage, const QString &message, bool terminal = true);
+    void cancelManualCommunication(const QString &reason);
+    quint64 manualCommunicationSession_ = 0, manualCommunicationIdentitySession_ = 0;
+    quint64 manualCommunicationRequest_ = 0, manualCommunicationPageSession_ = 0;
+    quint64 manualCommunicationConnection_ = 0, manualCommunicationTaskRequest_ = 0;
+    AccountSession manualCommunicationIdentity_;
+    QByteArray manualCommunicationPayload_;
+    bool manualCommunicationSendAttempted_ = false;
+    bool manualCommunicationAttached_ = false;
+    QPointer<OriginalChannelReceiver> originalChannelReadback_;
+    QPointer<InstrumentPage> originalChannelReadbackPage_;
+    QString originalChannelReadbackRoot_;
+    quint64 originalChannelReadbackRegistration_ = 0;
+    QString channelReadbackRequestBlocker(quint64 connection) const;
     void receiveDeviceStartKey(quint64 connection);
+    // 开始、暂停与静音共用确认占用，避免嵌套确认继续接受另一条控制操作。
     bool deviceStartConfirmationPending_ = false;
     // 只保护退出/账户切换尝试的前置页面检查；不表示任务或液面读取已完成。
     bool deviceUserInteractionPending_ = false;
@@ -313,6 +343,38 @@ private:
     QString reagentPrioritySavedFingerprint_;
     QSet<QByteArray> reagentPriorityReplyDigests_;
     QElapsedTimer reagentPriorityClock_;
+    struct ReagentProbeState
+    {
+        OriginalReagentProbe::Request source;
+        OriginalReagentProbe::Prepared prepared;
+        enum class Stage { Preparing, Queuing, Waiting } stage = Stage::Preparing;
+        QElapsedTimer clock;
+        bool prepareReturned=false, mayHaveQueued=false, cancelled=false, retiring=false;
+        bool reported=false, actionSuccess=false, nSeen=false;
+        bool nProcessed=false, nCommitted=false, nLoaded=false, nDisplayDone=false, nShown=false;
+        bool nReaderReturned=true, nFinished=false;
+        quint64 nPacket=0, nPermission=0;
+        QByteArray completion;
+        QString message;
+    };
+    std::shared_ptr<ReagentProbeState> reagentProbe_;
+    bool reagentProbeAttached_=false, reagentProbeUnknown_=false;
+    QString reagentProbeUnknownReason_;
+    QTimer *reagentProbeTimer_=nullptr;
+    void attachReagentProbe();
+    QString reagentProbeBlocker(const QString &hole, bool ownPageBusy=false, bool executing=false) const;
+    void beginReagentProbe(quint64 request,quint64 connection,const QString &hole);
+    void preparedReagentProbe(const OriginalReagentProbe::Prepared &prepared);
+    void cancelReagentProbe(const QString &message);
+    bool routeReagentProbeReply(const QByteArray &payload,quint64 connection);
+    void tickReagentProbe();
+    bool reagentProbeExecutionExpired() const;
+    void finishReagentProbeIfReady();
+    bool reagentProbeAcceptsN(const OriginalLevels::ReceivedPacket &packet,quint64 connection) const;
+    void reagentProbeNStarted(quint64 packet);
+    void reagentProbeNProcessed(quint64 packet,quint64 connection,bool committed,bool loaded);
+    void reagentProbeNPresented(quint64 packet,quint64 connection,bool shown);
+    void reagentProbeNReaderReturned(quint64 packet,quint64 connection);
     void attachReagentPriority();
     QString reagentPositionBlocker() const;
     QString reagentPriorityBlocker(bool ownPageBusy = false) const;

@@ -5,6 +5,257 @@
 #include <QLockFile>
 #include <QThread>
 #include <QTimer>
+#include <QUuid>
+
+namespace
+{
+bool sameProbeRow(const QVariantMap &first, const QVariantMap &second)
+{
+    if (first.keys()!=second.keys()) return false;
+    for (auto it=first.cbegin();it!=first.cend();++it)
+    {
+        const auto value=second.value(it.key());
+        if (it.value().userType()!=value.userType() || it.value().isNull()!=value.isNull() || it.value()!=value) return false;
+    }
+    return true;
+}
+bool sameProbeBatches(const OriginalReagentPageMetadata::View &first, const OriginalReagentPageMetadata::View &second)
+{
+    if (first.instance!=second.instance || first.root!=second.root || first.panel!=second.panel ||
+        first.revision!=second.revision || first.available!=second.available || first.batches!=second.batches ||
+        first.defaulted!=second.defaulted || first.originals.keys()!=second.originals.keys()) return false;
+    for (auto it=first.originals.cbegin();it!=first.originals.cend();++it)
+        if (!sameProbeRow(it.value(),second.originals.value(it.key()))) return false;
+    return true;
+}
+}
+
+// 只有试剂工作线程持有此对象。GUI持有的proof没有此指针，不能因最后一份GUI副本析构而解锁。
+struct ReagentStore::OriginalProbeSourceLease
+{
+    explicit OriginalProbeSourceLease(const OriginalReagentProbe::Request &source)
+        : token(source.token), project(QDir(source.root).filePath(QStringLiteral(".sn100-original-project-write.lock"))),
+          reagent(QDir(source.root).filePath(QStringLiteral(".sn100-original-reagent-write.lock")))
+    { project.setStaleLockTime(0); reagent.setStaleLockTime(0); }
+    QString token;
+    QLockFile project, reagent;
+    std::shared_ptr<const OriginalProbeSourceProof> proof;
+};
+
+bool ReagentStore::originalProbeProofMatches(const OriginalReagentProbe::Prepared &prepared,
+    const std::shared_ptr<const OriginalProbeSourceProof> &proof) const
+{
+    if (!proof) return false;
+    const auto &original=proof->prepared;
+    return prepared.success && original.success && !prepared.sourceLease.isEmpty() &&
+        prepared.sourceLease==original.sourceLease && OriginalReagentProbe::sameRequest(prepared.source,original.source) &&
+        prepared.source.actor.actionReady==original.source.actor.actionReady &&
+        prepared.source.actor.roleLabel==original.source.actor.roleLabel && prepared.table==original.table &&
+        prepared.payload==original.payload && sameProbeRow(prepared.originalHole,original.originalHole) &&
+        prepared.versions==original.versions && prepared.initialization==original.initialization &&
+        sameProbeBatches(prepared.batches,original.batches);
+}
+
+bool ReagentStore::originalProbeSourceCurrent(const OriginalReagentProbe::Prepared &prepared) const
+{
+    const auto proof=std::atomic_load(&probeSourceProof_);
+    return originalProbeProofMatches(prepared,proof) && proof->live.load() &&
+        proof->phase.load()!=OriginalProbeSourcePhase::Revoked &&
+        OriginalReagentProbe::Clock::now()<proof->prepared.source.prepareUntil &&
+        std::atomic_load(&probeSourceProof_)==proof && proof->live.load();
+}
+
+bool ReagentStore::claimOriginalProbeSource(const OriginalReagentProbe::Prepared &prepared)
+{
+    const auto proof=std::atomic_load(&probeSourceProof_);
+    if (!originalProbeProofMatches(prepared,proof) || !proof->live.load() ||
+        OriginalReagentProbe::Clock::now()>=proof->prepared.source.prepareUntil) return false;
+    auto available=OriginalProbeSourcePhase::Available;
+    if (!proof->phase.compare_exchange_strong(available,OriginalProbeSourcePhase::Claimed)) return false;
+    // 认领与撤销/到期相撞时也保留Claimed，直到发送调用返回后由工作线程显式释放。
+    return proof->live.load() && OriginalReagentProbe::Clock::now()<proof->prepared.source.prepareUntil &&
+        std::atomic_load(&probeSourceProof_)==proof && proof->live.load();
+}
+
+void ReagentStore::attachOriginalProbeSourceCleanup()
+{
+    if (probeSourceCleanupAttached_ || QThread::currentThread()!=thread()) return;
+    probeSourceCleanupAttached_=true;
+    probeSourceTimer_=new QTimer(this);
+    probeSourceTimer_->setSingleShot(true);
+    connect(probeSourceTimer_,&QTimer::timeout,this,[this](){ expireOriginalProbeSource(); });
+    connect(this,&ReagentStore::closed,this,[this]()
+    {
+        const auto permit=std::atomic_load(&probePermit_);
+        if (permit) revokeOriginalProbe(permit->source.token);
+        expireOriginalProbeSource(true);
+    },Qt::DirectConnection);
+}
+
+void ReagentStore::expireOriginalProbeSource(bool closing)
+{
+    if (QThread::currentThread()!=thread() || !probeSourceLease_) return;
+    const auto proof=probeSourceLease_->proof;
+    if (!proof) return;
+    const auto now=OriginalReagentProbe::Clock::now();
+    if (closing || now>=proof->prepared.source.prepareUntil) proof->live.store(false);
+    if (!proof->live.load())
+    {
+        auto available=OriginalProbeSourcePhase::Available;
+        proof->phase.compare_exchange_strong(available,OriginalProbeSourcePhase::Revoked);
+    }
+    if (proof->phase.load()==OriginalProbeSourcePhase::Revoked)
+    {
+        probeSourceTimer_->stop();
+        probeSourceLease_.reset();
+        return;
+    }
+    if (!proof->live.load())
+    {
+        // 已认领的锁即使关闭或到期也不能在实际send返回前释放。
+        probeSourceTimer_->stop();
+        return;
+    }
+    const auto remaining=std::chrono::duration_cast<std::chrono::milliseconds>(proof->prepared.source.prepareUntil-now).count();
+    probeSourceTimer_->start(static_cast<int>(remaining)+1);
+}
+
+void ReagentStore::releaseOriginalProbeSource(QString token)
+{
+    if (!onWorker(QStringLiteral("释放单孔探测来源")) || !probeSourceLease_ || probeSourceLease_->token!=token) return;
+    const auto proof=probeSourceLease_->proof;
+    if (proof) { proof->live.store(false); proof->phase.store(OriginalProbeSourcePhase::Revoked); }
+    probeSourceTimer_->stop();
+    probeSourceLease_.reset();
+}
+
+bool ReagentStore::authorizeOriginalProbe(OriginalReagentProbe::Request request)
+{
+    using namespace OriginalReagentProbe;
+    const auto now=Clock::now();
+    if (request.token.isEmpty() || !request.request || !request.connection || request.hole.isEmpty() ||
+        !QDir::isAbsolutePath(request.root) || !request.actor.authenticated || !request.actor.actionReady ||
+        request.actor.role<0 || request.actor.role>5 || request.prepareUntil<=now ||
+        request.prepareUntil>now+std::chrono::seconds(10)) return false;
+    const auto source=std::atomic_load(&probeSourceProof_);
+    if (source && (source->phase.load()==OriginalProbeSourcePhase::Claimed ||
+        (source->live.load() && now<source->prepared.source.prepareUntil &&
+         source->phase.load()==OriginalProbeSourcePhase::Available))) return false;
+    auto before=std::atomic_load(&probePermit_);
+    // 唯一token由Root签发；保留单槽撤销/认领事实，不重复认领同一请求，也不按数值猜编号顺序。
+    if (before && (before->source.token==request.token ||
+        (!before->revoked && now<before->source.prepareUntil))) return false;
+    auto next=std::make_shared<OriginalProbePermit>();
+    next->source=std::move(request);
+    std::shared_ptr<const OriginalProbePermit> permit=next;
+    return std::atomic_compare_exchange_strong(&probePermit_,&before,permit);
+}
+
+void ReagentStore::revokeOriginalProbe(QString token)
+{
+    auto before=std::atomic_load(&probePermit_);
+    while (before && before->source.token==token && !before->revoked)
+    {
+        auto next=std::make_shared<OriginalProbePermit>(*before);
+        next->revoked=true;
+        std::shared_ptr<const OriginalProbePermit> revoked=next;
+        if (std::atomic_compare_exchange_strong(&probePermit_,&before,revoked)) break;
+    }
+    const auto proof=std::atomic_load(&probeSourceProof_);
+    if (proof && proof->prepared.source.token==token)
+    {
+        proof->live.store(false);
+        auto available=OriginalProbeSourcePhase::Available;
+        proof->phase.compare_exchange_strong(available,OriginalProbeSourcePhase::Revoked);
+    }
+}
+
+void ReagentStore::prepareOriginalProbe(OriginalReagentProbe::Request request)
+{
+    using namespace OriginalReagentProbe;
+    Prepared result; result.source=request;
+    QString message;
+    if (QThread::currentThread()!=thread())
+        message=QStringLiteral("单孔探测准备不在试剂工作线程，未读取资料或发送。" );
+    else { attachOriginalProbeSourceCleanup(); expireOriginalProbeSource(); }
+    auto permit=std::atomic_load(&probePermit_);
+    if (message.isEmpty() && permit && !permit->claimed && !permit->revoked && sameRequest(permit->source,request))
+    {
+        auto claimed=std::make_shared<OriginalProbePermit>(*permit);
+        claimed->claimed=true;
+        std::shared_ptr<const OriginalProbePermit> active=claimed;
+        if (std::atomic_compare_exchange_strong(&probePermit_,&permit,active)) permit=active;
+        else permit.reset();
+    }
+    else permit.reset();
+    const auto current=[&]()
+    {
+        return permit && permit->claimed && !permit->revoked && Clock::now()<permit->source.prepareUntil &&
+            sameRequest(permit->source,request) && std::atomic_load(&probePermit_)==permit &&
+            ready_ && originalEditor_ && originalEditor_->root()==request.root &&
+            session_.authenticated && session_.actionReady && session_.role>=0 && session_.role<=5 &&
+            sameActor(session_,request.actor) && !instrumentBusy_;
+    };
+    if (message.isEmpty() && !current())
+        message=QStringLiteral("单孔探测准备许可、连接、账户、资料根或期限已变化，未准备或发送。" );
+    std::shared_ptr<OriginalProbeSourceLease> lease;
+    if (message.isEmpty() && probeSourceLease_)
+        message=QStringLiteral("上一单孔探测来源仍在等待认领或发送返回，未覆盖其锁或准备下一次。" );
+    if (message.isEmpty())
+    {
+        lease=std::make_shared<OriginalProbeSourceLease>(request);
+        if (!lease->project.tryLock(0) || !lease->reagent.tryLock(0))
+            message=QStringLiteral("项目或试剂资料正在保存，未准备或发送单孔探测。" );
+        else if (!OriginalProjectCopy::noPending(request.root,&message) && message.isEmpty())
+            message=QStringLiteral("存在待核项目复制，单孔探测不触发恢复。" );
+    }
+    if (message.isEmpty() && !originalEditor_->prepareSingleProbe(request,&result,&message))
+    {
+        if (message.isEmpty()) message=QStringLiteral("单孔探测准备失败，未写库或发送。" );
+    }
+    if (message.isEmpty() && !current())
+        message=QStringLiteral("单孔Mg已准备，但返回前许可或账户失效；保留原准备来源供核对，未发送。" );
+    if (message.isEmpty() && (!result.success || !sameRequest(result.source,request) ||
+        !result.initialization || !result.initialization->current(request.root,&message) ||
+        !pageMetadata_->current(result.batches,&message)))
+    {
+        if (message.isEmpty()) message=QStringLiteral("单孔准备返回的原请求、初始化或盘面来源未核实，未发送。" );
+    }
+    if (message.isEmpty() && !current())
+        message=QStringLiteral("来源核对后准备许可已撤销或到期，未发送。" );
+    if (message.isEmpty())
+    {
+        result.sourceLease=QUuid::createUuid().toString(QUuid::WithoutBraces);
+        const auto proof=std::make_shared<const OriginalProbeSourceProof>(result);
+        lease->proof=proof;
+        probeSourceLease_=lease;
+        std::atomic_store(&probeSourceProof_,proof);
+        // 发布后再核permit，覆盖GUI恰在proof发布前撤销的窗口。
+        if (!current())
+        {
+            proof->live.store(false);
+            auto available=OriginalProbeSourcePhase::Available;
+            proof->phase.compare_exchange_strong(available,OriginalProbeSourcePhase::Revoked);
+            message=QStringLiteral("来源凭据发布时准备许可已撤销或到期，未发送。" );
+        }
+        expireOriginalProbeSource();
+        if (message.isEmpty() && (!current() || !proof->live.load()))
+            message=QStringLiteral("单孔探测来源返回前已撤销或到期，未发送。" );
+    }
+    if (!message.isEmpty())
+    {
+        result.success=false; result.message=message;
+        if (lease && lease->proof)
+        {
+            lease->proof->live.store(false);
+            auto available=OriginalProbeSourcePhase::Available;
+            lease->proof->phase.compare_exchange_strong(available,OriginalProbeSourcePhase::Revoked);
+            expireOriginalProbeSource();
+        }
+    }
+    lease.reset(); // 失败局部锁在发结果前确定释放；已发布锁仅由worker槽/期限回收。
+    emit originalProbePrepared(result);
+}
 
 void ReagentStore::setOriginalDeviceOperationContext(quint64 connection,QStringList operations)
 {
@@ -27,9 +278,8 @@ bool ReagentStore::authorizeOriginalDeviceOperation(quint64 request,quint64 conn
     auto next=std::make_shared<OriginalDeviceOperationPermit>(*before);
     next->request=request; next->operation=operation;
     next->preparationClaimed=false;
-    // 原单孔等待为10秒；界面事件延迟不能把已超时的优先级回读重新放行。
-    next->deadline=operation==QStringLiteral("prioritizeHole") ?
-        std::chrono::steady_clock::now()+std::chrono::seconds(10) : std::chrono::steady_clock::time_point::max();
+    // 优先级沿既有10秒；旧非priority准备也有限期，不把准备许可延长到设备动作结束。
+    next->deadline=std::chrono::steady_clock::now()+std::chrono::seconds(10);
     std::shared_ptr<const OriginalDeviceOperationPermit> permit=next;
     return std::atomic_compare_exchange_strong(&deviceOperationPermit_,&before,permit);
 }
@@ -38,15 +288,18 @@ void ReagentStore::initializeOriginal(QString root)
 {
     qRegisterMetaType<ReagentProject>();
     qRegisterMetaType<OriginalTaskReagents::Commit>("OriginalTaskReagents::Commit");
+    qRegisterMetaType<OriginalReagentProbe::Request>("OriginalReagentProbe::Request");
+    qRegisterMetaType<OriginalReagentProbe::Prepared>("OriginalReagentProbe::Prepared");
     if (!onWorker(QStringLiteral("初始化原试剂"))) return;
+    attachOriginalProbeSourceCleanup();
     close();
     std::unique_ptr<OriginalReagentEditor> editor(new OriginalReagentEditor);
     QString message;
-    if (!editor->initialize(root,&message))
+    if (!editor->initialize(root,&message,pageMetadata_))
     { emit error(QStringLiteral("初始化原试剂"),message); return; }
     originalEditor_=std::move(editor);
     ready_=true;
-    loadOriginal();
+    if (!loadOriginal()) { ready_=false; originalEditor_.reset(); return; }
     emit ready();
 }
 
@@ -82,6 +335,15 @@ void ReagentStore::loadOriginalLevelObservation(QString root)
     if (!OriginalProjectCopy::noPending(root,&message))
     { emit error(operation,QStringLiteral("N页面重读遇到待核复制，未由N触发恢复：")+message); return; }
     loadOriginal(); // 两锁覆盖共享编辑器读取及快照发出，N不调用复制恢复入口。
+}
+
+void ReagentStore::rebuildOriginalPageMetadata(QString root, OriginalReagentPageMetadata::SourceTicket expected)
+{
+    if (!onWorker(QStringLiteral("重建原盘面批号")) || !originalEditor_) return;
+    QString message;
+    if (!originalEditor_->rebuildPageMetadata(root,expected,&message))
+    { emit error(QStringLiteral("重建原盘面批号"),message); return; }
+    loadOriginal();
 }
 
 bool ReagentStore::loadOriginal()

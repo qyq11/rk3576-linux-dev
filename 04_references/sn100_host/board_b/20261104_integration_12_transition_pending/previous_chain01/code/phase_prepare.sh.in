@@ -1,0 +1,15 @@
+require_phase prepare
+lock_store
+check_live_old
+check_old_release
+check_new_release
+begin_phase
+[[ ! -e $flat && ! -L $flat ]] || runtime_fail '平层版本已存在，不覆盖。'
+check_phase_materials
+check_live_old
+cp -a -- "$nested" "$flat"
+check_new_release both
+check_live_old
+check_old_release
+receipt_details() { printf 'FLAT_PREPARED=1\nNESTED_PRESERVED=1\nCURRENT_CHANGED=0\nPROGRAM_STARTED=0\nCLOSE_REQUESTED=0\n'; }
+emit_receipt

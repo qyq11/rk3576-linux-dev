@@ -4,6 +4,7 @@
 #include "protocol/tcp_transport.h"
 #include "protocol/status_session.h"
 #include <QSet>
+#include <chrono>
 #include <QElapsedTimer>
 #include <QTimer>
 
@@ -57,6 +58,12 @@ public:
     bool silenceAlarm();
     bool sendTaskReply(const QByteArray &payload);
     bool sendOriginalConfiguration(const QByteArray &payload);
+    QString reagentProbeBlocker(const QString &area, bool executing = false) const;
+    bool sendReagentProbe(const QString &token, quint64 connection, const QByteArray &payload,
+                          const QString &hole, const QString &area, std::chrono::steady_clock::time_point prepareUntil);
+    bool reagentProbeMayHaveQueued(const QString &token) const { return token==probeOwner_ && probeMayHaveQueued_; }
+    void finishReagentProbe(const QString &token, bool unknown);
+    bool reagentProbeUnresolved() const { return !probeOwner_.isEmpty() || probeUnknown_; }
     bool maintenanceCommand(const QByteArray &payload);
     bool updateDeviceTime();
     bool confirmObservedState();
@@ -90,9 +97,11 @@ private:
     QSet<QString> blockingAlarmCodes_;
     bool alarmPolicyAvailable_ = false;
     QString uncertainCommand_;
+    QString probeOwner_;
+    bool probeMayHaveQueued_ = false, probeUnknown_ = false;
     QByteArray lastMaintenance_;
     qint64 lastMaintenanceAt_ = -1;
-    bool send(const QByteArray &payload, const QString &pending = QString());
+    bool send(const QByteArray &payload, const QString &pending = QString(), bool ownProbe = false);
     bool reject(const QString &message);
     void receive(const QByteArray &message, quint64 connection);
     void tick();

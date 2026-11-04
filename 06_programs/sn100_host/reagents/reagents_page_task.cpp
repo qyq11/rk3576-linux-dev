@@ -75,6 +75,7 @@ bool validTaskIdentity(const TaskIdentity &identity)
 QByteArray basisBytes(const RuntimeBasis &b)
 {
     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
+    out<<OriginalTaskReagents::taskOriginBytes(b);
     out<<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
        <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
        <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
@@ -90,7 +91,7 @@ QByteArray receiptSignature(const Commit &r)
 {
     // 有界单槽重复回执核对：连typed原行、任务明细也核，不只比较receiptId或原包SHA。
     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
-    out<<r.receiptId<<int(r.action)<<basisBytes(r.basis)<<r.root<<r.payloadSha256<<r.settingTable
+    out<<r.receiptId<<int(r.action)<<basisBytes(r.basis)<<r.root<<r.payloadSha256<<r.originDigest<<r.settingTable
        <<int(r.transaction)<<r.committed<<r.reagentSqlWritten<<r.postCommitVerified<<r.basisMatchesDatabaseBefore
        <<r.beforeVersions<<r.afterVersions<<r.proofMessage;
     for (const auto *plate : {&r.beforePlate,&r.afterPlate})
@@ -161,6 +162,7 @@ RuntimeAdoption unadopted(const Commit &r,const QString &message)
 {
     RuntimeAdoption result;
     result.actionId=r.basis.actionId; result.arrivalPacketId=r.basis.arrivalPacketId;
+    result.source=r.basis.source; result.originDigest=r.basis.originDigest; result.userRequestId=r.basis.userOperation.requestId;
     result.connection=r.basis.connection; result.permissionRevision=r.basis.permissionRevision;
     result.receiptId=r.receiptId; result.basisToken=r.basis.basisToken; result.root=r.root;
     result.payloadSha256=r.payloadSha256; result.transaction=r.transaction; result.committed=r.committed;
@@ -409,7 +411,7 @@ OriginalTaskReagents::RuntimeBasis ReagentsPage::freezeOriginalTaskReagentBasis(
     if (QThread::currentThread()!=thread()) return reject(QStringLiteral("任务页面依据只能在页面所属线程冻结。"));
     if (originalTaskReagentBasis_ || originalTaskReagentCommit_)
         return reject(QStringLiteral("上一动作的页面依据或重读尚未收尾，未覆盖它；本次任务本身仍按原流程处理。"));
-    if (!seed.actionId || seed.actionId<=originalTaskReagentActionFloor_ || !seed.arrivalPacketId || seed.basisToken.isEmpty())
+    if (!seed.actionId || seed.actionId<=originalTaskReagentActionFloor_ || !OriginalTaskReagents::validTaskOrigin(seed) || seed.basisToken.isEmpty())
         return reject(QStringLiteral("任务动作编号或冻结标识缺失、已使用或过期，未复用旧依据。"));
     if (!session_.authenticated || !originalLevelRuntime_ || !originalTaskReagentProviderToken_ ||
         !originalTaskIdentityMatchesBasis(seed) || !sameSession(originalTaskReagentIdentitySession_,session_) ||

@@ -1,0 +1,66 @@
+{
+  "format": "sn100-integration-12-01-fresh-baseline-v1",
+  "board_serial": "8314b1e8ffd0321f",
+  "boot_id": "0eb94389-f120-42ad-9042-9c21d96a1481",
+  "old_current": "releases/c7cbf438a3a034b25ae22accfaf48bacf0717174ce85bef2203ce8db143cb06e",
+  "old_application": {
+    "run": "/home/rkshare/programs/sn100_shell/runs/20261103_221819_662833",
+    "pid": "669382",
+    "start_ticks": "2102645",
+    "uid": "1000",
+    "exe": "/home/rkshare/programs/sn100_shell/releases/c7cbf438a3a034b25ae22accfaf48bacf0717174ce85bef2203ce8db143cb06e/sn100_shell",
+    "sha256": "50d3f3b510772e717e456cc4e3e910060a82a6635b9d914f033e79f9ed6f0258",
+    "helper_sha256": "e3587bad320003bf1a2ea7b3176bf14d23527ebaae65b60ffb4bd5388d3866d2"
+  },
+  "controller": {
+    "pid": "5008",
+    "start_ticks": "118180",
+    "uid": "0",
+    "exe": "/userdata/shared/ACA_V1.0OffLineD-500",
+    "sha256": "ee8e1932f9a9f33d0bbffebfc9e161515dd79a53f50c78da274b04ef837d81ff",
+    "listen_endpoints": "0.0.0.0:5000"
+  },
+  "camera_processes": [
+    {
+      "role": "camera",
+      "pid": "2046481",
+      "start_ticks": "5701959",
+      "uid": "0",
+      "exe": "/opt/opto-camera/bin/opto-camera",
+      "sha256": "7a128358683d146319d6c79fccbfc10b144937083ca2647a2cd03355fe2ed4c4"
+    },
+    {
+      "role": "three_a",
+      "pid": "139148",
+      "start_ticks": "847289",
+      "uid": "0",
+      "exe": "/usr/bin/rkaiq_3A_server",
+      "sha256": "bd7b443fd92bf853c71a1816f2ad8ea5ebeef88601b1fe1a8039f7ec321178c0"
+    }
+  ],
+  "camera_service": {
+    "unit": "opto-camera.service",
+    "active_state": "active",
+    "sub_state": "running",
+    "main_pid": "2046481"
+  },
+  "configuration_manifest": {
+    "path": "04_references/sn100_host/board_b/20261103_integration_10_keep_running/observation/configuration.sha256",
+    "sha256": "ad11ae68d8ed119a5a34ed65acf98dc2d15bafba6afaa950bee5fd7d3805981c",
+    "bytes": 775
+  },
+  "pointers": [
+    {
+      "path": "/home/rkshare/programs/sn100_shell/original_project_root",
+      "sha256": "423baacf81fc1073b653eedd14651d701c3648b7e3324491d2a53f9d7af0f7a9"
+    },
+    {
+      "path": "/home/rkshare/programs/sn100_shell/instrument_configuration_file",
+      "sha256": "acf0371f227fc6fbcad1cff6a355c956d34105cec33546d980abab9317416422"
+    },
+    {
+      "path": "/home/rkshare/programs/sn100_shell/theme_configuration_file",
+      "sha256": "b89f9a8af4a052739555b0df65127859c7060bffc3ca204de1238556f7d3bf5c"
+    }
+  ]
+}

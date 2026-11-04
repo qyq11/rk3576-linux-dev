@@ -21,12 +21,17 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QScroller>
+#include <QScrollBar>
 #include <QSet>
 #include <QSignalBlocker>
 #include <QTableWidget>
 #include <QTextBrowser>
 #include <QTextDocument>
+#include <QTextCursor>
+#include <QTextEdit>
+#include <QToolTip>
 #include <QThread>
+#include <limits>
 
 namespace
 {
@@ -35,6 +40,66 @@ const QString buttonStyle = QStringLiteral(
     ".QPushButton{background-color:rgba(42,118,242,255);color:#FFFFFF;border-radius:4px;padding:2px;}"
     ".QPushButton:hover{background-color:rgba(42,118,242,170);}"
     ".QPushButton:pressed{background-color:rgba(135,206,250,255);}");
+
+
+// ASCII是一字节一字符。先完整检查，不能用会替换字符或遇NUL截断的转换。
+bool encodeCommunicationAscii(const QString &text, QByteArray *bytes, QString *message)
+{
+    if (bytes) bytes->clear();
+    if (message) message->clear();
+    for (int index=0;index<text.size();++index)
+    {
+        if (text.at(index).unicode() <= 0x7f) continue;
+        uint code=text.at(index).unicode();
+        if (text.at(index).isHighSurrogate() && index+1<text.size() && text.at(index+1).isLowSurrogate())
+            code=QChar::surrogateToUcs4(text.at(index),text.at(index+1));
+        if (message) *message=QCoreApplication::translate("InstrumentPage",
+            "第%1个文本位置含非ASCII字符（U+%2）；ASCII转换失败，原内容已保留。")
+            .arg(index+1).arg(QString::number(code,16).toUpper().rightJustified(4,QLatin1Char('0')));
+        return false;
+    }
+    if (bytes)
+    {
+        bytes->reserve(text.size());
+        for (const QChar character : text) bytes->append(static_cast<char>(character.unicode()));
+    }
+    return true;
+}
+
+QString communicationAsciiDisplay(const QByteArray &bytes)
+{
+    static const char hex[]="0123456789ABCDEF";
+    QString text;
+    text.reserve(bytes.size()*4);
+    for (const char raw : bytes)
+    {
+        const unsigned char value=static_cast<unsigned char>(raw);
+        if (value == '\\') text+=QStringLiteral("\\\\");
+        else if (value >= 0x20 && value <= 0x7e) text+=QChar(value);
+        else
+        {
+            text+=QStringLiteral("\\x");
+            text+=QLatin1Char(hex[value>>4]);
+            text+=QLatin1Char(hex[value&0x0f]);
+        }
+    }
+    return text;
+}
+
+void appendCommunicationLine(QTextBrowser *view, const QString &line)
+{
+    // 沿原append习惯，仅原来位于底部时跟随；不移动使用者的光标或选择。
+    QScrollBar *scroll=view->verticalScrollBar();
+    const bool atBottom=scroll->value() >= scroll->maximum();
+    // 直接插入纯文本，保留连续空格，不把设备内容作为HTML解释。
+    QTextCursor cursor(view->document());
+    cursor.beginEditBlock();
+    cursor.movePosition(QTextCursor::End);
+    if (!view->document()->isEmpty()) cursor.insertBlock();
+    cursor.insertText(line);
+    cursor.endEditBlock();
+    if (atBottom) scroll->setValue(scroll->maximum());
+}
 
 bool mayRecordManualMaintenance(const AccountSession &session)
 {
@@ -49,6 +114,19 @@ quint64 nextConnectionRequest()
     static QAtomicInteger<quint64> sequence(0);
     return sequence.fetchAndAddRelaxed(1) + 1;
 }
+
+quint64 nextManualCommunicationRequest()
+{
+    // 页面重建也不复用旧请求号；耗尽时拒绝，不从0重新编号。
+    static QAtomicInteger<quint64> sequence(0);
+    quint64 previous=sequence.loadRelaxed();
+    while (previous<std::numeric_limits<quint64>::max())
+    {
+        if (sequence.testAndSetRelaxed(previous,previous+1)) return previous+1;
+        previous=sequence.loadRelaxed();
+    }
+    return 0;
+}
 }
 
 InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
@@ -59,6 +137,9 @@ InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
     applyOriginalStyle();
     disableDeviceActions();
     clearDeviceValues(true);
+    connect(ui->sendTextEdit,&QTextEdit::textChanged,this,&InstrumentPage::refreshCommunicationAsciiInput);
+    refreshCommunicationAsciiInput();
+    connect(ui->push_send_btn,&QPushButton::clicked,this,&InstrumentPage::requestManualCommunication);
     displayedValues_=OriginalInstrument::statusDisplay(displayedSnapshot_,0);
     refreshSensors();
 
@@ -465,6 +546,8 @@ void InstrumentPage::initializeMaintenanceTable(QTableWidget *table, const QStri
 
 void InstrumentPage::setSession(AccountSession session)
 {
+    cancelManualCommunication(tr("会话已变化，旧手动请求不再继续；请核对已有收发，不自动重发。"));
+    ++manualCommunicationSession_;
     session_=session;
     if (store_) QMetaObject::invokeMethod(store_,"setSession",Qt::QueuedConnection,Q_ARG(AccountSession,session));
     updatePermissions();
@@ -514,6 +597,9 @@ void InstrumentPage::attachDeviceControl(DeviceControl *control, bool connectAtS
     autoConnectDevice_ = connectAtStartup;
     connect(control, &DeviceControl::changed, this, [this](const DeviceControlState &state)
     {
+        if (manualCommunicationPending_ && (!state.connected ||
+            manualCommunicationConnection_!=deviceControl_->connectionGeneration()))
+            cancelManualCommunication(tr("设备连接已失效或换代，旧手动请求停止等待；不转交新连接或自动重发。"));
         if (deviceControl_ && communicationGeneration_ != deviceControl_->connectionGeneration())
         {
             communicationGeneration_=deviceControl_->connectionGeneration();
@@ -546,7 +632,8 @@ void InstrumentPage::attachDeviceControl(DeviceControl *control, bool connectAtS
         QTextBrowser *view = direction.startsWith(QStringLiteral("TX"))
                                  ? ui->textBrowser_SendData : ui->textBrowser_ReceiveData;
         if (view->document()->blockCount() > 500) view->clear();
-        view->append(direction + QStringLiteral(" hex=") + QString::fromLatin1(bytes.toHex(' ')));
+        appendCommunicationLine(view,direction + QStringLiteral(" ASCII=") + communicationAsciiDisplay(bytes) +
+            QStringLiteral(" hex=") + QString::fromLatin1(bytes.toHex(' ')));
     });
     connect(control,&DeviceControl::payloadReceived,this,[this](const QByteArray &payload)
     {
@@ -605,6 +692,11 @@ void InstrumentPage::updateDeviceButtons()
             button->setToolTip(tr("沿用原Windows仪器通信测试页的命令；实际返回见收发区域。"));
         }
     ui->pushButton_updateTime->setEnabled(available && connected);
+    const bool realAdministrator=administrator && (session_.source==AccountSessionSource::Password ||
+        session_.source==AccountSessionSource::Configured);
+    ui->push_send_btn->setEnabled(manualCommunicationConsumerReady_ && realAdministrator && connected &&
+        !isBusy() && !connectionDirty_ && !manualCommunicationPending_);
+    ui->push_send_btn->setToolTip(tr("本片支持精确正文Qj、Qk、QH、Ts、Tp[0]、Mz、Uh；其余正文尚未兼容。开始、暂停与静音沿主流程确认；Uh会独立回读保存通道资料，入队不表示已回读完成；输入不会自动改写。"));
 }
 
 void InstrumentPage::setBusy(bool busy)
@@ -1012,30 +1104,148 @@ bool InstrumentPage::applyOriginalRuntime(const OriginalRuntime::RuntimeSettings
     return true;
 }
 
+bool InstrumentPage::prepareCommunicationAsciiPayload(QByteArray *payload, QString *message) const
+{
+    // toPlainText会先把不换行空格改为普通空格，必须先保留原字符再检查。
+    QString text=ui->sendTextEdit->document()->toRawText();
+    text.replace(QChar(QChar::ParagraphSeparator),QLatin1Char('\n'));
+    return encodeCommunicationAscii(text,payload,message);
+}
+
+void InstrumentPage::setManualCommunicationConsumerReady(bool ready)
+{
+    if (!ready) cancelManualCommunication(tr("手动请求消费者已撤销，旧请求不再继续。"));
+    manualCommunicationConsumerReady_=ready;
+    updateDeviceButtons();
+}
+
+QString InstrumentPage::manualCommunicationRequestBlocker(quint64 request, quint64 session,
+    quint64 connection, const QByteArray &payload) const
+{
+    if (!request || request!=manualCommunicationPending_ || session!=manualCommunicationSession_ ||
+        connection!=manualCommunicationConnection_ || payload!=manualCommunicationPayload_)
+        return tr("本次手动请求已撤销或不属于原点击，未继续处理。");
+    if (!manualCommunicationConsumerReady_ || !session_.authenticated || session_.role!=5 ||
+        (session_.source!=AccountSessionSource::Password && session_.source!=AccountSessionSource::Configured))
+        return tr("本次手动请求需要当前真实管理员会话。");
+    if (!deviceControl_ || !deviceControl_->state().connected ||
+        connection!=deviceControl_->connectionGeneration()) return tr("本次手动请求的设备连接已失效。");
+    if (isBusy() || connectionDirty_) return tr("仪器页面正在处理或连接设置尚未保存，未继续本次手动请求。");
+    return QString();
+}
+
+void InstrumentPage::showManualCommunicationMessage(const QString &stage, const QString &message)
+{
+    setProperty("manualCommunicationStage",stage);
+    setProperty("manualCommunicationMessage",message);
+    report(message);
+    if (isVisible() && ui->stackedWidget->currentIndex()==7 && isActiveWindow())
+        QToolTip::showText(ui->push_send_btn->mapToGlobal(QPoint(0,ui->push_send_btn->height())),
+            message,ui->push_send_btn);
+}
+
+void InstrumentPage::requestManualCommunication()
+{
+    if (manualCommunicationPending_) return;
+    if (!manualCommunicationConsumerReady_ || !session_.authenticated || session_.role!=5 ||
+        (session_.source!=AccountSessionSource::Password && session_.source!=AccountSessionSource::Configured) ||
+        !deviceControl_ || !deviceControl_->state().connected || isBusy() || connectionDirty_)
+    { showManualCommunicationMessage(QStringLiteral("rejected"),tr("当前会话、连接或页面状态不允许手动提交，未调用发送。")); return; }
+    QByteArray payload;
+    QString message;
+    if (!prepareCommunicationAsciiPayload(&payload,&message))
+    { showManualCommunicationMessage(QStringLiteral("encoding-rejected"),message); return; }
+    if (payload.isEmpty())
+    { showManualCommunicationMessage(QStringLiteral("empty"),tr("正文为空，本次未提交。")); return; }
+    if (payload.size()>Sn100Protocol::kMaxMessageBytes)
+    { showManualCommunicationMessage(QStringLiteral("length-rejected"),tr("正文超过当前128000字节整条预算，未截断或提交。")); return; }
+    if (payload!="Qj" && payload!="Qk" && payload!="QH" && payload!="Ts" && payload!="Tp[0]" && payload!="Mz" && payload!="Uh")
+    { showManualCommunicationMessage(QStringLiteral("unsupported"),tr("ASCII编码合法，但本正文尚未接入相应业务流程，本次未提交；并非设备拒绝。")); return; }
+    const quint64 request=nextManualCommunicationRequest();
+    if (!request)
+    { showManualCommunicationMessage(QStringLiteral("rejected"),tr("当前进程的手动请求号已耗尽，未复用旧编号或提交。")); return; }
+    manualCommunicationPending_=request;
+    manualCommunicationConnection_=deviceControl_->connectionGeneration();
+    manualCommunicationPayload_=payload;
+    const quint64 session=manualCommunicationSession_;
+    const quint64 connection=manualCommunicationConnection_;
+    const AccountSession identity=session_;
+    updateDeviceButtons();
+    // 先登记等待再发值副本，主窗可同步拒绝，不能在emit返回后恢复旧等待。
+    showManualCommunicationMessage(QStringLiteral("requested"),tr("已转交本次手动请求，仍待主流程核对；尚未确认入队或完成。"));
+    const QString blocker=manualCommunicationRequestBlocker(request,session,connection,payload);
+    if (!blocker.isEmpty())
+    {
+        if (manualCommunicationPending_==request && manualCommunicationSession_==session)
+            cancelManualCommunication(blocker);
+        return;
+    }
+    emit manualCommunicationRequested(request,session,connection,identity,payload);
+}
+
+void InstrumentPage::cancelManualCommunication(const QString &reason)
+{
+    if (!manualCommunicationPending_) return;
+    const quint64 request=manualCommunicationPending_, session=manualCommunicationSession_;
+    const quint64 connection=manualCommunicationConnection_;
+    manualCommunicationPending_=0; manualCommunicationConnection_=0; manualCommunicationPayload_.clear();
+    updateDeviceButtons();
+    emit manualCommunicationRevoked(request,session,connection,reason);
+    showManualCommunicationMessage(QStringLiteral("revoked"),reason);
+}
+
+void InstrumentPage::receiveManualCommunicationResult(quint64 request, quint64 session, quint64 connection,
+    bool terminal, const QString &stage, const QString &message)
+{
+    if (!request || request!=manualCommunicationPending_ || session!=manualCommunicationSession_ ||
+        connection!=manualCommunicationConnection_) return;
+    if (terminal)
+    { manualCommunicationPending_=0; manualCommunicationConnection_=0; manualCommunicationPayload_.clear(); }
+    updateDeviceButtons();
+    showManualCommunicationMessage(stage,message);
+}
+
+void InstrumentPage::refreshCommunicationAsciiInput()
+{
+    QString message;
+    const bool valid=prepareCommunicationAsciiPayload(nullptr,&message);
+    const QString previous=ui->sendTextEdit->property("communicationAsciiInputError").toString();
+    ui->sendTextEdit->setProperty("communicationAsciiInputValid",valid);
+    ui->sendTextEdit->setProperty("communicationAsciiInputError",message);
+    ui->sendTextEdit->setAccessibleDescription(valid ? tr("通讯测试ASCII输入") : message);
+    ui->sendTextEdit->setToolTip(valid
+        ? tr("仅接受ASCII字符；回车为LF，文字形式的\\xHH按原文字保留。输入检查通过不表示命令已发送。")
+        : message);
+    if (!valid && message!=previous && ui->sendTextEdit->hasFocus())
+        QToolTip::showText(ui->sendTextEdit->mapToGlobal(QPoint(0,ui->sendTextEdit->height())),
+            message,ui->sendTextEdit);
+    else if (valid && !previous.isEmpty() && ui->sendTextEdit->hasFocus()) QToolTip::hideText();
+}
+
 void InstrumentPage::appendOriginalCommunication(bool transmitted, const QByteArray &payload)
 {
     if (!showCommunication_) return;
-    const QString text=QString::fromUtf8(payload);
     if (!transmitted)
     {
-        // 原接收窗口先执行显示名单，只有未启用它时才执行屏蔽名单；发送窗口不筛名单。
+        // 仅过滤沿用旧正文解码；ASCII展示另行生成，不改变名单匹配或空项含义。
+        const QString filterText=QString::fromUtf8(payload);
         if (showOnlyCommunication_)
         {
             bool found=false;
-            for (const QString &command : shownCommunication_) if (text.contains(command)) {found=true;break;}
+            for (const QString &command : shownCommunication_) if (filterText.contains(command)) {found=true;break;}
             if (!found) return;
         }
         else if (maskCommunication_)
         {
-            for (const QString &command : maskedCommunication_) if (text.contains(command)) return;
+            for (const QString &command : maskedCommunication_) if (filterText.contains(command)) return;
         }
     }
+    const QString text=communicationAsciiDisplay(payload);
     QTextBrowser *view=transmitted ? ui->textBrowser_SendData : ui->textBrowser_ReceiveData;
     const QString line=QDateTime::currentDateTime().toString(QStringLiteral("HH:mm:ss:zzz")) +
         (transmitted ? QStringLiteral(" TX ") : QStringLiteral(" RX ")) + text +
         QStringLiteral(" hex=") + QString::fromLatin1(payload.toHex(' '));
-    // 当作纯文本追加，设备字段中的尖括号不会成为页面HTML；十六进制仍保留实际字节。
-    view->append(line.toHtmlEscaped());
+    appendCommunicationLine(view,line);
     if (transmitted) ui->label_SendCount->setText(QString::number(++sentCommunication_));
     else ui->label_ReceiveCount->setText(QString::number(++receivedCommunication_));
 }

@@ -1,0 +1,39 @@
+{
+  "all_intended_source_slices_present": false,
+  "format": "sn100-stage12-source-input-gaps-v1",
+  "frozen": false,
+  "notice": "这里的received=false只反映本准备时尚未纳入材料；不得猜实际退出，不说明Root尚未或不能执行。历史失败空列表亦不表示无失败。",
+  "prepared_at": "2026-11-04T00:48:50.703602+00:00",
+  "required": [
+    {
+      "id": "root_actual_adoption",
+      "received": false,
+      "required": "Root真实接纳脚本原件、外层工具调用/退出/日志；不把私有重放当正式采用。"
+    },
+    {
+      "id": "actual_check_apply",
+      "received": false,
+      "required": "本片正式git apply --check和apply的原argv、cwd、实际退出及stdout/stderr；真实失败原件如有也单列保留。"
+    },
+    {
+      "id": "actual_before_after",
+      "received": false,
+      "required": "Root正式完整before/after原快照、原snapshot命令/退出/输出；Windows native/raw与路径规范化各自固定，不改源码SHA值。"
+    },
+    {
+      "id": "actual_acceptance",
+      "received": false,
+      "required": "Root实际后像接纳记录，证明688实际after与批准0e5c字典及6份后像相同；不是合成期望。"
+    },
+    {
+      "id": "git_environment",
+      "received": false,
+      "required": "本批真实Git配置/根属性与命令级选项来源；Root确认上次实录是否仍适用，或另补真实只读采集。"
+    },
+    {
+      "id": "root_approval_and_freeze",
+      "received": false,
+      "required": "真实Root范围批准；必要独审通过后另存冻结spec，保留本draft；不反绑未来spec/review/progress制造SHA循环。"
+    }
+  ]
+}

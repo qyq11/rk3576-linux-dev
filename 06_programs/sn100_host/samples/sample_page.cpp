@@ -205,7 +205,8 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
             });
     connect(ui->btnAdd, &CusBadgeButton::clicked, this, &SamplePage::addRack);
     connect(ui->btnMenuSave, &QPushButton::clicked, this, &SamplePage::saveRack);
-    connect(ui->btnEditRack, &QPushButton::clicked, this, [this]() { showRack(editing_.id); });
+    connect(ui->btnEditRack, &QPushButton::clicked, this,
+            [this]() { if (prepareToLeave()) showRack(editing_.id); });
     connect(ui->btnMenuReturn, &QPushButton::clicked, this,
             [this]()
             {
@@ -313,6 +314,57 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
                 initialized_ = true;
                 reload();
             });
+    connect(store, &SampleStore::emptyOrdinaryRackRegistered, this,
+            [this](qint64 request, qint64 addedId, SampleSnapshot snapshot)
+            {
+                if (request != request_ || request != pendingAddRequest_)
+                {
+                    return;
+                }
+                snapshot_ = snapshot;
+                ready_ = true;
+                bool exists = false;
+                for (const auto &rack : snapshot_.racks)
+                    if (rack.id == addedId && !rack.emergency) exists = true;
+                if (!exists || addedId <= 0)
+                {
+                    pendingAddRequest_ = 0;
+                    setBusy(false);
+                    report(tr("新增返回的运行态架列表不完整，未切换当前编辑。"));
+                    emit operationFinished("addRack", false);
+                    return;
+                }
+                // 原版先新增一行，再询问旧设置；取消切换时新架和旧草稿都保留。
+                selectAfter_ = 0;
+                const bool deviceChangesIncluded = pendingDeviceReload_;
+                pendingDeviceReload_ = false; // 同一工作线程在此快照之前的设备变化已包含。
+                const QPointer<SamplePage> page(this);
+                refreshRackList();
+                setBusy(false);
+                if (!page) return;
+                if (!initialized_ || pendingAddRequest_ != request)
+                {
+                    emit operationFinished("addRack", false);
+                    return;
+                }
+                const bool switchToAddedRack = !openAddedRack_ || prepareToLeave();
+                if (!page) return;
+                if (!initialized_ || pendingAddRequest_ != request)
+                {
+                    emit operationFinished("addRack", false);
+                    return;
+                }
+                pendingAddRequest_ = 0;
+                if (switchToAddedRack) selectRack(addedId, openAddedRack_);
+                else actions();
+                report((switchToAddedRack ? tr("已新增普通架；可连续新增，双击样本架后设置。")
+                                         : tr("已新增普通架；当前未保存设置保留，尚未切换到新架。")) + qualityWarning_);
+                // 仅空架不触发自动参数同步；此前真实设备变化的通知义务继续交给主窗口。
+                if (deviceChangesIncluded) emit snapshotChanged(snapshot_);
+                emit operationFinished("addRack", true);
+                if (pendingDeviceReload_ && !dirty_ && !dialogDirty_)
+                    QTimer::singleShot(0, this, &SamplePage::reloadRuntimeSnapshot);
+            });
     connect(store, &SampleStore::snapshotReady, this,
             [this](qint64 request, SampleSnapshot snapshot)
             {
@@ -320,6 +372,9 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
                 {
                     return;
                 }
+                const bool runtimeOnly = request == runtimeSnapshotRequest_;
+                runtimeSnapshotRequest_ = 0;
+                const bool openEditor = !ready_ || !settingWidget_->isHidden();
                 snapshot_ = snapshot;
                 ready_ = true;
                 qint64 selected = selectAfter_ ? selectAfter_ : editing_.id;
@@ -338,7 +393,7 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
                 }
                 if (!dirty_)
                 {
-                    showRack(selected);
+                    selectRack(selected, openEditor);
                 }
                 else
                 {
@@ -350,14 +405,17 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
                     }
                 }
                 setBusy(false);
-                report((originalProfile_ ? tr("已读取当前原项目、原组合及样本任务状态。") : tr("本地预设已读取；未下发，真实状态和足料校验待验。"))+qualityWarning_);
+                report((runtimeOnly ? tr("已刷新运行态样本架列表。")
+                                    : originalProfile_ ? tr("已读取当前原项目、原组合及样本任务状态。")
+                                         : tr("本地预设已读取；未下发，真实状态和足料校验待验。"))+qualityWarning_);
                 if (pendingDeviceReload_ && !dirty_ && !dialogDirty_)
                 {
                     pendingDeviceReload_ = false;
-                    QTimer::singleShot(0, this, &SamplePage::reload);
+                    if (runtimeOnly) QTimer::singleShot(0, this, &SamplePage::reloadRuntimeSnapshot);
+                    else QTimer::singleShot(0, this, &SamplePage::reload);
                 }
                 emit snapshotChanged(snapshot_);
-                emit operationFinished("load", true);
+                emit operationFinished(runtimeOnly ? "runtimeSnapshot" : "load", true);
             });
     connect(store, &SampleStore::succeeded, this,
             [this](qint64 request, const QString &operation, qint64 id)
@@ -391,8 +449,12 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
                 {
                     return;
                 }
+                const bool addingRack = request && request == pendingAddRequest_;
+                if (addingRack) pendingAddRequest_ = 0;
+                if (request == runtimeSnapshotRequest_) runtimeSnapshotRequest_ = 0;
                 setBusy(false);
                 report(message + qualityWarning_);
+                if (addingRack) emit operationFinished("addRack", false);
                 emit operationFinished(operation, false);
             });
     connect(store,&SampleStore::warning,this,[this](qint64,QString,const QString &message)
@@ -416,6 +478,8 @@ SamplePage::SamplePage(SampleStore *store, QWidget *parent)
             {
                 initialized_ = false;
                 ready_ = false;
+                pendingAddRequest_ = 0;
+                runtimeSnapshotRequest_ = 0;
                 invalidateQualityChoices(tr("样本存储已关闭，质控选择已失效。"));
                 setBusy(false);
                 report(tr("样本存储已关闭；本地草稿保留，不能继续提交。"));
@@ -482,7 +546,7 @@ void SamplePage::setBusy(bool busy)
 void SamplePage::actions()
 {
     QSignalBlocker tableSignals(setting_->tblSetting);
-    const bool edit = ready_ && !busy_ && SampleStore::canEdit(session_);
+    const bool edit = ready_ && !busy_ && !pendingAddRequest_ && SampleStore::canEdit(session_);
     for (QAbstractButton *button :
          QList<QAbstractButton *>{ui->btnMenuSave, ui->btnHoleDetail, ui->btnRepeatHoleTask,
                                   ui->btnDelHoleTask, ui->btnCombSetting, ui->btnDelRack,
@@ -491,7 +555,8 @@ void SamplePage::actions()
     {
         button->setEnabled(edit);
     }
-    ui->btnAdd->setEnabled(edit);
+    ui->btnAdd->setEnabled(ready_ && !busy_ && !pendingAddRequest_ && SampleStore::canEdit(session_));
+    ui->btnEditRack->setEnabled(ready_ && !busy_ && editing_.id > 0);
     setting_->tblSetting->setEnabled(edit);
     const bool ordinary = row_>=0 && row_<editing_.holes.size() && editing_.holes[row_].sampleType==0;
     setting_->btnCalProj->setEnabled(edit && originalProfile_);
@@ -575,7 +640,7 @@ void SamplePage::setSession(AccountSession session)
 }
 void SamplePage::reload()
 {
-    if (!initialized_ || busy_)
+    if (!initialized_ || busy_ || pendingAddRequest_)
     {
         return;
     }
@@ -587,6 +652,18 @@ void SamplePage::reload()
     setBusy(true);
     ++request_;
     QMetaObject::invokeMethod(store_, "load", Qt::QueuedConnection, Q_ARG(qint64, request_));
+}
+void SamplePage::reloadRuntimeSnapshot()
+{
+    if (!initialized_ || busy_ || pendingAddRequest_ || hasUnsavedChanges())
+    {
+        pendingDeviceReload_ = true;
+        return;
+    }
+    pendingDeviceReload_ = false;
+    setBusy(true);
+    runtimeSnapshotRequest_ = ++request_;
+    QMetaObject::invokeMethod(store_, "loadOriginalRuntimeSnapshot", Qt::QueuedConnection, Q_ARG(qint64, request_));
 }
 bool SamplePage::closeEditor()
 {
@@ -608,9 +685,11 @@ bool SamplePage::prepareToLeave()
     {
         return false;
     }
-    if (dirty_ && !confirm(this, tr("当前样本设置未保存，是否放弃？")))
+    if (dirty_)
     {
-        return false;
+        const QPointer<SamplePage> page(this);
+        const bool discard = confirm(this, tr("当前样本设置未保存，是否放弃？"));
+        if (!page || !discard) return false;
     }
     if (dirty_)
     {
@@ -633,14 +712,14 @@ void SamplePage::closeEvent(QCloseEvent *event)
 }
 void SamplePage::markDirty()
 {
-    if (!populating_ && !busy_ && SampleStore::canEdit(session_))
+    if (!populating_ && !busy_ && !pendingAddRequest_ && SampleStore::canEdit(session_))
     {
         dirty_ = true;
     }
 }
 bool SamplePage::canEditHole(int row) const
 {
-    return ready_ && !busy_ && SampleStore::canEdit(session_) && row >= 0 && row < editing_.holes.size() &&
+    return ready_ && !busy_ && !pendingAddRequest_ && SampleStore::canEdit(session_) && row >= 0 && row < editing_.holes.size() &&
            editing_.holes[row].revise &&
            sampleHoleState(sampleHoleTaskStates(editing_.holes[row])) != SampleHoleState::Testing;
 }
@@ -776,7 +855,7 @@ void SamplePage::refreshRackList()
                 {
                     if (id != editing_.id && prepareToLeave())
                     {
-                        showRack(id);
+                        selectRack(id, !settingWidget_->isHidden());
                     }
                 });
         connect(view, &SampleRackView::editRequested, this,
@@ -790,7 +869,7 @@ void SamplePage::refreshRackList()
         connect(view, &SampleRackView::renameRequested, this,
                 [this](qint64 id)
                 {
-                    if (id != editing_.id)
+                    if (id != editing_.id || settingWidget_->isHidden())
                     {
                         if (!prepareToLeave())
                         {
@@ -814,6 +893,10 @@ void SamplePage::refreshRackList()
 }
 void SamplePage::showRack(qint64 id)
 {
+    selectRack(id, true);
+}
+void SamplePage::selectRack(qint64 id, bool openEditor)
+{
     editing_ = SampleRack();
     for (const auto &rack : snapshot_.racks)
     {
@@ -830,14 +913,14 @@ void SamplePage::showRack(qint64 id)
     row_ = 0;
     refreshTable();
     refreshProjects();
-    settingWidget_->setVisible(editing_.id > 0);
-    settingWidget_->raise();
+    settingWidget_->setVisible(openEditor && editing_.id > 0);
+    if (openEditor) settingWidget_->raise();
     refreshRackList();
-    ui->stkFunMenu->setCurrentIndex(1);
+    ui->stkFunMenu->setCurrentIndex(openEditor ? 1 : 0);
     ui->btnDelRack->setVisible(!editing_.emergency);
     ui->btnDelRackAll->setVisible(!editing_.emergency);
-    ui->btnPrvRack->setVisible(!snapshot_.racks.isEmpty() && editing_.id != snapshot_.racks.first().id);
-    ui->btnNextRack->setVisible(!snapshot_.racks.isEmpty() && editing_.id != snapshot_.racks.last().id);
+    ui->btnPrvRack->setVisible(openEditor && !snapshot_.racks.isEmpty() && editing_.id != snapshot_.racks.first().id);
+    ui->btnNextRack->setVisible(openEditor && !snapshot_.racks.isEmpty() && editing_.id != snapshot_.racks.last().id);
     ui->btnPrvRack->raise();
     ui->btnNextRack->raise();
     actions();
@@ -1084,10 +1167,21 @@ void SamplePage::refreshProjectButtons()
 }
 void SamplePage::addRack()
 {
-    if (busy_ || !SampleStore::canEdit(session_) || !prepareToLeave())
+    if (busy_ || pendingAddRequest_ || !SampleStore::canEdit(session_))
     {
         return;
     }
+    if (originalProfile_)
+    {
+        // 只传本页面当前的新孔配置；空架、架号和实际运行态列表由后端创建。
+        openAddedRack_ = !settingWidget_->isHidden();
+        setBusy(true);
+        pendingAddRequest_ = ++request_;
+        QMetaObject::invokeMethod(store_, "registerEmptyOrdinaryRack", Qt::QueuedConnection, Q_ARG(qint64, request_),
+                                  Q_ARG(int, ordinaryHoles_), Q_ARG(bool, originalDefaultContainerIsTube_));
+        return;
+    }
+    if (!prepareToLeave()) return;
     SampleRack rack;
     int number = 1;
     for (; number < 99; ++number)
@@ -1116,8 +1210,6 @@ void SamplePage::addRack()
     {
         SampleHole value;
         value.number = hole;
-        // 仅原资料模式真正新孔应用默认，重读、复制及CAL/QC转换保留自身容器。
-        if (originalProfile_) value.container = originalDefaultContainerIsTube_ ? 0 : 1;
         rack.holes.append(value);
     }
     editing_ = rack;
@@ -1224,7 +1316,7 @@ void SamplePage::clearHole()
 }
 void SamplePage::renameRack()
 {
-    if (dialog_ || busy_ || !SampleStore::canEdit(session_) || editing_.emergency)
+    if (dialog_ || busy_ || pendingAddRequest_ || !SampleStore::canEdit(session_) || editing_.emergency)
     {
         return;
     }

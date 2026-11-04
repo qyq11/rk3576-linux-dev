@@ -1,0 +1,20 @@
+{
+  "sent_at_utc": "2026-11-04T04:16:11.682Z",
+  "destination_thread_id": "01a1a05a-73c4-7380-b761-c35a7fdbf76e",
+  "destination_title": "接管RK3576并推进SN100移植",
+  "authorization": "用户本轮明确要求整理后同步给总控",
+  "content_manifest_sha256": "a51e7b05dfb271471043b05ae4e72901c44452c1ff5a4d7f474a6bd6a39223e5",
+  "content_manifest_scope": "SHA256SUMS覆盖五份报告和source_snapshot.json；不覆盖自身及发送后新增的coordination.json",
+  "scope": "只分析和报告交接，不新增修复/构建/产品运行/板端操作授权",
+  "status": "send_message_to_thread已返回目标threadId；不等于总控已完成逐项审阅",
+  "message": "按用户“按 Windows 原版实际操作全面核对、重点新增/编辑/保存/取消/切换，只分析并同步总控”的明确要求，完整报告已冻结。用户再次强调：全部功能与原操作一致，不接受移植自定的草稿/保存顺序或本地预算改变业务。\n\n请查看总报告：\nC:/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/04_references/sn100_host/operation_flow_audit_20261104/README.md\n\n同目录明细：\n- samples_projects.md：样本/任务、组合、架号/容器、项目参数/复制/删除。\n- reagents_instrument_alarms.md：试剂/条码/孔位/批组、TCP/维护/容量、耗材/告警。\n- results_calibration_qc_lis.md：校准/质控、患者/查询/显示/导出/打印、LIS及预算。\n- settings_navigation.md：医院/账户/打印/语言、主菜单、登录注销和退出。\n每项有原/新函数和行号、计划/记录、已核/确定差异/未接/待核及验证边界。\n\n重要更新：\n1. 已按12:02采用的第14批重新读样本两源。加号/连续新增/选架相关项改为“历史差异已纠正，源码待RK”，不再重复列未修复；整架无dirty不重复更新原版本来也有，不误报。当前仍确认缺原空孔选项目自动样本号；架号点击即采用变成整架更新时采用；组合取消原留窗重读而新关窗；批量部分占用原逐孔跳过而新整批拒绝；原开始时保存并继续缺对应步骤。\n2. 其他高优先差异：批组新增/成员增删即时落库改成统一Save、成员跨组去重遗漏；条码删除确认遗漏并整页重读抹其他未保存资料；医院删行同类覆盖；校准不能复制当前未保存点；质控规则点选即时写库改外层Save及管理保存范围/关窗变化；项目无修改重复Save、复制后选中与有关联删除分支不同；显示排序恢复默认→取消的原落库副作用未保留。\n3. 原异常/空回调/隐藏/调试动作单列。原validator参数不当成严格有效上限，已追实际正则和Save是否重验；原98架、0–99次数、QLineEdit默认长度等保留来源。正常草稿本就属于原规则的，不一概判错。主菜单区分全局busy与当前页草稿：requestCatalogLeave(...,true)不等于每次都清所有隐藏业务页。\n4. 当前新数量/文字/时间限制按“正式路径拒绝”“只是分批”“尚无生产消费者”“有效原范围未核”区分。A9明确列1MiB/4MiB等现有边界；repeat仅标量，不截99、不展开，4096计划项目不等于4096次测试，后续真实展开/资源准入仍无消费者，不称通过。报告384行build/fromJson正式可达，与匿名配置64列条件分开。\n5. Uh、合法配置单孔Mg、批组开关、当前/历史告警、原库写回已有正式链，旧“全未接”结论已纠正。LIS九源入构建与生产应用/ACK/上传未接分开；Simple/nonSimple按isNewProtocal，保留sent/非Idle-Reset跳过及正reportRowID沿用，不把(hole,repeat)当原统一规则。\n\n版本证据：source_snapshot.json包含本轮开始/结束筛选源码及引用指纹。审查期间源码漂移仅sample_page.cpp/.h，与第14批两源匹配；结束后复查无新增漂移。该快照不是正式ARM构建枚举，不用数量衡量完成度。源快照SHA256：\n27c887f622d31e3633e7c1f8fee38b84a7eafb9428810b30d5873674855fbf81\n总报告SHA256：\n7c5d204b0f6645dec92de353a1b96d5cf53b4175216cf0817d63a46756ea32b5\nSHA256SUMS覆盖五份报告和源快照，其自身SHA256：\na51e7b05dfb271471043b05ae4e72901c44452c1ff5a4d7f474a6bd6a39223e5\n\n报告引用/行号/显式锚点、引用标签、表格列和源码末次指纹已静态检查。只新增分析目录，未改业务代码/公共计划/记录，未编译、运行产品、连接或操作板卡、提交推送。请先阅读后统一更新唯一计划和记录中的依赖/验证范围；本次交接只提供分析，不构成新的批量修复或板端操作指令，勿把这些发现混进正在准备的14同源输入。",
+  "tool_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"threadId\":\"01a1a05a-73c4-7380-b761-c35a7fdbf76e\"}"
+      }
+    ],
+    "isError": false
+  }
+}

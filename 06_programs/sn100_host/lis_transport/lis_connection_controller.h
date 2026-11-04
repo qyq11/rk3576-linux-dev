@@ -3,6 +3,7 @@
 
 #include "data/lis_settings_store.h"
 #include "lis_connection_values.h"
+#include <QList>
 #include <QMap>
 #include <QSet>
 
@@ -24,6 +25,9 @@ public:
     bool openConfirmed(quint64 expectedRevision, const QString &expectedToken, QString *error);
     bool sendMessage(quint64 expectedRevision, quint64 expectedGeneration,
                      const QString &body, quint64 *request, QString *error);
+    // 成功返回时即交出精确固定对端；保留上方原方法及成员函数类型。
+    bool sendMessageWithReceipt(quint64 expectedRevision, quint64 expectedGeneration,
+                                const QString &body, QueuedSend *accepted, QString *error);
     void stop(const QString &reason);
     void shutdown();
 
@@ -45,12 +49,15 @@ private:
     struct PendingSend
     {
         ConfigurationIdentity configuration;
+        ReceiveProfilePtr profile;
         quint64 generation = 0;
         QSet<quint64> peers;
     };
     LisTcpTransport *transport_ = nullptr;
     QMap<quint64, PendingSend> pending_;
     ConfigurationIdentity configuration_;
+    ReceiveProfilePtr profile_;
+    QList<std::weak_ptr<const ReceiveProfile>> profiles_; // 只计存活版本，不强持历史。
     ConnectionState state_;
     QString effectiveKey_, latestReadFingerprint_;
     bool reconnect_ = false, initialized_ = false, applying_ = false;
@@ -61,6 +68,7 @@ private:
     quint64 operation_ = 0, nextRevision_ = 0, nextRequest_ = 0;
     bool checkThread(QString *error) const;
     static QString effectiveKey(const LisSettings &settings);
+    bool canAdoptProfile(const LisSettings &settings, QString *error);
     void receiveCommitted(const LisSettings &settings, bool saved);
     void settingsError(const QString &operation, const QString &detail);
     void reportStoppedIfDrained();

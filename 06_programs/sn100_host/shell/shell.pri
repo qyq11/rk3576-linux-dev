@@ -55,9 +55,21 @@ HEADERS += $$PWD/printer_report_shell.h
 # O10-2独立两QPA各17/0通过后接入本地LIS设置，不加载原活动通信类。
 include($$PWD/../ui/lis_settings.pri)
 SOURCES += $$PWD/lis_shell.cpp
+SOURCES += $$PWD/lis_keep_running_observation.cpp
+HEADERS += $$PWD/lis_connection_observer_09.h
 include($$PWD/../lis_transport/lis_transport.pri)
 include($$PWD/../lis_raw_inbox/lis_raw_inbox.pri)
 SOURCES += $$PWD/lis_raw_inbox_shell.cpp
+# LIS首片只登记纯报文与应用计划，不接生产查询、保存或发送入口。
+SOURCES += $$PWD/../lis_business/original_lis_query.cpp \
+           $$PWD/../lis_business/original_lis_download_codec.cpp \
+           $$PWD/../lis_business/original_lis_application_plan.cpp \
+           $$PWD/../lis_business/original_lis_download_ack.cpp
+HEADERS += $$PWD/../lis_business/original_lis_query.h \
+           $$PWD/../lis_business/original_lis_download_types.h \
+           $$PWD/../lis_business/original_lis_download_codec.h \
+           $$PWD/../lis_business/original_lis_application_plan.h \
+           $$PWD/../lis_business/original_lis_download_ack.h
 # O11本地质控；真实测量/临床规则不进入此依赖闭包。
 include($$PWD/../quality_control/qc_core.pri)
 include($$PWD/../quality_control/qc_widgets.pri)

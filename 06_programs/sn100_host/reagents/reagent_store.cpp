@@ -14,6 +14,7 @@
 
 ReagentStore::ReagentStore(QObject* parent)
     : QObject(parent)
+    , pageMetadata_(std::make_shared<OriginalReagentPageMetadata>())
 {
     registerTypes();
 }

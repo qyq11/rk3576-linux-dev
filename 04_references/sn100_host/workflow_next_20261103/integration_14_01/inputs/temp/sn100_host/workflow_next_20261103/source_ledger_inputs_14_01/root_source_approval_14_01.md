@@ -1,0 +1,17 @@
+# Root批准第14批实际源码来源的汇总范围
+
+本批准只用于汇总已经发生的两片源码采用，不重复运行补丁，不是板端启停、登录、专项自动化、切版或发送指令的批准。当前C7及原主控保持，相机工作台按用户要求停止；急诊定义仍待办，生产LIS不开。正式采用范围符合用户完整移植Windows原行为及样本加号修复的授权。
+
+Root选择作者已锁定的`root_spec_14.draft_01.json`，38331字节，SHA `af823fc38bd61d3a5c9984067f5440f76479635b47f8e4b9a1ae3e39a47570d0`。来源是第12批实际688源恢复包及raw清单，经第13批LIS A9真实采用得到697/ed4a，再经第14批样本两源真实采用得到697/169f。原13记录、冻结来源账和未编译事实不追改，不借它的final_review/progress冒称14输出。
+
+第一片LIS A9的原check/apply实际0/0，既有兼容记录保留原命令和证据；第二片样本两源的真实check/apply也是0/0，外层实际0（Tool4805da），命令使用`git -c core.autocrlf=false apply --whitespace=error-all`，未使用三方、模糊忽略或自动修行尾。新样本acceptance兼容记录仅从原`all_after_bytes_equal=true`与实际前后表补聚合器所需字段，保留原件及派生说明，不能称又执行了一次采用。
+
+这两片来源采用没有失败检查，Root明确选择`historical_failed_checks=[]`。这是本次两片源码链的范围：12运行过渡的79/4、其他历史构建/调度及只读命令结果分别原样保留，不能归入本次源码采用失败或清掉。草案的`git_apply_config.post_adoption_readonly_environment`保持null：命令级配置的真实argv已保存，不补造采用时未采集的事后Git环境。
+
+最终完整枚举取`integration_14_source_acceptance_01/sample_add_order/source_after.json`，74988字节，SHA `169f571193b2893e8cbb3df8359c723e414cff89232ccc6e5d3a9274c44022bd`。相对688底稿为9新增、5修改、0删除；相对13中间表仅`samples/sample_page.cpp/.h`两修改，另外695源不变。根属性SHA `c46d8032dc7311b5911dfb7e578ad70ba1258ac924b72675f8b2192c5b9d445a`不变。B1患者/条码候选、全面流程只读审计发现、checker及其修订不纳本次正式源码表。
+
+两源最终03的Root供审副本snapshot SHA `143bbb6ceb6150c998e462c1fedf56011b6938dddf7c835d48801ec849d60a18`，业务独审c5af9411…、异步独审5746bb71…均已固定；源码无确定阻点不代表单击/双击/取消已在RK通过。14九文件阶段代码由13冻结原件仅命名映射，Root副本snapshot SHA `d1c169d322ce4188093d405e2b756958cce1451373c8e7179be815f8c46649da`，代码独审862df85a…完成。文件阶段配置仍false，未完整编译、存包或联板。
+
+只使用原聚合器`source_ledger_candidate_v2.py`，SHA `307674360d5c24c3fe17eae04e5c7a869f7f35021fdaabecb9fd0afedbc165cd`，以新冻结spec运行一次。Root另存冻结spec时只补本批准、本次独立输入审查、上述明确历史范围、当前已齐全标记和唯一新输出目录`temp/sn100_host/workflow_next_20261103/root_source_ledger_final_14_01`；其余草案事实记录保持。不能自绑定尚不存在或包含本批准的未来输出摘要。独立输入审查如有阻点，须先解决并保留原稿，不靠此批准跳过。
+
+来源汇总成功后，Root才基于实际final_review/progress及required_cfg_evidence准备新14文件配置并独审，仅允许完整ARM64构建、独立存包和归档。当前正常关闭保护仍未解除，不重发旧stop，不开第二GUI，不伪造身份或丢弃旧草稿；专项checker已发现两处工具问题，须新修订另审。所有编译、RK软件、仪器、实体输入及资源结果分别登记，复核结束继续留屏。

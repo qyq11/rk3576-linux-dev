@@ -1,0 +1,28 @@
+require_phase prepare
+lock_store
+check_live_old
+check_old_release
+check_new_release
+begin_phase
+check_phase_materials
+check_live_old
+flat_already_present=0
+flat_created_this_phase=0
+if [[ -e $flat || -L $flat ]]; then
+    # 已有flat只核同一完整包；坏链接、缺件或指纹不符由检查拒绝，不修复。
+    check_new_release both
+    flat_already_present=1
+else
+    check_phase_materials
+    check_live_old
+    cp -a -- "$nested" "$flat"
+    flat_created_this_phase=1
+fi
+check_new_release both
+check_live_old
+check_old_release
+receipt_details() {
+    # PREPARED只表示已核准备好；是否本阶段创建由两个互补标志分别说明。
+    printf 'FLAT_PREPARED=1\nFLAT_ALREADY_PRESENT=%s\nFLAT_CREATED_THIS_PHASE=%s\nNESTED_PRESERVED=1\nCURRENT_CHANGED=0\nPROGRAM_STARTED=0\nCLOSE_REQUESTED=0\n' "$flat_already_present" "$flat_created_this_phase"
+}
+emit_receipt

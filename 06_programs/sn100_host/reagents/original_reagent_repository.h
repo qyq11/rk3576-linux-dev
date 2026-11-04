@@ -4,7 +4,10 @@
 #include "samples/original_task_codec.h"
 #include "reagents/reagent_types.h"
 #include <QSet>
+#include "original_reagent_page_metadata.h"
+#include <memory>
 #include <functional>
+#include "original_files/original_ini.h"
 
 struct OriginalReagentState
 {
@@ -30,6 +33,7 @@ struct AmountWork
     QMap<qint64,double> remaining;
     QMap<qint64,QString> finalUsedText;
     QSet<qint64> touched;
+    OriginalReagentPageMetadata::View pageMetadata; // 与真实盘面同寿命的批号；仅本次计算持副本。
 };
 
 // 普通/质控(Normal/QC)每样本孔一份全项目资料；校准(CAL)每项目一份，次数不随扣量重算。
@@ -70,7 +74,10 @@ struct AllocationResult
 class OriginalReagentRepository
 {
 public:
-    bool initialize(const QString &root, QString *message);
+    bool initialize(const QString &root, QString *message,
+                    OriginalIni::InitializationSourcePtr configurationSource = {});
+    OriginalIni::InitializationSourcePtr configurationSource() const { return configurationSource_; }
+    void setPageMetadata(std::shared_ptr<OriginalReagentPageMetadata> metadata) { pageMetadata_ = std::move(metadata); }
     bool load(OriginalReagentState *state, QString *message);
     bool cleanerReady(const OriginalReagentState &state, QString *message) const;
     bool auxiliaryVolumesReady(const OriginalReagentState &state, const QList<OriginalTasks::Task> &tasks,
@@ -112,6 +119,10 @@ public:
                        QString *message);
     bool applyDeviceReply(const QByteArray &payload, QString *message);
 private:
+    OriginalIni::InitializationSourcePtr configurationSource_;
     QString root_, table_;
+    std::shared_ptr<OriginalReagentPageMetadata> pageMetadata_;
+    bool publishMetadataOverwrite(const QStringList &names, bool rebuild,
+        const OriginalReagentPageMetadata::SourceTicket &ticket, QString *message);
 };
 #endif

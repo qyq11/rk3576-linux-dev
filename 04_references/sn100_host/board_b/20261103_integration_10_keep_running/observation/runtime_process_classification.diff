@@ -1,0 +1,21 @@
+--- prepare_flat_batch10_01.sh
++++ prepare_flat_batch10_02.sh
+@@ -89,8 +89,16 @@
+         later_rest=${later##*) }
+         [[ $later_rest != "$later" ]] || return 79
+         IFS=' ' read -r -a later_fields <<<"$later_rest"
+-        [[ ${later_fields[0]-} == "${fields[0]}" && ${later_fields[6]-} == "${fields[6]}" && ${later_fields[19]-} == "${fields[19]}" ]] || return 79
+-        return 1  # 僵尸/死亡或PF_KTHREAD内核线程没有存活用户exe。
++        [[ ${later_fields[6]-} =~ ^[0-9]+$ && ${later_fields[19]-} == "${fields[19]}" ]] || return 79
++        # 内核线程的S/R/D会随调度改变；两次同启动身份且PF_KTHREAD均置才跳过。
++        if (( (10#${fields[6]} & 0x00200000) != 0 && (10#${later_fields[6]} & 0x00200000) != 0 )); then
++            return 1
++        fi
++        # 死亡状态可在Z/X间变化；普通存活用户进程的exe不可读仍拒绝。
++        if [[ ${fields[0]-} == Z || ${fields[0]-} == X ]] && [[ ${later_fields[0]-} == Z || ${later_fields[0]-} == X ]]; then
++            return 1
++        fi
++        return 79
+     fi
+     [[ ! -d $proc_dir ]] && return 1
+     echo '存活用户进程exe不可访问；未切换版本。' >&2

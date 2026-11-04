@@ -73,7 +73,9 @@ class SamplePage : public QWidget
     void actions();
     void report(const QString &message);
     void showRack(qint64 id);
+    void selectRack(qint64 id, bool openEditor);
     void refreshRackList();
+    void reloadRuntimeSnapshot();
     void refreshTable();
     void refreshProjects();
     void refreshProjectButtons();
@@ -116,6 +118,9 @@ class SamplePage : public QWidget
     bool initialized_ = false, ready_ = false, busy_ = false, dirty_ = false, dialogDirty_ = false,
          populating_ = false;
     qint64 request_ = 0, selectAfter_ = 0;
+    // 新增直接带回后端运行态快照；确认旧草稿期间仍保留请求号，阻止重复新增。
+    qint64 pendingAddRequest_ = 0, runtimeSnapshotRequest_ = 0;
+    bool openAddedRack_ = false;
     int row_ = 0;
     qint64 qualityChoicesRequest_ = 0;
     qint64 calibrationParametersRequest_ = 0;

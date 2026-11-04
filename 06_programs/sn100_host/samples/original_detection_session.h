@@ -9,8 +9,11 @@
 class OriginalDetectionSession
 {
 public:
-    bool initialize(OriginalSampleRepository *samples, QString *message);
+    bool initialize(OriginalSampleRepository *samples, QString *message,
+                    std::shared_ptr<OriginalReagentPageMetadata> metadata = {},
+                    OriginalIni::InitializationSourcePtr configurationSource = {});
     bool prepare(bool linuxNew, QString *message);
+    bool prepareUserOperation(const OriginalTaskReagents::RuntimeBasis &basis, bool linuxNew, QString *message);
     void cancelUnsent();
     bool answerRackRequest(const QByteArray &request, QByteArray *response, QString *message,
         const OriginalTaskReagents::RuntimeBasis &basis = {}, OriginalTaskReagents::Commit *receipt = nullptr,
@@ -34,11 +37,15 @@ public:
 private:
     OriginalSampleRepository *samples_ = nullptr; // 所有者SampleStore保证会话先于仓库释放。
     OriginalReagentRepository reagents_;
+    std::shared_ptr<OriginalReagentPageMetadata> pageMetadata_;
+    bool capturePageMetadata(const OriginalReagentState &state, OriginalReagentAllocation::AmountWork *work, QString *message) const;
     SampleSnapshot snapshot_;
     ProjectRecords projects_;
     ProjectUnits units_;
     QString root_;
     bool prepared_ = false, linuxNew_ = false;
+    QMap<QString,QString> initializedConfigurationVersions_;
+    OriginalIni::InitializationSourcePtr configurationSource_;
     bool scannerClosed_ = false, rackScannerClosed_ = false, allowMissingBarcode_ = true;
     bool sendByReportRow_ = true, horizontalReport_ = true;
     bool deleteSentTasks_ = false;

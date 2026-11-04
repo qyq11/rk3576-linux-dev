@@ -193,9 +193,11 @@ void DeviceControl::publish(const QString &message)
     emit changed(state_);
 }
 
-bool DeviceControl::send(const QByteArray &payload, const QString &pending)
+bool DeviceControl::send(const QByteArray &payload, const QString &pending, bool ownProbe)
 {
     if (!state_.connected) return reject(tr("主控未连接，请先连接设备。"));
+    if (!ownProbe && reagentProbeUnresolved() && payload!="Qj" && payload!="Qk" && payload!="QH" && payload!="Mz" && payload!="MP")
+        return reject(tr("单孔探测尚在收尾或执行结果待核；未并发发送其他业务/机械命令。"));
     if (!pending.isEmpty() && (!state_.pending.isEmpty() || state_.outcomeUnknown))
         return reject(tr("上一条控制命令尚未确认，不能重复提交；请核对设备状态。"));
     const quint64 intent=connectionIntent_, connection=transport_.generation();
@@ -233,6 +235,7 @@ bool DeviceControl::query(Sn100Protocol::ReadOnlyQuery type)
 
 QString DeviceControl::startBlocker() const
 {
+    if (reagentProbeUnresolved()) return tr("单孔探测尚未收尾或执行结果待核，不能开始测试。");
     if (!state_.connected) return tr("主控未连接，请先连接设备。");
     if (!state_.fresh) return tr("尚未取得有效设备状态，请等待状态返回。");
     if (state_.outcomeUnknown || !state_.pending.isEmpty()) return tr("控制命令尚未确认，请先核对设备状态。");
@@ -448,4 +451,63 @@ void DeviceControl::tick()
         pendingAt_ = -1;
         reject(tr("控制命令10秒未确认，执行结果未知；请核对设备，不自动重发。"));
     }
+}
+
+
+QString DeviceControl::reagentProbeBlocker(const QString &area, bool executing) const
+{
+    if (!state_.connected || !state_.fresh) return tr("主控未连接或本连接Qj状态已失效。");
+    if (probeUnknown_) return tr("此前单孔探测执行结果待核，Qj或通用确认不能清除。");
+    if (!executing && !probeOwner_.isEmpty()) return tr("已有单孔探测正在处理。");
+    if (state_.outcomeUnknown || !state_.pending.isEmpty()) return tr("其他控制动作尚未确认。");
+    if (!executing && (state_.status.ledStatus!=1 || (state_.status.mainStatus!=1 && state_.status.mainStatus!=2)))
+        return tr("未处于原Idle灯配育温/就绪状态，不能探测。");
+    const bool legacy=std::any_of(state_.status.subsystems.cbegin(),state_.status.subsystems.cend(),
+        [](const Sn100Protocol::SubsystemStatus &s){return s.id==3;});
+    if (area==QStringLiteral("r_area"))
+        return requireFlag(state_.status,legacy ? 6 : 32,legacy ? 2 : 12,true,tr("试剂舱盖未关闭或该字段未知"));
+    if (area==QStringLiteral("s_area"))
+    {
+        if (!legacy) return tr("当前协议稀释液舱盖来源尚未确认，未猜测默认关门。");
+        return requireFlag(state_.status,17,3,true,tr("稀释液舱盖未关闭或该字段未知"));
+    }
+    return tr("目标孔区域不是原试剂/稀释液区域。");
+}
+
+bool DeviceControl::sendReagentProbe(const QString &token, quint64 connection, const QByteArray &payload,
+    const QString &hole, const QString &area, std::chrono::steady_clock::time_point prepareUntil)
+{
+    if (token.isEmpty() || !connection || connection!=connectionGeneration() ||
+        std::chrono::steady_clock::now()>=prepareUntil)
+        return reject(tr("单孔探测来源或连接已失效。"));
+    const QString reason=reagentProbeBlocker(area);
+    if (!reason.isEmpty()) return reject(reason);
+    // 窄入口仅接受一个合法孔的原8字段；没有本地token写到线上。
+    if (!payload.startsWith("Mg[1][") || !payload.endsWith(']') || payload.size()>128000)
+        return reject(tr("不是已准备的单孔Mg正文。"));
+    QList<QByteArray> fields;
+    for (int cursor=2;cursor<payload.size();)
+    {
+        if (payload[cursor++]!='[') return reject(tr("Mg字段不完整。"));
+        const int end=payload.indexOf(']',cursor);
+        if (end<cursor || end-cursor>4096) return reject(tr("Mg字段长度无效。"));
+        const QByteArray value=payload.mid(cursor,end-cursor);
+        for (unsigned char ch : value) if (ch<32 || ch=='[') return reject(tr("Mg字段含控制字符或嵌套括号。"));
+        fields.append(value); cursor=end+1;
+    }
+    if (fields.size()!=9 || fields[0]!="1" || fields[1]!=hole.toLatin1() || fields[3]!=area.toLatin1())
+        return reject(tr("Mg正文与冻结的单孔/区域不对应。"));
+    if (std::chrono::steady_clock::now()>=prepareUntil) return reject(tr("单孔Mg入队前准备期限已过。"));
+    probeOwner_=token; probeMayHaveQueued_=true;
+    // 自己的入队例外由调用栈传递；重入的其他公开发送仍受全局门保护。
+    return send(payload,QString(),true);
+}
+
+void DeviceControl::finishReagentProbe(const QString &token, bool unknown)
+{
+    if (token!=probeOwner_ || token.isEmpty()) return;
+    probeUnknown_=probeUnknown_ || unknown;
+    probeOwner_.clear(); probeMayHaveQueued_=false;
+    publish(unknown ? tr("单孔探测执行结果待核；没有重发、退款或通用确认复位。") :
+        tr("单孔探测本地等待已收尾，动作和液面资料结果分别记录。"));
 }

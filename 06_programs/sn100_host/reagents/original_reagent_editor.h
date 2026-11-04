@@ -3,14 +3,16 @@
 #include "original_reagent_repository.h"
 #include "projects/original_project_repository.h"
 #include "samples/original_task_reagent_receipt.h"
+#include "original_reagent_probe.h"
 #include <functional>
 
 // 只在ReagentStore数据库线程使用；界面仍用原表单，原名称关联不转成catalog外键。
 class OriginalReagentEditor
 {
 public:
-    bool initialize(const QString &root, QString *message);
+    bool initialize(const QString &root, QString *message, std::shared_ptr<OriginalReagentPageMetadata> metadata = {});
     bool load(ReagentSnapshot *snapshot, ReagentProjects *projects, QString *message);
+    bool rebuildPageMetadata(const QString &root, const OriginalReagentPageMetadata::SourceTicket &expected, QString *message);
     // 调用者持项目→试剂两锁；仅用于临时副本，成功后再整体采用，绝不调用普通load/recover。
     bool loadTaskReagentCommit(const OriginalTaskReagents::Commit &receipt, ReagentSnapshot *snapshot,
                                ReagentProjects *projects, QString *message);
@@ -27,6 +29,9 @@ public:
     bool prepareDeviceOperation(const QString &operation, const QString &holeName, bool linuxNew,
                                 QList<QByteArray> *packets, bool *localSaved, QString *message,
                                 const std::function<bool()> &stillCurrent);
+    // 只准备一个已配置合法孔的Mg；保持原行/来源，不写库、不改CAL页面批号。
+    bool prepareSingleProbe(const OriginalReagentProbe::Request &request,
+                            OriginalReagentProbe::Prepared *prepared, QString *message);
     bool remove(const QString &kind, qint64 id, QString *message);
     QString root() const { return root_; }
     QMap<QString,QString> deviceVersions() const { return state_.versions; }
@@ -39,6 +44,8 @@ public:
     }
 private:
     QString root_;
+    OriginalIni::InitializationSourcePtr initialization_;
+    std::shared_ptr<OriginalReagentPageMetadata> pageMetadata_;
     OriginalReagentRepository repository_;
     OriginalReagentState state_;
     OriginalBusiness::Rows isiRows_;
@@ -48,7 +55,8 @@ private:
                          const ProjectRecords &records, const QMap<QString,QString> &versions,
                          ReagentSnapshot *snapshot, ReagentProjects *choices) const;
     bool mutate(const QString &file, const QString &expected, const std::function<bool(OriginalBusiness::Database &, QString *)> &change,
-                QString *message, const ProjectRecord *projectSave = nullptr, const QString &groupEnabled = QString(),
+                QString *message, const QStringList &metadataOverwrites = {}, bool *databaseCommitted = nullptr,
+                const ProjectRecord *projectSave = nullptr, const QString &groupEnabled = QString(),
                 OriginalProjectSaveNotice *result = nullptr, const std::function<bool()> &claim = {},
                 const std::function<void(const OriginalProjectSaveNotice &)> &committed = {});
     bool saveRow(OriginalBusiness::Database &database, const QString &table, qint64 id, QVariantMap values, QString *message);

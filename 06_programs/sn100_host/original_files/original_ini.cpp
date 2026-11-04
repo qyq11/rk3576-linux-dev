@@ -1,16 +1,17 @@
 #include "original_ini.h"
 #include <QDir>
+#include <QCryptographicHash>
 #include <QFile>
 #include <QFileInfo>
 #include <QSettings>
+#include <QStringList>
 #include <QTemporaryFile>
 #include <QTextCodec>
 
-bool OriginalIni::read(const QString &path, Settings *settings, QString *message)
+namespace
 {
-    if (!settings || !message) return false;
-    *settings = Settings();
-    message->clear();
+bool readBytes(const QString &path, QByteArray *result, QString *message)
+{
     for (QFileInfo entry(path); ; entry.setFile(entry.absolutePath()))
     {
         if (!QDir::isAbsolutePath(path) || entry.isSymLink())
@@ -32,6 +33,12 @@ bool OriginalIni::read(const QString &path, Settings *settings, QString *message
         *message = QStringLiteral("读取原INI文件未完成。");
         return false;
     }
+    *result = bytes;
+    return true;
+}
+
+bool parseBytes(QByteArray bytes, OriginalIni::Settings *settings, QString *message)
+{
     QTextCodec::ConverterState state;
     QTextCodec::codecForName("UTF-8")->toUnicode(bytes.constData(), bytes.size(), &state);
     if (state.invalidChars || state.remainingChars || bytes.contains('\0'))
@@ -101,6 +108,96 @@ bool OriginalIni::read(const QString &path, Settings *settings, QString *message
     for (const QString &key : keys) settings->values.insert(key, parsed.value(key));
     settings->commentLines = comments;
     return true;
+}
+}
+
+bool OriginalIni::read(const QString &path, Settings *settings, QString *message)
+{
+    if (!settings || !message) return false;
+    *settings = Settings();
+    message->clear();
+    QByteArray bytes;
+    return readBytes(path,&bytes,message) && parseBytes(bytes,settings,message);
+}
+
+bool OriginalIni::readWithFingerprint(const QString &path, Settings *settings, QString *digest, QString *message)
+{
+    if (!settings || !digest || !message) return false;
+    *settings = Settings();
+    digest->clear();
+    message->clear();
+    QByteArray bytes;
+    if (!readBytes(path,&bytes,message) || !parseBytes(bytes,settings,message)) return false;
+    *digest = QString::fromLatin1(QCryptographicHash::hash(bytes,QCryptographicHash::Sha256).toHex());
+    return true;
+}
+
+QString OriginalIni::fingerprint(const QString &path, QString *message)
+{
+    if (!message) return QString();
+    message->clear();
+    QByteArray bytes;
+    return readBytes(path,&bytes,message)
+        ? QString::fromLatin1(QCryptographicHash::hash(bytes,QCryptographicHash::Sha256).toHex()) : QString();
+}
+
+OriginalIni::InitializationSourcePtr OriginalIni::InitializationSource::capture(const QString &root, QString *message)
+{
+    if (!message) return {};
+    auto captured = std::shared_ptr<InitializationSource>(new InitializationSource);
+    if (!QDir::isAbsolutePath(root) || !QFileInfo(root).isDir())
+    { *message=QStringLiteral("初始化配置必须来自现有资料根的绝对路径。"); return {}; }
+    captured->root_=QDir::cleanPath(QFileInfo(root).absoluteFilePath());
+    captured->canonicalRoot_=QFileInfo(root).canonicalFilePath();
+    if (captured->canonicalRoot_.isEmpty())
+    { *message=QStringLiteral("初始化配置的实际资料根无法确认。"); return {}; }
+    const QStringList files{QStringLiteral("config.ini"),QStringLiteral("config_Debug.ini"),QStringLiteral("theme_config.ini")};
+    Settings *settings[]{&captured->normal_,&captured->debug_,&captured->theme_};
+    for (int index=0;index<files.size();++index)
+    {
+        QString digest;
+        if (!readWithFingerprint(QDir(root).filePath(files[index]),settings[index],&digest,message)) return {};
+        captured->versions_.insert(files[index],digest);
+    }
+    // 三文件不能原子读取；捕获后和安装前分别重核，绝不把后来版本贴到早先解析值上。
+    if (!captured->current(root,message)) return {};
+    return captured;
+}
+
+bool OriginalIni::InitializationSource::matchesRoot(const QString &root, QString *message) const
+{
+    if (!message) return false;
+    if (!QDir::isAbsolutePath(root) || QDir::cleanPath(QFileInfo(root).absoluteFilePath())!=root_ ||
+        QFileInfo(root).canonicalFilePath()!=canonicalRoot_ || !QFileInfo(root).isDir())
+    { *message=QStringLiteral("初始化配置的资料根或实际路径已改变，未沿用旧来源。"); return false; }
+    return true;
+}
+
+bool OriginalIni::InitializationSource::current(const QString &root, QString *message) const
+{
+    if (!matchesRoot(root,message)) return false;
+    for (auto version=versions_.cbegin();version!=versions_.cend();++version)
+    {
+        const QString actual=fingerprint(QDir(root).filePath(version.key()),message);
+        if (actual.isEmpty()) return false;
+        if (actual!=version.value())
+        { *message=QStringLiteral("初始化期间原配置已改变，请重新加载资料；未发布混用版本的缓存。"); return false; }
+    }
+    return matchesRoot(root,message);
+}
+
+bool OriginalIni::InitializationSource::defaultContainerIsTube(bool *tube, QString *message) const
+{
+    if (!tube || !message) return false;
+    // 与main的OriginalRuntime::IniReader::flag相同：准确键优先，否则仅接受唯一大小写匹配。
+    const QString key=QStringLiteral("userOption/isContainerTube");
+    QString actual=key;
+    if (!normal_.values.contains(key) && !resolveKey(normal_,key,&actual,message)) return false;
+    const QString value=normal_.values.value(actual,false).toString().trimmed().toLower();
+    if (value==QStringLiteral("true") || value==QStringLiteral("1")) { *tube=true; return true; }
+    if (value==QStringLiteral("false") || value==QStringLiteral("0") || value.isEmpty()) { *tube=false; return true; }
+    *message=QStringLiteral("原新孔容器配置不是有效布尔值，未按默认值接续。");
+    return false;
 }
 
 bool OriginalIni::resolveKey(const Settings &settings, const QString &key, QString *actualKey, QString *message)

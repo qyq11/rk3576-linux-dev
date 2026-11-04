@@ -14,6 +14,7 @@
 class OriginalSampleRepository;
 class OriginalDetectionSession;
 class OriginalDeviceSync;
+class OriginalReagentPageMetadata;
 struct OriginalConfigurationStep;
 
 class QTimer;
@@ -27,6 +28,12 @@ class SampleStore : public QObject
     ~SampleStore() override;
     static void registerTypes();
     static bool canEdit(const AccountSession &session);
+    // 线程启动前绑定真实试剂盘面拥有者，不从Session创建永久影子批号。
+    bool configureOriginalReagentMetadata(std::shared_ptr<OriginalReagentPageMetadata> metadata)
+    {
+        if (QThread::currentThread() != thread() || ready_) return false;
+        originalPageMetadata_ = std::move(metadata); return true;
+    }
     // 在线程启动前设置；初始化时只调整空孔，已有样本或任务超出新范围则拒绝。
     void configureLayout(int ordinary, int emergency);
     // 主程序在移入工作线程前传入同次已核配置；旧独立入口仍保持原杯默认。
@@ -42,6 +49,7 @@ class SampleStore : public QObject
     void loadOriginalQualityChoices(qint64 requestId);
     void saveOriginalCalibrationParameters(qint64 requestId, qint64 projectId, QString expectedVersion, QString lastValues);
     void prepareDeviceTasks(quint64 request, bool linuxNew);
+    void prepareUserDeviceTasks(OriginalTaskReagents::RuntimeBasis basis, bool linuxNew);
     void cancelDeviceTaskPreparation();
     void queryDeviceRecovery(quint64 request, quint64 connection, QString root);
     void reserveOriginalProjectSave(quint64 ticket, OriginalProjectSaveNotice proposal, qint64 sourceDeadline);
@@ -58,6 +66,8 @@ class SampleStore : public QObject
     void prepareOriginalReagentUpdate(QString holeName, bool updateAmount, quint64 connection);
     void setSession(AccountSession session);
     void load(qint64 requestId);
+    void registerEmptyOrdinaryRack(qint64 requestId, int ordinaryHoles, bool containerIsTube);
+    void loadOriginalRuntimeSnapshot(qint64 requestId);
     void saveRack(qint64 requestId, SampleRack rack);
     void removeRack(qint64 requestId, qint64 rackId);
     void clearOrdinaryRacks(qint64 requestId);
@@ -79,6 +89,7 @@ class SampleStore : public QObject
     void originalCalibrationParametersSaved(qint64 requestId, bool success, QString message);
     void originalCalibrationRecordsChanged(); // 原校准占号、进度或曲线状态变更；不表示计算完成。
     void deviceTasksPrepared(quint64 request, bool success, QString message);
+    void userTaskOperationFinished(OriginalTaskReagents::Commit receipt, bool success, QString message);
     void deviceRecoveryState(quint64 request, quint64 connection, QString root,
                              bool known, bool unfinishedTasks, QString message);
     void originalProjectSaveAdmissionReady(OriginalProjectSaveAdmission admission);
@@ -91,12 +102,14 @@ class SampleStore : public QObject
     void deviceTaskStateChanged();
     void taskReagentCommitObserved(OriginalTaskReagents::Commit receipt); // 已提交或无法确认的原动作事实。
     void originalResultsChanged(); // 原Tr曲线及报告状态保存成功后，历史页重读同一原库。
+    void originalReagentPageMetadataChanged(); // 纯页面批号变化，不表示写库或设备执行。
     void originalReagentsChanged(); // 原Ur写回完成后，试剂页重读，避免只改设备缓存。
     void originalProjectsChanged(); // 原UP保存后，项目页重读同一原库。
     void originalConfigurationPacket(QByteArray payload, quint64 connection);
     void originalConfigurationState(quint64 connection, bool ready, QString message);
     void devicePacketProcessed(quint64 packet, quint64 connection, QByteArray command, bool success, QString message);
     void snapshotReady(qint64 requestId, SampleSnapshot snapshot);
+    void emptyOrdinaryRackRegistered(qint64 requestId, qint64 rackId, SampleSnapshot snapshot);
     void succeeded(qint64 requestId, QString operation, qint64 id);
     void error(qint64 requestId, QString operation, QString message);
     void closed();
@@ -114,6 +127,7 @@ class SampleStore : public QObject
     void release();
     std::unique_ptr<OriginalSampleRepository> originalSamples_;
     std::unique_ptr<OriginalDetectionSession> originalDetection_;
+    std::shared_ptr<OriginalReagentPageMetadata> originalPageMetadata_;
     std::unique_ptr<OriginalDeviceSync> originalDeviceSync_;
     QTimer *originalConfigurationTimeout_ = nullptr;
     QTimer *originalProjectUpdateTimeout_ = nullptr;

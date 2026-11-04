@@ -53,9 +53,9 @@ bool verifyDisplayCommit(const Commit &receipt,QString *message)
     const auto &basis=receipt.basis;
     if (!receipt.committed || receipt.transaction!=TransactionState::Committed ||
         !receipt.postCommitVerified || !receipt.basisMatchesDatabaseBefore || !basis.available ||
-        receipt.receiptId.isEmpty() || !basis.actionId || !basis.arrivalPacketId || !basis.connection ||
+        receipt.receiptId.isEmpty() || !basis.actionId || !taskOriginAllows(basis,receipt.action) || !basis.connection ||
         !basis.permissionRevision || !basis.basisRevision || basis.basisToken.isEmpty() ||
-        basis.root.isEmpty() || receipt.root!=basis.root || receipt.payloadSha256.isEmpty() ||
+        basis.root.isEmpty() || receipt.root!=basis.root || receipt.originDigest!=basis.originDigest ||
         receipt.payloadSha256!=basis.payloadSha256 ||
         (receipt.action!=Action::RackReservation && receipt.action!=Action::UnusedReservationReturn))
         return fail(message,QStringLiteral("任务提交事实、完整后核或动作前依据未核实；保留真实提交状态，显示待核。"));

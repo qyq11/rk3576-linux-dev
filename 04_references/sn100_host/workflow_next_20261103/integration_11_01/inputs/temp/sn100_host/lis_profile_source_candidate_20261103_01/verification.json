@@ -1,0 +1,67 @@
+{
+  "scope": "source patch check/replay only; no compile, product execution, fabricated messages, network or board activity",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\lis_profile_source_candidate_20261103_01\\ordinary_replay",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\lis_profile_source_candidate_20261103_01\\ordinary_replay",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "apply",
+        "--check",
+        "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\lis_profile_source_candidate_20261103_01\\lis_profile_source.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\lis_profile_source_candidate_20261103_01\\ordinary_replay",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "apply",
+        "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\lis_profile_source_candidate_20261103_01\\lis_profile_source.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "replay_matches_two_candidate_sources": true,
+  "formal_two_sources_still_match_preimages": true,
+  "base_sha256": {
+    "lis_transport/lis_connection_values.h": "c9d47a9f3049470862b7a5b3db88e2473a3acfa5e7217619ab64baa4a63ac1ba",
+    "lis_transport/lis_connection_controller.cpp": "f403e0470636551fedc2611bb204522306938b493462b9d5fe8d3126407ba1e3"
+  },
+  "candidate_sha256": {
+    "lis_transport/lis_connection_values.h": "41bb19561f6b3996107470107a59b04b01df1310fa1afb5abf16caf9a79b2051",
+    "lis_transport/lis_connection_controller.cpp": "7ca09f58d332ac20bf0f7d234c7fc4081a5acddadf646484bba11d81f69c7b61"
+  },
+  "patch_sha256": "7fd8567ece6c4f938f2acc210c2e606abecaae4fdf7b91f9870e3fdd9ad23bdf",
+  "composed_table_count": 687,
+  "composed_table_note": "derived from frozen f741 table plus two candidate sources; not a rescan of current formal tree"
+}

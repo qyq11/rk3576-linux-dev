@@ -1,6 +1,7 @@
 #ifndef SN100_REAGENTS_PAGE_H
 #define SN100_REAGENTS_PAGE_H
 #include "reagent_store.h"
+#include "original_reagent_probe.h"
 #include "original_task_reagent_display.h"
 #include <QPointer>
 #include <QHash>
@@ -39,6 +40,13 @@ public:
         return snapshot_;
     }
     ReagentStore *taskStore() const { return store_; }
+    bool beginOriginalProbe(OriginalReagentProbe::Request source);
+    bool originalProbeOwnBusy(const OriginalReagentProbe::Request &source) const;
+    bool grantOriginalProbeN(const OriginalReagentProbe::Prepared &source, quint64 packet);
+    bool originalProbeNMatches(quint64 packet, quint64 connection, const QString &root, const QString &hole) const;
+    void stopOriginalProbeN(const OriginalReagentProbe::Request &source);
+    void retireOriginalProbeN(const OriginalReagentProbe::Request &source, quint64 packet);
+    bool finishOriginalProbe(const OriginalReagentProbe::Request &source, bool success, const QString &message);
     void configureLayout(int count);
     OriginalLevels::CurrentHoleRuntime originalLevelRuntime(const QString &hole) const;
     QString originalLevelRuntimeReason(const QString &hole) const;
@@ -69,6 +77,7 @@ public slots:
     void openBatchEditor();
     void openBottleEditor();
     void reloadOriginal();
+    void refreshOriginalPageMetadata();
     void setInstrumentBusy(bool busy);
     // 由主窗口在核对真实连接和已接好的回读流程后开放动作；断线时传0和空清单。
     void setDeviceOperations(quint64 connection, QStringList operations);
@@ -161,6 +170,9 @@ private:
     void renderOriginalLevelViews();
     Ui::frmReagentMaterial* ui;
     ReagentStore *store_ = nullptr;
+    OriginalReagentProbe::Request probeOwner_;
+    OriginalReagentProbe::NGrant probeN_;
+    bool probeAcceptingN_ = false;
     bool originalProfile_ = false;
     bool instrumentBusy_ = false, pendingOriginalReload_ = false;
     QString pendingSavedOperation_;
@@ -177,6 +189,7 @@ private:
     QString pendingDeviceOperation_;
     QTimer *deviceOperationTimer_ = nullptr;
     void selectHole(QString name);
+    QString originalPageBatch(const ReagentHole &hole) const;
     void setBusy(bool busy);
     void showOperationMessage(const QString &operation, const QString &message);
     void requestOriginalDeviceOperation(const QString &operation, const QString &question);

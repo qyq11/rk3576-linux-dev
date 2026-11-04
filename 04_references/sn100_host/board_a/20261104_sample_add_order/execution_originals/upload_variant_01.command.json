@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "HostKeyAlgorithms=ssh-ed25519",
+    "-o",
+    "HostKeyAlias=rk3576-board-a",
+    "-o",
+    "UserKnownHostsFile=C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\board_a\\sample_order_review_20261104_01\\known_hosts.board_a",
+    "-o",
+    "UpdateHostKeys=no",
+    "root@192.168.100.123",
+    "bash -c 'set -Eeuo pipefail\n[[ $(tr -d '\"'\"'\\0\\n'\"'\"' </proc/device-tree/serial-number) == 3bf8222fe1417f6a ]]\ntarget=/home/rkshare/programs/sn100_shell/.board_a_variant_20261104_01.tar.gz\n[[ ! -e $target && ! -L $target ]]\numask 077\nset -C\ncat >\"$target\"\n[[ $(sha256sum \"$target\" | cut -d'\"'\"' '\"'\"' -f1) == 8d664c2f5cdb50f9f62e5d680612515aefa24d53f15121940e6ac7154b36f735 ]]\nprintf '\"'\"'UPLOADED_BOARD_A_SHA256=%s\\n'\"'\"' 8d664c2f5cdb50f9f62e5d680612515aefa24d53f15121940e6ac7154b36f735\n'"
+  ],
+  "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\07_backups\\sn100_host\\board_a\\sample_order_20261104_01\\application\\sn100_sample_review_0b0b93787b055f51bba1ac579e0a79488959940284e0a702ab2fa06a1934e743.tar.gz",
+  "source_sha256": "8d664c2f5cdb50f9f62e5d680612515aefa24d53f15121940e6ac7154b36f735",
+  "remote": "/home/rkshare/programs/sn100_shell/.board_a_variant_20261104_01.tar.gz",
+  "board": "board_a"
+}

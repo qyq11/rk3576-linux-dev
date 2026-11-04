@@ -1,0 +1,29 @@
+# 运行准备生成器01：只读独审
+
+2026-11-03。审 `prepare_runtime_batch10_01.py` 的实际字节，SHA为 `ee16a7cc5f45b3763cc5c87218cee72aebfd8bd9639d46d9ea0335455347db4f`。本Agent未执行生成器、派生脚本或板端操作，未改正式/冻结代码。只写本报告；后续v02修正另记 `runtime_prepare_independent_review_02.md`，不以修正覆盖本版事实。
+
+## 本版阻点
+
+**普通lckfb无法读取或执行安装后的等待器。** 安装片段以root创建 `wait_lis_observation.sh`，随后只做chmod700，未改所属组/用户。元数据父为root:lckfb 750不改变子文件root专用700的限制。后续计划由lckfb执行等待器时必然遇到权限拒绝。应保留本版，另版最小改为root:lckfb并给组读/执行；总控已采纳以v02处理。
+
+三份记录本身是root:lckfb 640，父目录750、观察目录lckfb:lckfb 700，权限配对正确；问题只在本版waiter文件。capture目录也不能让lckfb直接在root拥有的750元数据父内新建，应由总控另预建lckfb可写的专用父目录，叶目录交等待器独占创建。
+
+## 准备范围与冻结值
+
+本版在本地创建输出前要求真实build_exit为0，以及stage、archive、verify-and-save、finish四份外层退出文件均为0。读取时四份外层文件实为0，build_complete声明687源、完整ARM64构建/打包通过、未运行产品/未板端验业务；这些文件阶段结果不代表新程序已启动。
+
+实际build_complete SHA为 `22c82ee0b906eca1d36847212235b428cae9e6676ebfac638b785a91e9b589a9`。新发布为 `c7cbf438a3a034b25ae22accfaf48bacf0717174ce85bef2203ce8db143cb06e`，主程序SHA为 `50d3f3b510772e717e456cc4e3e910060a82a6635b9d914f033e79f9ed6f0258`，报告程序为 `92d35399a3a96515b5cac8aed0d803f77c24a0891c307d9e4d026392572ef75b`，包SHA为 `0cfa398b008df64ebc92aae17e9837633b675adccee73c65083db08b255187ee`。
+
+生成器重新计算固定cfg SHA并要求为 `50b94b7d026385816811ae720d1409b656518dde6929a7e481b4696944462d03`；所读build_complete内嵌cfg SHA实与其一致。它也重新核Root裁定、正式helper以及两份已批准配置清单原件。七份实际配置内容由后续安装/prepare脚本再执行sha256sum核，不因历史清单存在就假报当前INI未变。
+
+本次所读冻结transition模板为已审03字节 `f4ca11e27ea16ef2a5f65e894a180d62b58081b253008e6376ab015c41dd72ea`，意图模板为 `9e7a226d2960474026e781d74c651fc049519372e066fe29932d987a18ca5d16`。本版只填既有赋值字段，不增加停/启应用语句。
+
+## 不会在prepare分支停旧或激活
+
+派给prepare-flat的脚本首行强制 `set -- prepare-flat`，使执行动作不能由调用方额外参数改成activate。模板先核Root批准、配置清单及启动意图三记录原件SHA，再按意图固定字段顺序、ASCII安全值和真实类型解析；核新包/helper/SHA、七配置及原主控后，只复制新平层目录。准备分支第252行退出，在读取旧停止凭据和切current之前结束。
+
+因此本版虽然填写 `allow_activate=true`，旧停止凭据SHA仍为64个零，也不会在强制prepare分支使用它；这不是伪造已停止凭据。单独尝试activate仍须通过真实旧停止记录SHA检查，当前零值不能当成功。未来激活必须在真实旧应用停止证据取得后另派生和重审，不能复用本准备结论。
+
+本地生成器不包含SSH或产品执行。安装片段只检查固定boot/current、拒绝已存在目录、建本批私有元数据/观察目录、落三份精确记录和waiter、逐个重哈希并再核七配置；它不改current、不启动/停止应用。它本身没有板卡序列或SSH主机校验，必须由总控既有固定主机指纹/序列号Rootguard外层发送；不能拿boot/current替代该外层身份核对。
+
+本版运行准备目录在审查过程中已由其他执行方建立；本Agent没有执行，也不据目录存在推定板端安装、prepare-flat或切换成功。本版权限阻点保持上述原结论，修正与实际后像另见02报告。

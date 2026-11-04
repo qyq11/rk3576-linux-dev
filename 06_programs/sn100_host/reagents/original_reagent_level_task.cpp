@@ -75,6 +75,7 @@ RuntimeAdoption adoption(const Commit &receipt)
     RuntimeAdoption result;
     const auto &basis=receipt.basis;
     result.actionId=basis.actionId; result.arrivalPacketId=basis.arrivalPacketId;
+    result.source=basis.source; result.originDigest=basis.originDigest; result.userRequestId=basis.userOperation.requestId;
     result.connection=basis.connection; result.permissionRevision=basis.permissionRevision;
     result.receiptId=receipt.receiptId; result.basisToken=basis.basisToken;
     result.root=receipt.root; result.payloadSha256=receipt.payloadSha256;
@@ -84,6 +85,7 @@ RuntimeAdoption adoption(const Commit &receipt)
 QByteArray basisSignature(const RuntimeBasis &b)
 {
     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
+    out<<OriginalTaskReagents::taskOriginBytes(b);
     out<<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
        <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
        <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
@@ -99,7 +101,8 @@ QByteArray signature(const Commit &receipt)
 {
     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
     const auto &b=receipt.basis;
-    out<<receipt.receiptId<<int(receipt.action)<<receipt.root<<receipt.payloadSha256<<receipt.settingTable
+    out<<OriginalTaskReagents::taskOriginBytes(b);
+    out<<receipt.receiptId<<int(receipt.action)<<receipt.root<<receipt.payloadSha256<<receipt.originDigest<<receipt.settingTable
        <<int(receipt.transaction)<<receipt.committed<<receipt.postCommitVerified<<receipt.basisMatchesDatabaseBefore
        <<receipt.reagentSqlWritten<<receipt.beforeVersions<<receipt.afterVersions<<receipt.proofMessage
        <<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
@@ -146,8 +149,8 @@ OriginalTaskReagents::RuntimeBasis RuntimeProvider::freezeTaskBasis(OriginalTask
         active.insert(hole);
     }
     if (active.isEmpty() || !observed_ || !snapshotValid_ || seed.root!=snapshot_.originalRoot || !seed.actionId ||
-        !seed.arrivalPacketId || !seed.connection || !seed.permissionRevision || seed.basisToken.isEmpty() ||
-        seed.payloadSha256.isEmpty() || seed.protocolToken.isEmpty() || !revision_ ||
+        !OriginalTaskReagents::validTaskOrigin(seed) || !seed.connection || !seed.permissionRevision || seed.basisToken.isEmpty() ||
+        seed.originDigest.isEmpty() || seed.protocolToken.isEmpty() || !revision_ ||
         !snapshotVersions(snapshot_,&seed.versions))
         return reject(QStringLiteral("任务动作上下文或当前三库运行快照不完整，任务可照常处理，运行量依据待核。"));
     QSet<qint64> ids;
@@ -220,7 +223,8 @@ OriginalTaskReagents::RuntimeAdoption RuntimeProvider::markTaskUnconfirmed(const
     if (receipt.transaction!=OriginalTaskReagents::TransactionState::CommitUnconfirmed || receipt.committed ||
         receipt.receiptId.isEmpty() ||
         (receipt.action!=OriginalTaskReagents::Action::RackReservation && receipt.action!=OriginalTaskReagents::Action::UnusedReservationReturn) ||
-        receipt.root.isEmpty() || receipt.root!=receipt.basis.root || receipt.payloadSha256.isEmpty() ||
+        receipt.root.isEmpty() || receipt.root!=receipt.basis.root || !OriginalTaskReagents::taskOriginAllows(receipt.basis,receipt.action) ||
+        receipt.originDigest!=receipt.basis.originDigest ||
         receipt.payloadSha256!=receipt.basis.payloadSha256)
     {
         auto result=adoption(receipt);

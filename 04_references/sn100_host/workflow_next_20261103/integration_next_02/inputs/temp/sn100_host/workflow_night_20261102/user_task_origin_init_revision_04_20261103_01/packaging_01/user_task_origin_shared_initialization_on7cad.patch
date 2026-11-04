@@ -1,0 +1,1380 @@
+--- a/06_programs/sn100_host/original_files/original_ini.cpp
++++ b/06_programs/sn100_host/original_files/original_ini.cpp
+@@ -1,16 +1,17 @@
+ #include "original_ini.h"
+ #include <QDir>
++#include <QCryptographicHash>
+ #include <QFile>
+ #include <QFileInfo>
+ #include <QSettings>
++#include <QStringList>
+ #include <QTemporaryFile>
+ #include <QTextCodec>
+ 
+-bool OriginalIni::read(const QString &path, Settings *settings, QString *message)
+-{
+-    if (!settings || !message) return false;
+-    *settings = Settings();
+-    message->clear();
++namespace
++{
++bool readBytes(const QString &path, QByteArray *result, QString *message)
++{
+     for (QFileInfo entry(path); ; entry.setFile(entry.absolutePath()))
+     {
+         if (!QDir::isAbsolutePath(path) || entry.isSymLink())
+@@ -32,6 +33,12 @@
+         *message = QStringLiteral("读取原INI文件未完成。");
+         return false;
+     }
++    *result = bytes;
++    return true;
++}
++
++bool parseBytes(QByteArray bytes, OriginalIni::Settings *settings, QString *message)
++{
+     QTextCodec::ConverterState state;
+     QTextCodec::codecForName("UTF-8")->toUnicode(bytes.constData(), bytes.size(), &state);
+     if (state.invalidChars || state.remainingChars || bytes.contains('\0'))
+@@ -102,6 +109,96 @@
+     settings->commentLines = comments;
+     return true;
+ }
++}
++
++bool OriginalIni::read(const QString &path, Settings *settings, QString *message)
++{
++    if (!settings || !message) return false;
++    *settings = Settings();
++    message->clear();
++    QByteArray bytes;
++    return readBytes(path,&bytes,message) && parseBytes(bytes,settings,message);
++}
++
++bool OriginalIni::readWithFingerprint(const QString &path, Settings *settings, QString *digest, QString *message)
++{
++    if (!settings || !digest || !message) return false;
++    *settings = Settings();
++    digest->clear();
++    message->clear();
++    QByteArray bytes;
++    if (!readBytes(path,&bytes,message) || !parseBytes(bytes,settings,message)) return false;
++    *digest = QString::fromLatin1(QCryptographicHash::hash(bytes,QCryptographicHash::Sha256).toHex());
++    return true;
++}
++
++QString OriginalIni::fingerprint(const QString &path, QString *message)
++{
++    if (!message) return QString();
++    message->clear();
++    QByteArray bytes;
++    return readBytes(path,&bytes,message)
++        ? QString::fromLatin1(QCryptographicHash::hash(bytes,QCryptographicHash::Sha256).toHex()) : QString();
++}
++
++OriginalIni::InitializationSourcePtr OriginalIni::InitializationSource::capture(const QString &root, QString *message)
++{
++    if (!message) return {};
++    auto captured = std::shared_ptr<InitializationSource>(new InitializationSource);
++    if (!QDir::isAbsolutePath(root) || !QFileInfo(root).isDir())
++    { *message=QStringLiteral("初始化配置必须来自现有资料根的绝对路径。"); return {}; }
++    captured->root_=QDir::cleanPath(QFileInfo(root).absoluteFilePath());
++    captured->canonicalRoot_=QFileInfo(root).canonicalFilePath();
++    if (captured->canonicalRoot_.isEmpty())
++    { *message=QStringLiteral("初始化配置的实际资料根无法确认。"); return {}; }
++    const QStringList files{QStringLiteral("config.ini"),QStringLiteral("config_Debug.ini"),QStringLiteral("theme_config.ini")};
++    Settings *settings[]{&captured->normal_,&captured->debug_,&captured->theme_};
++    for (int index=0;index<files.size();++index)
++    {
++        QString digest;
++        if (!readWithFingerprint(QDir(root).filePath(files[index]),settings[index],&digest,message)) return {};
++        captured->versions_.insert(files[index],digest);
++    }
++    // 三文件不能原子读取；捕获后和安装前分别重核，绝不把后来版本贴到早先解析值上。
++    if (!captured->current(root,message)) return {};
++    return captured;
++}
++
++bool OriginalIni::InitializationSource::matchesRoot(const QString &root, QString *message) const
++{
++    if (!message) return false;
++    if (!QDir::isAbsolutePath(root) || QDir::cleanPath(QFileInfo(root).absoluteFilePath())!=root_ ||
++        QFileInfo(root).canonicalFilePath()!=canonicalRoot_ || !QFileInfo(root).isDir())
++    { *message=QStringLiteral("初始化配置的资料根或实际路径已改变，未沿用旧来源。"); return false; }
++    return true;
++}
++
++bool OriginalIni::InitializationSource::current(const QString &root, QString *message) const
++{
++    if (!matchesRoot(root,message)) return false;
++    for (auto version=versions_.cbegin();version!=versions_.cend();++version)
++    {
++        const QString actual=fingerprint(QDir(root).filePath(version.key()),message);
++        if (actual.isEmpty()) return false;
++        if (actual!=version.value())
++        { *message=QStringLiteral("初始化期间原配置已改变，请重新加载资料；未发布混用版本的缓存。"); return false; }
++    }
++    return matchesRoot(root,message);
++}
++
++bool OriginalIni::InitializationSource::defaultContainerIsTube(bool *tube, QString *message) const
++{
++    if (!tube || !message) return false;
++    // 与main的OriginalRuntime::IniReader::flag相同：准确键优先，否则仅接受唯一大小写匹配。
++    const QString key=QStringLiteral("userOption/isContainerTube");
++    QString actual=key;
++    if (!normal_.values.contains(key) && !resolveKey(normal_,key,&actual,message)) return false;
++    const QString value=normal_.values.value(actual,false).toString().trimmed().toLower();
++    if (value==QStringLiteral("true") || value==QStringLiteral("1")) { *tube=true; return true; }
++    if (value==QStringLiteral("false") || value==QStringLiteral("0") || value.isEmpty()) { *tube=false; return true; }
++    *message=QStringLiteral("原新孔容器配置不是有效布尔值，未按默认值接续。");
++    return false;
++}
+ 
+ bool OriginalIni::resolveKey(const Settings &settings, const QString &key, QString *actualKey, QString *message)
+ {
+--- a/06_programs/sn100_host/original_files/original_ini.h
++++ b/06_programs/sn100_host/original_files/original_ini.h
+@@ -4,6 +4,7 @@
+ #include <QMap>
+ #include <QString>
+ #include <QVariant>
++#include <memory>
+ 
+ // 原发行版使用整行#注释，Qt5的INI格式只识别分号注释。
+ // 只在私有临时副本替换注释标记；原文件、键名和配置值都不改写。
+@@ -15,6 +16,32 @@
+     int commentLines = 0;
+ };
+ bool read(const QString &path, Settings *settings, QString *message);
++// 解析值和摘要来自同一次原字节读取；摘要计算在去BOM/替换注释之前。
++bool readWithFingerprint(const QString &path, Settings *settings, QString *fingerprint, QString *message);
++QString fingerprint(const QString &path, QString *message);
++
++class InitializationSource;
++using InitializationSourcePtr = std::shared_ptr<const InitializationSource>;
++
++// 仅证明本次样本仓库、内置试剂仓库和Session的初始化来源；不替main或其他页面证明配置来源。
++// 创建后只读，不公开原INI字节，也不重新捕获版本给已有缓存续签。
++class InitializationSource
++{
++public:
++    static InitializationSourcePtr capture(const QString &root, QString *message);
++    bool matchesRoot(const QString &root, QString *message) const;
++    bool current(const QString &root, QString *message) const;
++    bool defaultContainerIsTube(bool *tube, QString *message) const;
++    const Settings &normal() const { return normal_; }
++    const Settings &debug() const { return debug_; }
++    const Settings &theme() const { return theme_; }
++    const QMap<QString,QString> &versions() const { return versions_; }
++private:
++    InitializationSource() = default;
++    QString root_, canonicalRoot_;
++    Settings normal_, debug_, theme_;
++    QMap<QString,QString> versions_;
++};
+ // 沿原Windows大小写不敏感的查键方式，返回实际键名；未找到时返回空名。
+ // 若Linux读到多个仅大小写不同的键，拒绝猜测覆盖，原键名不改写。
+ bool resolveKey(const Settings &settings, const QString &key, QString *actualKey, QString *message);
+--- a/06_programs/sn100_host/reagents/original_reagent_level_task.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_level_task.cpp
+@@ -75,6 +75,7 @@
+     RuntimeAdoption result;
+     const auto &basis=receipt.basis;
+     result.actionId=basis.actionId; result.arrivalPacketId=basis.arrivalPacketId;
++    result.source=basis.source; result.originDigest=basis.originDigest; result.userRequestId=basis.userOperation.requestId;
+     result.connection=basis.connection; result.permissionRevision=basis.permissionRevision;
+     result.receiptId=receipt.receiptId; result.basisToken=basis.basisToken;
+     result.root=receipt.root; result.payloadSha256=receipt.payloadSha256;
+@@ -84,6 +85,7 @@
+ QByteArray basisSignature(const RuntimeBasis &b)
+ {
+     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<OriginalTaskReagents::taskOriginBytes(b);
+     out<<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
+        <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
+        <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
+@@ -99,7 +101,8 @@
+ {
+     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
+     const auto &b=receipt.basis;
+-    out<<receipt.receiptId<<int(receipt.action)<<receipt.root<<receipt.payloadSha256<<receipt.settingTable
++    out<<OriginalTaskReagents::taskOriginBytes(b);
++    out<<receipt.receiptId<<int(receipt.action)<<receipt.root<<receipt.payloadSha256<<receipt.originDigest<<receipt.settingTable
+        <<int(receipt.transaction)<<receipt.committed<<receipt.postCommitVerified<<receipt.basisMatchesDatabaseBefore
+        <<receipt.reagentSqlWritten<<receipt.beforeVersions<<receipt.afterVersions<<receipt.proofMessage
+        <<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
+@@ -146,8 +149,8 @@
+         active.insert(hole);
+     }
+     if (active.isEmpty() || !observed_ || !snapshotValid_ || seed.root!=snapshot_.originalRoot || !seed.actionId ||
+-        !seed.arrivalPacketId || !seed.connection || !seed.permissionRevision || seed.basisToken.isEmpty() ||
+-        seed.payloadSha256.isEmpty() || seed.protocolToken.isEmpty() || !revision_ ||
++        !OriginalTaskReagents::validTaskOrigin(seed) || !seed.connection || !seed.permissionRevision || seed.basisToken.isEmpty() ||
++        seed.originDigest.isEmpty() || seed.protocolToken.isEmpty() || !revision_ ||
+         !snapshotVersions(snapshot_,&seed.versions))
+         return reject(QStringLiteral("任务动作上下文或当前三库运行快照不完整，任务可照常处理，运行量依据待核。"));
+     QSet<qint64> ids;
+@@ -220,7 +223,8 @@
+     if (receipt.transaction!=OriginalTaskReagents::TransactionState::CommitUnconfirmed || receipt.committed ||
+         receipt.receiptId.isEmpty() ||
+         (receipt.action!=OriginalTaskReagents::Action::RackReservation && receipt.action!=OriginalTaskReagents::Action::UnusedReservationReturn) ||
+-        receipt.root.isEmpty() || receipt.root!=receipt.basis.root || receipt.payloadSha256.isEmpty() ||
++        receipt.root.isEmpty() || receipt.root!=receipt.basis.root || !OriginalTaskReagents::taskOriginAllows(receipt.basis,receipt.action) ||
++        receipt.originDigest!=receipt.basis.originDigest ||
+         receipt.payloadSha256!=receipt.basis.payloadSha256)
+     {
+         auto result=adoption(receipt);
+--- a/06_programs/sn100_host/reagents/original_reagent_repository.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_repository.cpp
+@@ -141,18 +141,27 @@
+ }
+ }
+ 
+-bool OriginalReagentRepository::initialize(const QString &root, QString *message)
+-{
++bool OriginalReagentRepository::initialize(const QString &root, QString *message,
++    OriginalIni::InitializationSourcePtr configurationSource)
++{
++    configurationSource_.reset();
+     if (!workingRoot(root, message)) return false;
+     OriginalIni::Settings settings;
+-    if (!OriginalIni::read(QDir(root).filePath(QStringLiteral("theme_config.ini")), &settings, message)) return false;
++    if (configurationSource)
++    {
++        if (!configurationSource->matchesRoot(root,message)) return false;
++        settings=configurationSource->theme();
++    }
++    else if (!OriginalIni::read(QDir(root).filePath(QStringLiteral("theme_config.ini")), &settings, message)) return false;
+     bool ok = false;
+     const int count = settings.values.value(QStringLiteral("theme/ReagentPanelChannelCount"), 20).toInt(&ok);
+     if (!ok || (count != 20 && count != 42)) return fail(message, QStringLiteral("原试剂盘孔数未对应20或42配置，未选择其他机型表。"));
+     root_ = root;
+     table_ = count == 20 ? QStringLiteral("reagent_setting") : QStringLiteral("reagent_setting_6600");
+     OriginalReagentState state;
+-    return load(&state, message);
++    if (!load(&state, message)) return false;
++    configurationSource_=std::move(configurationSource);
++    return true;
+ }
+ 
+ bool OriginalReagentRepository::load(OriginalReagentState *state, QString *message)
+--- a/06_programs/sn100_host/reagents/original_reagent_repository.h
++++ b/06_programs/sn100_host/reagents/original_reagent_repository.h
+@@ -7,6 +7,7 @@
+ #include "original_reagent_page_metadata.h"
+ #include <memory>
+ #include <functional>
++#include "original_files/original_ini.h"
+ 
+ struct OriginalReagentState
+ {
+@@ -73,7 +74,9 @@
+ class OriginalReagentRepository
+ {
+ public:
+-    bool initialize(const QString &root, QString *message);
++    bool initialize(const QString &root, QString *message,
++                    OriginalIni::InitializationSourcePtr configurationSource = {});
++    OriginalIni::InitializationSourcePtr configurationSource() const { return configurationSource_; }
+     void setPageMetadata(std::shared_ptr<OriginalReagentPageMetadata> metadata) { pageMetadata_ = std::move(metadata); }
+     bool load(OriginalReagentState *state, QString *message);
+     bool cleanerReady(const OriginalReagentState &state, QString *message) const;
+@@ -116,6 +119,7 @@
+                        QString *message);
+     bool applyDeviceReply(const QByteArray &payload, QString *message);
+ private:
++    OriginalIni::InitializationSourcePtr configurationSource_;
+     QString root_, table_;
+     std::shared_ptr<OriginalReagentPageMetadata> pageMetadata_;
+     bool publishMetadataOverwrite(const QStringList &names, bool rebuild,
+--- a/06_programs/sn100_host/reagents/original_task_reagent_display.cpp
++++ b/06_programs/sn100_host/reagents/original_task_reagent_display.cpp
+@@ -53,9 +53,9 @@
+     const auto &basis=receipt.basis;
+     if (!receipt.committed || receipt.transaction!=TransactionState::Committed ||
+         !receipt.postCommitVerified || !receipt.basisMatchesDatabaseBefore || !basis.available ||
+-        receipt.receiptId.isEmpty() || !basis.actionId || !basis.arrivalPacketId || !basis.connection ||
++        receipt.receiptId.isEmpty() || !basis.actionId || !taskOriginAllows(basis,receipt.action) || !basis.connection ||
+         !basis.permissionRevision || !basis.basisRevision || basis.basisToken.isEmpty() ||
+-        basis.root.isEmpty() || receipt.root!=basis.root || receipt.payloadSha256.isEmpty() ||
++        basis.root.isEmpty() || receipt.root!=basis.root || receipt.originDigest!=basis.originDigest ||
+         receipt.payloadSha256!=basis.payloadSha256 ||
+         (receipt.action!=Action::RackReservation && receipt.action!=Action::UnusedReservationReturn))
+         return fail(message,QStringLiteral("任务提交事实、完整后核或动作前依据未核实；保留真实提交状态，显示待核。"));
+--- a/06_programs/sn100_host/reagents/original_task_reagent_display.h
++++ b/06_programs/sn100_host/reagents/original_task_reagent_display.h
+@@ -28,6 +28,9 @@
+ 
+ struct RuntimeAdoption
+ {
++    OperationSource source=OperationSource::DevicePacket;
++    quint64 userRequestId=0;
++    QString originDigest;
+     quint64 actionId=0, arrivalPacketId=0, connection=0, permissionRevision=0;
+     QString receiptId, basisToken, root, payloadSha256;
+     TransactionState transaction=TransactionState::NotStarted;
+--- a/06_programs/sn100_host/reagents/reagents_page_task.cpp
++++ b/06_programs/sn100_host/reagents/reagents_page_task.cpp
+@@ -75,6 +75,7 @@
+ QByteArray basisBytes(const RuntimeBasis &b)
+ {
+     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<OriginalTaskReagents::taskOriginBytes(b);
+     out<<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
+        <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
+        <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
+@@ -90,7 +91,7 @@
+ {
+     // 有界单槽重复回执核对：连typed原行、任务明细也核，不只比较receiptId或原包SHA。
+     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
+-    out<<r.receiptId<<int(r.action)<<basisBytes(r.basis)<<r.root<<r.payloadSha256<<r.settingTable
++    out<<r.receiptId<<int(r.action)<<basisBytes(r.basis)<<r.root<<r.payloadSha256<<r.originDigest<<r.settingTable
+        <<int(r.transaction)<<r.committed<<r.reagentSqlWritten<<r.postCommitVerified<<r.basisMatchesDatabaseBefore
+        <<r.beforeVersions<<r.afterVersions<<r.proofMessage;
+     for (const auto *plate : {&r.beforePlate,&r.afterPlate})
+@@ -161,6 +162,7 @@
+ {
+     RuntimeAdoption result;
+     result.actionId=r.basis.actionId; result.arrivalPacketId=r.basis.arrivalPacketId;
++    result.source=r.basis.source; result.originDigest=r.basis.originDigest; result.userRequestId=r.basis.userOperation.requestId;
+     result.connection=r.basis.connection; result.permissionRevision=r.basis.permissionRevision;
+     result.receiptId=r.receiptId; result.basisToken=r.basis.basisToken; result.root=r.root;
+     result.payloadSha256=r.payloadSha256; result.transaction=r.transaction; result.committed=r.committed;
+@@ -409,7 +411,7 @@
+     if (QThread::currentThread()!=thread()) return reject(QStringLiteral("任务页面依据只能在页面所属线程冻结。"));
+     if (originalTaskReagentBasis_ || originalTaskReagentCommit_)
+         return reject(QStringLiteral("上一动作的页面依据或重读尚未收尾，未覆盖它；本次任务本身仍按原流程处理。"));
+-    if (!seed.actionId || seed.actionId<=originalTaskReagentActionFloor_ || !seed.arrivalPacketId || seed.basisToken.isEmpty())
++    if (!seed.actionId || seed.actionId<=originalTaskReagentActionFloor_ || !OriginalTaskReagents::validTaskOrigin(seed) || seed.basisToken.isEmpty())
+         return reject(QStringLiteral("任务动作编号或冻结标识缺失、已使用或过期，未复用旧依据。"));
+     if (!session_.authenticated || !originalLevelRuntime_ || !originalTaskReagentProviderToken_ ||
+         !originalTaskIdentityMatchesBasis(seed) || !sameSession(originalTaskReagentIdentitySession_,session_) ||
+--- a/06_programs/sn100_host/samples/original_detection_session.cpp
++++ b/06_programs/sn100_host/samples/original_detection_session.cpp
+@@ -236,16 +236,30 @@
+ }
+ 
+ bool OriginalDetectionSession::initialize(OriginalSampleRepository *samples, QString *message,
+-    std::shared_ptr<OriginalReagentPageMetadata> metadata)
+-{
++    std::shared_ptr<OriginalReagentPageMetadata> metadata,
++    OriginalIni::InitializationSourcePtr configurationSource)
++{
++    initializedConfigurationVersions_.clear();
++    configurationSource_.reset();
+     if (!samples || samples->root().isEmpty()) return fail(message, QStringLiteral("原样本仓库未就绪。"));
++    // 旧接口只可复用仓库真正消费的同一来源，不能在仓库读完后另抓新版给旧缓存续签。
++    if (!configurationSource) configurationSource=samples->configurationSource();
++    if (configurationSource && (configurationSource!=samples->configurationSource() ||
++        !configurationSource->current(samples->root(),message)))
++        return fail(message,QStringLiteral("样本仓库和任务会话的初始化配置来源不一致，未采用任务缓存。"));
+     samples_ = samples;
+     pageMetadata_ = std::move(metadata);
+     reagents_.setPageMetadata(pageMetadata_);
+     root_ = samples->root();
+-    if (!reagents_.initialize(root_, message)) return false;
++    if (!reagents_.initialize(root_, message, configurationSource)) return false;
+     OriginalIni::Settings settings, debug, theme;
+-    if (!OriginalIni::read(QDir(root_).filePath(QStringLiteral("config.ini")), &settings, message) ||
++    if (configurationSource)
++    {
++        if (reagents_.configurationSource()!=configurationSource)
++            return fail(message,QStringLiteral("内置试剂仓库未消费同一初始化配置，未采用任务缓存。"));
++        settings=configurationSource->normal(); debug=configurationSource->debug(); theme=configurationSource->theme();
++    }
++    else if (!OriginalIni::read(QDir(root_).filePath(QStringLiteral("config.ini")), &settings, message) ||
+         !OriginalIni::read(QDir(root_).filePath(QStringLiteral("config_Debug.ini")), &debug, message) ||
+         !OriginalIni::read(QDir(root_).filePath(QStringLiteral("theme_config.ini")), &theme, message)) return false;
+     if (!boolean(settings, QStringLiteral("userOption/isSampleHoleScanClose"), false, &scannerClosed_, message) ||
+@@ -258,6 +272,12 @@
+     horizontalReport_ = report == QStringLiteral("0");
+     // 原main.cpp:163/181从同一config.ini取QStringList；不新增键或人工拆分逗号。
+     multiBottleExceptions_=settings.values.value(QStringLiteral("Reagent/exMultil"),QVariant()).toStringList();
++    if (configurationSource)
++    {
++        if (!configurationSource->current(root_,message)) return false;
++        initializedConfigurationVersions_=configurationSource->versions();
++        configurationSource_=std::move(configurationSource);
++    }
+     return true;
+ }
+ 
+@@ -445,6 +465,37 @@
+     return true;
+ }
+ 
++bool OriginalDetectionSession::prepareUserOperation(const OriginalTaskReagents::RuntimeBasis &basis,bool linuxNew,QString *message)
++{
++    cancelUnsent(); // 只撤旧的未占号准备，不清已发任务或退款依据。
++    const auto matches=[&]()
++    {
++        if (!OriginalTaskReagents::taskOriginAllows(basis,OriginalTaskReagents::Action::None) ||
++            basis.source!=OriginalTaskReagents::OperationSource::UserOperation || !samples_ || basis.root!=root_ ||
++            !configurationSource_ || samples_->configurationSource()!=configurationSource_ ||
++            reagents_.configurationSource()!=configurationSource_ || initializedConfigurationVersions_.size()!=3 ||
++            basis.userOperation.configurationVersions!=initializedConfigurationVersions_ ||
++            !configurationSource_->current(root_,message)) return false;
++        SampleSnapshot current;
++        if (!samples_->load(&current,message) || OriginalTaskReagents::sampleTaskInputDigest(current)!=basis.userOperation.sampleSnapshotDigest) return false;
++        QMap<QString,QString> projects;
++        for (const auto &project : samples_->projects())
++        {
++            if (project.originalFileName.isEmpty() || project.originalFingerprint.isEmpty() || projects.contains(project.originalFileName)) return false;
++            projects.insert(project.originalFileName,project.originalFingerprint);
++        }
++        return projects==basis.userOperation.projectVersions;
++    };
++    if (!matches()) return fail(message,QStringLiteral("用户准备请求的来源、原配置或项目版本已改变，未准备任务。"));
++    bool immediate=false;
++    if (!boolean(configurationSource_->debug(),QStringLiteral("userOption/SendTaskImmediate"),false,&immediate,message)) return false;
++    if (immediate) return fail(message,QStringLiteral("原配置启用了立即下发；Emergency业务层尚未接通，未改走Ts开始命令。"));
++    const bool success=prepare(linuxNew,message);
++    if (!matches())
++    { cancelUnsent(); return fail(message,QStringLiteral("准备期间原配置或项目版本改变，旧用户请求已停止，未发送开始。")); }
++    return success;
++}
++
+ void OriginalDetectionSession::cancelUnsent()
+ {
+     // 仅取消尚未分配设备任务号的开始准备；已占号任务不删除、不恢复试剂量。
+@@ -581,6 +632,10 @@
+     OriginalTaskReagents::CommitHandler committed)
+ {
+     if (receipt) *receipt=OriginalTaskReagents::Commit();
++    if (basis.source!=OriginalTaskReagents::OperationSource::DevicePacket ||
++        (basis.actionId && (!OriginalTaskReagents::validTaskOrigin(basis) ||
++            basis.payloadSha256!=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex()))))
++        return fail(message,QStringLiteral("设备入口只接受原设备包来源；用户请求不得借伪Tt/TR进入事务。"));
+     if (!prepared_ || !samples_ || !response) return fail(message, QStringLiteral("原样本任务尚未完成开始前准备，未回应设备任务请求。"));
+     RackRequest request;
+     if (!parseRackRequest(payload, &request, message)) return false;
+@@ -637,6 +692,10 @@
+     OriginalTaskReagents::CommitHandler committed)
+ {
+     if (receipt) *receipt=OriginalTaskReagents::Commit();
++    if (basis.source!=OriginalTaskReagents::OperationSource::DevicePacket ||
++        (basis.actionId && (!OriginalTaskReagents::validTaskOrigin(basis) ||
++            basis.payloadSha256!=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex()))))
++        return fail(message,QStringLiteral("设备入口只接受原设备包来源；用户请求不得借伪Tt/TR进入事务。"));
+     if (payload.startsWith("Ur")) return reagents_.applyDeviceReply(payload, message);
+     if (payload.startsWith("TR")) return receiveTaskErrors(payload,message,basis,receipt,committed);
+     if (payload.startsWith("TB"))
+--- a/06_programs/sn100_host/samples/original_detection_session.h
++++ b/06_programs/sn100_host/samples/original_detection_session.h
+@@ -10,8 +10,10 @@
+ {
+ public:
+     bool initialize(OriginalSampleRepository *samples, QString *message,
+-                    std::shared_ptr<OriginalReagentPageMetadata> metadata = {});
++                    std::shared_ptr<OriginalReagentPageMetadata> metadata = {},
++                    OriginalIni::InitializationSourcePtr configurationSource = {});
+     bool prepare(bool linuxNew, QString *message);
++    bool prepareUserOperation(const OriginalTaskReagents::RuntimeBasis &basis, bool linuxNew, QString *message);
+     void cancelUnsent();
+     bool answerRackRequest(const QByteArray &request, QByteArray *response, QString *message,
+         const OriginalTaskReagents::RuntimeBasis &basis = {}, OriginalTaskReagents::Commit *receipt = nullptr,
+@@ -42,6 +44,8 @@
+     ProjectUnits units_;
+     QString root_;
+     bool prepared_ = false, linuxNew_ = false;
++    QMap<QString,QString> initializedConfigurationVersions_;
++    OriginalIni::InitializationSourcePtr configurationSource_;
+     bool scannerClosed_ = false, rackScannerClosed_ = false, allowMissingBarcode_ = true;
+     bool sendByReportRow_ = true, horizontalReport_ = true;
+     bool deleteSentTasks_ = false;
+--- a/06_programs/sn100_host/samples/original_sample_repository.cpp
++++ b/06_programs/sn100_host/samples/original_sample_repository.cpp
+@@ -37,11 +37,23 @@
+     return projectRepository_.load(&projects_, &units_, &reagents, &cleaners, &diluents, message);
+ }
+ 
+-bool OriginalSampleRepository::initialize(const QString &root, QString *message, bool newHoleContainerIsTube)
+-{
+-    if (!OriginalBusiness::workingRoot(root, message) || !projectRepository_.initialize(root, {}, message)) return false;
++bool OriginalSampleRepository::initialize(const QString &root, QString *message, bool newHoleContainerIsTube,
++    OriginalIni::InitializationSourcePtr configurationSource)
++{
++    configurationSource_.reset();
++    if (!OriginalBusiness::workingRoot(root, message)) return false;
++    if (configurationSource)
++    {
++        bool configuredTube=false;
++        if (!configurationSource->matchesRoot(root,message) ||
++            !configurationSource->defaultContainerIsTube(&configuredTube,message)) return false;
++        if (configuredTube!=newHoleContainerIsTube)
++            return fail(message,QStringLiteral("新孔容器默认值与本次初始化配置不一致，未给旧参数采用新来源。"));
++    }
++    if (!projectRepository_.initialize(root, {}, message)) return false;
+     OriginalIni::Settings theme;
+-    if (!OriginalIni::read(QDir(root).filePath(QStringLiteral("theme_config.ini")), &theme, message)) return false;
++    if (configurationSource) theme=configurationSource->theme();
++    else if (!OriginalIni::read(QDir(root).filePath(QStringLiteral("theme_config.ini")), &theme, message)) return false;
+     bool normalOk = false, emergencyOk = false;
+     ordinaryHoles_ = theme.values.value(QStringLiteral("theme/SampleHoleCount"), 8).toInt(&normalOk);
+     emergencyHoles_ = theme.values.value(QStringLiteral("theme/EmergencyHoleCount"), 3).toInt(&emergencyOk);
+@@ -63,7 +75,9 @@
+     snapshot_.racks.append(emergency);
+     nextRackId_ = 2;
+     inFlight_.clear();
+-    return load(&snapshot_, message);
++    if (!load(&snapshot_, message)) return false;
++    configurationSource_=std::move(configurationSource); // 只记录本仓库真正消费并成功初始化的那一份。
++    return true;
+ }
+ 
+ bool OriginalSampleRepository::load(SampleSnapshot *snapshot, QString *message)
+--- a/06_programs/sn100_host/samples/original_sample_repository.h
++++ b/06_programs/sn100_host/samples/original_sample_repository.h
+@@ -6,13 +6,16 @@
+ #include "projects/original_project_save_notice.h"
+ #include <QSet>
+ #include <functional>
++#include "original_files/original_ini.h"
+ 
+ // 原样本架是本次运行内的任务，原组合存sample_Combination.db；不把原项目写进早期catalog。
+ class OriginalSampleRepository
+ {
+ public:
+     // 主程序显式传已验配置；旧直接调用省略参数时保留既有杯默认和失败语义。
+-    bool initialize(const QString &root, QString *message, bool newHoleContainerIsTube = false);
++    bool initialize(const QString &root, QString *message, bool newHoleContainerIsTube = false,
++                    OriginalIni::InitializationSourcePtr configurationSource = {});
++    OriginalIni::InitializationSourcePtr configurationSource() const { return configurationSource_; }
+     bool load(SampleSnapshot *snapshot, QString *message);
+     bool saveRack(SampleRack rack, qint64 *savedId, QString *message);
+     bool removeRack(qint64 rackId, QString *message);
+@@ -36,6 +39,7 @@
+     SampleSnapshot snapshot() const { return snapshot_; }
+ private:
+     QString root_;
++    OriginalIni::InitializationSourcePtr configurationSource_;
+     OriginalProjectRepository projectRepository_;
+     ProjectRecords projects_;
+     ProjectUnits units_;
+--- a/06_programs/sn100_host/samples/original_sample_store.cpp
++++ b/06_programs/sn100_host/samples/original_sample_store.cpp
+@@ -1,8 +1,11 @@
+ #include "sample_store.h"
++#include "original_task_reagent_receipt_writer.h"
+ #include "original_sample_repository.h"
+ #include "original_detection_session.h"
+ #include "original_device_sync.h"
++#include "original_files/original_ini.h"
+ #include <QThread>
++#include <QCryptographicHash>
+ #include <QTimer>
+ #include <QFileInfo>
+ #include <QDir>
+@@ -14,17 +17,27 @@
+     if (!pendingQuality_.change.changeToken.isEmpty())
+     { emit error(0,QStringLiteral("initializeOriginal"),QStringLiteral("原有质控引用操作正在完成，未切换数据源。")); return; }
+     release();
++    QString message;
++    if (!OriginalBusiness::workingRoot(root,&message))
++    { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
++    const auto configurationSource=OriginalIni::InitializationSource::capture(root,&message);
++    if (!configurationSource)
++    { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+     auto repository = std::unique_ptr<OriginalSampleRepository>(new OriginalSampleRepository);
+-    QString message;
+-    if (!repository->initialize(root, &message, originalDefaultContainerIsTube_))
++    if (!repository->initialize(root, &message, originalDefaultContainerIsTube_, configurationSource))
+     { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
++    if (layoutConfigured_ && (ordinaryHoles_!=repository->ordinaryHoles() || emergencyHoles_!=repository->emergencyHoles()))
++    { emit error(0,QStringLiteral("initializeOriginal"),QStringLiteral("预先配置的普通/急诊孔数与本次原配置不一致，请重新加载资料。")); return; }
+     auto detection = std::unique_ptr<OriginalDetectionSession>(new OriginalDetectionSession);
+-    if (!detection->initialize(repository.get(), &message, originalPageMetadata_))
++    if (!detection->initialize(repository.get(), &message, originalPageMetadata_, configurationSource))
+     { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+     std::unique_ptr<OriginalDeviceSync> synchronization(new OriginalDeviceSync);
+     if (!synchronization->initialize(root,&message))
+     { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+     synchronization->setKnownProjectFiles(repository->projects());
++    // 首次安装和所有就绪信号之前核对；失败只放弃本次局部对象，不假称项目原恢复动作已回滚。
++    if (!configurationSource->current(root,&message))
++    { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+     originalSamples_ = std::move(repository);
+     originalDetection_ = std::move(detection);
+     originalDeviceSync_=std::move(synchronization);
+@@ -298,6 +311,36 @@
+     emit deviceTasksPrepared(request, success, success ? QStringLiteral("已按当前原数据库核对样本任务，等待原开始命令。") : message);
+ }
+ 
++void SampleStore::prepareUserDeviceTasks(OriginalTaskReagents::RuntimeBasis basis,bool linuxNew)
++{
++    if (QThread::currentThread()!=thread())
++    {
++        // 拒绝线程错误的调用，既不读仓库/账户，也不伪称已排worker完成。
++        emit deviceTaskError(QStringLiteral("用户任务准备调用线程错误，未处理；这不是原后台完成回执。"));
++        return;
++    }
++    OriginalTaskReagents::Commit receipt;
++    const QString root=originalSamples_ ? originalSamples_->root() : QString();
++    OriginalTaskReagents::ReceiptWriter writer(OriginalTaskReagents::Action::None,basis.root,QByteArray(),basis,&receipt,{});
++    const auto &user=basis.userOperation;
++    const bool account=user.authenticated==session_.authenticated && user.accountName==session_.name &&
++        user.role==session_.role && user.sessionSource==int(session_.source) && user.policyRoot==session_.originalPolicySource &&
++        user.grantedPowerIds==session_.grantedPowerIds;
++    QString message;
++    bool success=false;
++    if (!ready_ || !originalDetection_ || !originalDeviceSync_ ||
++        !canEdit(session_) || !account || !OriginalTaskReagents::taskOriginAllows(basis,OriginalTaskReagents::Action::None) ||
++        basis.source!=OriginalTaskReagents::OperationSource::UserOperation || basis.root!=root ||
++        originalDeviceSync_->connection()!=basis.connection)
++        message=QStringLiteral("用户任务准备的账户、连接、资料或所属线程已经失效，未继续。 ");
++    else if (!originalDeviceSync_->canStart(linuxNew,&message)) {}
++    else success=originalDetection_->prepareUserOperation(basis,linuxNew,&message);
++    if (!success && originalDetection_ && QThread::currentThread()==thread()) originalDetection_->cancelUnsent();
++    // 原Session已经返回；本入口无reserve/SQL写，finished不早于工作真正结束。
++    writer.finish();
++    emit userTaskOperationFinished(receipt,success,message);
++}
++
+ void SampleStore::cancelDeviceTaskPreparation()
+ {
+     if (QThread::currentThread() == thread() && originalDetection_) originalDetection_->cancelUnsent();
+@@ -363,6 +406,11 @@
+         message = QStringLiteral("原样本/试剂处理未就绪，未保存或回应设备数据。");
+     else if (!originalDeviceSync_ || !connection || originalDeviceSync_->connection()!=connection)
+         message = QStringLiteral("该数据不属于当前已核对的设备连接，未写入或下发任务。");
++    else if (taskBasis && (payload.startsWith("Tt") || payload.startsWith("TR")) &&
++        (taskBasis->source!=OriginalTaskReagents::OperationSource::DevicePacket ||
++         !OriginalTaskReagents::validTaskOrigin(*taskBasis) || taskBasis->arrivalPacketId!=packet ||
++         taskBasis->connection!=connection || taskBasis->payloadSha256!=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex())))
++        message=QStringLiteral("设备原包与任务来源不对应，未借用户意图或另一包执行事务。 ");
+     else if (payload.startsWith("Tt"))
+     {
+         QByteArray response;
+--- a/06_programs/sn100_host/samples/original_task_reagent_receipt_writer.cpp
++++ b/06_programs/sn100_host/samples/original_task_reagent_receipt_writer.cpp
+@@ -185,8 +185,8 @@
+     const auto &basis=commit.basis;
+     const QString table=basis.configuredPositions==20 ? QStringLiteral("reagent_setting") :
+         basis.configuredPositions==42 ? QStringLiteral("reagent_setting_6600") : QString();
+-    if (!basis.available || !basis.actionId || !basis.arrivalPacketId || !basis.connection || !basis.basisRevision ||
+-        basis.basisToken.isEmpty() || basis.root!=commit.root || basis.payloadSha256!=commit.payloadSha256 ||
++    if (!basis.available || !basis.actionId || !taskOriginAllows(basis,commit.action) || !basis.connection || !basis.basisRevision ||
++        basis.basisToken.isEmpty() || basis.root!=commit.root || basis.payloadSha256!=commit.payloadSha256 || basis.originDigest!=commit.originDigest ||
+         basis.versions!=commit.beforeVersions || table!=commit.settingTable || basis.holes.isEmpty()) return false;
+     QMap<qint64,const TypedRow *> indexed; QString ignored;
+     if (!indexPlate(commit.beforePlate,&indexed,&ignored)) return false;
+@@ -225,7 +225,20 @@
+ {
+     data_.receiptId=QUuid::createUuid().toString(QUuid::WithoutBraces);
+     data_.action=action; data_.root=root; data_.basis=basis;
+-    data_.payloadSha256=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex());
++    if (basis.source==OperationSource::DevicePacket)
++    {
++        data_.payloadSha256=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex());
++        data_.originDigest=data_.payloadSha256;
++    }
++    else
++    {
++        data_.originDigest=userOperationDigest(basis.userOperation);
++        if (!payload.isEmpty() || !taskOriginAllows(basis,action))
++        {
++            data_.originDigest.clear(); // 保留事实，但绝不能采用这份不合法的来源证明。
++            appendProblem(QStringLiteral("用户来源携带设备字节或不属于获准动作，凭据不能作为可信前版。"));
++        }
++    }
+     if (result_) *result_=data_;
+ }
+ ReceiptWriter::~ReceiptWriter()
+--- a/06_programs/sn100_host/samples/original_task_reagent_receipt.h
++++ b/06_programs/sn100_host/samples/original_task_reagent_receipt.h
+@@ -2,6 +2,9 @@
+ #define SN100_ORIGINAL_TASK_REAGENT_RECEIPT_H
+ 
+ #include <QByteArray>
++#include <QCryptographicHash>
++#include <QDataStream>
++#include "sample_types.h"
+ #include <QList>
+ #include <QMap>
+ #include <QMetaType>
+@@ -17,6 +20,56 @@
+ {
+ enum class Action { None, RackReservation, UnusedReservationReturn };
+ enum class TransactionState { NotStarted, NotCommitted, CommitUnconfirmed, Committed };
++
++// 内部来源不改变线协议。用户操作没有设备原包，也没有真实到包号。
++enum class OperationSource { DevicePacket, UserOperation };
++struct UserOperation
++{
++    quint64 requestId=0, connection=0;
++    Action allowedAction=Action::None;
++    QString root, accountName, policyRoot, sampleSnapshotDigest;
++    int role=0, sessionSource=0;
++    bool authenticated=false;
++    QStringList grantedPowerIds;
++    QMap<QString,QString> configurationVersions, projectVersions;
++};
++inline QByteArray userOperationBytes(const UserOperation &u)
++{
++    QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<QStringLiteral("SN100-user-operation-v1")<<u.sampleSnapshotDigest;
++    out<<u.requestId<<u.connection<<int(u.allowedAction)<<u.root<<u.accountName<<u.policyRoot
++       <<u.role<<u.sessionSource<<u.authenticated<<u.grantedPowerIds<<u.configurationVersions<<u.projectVersions;
++    return bytes;
++}
++// 只绑定已保存的任务输入；TB剩余时间和组合目录不改变这次输入身份。
++inline QString sampleTaskInputDigest(const SampleSnapshot &snapshot)
++{
++    QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<QStringLiteral("SN100-sample-task-input-v1")<<snapshot.racks.size();
++    for (const auto &rack : snapshot.racks)
++    {
++        out<<rack.id<<rack.name<<rack.emergency<<rack.holes.size();
++        for (const auto &hole : rack.holes)
++        {
++            out<<hole.number<<hole.sampleId<<hole.container<<hole.revise<<hole.sampleType<<hole.tasks.size();
++            for (const auto &task : hole.tasks)
++            {
++                out<<task.projectId<<task.rate<<task.repeats<<task.prolonged<<task.calibrationPoint<<task.calibrationConcentration<<task.states.size();
++                for (const auto state : task.states) out<<int(state);
++            }
++            const auto &c=hole.calibration;
++            out<<c.projectId<<c.groupToken<<c.calibratorBatch<<c.reagentBatchGroup<<c.autoDilution<<c.pointCount<<c.repeatCount
++               <<c.baselineConcentration<<c.rates<<c.concentrations<<c.holes;
++            const auto &q=hole.quality.selected;
++            out<<hole.quality.slotToken<<hole.quality.changeToken<<q.datasetId<<q.controlId<<q.batchId
++               <<q.controlName<<q.batchName<<q.sampleId<<q.projects.size();
++            for (const auto &project : q.projects) out<<project.associationId<<project.projectId;
++        }
++    }
++    return QString::fromLatin1(QCryptographicHash::hash(bytes,QCryptographicHash::Sha256).toHex());
++}
++inline QString userOperationDigest(const UserOperation &u)
++{ return QString::fromLatin1(QCryptographicHash::hash(userOperationBytes(u),QCryptographicHash::Sha256).toHex()); }
+ 
+ struct HoleRuntimeBasis
+ {
+@@ -35,6 +88,9 @@
+ 
+ struct RuntimeBasis
+ {
++    OperationSource source=OperationSource::DevicePacket;
++    UserOperation userOperation;
++    QString originDigest; // 原设备字节或用户意图各自的摘要；不把用户意图放进payloadSha256。
+     bool available=false;
+     quint64 actionId=0, arrivalPacketId=0, connection=0, basisRevision=0, permissionRevision=0;
+     QString root, payloadSha256, basisToken;
+@@ -47,6 +103,38 @@
+     QString unavailableReason;
+ };
+ 
++inline bool validTaskOrigin(const RuntimeBasis &b)
++{
++    if (!b.actionId || !b.connection || b.root.isEmpty() || b.originDigest.isEmpty()) return false;
++    if (b.source==OperationSource::DevicePacket)
++        return b.arrivalPacketId && !b.payloadSha256.isEmpty() && b.originDigest==b.payloadSha256 &&
++            userOperationBytes(b.userOperation)==userOperationBytes(UserOperation());
++    if (b.source!=OperationSource::UserOperation || b.arrivalPacketId || !b.payloadSha256.isEmpty()) return false;
++    const auto &u=b.userOperation;
++    if (!u.requestId || u.connection!=b.connection || u.root!=b.root || !u.authenticated ||
++        u.role<0 || u.role>5 || u.accountName.isEmpty() || u.policyRoot!=u.root ||
++        (u.allowedAction!=Action::None && u.allowedAction!=Action::RackReservation) ||
++        u.sampleSnapshotDigest.isEmpty() || u.configurationVersions.size()!=3 || u.projectVersions.isEmpty() || b.originDigest!=userOperationDigest(u)) return false;
++    for (const auto &key : {QStringLiteral("config.ini"),QStringLiteral("config_Debug.ini"),QStringLiteral("theme_config.ini")})
++        if (u.configurationVersions.value(key).isEmpty()) return false;
++    for (auto p=u.projectVersions.cbegin();p!=u.projectVersions.cend();++p)
++        if (p.key().isEmpty() || p.value().isEmpty()) return false;
++    return true;
++}
++inline bool taskOriginAllows(const RuntimeBasis &b,Action action)
++{
++    if (!validTaskOrigin(b)) return false;
++    if (b.source==OperationSource::DevicePacket)
++        return action==Action::RackReservation || action==Action::UnusedReservationReturn;
++    return action==b.userOperation.allowedAction; // 用户意图不能申请TR退量。
++}
++inline QByteArray taskOriginBytes(const RuntimeBasis &b)
++{
++    QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<int(b.source)<<b.originDigest<<userOperationBytes(b.userOperation);
++    return bytes;
++}
++
+ struct TypedRow
+ {
+     QVariantMap values; // 保留原QVariant类型和null，未知厂商列不转成QString。
+@@ -95,7 +183,7 @@
+     QString receiptId; // 本进程一次writer尝试的本地标识，不是设备请求号或跨进程对账资格。
+     Action action=Action::None;
+     RuntimeBasis basis;
+-    QString root, payloadSha256, settingTable;
++    QString root, payloadSha256, originDigest, settingTable;
+     TransactionState transaction=TransactionState::NotStarted;
+     bool committed=false;
+     bool reagentSqlWritten=false; // 是否实际执行used UPDATE；不等同于整笔COMMIT。
+--- a/06_programs/sn100_host/samples/sample_store.h
++++ b/06_programs/sn100_host/samples/sample_store.h
+@@ -49,6 +49,7 @@
+     void loadOriginalQualityChoices(qint64 requestId);
+     void saveOriginalCalibrationParameters(qint64 requestId, qint64 projectId, QString expectedVersion, QString lastValues);
+     void prepareDeviceTasks(quint64 request, bool linuxNew);
++    void prepareUserDeviceTasks(OriginalTaskReagents::RuntimeBasis basis, bool linuxNew);
+     void cancelDeviceTaskPreparation();
+     void queryDeviceRecovery(quint64 request, quint64 connection, QString root);
+     void reserveOriginalProjectSave(quint64 ticket, OriginalProjectSaveNotice proposal, qint64 sourceDeadline);
+@@ -86,6 +87,7 @@
+     void originalCalibrationParametersSaved(qint64 requestId, bool success, QString message);
+     void originalCalibrationRecordsChanged(); // 原校准占号、进度或曲线状态变更；不表示计算完成。
+     void deviceTasksPrepared(quint64 request, bool success, QString message);
++    void userTaskOperationFinished(OriginalTaskReagents::Commit receipt, bool success, QString message);
+     void deviceRecoveryState(quint64 request, quint64 connection, QString root,
+                              bool known, bool unfinishedTasks, QString message);
+     void originalProjectSaveAdmissionReady(OriginalProjectSaveAdmission admission);
+--- a/06_programs/sn100_host/shell/device_control_shell.cpp
++++ b/06_programs/sn100_host/shell/device_control_shell.cpp
+@@ -166,17 +166,36 @@
+     deviceTaskConnection_=connection;
+     const bool linuxNew=deviceControl_->state().status.generalFields.value(19)==QStringLiteral("LinuxNew");
+     updateDeviceControlActions();
+-    QMetaObject::invokeMethod(deviceTaskStore_,"prepareDeviceTasks",Qt::QueuedConnection,
+-        Q_ARG(quint64,request),Q_ARG(bool,linuxNew));
++    QString preparationMessage;
++    if (!queueUserTaskPreparation(request,connection,linuxNew,&preparationMessage))
++    {
++        deviceTaskPreparing_=false;
++        reportDeviceTaskError(preparationMessage); updateDeviceControlActions(); return;
++    }
+     QTimer::singleShot(10000,this,[this,request]()
+     {
+         if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
+         deviceTaskPreparing_=false;
++        cancelUserTaskPreparation(request,tr("本次用户任务准备超时；保留已经进入后台的动作，等待真实结束。"));
+         if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
+         reportDeviceTaskError(tr("样本任务准备10秒未返回，未发送开始；请核对数据和连接后重试。"));
+         updateDeviceControlActions();
+     });
+     record(tr("已登记本次任务准备，仍待后台核对和设备实际回复；尚未确认开始。"));
++}
++
++void frmMain::finishDeviceTaskPreparation(quint64 request,bool success,const QString &detail)
++{
++    if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
++    deviceTaskPreparing_=false;
++    const QString interaction=deviceUserControlBlocker(deviceTaskConnection_);
++    const QString blocker=interaction.isEmpty() ? detectionStartBlocker() : interaction;
++    if (!success || !blocker.isEmpty() || !deviceControl_->start())
++    {
++        if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
++        reportDeviceTaskError(!success ? detail : !blocker.isEmpty() ? blocker : deviceControl_->state().message);
++    }
++    updateDeviceControlActions();
+ }
+ 
+ void frmMain::receiveDeviceStartKey(quint64 connection)
+@@ -595,19 +614,7 @@
+     { updateOriginalDeviceSync(); updateDeviceControlActions(); });
+     connect(samples_,&SamplePage::busyChanged,this,[this](bool){ updateDeviceControlActions(); });
+     connect(projects_,&ProjectPage::busyChanged,this,[this](bool){ updateDeviceControlActions(); });
+-    connect(store,&SampleStore::deviceTasksPrepared,this,[this,store](quint64 request,bool success,const QString &detail)
+-    {
+-        if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
+-        deviceTaskPreparing_=false;
+-        const QString interaction=deviceUserControlBlocker(deviceTaskConnection_);
+-        const QString blocker=interaction.isEmpty() ? detectionStartBlocker() : interaction;
+-        if (!success || !blocker.isEmpty() || !deviceControl_->start())
+-        {
+-            QMetaObject::invokeMethod(store,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
+-            reportDeviceTaskError(!success ? detail : !blocker.isEmpty() ? blocker : deviceControl_->state().message);
+-        }
+-        updateDeviceControlActions();
+-    });
++    connect(store,&SampleStore::deviceTasksPrepared,this,&frmMain::finishDeviceTaskPreparation);
+     connect(deviceControl_,&DeviceControl::startAccepted,store,[store](bool accepted)
+     { if (!accepted) store->cancelDeviceTaskPreparation(); },Qt::QueuedConnection);
+     connect(store,&SampleStore::originalConfigurationState,this,[this](quint64 connection,bool ready,const QString &message)
+--- a/06_programs/sn100_host/shell/frmmain.h
++++ b/06_programs/sn100_host/shell/frmmain.h
+@@ -25,7 +25,7 @@
+ class ProjectPage;
+ class ReagentsPage;
+ namespace OriginalLevels { class ObservationWorker; struct Context; }
+-namespace OriginalTaskReagents { struct Commit; struct RuntimeAdoption; }
++namespace OriginalTaskReagents { struct Commit; struct RuntimeAdoption; struct RuntimeBasis; }
+ namespace TaskReagentRouting { struct Bridge; }
+ class SamplePage;
+ class SampleStore;
+@@ -141,7 +141,12 @@
+     void observeTaskReagentCommit(const OriginalTaskReagents::Commit &receipt);
+     void receiveTaskReagentAdoption(const OriginalTaskReagents::RuntimeAdoption &adoption);
+     void taskReagentReadbackFinished(const OriginalTaskReagents::Commit &receipt);
+-    void completeTaskReagentAction(quint64 packet);
++    void completeTaskReagentAction(quint64 actionId);
++    bool queueUserTaskPreparation(quint64 request, quint64 connection, bool linuxNew, QString *message);
++    bool userTaskOriginCurrent(const OriginalTaskReagents::RuntimeBasis &basis, QString *message) const;
++    void finishUserTaskOperation(const OriginalTaskReagents::Commit &receipt, bool success, const QString &message);
++    void cancelUserTaskPreparation(quint64 request, const QString &message);
++    void finishDeviceTaskPreparation(quint64 request, bool success, const QString &message);
+     void cancelTaskReagentContexts(const QString &reason);
+     void taskReagentContextChanged();
+     void taskReagentSourceReviewed(bool success);
+--- a/06_programs/sn100_host/shell/task_reagent_context.h
++++ b/06_programs/sn100_host/shell/task_reagent_context.h
+@@ -31,6 +31,7 @@
+     bool basisEligible=false, dispatched=false, processed=false, cancelled=false;
+     bool observed=false, receiptAuthorized=false, receiptConflict=false, pageRequested=false, enqueueing=false, ackSeen=false, readerPending=false;
+     bool displayUnknown=false, transactionUnknown=false, unscoped=false, waitWarned=false;
++    bool userSuccess=false;
+     QMap<QString,qint64> unresolvedHoles;
+     QString message;
+     Clock::time_point arrived=Clock::now();
+@@ -66,7 +67,9 @@
+ struct TransactionFact
+ {
+     quint64 actionId=0, packet=0, connection=0, epoch=0;
+-    QString root, receiptId, payloadSha256;
++    QString root, receiptId, payloadSha256, originDigest;
++    OriginalTaskReagents::OperationSource source=OriginalTaskReagents::OperationSource::DevicePacket;
++    OriginalTaskReagents::UserOperation userOperation;
+     bool receiptAvailable=false, committed=false;
+     OriginalTaskReagents::TransactionState transaction=OriginalTaskReagents::TransactionState::NotStarted;
+     bool unscoped=false;
+@@ -76,7 +79,9 @@
+ struct Terminal
+ {
+     quint64 id=0, packet=0, connection=0, epoch=0;
+-    QString root, receiptId, basisToken, payloadSha256;
++    QString root, receiptId, basisToken, payloadSha256, originDigest;
++    OriginalTaskReagents::OperationSource source=OriginalTaskReagents::OperationSource::DevicePacket;
++    OriginalTaskReagents::UserOperation userOperation;
+     QByteArray receiptSignature;
+     QByteArray basisSignature;
+     OriginalTaskReagents::Action expected=OriginalTaskReagents::Action::None;
+@@ -85,9 +90,10 @@
+ 
+ struct Bridge
+ {
+-    QMap<quint64,Action> actions; // 仅活跃动作与原32包/1MiB合计记账，B历史不占业务包预算。
++    QMap<quint64,Action> actions; // key仅为内部actionId，packet只保存真实设备到包号； 仅活跃动作与原32包/1MiB合计记账，B历史不占业务包预算。
+     QQueue<quint64> waiting;
+     QMap<quint64,quint64> nReaders; // 包编号对应连接编号；只在实际液面读取结束后移除。
++    quint64 lastUserRequest=0;
+     quint64 nextAction=0, epoch=1, identityRevision=0, fenceToken=0, fenceConnection=0, processedSerial=0;
+     bool attached=false, closing=false, closeRetryNeeded=false, identityChanging=false, pumpQueued=false, fenceClosed=false, awaitFreshQj=false;
+     bool readerCloseIntent=false, readerCloseRetryPosted=false;
+--- a/06_programs/sn100_host/shell/task_reagent_shell.cpp
++++ b/06_programs/sn100_host/shell/task_reagent_shell.cpp
+@@ -8,6 +8,9 @@
+ #include "samples/sample_store.h"
+ #include "projects/project_page.h"
+ #include <QCryptographicHash>
++#include <QDir>
++#include "projects/original_project_repository.h"
++#include "original_files/original_ini.h"
+ #include <QDataStream>
+ #include <QDebug>
+ #include <QMetaObject>
+@@ -24,6 +27,7 @@
+ QByteArray taskBasisBytes(const OriginalTaskReagents::RuntimeBasis &b)
+ {
+     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
++    out<<OriginalTaskReagents::taskOriginBytes(b);
+     out<<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
+        <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
+        <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
+@@ -36,7 +40,7 @@
+ QByteArray taskCommitSignature(const OriginalTaskReagents::Commit &r)
+ {
+     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
+-    out<<r.receiptId<<int(r.action)<<taskBasisBytes(r.basis)<<r.root<<r.payloadSha256<<r.settingTable
++    out<<r.receiptId<<int(r.action)<<taskBasisBytes(r.basis)<<r.root<<r.payloadSha256<<r.originDigest<<r.settingTable
+        <<int(r.transaction)<<r.committed<<r.reagentSqlWritten<<r.postCommitVerified<<r.basisMatchesDatabaseBefore
+        <<r.beforeVersions<<r.afterVersions<<r.proofMessage;
+     for (const auto *plate : {&r.beforePlate,&r.afterPlate})
+@@ -81,6 +85,7 @@
+     { bridge.transactionOverflow=true; return; }
+     TransactionFact fact;
+     fact.actionId=action.id; fact.packet=action.packet; fact.connection=action.connection; fact.epoch=action.epoch;
++    fact.source=action.seed.source; fact.userOperation=action.seed.userOperation; fact.originDigest=action.seed.originDigest;
+     fact.root=action.root; fact.receiptId=action.receipt ? action.receipt->receiptId : QString(); fact.payloadSha256=action.payloadSha256;
+     if (action.receipt)
+     { fact.receiptAvailable=true; fact.transaction=action.receipt->transaction; fact.committed=action.receipt->committed; }
+@@ -250,14 +255,14 @@
+ {
+     int count=0;
+     if (taskReagentBridge_) for (const auto &a : taskReagentBridge_->actions)
+-        if (a.processed && !devicePackets_.contains(a.packet)) ++count;
++        if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation || (a.processed && !devicePackets_.contains(a.packet))) ++count;
+     return count;
+ }
+ qint64 frmMain::taskReagentRetainedBytes() const
+ {
+     qint64 bytes=0;
+     if (taskReagentBridge_) for (const auto &a : taskReagentBridge_->actions)
+-        if (a.processed && !devicePackets_.contains(a.packet)) bytes+=a.payloadBytes;
++        if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation || (a.processed && !devicePackets_.contains(a.packet))) bytes+=a.payloadBytes;
+     return bytes;
+ }
+ 
+@@ -292,6 +297,7 @@
+         if (warned) reportTaskReagent(tr("任务处理时间较长，仍在等待原处理结束；没有自动重试或退回试剂用量。"));
+     });
+     connect(deviceTaskStore_,&SampleStore::taskReagentCommitObserved,this,&frmMain::observeTaskReagentCommit,Qt::QueuedConnection);
++    connect(deviceTaskStore_,&SampleStore::userTaskOperationFinished,this,&frmMain::finishUserTaskOperation,Qt::QueuedConnection);
+     connect(reagents_,&ReagentsPage::originalTaskReagentAdopted,this,&frmMain::receiveTaskReagentAdoption);
+     connect(reagents_->taskStore(),&ReagentStore::originalTaskReagentReadback,this,
+         [this](const OriginalTaskReagents::Commit &receipt,bool,const ReagentSnapshot &,const ReagentProjects &,const QString &)
+@@ -340,8 +346,8 @@
+     a.seed.capacityFileState=identity.capacityFileState; a.seed.configuredPositions=identity.configuredPositions;
+     a.seed.reportedPositions=identity.reportedPositions; a.seed.capacityCalibrationActive=identity.capacityCalibrationActive;
+     a.seed.mainStatus=deviceControl_->state().status.mainStatus; // 原到达值，后续Qj不重贴。
+-    a.basis=a.seed;
+-    b.actions.insert(packet,a); b.waiting.enqueue(packet);
++    a.seed.originDigest=a.payloadSha256; a.basis=a.seed;
++    b.actions.insert(a.id,a); b.waiting.enqueue(a.id);
+     if (b.actionDeadlineTimer && !b.actionDeadlineTimer->isActive()) b.actionDeadlineTimer->start();
+     ensureTaskReagentFence();
+     updateDeviceControlActions();
+@@ -354,18 +360,20 @@
+ {
+     if (!taskReagentBridge_) return;
+     auto &b=*taskReagentBridge_;
+-    auto it=b.actions.find(receipt.basis.arrivalPacketId);
++    auto it=b.actions.find(receipt.basis.actionId);
+     const QByteArray signature=taskCommitSignature(receipt);
+     if (it==b.actions.end())
+     {
+-        const auto old=b.terminal.constFind(receipt.basis.arrivalPacketId);
++        const auto old=b.terminal.constFind(receipt.basis.actionId);
+         if (old!=b.terminal.cend() && old->receiptSignature==signature) return;
+         if (old!=b.terminal.cend() && old->id==receipt.basis.actionId && old->connection==receipt.basis.connection &&
+             old->expected==receipt.action && old->root==receipt.root && old->payloadSha256==receipt.payloadSha256 &&
++            old->source==receipt.basis.source && old->originDigest==receipt.originDigest && old->packet==receipt.basis.arrivalPacketId &&
+             old->basisToken==receipt.basis.basisToken && old->basisSignature==QCryptographicHash::hash(taskBasisBytes(receipt.basis),QCryptographicHash::Sha256))
+         {
+             // 本应先于processed的事实迟到：保原事实和归属未知，不借已回收槽位采用或撤新来源。
+             Action late; late.id=old->id; late.packet=old->packet; late.connection=old->connection; late.epoch=old->epoch;
++            late.seed.source=old->source; late.seed.userOperation=old->userOperation; late.seed.originDigest=old->originDigest;
+             late.root=old->root; late.payloadSha256=old->payloadSha256; late.transactionUnknown=true;
+             late.displayUnknown=true; late.unscoped=true; late.processedSerial=b.processedSerial;
+             late.receipt=std::make_shared<const OriginalTaskReagents::Commit>(receipt);
+@@ -377,7 +385,9 @@
+     }
+     auto &a=it.value();
+     if (!a.dispatched || receipt.action!=a.expected || receipt.basis.actionId!=a.id || receipt.basis.connection!=a.connection ||
+-        receipt.root!=a.root || receipt.payloadSha256!=a.payloadSha256 || taskBasisBytes(receipt.basis)!=taskBasisBytes(a.basis))
++        receipt.root!=a.root || receipt.payloadSha256!=a.payloadSha256 || receipt.originDigest!=a.seed.originDigest ||
++        receipt.basis.arrivalPacketId!=a.packet || !OriginalTaskReagents::taskOriginAllows(receipt.basis,receipt.action) ||
++        taskBasisBytes(receipt.basis)!=taskBasisBytes(a.basis))
+     {
+         if (!a.receipt) { a.receipt=std::make_shared<const OriginalTaskReagents::Commit>(receipt); a.receiptSignature=signature; }
+         a.observed=true; a.receiptConflict=true; a.transactionUnknown=true; a.displayUnknown=true; a.unscoped=true;
+@@ -411,7 +421,8 @@
+ {
+     if (!taskReagentBridge_) return;
+     auto &b=*taskReagentBridge_;
+-    auto it=b.actions.find(packet);
++    auto it=b.actions.begin();
++    while (it!=b.actions.end() && (it->seed.source!=OriginalTaskReagents::OperationSource::DevicePacket || it->packet!=packet)) ++it;
+     if (it==b.actions.end()) return;
+     auto &a=it.value();
+     const QByteArray expected=a.expected==OriginalTaskReagents::Action::RackReservation ? QByteArray("Tt") : QByteArray("TR");
+@@ -434,11 +445,12 @@
+ {
+     if (!taskReagentBridge_) return;
+     auto &b=*taskReagentBridge_;
+-    auto it=b.actions.find(result.arrivalPacketId);
++    auto it=b.actions.find(result.actionId);
+     if (it==b.actions.end()) return; // 有界last/tombstone不授权清旧B/C。
+     auto &a=it.value();
+     if (!a.pageRequested || !a.receipt || result.actionId!=a.id || result.connection!=a.connection || result.root!=a.root ||
+-        result.payloadSha256!=a.payloadSha256 || result.basisToken!=a.basis.basisToken ||
++        result.payloadSha256!=a.payloadSha256 || result.arrivalPacketId!=a.packet || result.source!=a.seed.source ||
++        result.userRequestId!=a.seed.userOperation.requestId || result.originDigest!=a.seed.originDigest || result.basisToken!=a.basis.basisToken ||
+         result.permissionRevision!=a.basis.permissionRevision || result.receiptId!=a.receipt->receiptId ||
+         result.transaction!=a.receipt->transaction || result.committed!=a.receipt->committed)
+     { reportTaskReagent(tr("Page回执不属于原动作，未借另一ACK清任务或来源未知。")); return; }
+@@ -455,17 +467,17 @@
+ void frmMain::taskReagentReadbackFinished(const OriginalTaskReagents::Commit &receipt)
+ {
+     if (!taskReagentBridge_) return;
+-    auto it=taskReagentBridge_->actions.find(receipt.basis.arrivalPacketId);
++    auto it=taskReagentBridge_->actions.find(receipt.basis.actionId);
+     if (it==taskReagentBridge_->actions.end() || !it->pageRequested || it->receiptSignature!=taskCommitSignature(receipt)) return;
+     it->readerPending=false;
+     advanceTaskReagents();
+ }
+ 
+-void frmMain::completeTaskReagentAction(quint64 packet)
+-{
+-    if (!taskReagentBridge_) return;
+-    auto &b=*taskReagentBridge_;
+-    auto it=b.actions.find(packet);
++void frmMain::completeTaskReagentAction(quint64 actionId)
++{
++    if (!taskReagentBridge_) return;
++    auto &b=*taskReagentBridge_;
++    auto it=b.actions.find(actionId);
+     if (it==b.actions.end()) return;
+     const Action a=it.value();
+     if (a.dispatched && (!a.processed || a.readerPending || a.enqueueing || (a.pageRequested && !a.ackSeen))) return;
+@@ -473,18 +485,27 @@
+     foldTransaction(b,a); foldDisplay(b,a);
+     Terminal terminal;
+     terminal.id=a.id; terminal.packet=a.packet; terminal.connection=a.connection; terminal.epoch=a.epoch;
++    terminal.source=a.seed.source; terminal.userOperation=a.seed.userOperation; terminal.originDigest=a.seed.originDigest;
+     terminal.root=a.root; terminal.payloadSha256=a.payloadSha256; terminal.basisToken=a.basis.basisToken;
+     terminal.receiptId=a.receipt ? a.receipt->receiptId : QString(); terminal.receiptSignature=a.receiptSignature;
+     terminal.expected=a.expected; terminal.basisSignature=QCryptographicHash::hash(taskBasisBytes(a.basis),QCryptographicHash::Sha256);
+     terminal.committed=a.receipt && a.receipt->committed; terminal.snapshotAccepted=a.adoption.snapshotAccepted;
+     terminal.runtimeApplied=a.adoption.runtimeApplied;
+-    b.terminal.insert(packet,terminal);
++    b.terminal.insert(actionId,terminal);
+     while (b.terminal.size()>32) b.terminal.erase(b.terminal.begin());
+     b.actions.erase(it); // B只留有界scope，typed大行和原包字节不成为第二个历史队列。
+     if (b.actions.isEmpty() && b.actionDeadlineTimer) b.actionDeadlineTimer->stop();
+-    const auto raw=devicePackets_.take(packet); devicePacketBytes_-=raw.size();
+-    qInfo()<<"TASK_REAGENT_RETIRED"<<a.id<<packet<<a.displayUnknown<<a.transactionUnknown;
++    const auto raw=a.packet ? devicePackets_.take(a.packet) : QByteArray(); devicePacketBytes_-=raw.size();
++    qInfo()<<"TASK_REAGENT_RETIRED"<<a.id<<a.packet<<a.displayUnknown<<a.transactionUnknown;
+     checkTaskReagentSource();
++    if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation)
++    {
++        QString message=a.message.isEmpty() ? tr("本次用户准备未完成或已取消，未发送开始。") : a.message;
++        const bool current=!a.cancelled && a.epoch==b.epoch && userTaskOriginCurrent(a.seed,&message);
++        const bool success=a.userSuccess && current && !a.transactionUnknown && !a.receiptConflict;
++        if (!success && deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
++        finishDeviceTaskPreparation(a.seed.userOperation.requestId,success,message);
++    }
+ }
+ 
+ void frmMain::advanceTaskReagents()
+@@ -495,9 +516,9 @@
+     {
+         if (!taskReagentBridge_) return;
+         auto &b=*taskReagentBridge_; b.pumpQueued=false;
+-        for (const auto packet : b.actions.keys())
++        for (const auto actionId : b.actions.keys())
+         {
+-            auto it=b.actions.find(packet);
++            auto it=b.actions.find(actionId);
+             if (it==b.actions.end() || !it->processed) continue;
+             auto &a=it.value();
+             const bool committed=a.receiptAuthorized && a.receipt && a.receipt->committed && a.receipt->transaction==TransactionState::Committed;
+@@ -509,14 +530,14 @@
+                 QString message;
+                 const auto receipt=*a.receipt;
+                 const bool queued=reagents_->enqueueOriginalTaskReagentCommit(receipt,&message);
+-                it=b.actions.find(packet);
++                it=b.actions.find(actionId);
+                 if (it==b.actions.end()) continue;
+                 it->enqueueing=false; it->readerPending=queued && !it->ackSeen;
+                 if (!queued && !it->ackSeen)
+                 { it->ackSeen=true; it->displayUnknown=true; it->unscoped=!it->basis.available; it->message=message; }
+             }
+-            it=b.actions.find(packet);
+-            if (it!=b.actions.end() && (!needsPage || (it->ackSeen && !it->readerPending))) completeTaskReagentAction(packet);
++            it=b.actions.find(actionId);
++            if (it!=b.actions.end() && (!needsPage || (it->ackSeen && !it->readerPending))) completeTaskReagentAction(actionId);
+         }
+         bool active=false;
+         for (const auto &a : b.actions) if (a.dispatched) active=true;
+@@ -525,36 +546,48 @@
+             while (!b.waiting.isEmpty() && !b.actions.contains(b.waiting.head())) b.waiting.dequeue();
+             if (!b.waiting.isEmpty())
+             {
+-                const quint64 packet=b.waiting.head();
+-                auto &a=b.actions[packet];
++                const quint64 actionId=b.waiting.head();
++                auto &a=b.actions[actionId];
+                 if (b.closing || b.transactionOverflow || !b.transactions.isEmpty() || a.cancelled)
+                 {
+                     b.waiting.dequeue();
+                     reportTaskReagent(tr("尚未进入后台的原任务已停止等待；原事务或身份待核，未伪造processed、回应或重放。"));
+-                    completeTaskReagentAction(packet); advanceTaskReagents();
++                    completeTaskReagentAction(actionId); advanceTaskReagents();
+                 }
+                 else if (!reagentLevelBusy() && b.nReaders.isEmpty() && reagents_)
+                 {
+                     b.waiting.dequeue();
+                     if (a.epoch!=b.epoch) a.cancelled=true;
+-                    if (a.cancelled) { completeTaskReagentAction(packet); advanceTaskReagents(); return; }
++                    if (a.cancelled) { completeTaskReagentAction(actionId); advanceTaskReagents(); return; }
+                     QString message;
+                     if (a.basisEligible && !reagents_->isBusy() && !reagents_->hasUnconfirmedOriginalLevelRuntime() &&
+                         a.seed.permissionRevision==b.identity.revision && a.seed.connection==b.identity.connection)
+                         a.basis=reagents_->freezeOriginalTaskReagentBasis(a.seed,&message);
+                     else
+                     { a.basis=a.seed; a.basis.available=false; a.basis.unavailableReason=tr("原到达时没有独立可冻结前版，未把前一动作after贴给旧包。"); }
+-                    const QByteArray payload=devicePackets_.value(packet);
++                    if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation)
++                    {
++                        QString reason;
++                        if (!userTaskOriginCurrent(a.seed,&reason))
++                        { a.cancelled=true; a.message=reason; completeTaskReagentAction(actionId); advanceTaskReagents(); return; }
++                        a.dispatched=true; a.stage=Stage::Backend;
++                        const bool linuxNew=a.seed.protocolToken==QStringLiteral("LinuxNew");
++                        if (!QMetaObject::invokeMethod(deviceTaskStore_,"prepareUserDeviceTasks",Qt::QueuedConnection,
++                            Q_ARG(OriginalTaskReagents::RuntimeBasis,a.basis),Q_ARG(bool,linuxNew)))
++                        { a.dispatched=false; a.cancelled=true; a.message=tr("用户准备请求未能进入后台，未伪造处理结束或提交。 "); completeTaskReagentAction(actionId); }
++                        advanceTaskReagents(); return;
++                    }
++                    const QByteArray payload=devicePackets_.value(a.packet);
+                     if (payload.isEmpty() || digest(payload)!=a.payloadSha256)
+-                    { a.cancelled=true; completeTaskReagentAction(packet); reportTaskReagent(tr("原任务包已不在唯一预算队列，未补造或重发。")); return; }
++                    { a.cancelled=true; completeTaskReagentAction(actionId); reportTaskReagent(tr("原任务包已不在唯一预算队列，未补造或重发。")); return; }
+                     a.dispatched=true; a.stage=Stage::Backend;
+                     if (!QMetaObject::invokeMethod(deviceTaskStore_,"receiveDevicePacketWithTaskBasis",Qt::QueuedConnection,
+-                        Q_ARG(QByteArray,payload),Q_ARG(quint64,a.connection),Q_ARG(quint64,packet),
++                        Q_ARG(QByteArray,payload),Q_ARG(quint64,a.connection),Q_ARG(quint64,a.packet),
+                         Q_ARG(OriginalTaskReagents::RuntimeBasis,a.basis)))
+                     {
+                         a.dispatched=false; a.cancelled=true;
+                         reportTaskReagent(tr("原任务未能排入后台，已取消冻结依据；不假报设备回应或数据库提交。"));
+-                        completeTaskReagentAction(packet);
++                        completeTaskReagentAction(actionId);
+                     }
+                 }
+             }
+@@ -580,6 +613,137 @@
+     });
+ }
+ 
++bool frmMain::userTaskOriginCurrent(const OriginalTaskReagents::RuntimeBasis &basis,QString *message) const
++{
++    const auto reject=[&](const QString &reason) { if (message) *message=reason; return false; };
++    if (!OriginalTaskReagents::validTaskOrigin(basis) || basis.source!=OriginalTaskReagents::OperationSource::UserOperation ||
++        !deviceControl_ || basis.connection!=deviceControl_->connectionGeneration() || !deviceControl_->state().connected ||
++        !samples_ || samples_->property("originalRoot").toString()!=basis.root || !projects_)
++        return reject(tr("用户准备请求不再属于原连接或资料，未转交新上下文。"));
++    const auto &u=basis.userOperation;
++    if (OriginalTaskReagents::sampleTaskInputDigest(samples_->snapshot())!=u.sampleSnapshotDigest)
++        return reject(tr("用户准备期间已保存的样本任务输入改变，未沿用旧确认。"));
++    if (u.accountName!=session_.name || u.role!=session_.role || u.authenticated!=session_.authenticated ||
++        u.sessionSource!=int(session_.source) || u.policyRoot!=session_.originalPolicySource || u.grantedPowerIds!=session_.grantedPowerIds)
++        return reject(tr("用户准备请求的原账户或权限已经改变。"));
++    for (auto file=u.configurationVersions.cbegin();file!=u.configurationVersions.cend();++file)
++        if (OriginalIni::fingerprint(QDir(basis.root).filePath(file.key()),message)!=file.value())
++            return reject(tr("用户准备期间原配置版本改变，未发送开始。"));
++    QMap<QString,QString> versions;
++    for (const auto &project : projects_->projects())
++    {
++        if (project.originalFileName.isEmpty() || project.originalFingerprint.isEmpty() || versions.contains(project.originalFileName))
++            return reject(tr("当前项目资料身份不完整，用户准备停止。"));
++        versions.insert(project.originalFileName,project.originalFingerprint);
++    }
++    if (versions!=u.projectVersions) return reject(tr("用户准备期间项目资料已经改变。"));
++    for (auto project=versions.cbegin();project!=versions.cend();++project)
++        if (OriginalProjectRepository::databaseFingerprint(QDir(basis.root).filePath(QStringLiteral("project/")+project.key()),message)!=project.value())
++            return reject(tr("用户准备期间项目文件已经改变，未沿用页面旧版本。"));
++    if (message) message->clear();
++    return true;
++}
++
++bool frmMain::queueUserTaskPreparation(quint64 request,quint64 connection,bool linuxNew,QString *message)
++{
++    Q_UNUSED(linuxNew); // 协议选择绑定在原seed；后台仍按同一原协议处理。
++    if (!taskReagentBridge_) attachTaskReagents();
++    if (!taskReagentBridge_ || !samples_ || !projects_ || !deviceControl_) return false;
++    auto &b=*taskReagentBridge_;
++    if (!request || request<=b.lastUserRequest || b.closing || b.transactionOverflow || !b.transactions.isEmpty() ||
++        !b.actions.isEmpty() || b.nextAction==std::numeric_limits<quint64>::max())
++    { if (message) *message=tr("上一任务或用户请求仍未收尾，未重复登记。 "); return false; }
++    Action a; a.id=++b.nextAction; a.connection=connection; a.epoch=b.epoch;
++    a.expected=OriginalTaskReagents::Action::None; a.root=samples_->property("originalRoot").toString();
++    auto &seed=a.seed; seed.source=OriginalTaskReagents::OperationSource::UserOperation;
++    seed.actionId=a.id; seed.connection=connection; seed.root=a.root;
++    seed.permissionRevision=b.identity.revision; seed.mainStatus=deviceControl_->state().status.mainStatus;
++    seed.basisToken=QStringLiteral("user-task:%1:%2:%3").arg(b.epoch).arg(a.id).arg(request);
++    auto &u=seed.userOperation; u.requestId=request; u.connection=connection; u.root=a.root;
++    u.allowedAction=OriginalTaskReagents::Action::None;
++    u.sampleSnapshotDigest=OriginalTaskReagents::sampleTaskInputDigest(samples_->snapshot());
++    u.accountName=session_.name; u.role=session_.role; u.authenticated=session_.authenticated;
++    u.sessionSource=int(session_.source); u.policyRoot=session_.originalPolicySource; u.grantedPowerIds=session_.grantedPowerIds;
++    for (const auto &file : {QStringLiteral("config.ini"),QStringLiteral("config_Debug.ini"),QStringLiteral("theme_config.ini")})
++        u.configurationVersions.insert(file,OriginalIni::fingerprint(QDir(a.root).filePath(file),message));
++    for (const auto &project : projects_->projects())
++    {
++        if (u.projectVersions.contains(project.originalFileName)) return false;
++        u.projectVersions.insert(project.originalFileName,project.originalFingerprint);
++    }
++    const auto &identity=b.identity;
++    seed.actualModel=identity.actualModel; seed.configuredModel=identity.configuredModel; seed.protocolToken=identity.protocolToken;
++    seed.themeFingerprint=identity.themeFingerprint; seed.capacityRelativeFile=identity.capacityRelativeFile;
++    seed.capacityFingerprint=identity.capacityFingerprint; seed.capacityFileState=identity.capacityFileState;
++    seed.configuredPositions=identity.configuredPositions; seed.reportedPositions=identity.reportedPositions;
++    seed.capacityCalibrationActive=identity.capacityCalibrationActive;
++    seed.originDigest=OriginalTaskReagents::userOperationDigest(u);
++    if (!userTaskOriginCurrent(seed,message)) return false;
++    a.payloadBytes=OriginalTaskReagents::userOperationBytes(u).size();
++    if (a.payloadBytes>128000 || devicePackets_.size()+taskReagentRetainedPackets()>=32 ||
++        devicePacketBytes_+taskReagentRetainedBytes()+a.payloadBytes>1048576)
++    { if (message) *message=tr("用户请求资料超过任务队列预算，未登记或发送。 "); return false; }
++    a.basisEligible=!b.displayUnknown.contains(a.root) && !b.globalDisplayUnknown;
++    a.basis=seed; b.lastUserRequest=request;
++    b.actions.insert(a.id,a); b.waiting.enqueue(a.id);
++    if (b.actionDeadlineTimer && !b.actionDeadlineTimer->isActive()) b.actionDeadlineTimer->start();
++    ensureTaskReagentFence(); advanceTaskReagents();
++    return true;
++}
++
++void frmMain::cancelUserTaskPreparation(quint64 request,const QString &message)
++{
++    if (!taskReagentBridge_) return;
++    for (auto &a : taskReagentBridge_->actions)
++        if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation && a.seed.userOperation.requestId==request)
++        {
++            a.cancelled=true; a.message=message;
++            if (reagents_ && !a.basis.basisToken.isEmpty()) reagents_->cancelOriginalTaskReagentBasis(a.basis.basisToken,message);
++        }
++    advanceTaskReagents();
++}
++
++void frmMain::finishUserTaskOperation(const OriginalTaskReagents::Commit &receipt,bool success,const QString &message)
++{
++    if (!taskReagentBridge_) return;
++    auto &b=*taskReagentBridge_;
++    auto it=b.actions.find(receipt.basis.actionId);
++    if (it==b.actions.end()) { observeTaskReagentCommit(receipt); return; }
++    const auto &expected=it.value();
++    const bool belongs=expected.seed.source==OriginalTaskReagents::OperationSource::UserOperation && expected.dispatched &&
++        receipt.basis.source==expected.seed.source && receipt.action==expected.expected &&
++        receipt.basis.actionId==expected.id && receipt.basis.arrivalPacketId==expected.packet &&
++        receipt.basis.connection==expected.connection && receipt.root==expected.root &&
++        receipt.payloadSha256==expected.payloadSha256 && receipt.originDigest==expected.seed.originDigest &&
++        OriginalTaskReagents::taskOriginAllows(receipt.basis,receipt.action) && taskBasisBytes(receipt.basis)==taskBasisBytes(expected.basis);
++    if (!belongs)
++    {
++        // 可疑事实仍进原未知保护，但它不是当前worker真正结束的证明。
++        observeTaskReagentCommit(receipt);
++        reportTaskReagent(tr("用户完成回执不属于原请求，仍等待对应后台真实结束。"));
++        return;
++    }
++    if (expected.processed) { observeTaskReagentCommit(receipt); return; }
++    observeTaskReagentCommit(receipt);
++    it=b.actions.find(receipt.basis.actionId);
++    if (it==b.actions.end()) return;
++    auto &a=it.value();
++    const bool noWrite=receipt.action==OriginalTaskReagents::Action::None && !receipt.committed &&
++        receipt.transaction==OriginalTaskReagents::TransactionState::NotStarted && !receipt.reagentSqlWritten &&
++        receipt.sqlWrites.isEmpty() && receipt.tasks.isEmpty() && receipt.beforeVersions.isEmpty() && receipt.afterVersions.isEmpty() &&
++        !receipt.beforePlate.complete && !receipt.afterPlate.complete && receipt.refreshHoles.isEmpty() &&
++        receipt.beforePlate.rows.isEmpty() && receipt.afterPlate.rows.isEmpty() &&
++        receipt.alreadyHandledTaskIds.isEmpty() && receipt.skippedAddedTaskIds.isEmpty() && receipt.refusedUncertainTaskIds.isEmpty() &&
++        !receipt.postCommitVerified && !receipt.basisMatchesDatabaseBefore;
++    if (!noWrite || !a.receiptAuthorized || a.receiptConflict)
++    { a.transactionUnknown=true; a.displayUnknown=true; a.unscoped=true; foldTransaction(b,a); ensureTaskReagentFence(); }
++    a.processed=true; a.userSuccess=success && noWrite && a.receiptAuthorized && !a.receiptConflict;
++    a.message=message;
++    if (b.processedSerial!=std::numeric_limits<quint64>::max()) ++b.processedSerial; else b.transactionOverflow=true;
++    a.processedSerial=b.processedSerial;
++    advanceTaskReagents(); // 只有真实worker返回后，才允许Page或无写退休。
++}
++
+ void frmMain::enterTaskReagentCloseAttempt()
+ {
+     if (!taskReagentBridge_) return;
+@@ -607,7 +771,7 @@
+     b.sourceTicket.reset(); b.confirmedSources.clear(); b.independentFullIdentity=0;
+     for (auto &a : b.actions)
+     {
+-        a.cancelled=true;
++        a.cancelled=true; a.message=reason;
+         if (reagents_ && !a.basis.basisToken.isEmpty()) reagents_->cancelOriginalTaskReagentBasis(a.basis.basisToken,reason);
+     }
+     ensureTaskReagentFence(); advanceTaskReagents();

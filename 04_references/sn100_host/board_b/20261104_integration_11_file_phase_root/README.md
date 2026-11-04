@@ -1,0 +1,9 @@
+# 第11批总控执行回执和后补独立审查
+
+本目录补充保存总控四个文件阶段的真实输出、退出、最终完成记录、后补独审，以及冻结入口01的捕获重试失败和02最小修正结果。主证据仍是04_references/sn100_host/workflow_next_20261103/integration_11_01的202份清单，本目录没有修改那批原件。
+
+Root实际观察的工具事实与进程原始stdout/stderr分开：第一次冻结调用的完整输出未保留，退出记null；捕获重试明确退出1，02退出0。build/stage/archive/collect/finish工具结束均实际0，不将本JSON称为原始进程输出。
+
+新356fe5f8包只另存板B独立目录，current仍C7；锁内前后同669382/2102645、原主控5008/118180及七配置指纹。未切版、未启停，不包含新版本功能、真实仪器、实体或资源验证通过结论。Root恢复文件在07_backups/sn100_host/board_b/workflow_integration_20261103/integration_11_01。
+
+inputs按仓库相对路径保存精确字节，source_records.json记录来源。SHA256SUMS逐份核对全部文件；.gitattributes只在本目录禁用文本换行转换，根属性不变。没有INI正文、数据库或认证材料。本归档器未连接板卡或运行产品。

@@ -100,6 +100,8 @@ void frmMain::confirmReagentLevelUr(const QByteArray &payload,quint64 connection
 bool frmMain::requestReagentLevelShutdown()
 {
     reagentLevelClosing_=true;
+    cancelReagentProbe(tr("程序关闭：不停止设备、不回滚或重发探测；等待已派准备/N/读者真实收尾。"));
+    if (reagentProbe_) return false;
     invalidateReagentLevels();
     if (reagentLevelActive_ || (reagentLevelWorker_ && reagentLevelWorker_->isBusy()))
     {
@@ -278,6 +280,10 @@ void frmMain::attachReagentLevels()
         if (arrival!=deviceControl_->connectionGeneration()) return;
         if (payload.startsWith("Qj")) { updateReagentLevelContext(true); return; }
         if (!payload.startsWith('N')) return;
+        if (reagentProbeExecutionExpired())
+        { cancelReagentProbe(tr("N到达时实际60秒等待已过，未先接纳再续时。")); return; }
+        if (reagentProbeUnknown_ && !reagentProbe_)
+        { reportReagentLevel(tr("单孔探测执行/数据结果待核，新的N未写库；Qj未清此未知。")); return; }
         const QString taskBlocker=taskReagentNBlocker();
         if (!taskBlocker.isEmpty()) { reportReagentLevel(taskBlocker); return; }
         QString message;
@@ -285,24 +291,49 @@ void frmMain::attachReagentLevels()
         { reportReagentLevel(property("originalLevelBlocker").toString()); return; }
         const QString synchronization=reagentLevelSyncBlocker(arrival);
         if (!synchronization.isEmpty()) { reportReagentLevel(synchronization); return; }
-        if (reagentLevelBusy() || reagents_->hasUnconfirmedOriginalLevelRuntime() || reagents_->isBusy() ||
-            reagents_->hasUnsavedChanges() || reagentPriorityRequest_ || deviceTaskPreparing_ ||
-            !devicePackets_.isEmpty() || !deviceReagentUpdateHole_.isEmpty())
-        { reportReagentLevel(tr("N到达时资料、其他回读或展示仍在处理；未并发写库、换版本或合并旧N。")); return; }
         OriginalLevels::ReceivedPacket packet;
         if (!OriginalLevels::decodePacket(payload,reagentLevelContext_->linuxNew,&packet,&message))
-        { reportReagentLevel(message); return; }
+        {
+            if (reagentProbe_) cancelReagentProbe(tr("探测等待中收到无效N，未放宽解码或报告数据完成：")+message);
+            reportReagentLevel(message); return;
+        }
         if (packet.kind==OriginalLevels::PacketKind::SampleIgnored) return;
+        const bool ownProbe=reagentProbeAcceptsN(packet,arrival);
+        if (reagentProbe_ && !ownProbe)
+        { cancelReagentProbe(tr("N不属于当前单孔探测或已有一条N未收尾，未合并/换标签。")); return; }
+        if (reagentLevelBusy() || reagents_->hasUnconfirmedOriginalLevelRuntime() || (reagents_->isBusy() && !ownProbe) ||
+            reagents_->hasUnsavedChanges() || reagentPriorityRequest_ || deviceTaskPreparing_ ||
+            !devicePackets_.isEmpty() || !deviceReagentUpdateHole_.isEmpty())
+        {
+            if (ownProbe) cancelReagentProbe(tr("本探测N遇到另一保存/读者或资料占用，未清其他owner。"));
+            reportReagentLevel(tr("N到达时资料、其他回读或展示仍在处理；未并发写库、换版本或合并旧N。")); return;
+        }
         const auto runtime=reagents_->originalLevelRuntime(packet.hole);
         if (!runtime.available)
-        { reportReagentLevel(reagents_->originalLevelRuntimeReason(packet.hole)); return; }
+        {
+            if (ownProbe) cancelReagentProbe(tr("本孔N独立运行来源已失效，未写库。"));
+            reportReagentLevel(reagents_->originalLevelRuntimeReason(packet.hole)); return;
+        }
         if (!reagentLevelWorker_->publishRuntime(arrival,runtime,&message))
         { reportReagentLevel(message); return; }
         if (reagentLevelPacket_==std::numeric_limits<quint64>::max())
         { reportReagentLevel(tr("N本地接收编号已满，未复用旧编号。")); return; }
         const quint64 packetId=++reagentLevelPacket_;
+        const auto probe=ownProbe ? reagentProbe_ : std::shared_ptr<ReagentProbeState>();
+        if (probe && reagentProbeExecutionExpired())
+        { cancelReagentProbe(tr("N签发具体grant前等待已到期，未排后台。")); return; }
+        if (probe && !reagents_->grantOriginalProbeN(probe->prepared,packetId))
+        { cancelReagentProbe(tr("页面没有接受同一探测来源的N grant，未派写入。")); return; }
         if (!reagentLevelWorker_->submit(arrival,packetId,payload,&message))
-        { reportReagentLevel(message); return; }
+        {
+            if (probe)
+            {
+                reagents_->retireOriginalProbeN(probe->source,packetId);
+                cancelReagentProbe(tr("N后台排队未成功，未伪造提交或展示：")+message);
+            }
+            reportReagentLevel(message); return;
+        }
+        if (probe) reagentProbeNStarted(packetId);
         reagentLevelActive_=std::make_shared<OriginalLevels::Context>(*reagentLevelContext_);
         reagentLevelActive_->packetId=packetId;
         reagentLevelRuntimeHole_=packet.hole;
@@ -319,6 +350,7 @@ void frmMain::attachReagentLevels()
             context.permissionRevision!=reagentLevelActive_->permissionRevision || !sameLevelContext(context,*reagentLevelActive_))
         { reportReagentLevel(tr("收到不属于当前N等待的后台收尾，保留提交记录，未撤销另一条N许可。")); return; }
         const QString hole=reagentLevelRuntimeHole_;
+        reagentProbeNProcessed(context.packetId,context.connection,committed,loaded);
         reagentLevelActive_.reset();
         reagentLevelRuntimeHole_.clear();
         if (!loaded) reagents_->rejectOriginalLevelObservation(hole,committed,message);
@@ -337,10 +369,14 @@ void frmMain::attachReagentLevels()
             presentation.context.connection!=reagentLevelActive_->connection ||
             !reagentLevelContext_ || reagentLevelClosing_ || !reagentLevelWorker_->isContextCurrent(presentation.context) || !sameLevelContext(presentation.context,*reagentLevelContext_) ||
             presentation.context.permissionRevision!=reagentLevelContext_->permissionRevision)
-        { reportReagentLevel(tr("N已保存，但GUI收到展示时上下文已变，未把旧展示归给当前连接。")); return; }
+        {
+            reagentProbeNPresented(presentation.context.packetId,presentation.context.connection,false);
+            reportReagentLevel(tr("N已保存，但GUI收到展示时上下文已变，未把旧展示归给当前连接。")); return;
+        }
         QString message;
         if (!reagents_->enqueueOriginalLevelPresentation(presentation,&message))
         {
+            reagentProbeNPresented(presentation.context.packetId,presentation.context.connection,false);
             reagents_->rejectOriginalLevelObservation(presentation.after.hole,true,message);
             reportReagentLevel(message);
             if (reagentLevelContext_ && reagentLevelContext_->connection==presentation.context.connection)
@@ -348,6 +384,9 @@ void frmMain::attachReagentLevels()
         }
         else
         {
+            if (reagentProbe_ && reagentProbe_->nPacket==presentation.context.packetId &&
+                reagentProbe_->source.connection==presentation.context.connection)
+                reagentProbe_->nReaderReturned=false;
             if (!taskReagentBridge_) attachTaskReagents();
             if (!taskReagentBridge_) taskReagentBridge_=std::make_shared<TaskReagentRouting::Bridge>();
             const quint64 packet=presentation.context.packetId, connection=presentation.context.connection;
@@ -360,11 +399,14 @@ void frmMain::attachReagentLevels()
                 if (!owner) return;
                 const bool returned=QMetaObject::invokeMethod(owner.data(),[owner,packet,connection]()
                 {
-                    if (!owner || !owner->taskReagentBridge_) return;
-                    auto &readers=owner->taskReagentBridge_->nReaders;
-                    const auto reader=readers.find(packet);
-                    if (reader==readers.end() || reader.value()!=connection) return;
-                    readers.erase(reader);
+                    if (!owner) return;
+                    if (owner->taskReagentBridge_)
+                    {
+                        auto &readers=owner->taskReagentBridge_->nReaders;
+                        const auto reader=readers.find(packet);
+                        if (reader!=readers.end() && reader.value()==connection) readers.erase(reader);
+                    }
+                    owner->reagentProbeNReaderReturned(packet,connection);
                     owner->advanceTaskReagents();
                 },Qt::QueuedConnection);
                 if (!returned)
@@ -380,6 +422,7 @@ void frmMain::attachReagentLevels()
         [this](quint64 packet,quint64 connection,quint64 permission,bool shown,const QString &fingerprint,const QString &message)
     {
         qInfo().noquote()<<"REAGENT_LEVEL_DISPLAY"<<packet<<connection<<permission<<shown<<fingerprint<<message;
+        if (reagentProbe_ && reagentProbe_->nPermission==permission) reagentProbeNPresented(packet,connection,shown);
         QTimer::singleShot(0,this,[this](){advanceTaskReagents();});
         reportReagentLevel(message); updateDeviceControlActions();
         if (!shown && reagentLevelContext_ && permission==reagentLevelContext_->permissionRevision &&

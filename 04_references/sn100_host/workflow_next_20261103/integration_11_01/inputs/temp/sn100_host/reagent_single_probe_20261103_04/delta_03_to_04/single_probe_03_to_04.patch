@@ -1,0 +1,72 @@
+diff --git a/06_programs/sn100_host/reagents/original_reagent_editor.cpp b/06_programs/sn100_host/reagents/original_reagent_editor.cpp
+index 935e5d9..f238a47 100644
+--- a/06_programs/sn100_host/reagents/original_reagent_editor.cpp
++++ b/06_programs/sn100_host/reagents/original_reagent_editor.cpp
+@@ -157,6 +157,55 @@ bool orderedOriginalProjects(const QString &root, const ProjectRecords &records,
+     return source->current(root,message);
+ }
+ 
++bool singleProbeNeedles(const QString &root, const ProjectRecords &orderedProjects, const QString &reagent,
++                       OriginalReagentProbe::Clock::time_point deadline, QMap<QString,int> *needles, QString *message)
++{
++    if (!needles) return fail(message,QStringLiteral("单孔探测针号输出为空，未准备命令。"));
++    const auto inTime=[&]()
++    {
++        return OriginalReagentProbe::Clock::now()<deadline ||
++            fail(message,QStringLiteral("单孔探测读取原项目步骤时已过准备期限，未发布针号或发送。"));
++    };
++    QMap<QString,int> selected;
++    for (const auto &project : orderedProjects)
++    {
++        if (!inTime()) return false;
++        // 原loadAllProject只排除文件名含小写formula的项目；来源集合和版本仍完整核对。
++        if (project.originalFileName.contains(QStringLiteral("formula"),Qt::CaseSensitive)) continue;
++        Database database;
++        if (!database.open(root,QStringLiteral("project/")+project.originalFileName,false,message) || !inTime()) return false;
++        QSqlQuery query(database.db);
++        // 原loadProject/getData无ORDER BY：保留SELECT *实际返回顺序，不能改成xuhao或rowid排序。
++        if (!query.exec(QStringLiteral("SELECT * FROM project_reagent")))
++            return fail(message,QStringLiteral("单孔探测无法完整读取原项目试剂步骤：")+query.lastError().text());
++        const auto columns=query.record();
++        int nameColumn=-1, needleColumn=-1;
++        for (int column=0;column<columns.count();++column)
++        {
++            if (columns.fieldName(column)==QStringLiteral("reagent_name")) nameColumn=column;
++            if (columns.fieldName(column)==QStringLiteral("needle_select")) needleColumn=column;
++        }
++        if (nameColumn<0 || needleColumn<0)
++            return fail(message,QStringLiteral("单孔探测原项目缺少准确的试剂名或针号字段，未采用部分步骤。"));
++        int rows=0;
++        while (query.next())
++        {
++            if (!inTime()) return false;
++            if (rows>=4096) return fail(message,QStringLiteral("单孔探测原项目步骤超过4096行，未截断或发布针号。"));
++            ++rows;
++            if (query.value(nameColumn).toString()==reagent)
++                // 原loadProject先把原串1译为左针、其他译为右针；dectLV按后出现者覆盖。
++                selected[reagent]=query.value(needleColumn).toString()==QStringLiteral("1") ? 1 : 2;
++        }
++        if (query.lastError().isValid())
++            return fail(message,QStringLiteral("单孔探测原项目步骤未读完，未采用部分针号：")+query.lastError().text());
++        if (!inTime()) return false;
++    }
++    if (!inTime()) return false;
++    *needles=selected;
++    return true;
++}
++
+ bool probeProjectFilesMatch(const QString &root, const ProjectRecords &projects,
+                             const QMap<QString,QString> &versions, QString *message)
+ {
+@@ -682,10 +731,7 @@ bool OriginalReagentEditor::prepareSingleProbe(const OriginalReagentProbe::Reque
+     if (!orderedOriginalProjects(root_,projects_,&projects,initialization_,message)) return false;
+     QMap<QString,int> needles;
+     const QString reagent=selected->value(QStringLiteral("reagent_name")).toString();
+-    for (const auto &project : projects)
+-        for (const auto &step : project.advanced.reagents)
+-            if (step.value(QStringLiteral("reagent_name"))==reagent)
+-                needles[reagent]=step.value(QStringLiteral("needle_select"))==QStringLiteral("左试剂针") ? 1 : 2;
++    if (!singleProbeNeedles(root_,projects,reagent,request.prepareUntil,&needles,message)) return false;
+     QByteArray payload;
+     if (!repository_.detectionPayload(state_,QStringList{request.hole},needles,&payload,message) ||
+         !payload.startsWith(QByteArrayLiteral("Mg[1]")) || !current(message) || !pageMetadata_->current(batches,message))

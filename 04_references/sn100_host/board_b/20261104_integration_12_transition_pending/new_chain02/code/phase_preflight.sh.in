@@ -1,0 +1,14 @@
+require_phase preflight
+lock_store
+check_live_old
+check_old_release
+check_new_release both
+begin_phase
+check_phase_materials
+check_live_old
+/usr/sbin/runuser -u lckfb -- /bin/bash -c 'source "$1"; preflight "$2" "$3"' preflight "$flat/rk_board.sh" "$base" "$flat"
+check_new_release both
+check_live_old
+check_old_release
+receipt_details() { printf 'NEW_RELEASE_PREFLIGHT_PASSED=1\nOLD_APPLICATION_STILL_RUNNING=1\nCURRENT_CHANGED=0\nPROGRAM_STARTED=0\nCLOSE_REQUESTED=0\n'; }
+emit_receipt

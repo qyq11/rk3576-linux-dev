@@ -8,6 +8,9 @@
 #include "samples/sample_store.h"
 #include "projects/project_page.h"
 #include <QCryptographicHash>
+#include <QDir>
+#include "projects/original_project_repository.h"
+#include "original_files/original_ini.h"
 #include <QDataStream>
 #include <QDebug>
 #include <QMetaObject>
@@ -24,6 +27,7 @@ bool sameTaskSession(const AccountSession &a,const AccountSession &b)
 QByteArray taskBasisBytes(const OriginalTaskReagents::RuntimeBasis &b)
 {
     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
+    out<<OriginalTaskReagents::taskOriginBytes(b);
     out<<b.available<<b.actionId<<b.arrivalPacketId<<b.connection<<b.basisRevision<<b.permissionRevision
        <<b.root<<b.payloadSha256<<b.basisToken<<b.protocolToken<<b.actualModel<<b.configuredModel<<b.themeFingerprint
        <<b.capacityRelativeFile<<b.capacityFingerprint<<b.capacityFileState<<b.configuredPositions<<b.reportedPositions
@@ -36,7 +40,7 @@ QByteArray taskBasisBytes(const OriginalTaskReagents::RuntimeBasis &b)
 QByteArray taskCommitSignature(const OriginalTaskReagents::Commit &r)
 {
     QByteArray bytes; QDataStream out(&bytes,QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
-    out<<r.receiptId<<int(r.action)<<taskBasisBytes(r.basis)<<r.root<<r.payloadSha256<<r.settingTable
+    out<<r.receiptId<<int(r.action)<<taskBasisBytes(r.basis)<<r.root<<r.payloadSha256<<r.originDigest<<r.settingTable
        <<int(r.transaction)<<r.committed<<r.reagentSqlWritten<<r.postCommitVerified<<r.basisMatchesDatabaseBefore
        <<r.beforeVersions<<r.afterVersions<<r.proofMessage;
     for (const auto *plate : {&r.beforePlate,&r.afterPlate})
@@ -81,6 +85,7 @@ void foldTransaction(Bridge &bridge,const Action &action)
     { bridge.transactionOverflow=true; return; }
     TransactionFact fact;
     fact.actionId=action.id; fact.packet=action.packet; fact.connection=action.connection; fact.epoch=action.epoch;
+    fact.source=action.seed.source; fact.userOperation=action.seed.userOperation; fact.originDigest=action.seed.originDigest;
     fact.root=action.root; fact.receiptId=action.receipt ? action.receipt->receiptId : QString(); fact.payloadSha256=action.payloadSha256;
     if (action.receipt)
     { fact.receiptAvailable=true; fact.transaction=action.receipt->transaction; fact.committed=action.receipt->committed; }
@@ -250,14 +255,14 @@ int frmMain::taskReagentRetainedPackets() const
 {
     int count=0;
     if (taskReagentBridge_) for (const auto &a : taskReagentBridge_->actions)
-        if (a.processed && !devicePackets_.contains(a.packet)) ++count;
+        if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation || (a.processed && !devicePackets_.contains(a.packet))) ++count;
     return count;
 }
 qint64 frmMain::taskReagentRetainedBytes() const
 {
     qint64 bytes=0;
     if (taskReagentBridge_) for (const auto &a : taskReagentBridge_->actions)
-        if (a.processed && !devicePackets_.contains(a.packet)) bytes+=a.payloadBytes;
+        if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation || (a.processed && !devicePackets_.contains(a.packet))) bytes+=a.payloadBytes;
     return bytes;
 }
 
@@ -292,6 +297,7 @@ void frmMain::attachTaskReagents()
         if (warned) reportTaskReagent(tr("任务处理时间较长，仍在等待原处理结束；没有自动重试或退回试剂用量。"));
     });
     connect(deviceTaskStore_,&SampleStore::taskReagentCommitObserved,this,&frmMain::observeTaskReagentCommit,Qt::QueuedConnection);
+    connect(deviceTaskStore_,&SampleStore::userTaskOperationFinished,this,&frmMain::finishUserTaskOperation,Qt::QueuedConnection);
     connect(reagents_,&ReagentsPage::originalTaskReagentAdopted,this,&frmMain::receiveTaskReagentAdoption);
     connect(reagents_->taskStore(),&ReagentStore::originalTaskReagentReadback,this,
         [this](const OriginalTaskReagents::Commit &receipt,bool,const ReagentSnapshot &,const ReagentProjects &,const QString &)
@@ -340,8 +346,8 @@ bool frmMain::routeTaskReagentPacket(quint64 packet,quint64 connection,const QBy
     a.seed.capacityFileState=identity.capacityFileState; a.seed.configuredPositions=identity.configuredPositions;
     a.seed.reportedPositions=identity.reportedPositions; a.seed.capacityCalibrationActive=identity.capacityCalibrationActive;
     a.seed.mainStatus=deviceControl_->state().status.mainStatus; // 原到达值，后续Qj不重贴。
-    a.basis=a.seed;
-    b.actions.insert(packet,a); b.waiting.enqueue(packet);
+    a.seed.originDigest=a.payloadSha256; a.basis=a.seed;
+    b.actions.insert(a.id,a); b.waiting.enqueue(a.id);
     if (b.actionDeadlineTimer && !b.actionDeadlineTimer->isActive()) b.actionDeadlineTimer->start();
     ensureTaskReagentFence();
     updateDeviceControlActions();
@@ -354,18 +360,20 @@ void frmMain::observeTaskReagentCommit(const OriginalTaskReagents::Commit &recei
 {
     if (!taskReagentBridge_) return;
     auto &b=*taskReagentBridge_;
-    auto it=b.actions.find(receipt.basis.arrivalPacketId);
+    auto it=b.actions.find(receipt.basis.actionId);
     const QByteArray signature=taskCommitSignature(receipt);
     if (it==b.actions.end())
     {
-        const auto old=b.terminal.constFind(receipt.basis.arrivalPacketId);
+        const auto old=b.terminal.constFind(receipt.basis.actionId);
         if (old!=b.terminal.cend() && old->receiptSignature==signature) return;
         if (old!=b.terminal.cend() && old->id==receipt.basis.actionId && old->connection==receipt.basis.connection &&
             old->expected==receipt.action && old->root==receipt.root && old->payloadSha256==receipt.payloadSha256 &&
+            old->source==receipt.basis.source && old->originDigest==receipt.originDigest && old->packet==receipt.basis.arrivalPacketId &&
             old->basisToken==receipt.basis.basisToken && old->basisSignature==QCryptographicHash::hash(taskBasisBytes(receipt.basis),QCryptographicHash::Sha256))
         {
             // 本应先于processed的事实迟到：保原事实和归属未知，不借已回收槽位采用或撤新来源。
             Action late; late.id=old->id; late.packet=old->packet; late.connection=old->connection; late.epoch=old->epoch;
+            late.seed.source=old->source; late.seed.userOperation=old->userOperation; late.seed.originDigest=old->originDigest;
             late.root=old->root; late.payloadSha256=old->payloadSha256; late.transactionUnknown=true;
             late.displayUnknown=true; late.unscoped=true; late.processedSerial=b.processedSerial;
             late.receipt=std::make_shared<const OriginalTaskReagents::Commit>(receipt);
@@ -377,7 +385,9 @@ void frmMain::observeTaskReagentCommit(const OriginalTaskReagents::Commit &recei
     }
     auto &a=it.value();
     if (!a.dispatched || receipt.action!=a.expected || receipt.basis.actionId!=a.id || receipt.basis.connection!=a.connection ||
-        receipt.root!=a.root || receipt.payloadSha256!=a.payloadSha256 || taskBasisBytes(receipt.basis)!=taskBasisBytes(a.basis))
+        receipt.root!=a.root || receipt.payloadSha256!=a.payloadSha256 || receipt.originDigest!=a.seed.originDigest ||
+        receipt.basis.arrivalPacketId!=a.packet || !OriginalTaskReagents::taskOriginAllows(receipt.basis,receipt.action) ||
+        taskBasisBytes(receipt.basis)!=taskBasisBytes(a.basis))
     {
         if (!a.receipt) { a.receipt=std::make_shared<const OriginalTaskReagents::Commit>(receipt); a.receiptSignature=signature; }
         a.observed=true; a.receiptConflict=true; a.transactionUnknown=true; a.displayUnknown=true; a.unscoped=true;
@@ -411,7 +421,8 @@ void frmMain::finishTaskReagentPacket(quint64 packet,quint64 connection,const QB
 {
     if (!taskReagentBridge_) return;
     auto &b=*taskReagentBridge_;
-    auto it=b.actions.find(packet);
+    auto it=b.actions.begin();
+    while (it!=b.actions.end() && (it->seed.source!=OriginalTaskReagents::OperationSource::DevicePacket || it->packet!=packet)) ++it;
     if (it==b.actions.end()) return;
     auto &a=it.value();
     const QByteArray expected=a.expected==OriginalTaskReagents::Action::RackReservation ? QByteArray("Tt") : QByteArray("TR");
@@ -434,11 +445,12 @@ void frmMain::receiveTaskReagentAdoption(const OriginalTaskReagents::RuntimeAdop
 {
     if (!taskReagentBridge_) return;
     auto &b=*taskReagentBridge_;
-    auto it=b.actions.find(result.arrivalPacketId);
+    auto it=b.actions.find(result.actionId);
     if (it==b.actions.end()) return; // 有界last/tombstone不授权清旧B/C。
     auto &a=it.value();
     if (!a.pageRequested || !a.receipt || result.actionId!=a.id || result.connection!=a.connection || result.root!=a.root ||
-        result.payloadSha256!=a.payloadSha256 || result.basisToken!=a.basis.basisToken ||
+        result.payloadSha256!=a.payloadSha256 || result.arrivalPacketId!=a.packet || result.source!=a.seed.source ||
+        result.userRequestId!=a.seed.userOperation.requestId || result.originDigest!=a.seed.originDigest || result.basisToken!=a.basis.basisToken ||
         result.permissionRevision!=a.basis.permissionRevision || result.receiptId!=a.receipt->receiptId ||
         result.transaction!=a.receipt->transaction || result.committed!=a.receipt->committed)
     { reportTaskReagent(tr("Page回执不属于原动作，未借另一ACK清任务或来源未知。")); return; }
@@ -455,17 +467,17 @@ void frmMain::receiveTaskReagentAdoption(const OriginalTaskReagents::RuntimeAdop
 void frmMain::taskReagentReadbackFinished(const OriginalTaskReagents::Commit &receipt)
 {
     if (!taskReagentBridge_) return;
-    auto it=taskReagentBridge_->actions.find(receipt.basis.arrivalPacketId);
+    auto it=taskReagentBridge_->actions.find(receipt.basis.actionId);
     if (it==taskReagentBridge_->actions.end() || !it->pageRequested || it->receiptSignature!=taskCommitSignature(receipt)) return;
     it->readerPending=false;
     advanceTaskReagents();
 }
 
-void frmMain::completeTaskReagentAction(quint64 packet)
+void frmMain::completeTaskReagentAction(quint64 actionId)
 {
     if (!taskReagentBridge_) return;
     auto &b=*taskReagentBridge_;
-    auto it=b.actions.find(packet);
+    auto it=b.actions.find(actionId);
     if (it==b.actions.end()) return;
     const Action a=it.value();
     if (a.dispatched && (!a.processed || a.readerPending || a.enqueueing || (a.pageRequested && !a.ackSeen))) return;
@@ -473,18 +485,27 @@ void frmMain::completeTaskReagentAction(quint64 packet)
     foldTransaction(b,a); foldDisplay(b,a);
     Terminal terminal;
     terminal.id=a.id; terminal.packet=a.packet; terminal.connection=a.connection; terminal.epoch=a.epoch;
+    terminal.source=a.seed.source; terminal.userOperation=a.seed.userOperation; terminal.originDigest=a.seed.originDigest;
     terminal.root=a.root; terminal.payloadSha256=a.payloadSha256; terminal.basisToken=a.basis.basisToken;
     terminal.receiptId=a.receipt ? a.receipt->receiptId : QString(); terminal.receiptSignature=a.receiptSignature;
     terminal.expected=a.expected; terminal.basisSignature=QCryptographicHash::hash(taskBasisBytes(a.basis),QCryptographicHash::Sha256);
     terminal.committed=a.receipt && a.receipt->committed; terminal.snapshotAccepted=a.adoption.snapshotAccepted;
     terminal.runtimeApplied=a.adoption.runtimeApplied;
-    b.terminal.insert(packet,terminal);
+    b.terminal.insert(actionId,terminal);
     while (b.terminal.size()>32) b.terminal.erase(b.terminal.begin());
     b.actions.erase(it); // B只留有界scope，typed大行和原包字节不成为第二个历史队列。
     if (b.actions.isEmpty() && b.actionDeadlineTimer) b.actionDeadlineTimer->stop();
-    const auto raw=devicePackets_.take(packet); devicePacketBytes_-=raw.size();
-    qInfo()<<"TASK_REAGENT_RETIRED"<<a.id<<packet<<a.displayUnknown<<a.transactionUnknown;
+    const auto raw=a.packet ? devicePackets_.take(a.packet) : QByteArray(); devicePacketBytes_-=raw.size();
+    qInfo()<<"TASK_REAGENT_RETIRED"<<a.id<<a.packet<<a.displayUnknown<<a.transactionUnknown;
     checkTaskReagentSource();
+    if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation)
+    {
+        QString message=a.message.isEmpty() ? tr("本次用户准备未完成或已取消，未发送开始。") : a.message;
+        const bool current=!a.cancelled && a.epoch==b.epoch && userTaskOriginCurrent(a.seed,&message);
+        const bool success=a.userSuccess && current && !a.transactionUnknown && !a.receiptConflict;
+        if (!success && deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
+        finishDeviceTaskPreparation(a.seed.userOperation.requestId,success,message);
+    }
 }
 
 void frmMain::advanceTaskReagents()
@@ -495,9 +516,9 @@ void frmMain::advanceTaskReagents()
     {
         if (!taskReagentBridge_) return;
         auto &b=*taskReagentBridge_; b.pumpQueued=false;
-        for (const auto packet : b.actions.keys())
+        for (const auto actionId : b.actions.keys())
         {
-            auto it=b.actions.find(packet);
+            auto it=b.actions.find(actionId);
             if (it==b.actions.end() || !it->processed) continue;
             auto &a=it.value();
             const bool committed=a.receiptAuthorized && a.receipt && a.receipt->committed && a.receipt->transaction==TransactionState::Committed;
@@ -509,14 +530,14 @@ void frmMain::advanceTaskReagents()
                 QString message;
                 const auto receipt=*a.receipt;
                 const bool queued=reagents_->enqueueOriginalTaskReagentCommit(receipt,&message);
-                it=b.actions.find(packet);
+                it=b.actions.find(actionId);
                 if (it==b.actions.end()) continue;
                 it->enqueueing=false; it->readerPending=queued && !it->ackSeen;
                 if (!queued && !it->ackSeen)
                 { it->ackSeen=true; it->displayUnknown=true; it->unscoped=!it->basis.available; it->message=message; }
             }
-            it=b.actions.find(packet);
-            if (it!=b.actions.end() && (!needsPage || (it->ackSeen && !it->readerPending))) completeTaskReagentAction(packet);
+            it=b.actions.find(actionId);
+            if (it!=b.actions.end() && (!needsPage || (it->ackSeen && !it->readerPending))) completeTaskReagentAction(actionId);
         }
         bool active=false;
         for (const auto &a : b.actions) if (a.dispatched) active=true;
@@ -525,36 +546,48 @@ void frmMain::advanceTaskReagents()
             while (!b.waiting.isEmpty() && !b.actions.contains(b.waiting.head())) b.waiting.dequeue();
             if (!b.waiting.isEmpty())
             {
-                const quint64 packet=b.waiting.head();
-                auto &a=b.actions[packet];
+                const quint64 actionId=b.waiting.head();
+                auto &a=b.actions[actionId];
                 if (b.closing || b.transactionOverflow || !b.transactions.isEmpty() || a.cancelled)
                 {
                     b.waiting.dequeue();
                     reportTaskReagent(tr("尚未进入后台的原任务已停止等待；原事务或身份待核，未伪造processed、回应或重放。"));
-                    completeTaskReagentAction(packet); advanceTaskReagents();
+                    completeTaskReagentAction(actionId); advanceTaskReagents();
                 }
                 else if (!reagentLevelBusy() && b.nReaders.isEmpty() && reagents_)
                 {
                     b.waiting.dequeue();
                     if (a.epoch!=b.epoch) a.cancelled=true;
-                    if (a.cancelled) { completeTaskReagentAction(packet); advanceTaskReagents(); return; }
+                    if (a.cancelled) { completeTaskReagentAction(actionId); advanceTaskReagents(); return; }
                     QString message;
                     if (a.basisEligible && !reagents_->isBusy() && !reagents_->hasUnconfirmedOriginalLevelRuntime() &&
                         a.seed.permissionRevision==b.identity.revision && a.seed.connection==b.identity.connection)
                         a.basis=reagents_->freezeOriginalTaskReagentBasis(a.seed,&message);
                     else
                     { a.basis=a.seed; a.basis.available=false; a.basis.unavailableReason=tr("原到达时没有独立可冻结前版，未把前一动作after贴给旧包。"); }
-                    const QByteArray payload=devicePackets_.value(packet);
+                    if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation)
+                    {
+                        QString reason;
+                        if (!userTaskOriginCurrent(a.seed,&reason))
+                        { a.cancelled=true; a.message=reason; completeTaskReagentAction(actionId); advanceTaskReagents(); return; }
+                        a.dispatched=true; a.stage=Stage::Backend;
+                        const bool linuxNew=a.seed.protocolToken==QStringLiteral("LinuxNew");
+                        if (!QMetaObject::invokeMethod(deviceTaskStore_,"prepareUserDeviceTasks",Qt::QueuedConnection,
+                            Q_ARG(OriginalTaskReagents::RuntimeBasis,a.basis),Q_ARG(bool,linuxNew)))
+                        { a.dispatched=false; a.cancelled=true; a.message=tr("用户准备请求未能进入后台，未伪造处理结束或提交。 "); completeTaskReagentAction(actionId); }
+                        advanceTaskReagents(); return;
+                    }
+                    const QByteArray payload=devicePackets_.value(a.packet);
                     if (payload.isEmpty() || digest(payload)!=a.payloadSha256)
-                    { a.cancelled=true; completeTaskReagentAction(packet); reportTaskReagent(tr("原任务包已不在唯一预算队列，未补造或重发。")); return; }
+                    { a.cancelled=true; completeTaskReagentAction(actionId); reportTaskReagent(tr("原任务包已不在唯一预算队列，未补造或重发。")); return; }
                     a.dispatched=true; a.stage=Stage::Backend;
                     if (!QMetaObject::invokeMethod(deviceTaskStore_,"receiveDevicePacketWithTaskBasis",Qt::QueuedConnection,
-                        Q_ARG(QByteArray,payload),Q_ARG(quint64,a.connection),Q_ARG(quint64,packet),
+                        Q_ARG(QByteArray,payload),Q_ARG(quint64,a.connection),Q_ARG(quint64,a.packet),
                         Q_ARG(OriginalTaskReagents::RuntimeBasis,a.basis)))
                     {
                         a.dispatched=false; a.cancelled=true;
                         reportTaskReagent(tr("原任务未能排入后台，已取消冻结依据；不假报设备回应或数据库提交。"));
-                        completeTaskReagentAction(packet);
+                        completeTaskReagentAction(actionId);
                     }
                 }
             }
@@ -578,6 +611,137 @@ void frmMain::advanceTaskReagents()
             { b.closeRetryNeeded=false; QTimer::singleShot(0,this,[this](){window()->close();}); }
         }
     });
+}
+
+bool frmMain::userTaskOriginCurrent(const OriginalTaskReagents::RuntimeBasis &basis,QString *message) const
+{
+    const auto reject=[&](const QString &reason) { if (message) *message=reason; return false; };
+    if (!OriginalTaskReagents::validTaskOrigin(basis) || basis.source!=OriginalTaskReagents::OperationSource::UserOperation ||
+        !deviceControl_ || basis.connection!=deviceControl_->connectionGeneration() || !deviceControl_->state().connected ||
+        !samples_ || samples_->property("originalRoot").toString()!=basis.root || !projects_)
+        return reject(tr("用户准备请求不再属于原连接或资料，未转交新上下文。"));
+    const auto &u=basis.userOperation;
+    if (OriginalTaskReagents::sampleTaskInputDigest(samples_->snapshot())!=u.sampleSnapshotDigest)
+        return reject(tr("用户准备期间已保存的样本任务输入改变，未沿用旧确认。"));
+    if (u.accountName!=session_.name || u.role!=session_.role || u.authenticated!=session_.authenticated ||
+        u.sessionSource!=int(session_.source) || u.policyRoot!=session_.originalPolicySource || u.grantedPowerIds!=session_.grantedPowerIds)
+        return reject(tr("用户准备请求的原账户或权限已经改变。"));
+    for (auto file=u.configurationVersions.cbegin();file!=u.configurationVersions.cend();++file)
+        if (OriginalIni::fingerprint(QDir(basis.root).filePath(file.key()),message)!=file.value())
+            return reject(tr("用户准备期间原配置版本改变，未发送开始。"));
+    QMap<QString,QString> versions;
+    for (const auto &project : projects_->projects())
+    {
+        if (project.originalFileName.isEmpty() || project.originalFingerprint.isEmpty() || versions.contains(project.originalFileName))
+            return reject(tr("当前项目资料身份不完整，用户准备停止。"));
+        versions.insert(project.originalFileName,project.originalFingerprint);
+    }
+    if (versions!=u.projectVersions) return reject(tr("用户准备期间项目资料已经改变。"));
+    for (auto project=versions.cbegin();project!=versions.cend();++project)
+        if (OriginalProjectRepository::databaseFingerprint(QDir(basis.root).filePath(QStringLiteral("project/")+project.key()),message)!=project.value())
+            return reject(tr("用户准备期间项目文件已经改变，未沿用页面旧版本。"));
+    if (message) message->clear();
+    return true;
+}
+
+bool frmMain::queueUserTaskPreparation(quint64 request,quint64 connection,bool linuxNew,QString *message)
+{
+    Q_UNUSED(linuxNew); // 协议选择绑定在原seed；后台仍按同一原协议处理。
+    if (!taskReagentBridge_) attachTaskReagents();
+    if (!taskReagentBridge_ || !samples_ || !projects_ || !deviceControl_) return false;
+    auto &b=*taskReagentBridge_;
+    if (!request || request<=b.lastUserRequest || b.closing || b.transactionOverflow || !b.transactions.isEmpty() ||
+        !b.actions.isEmpty() || b.nextAction==std::numeric_limits<quint64>::max())
+    { if (message) *message=tr("上一任务或用户请求仍未收尾，未重复登记。 "); return false; }
+    Action a; a.id=++b.nextAction; a.connection=connection; a.epoch=b.epoch;
+    a.expected=OriginalTaskReagents::Action::None; a.root=samples_->property("originalRoot").toString();
+    auto &seed=a.seed; seed.source=OriginalTaskReagents::OperationSource::UserOperation;
+    seed.actionId=a.id; seed.connection=connection; seed.root=a.root;
+    seed.permissionRevision=b.identity.revision; seed.mainStatus=deviceControl_->state().status.mainStatus;
+    seed.basisToken=QStringLiteral("user-task:%1:%2:%3").arg(b.epoch).arg(a.id).arg(request);
+    auto &u=seed.userOperation; u.requestId=request; u.connection=connection; u.root=a.root;
+    u.allowedAction=OriginalTaskReagents::Action::None;
+    u.sampleSnapshotDigest=OriginalTaskReagents::sampleTaskInputDigest(samples_->snapshot());
+    u.accountName=session_.name; u.role=session_.role; u.authenticated=session_.authenticated;
+    u.sessionSource=int(session_.source); u.policyRoot=session_.originalPolicySource; u.grantedPowerIds=session_.grantedPowerIds;
+    for (const auto &file : {QStringLiteral("config.ini"),QStringLiteral("config_Debug.ini"),QStringLiteral("theme_config.ini")})
+        u.configurationVersions.insert(file,OriginalIni::fingerprint(QDir(a.root).filePath(file),message));
+    for (const auto &project : projects_->projects())
+    {
+        if (u.projectVersions.contains(project.originalFileName)) return false;
+        u.projectVersions.insert(project.originalFileName,project.originalFingerprint);
+    }
+    const auto &identity=b.identity;
+    seed.actualModel=identity.actualModel; seed.configuredModel=identity.configuredModel; seed.protocolToken=identity.protocolToken;
+    seed.themeFingerprint=identity.themeFingerprint; seed.capacityRelativeFile=identity.capacityRelativeFile;
+    seed.capacityFingerprint=identity.capacityFingerprint; seed.capacityFileState=identity.capacityFileState;
+    seed.configuredPositions=identity.configuredPositions; seed.reportedPositions=identity.reportedPositions;
+    seed.capacityCalibrationActive=identity.capacityCalibrationActive;
+    seed.originDigest=OriginalTaskReagents::userOperationDigest(u);
+    if (!userTaskOriginCurrent(seed,message)) return false;
+    a.payloadBytes=OriginalTaskReagents::userOperationBytes(u).size();
+    if (a.payloadBytes>128000 || devicePackets_.size()+taskReagentRetainedPackets()>=32 ||
+        devicePacketBytes_+taskReagentRetainedBytes()+a.payloadBytes>1048576)
+    { if (message) *message=tr("用户请求资料超过任务队列预算，未登记或发送。 "); return false; }
+    a.basisEligible=!b.displayUnknown.contains(a.root) && !b.globalDisplayUnknown;
+    a.basis=seed; b.lastUserRequest=request;
+    b.actions.insert(a.id,a); b.waiting.enqueue(a.id);
+    if (b.actionDeadlineTimer && !b.actionDeadlineTimer->isActive()) b.actionDeadlineTimer->start();
+    ensureTaskReagentFence(); advanceTaskReagents();
+    return true;
+}
+
+void frmMain::cancelUserTaskPreparation(quint64 request,const QString &message)
+{
+    if (!taskReagentBridge_) return;
+    for (auto &a : taskReagentBridge_->actions)
+        if (a.seed.source==OriginalTaskReagents::OperationSource::UserOperation && a.seed.userOperation.requestId==request)
+        {
+            a.cancelled=true; a.message=message;
+            if (reagents_ && !a.basis.basisToken.isEmpty()) reagents_->cancelOriginalTaskReagentBasis(a.basis.basisToken,message);
+        }
+    advanceTaskReagents();
+}
+
+void frmMain::finishUserTaskOperation(const OriginalTaskReagents::Commit &receipt,bool success,const QString &message)
+{
+    if (!taskReagentBridge_) return;
+    auto &b=*taskReagentBridge_;
+    auto it=b.actions.find(receipt.basis.actionId);
+    if (it==b.actions.end()) { observeTaskReagentCommit(receipt); return; }
+    const auto &expected=it.value();
+    const bool belongs=expected.seed.source==OriginalTaskReagents::OperationSource::UserOperation && expected.dispatched &&
+        receipt.basis.source==expected.seed.source && receipt.action==expected.expected &&
+        receipt.basis.actionId==expected.id && receipt.basis.arrivalPacketId==expected.packet &&
+        receipt.basis.connection==expected.connection && receipt.root==expected.root &&
+        receipt.payloadSha256==expected.payloadSha256 && receipt.originDigest==expected.seed.originDigest &&
+        OriginalTaskReagents::taskOriginAllows(receipt.basis,receipt.action) && taskBasisBytes(receipt.basis)==taskBasisBytes(expected.basis);
+    if (!belongs)
+    {
+        // 可疑事实仍进原未知保护，但它不是当前worker真正结束的证明。
+        observeTaskReagentCommit(receipt);
+        reportTaskReagent(tr("用户完成回执不属于原请求，仍等待对应后台真实结束。"));
+        return;
+    }
+    if (expected.processed) { observeTaskReagentCommit(receipt); return; }
+    observeTaskReagentCommit(receipt);
+    it=b.actions.find(receipt.basis.actionId);
+    if (it==b.actions.end()) return;
+    auto &a=it.value();
+    const bool noWrite=receipt.action==OriginalTaskReagents::Action::None && !receipt.committed &&
+        receipt.transaction==OriginalTaskReagents::TransactionState::NotStarted && !receipt.reagentSqlWritten &&
+        receipt.sqlWrites.isEmpty() && receipt.tasks.isEmpty() && receipt.beforeVersions.isEmpty() && receipt.afterVersions.isEmpty() &&
+        !receipt.beforePlate.complete && !receipt.afterPlate.complete && receipt.refreshHoles.isEmpty() &&
+        receipt.beforePlate.rows.isEmpty() && receipt.afterPlate.rows.isEmpty() &&
+        receipt.alreadyHandledTaskIds.isEmpty() && receipt.skippedAddedTaskIds.isEmpty() && receipt.refusedUncertainTaskIds.isEmpty() &&
+        !receipt.postCommitVerified && !receipt.basisMatchesDatabaseBefore;
+    if (!noWrite || !a.receiptAuthorized || a.receiptConflict)
+    { a.transactionUnknown=true; a.displayUnknown=true; a.unscoped=true; foldTransaction(b,a); ensureTaskReagentFence(); }
+    a.processed=true; a.userSuccess=success && noWrite && a.receiptAuthorized && !a.receiptConflict;
+    a.message=message;
+    if (b.processedSerial!=std::numeric_limits<quint64>::max()) ++b.processedSerial; else b.transactionOverflow=true;
+    a.processedSerial=b.processedSerial;
+    advanceTaskReagents(); // 只有真实worker返回后，才允许Page或无写退休。
 }
 
 void frmMain::enterTaskReagentCloseAttempt()
@@ -607,7 +771,7 @@ void frmMain::cancelTaskReagentContexts(const QString &reason)
     b.sourceTicket.reset(); b.confirmedSources.clear(); b.independentFullIdentity=0;
     for (auto &a : b.actions)
     {
-        a.cancelled=true;
+        a.cancelled=true; a.message=reason;
         if (reagents_ && !a.basis.basisToken.isEmpty()) reagents_->cancelOriginalTaskReagentBasis(a.basis.basisToken,reason);
     }
     ensureTaskReagentFence(); advanceTaskReagents();

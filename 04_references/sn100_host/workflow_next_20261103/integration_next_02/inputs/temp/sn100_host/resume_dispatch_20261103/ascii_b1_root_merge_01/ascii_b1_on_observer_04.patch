@@ -1,0 +1,612 @@
+--- a/06_programs/sn100_host/instrument/instrument_page.cpp
++++ b/06_programs/sn100_host/instrument/instrument_page.cpp
+@@ -31,6 +31,7 @@
+ #include <QTextEdit>
+ #include <QToolTip>
+ #include <QThread>
++#include <limits>
+ 
+ namespace
+ {
+@@ -113,6 +114,19 @@
+     static QAtomicInteger<quint64> sequence(0);
+     return sequence.fetchAndAddRelaxed(1) + 1;
+ }
++
++quint64 nextManualCommunicationRequest()
++{
++    // 页面重建也不复用旧请求号；耗尽时拒绝，不从0重新编号。
++    static QAtomicInteger<quint64> sequence(0);
++    quint64 previous=sequence.loadRelaxed();
++    while (previous<std::numeric_limits<quint64>::max())
++    {
++        if (sequence.testAndSetRelaxed(previous,previous+1)) return previous+1;
++        previous=sequence.loadRelaxed();
++    }
++    return 0;
++}
+ }
+ 
+ InstrumentPage::InstrumentPage(MaintenanceStore *store, QWidget *parent) :
+@@ -125,6 +139,7 @@
+     clearDeviceValues(true);
+     connect(ui->sendTextEdit,&QTextEdit::textChanged,this,&InstrumentPage::refreshCommunicationAsciiInput);
+     refreshCommunicationAsciiInput();
++    connect(ui->push_send_btn,&QPushButton::clicked,this,&InstrumentPage::requestManualCommunication);
+     displayedValues_=OriginalInstrument::statusDisplay(displayedSnapshot_,0);
+     refreshSensors();
+ 
+@@ -531,6 +546,8 @@
+ 
+ void InstrumentPage::setSession(AccountSession session)
+ {
++    cancelManualCommunication(tr("会话已变化，旧手动请求不再继续；请核对已有收发，不自动重发。"));
++    ++manualCommunicationSession_;
+     session_=session;
+     if (store_) QMetaObject::invokeMethod(store_,"setSession",Qt::QueuedConnection,Q_ARG(AccountSession,session));
+     updatePermissions();
+@@ -580,6 +597,9 @@
+     autoConnectDevice_ = connectAtStartup;
+     connect(control, &DeviceControl::changed, this, [this](const DeviceControlState &state)
+     {
++        if (manualCommunicationPending_ && (!state.connected ||
++            manualCommunicationConnection_!=deviceControl_->connectionGeneration()))
++            cancelManualCommunication(tr("设备连接已失效或换代，旧手动请求停止等待；不转交新连接或自动重发。"));
+         if (deviceControl_ && communicationGeneration_ != deviceControl_->connectionGeneration())
+         {
+             communicationGeneration_=deviceControl_->connectionGeneration();
+@@ -672,6 +692,11 @@
+             button->setToolTip(tr("沿用原Windows仪器通信测试页的命令；实际返回见收发区域。"));
+         }
+     ui->pushButton_updateTime->setEnabled(available && connected);
++    const bool realAdministrator=administrator && (session_.source==AccountSessionSource::Password ||
++        session_.source==AccountSessionSource::Configured);
++    ui->push_send_btn->setEnabled(manualCommunicationConsumerReady_ && realAdministrator && connected &&
++        !isBusy() && !connectionDirty_ && !manualCommunicationPending_);
++    ui->push_send_btn->setToolTip(tr("本片支持精确正文Qj、Qk、QH、Ts、Tp[0]、Mz；其余正文尚未兼容。开始、暂停与静音沿主流程确认，输入不会自动改写。"));
+ }
+ 
+ void InstrumentPage::setBusy(bool busy)
+@@ -1087,6 +1112,99 @@
+     return encodeCommunicationAscii(text,payload,message);
+ }
+ 
++void InstrumentPage::setManualCommunicationConsumerReady(bool ready)
++{
++    if (!ready) cancelManualCommunication(tr("手动请求消费者已撤销，旧请求不再继续。"));
++    manualCommunicationConsumerReady_=ready;
++    updateDeviceButtons();
++}
++
++QString InstrumentPage::manualCommunicationRequestBlocker(quint64 request, quint64 session,
++    quint64 connection, const QByteArray &payload) const
++{
++    if (!request || request!=manualCommunicationPending_ || session!=manualCommunicationSession_ ||
++        connection!=manualCommunicationConnection_ || payload!=manualCommunicationPayload_)
++        return tr("本次手动请求已撤销或不属于原点击，未继续处理。");
++    if (!manualCommunicationConsumerReady_ || !session_.authenticated || session_.role!=5 ||
++        (session_.source!=AccountSessionSource::Password && session_.source!=AccountSessionSource::Configured))
++        return tr("本次手动请求需要当前真实管理员会话。");
++    if (!deviceControl_ || !deviceControl_->state().connected ||
++        connection!=deviceControl_->connectionGeneration()) return tr("本次手动请求的设备连接已失效。");
++    if (isBusy() || connectionDirty_) return tr("仪器页面正在处理或连接设置尚未保存，未继续本次手动请求。");
++    return QString();
++}
++
++void InstrumentPage::showManualCommunicationMessage(const QString &stage, const QString &message)
++{
++    setProperty("manualCommunicationStage",stage);
++    setProperty("manualCommunicationMessage",message);
++    report(message);
++    if (isVisible() && ui->stackedWidget->currentIndex()==7 && isActiveWindow())
++        QToolTip::showText(ui->push_send_btn->mapToGlobal(QPoint(0,ui->push_send_btn->height())),
++            message,ui->push_send_btn);
++}
++
++void InstrumentPage::requestManualCommunication()
++{
++    if (manualCommunicationPending_) return;
++    if (!manualCommunicationConsumerReady_ || !session_.authenticated || session_.role!=5 ||
++        (session_.source!=AccountSessionSource::Password && session_.source!=AccountSessionSource::Configured) ||
++        !deviceControl_ || !deviceControl_->state().connected || isBusy() || connectionDirty_)
++    { showManualCommunicationMessage(QStringLiteral("rejected"),tr("当前会话、连接或页面状态不允许手动提交，未调用发送。")); return; }
++    QByteArray payload;
++    QString message;
++    if (!prepareCommunicationAsciiPayload(&payload,&message))
++    { showManualCommunicationMessage(QStringLiteral("encoding-rejected"),message); return; }
++    if (payload.isEmpty())
++    { showManualCommunicationMessage(QStringLiteral("empty"),tr("正文为空，本次未提交。")); return; }
++    if (payload.size()>Sn100Protocol::kMaxMessageBytes)
++    { showManualCommunicationMessage(QStringLiteral("length-rejected"),tr("正文超过当前128000字节整条预算，未截断或提交。")); return; }
++    if (payload!="Qj" && payload!="Qk" && payload!="QH" && payload!="Ts" && payload!="Tp[0]" && payload!="Mz")
++    { showManualCommunicationMessage(QStringLiteral("unsupported"),tr("ASCII编码合法，但本正文尚未接入相应业务流程，本次未提交；并非设备拒绝。")); return; }
++    const quint64 request=nextManualCommunicationRequest();
++    if (!request)
++    { showManualCommunicationMessage(QStringLiteral("rejected"),tr("当前进程的手动请求号已耗尽，未复用旧编号或提交。")); return; }
++    manualCommunicationPending_=request;
++    manualCommunicationConnection_=deviceControl_->connectionGeneration();
++    manualCommunicationPayload_=payload;
++    const quint64 session=manualCommunicationSession_;
++    const quint64 connection=manualCommunicationConnection_;
++    const AccountSession identity=session_;
++    updateDeviceButtons();
++    // 先登记等待再发值副本，主窗可同步拒绝，不能在emit返回后恢复旧等待。
++    showManualCommunicationMessage(QStringLiteral("requested"),tr("已转交本次手动请求，仍待主流程核对；尚未确认入队或完成。"));
++    const QString blocker=manualCommunicationRequestBlocker(request,session,connection,payload);
++    if (!blocker.isEmpty())
++    {
++        if (manualCommunicationPending_==request && manualCommunicationSession_==session)
++            cancelManualCommunication(blocker);
++        return;
++    }
++    emit manualCommunicationRequested(request,session,connection,identity,payload);
++}
++
++void InstrumentPage::cancelManualCommunication(const QString &reason)
++{
++    if (!manualCommunicationPending_) return;
++    const quint64 request=manualCommunicationPending_, session=manualCommunicationSession_;
++    const quint64 connection=manualCommunicationConnection_;
++    manualCommunicationPending_=0; manualCommunicationConnection_=0; manualCommunicationPayload_.clear();
++    updateDeviceButtons();
++    emit manualCommunicationRevoked(request,session,connection,reason);
++    showManualCommunicationMessage(QStringLiteral("revoked"),reason);
++}
++
++void InstrumentPage::receiveManualCommunicationResult(quint64 request, quint64 session, quint64 connection,
++    bool terminal, const QString &stage, const QString &message)
++{
++    if (!request || request!=manualCommunicationPending_ || session!=manualCommunicationSession_ ||
++        connection!=manualCommunicationConnection_) return;
++    if (terminal)
++    { manualCommunicationPending_=0; manualCommunicationConnection_=0; manualCommunicationPayload_.clear(); }
++    updateDeviceButtons();
++    showManualCommunicationMessage(stage,message);
++}
++
+ void InstrumentPage::refreshCommunicationAsciiInput()
+ {
+     QString message;
+--- a/06_programs/sn100_host/instrument/instrument_page.h
++++ b/06_programs/sn100_host/instrument/instrument_page.h
+@@ -31,6 +31,11 @@
+     // 只读取并严格转换通讯测试输入，不发送、不检查命令权限或设备状态。
+     // 文档段换行映为LF；不解析文字形式的\xHH，失败时清空输出并说明位置。
+     bool prepareCommunicationAsciiPayload(QByteArray *payload, QString *message) const;
++    void setManualCommunicationConsumerReady(bool ready);
++    QString manualCommunicationRequestBlocker(quint64 request, quint64 session, quint64 connection,
++                                               const QByteArray &payload) const;
++    void receiveManualCommunicationResult(quint64 request, quint64 session, quint64 connection,
++                                           bool terminal, const QString &stage, const QString &message);
+     void setSession(AccountSession session);
+     bool setConnectionConfigurationFile(const QString &absoluteFile);
+     void attachDeviceControl(DeviceControl *control, bool connectAtStartup);
+@@ -49,6 +54,10 @@
+     void statusChanged(QString message);
+     void busyChanged(bool busy);
+     void operationFinished(QString operation, bool success);
++    // 值副本是同一点击的正文与身份；不是设备到包号或任务提交凭据。
++    void manualCommunicationRequested(quint64 request, quint64 session, quint64 connection,
++                                      AccountSession identity, QByteArray payload);
++    void manualCommunicationRevoked(quint64 request, quint64 session, quint64 connection, QString reason);
+ 
+ private:
+     Ui::frmDriverSet *ui;
+@@ -68,6 +77,10 @@
+     QStringList blockingAlarmCodes_;
+     bool alarmPolicyAvailable_ = false;
+     bool originalCommunicationConfigured_ = false;
++    bool manualCommunicationConsumerReady_ = false;
++    quint64 manualCommunicationSession_ = 0;
++    quint64 manualCommunicationPending_ = 0, manualCommunicationConnection_ = 0;
++    QByteArray manualCommunicationPayload_;
+     bool showCommunication_ = true, showOnlyCommunication_ = false, maskCommunication_ = false;
+     QStringList shownCommunication_, maskedCommunication_;
+     quint64 sentCommunication_ = 0, receivedCommunication_ = 0, communicationGeneration_ = 0;
+@@ -103,6 +116,9 @@
+     void updateDeviceButtons();
+     void appendOriginalCommunication(bool transmitted, const QByteArray &payload);
+     void refreshCommunicationAsciiInput();
++    void requestManualCommunication();
++    void cancelManualCommunication(const QString &reason);
++    void showManualCommunicationMessage(const QString &stage, const QString &message);
+     void refreshOriginalAdChannels();
+     void clearOriginalAdValues(const QString &reason);
+ };
+--- a/06_programs/sn100_host/shell/frmmain.h
++++ b/06_programs/sn100_host/shell/frmmain.h
+@@ -282,9 +282,24 @@
+     void updateOriginalProjectReadiness();
+     QString originalProjectUpdateBlocker() const;
+     void reportDeviceTaskError(const QString &message);
+-    QString deviceUserControlBlocker(quint64 connection) const;
+-    void requestDeviceStart(quint64 connection, bool physicalKey);
++    QString deviceUserControlBlocker(quint64 connection, bool requireFresh = true) const;
++    void requestDeviceStart(quint64 connection, bool physicalKey, quint64 manualRequest = 0);
++    void requestDevicePauseOrSilence(quint64 connection, bool pause, quint64 manualRequest = 0);
++    void attachManualCommunication();
++    void receiveManualCommunication(quint64 request, quint64 pageSession, quint64 connection,
++                                    AccountSession identity, QByteArray payload);
++    QString manualCommunicationBlocker(quint64 request) const;
++    void finishManualCommunication(quint64 request, const QString &stage, const QString &message, bool terminal = true);
++    void cancelManualCommunication(const QString &reason);
++    quint64 manualCommunicationSession_ = 0, manualCommunicationIdentitySession_ = 0;
++    quint64 manualCommunicationRequest_ = 0, manualCommunicationPageSession_ = 0;
++    quint64 manualCommunicationConnection_ = 0, manualCommunicationTaskRequest_ = 0;
++    AccountSession manualCommunicationIdentity_;
++    QByteArray manualCommunicationPayload_;
++    bool manualCommunicationSendAttempted_ = false;
++    bool manualCommunicationAttached_ = false;
+     void receiveDeviceStartKey(quint64 connection);
++    // 开始、暂停与静音共用确认占用，避免嵌套确认继续接受另一条控制操作。
+     bool deviceStartConfirmationPending_ = false;
+     // 只保护退出/账户切换尝试的前置页面检查；不表示任务或液面读取已完成。
+     bool deviceUserInteractionPending_ = false;
+--- a/06_programs/sn100_host/shell/device_control_shell.cpp
++++ b/06_programs/sn100_host/shell/device_control_shell.cpp
+@@ -40,6 +40,14 @@
+         if (QString::fromLatin1(values.value(1+i*15)).compare(hole,Qt::CaseInsensitive)==0) return true;
+     return false;
+ }
++
++bool sameManualIdentity(const AccountSession &left, const AccountSession &right)
++{
++    // actionReady是设备状态，不是登录代次；另用sessionChanged代次防同名重登复活旧请求。
++    return left.name==right.name && left.role==right.role && left.authenticated==right.authenticated &&
++        left.source==right.source && left.originalPolicySource==right.originalPolicySource &&
++        left.grantedPowerIds==right.grantedPowerIds;
++}
+ }
+ 
+ bool frmMain::enableDeviceControl(bool connectAtStartup)
+@@ -55,8 +63,12 @@
+     { qInfo().noquote() << "DEVICE_WIRE" << direction << bytes.toHex(' '); });
+     connectDeviceAtStartup_ = connectAtStartup;
+     if (instrument_) instrument_->attachDeviceControl(deviceControl_, connectAtStartup);
++    attachManualCommunication();
+     connect(deviceControl_, &DeviceControl::changed, this, [this](const DeviceControlState &state)
+     {
++        if (manualCommunicationRequest_ && (!state.connected ||
++            manualCommunicationConnection_!=deviceControl_->connectionGeneration()))
++            cancelManualCommunication(tr("原设备连接已失效或换代。"));
+         if (!state.connected) reagentLevelRequestedUrConnection_=0;
+         updateDeviceActionReadiness();
+         updateDeviceStatusDisplay();
+@@ -75,6 +87,7 @@
+     updateDeviceStatusDisplay();
+     connect(this, &frmMain::sessionChanged, this, [this](const AccountSession &)
+     {
++        ++manualCommunicationSession_;
+         invalidateDeviceTaskContext();
+         // 页面的session槽也向后台排队；等同一轮GUI槽处理完再开始同步。
+         QTimer::singleShot(0,this,[this](){ updateOriginalDeviceSync(); updateDeviceControlActions(); });
+@@ -88,17 +101,9 @@
+         if (payload.startsWith("QB")) receiveDeviceStartKey(connection);
+     });
+     connect(ui->btnPause, &QPushButton::clicked, this, [this]()
+-    {
+-        CusMessageBox question(this);
+-        question.showQuestionBox(tr("是否暂停测试？"));
+-        if (question.getClickButton() == QMessageBox::Yes) deviceControl_->pause();
+-    });
++    { requestDevicePauseOrSilence(deviceControl_->connectionGeneration(),true); });
+     connect(ui->btnCloseBeep, &CusBadgeButton::clicked, this, [this]()
+-    {
+-        CusMessageBox question(this);
+-        question.showQuestionBox(tr("是否关闭报警蜂鸣器？"));
+-        if (question.getClickButton() == QMessageBox::Yes) deviceControl_->silenceAlarm();
+-    });
++    { requestDevicePauseOrSilence(deviceControl_->connectionGeneration(),false); });
+     connect(ui->btnAbnormal, &CusBadgeButton::clicked, this, [this]()
+     {
+         // 当前告警已挂接时由唯一入口发送，避免同次点击重复Qk。
+@@ -106,12 +111,32 @@
+             deviceControl_->query(Sn100Protocol::ReadOnlyQuery::Alarm);
+     });
+     // main在创建设备控制之后才挂业务页；事件循环开始时再做一次幂等绑定。
+-    QTimer::singleShot(0,this,[this](){ attachDeviceTaskStore(); updateOriginalDeviceSync(); });
++    QTimer::singleShot(0,this,[this](){ attachManualCommunication(); attachDeviceTaskStore(); updateOriginalDeviceSync(); });
+     updateDeviceControlActions();
+     return true;
+ }
+ 
+-QString frmMain::deviceUserControlBlocker(quint64 connection) const
++void frmMain::attachManualCommunication()
++{
++    // main先创建设备控制、后挂仪器页；立即、延后及状态更新都可重入本幂等入口。
++    if (!deviceControl_ || !instrument_ || manualCommunicationAttached_) return;
++    manualCommunicationAttached_=true;
++    connect(instrument_,&InstrumentPage::manualCommunicationRequested,this,&frmMain::receiveManualCommunication);
++    connect(instrument_,&InstrumentPage::manualCommunicationRevoked,this,
++        [this](quint64 request,quint64 session,quint64 connection,const QString &reason)
++    {
++        if (request==manualCommunicationRequest_ && session==manualCommunicationPageSession_ &&
++            connection==manualCommunicationConnection_) cancelManualCommunication(reason);
++    });
++    connect(instrument_,&QObject::destroyed,this,[this]()
++    {
++        instrument_=nullptr; manualCommunicationAttached_=false;
++        cancelManualCommunication(tr("通讯测试页面已销毁，旧请求不再继续。"));
++    });
++    instrument_->setManualCommunicationConsumerReady(true);
++}
++
++QString frmMain::deviceUserControlBlocker(quint64 connection,bool requireFresh) const
+ {
+     if (!deviceControl_ || !connection || connection!=deviceControl_->connectionGeneration() ||
+         !deviceControl_->state().connected)
+@@ -123,17 +148,160 @@
+         return tr("程序正在确认退出或等待关闭收尾，未接受新的开始或暂停操作。");
+     if (logoutPending_ || !loginDialog_.isNull() || !session_.authenticated)
+         return tr("当前会话尚未就绪或正在登录注销，未接受设备操作。");
+-    if (!deviceControl_->state().fresh)
++    if (requireFresh && !deviceControl_->state().fresh)
+         return tr("尚未取得当前连接的有效设备状态，未执行本次操作。");
+     return QString();
+ }
+ 
+-void frmMain::requestDeviceStart(quint64 connection,bool physicalKey)
+-{
+-    const auto record=[this,connection,physicalKey](const QString &message)
++QString frmMain::manualCommunicationBlocker(quint64 request) const
++{
++    if (!request || request!=manualCommunicationRequest_ ||
++        manualCommunicationIdentitySession_!=manualCommunicationSession_ ||
++        !sameManualIdentity(manualCommunicationIdentity_,session_))
++        return tr("手动请求的原会话已失效，不转交给新会话。");
++    if (!session_.authenticated || session_.role!=5 ||
++        (session_.source!=AccountSessionSource::Password && session_.source!=AccountSessionSource::Configured))
++        return tr("通讯测试手动请求需要当前真实管理员会话。");
++    if (!instrument_) return tr("通讯测试页面已撤销，旧请求不再继续。");
++    const QString page=instrument_->manualCommunicationRequestBlocker(request,manualCommunicationPageSession_,
++        manualCommunicationConnection_,manualCommunicationPayload_);
++    if (!page.isEmpty()) return page;
++    // 查询可用于读取已失效状态；静音也不套开始专用状态或任务条件。
++    return deviceUserControlBlocker(manualCommunicationConnection_,false);
++}
++
++void frmMain::finishManualCommunication(quint64 request, const QString &stage, const QString &message, bool terminal)
++{
++    if (!request || request!=manualCommunicationRequest_) return;
++    const quint64 pageSession=manualCommunicationPageSession_, connection=manualCommunicationConnection_;
++    QVariantMap result;
++    result.insert(QStringLiteral("request"),QVariant::fromValue(request));
++    result.insert(QStringLiteral("pageSession"),QVariant::fromValue(pageSession));
++    result.insert(QStringLiteral("identitySession"),QVariant::fromValue(manualCommunicationIdentitySession_));
++    result.insert(QStringLiteral("connection"),QVariant::fromValue(connection));
++    result.insert(QStringLiteral("payloadBytes"),manualCommunicationPayload_.size());
++    result.insert(QStringLiteral("payloadSha256"),QCryptographicHash::hash(manualCommunicationPayload_,QCryptographicHash::Sha256).toHex());
++    result.insert(QStringLiteral("sendCallAttempted"),manualCommunicationSendAttempted_);
++    result.insert(QStringLiteral("stage"),stage);
++    result.insert(QStringLiteral("message"),message);
++    if (terminal)
++    {
++        manualCommunicationRequest_=0; manualCommunicationTaskRequest_=0;
++        manualCommunicationPayload_.clear(); manualCommunicationSendAttempted_=false;
++    }
++    // 通知可重入新的用户操作；先结束旧等待，不能在通知后清掉新请求。
++    setProperty("manualCommunicationLastResult",result);
++    qInfo().noquote()<<"MANUAL_COMMUNICATION"<<request<<connection<<stage<<message;
++    if (instrument_) instrument_->receiveManualCommunicationResult(request,pageSession,connection,terminal,stage,message);
++}
++
++void frmMain::cancelManualCommunication(const QString &reason)
++{
++    const quint64 request=manualCommunicationRequest_;
++    if (!request) return;
++    const quint64 taskRequest=manualCommunicationTaskRequest_;
++    // 先按保存的原准备号撤User采用资格；即便等待bool已结束，仍不漏撤在途动作。
++    // 此调用只标取消，实际Worker/reader仍等原finished，不把手动终态当动作退休。
++    if (taskRequest) cancelUserTaskPreparation(taskRequest,reason);
++    if (taskRequest && deviceTaskPreparing_ && taskRequest==deviceTaskRequest_)
++    {
++        deviceTaskPreparing_=false; ++deviceTaskRequest_;
++        if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
++    }
++    const QString outcome=manualCommunicationSendAttempted_
++        ? tr(" 已有发送调用可能已入队，结果待核；未自动重发或清除原未知状态。")
++        : tr(" 本次尚未调用发送，旧请求不再继续。");
++    finishManualCommunication(request,QStringLiteral("revoked"),reason+outcome);
++    updateDeviceControlActions();
++}
++
++void frmMain::receiveManualCommunication(quint64 request,quint64 pageSession,quint64 connection,
++    AccountSession identity,QByteArray payload)
++{
++    if (!instrument_) return;
++    QString reason=instrument_->manualCommunicationRequestBlocker(request,pageSession,connection,payload);
++    if (reason.isEmpty() && manualCommunicationRequest_) reason=tr("已有手动请求正在处理，未重复提交。");
++    if (reason.isEmpty() && (!sameManualIdentity(identity,session_) || !session_.authenticated || session_.role!=5 ||
++        (session_.source!=AccountSessionSource::Password && session_.source!=AccountSessionSource::Configured)))
++        reason=tr("手动请求与当前真实管理员身份不符，未调用发送。");
++    if (reason.isEmpty()) reason=deviceUserControlBlocker(connection,false);
++    if (reason.isEmpty() && (payload.isEmpty() || payload.size()>Sn100Protocol::kMaxMessageBytes))
++        reason=tr("正文为空或超过当前整条预算，未调用发送。");
++    if (reason.isEmpty() && payload!="Qj" && payload!="Qk" && payload!="QH" &&
++        payload!="Ts" && payload!="Tp[0]" && payload!="Mz")
++        reason=tr("本正文尚未接入相应业务流程，未调用发送；不是ASCII编码错误或设备拒绝。");
++    if (!reason.isEmpty())
++    { instrument_->receiveManualCommunicationResult(request,pageSession,connection,true,QStringLiteral("rejected"),reason); return; }
++    manualCommunicationRequest_=request; manualCommunicationPageSession_=pageSession;
++    manualCommunicationConnection_=connection; manualCommunicationIdentity_=identity;
++    manualCommunicationIdentitySession_=manualCommunicationSession_;
++    manualCommunicationPayload_=payload; manualCommunicationTaskRequest_=0;
++    manualCommunicationSendAttempted_=false;
++    if (payload=="Ts")
++    {
++        requestDeviceStart(connection,false,request);
++        if (request!=manualCommunicationRequest_) return;
++        if (manualCommunicationTaskRequest_)
++            finishManualCommunication(request,QStringLiteral("preparing"),
++                tr("通讯测试手动开始已进入任务准备流程，尚未确认入队或设备开始。"),false);
++        else finishManualCommunication(request,QStringLiteral("not-submitted"),property("deviceStartRequestMessage").toString());
++        return;
++    }
++    if (payload=="Tp[0]" || payload=="Mz")
++    { requestDevicePauseOrSilence(connection,payload=="Tp[0]",request); return; }
++    reason=manualCommunicationBlocker(request);
++    if (!reason.isEmpty()) { finishManualCommunication(request,QStringLiteral("rejected"),reason); return; }
++    const auto query=payload=="Qj" ? Sn100Protocol::ReadOnlyQuery::Status :
++        payload=="Qk" ? Sn100Protocol::ReadOnlyQuery::Alarm : Sn100Protocol::ReadOnlyQuery::Consumables;
++    // 入队信号可重入断线；调用前登记“已尝试”，false不能统一解释成保证从未发送。
++    manualCommunicationSendAttempted_=true;
++    const bool queued=deviceControl_->query(query);
++    finishManualCommunication(request,queued ? QStringLiteral("queued") : QStringLiteral("unconfirmed"),
++        queued ? tr("本次查询已进入发送队列，仍待实际回复；没有解除其他未知状态。") :
++        tr("本次查询发送调用未确认，可能已入队；请核对收发与连接，未自动重试。"));
++}
++
++void frmMain::requestDevicePauseOrSilence(quint64 connection,bool pause,quint64 manualRequest)
++{
++    const quint64 identitySession=manualCommunicationSession_;
++    const auto reject=[this,manualRequest](const QString &reason)
++    {
++        if (manualRequest) finishManualCommunication(manualRequest,QStringLiteral("rejected"),reason);
++        else reportDeviceTaskError(reason);
++    };
++    QString reason=deviceUserControlBlocker(connection,pause);
++    if (reason.isEmpty() && manualRequest) reason=manualCommunicationBlocker(manualRequest);
++    if (reason.isEmpty() && pause) reason=deviceControl_->pauseBlocker();
++    if (reason.isEmpty() && deviceStartConfirmationPending_) reason=tr("已有控制确认正在处理，未叠加新的确认。");
++    if (!reason.isEmpty()) { reject(reason); return; }
++    QScopedValueRollback<bool> confirmation(deviceStartConfirmationPending_,true);
++    CusMessageBox question(this);
++    question.showQuestionBox(pause ? tr("是否暂停测试？") : tr("是否关闭报警蜂鸣器？"));
++    if (question.getClickButton()!=QMessageBox::Yes)
++    {
++        if (manualRequest) finishManualCommunication(manualRequest,QStringLiteral("cancelled"),tr("已取消本次确认，未调用发送。"));
++        return;
++    }
++    reason=identitySession==manualCommunicationSession_ ? deviceUserControlBlocker(connection,pause)
++        : tr("确认期间身份已变化，旧确认不再继续。");
++    if (reason.isEmpty() && manualRequest) reason=manualCommunicationBlocker(manualRequest);
++    if (reason.isEmpty() && pause) reason=deviceControl_->pauseBlocker();
++    if (!reason.isEmpty()) { reject(reason); return; }
++    if (manualRequest) manualCommunicationSendAttempted_=true;
++    const bool queued=pause ? deviceControl_->pause() : deviceControl_->silenceAlarm();
++    if (manualRequest)
++        finishManualCommunication(manualRequest,queued ? QStringLiteral("queued") : QStringLiteral("unconfirmed"),
++            queued ? (pause ? tr("暂停命令已入队，仍待设备实际暂停状态。") : tr("静音命令已入队，不表示故障已解除。")) :
++            tr("发送调用未确认，可能已入队；请核对收发与连接，未自动重试。"));
++}
++
++void frmMain::requestDeviceStart(quint64 connection,bool physicalKey,quint64 manualRequest)
++{
++    const auto record=[this,connection,physicalKey,manualRequest](const QString &message)
+     {
+         setProperty("deviceStartRequestMessage",message);
+-        qInfo().noquote()<<"DEVICE_START_REQUEST"<<(physicalKey ? "QB" : "button")<<connection<<message;
++        qInfo().noquote()<<"DEVICE_START_REQUEST"<<(manualRequest ? "communication-manual" : physicalKey ? "QB" : "button")
++            <<connection<<manualRequest<<message;
+     };
+     if (deviceStartConfirmationPending_ || deviceTaskPreparing_)
+     { record(tr("已有开始确认或任务准备正在处理，未重复提交。")); return; }
+@@ -141,6 +309,7 @@
+     QScopedValueRollback<bool> confirmation(deviceStartConfirmationPending_,true);
+     const quint64 contextRequest=deviceTaskRequest_;
+     QString reason=deviceUserControlBlocker(connection);
++    if (reason.isEmpty() && manualRequest) reason=manualCommunicationBlocker(manualRequest);
+     if (reason.isEmpty()) reason=deviceControl_->startBlocker();
+     if (reason.isEmpty()) reason=detectionStartBlocker();
+     if (!reason.isEmpty())
+@@ -157,6 +326,7 @@
+     if (contextRequest!=deviceTaskRequest_)
+     { record(tr("确认期间会话或原资料上下文已撤销，旧确认未继续开始。")); return; }
+     reason=deviceUserControlBlocker(connection);
++    if (reason.isEmpty() && manualRequest) reason=manualCommunicationBlocker(manualRequest);
+     if (reason.isEmpty()) reason=deviceControl_->startBlocker();
+     if (reason.isEmpty()) reason=detectionStartBlocker();
+     if (!reason.isEmpty() || deviceTaskPreparing_)
+@@ -164,21 +334,41 @@
+     deviceTaskPreparing_=true;
+     const quint64 request=++deviceTaskRequest_;
+     deviceTaskConnection_=connection;
++    if (manualRequest) manualCommunicationTaskRequest_=request;
+     const bool linuxNew=deviceControl_->state().status.generalFields.value(19)==QStringLiteral("LinuxNew");
+     updateDeviceControlActions();
++    if (manualRequest)
++    {
++        reason=manualCommunicationBlocker(manualRequest);
++        if (!deviceTaskPreparing_ || request!=deviceTaskRequest_ || !reason.isEmpty())
++        {
++            if (request==deviceTaskRequest_ && deviceTaskPreparing_)
++            { deviceTaskPreparing_=false; ++deviceTaskRequest_; }
++            record(reason.isEmpty() ? tr("原手动开始已撤销，未继续排队任务准备。") : reason);
++            finishManualCommunication(manualRequest,QStringLiteral("revoked"),property("deviceStartRequestMessage").toString());
++            updateDeviceControlActions();
++            return;
++        }
++    }
++    // 普通按钮、QB和手动Ts共用真实User来源；不改回旧prepareDeviceTasks入口。
+     QString preparationMessage;
+     if (!queueUserTaskPreparation(request,connection,linuxNew,&preparationMessage))
+     {
+         deviceTaskPreparing_=false;
+-        reportDeviceTaskError(preparationMessage); updateDeviceControlActions(); return;
+-    }
+-    QTimer::singleShot(10000,this,[this,request]()
++        reportDeviceTaskError(preparationMessage);
++        if (manualRequest) finishManualCommunication(manualRequest,QStringLiteral("rejected"),preparationMessage);
++        updateDeviceControlActions();
++        return;
++    }
++    QTimer::singleShot(10000,this,[this,request,manualRequest]()
+     {
+         if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
+         deviceTaskPreparing_=false;
+         cancelUserTaskPreparation(request,tr("本次用户任务准备超时；保留已经进入后台的动作，等待真实结束。"));
+         if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
+         reportDeviceTaskError(tr("样本任务准备10秒未返回，未发送开始；请核对数据和连接后重试。"));
++        if (manualRequest) finishManualCommunication(manualRequest,QStringLiteral("preparation-timeout"),
++            tr("任务准备10秒未返回，未调用本次开始发送；旧准备不自动重试。"));
+         updateDeviceControlActions();
+     });
+     record(tr("已登记本次任务准备，仍待后台核对和设备实际回复；尚未确认开始。"));
+@@ -187,14 +377,29 @@
+ void frmMain::finishDeviceTaskPreparation(quint64 request,bool success,const QString &detail)
+ {
+     if (!deviceTaskPreparing_ || request!=deviceTaskRequest_) return;
++    // User桥只在真实finished及动作退休后调用；手动号只映射这次原准备号。
++    const quint64 manualRequest=manualCommunicationTaskRequest_==request ? manualCommunicationRequest_ : 0;
+     deviceTaskPreparing_=false;
+     const QString interaction=deviceUserControlBlocker(deviceTaskConnection_);
+-    const QString blocker=interaction.isEmpty() ? detectionStartBlocker() : interaction;
+-    if (!success || !blocker.isEmpty() || !deviceControl_->start())
++    QString blocker=interaction.isEmpty() ? detectionStartBlocker() : interaction;
++    if (blocker.isEmpty() && manualRequest) blocker=manualCommunicationBlocker(manualRequest);
++    bool queued=false;
++    if (success && blocker.isEmpty())
++    {
++        if (manualRequest) manualCommunicationSendAttempted_=true;
++        queued=deviceControl_->start();
++    }
++    if (!success || !blocker.isEmpty() || !queued)
+     {
+         if (deviceTaskStore_) QMetaObject::invokeMethod(deviceTaskStore_,"cancelDeviceTaskPreparation",Qt::QueuedConnection);
+         reportDeviceTaskError(!success ? detail : !blocker.isEmpty() ? blocker : deviceControl_->state().message);
+     }
++    if (manualRequest)
++        finishManualCommunication(manualRequest,queued ? QStringLiteral("queued") :
++            (!success || !blocker.isEmpty()) ? QStringLiteral("rejected") : QStringLiteral("unconfirmed"),
++            queued ? tr("本次开始已进入发送队列，仍待设备实际接受及运行状态；不表示检测完成。") :
++            !success ? detail : !blocker.isEmpty() ? blocker :
++            tr("本次开始发送调用未确认，可能已入队；请核对收发和连接，未自动重试。"));
+     updateDeviceControlActions();
+ }
+ 
+@@ -274,6 +479,7 @@
+ void frmMain::updateDeviceControlActions()
+ {
+     if (!deviceControl_) return;
++    attachManualCommunication();
+     const auto &state = deviceControl_->state();
+     const bool available = !deviceTaskPreparing_ && session_.authenticated && state.connected && state.fresh &&
+                            state.pending.isEmpty() && !state.outcomeUnknown;
+@@ -385,6 +591,7 @@
+ 
+ void frmMain::invalidateDeviceTaskContext()
+ {
++    cancelManualCommunication(tr("连接、身份或原资料上下文已真实撤销。"));
+     cancelTaskReagentContexts(tr("连接、身份或原资料上下文已真实撤销，旧任务仍待真实后台收尾。"));
+     invalidateReagentLevels();
+     reagentLevelRequestedUrConnection_=0;

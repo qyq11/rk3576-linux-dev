@@ -1,0 +1,241 @@
+#!/usr/bin/env bash
+# 仅供总窗口审查、冻结后执行派生副本。此.in没有本轮实值，不可直接运行。
+set -Eeuo pipefail
+shopt -s inherit_errexit
+set -o noclobber
+umask 077
+@@GLOBALS@@
+[[ $template_frozen == true && $phase_allowed == true ]] || exit 78
+
+@@LEGACY_FUNCTIONS@@
+
+runtime_fail() { printf 'RUNTIME_TRANSITION_REFUSED=%s\n' "$*" >&2; exit 79; }
+require_phase() { [[ $phase == "$1" && $template_frozen == true && $phase_allowed == true ]] || runtime_fail '当前阶段没有单独冻结批准。'; }
+runtime_sha() { sha256sum -- "$1" | cut -d' ' -f1; }
+runtime_regular() {
+    [[ -f $1 && ! -L $1 && $(stat -c %h -- "$1") == 1 && $(readlink -f -- "$1") == "$1" ]] || runtime_fail '原件不是规范单链接普通文件。'
+}
+runtime_checked() {
+    runtime_regular "$1"
+    [[ $(runtime_sha "$1") == "$2" ]] || runtime_fail '原件SHA变化。'
+}
+check_board() {
+    [[ $EUID == 0 && $(tr -d '\0\n' </proc/device-tree/serial-number) == 8314b1e8ffd0321f ]] || runtime_fail '板卡或执行用户不符。'
+    [[ $(cat /proc/sys/kernel/random/boot_id) == "$expected_boot" ]] || runtime_fail '过渡期间boot变化。'
+    [[ -d $base && ! -L $base && $(readlink -f "$base") == "$base" && ! -L $base/releases && $(readlink -f "$base/releases") == "$base/releases" ]] || runtime_fail '部署根经过链接。'
+}
+lock_store() {
+    check_board
+    [[ ! -L $base/immutable_store.lock ]] || runtime_fail '存储锁经过链接。'
+    if [[ -e $base/immutable_store.lock ]]; then [[ -f $base/immutable_store.lock ]] || runtime_fail '存储锁不是文件。'; fi
+    exec 8>>"$base/immutable_store.lock"
+    flock -n 8
+    [[ ! -L $base/immutable_store.lock && $base/immutable_store.lock -ef /proc/$$/fd/8 ]] || runtime_fail '存储锁身份变化。'
+    check_board
+}
+lock_life() {
+    transition_assert_quiet
+    [[ -f $base/lifecycle.lock && ! -L $base/lifecycle.lock && $(readlink -f "$base/lifecycle.lock") == "$base/lifecycle.lock" ]] || runtime_fail '生命周期锁不明。'
+    exec 9<>"$base/lifecycle.lock"
+    flock -n 9
+    [[ $base/lifecycle.lock -ef /proc/$$/fd/9 ]] || runtime_fail '生命周期锁身份变化。'
+    check_board
+    transition_assert_quiet
+}
+check_current() { [[ -L $base/current && $(readlink "$base/current") == "$1" ]] || runtime_fail 'current不是本阶段冻结值。'; }
+check_process() {
+    local pid=$1 ticks=$2 uid=$3 exe=$4 wanted=$5 actual
+    [[ $(transition_start_ticks "$pid") == "$ticks" && $(transition_uid "$pid") == "$uid" ]] || runtime_fail '进程启动身份或用户变化。'
+    actual=$(readlink -- "/proc/$pid/exe")
+    [[ $actual == "$exe" && $(runtime_sha "/proc/$pid/exe") == "$wanted" ]] || runtime_fail '实际运行映像变化。'
+    [[ $(transition_start_ticks "$pid") == "$ticks" && $(transition_uid "$pid") == "$uid" && $(readlink -- "/proc/$pid/exe") == "$exe" ]] || runtime_fail '读取期间进程变化。'
+}
+check_unique_exe() {
+    local wanted=$1 wanted_pid=$2 node target status pid
+    local -a found=()
+    for node in /proc/[0-9]*/exe; do
+        if target=$(transition_process_exe "$node"); then
+            if [[ ${target##*/} == "${wanted##*/}" || ${target##*/} == "${wanted##*/} (deleted)" ]]; then
+                [[ $target == "$wanted" ]] || runtime_fail '同名映像来自另一位置或已删除。'
+                pid=${node#/proc/}; found+=("${pid%/exe}")
+            fi
+        else
+            status=$?
+            [[ $status == 1 ]] || return "$status"
+        fi
+    done
+    [[ ${#found[@]} == 1 && ${found[0]} == "$wanted_pid" ]] || runtime_fail '所需运行进程缺失或重复。'
+}
+check_camera() {
+    local row role pid ticks uid exe wanted active sub main actual_rows=
+    for row in "${camera_rows[@]}"; do
+        IFS='|' read -r role pid ticks uid exe wanted <<<"$row"
+        check_unique_exe "$exe" "$pid"
+        check_process "$pid" "$ticks" "$uid" "$exe" "$wanted"
+        actual_rows+="$role|$pid|$(transition_start_ticks "$pid")|$(transition_uid "$pid")|$(readlink "/proc/$pid/exe")|$(runtime_sha "/proc/$pid/exe")"$'\n'
+    done
+    active=$(systemctl show "$camera_service_unit" -p ActiveState --value)
+    sub=$(systemctl show "$camera_service_unit" -p SubState --value)
+    main=$(systemctl show "$camera_service_unit" -p MainPID --value)
+    [[ $active == "$camera_active_state" && $sub == "$camera_sub_state" && $main == "$camera_main_pid" ]] || runtime_fail '相机服务身份变化。'
+    actual_rows+="$camera_service_unit|$active|$sub|$main"$'\n'
+    camera_identity_sha256=$(printf '%s' "$actual_rows" | sha256sum | cut -d' ' -f1)
+}
+check_environment_baseline() {
+    local path actual_table= row wanted
+    check_board
+    for path in "${configuration_paths[@]}"; do
+        runtime_regular "$path"
+        actual_table+="$(runtime_sha "$path")  $path"$'\n'
+    done
+    [[ $(printf '%s' "$actual_table" | sha256sum | cut -d' ' -f1) == "$configuration_manifest_sha256" ]] || runtime_fail '七配置原文指纹变化。'
+    for row in "${pointer_rows[@]}"; do
+        wanted=${row%%  *}; path=${row#*  }
+        runtime_checked "$path" "$wanted"
+    done
+    check_controller
+    [[ $controller_identity == "$controller_expected_identity" ]] || runtime_fail '原主控身份变化，不能接受新进程替代。'
+    check_camera
+    check_board
+}
+verify_release_before_source() {
+    local directory=$1 expected_helper=$2 expected_id=$3 expected_main=$4
+    [[ -d $directory && ! -L $directory && $(readlink -f "$directory") == "$directory" ]] || runtime_fail '版本目录不规范。'
+    runtime_regular "$directory/release_id"
+    runtime_regular "$directory/SHA256SUMS"
+    [[ $(cat "$directory/release_id") == "$expected_id" && $(runtime_sha "$directory/SHA256SUMS") == "$expected_id" ]] || runtime_fail '包身份不符。'
+    [[ -z $(find "$directory" -type l -print -quit) && -z $(find "$directory" ! -type f ! -type d -print -quit) ]] || runtime_fail '版本目录含链接或特殊成员。'
+    (cd "$directory" && sha256sum --quiet -c SHA256SUMS)
+    runtime_checked "$directory/rk_board.sh" "$expected_helper"
+    runtime_checked "$directory/sn100_shell" "$expected_main"
+    source "$directory/rk_board.sh"
+    verify_release "$directory"
+}
+check_new_release() {
+    verify_release_before_source "$nested" "$expected_board_script_sha256" "$release_id" "$expected_app_sha256"
+    runtime_checked "$nested/sn100_report_renderer" "$expected_renderer_sha256"
+    if [[ ${1:-} == both ]]; then
+        verify_release_before_source "$flat" "$expected_board_script_sha256" "$release_id" "$expected_app_sha256"
+        runtime_checked "$flat/sn100_report_renderer" "$expected_renderer_sha256"
+        [[ $(runtime_sha "$flat/SHA256SUMS") == $(runtime_sha "$nested/SHA256SUMS") ]] || runtime_fail 'nested/flat不是同一清单。'
+    fi
+}
+check_old_release() {
+    verify_release_before_source "$base/$expected_current" "$old_helper_sha" "${expected_current#releases/}" "$old_exe_sha"
+}
+check_old_run_files() {
+    runtime_regular "$base/latest_run"
+    [[ -d $oldrun && ! -L $oldrun && $(readlink -f "$oldrun") == "$oldrun" && $(cat "$base/latest_run") == "${oldrun##*/}" ]] || runtime_fail '旧run不是本次latest_run。'
+    local name
+    for name in app.pid app.start_ticks app.exe boot_id; do runtime_regular "$oldrun/$name"; done
+    [[ $(cat "$oldrun/app.pid") == "$old_pid" && $(cat "$oldrun/app.start_ticks") == "$old_ticks" && $(cat "$oldrun/app.exe") == "$old_exe" && $(cat "$oldrun/boot_id") == "$expected_boot" ]] || runtime_fail '旧run身份文件不符。'
+}
+check_live_old() {
+    check_current "$expected_current"
+    check_old_run_files
+    [[ ! -e $oldrun/exit_code && ! -L $oldrun/exit_code && ! -e $oldrun/result.txt && ! -L $oldrun/result.txt ]] || runtime_fail '旧run已有退出封口。'
+    [[ $old_uid == "$(id -u lckfb)" ]] || runtime_fail '旧运行用户不是lckfb。'
+    check_unique_exe "$old_exe" "$old_pid"
+    check_process "$old_pid" "$old_ticks" "$old_uid" "$old_exe" "$old_exe_sha"
+    check_environment_baseline
+}
+check_old_exit_seal() {
+    check_old_run_files
+    runtime_regular "$oldrun/result.txt"
+    runtime_regular "$oldrun/exit_code"
+    [[ $(base64 -w0 "$oldrun/result.txt") == "$(printf 'APP_EXIT=0\nCLEAN_SHUTDOWN=1\n' | base64 -w0)" && $(base64 -w0 "$oldrun/exit_code") == "$(printf '0\n' | base64 -w0)" ]] || runtime_fail '准确旧run没有真实APP_EXIT0/clean1提交封口。'
+}
+check_stopped_old() {
+    check_old_exit_seal
+    transition_assert_quiet
+    check_environment_baseline
+}
+put_frozen_file() {
+    local path=$1 wanted=$2 content=$3 mode=${4:-640}
+    if [[ -e $path || -L $path ]]; then runtime_checked "$path" "$wanted"; return; fi
+    printf '%s' "$content" | base64 --decode > "$path"
+    chmod "$mode" "$path"
+    chown root:lckfb "$path"
+    runtime_checked "$path" "$wanted"
+}
+check_metadata() {
+    [[ -d $meta && ! -L $meta && $(readlink -f "$meta") == "$meta" && $(stat -c %U "$meta") == root && $(stat -c %G "$meta") == lckfb && $(stat -c %a "$meta") == 750 ]] || runtime_fail '本轮元数据目录身份不符。'
+    runtime_checked "$meta/core_inputs.json" "$core_sha256"
+    runtime_checked "$meta/runtime_launch_intent.json" "$root_launch_intent_sha256"
+    runtime_checked "$meta/configuration.sha256" "$configuration_manifest_sha256"
+    runtime_checked "$meta/wait_lis_observation.sh" "$waiter_sha256"
+}
+begin_phase() {
+    require_phase "$phase"
+    check_metadata
+    [[ ! -e $meta/receipts/$phase.receipt && ! -L $meta/receipts/$phase.receipt && ! -e $meta/phase_logs/$phase && ! -L $meta/phase_logs/$phase ]] || runtime_fail '本阶段已有执行或失败现场，不重跑。'
+    if [[ -n $previous_phase ]]; then
+        runtime_checked "$meta/receipts/$previous_phase.receipt" "$previous_receipt_sha256"
+        runtime_checked "$meta/authorizations/$previous_phase.json" "$previous_authorization_sha256"
+    fi
+    if [[ -n $old_stop_receipt_sha256 ]]; then runtime_checked "$meta/receipts/stop.receipt" "$old_stop_receipt_sha256"; fi
+    put_frozen_file "$meta/authorizations/$phase.json" "$authorization_sha256" "$authorization_base64"
+    put_frozen_file "$meta/authorizations/$phase.approval" "$approval_sha256" "$approval_base64"
+    mkdir -m 750 "$meta/phase_logs/$phase"
+    chown root:lckfb "$meta/phase_logs/$phase"
+    check_phase_materials
+}
+check_phase_materials() {
+    [[ $template_frozen == true && $phase_allowed == true ]] || runtime_fail '阶段未冻结或未批准。'
+    check_metadata
+    runtime_checked "$meta/authorizations/$phase.json" "$authorization_sha256"
+    runtime_checked "$meta/authorizations/$phase.approval" "$approval_sha256"
+    if [[ -n $previous_phase ]]; then
+        runtime_checked "$meta/receipts/$previous_phase.receipt" "$previous_receipt_sha256"
+        runtime_checked "$meta/authorizations/$previous_phase.json" "$previous_authorization_sha256"
+    fi
+    if [[ -n $old_stop_receipt_sha256 ]]; then runtime_checked "$meta/receipts/stop.receipt" "$old_stop_receipt_sha256"; fi
+}
+emit_receipt() {
+    check_phase_materials
+    check_environment_baseline
+    case $phase in
+        metadata|prepare|preflight) check_live_old ;;
+        stop) check_current "$expected_current"; check_stopped_old ;;
+        activate) check_current "releases/$release_id"; check_stopped_old ;;
+        launch|observe) check_new_live ;;
+        *) runtime_fail '未知阶段，不创建收据。' ;;
+    esac
+    local receipt=$meta/receipts/$phase.receipt
+    [[ ! -e $receipt && ! -L $receipt ]] || runtime_fail '不得覆盖既有收据。'
+    {
+        printf 'FORMAT=sn100-integration-12-01-runtime-receipt-v1\nPHASE=%s\nTRANSITION_ID=%s\nBOARD=board_b\nSERIAL=8314b1e8ffd0321f\n' "$phase" "$transition_id"
+        printf 'BOOT_ID=%s\nCORE_INPUTS_SHA256=%s\nAUTHORIZATION_SHA256=%s\nROOT_LAUNCH_INTENT_SHA256=%s\nCONFIGURATION_MANIFEST_SHA256=%s\n' "$expected_boot" "$core_sha256" "$authorization_sha256" "$root_launch_intent_sha256" "$configuration_manifest_sha256"
+        printf 'CONTROLLER_IDENTITY=%s\nCAMERA_IDENTITY_SHA256=%s\nCURRENT_AFTER=%s\n' "$controller_identity" "$camera_identity_sha256" "$(readlink "$base/current")"
+        if [[ -n $old_stop_receipt_sha256 ]]; then printf 'OLD_STOP_RECEIPT_SHA256=%s\n' "$old_stop_receipt_sha256"; fi
+        receipt_details
+        printf 'EXIT_CODE=0\n'
+    } > "$receipt"
+    chmod 640 "$receipt"
+    chown root:lckfb "$receipt"
+    printf 'RUNTIME_RECEIPT_SHA256=%s\n' "$(runtime_sha "$receipt")"
+    cat "$receipt"
+}
+read_product_environment() {
+    local actual expected
+    actual=$(tr '\0' '\n' <"/proc/$new_pid/environ" | grep '^SN100_LIS_OBSERVATION_' | LC_ALL=C sort)
+    expected=$(printf 'SN100_LIS_OBSERVATION_DIR=%s\nSN100_LIS_OBSERVATION_ID=%s\nSN100_LIS_OBSERVATION_RELEASE=%s\n' "$observation_dir" "$observation_id" "$release_id" | LC_ALL=C sort)
+    [[ $actual == "$expected" ]] || runtime_fail '三个观察变量没有在实际产品进程生效。'
+    printf '%s\n' "$actual"
+}
+check_new_live() {
+    [[ $new_pid =~ ^[1-9][0-9]*$ && $new_ticks =~ ^[1-9][0-9]*$ ]] || runtime_fail '新PID或启动计数不规范。'
+    check_current "releases/$release_id"
+    [[ $new_run == "$base/runs/"* && ${new_run#"$base/runs/"} =~ ^[0-9_]+$ && -d $new_run && ! -L $new_run && $(readlink -f "$new_run") == "$new_run" ]] || runtime_fail '新run不规范。'
+    [[ $(cat "$base/latest_run") == "${new_run##*/}" && ! -e $new_run/exit_code && ! -L $new_run/exit_code && ! -e $new_run/result.txt && ! -L $new_run/result.txt ]] || runtime_fail '新run已退出或不是latest_run。'
+    local name
+    for name in app.pid app.start_ticks app.exe boot_id; do runtime_regular "$new_run/$name"; done
+    runtime_regular "$base/latest_run"
+    [[ $(cat "$new_run/app.pid") == "$new_pid" && $(cat "$new_run/app.start_ticks") == "$new_ticks" && $(cat "$new_run/app.exe") == "$flat/sn100_shell" && $(cat "$new_run/boot_id") == "$expected_boot" ]] || runtime_fail '新run身份文件不符。'
+    check_unique_exe "$flat/sn100_shell" "$new_pid"
+    check_process "$new_pid" "$new_ticks" "$(id -u lckfb)" "$flat/sn100_shell" "$expected_app_sha256"
+    read_product_environment >/dev/null
+    check_environment_baseline
+}
+
+@@PHASE_BODY@@

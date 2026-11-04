@@ -25,6 +25,7 @@
 #include <QIntValidator>
 #include <QRegularExpressionValidator>
 #include <QMenu>
+#include <QMetaObject>
 #include <QSignalBlocker>
 #include <QSpinBox>
 #include <QTimer>
@@ -200,6 +201,14 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
     {
         if (!pendingDeviceRequest_) return;
         const QString operation=pendingDeviceOperation_;
+        if (!probeOwner_.token.isEmpty() && operation==QStringLiteral("detectOne"))
+        {
+            probeAcceptingN_=false; deviceOperations_.clear();
+            store_->setOriginalDeviceOperationContext(0,QStringList());
+            showOperationMessage(operation,QStringLiteral("单孔探测等待超时，已派发的数据保存/读者仍须收尾，未重发。"));
+            emit operationFinished(operation,false);
+            return;
+        }
         pendingDeviceRequest_=0; pendingDeviceOperation_.clear(); deviceOperations_.clear();
         store_->setOriginalDeviceOperationContext(0,QStringList());
         setBusy(false);
@@ -306,6 +315,19 @@ ReagentsPage::~ReagentsPage()
         delete dialog_;
     delete ui;
 }
+QString ReagentsPage::originalPageBatch(const ReagentHole &hole) const
+{
+    QString batch;
+    return store_ && store_->originalPageMetadata()->batch(snapshot_.originalRoot,hole.originalValues,&batch)
+        ? batch : QStringLiteral("待核");
+}
+
+void ReagentsPage::refreshOriginalPageMetadata()
+{
+    // 只刷新当前详情；原快照/typed数据库行和任务凭据仍是实际DB原文。
+    if (originalProfile_ && ready_) selectHole(selectedHole_);
+}
+
 void ReagentsPage::setProjects(ReagentProjects projects)
 {
     if (originalProfile_)
@@ -323,7 +345,15 @@ void ReagentsPage::setProjects(ReagentProjects projects)
 }
 void ReagentsPage::configureLayout(int count)
 {
+    const bool newPanel = count==42 && ui->reagentPanel->property("configuredReagentPositions").toInt()!=42;
     ui->reagentPanel->configureLayout(count);
+    if (newPanel && ready_ && originalProfile_)
+    {
+        const auto ticket=store_->originalPageMetadata()->sourceTicket();
+        const QString root=snapshot_.originalRoot;
+        ReagentStore *store=store_;
+        QMetaObject::invokeMethod(store,[store,root,ticket]() { store->rebuildOriginalPageMetadata(root,ticket); },Qt::QueuedConnection);
+    }
     if (count==42)
     {
         ui->reagentPanel->setGeometry(13,11,1111,941);
@@ -398,8 +428,13 @@ void ReagentsPage::setDeviceOperations(quint64 connection, QStringList operation
     if (pendingDeviceRequest_ && connection!=deviceConnection_)
     {
         const QString operation=pendingDeviceOperation_;
-        pendingDeviceRequest_=0; pendingDeviceOperation_.clear(); deviceOperationTimer_->stop();
-        setBusy(false);
+        if (probeOwner_.token.isEmpty())
+        {
+            pendingDeviceRequest_=0; pendingDeviceOperation_.clear();
+            setBusy(bool(pendingOriginalLevelPresentation_));
+        }
+        else probeAcceptingN_=false;
+        deviceOperationTimer_->stop();
         showOperationMessage(operation,QStringLiteral("连接已变化，原操作执行结果待核对；没有将新连接的回复归给旧操作。"));
         emit operationFinished(operation,false);
     }
@@ -470,6 +505,7 @@ void ReagentsPage::renewDeviceOperationWait(quint64 request, quint64 connection)
 void ReagentsPage::finishDeviceOperation(quint64 request, quint64 connection, bool success, QString message)
 {
     if (!request || request!=pendingDeviceRequest_ || connection!=deviceConnection_) return;
+    if (!probeOwner_.token.isEmpty() && pendingDeviceOperation_==QStringLiteral("detectOne")) return;
     const QString operation=pendingDeviceOperation_;
     deviceOperationTimer_->stop(); pendingDeviceRequest_=0; pendingDeviceOperation_.clear();
     setBusy(false);
@@ -685,7 +721,8 @@ void ReagentsPage::selectHole(QString name)
     ui->lblHoleinfo->setText(name + QStringLiteral("试剂信息"));
     ui->lblName->setText(reagent.id ? reagent.name : QStringLiteral("none"));
     ui->lblBottleName->setText(bottle.id ? bottle.name : QStringLiteral("-"));
-    ui->lblBatch->setText(snapshot_.originalProfile ? hole.originalBatch : batch.id ? batch.batchGroup : QStringLiteral("-"));
+    const QString shownBatch = snapshot_.originalProfile ? originalPageBatch(hole) : batch.id ? batch.batchGroup : QStringLiteral("-");
+    ui->lblBatch->setText(snapshot_.originalProfile && shownBatch==QStringLiteral("Default") ? QStringLiteral("-") : shownBatch);
     ui->lblAmount->setText(hole.id ? QString::number(hole.remainingUl) : QStringLiteral("-"));
     ui->lblAmount->setToolTip(QString());
     ui->lblOutDate->setText(hole.expiry);
@@ -976,7 +1013,7 @@ void ReagentsPage::openHoleEditor()
                         if (form->cbxBatch->findText(name)<0) form->cbxBatch->addItem(name);
                 }
             }
-            const int selected=form->cbxBatch->findText(current->originalBatch);
+            const int selected=form->cbxBatch->findText(originalPageBatch(*current));
             if (selected>=0) form->cbxBatch->setCurrentIndex(selected);
         };
         refreshChoices();
@@ -1567,4 +1604,70 @@ bool ReagentsPage::eventFilter(QObject* watched, QEvent* event)
         return true;
     }
     return QWidget::eventFilter(watched, event);
+}
+
+
+bool ReagentsPage::beginOriginalProbe(OriginalReagentProbe::Request source)
+{
+    if (!probeOwner_.token.isEmpty() || !source.request || source.token.isEmpty() ||
+        source.request!=pendingDeviceRequest_ || source.connection!=deviceConnection_ ||
+        pendingDeviceOperation_!=QStringLiteral("detectOne") || source.root!=snapshot_.originalRoot ||
+        !OriginalReagentProbe::sameActor(source.actor,session_) || dirty_ || pendingOriginalReload_ ||
+        pendingOriginalLevelPresentation_) return false;
+    // 只在探测拥有期使用不提前触发的计时；实际发送后仍由Root按原60秒重新排等待。
+    deviceOperationTimer_->setTimerType(Qt::PreciseTimer);
+    probeOwner_=std::move(source); probeN_={}; probeAcceptingN_=true;
+    return true;
+}
+
+bool ReagentsPage::originalProbeOwnBusy(const OriginalReagentProbe::Request &source) const
+{
+    return OriginalReagentProbe::sameRequest(probeOwner_,source) && pendingDeviceRequest_==source.request &&
+        pendingDeviceOperation_==QStringLiteral("detectOne") && source.root==snapshot_.originalRoot &&
+        OriginalReagentProbe::sameActor(source.actor,session_) && !dirty_ && !pendingOriginalReload_;
+}
+
+bool ReagentsPage::grantOriginalProbeN(const OriginalReagentProbe::Prepared &source, quint64 packet)
+{
+    if (!packet || !probeAcceptingN_ || probeN_.packet || !originalProbeOwnBusy(source.source) ||
+        source.source.connection!=deviceConnection_ || !source.success) return false;
+    const ReagentHole *hole=nullptr;
+    for (const auto &row : snapshot_.holes) if (row.name==source.source.hole) { if (hole) return false; hole=&row; }
+    QString problem;
+    if (!hole || !OriginalReagentProbe::sameHoleIdentity(hole->originalValues,source.originalHole) ||
+        !store_->originalPageMetadata()->current(source.batches,&problem)) return false;
+    probeN_.token=source.source.token; probeN_.request=source.source.request; probeN_.connection=source.source.connection;
+    probeN_.root=source.source.root; probeN_.hole=source.source.hole; probeN_.packet=packet;
+    return true;
+}
+
+bool ReagentsPage::originalProbeNMatches(quint64 packet,quint64 connection,const QString &root,const QString &hole) const
+{
+    // 已派发grant在取消后继续收真实保存/采用；新grant已被stop关闭。
+    return !probeOwner_.token.isEmpty() && probeN_.token==probeOwner_.token && probeN_.request==probeOwner_.request &&
+        probeN_.packet==packet && probeN_.connection==connection && probeN_.root==root && probeN_.hole==hole &&
+        OriginalReagentProbe::sameActor(probeOwner_.actor,session_);
+}
+
+void ReagentsPage::stopOriginalProbeN(const OriginalReagentProbe::Request &source)
+{
+    if (OriginalReagentProbe::sameRequest(probeOwner_,source)) probeAcceptingN_=false;
+}
+
+void ReagentsPage::retireOriginalProbeN(const OriginalReagentProbe::Request &source,quint64 packet)
+{
+    if (OriginalReagentProbe::sameRequest(probeOwner_,source) && probeN_.packet==packet) probeN_={};
+}
+
+bool ReagentsPage::finishOriginalProbe(const OriginalReagentProbe::Request &source,bool success,const QString &message)
+{
+    if (!OriginalReagentProbe::sameRequest(probeOwner_,source) || probeN_.packet || pendingOriginalLevelPresentation_ ||
+        pendingDeviceRequest_!=source.request || pendingDeviceOperation_!=QStringLiteral("detectOne")) return false;
+    probeOwner_={}; probeAcceptingN_=false;
+    deviceOperationTimer_->stop(); pendingDeviceRequest_=0; pendingDeviceOperation_.clear();
+    setBusy(false);
+    showOperationMessage(QStringLiteral("detectOne"),message);
+    emit operationFinished(QStringLiteral("detectOne"),success && source.connection==deviceConnection_);
+    // 量已由专用N reader采用；不用普通reload冒充动作/资料完成。
+    return true;
 }

@@ -6,14 +6,20 @@
 #include "projects/original_project_save_notice.h"
 #include <QSet>
 #include <functional>
+#include "original_files/original_ini.h"
 
 // 原样本架是本次运行内的任务，原组合存sample_Combination.db；不把原项目写进早期catalog。
 class OriginalSampleRepository
 {
 public:
     // 主程序显式传已验配置；旧直接调用省略参数时保留既有杯默认和失败语义。
-    bool initialize(const QString &root, QString *message, bool newHoleContainerIsTube = false);
+    bool initialize(const QString &root, QString *message, bool newHoleContainerIsTube = false,
+                    OriginalIni::InitializationSourcePtr configurationSource = {});
+    OriginalIni::InitializationSourcePtr configurationSource() const { return configurationSource_; }
     bool load(SampleSnapshot *snapshot, QString *message);
+    // 孔数须符合本次初始化配置；当前默认容器只用于真正新孔，不刷新项目或数据库。
+    bool registerEmptyOrdinaryRack(int ordinaryHoles, bool containerIsTube, qint64 *rackId,
+                                   SampleSnapshot *snapshot, QString *message);
     bool saveRack(SampleRack rack, qint64 *savedId, QString *message);
     bool removeRack(qint64 rackId, QString *message);
     bool clearOrdinary(QString *message);
@@ -36,12 +42,14 @@ public:
     SampleSnapshot snapshot() const { return snapshot_; }
 private:
     QString root_;
+    OriginalIni::InitializationSourcePtr configurationSource_;
     OriginalProjectRepository projectRepository_;
     ProjectRecords projects_;
     ProjectUnits units_;
     SampleSnapshot snapshot_;
     qint64 nextRackId_ = 2;
     int ordinaryHoles_ = 8, emergencyHoles_ = 3;
+    bool initialized_ = false;
     QSet<qint64> inFlight_;
     QString combinationVersion_;
     bool refreshProjects(QString *message);

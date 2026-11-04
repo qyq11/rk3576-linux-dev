@@ -1,0 +1,17 @@
+# 三文件配置来源与入队回执独立源码复核
+
+本说明由作者据两个独立Agent消息整理。root认可接口方向不计为源码审查通过；作者自查也不冒充独审。没有运行、编译或消息测试。
+
+`original_lis_chain`只读核Store同一次Snapshot/保存成功回读来源、原序列号缺省及大小写键规则、no-op loaded保旧对象、saved换代、失败/local/serial无新通信profile、原发送签名和Qt值类型。初审发现P2：容量拒绝路径先settingsError后profile.reset，直接消费者成功重读后会被外层清新值；已移到通知前，旧pending自身持有profile，旧回执不受影响。另发现版本耗尽检查仅原TCP分支，修为所有新configure/++前。两处窄复核通过。
+
+`current_lis_transport`只读核低层sendMessage在固定peers→enqueue→输出acceptedPeers→true之间无emit/写socket/事件循环；新回执在true后只登记pending和复制值，无后置false或信号。核旧逐peer来源、notificationDepth/关闭排空、16存活版本、4096 UTF16字值、weak表和无QObject依赖析构，并补核上述两处修点。所查范围未见新增确定阻断；并非编译证据。
+
+最终两方绑定的指纹（ASCII接续只复制这三个相同后像）：
+
+```text
+c9d47a9f3049470862b7a5b3db88e2473a3acfa5e7217619ab64baa4a63ac1ba  lis_connection_values.h
+468c0418413ae295e73b6c3b347de94a382b960954df3f1646280bfdb11fd151  lis_connection_controller.h
+f403e0470636551fedc2611bb204522306938b493462b9d5fe8d3126407ba1e3  lis_connection_controller.cpp
+```
+
+新ASCII684基线及完整回演由作者工具另行实际核对，见verification.json；不把作者的回演记为Agent执行。正式接入、消费者profile校验、查询/真实Tt/保存/ACK以及ARM/RK/真实LIS仍待。

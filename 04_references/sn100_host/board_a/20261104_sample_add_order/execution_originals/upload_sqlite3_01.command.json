@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "HostKeyAlgorithms=ssh-ed25519",
+    "-o",
+    "HostKeyAlias=rk3576-board-a",
+    "-o",
+    "UserKnownHostsFile=C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\temp\\sn100_host\\board_a\\sample_order_review_20261104_01\\known_hosts.board_a",
+    "-o",
+    "UpdateHostKeys=no",
+    "root@192.168.100.123",
+    "bash -c 'set -Eeuo pipefail\n[[ $(tr -d '\"'\"'\\0\\n'\"'\"' </proc/device-tree/serial-number) == 3bf8222fe1417f6a ]]\ntarget=/home/rkshare/programs/sn100_shell/.board_a_sqlite3_20261104_01.deb\n[[ ! -e $target && ! -L $target ]]\numask 077\nset -C\ncat >\"$target\"\n[[ $(sha256sum \"$target\" | cut -d'\"'\"' '\"'\"' -f1) == ced8d1e467584a3d96b89b79d1b8342b173966db21f9acedae8f568ca7f85147 ]]\nprintf '\"'\"'UPLOADED_BOARD_A_SHA256=%s\\n'\"'\"' ced8d1e467584a3d96b89b79d1b8342b173966db21f9acedae8f568ca7f85147\n'"
+  ],
+  "source": "C:\\Users\\52400\\Desktop\\internship\\seerain\\20260907_RK3576_Linux\\07_backups\\sn100_host\\board_b\\sqlite3_20261102\\sqlite3_3.45.1-1ubuntu2.8_arm64.deb",
+  "source_sha256": "ced8d1e467584a3d96b89b79d1b8342b173966db21f9acedae8f568ca7f85147",
+  "remote": "/home/rkshare/programs/sn100_shell/.board_a_sqlite3_20261104_01.deb",
+  "board": "board_a"
+}

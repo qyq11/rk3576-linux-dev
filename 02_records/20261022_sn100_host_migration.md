@@ -4025,3 +4025,391 @@ Root把删除范围收窄为04的arm64_build，先核绝对路径位于指定工
 
 
 暂停前实际清理收口：在校验正式包、检查器包及候选包之后，改为非递归逐文件白名单删除，实际成功清理1454个已归档构建中间文件/重复产物，共2160144617字节，清单内剩余0。未清源码、参考工程、日志、候选、sysroot或板端运行目录。再次核684份正式源与本轮冻结表全部一致，三组恢复清单仍全匹配。早先递归删除被自动审批拒绝的记录保留；本次更窄白名单操作已实际完成，见固定证据的cleanup_inventory/result/verification。按用户要求仅剩本轮单次提交与推送，业务开发已暂停，正式界面保持运行。
+
+
+<a id="root-manager-resume-dispatch-20261103"></a>
+## 用户恢复后的Agent审查与既有窗口分工（2026-11-03）
+
+用户明确继续后续任务，要求多用Agent、先读任务提示词并分发不同窗口。本总控已读暂停交接/接续提示词、当前卡、必要原版与两份冻结候选，起始HEAD为4fc69a749345de3e2f10f44c4eeba48f63fb6faa，工作区原无未提交修改；正式684源及b31f581f发布保持。本轮尚未操作板卡或关闭程序，没有新增编译/RK通过结论。旧26/25/1、解析/独审1和Qk无回包原件不改。
+
+总控已调用三个Agent分别核ASCII实际入口与编码、CAL685归档/前像完整性及高风险路径、LIS观察/立即下发/LIS字段的并行依赖。已确认ASCII显示当前fromUtf8，但手动发送按钮被禁用且无clicked消费者；C参数和自测注入是另外未接或调试分支，不随显示修改开放。ASCII可打印字符与不可打印/高位字节采用无歧义表示，原payload不改；发送入口仍按原权限/封帧另核。
+
+六个既有窗口已实际接收并回复正在工作：报告维护做ASCII片和手动入口边界；状态登录修顶部LIS定位并交不自动关闭观察合同；校准工具做新构建/暂存/切版/归档模板；同步任务做真实用户操作来源首片；LIS做查询回应字段/路由及纯编解码准备；试剂作者冻结685候选并补恢复/实际核对清单与接口交界。作者各自使用Agent做独立审查，不改正式、不构建/联板、不提交删除；当前告警窗口继续冻结，不重复Qk查询。
+
+已把旧观察工具的窗口close、control->close、外层timeout TERM/kill及结束式collector/关闭合同一并列为必须处理的生命周期问题，不能只删一个close，也不能把没执行的关闭记为退出0。正式build/stage/switch/archive模板与观察runner/parser分属原工具窗口和状态窗口，公共字段由root审定，避免重复实现。
+
+CAL与立即下发在Session/Repository/凭据/页面/main强重叠；当前仅候选并行，ASCII先整合，CAL先独审，立即下发先闭合来源合同再接急诊补发，不大合并。唯一当前计划的resume-dispatch-20261103段含具体任务、顺序和边界；派工正文/首次回执在temp/sn100_host/resume_dispatch_20261103/。本轮没有新的提交推送授权，不自动提交；算法最后。
+
+<a id="cal-us-call-chain-correction-20261103"></a>
+### CAL窄审的Us调用链事实更正（2026-11-03）
+
+试剂作者指出并由总控独立核实：`prepareOriginalReagentUpdate`不是仅测试调用。原孔位保存/清孔成功在`reagent_store.cpp:816/889`发`originalHoleSaved`，`device_control_shell.cpp:660–687`核实际连接、精确LinuxNew、新鲜状态、无在途/未知、主状态与配置就绪后，以字符串`QMetaObject::invokeMethod`排到样本线程，候选`original_sample_store.cpp:524–538`从真库生成Us。此前“未见生产调用”遗漏了此动态调用，已在临时独审开头提示并把原判断标记作废；新报告SHA为`9dcf701ac3711973c517d6232ec195e05e8b642e304dd8de582ae7e775e84255`。原685候选和原两份独审未改，不能由该事实更正直接认定新代码缺陷或运行通过。
+
+后续按“明确孔位保存后的真实Us”核该次提交批号、盘面覆盖、排队来源与Ur/未知恢复，和充满/优先级发送副本分开。CAL盘面票据、Ur/手工运行量票据、已发单归属和未来用户操作来源继续分清；均不冒充真实到包号，后续覆盖不清任务提交待核阻断。已同步原试剂作者及立即下发首片作者。本次只有只读核查、审查说明与协调记录更新，没有修改正式源码、构建或操作板卡。
+### 本轮候选审查推进（2026-11-03，仍未合入或上板）
+
+通讯测试A片的逐字节ASCII显示、严格输入准备和原hex/网络字节未见确定丢字节问题，但根独审发现两项超出范围的过滤改变：活动名单含非ASCII时暂停全部RX；原Qt5 fromUtf8(QByteArray)在NUL前构造过滤文本，而新raw contains会匹配到NUL后内容。已退回作者在新A2恢复旧过滤构造、名单优先级/空项及计数/清空语义，ASCII仅用于新显示/输入编码；旧A1与原检查证据保留，未合正式。手动发送B仍未接，不把A片当收发全功能完成。
+
+状态/登录窗口已交顶部LIS图标定位补丁及留屏接口草案，只有静态检查和独审，不是运行结论。总控已结合构建窗口操作合同裁定v1：新被动观察模块拟随下一版正式主程序同进程链接，普通启动无观察参数零干预；当前程序不附加/注入/另起。发布号由包内SHA清单计算，不能编译进参与该计算的主程序造成循环，改由实际核包后运行时传入；大exe哈希由外部采集器核，不在GUI线程做。快照封口、软件观察、实际采集退出与仍运行的应用分别记，应用退出保持null/未评估。旧start0就绪超时仍TERM，实际新启动编排由root审定，作者不照旧执行。裁定在temp/sn100_host/resume_dispatch_20261103/lis_observation_root_decision_v1.md，已交两个窗口继续候选实现；本轮仍无构建或板卡操作。
+
+LIS业务窗口另交5份纯编解码/字段源码及689预期后像，未接main/build/开始门、ACK/患者保存/上传或串口；已派新root Agent独立核原字段/阶段和来源。暂缺真实发送目标及患者持久保存/实际Tt接口，不用纯解析通过代替业务接通。
+
+<a id="integration-10-ascii-source-20261103"></a>
+### 恢复后的第一片源码合入及后续派工（2026-11-03）
+
+总控Agent独审ASCII A2修订01确认：A1两处过滤改变已撤回，旧QString过滤正文及NUL前匹配、Show/Mask顺序与空项不变；ASCII展示仍逐完整原字节生成，原hex/网络字节不变。追加不再主动替换使用者光标或强制跳尾，格式、选择和500块裁剪继续待RK实屏。报告在`temp/sn100_host/resume_dispatch_20261103/ascii_a2_r1_independent_review.md`，不是运行通过。
+
+Root随后仅对`instrument/instrument_page.cpp/.h`执行普通补丁check/apply，实际退出分别0/0；应用前逐684份核b066前像，应用后逐684份核候选预期后像，均相同。未整树覆盖。补丁SHA-256为`952523f3614dcd758f46af5d7c40848961cf376a261425897ff134575fd67937`；实际源码新表`temp/sn100_host/workflow_next_20261103/integration_10_source_acceptance_01/ascii/source_after.json`，SHA-256 `747ae955c12b4bc39e6b76ab80b282445c07500d92b08a364861333ddad5f913`。同目录保存实际命令、stdout/stderr、前后表及`acceptance.json`；执行入口为总控的`resume_dispatch_20261103/accept_ascii_source.py`。
+
+这一步只接已有收发的ASCII呈现和严格输入准备，手动按钮尚未接，未编译、部署或新增RK/仪器/资源结果。正式运行包仍为b31f581f，本轮没有板端启停或版本切换。已通知六个既有作者新的源码前像；原b066和各候选旧清单按历史时点保留，不回改原件。
+
+手动发送的总控实施复核已完成，原说明“没有自由发送授权”不再采用；用户已授权移植，缺的是业务接线，无需再追问。原报告/维护窗口接B1：原按钮真实点击，精确Qj/Qk/QH复用现查询，Ts进入主窗完整确认及任务准备，Tp[0]共享暂停、Mz共享确认。输入不裁剪或改写，不公开裸send、不放宽维护白名单；其他ASCII正文逐项保留未兼容及其任务/配置/维护依赖，不能把B1叫原自由正文全部完成。窗口在新候选实施并安排Agent审查，不操作板卡。
+
+用户来源03的14文件已由根Agent独审，普通开始的无写prepare、真实finished、动作退休再到Ts的链未见确定新增阻点，但发现初始化混版窗口：SampleRepository/ReagentRepository先缓存孔数/表名，Session随后才记三INI指纹，可能把旧值与新指纹绑定。Root独立回读确认顺序后已退作者在新修订统一初始化来源，要求所有配置消费者前冻结、ready前复核，不只移动Session内部检查。原03及审查`user_origin_independent_review.md`保留，03尚未合入；实际用户写事务、Emergency立即下发及测试中补发仍未实现。CAL四个公共文件由root后续按两方真实逻辑窄合，CAL685不被该候选覆盖。
+
+LIS五份纯字段/查询文件已由根Agent完成独审，实际文件与补丁/原源表对应，本纯值范围未见确定阻点；仍未接main/build、保存、ACK或真实业务。下一片已派原LIS窗口，仅在三份transport文件准备与完整配置身份绑定的不可变sequenceNumber快照和实际入队固定对端回传；有限资源、旧消息/重入/关闭另审，不用当前全局配置或当前对端数补旧来源。留屏四文件修订02及构建归档修订02正在根Agent独审，真实新编译配置尚未冻结。
+
+相机原窗口另行通知板B当前1280×720、目标10帧/秒、JPEG85、8080，3A引擎PID139148、自动曝光/白平衡已恢复；其300秒监测是该窗口的相机结果，不是本总控SN100资源实测。已确认后续按现场实际参数计入背景负载，不默认关闭相机/3A或重复启动原主控。算法仍最后，本轮不自动提交推送或清理中间物。
+
+<a id="integration-10-cal-source-20261103"></a>
+### CAL盘面批号片的精确合入与三项退修（2026-11-03）
+
+根Agent另补审明确保存/清孔后的Us真实消费者，报告`temp/sn100_host/resume_dispatch_20261103/cal_saved_hole_us_followup.md`（SHA-256 `ea73af2b9c20b08791f3e29997cd30a3de20bbca94f6f831b35f92ebffc3a142`）。所审新片未见确定回盖或发布失败仍发Us问题：实际COMMIT后只覆盖原孔范围，来源发布失败明确本地已提交且不发保存成功信号；Us只在LinuxNew链从真库生成。旧非任务异步请求不带保存后指纹、晚到Ur、未知恢复、N/C和42/48实机边界仍未关闭。
+
+Root据原独审、恢复/高风险审及此补审，仅应用CAL的16改+1新增补丁，check/apply实际0/0。初次总入口`accept_cal_source.py`实际退出1：完整后像比较发现`reagents.pri`和新`original_reagent_page_metadata.h`的换行字节与批准候选不等；静态逐字节比较仅CRLF/LF有差别，其余内容相同。没有改批准候选、忽略差异冒称通过或回改首次结果。Root保留首轮685表、日志、差异清单及两文件实际原字节，在独立`finish_cal_exact_postimage.py`中只恢复这两个批准后像的精确字节，实际退出0，完整685份重新核对全部一致。两次入口和记录均在`temp/sn100_host/resume_dispatch_20261103/`及`workflow_next_20261103/integration_10_source_acceptance_01/cal/`。
+
+当前最终源码表必须使用`cal/line_ending_correction_01/source_after.json`，SHA-256 `7cad7a7e401f619276cfea032dcf3337c76a4522a1f52ba594a845b381b1ea7e`；`cal/source_after.json`是首次失败的实测表，不能当成最终后像。当前由ASCII两文件与CAL17项组成，未接用户来源03、LIS五文件/快照或留屏模块。已同步六个原窗口，作者的历史684/747回演及正式漂移检测失败按当时事实保留，不为追随当前现场而重写。没有编译、部署、板端启停或新增业务/仪器/资源通过。
+
+其余独审已分别退原窗口新修订：用户来源03须统一全部初始化消费者的原INI字节/解析值/指纹并在ready前复核，root已批准设计及从当前7cad685接续，保留四处CAL逻辑；留屏修订02的C++自身有15秒阈值，但独立解析器只核时间非负，须独立验证观察至少15秒及启动截止，不能由封口自报pass；构建归档02的切换草稿在lifecycle锁前核无GUI/服务/显示，锁后未复核，须在持锁后和切指针前重核，并加强同名原主控排重。三个问题都是源码/工具审查发现，不是已执行的板端失败。各原件和独审保留，作者不得停现程序来绕检查；实际下一批构建配置仍未冻结。
+
+三份LIS配置快照/固定对端候选已交付`temp/sn100_host/lis_profile_queue_candidate_20261103_01/handoff.md`，patch SHA-256 `5090d167d455d8f89c6c8a589da0fc4df911fbf26891b682d93b733aab5e18f5`，根新Agent正在独审。作者按747历史前像的check/apply0/0及随后检测root合CAL漂移的退出1分别保留；三份局部前像未变，root后续从7cad组合，不让作者反复复制整树或覆盖当前新片。CAL作者已另接只读下一项：在`temp/sn100_host/reagent_probe_scan_scope_20261103_01/`核单孔/整盘探测和扫码真实链、守卫/回报及最小实施提示词，不写实现或发动作，不以准备下一片关闭本片RK待验。
+
+本次合入后的`git diff --check`实际0，现行`shell/build.sh`仅`bash -n`语法检查实际0；后者不是ARM编译或产品运行。根保留全部修改、旧失败及中间原件，未提交推送、未清理，板端仍未被本轮操作。
+
+<a id="integration-10-user-lis-source-20261103"></a>
+### 普通开始初始化修订与LIS配置来源逐片合入（2026-11-03）
+
+User初始化04在`user_task_origin_init_revision_04_20261103_01/`冻结：7cad685前像、20改/0增删，累计补丁269d0ad8f20a3c8978b69a12865ced365a6e9bdbb23586004fa51fc87ba2f781，不能先叠旧03。root两Agent独审分别核同次原INI字节/解析值/指纹、三个实际消费者/ready顺序及CAL共享模型，以及旧Us/N/LIS、实际无写finished/取消/关闭；所审源码未见确定阻点。作者两审与原03失败一并保留，送审6cb补丁和最终269补丁仅receipt两文件块顺序不同，原件字节/SHA不混写。
+
+Root的`accept_user_and_lis_sources.py`先对20片普通check/apply0/0，随后完整685后像比较实际退出1，尚未进入LIS三片。十文件只有CRLF/LF与批准后像不等；查明Git系统`core.autocrlf=true`。root未改全局配置或根属性，保留首次表/日志/十原字节及逐项静态比对，仅在新`finish_user_exact_postimage_and_lis.py`恢复批准精确行尾。User完整685匹配后的表为`user_init_04/line_ending_correction_01/source_after.json`，SHAd0ff4d57170e0c77554f24a54bd80110734bdeb99735bad43e754645c205988b；这不是原失败`user_init_04/source_after.json`。
+
+随后LIS三文件用命令级`git -c core.autocrlf=false apply`执行check/apply0/0，完整685实物与组合预期一致，补正及LIS入口最终实际0。当前唯一组合后表为`temp/sn100_host/workflow_next_20261103/integration_10_source_acceptance_01/lis_profile_queue/source_after.json`，SHA-256 `c8bf26a4247c03060feb778d250bf9b5c14a9b93f3bcd550081fb617c88c8c18`。三源补丁5090不变，总控独审`lis_profile_queue_independent_review.md`已直接核不可变配置/序列号、16版本/4096字值本地预算、重入、固定peers及旧回执；没有把入队当socket写完或业务确认。
+
+User当前实际消费者仅普通开始的None/NoCommit准备，原真正用户写事务、Emergency及草稿/水杯盖仍未接；main其他早缓存也不凭此获得同源证明。LIS五份纯字段仍候选，新profile校验/查询等待/真实Tt、患者持久保存与ACK未接。当前685编译/RK/仪器/资源均未增加通过；各窗口已收到新表，不整树覆盖旧前像。本轮仍没有板端操作，正式运行包仍b31f581f。
+
+留屏修订03关闭了独立15秒判读，但CPP早查截止、后再次取时可能跨60秒，与严格parser不配对；原件及总控报告保留。修订04改为创建observer前同次采样、记录并判截止，过期只封口pending；根定向独审`lis_keep_running_04_targeted_review.md`未见新确定阻点，四源/24清单一致。正式相邻CPP/头和build/pri接线仍待root执行，不能把定向审当已链接或实际留屏。工具03锁内复核仍收口中；根Agent正准备仅聚合真实来源的未执行ledger，源/阶段/退出不预填未来值。
+
+<a id="integration-10-source-freeze-build-20261103"></a>
+### 六片源码冻结、保留运行的观察接线及完整编译启动（2026-11-03）
+
+Root已按修订04批准字节实际接线，安装入口`temp/sn100_host/resume_dispatch_20261103/install_lis_observation_sources_candidate.py --apply`实际退出0，普通补丁check/apply均0。正式新增`shell/lis_keep_running_observation.cpp`及`shell/lis_connection_observer_09.h`，只在shell的build/pri登记；外部等待器与独立解析器放`05_tools/tests/sn100_host/lis_keep_running_20261103/`。687份实际后像SHA为`b688f7a8c9c888482bf53b9520239ec9618c61a2da5a701d526387e644add5d3`。未链接旧自动关闭检查器，没有注入现进程或另起GUI。
+
+观察合同`temp/sn100_host/resume_dispatch_20261103/lis_observation_root_decision_v1.md`（SHA-256 `c27714ee5142d4125d40235da2f551977d5e9dc4580885e34ef8755f0242be3f`）要求在取得真实新包后，以运行时发布号、独立观察号和lckfb专用目录绑定一次正式启动。同一正式进程只做被动观察；未设置观察环境时不启用观察模块，业务照常运行。观察至少15秒、严格60秒启动截止，结果先原子保存JSON再写ready。应用退出码保持null/未评估，外部等待器超时只退出自身，不能关闭、杀死或重启正式程序。没有真实LIS对端时仅登记连接现状，不报下载/上传业务通过。
+
+随后Root将手动ASCII B1与User04窄合四文件，保留全部普通开始准备链，不覆盖旧作者主窗口。候选合并时两个冲突及首次制备退出1原样保存，Root明确处理后使用新补丁`ascii_b1_on_observer_04.patch`（SHA-256 `b2f6c407df563571bd90f73c965b31705069a023d3b9e0a4b581fc67c3dbe106`）；正式`accept_ascii_b1_merged.py`实际退出0、check/apply0/0。真实设备任务准备完成信号只保留原单一连接，用户来源无写准备退休后进入`finishDeviceTaskPreparation`再发Ts；取消准确撤原请求。B1当前只接精确Qj/Qk/QH、Ts、Tp[0]、Mz六种正文，非ASCII或超限不发送、原输入保留；其他正文仍未兼容，不把六种子集当作完整自由发送。Qk并未因此再发，C参数和自测注入仍未开放。
+
+当前唯一冻结源表为`temp/sn100_host/workflow_next_20261103/integration_10_source_acceptance_01/ascii_b1/source_after.json`，687份，SHA-256 `f741feea28fcb6a2bcff8d6c2bda49faa67d3b72e3508062e5f1e368b2422b8b`。六片顺序是ASCII A、CAL、User04、LIS配置来源、留屏观察04、ASCII B1。LIS五份纯字段和单孔Mg十三源均未纳本批；真正用户写事务和急诊立即下发仍待。
+
+来源聚合v2经独立审查后，Root补齐Git系统`core.autocrlf=true`的真实只读记录、六片范围批准和原Tool退出事实说明，再冻结新输入；未改首失败日志、原批准候选、原null字段或全局Git设置。v2实际运行退出0，输出`temp/sn100_host/resume_dispatch_20261103/root_source_ledger_final_01/final_review.json`（SHA-256 `610685a82680694218a35e7c57b3a3890de896ab81ca9b02a9536bd959651b02`）及`promotion_progress.json`（SHA-256 `0d3384e5c76493a1a14fc48245b2665701b57b6180379418681de0cf0a31db5b`）。它们只证明真实源码链一致，聚合器没有重新apply补丁、编译或联板。User行尾修正退出来源由Root据本聊天Tool chunk 07c46d明确事后确认；派生字段与原证据分别保存，不冒充原始stdout。旧归档文件实际SHA是6581e0e2…，b31f581f是其发布号，首个混用断言失败另保留。
+
+20:38:12（北京时间）Root通过专用known_hosts的已知ED25519指纹和序列号`8314b1e8ffd0321f`只读核板B，原b31发布应用PID24414、原主控PID5008及5000唯一监听保持；启动号`0eb94389-f120-42ad-9042-9c21d96a1481`，七配置按原清单逐份一致。相机服务与3A仍运行，不沿用旧4K假设。应用RSS443088 KiB只是该时点读数，不代表泄漏或资源门槛通过。实际脚本、stdout及退出0在`temp/sn100_host/root_manager_20261103/prebuild_live_20261103_01.*`，没有启停、切版、显示或仪器动作。
+
+构建工具03锁内复查经Root Agent审阅后，Root将九份代码按实物复制到新`temp/sn100_host/workflow_next_20261103/integration_10_root_frozen_01/`，新冻结配置SHA-256 `50b94b7d026385816811ae720d1409b656518dde6929a7e481b4696944462d03`。只授权完整构建和独立暂存，不授权该工具切版或关闭应用；工具修订03与执行目录`integration_next_02`有意区分，实际命名空间一致。新增04/07证据子树局部`.gitattributes`保留原字节，根属性未改。
+
+Root实际调用冻结`build_integration_next.sh`，在WSL普通用户qyq从新空`temp/sn100_host/workflow_next_20261103/integration_next_02/`完整ARM64交叉编译，不复用已清理或中断对象。687份源及395个不同构建输入前检通过，产品未在电脑运行。登记此段时构建仍在执行，日志在该目录`logs/build.log`；未取得最终退出、链接/依赖/打包结果，尚未暂存、切版或新增RK/仪器通过。后续据真实终态追加，不预填成功；复核结束须让正式界面继续运行。
+
+原试剂窗口已交单合法配置孔纯Mg最终freeze03/packaging02，13份源另由Root两个Agent分别独审业务和异步生命周期。它基于留屏b688前像，后续需单独处理B1公共文件重叠及新增头登记，当前不合入、不编译、不发探测。电脑仅只读原Windows源码/既有证据；作者交接中提到运行Windows不构成授权，已明确禁止。六个既有窗口沿用，未开重复功能聊天；本轮继续保留全部修改和中间原件，不新增提交、推送或清理。
+
+<a id="integration-10-live-keep-running-20261103"></a>
+### 第10批完整编译、板B被动观察及留驻结果（2026-11-03）
+
+冻结687源的完整ARM64构建于21:52:08取得实际退出0，主程序和报告辅助程序完整链接、依赖与打包通过；395个不同输入，291个主对象加2个辅助对象，共293个ARM64对象逐份绑定。发布为`c7cbf438a3a034b25ae22accfaf48bacf0717174ce85bef2203ce8db143cb06e`，主程序SHA-256 `50d3f3b510772e717e456cc4e3e910060a82a6635b9d914f033e79f9ed6f0258`，报告程序`92d35399a3a96515b5cac8aed0d803f77c24a0891c307d9e4d026392572ef75b`，包SHA-256 `0cfa398b008df64ebc92aae17e9837633b675adccee73c65083db08b255187ee`。构建终态SHA `22c82ee0b906eca1d36847212235b428cae9e6676ebfac638b785a91e9b589a9`。不是复用旧对象或电脑运行；原Qt布局/旧源码警告按实际日志保留。
+
+Root从新`run_file_phases_01.py`顺序执行冻结stage/archive/collect/finish，外层真实退出分别0/0/0/0。板B独立暂存期间持存储锁核原应用24414和原主控5008前后身份逐字节不变；没有切current或停程序。源码恢复包回读687份、程序包33份，正式恢复输入清单9份、固定文件阶段证据238份分别核过。原件在`07_backups/sn100_host/board_b/workflow_integration_20261103/integration_next_02/`和`04_references/sn100_host/workflow_next_20261103/integration_next_02/`，不因后续运行改写其“文件阶段未运行产品”口径。
+
+包后Root另冻结启动意图，SHA `e8810370280fe56587bf15aa10f0c3e1377ed31c30b5eb307ef0d44bcdda40eb`，固定七配置清单SHA `ad11ae68d8ed119a5a34ed65acf98dc2d15bafba6afaa950bee5fd7d3805981c`。01生成器的等待器权限在独审发现root700普通用户不可读后，保留01并在新02修为root:lckfb750；尚未执行时修正，不伪造一次板端权限失败。实际安装元数据退出0，观察目录独立lckfb700、捕获目录另设可写父，未覆盖配置或业务资料。
+
+新平层准备首轮远端SSH退出79，Tool封装显示1，原脚本/退出/只读诊断分别保留，旧GUI/current保持且平层未创建。实际诊断发现内核线程`sugov:4`状态D→S、flags69238848和启动计数126不变，旧工具却要求瞬态调度状态相同。Root只在新运行脚本修为两次PF_KTHREAD位及同启动身份均成立才跳过，死亡状态两次均Z/X也可跳过；其他活用户exe不可读仍拒绝。Agent定向核恰一处函数块差异，bash语法0，实际新prepare0。冻结九文件、50b配置、原03模板与失败记录不改，没有重编产品或停原程序绕过检查。新包板端预检查也0，字体/HDMI/权限/运行库通过；cwd及cp-n提示原文保留，没有改成业务失败或隐去。
+
+Root先完成包和归档，再为必要版本切换只正常关闭旧b31程序一次。旧stop工具实际0、旧APP_EXIT0/clean1，显示和运行锁释放后才写真实凭据，SHA `4619885a1c8f3d5b99b034c7168ce7021a7aaefb4a154fc9ad0475a4912ebcb0`；没有强杀、重复停止或重启主控。基于该真实凭据派生activate-only，仅变动作和凭据SHA，实际激活0。新启动直接使用已核helper的六参`supervise BASE RELEASE RUN 0 ''`，systemd-run→openvt7→runuser lckfb→env显式三观察变量，避开旧start外层30秒READY关闭；存储锁/运行锁交接、唯一性和原控制进程等由Agent独审后执行。监督异常/外部停止仍可能TERM，不能把0说成永不退出。
+
+新应用22:18:20启动，PID669382、start_ticks2102645，运行目录`/home/rkshare/programs/sn100_shell/runs/20261103_221819_662833`。被动观察实际startup_wait_ms6344、duration_ms15002，顶部LIS控件/结构提示与配置来源1项通过、0失败；等待器实际0、封口采集0、独立解析0。新应用退出null、关闭未评估、人工实屏false；本次只核受影响1项，不能把旧26项25通过/1失败改成全过。LIS实际127.0.0.1:3800客户端，linktrue、连接false，自动获取/发送/模拟false，真实下载上传及业务确认pending。未重做登录/注销、Qk、机械动作或模拟消息。
+
+22:20:42后验同一669382已SHELL_READY、无exit_code/result，原主控5008/118180及5000监听、七配置/三个资料指针保持，相机455358/8080与3A139148运行；资源副本146行含145个启动阶段样本，不判资源/实时控制达标。22:29:50再只读核5000两端ESTAB分别归669382和5008，同一新应用继续运行、配置指针仍匹配，没有发送查询或停止程序。命令行保留既有统一入口`--offline`名称，同时实际使用原资料及`--instrument-control`，不使用匿名资料或模拟会话。当前发布正式为c7，复核结束没有关闭它；各时点均以已知SSH指纹及板B序列号核身份，未混板A。
+
+Agent对封口五文件SHA/ready、前后活体身份同字节、tar六文件与本地副本、额外九个板端原件及Root实际启动/停止/激活事实完成独审，报告SHA `945c9132d36e4ac9150697166d6eba8c04505c57f8373ff902736c1d043bb274`。仅接受本段启动/有限软件/留驻，不扩大为B1实发、真实LIS、仪器或资源。Root保存并逐份读回139份固定运行证据：[范围与索引](../../04_references/sn100_host/board_b/20261103_integration_10_keep_running/README.md)。原b31、08及本次失败原件均保持，本轮没有新提交/推送或清理；两05工具新增窄跟踪例外和局部-text属性，固定字节可随Git保存，根属性未改。
+
+单孔Mg03独审另发现确定选针错误：原库字符串1在Windows先转左针，候选却直接与中文比较判右针；步骤SELECT*顺序及小写formula消费过滤也未承接。03不放行报告保留，作者在04只改EditorCPP（SHA `bb68c3c1d21f66fcb31483d9dc6b4bfcdfbf003e019459f0872ed08ede364163`），Root窄审确认三个修点对应闭合；其余12源与03相同。最终04交接在`temp/sn100_host/reagent_single_probe_20261103_04/handoff_04.md`，十三源表SHA `f1f21c931da5d4b1b2cbfbf0c02dbc8bc6c576647ef9c16bee1f2148c5efead7`，新累计补丁3b5a0f5d…b09b1a0c。仍未合正式、编译或联板，不能计入c7，后续Root须窄合B1两主窗冲突并登记新头；原资料下SELECT*实际返回顺序和真实Mg/N先后待验。
+
+Root已读后续具体提示词并继续沿原窗口分派：ASCII窗口先交剩余正文依赖；User窗口依据5aa89786…cd2f0b4提示词，在新`temp/sn100_host/user_emergency_save_candidate_20261103_01/`推进首次未发/无旧占用的急诊普通样本真实保存→预留/扣量→真实finished/必要采用/退休→单次原TX Tt[Emergency]。原保存盖字段与Start立即不同，保留None/Ts链及在途保护，Start立即/在测追加/CAL-QC未覆盖部分后片；不伪造RX。LIS窗口先用两Agent收口同源autoGet/profile、唯一真实Tt的10秒动作与60秒查询等待/归还合同，不保存/ACK或旁接第二消费者。跨窗口消息由Root转送。状态和工具原件冻结，板卡只由Root操作，相机协调窗口已释放；算法最后。当前计划和[下一任务提示词](../../01_docs/plans/sn100_next_session_prompt_20261103.md)已据实际结果重写，旧提示词副本保留于temp，不再把旧b31/685当接续点。
+
+后续具体派工已进一步收口，仍未写入c7正式源：Root读ASCII B2的handoff/next_slice_prompt后，仅授精确Uh的独立候选，先现receiver真实能力/Root登记，再B1点击复用原命令，两Agent自审及Root设计预审。预审指出main构造登记早于后台start，登记不等于动态就绪；旧consumer捕获的仪器页销毁后不可称新页可刷新，Root须同页QPointer门，只拒主动、不撤被动保存。未放开其他正文或运行Windows产品。
+
+User首片设计由Root独审，报告7de8ef30…b2decc7，只接受设计方向、不判候选代码通过。原已reserve的普通架在TD前snapshot仍可Ready/revise，预检需据同Session真实issued/inFlight排除已扣需求；源准入令牌必须抵达真实写入边界，不能拿basis或清信任摘要代替。原不足Yes后全OriginalSkipped可形成真NotStarted与Tt[Emergency][0]，不能伪COMMIT或掉回None/Ts。作者另指出跨重启无旧急诊无可靠来源，Root否定prepared_/普通任务账可作该证明；本地空账/Qj也不证明无旧任务。可信会话起点及目标架连续跟踪依赖未闭合，不造空授权接口/新确认按钮冒称闭环，事务/收尾独立部分继续准备，整体仍未完成。
+
+LIS只读合同曾两次把dispatched含义解释过强，原消息保留。Root独立事实审9365071a…344c60确认：GUI在invoke之前置true，只是派发尝试，成功返回仅证明排队；Worker实际校验及SQL开始分层。10秒只在未processed/未提醒且当刻未dispatch时撤basisEligible，它只是页面前版冻结资格；已传basis不撤，reserve仍可能实际提交，不能把false当SQL拒绝或NoWrite证据。异步等待不可持原taskBasis栈指针或捕获receiptObserved引用，须原Worker新建局部回执后真finishOnce/processed，关闭前完成原握手，不改原计时或新造SQL十秒许可。query-only不接生产、不制造半程空成功/无限等待。后续仅批准同次profile补autoGet/canonical原根两源候选，15原件已交、Root独审中；两个指纹算法分别校验，新root有限预算，原加载/保存、旧消息/重入/关闭与编码保持，尚未正式合入或编译。
+
+结束本段的文件检查实际0：正式687实物仍全等f741冻结表，固定运行139份SHA全部匹配，根属性SHA仍c46d8032…9d445a，文档/源码差异检查0。结果在`temp/sn100_host/resume_dispatch_20261103/final_checks_batch10_01.json`。新增候选和提示词原件均留存，本次不再对运行程序做启停操作。
+
+<a id="integration-11-source-20261104"></a>
+
+### 第11批：试剂单探测与LIS连接来源两片源码已采用，完整交叉编译启动（2026-11-04）
+
+- [x] 完成本批两片源码的独立审查、公共入口窄合、实际补丁采用和来源核对。第一片为试剂单探测（`Mg` 命令）的总控修订02，共15个文件，包含新增头文件的构建登记，并保留已有手动通讯入口；第二片为检验信息系统（LIS）接收配置来源，共2个文件，只补齐同次配置的来源信息，不启用任务查询、下载保存或确认应答。原组合01两份审查、修订02两份审查及专项审查均保留；修订02处理了组合01发现的查询、消音入口被扩大拦截的问题。
+- [x] 两片均有真实 `git apply --check` 和 `git apply` 退出码0，采用后字节与批准后像一致。试剂片补丁 SHA-256 为 `440f22fe22ac42503e7df5d2b3099e4732bc5a19f0b96c1728fd13672b08ebb6`；LIS片为 `7fd8567ece6c4f938f2acc210c2e606abecaae4fdf7b91f9870e3fdd9ad23bdf`。前者在仓库根目录采用，后者成功重试时在 `06_programs/sn100_host` 采用，均按实际命令保留 `-c core.autocrlf=false`，没有修改全局Git配置。试剂片原有空白警告保留，没有用自动空白修复改写批准后像。
+
+本轮失败与后续成功分别登记，不能把外层失败改写成整轮成功：
+
+| 实际入口 | 外层结果 | 已发生的动作与失败原因 |
+| --- | --- | --- |
+| `accept_sources_11_01.py` | 1 | Windows原生快照路径使用反斜杠，字典比较失败；尚未执行任何补丁检查或应用。原始表、正斜杠派生表和路径对应核对记录分别保留；这是路径表示修正，没有改源码字节或行尾。 |
+| `accept_sources_11_02.py` | 1 | 试剂片检查0、应用0，正式后像688项一致；随后LIS片从仓库根目录检查，因补丁路径相对工程目录而找不到文件，检查1，未执行LIS应用。 |
+| `resume_lis_profile_source_11_03.py` | 0 | 改用工程目录检查、应用LIS片，分别0、0；最终688项后像一致。没有重做已成功的试剂片。 |
+
+上述三个外层退出码由总控按本聊天实际工具结果另行归档于 `source_ledger_inputs_11_01/root_actual_entry_facts_01.json`，对应工具块 `229212`、`3ed224`、`3ad361`。这是事后归档的工具事实，不冒充当时不存在的标准输出日志；原记录中的空值、失败表和失败日志不改写。两片各自的检查、应用 `.actual_exit` 及原始输出仍是直接执行依据。
+
+- [x] 总控确认并冻结本批来源清单后，来源账工具v2实际退出0，核对688个当前文件路径，生成 `root_source_ledger_final_11_01/final_review.json` 与 `promotion_progress.json`；后者为 `complete=true`、`phase=complete`。两份均明确 `aggregation_only=true`、`executed_git_apply=false`，表示工具核对并汇总已经发生的采用事实，没有自行重做补丁应用。冻结清单 SHA-256 为 `fb75bd3159d0bf815dc44d16a21c112e709676d87eac47d90668263838fcf0ea`；最终审查为 `1c71afdec3568e547ace6193c533e68d499f132e890aa0817d54500729251abb`；采用终态为 `8470f2abccda6a475ee7f6e7e31caaa58a5c299f99990815534d42cea3252ed8`。
+- [x] 正式源码快照现为688项，最终清单 SHA-256 为 `b0788f899b63a982c55ae85d098d7f4e843bdbedbd19b9f7c1ca0d5a3c569767`。`integration_11_source_acceptance_02/source_complete.json` 明确范围是 `source_acceptance_only`，`compiled=false`、`board_operated=false`。基线使用板B的C7恢复源包，包文件实际 SHA-256 为 `56fbff3871eec9776205487ef59d1c9826b6605ec4f8f884bc90b6ceede6b4bf`；其中 `source_snapshot.json` 原件 SHA-256 为 `fd50fedc204888ba6277029715caa80054bd3c760d2c80e1e9c9b93762abb4fc`，其687项内容与采用前 `f741feea…` 清单相同，不能把发布号或格式不同的清单文件哈希当成源包哈希。
+- [ ] 本批ARM64交叉编译正在进行，产物核对与暂存尚未完成；板B仍保持原C7版本 `c7cbf438` 和现有界面留驻，本轮没有停止程序、上传或切版。本批板端软件复核、连接真实仪器验证、实体操作和资源测量均待后续按依赖执行，不能将“来源账通过”记成上述验证通过。手动 `Uh` 六源候选、急诊来源候选、LIS任务等待与保存合同以及算法均不属于本批已采用范围。
+
+核对入口：`temp/sn100_host/workflow_next_20261103/integration_11_source_acceptance_02/`（`mg04/`、首次失败的 `lis_profile_source/`、成功的 `lis_profile_source_retry_01/`、`source_complete.json`）；`temp/sn100_host/resume_dispatch_20261103/source_ledger_inputs_11_01/`（总控确认、冻结清单、原件与派生映射）；`temp/sn100_host/resume_dispatch_20261103/source_ledger_run_11_01.{stdout.log,stderr.log,exit}`（实际来源账退出0，标准错误为空）；`temp/sn100_host/resume_dispatch_20261103/root_source_ledger_final_11_01/`（最终审查、采用终态、证据索引和已核源表）。
+
+第11批文件工具冻结与实际启动：总控复制九份已审工具到`temp/sn100_host/workflow_next_20261103/integration_11_root_frozen_01/`，原代码SHA不变；真实配置SHA为`051977b52473c907e3df8dba3245781432aa619b79cb0a9f4b22b2430b92186c`，仅开放完整构建、独立板端存包两项许可，145份证据逐项实核。独立工具报告`build_archive_11_independent_review_01.md`与冻结绑定补审`build_archive_11_frozen_binding_review_01.md`均未发现新确定阻点；补审SHA为`1b580473ff73e4095d4ed4165b7566e1339039675f06bb97177649dc3a6c2b68`。冻结入口01原调用输出未完整保留；捕获重试明确把报告字节数列当文件名，在创建目录前退出1，保留retry日志，不冒充更早原调用的完整回执；新入口02只改读取列和UTF-8及九名集合校验，实际退出0，不改九工具和原报告。
+
+总控随后实际启动普通WSL用户qyq的完整ARM64构建，使用全新`integration_11_01/arm64_build`，不复用旧对象。预检已输出`INTEGRATION_11_01_FROZEN_INPUT_PREFLIGHT=1`，实际源核对688、不同构建输入396，已进入正式编译；尚未收最终退出，不能写编译通过。UI生成器对原frmdriverset.ui重复layoutWidget名称的警告留在实际日志，不因警告清理或重设计界面。本批不提供切版/启动器，现C7仍应保持运行；后续仅在编译成功后由总控核板卡身份、协调存储窗口并执行另存和归档。
+
+00:40:05的板B只读核对记录在`temp/sn100_host/root_manager_20261103/prebuild_live_integration11_20261104_01.*`，实际退出0。序列号、已知SSH指纹、C7程序669382/启动计数2102645、原主控5008/118180及5000连接、七配置与三资料指针相符；当时相机975694及3A139148运行。这只证明该次现场身份和指纹，未代替新688功能、实体或资源验收。相机窗口已收到本批仅存包不启停的协调通知，实际存包前仍须串行协调。
+
+
+本次编译期间继续沿原窗口分派下一片，但不改变冻结的688份源码。Root把Uh六文件历史候选同当前688窄合，头文件三向退出0、CPP退出1仅头引用冲突；在独立候选保留QUuid和QDir/QThread/limits，原冲突输出未删。私有普通补丁check/apply实际0/0、六份后像逐字一致，正式688再次核对仍b078。新候选`temp/sn100_host/workflow_next_20261103/root_ascii_uh_candidate_12_01/`，补丁SHA `d89e920d59e6fde53cb87a1290dc1a67483fb072fd38321071a9799d3ba71c15`；合成预期688表SHA `0e5c70ef9d5ac5fa3db34888103b4158783141aac5f90845e225c720d532ac8d`只代表下一批候选，不是正式源表或编译通过。两个Agent随后完成公共守卫与生命周期独审，均未发现新确定阻点；仍未正式采用，不能把Uh计入本次688构建。报告为ascii_uh_root_combined_business_review_12_01.md（SHA f424f1d1a5db11c41deaf982276b8f6c4353dbdccdd6dd8d5826b631818ff32c）和ascii_uh_root_combined_lifecycle_review_12_01.md（SHA 42c3fb139d3b0453bf50ca522469aab3e62370cccade730078bb794950624c3a），在resume_dispatch_20261103目录。
+
+急诊独立候选已推进第六轮。Root第四轮业务独审报告`user_emergency_components_business_review_04.md`（SHA `fbd9898609289c8aa071bdb11fcc327b908d2977f5cd1c9605535ff684733438`）确认旧三项预检差异已有修正；第三至五轮取消/关闭链问题及各次报告按当时结论保留。第六轮只将关闭等待提示延后到Root上下文，避免同步提示销毁窗口后返回原关闭栈；Root指定回栈独审`user_emergency_components_lifecycle_review_06.md`通过，不扩大为全程序关闭审计。第六轮18源对应虚拟687后表SHA `9ecb59cf151395c0a7f4d4706c83cd7b9b41bd65019d7b718db2601cdef24f12`，由旧f741下669项不变来源及18物理覆盖构成；实际普通补丁只重放18项，不能说重新物理回演687份。作者交接在`user_emergency_save_candidate_20261103_01/revision_06/handoff.md`。仍没有权威设备会话起点和Emergency连续无旧任务来源，未接页面保存生产入口、未启用consumerReady，不纳第11批，也不标急诊功能完成。Root已一次询问现有主控源码/协议路径，等待资料期间继续其他工作，不重复追问。
+
+
+<a id="integration-11-file-phase-20261104"></a>
+### 第11批完整编译、板B只存包与归档完成，现C7保持运行（2026-11-04）
+
+Root实际完成普通WSL用户qyq的全量ARM64构建，外层工具退出0，build_exit.txt为0且完整收尾标志出现一次。正式688源、396不同输入、291主对象和2报告辅助对象全部核为ARM64，155份生成物与对象直接来源绑定一致。主程序SHA `3248b4fe66aa0014ccf3890bf253a1ea5905352981f0e8c692ad628b0c372642`，报告辅助SHA `9a6091a9aee0e38e51a1963f323559091d6cb879412e6cb4f3a11c6550ab568b`；object_binding.json SHA `b67b30b5001f452eb5ff3c628e315e6bb6ac47b356556efb9abda4854d1f778b`。独立实物审查cb477a93280c761b48bfa81eed7093c965bb0fe45577560788dcdb79e09086c1核1150项唯一原件/记录及实际构建规则，未发现不一致。依赖工具的offline_closure标志仅是静态库文件闭合，不是脱机业务运行；电脑没有运行SN100或模拟测试。
+
+真实构建快照原文SHA `387348d0a0dfb77cb5c1640432044d3e283dfe8f3a427e946568ba8a6352a676`，与批准b078表字典相同、序列化原文不同，二者原件保留，不互换SHA。新发布编号 `356fe5f88efe52226105f68ec3d6479f70d3f4ad12bcb967da790a180d22b6d5`，程序包SHA `4f90ea77c1c9eef9e94b7af92761cb6efeecb5a77724daabaefc2828539ea6f5`。
+
+Root依次执行stage、archive、verify_and_save、finish，四个外层实际退出均0，原始stdout/stderr/exit在WORK的logs/root_*_01.*。上传及板端存包各0，板B专用SSH ED25519和序列号8314b1e8ffd0321f按当次核实后操作；只新建`/home/rkshare/programs/sn100_shell/releases/integration_11_01/356fe5f88efe52226105f68ec3d6479f70d3f4ad12bcb967da790a180d22b6d5/`。真实板端动态库解析通过，没有执行新SN100、切current或启停原程序/主控。
+
+锁内前后23项运行身份原文完全相同：boot仍0eb94389-f120-42ad-9042-9c21d96a1481，current仍C7，主程序仍669382/启动计数2102645/普通用户1000/SHA50d3，原主控仍5008/118180/SHAee8，5000监听及三资料指针相符。七份配置的before/after原文均为775字节、SHA ad11ae68d8ed119a5a34ed65acf98dc2d15bafba6afaa950bee5fd7d3805981c，与冻结表和日志Base64解码逐字节一致。独立留驻审查只确认本次locked_unpack_and_commit区间，不扩大成长稳/界面/资源通过。Root已向相机窗口释放本次存储协调，现有相机/3A未由Root启停；C7界面继续保持打开。
+
+恢复文件在`07_backups/sn100_host/board_b/workflow_integration_20261103/integration_11_01/`，SHA256SUMS列9份实物；程序包回读33项、源码包回读688项全部匹配，压缩包LFS属性通过。固定证据在`04_references/sn100_host/workflow_next_20261103/integration_11_01/`，校验清单列202份，先看README和verification.json。最终finish_complete.json为complete=true、current_changed=false、program_started=false、rk_function_verified=false、instrument_verified=false；不改固定202份原件去追后续结果。
+
+本批只关闭编译和文件阶段。新688中的单孔探测/LIS补充来源未运行，真实仪器、实际收发、实体操作和资源仍待。Uh下一批六文件Root组合已双独审但未正式采用；急诊06仍缺可信设备来源且生产入口不开，算法最后。下一次先核本次finish及当前前像，再处理Uh六片正式接纳和新批冻结；如需启用新包，Root须先审嵌套存包路径和保留运行的过渡，不能套旧flat或30秒自动终止草稿。本轮保留全部未提交修改及temp，未新增commit/push或清理。
+
+
+总控后补回执另存`04_references/sn100_host/board_b/20261104_integration_11_file_phase_root/`：32份来源原件、35份校验条目，SHA256SUMS自身SHA `864f3ae9fcb16ce4ca52b40a946cfaf3850fc8f487a9aa300d3e2307c0e9631e`。它收录四阶段外层回执、finish终态、后补独审及冻结捕获重试/02修正，不回改主202份证据。Root工具事实JSON把最早冻结原调用退出记null，捕获重试才记1，与原stdout/stderr分开。最终文件检查实际0：当前688仍等b078，旧运行139、新固定202、恢复9均按清单逐字节相同，根属性/冻结配置不变，git diff --check实际0；归档器本身没有产品或板端动作。下一次可直接读维护中的`01_docs/plans/sn100_next_session_prompt_20261103.md`，不用重载完整历史。
+
+
+<a id="integration-12-source-20261104"></a>
+### 急诊来源列待办，继续精确Uh正式采用（2026-11-04）
+
+用户回复原主控“完整在途任务、清空完成或新会话”定义为待办，先做其他。Root已通知原任务窗口冻结急诊第六轮候选和原件，不继续追问资料、不启生产入口；该依赖不阻塞通讯测试等独立工作。计划将来待办及接续提示词已同步，原06修复不因此算作急诊闭环。
+
+Root先核已审Uh六文件候选与当前正式688/b078未漂移、上轮四阶段收尾0；即时独审报告`uh12_adoption_preflight_review_01.md` SHA 1e4ee4030c60e7722c9df415b4a87821f273d0871897088123174cf1de38bfe3。随后只普通check/apply已批准d89e920d59e6fde53cb87a1290dc1a67483fb072fd38321071a9799d3ba71c15补丁，实际0/0，外层完整捕获退出0（Tool526239）。六改、0新增删除，正式完整688实际后表SHA `0e5c70ef9d5ac5fa3db34888103b4158783141aac5f90845e225c720d532ac8d`，等原组合预期。原有未提交修改保留，没有整树覆盖或自动行尾修正。
+
+真实材料在`temp/sn100_host/workflow_next_20261103/integration_12_source_acceptance_01/`；入口及外层stdout/stderr/exit在`temp/sn100_host/resume_dispatch_20261103/accept_uh12_source_01.*`。采用前后原生快照、路径名归一化派生表与一对一映射分别保留，源字节不变。当前只关闭源码采用，未编译、联板或发送Uh。管理员在通讯测试中输入完全相等的Uh并点击发送时，仍先核原后台、原页面/根和连接身份，再沿原维护入口发送；入队不等于设备收到。真实回包继续原channel.db保存/重读/页面采用链，未制造手动号与接收批号映射，其他正文范围不扩。
+
+08:48:32对板B另作只读检查，专用SSH指纹和序列8314b1e8ffd0321f通过：boot仍0eb94389-f120-42ad-9042-9c21d96a1481，current仍C7，应用669382、原主控5008及5000两端连接仍相符，七配置ad11检查全OK；相机服务2046481/8080及3A139148运行。应用RSS快照431204KiB，不据此声称资源门槛或长稳通过。实际0输出在`temp/sn100_host/root_manager_20261103/prebuild_live_integration12_20261104_01.*`；未发送信号、切版、改INI或重复启动原主控。下步由Root串行冻结12来源账、完整ARM64编译和独立存包，运行C7仍保持打开。
+
+
+第12批来源独审110ee0ad4c355fca4eeea8379f9cd1d803a28b44cf5f9d156a71883620ee3a1d确认锁定draft02/119支持原件及688实际源无阻点。Root另存source_ledger_inputs_12_01/root_spec_12.frozen_01.json，SHA `8e99696b686c80c696b2bd652f43db856630b514938a074f1323af0a4783de71`，实际冻结入口0；v2实际运行0（Toolc79d8b），final_review SHA `79b3d9645df425d2fd50d82590607a8d7a9eae6149aaa66e9484b0633e263869`，promotion_progress SHA `bd6e2d97ce04e5a934854a3bcb3985364fec6454c8c6c0978030c08925c67941`。仅汇总已发生采用，executed_git_apply=false，不重复apply。未使用的draft03因消息时序额外留存，未覆盖02或参与运行；Root最后批准及08:52采用后Git采集适用范围按新字节纳冻结，不回写旧草案空值。
+
+Root九工具独审32b6d8cf5f0fa1df295cb442fe40111bac7d392251d223553438877973f4b585确认代码只做11→12必要命名映射。按独立JSON清单1515aa15d996633bdbf21dadbe6f206411647864adc4043c1aec9ea094e11e06原字节复制，不再从Markdown表格猜列；所有外部证据先核实再创建冻结目录。冻结工具在integration_12_root_frozen_01，cfg SHA `d09f1ab9555a5cda1e6a66fa39ec8e6b2afdf4262778028c3cf6f02ba45d44be`，147项证据，仅full_build/stage两许可。普通WSL用户qyq的全新WORK integration_12_01完整ARM64编译已启动（session68357），预检成功，尚无最终编译退出，不写通过。当前C7保持运行。
+
+来源独审的第一次后续消息发给了已结束的Agent而未触发新轮，Root发现后用followup显式启动，保留调度事实；没有源码或板端动作被重复执行。后续必要RK启动复核另作只读可行性审：新包nested另存不能直接成为只支持flat的常规current，先准备可审的不可覆盖平铺复制和不限时supervise正常过渡。仅在真实新包/归档及该方案审定后由Root串行执行必要换版；不把文件工具双许可当成已发生启停，不在复核结束再关闭新版。
+
+
+第12批完整ARM64构建外层实际0（Tool05fc51/session68357），实际688源/396不同输入/291主对象+2辅助对象全部核为ARM64。新主程序SHA `fb1d42f5a67b0f3663cb3098947ac69d480d4a6784d790bd055ee3dcd5d8ef91`，报告辅助 `74b8636086d13cefb63d69117fcafdbf9c3fc01c440885d800b5bafd7189c78f`；release `69220b2eb393408a0c612b43a0fc954e479e8c450a09a48755b3fd2d43b84f72`，包SHA `2834aaabfb492f0667e55c2f0a97a01be8fbbd3d100dd273ba46eb2f1ecdc687`。独立实物审9945cff248be47efc575e1ca7ca053a7cc65984c95870e7a8a171dc1aa6c0d13复核1160去重原件、293对象/155生成物/449目录项、包33普通成员及完整源码链，无不一致；静态依赖不是脱机业务测试。
+
+随后stage（99bdbe）、archive（572654）、collect（6aa99d）、finish（f04c38）四外层实际均0；上传及板端存包0，七配置/23字段存包前后保持同C7身份，未在文件阶段切current或启动新程序。新nested只另存于releases/integration_12_01/69220…；程序包33项、源码包688项回读全等，204份固定证据和9份恢复实物校验/LFS属性完成。固定目录分别为04_references/sn100_host/workflow_next_20261103/integration_12_01与07_backups/sn100_host/board_b/workflow_integration_20261103/integration_12_01，原件不追后续结果改写。
+
+为继续完成必要RK实际启动复核，Root已按已验证C7平铺流程准备独立受限过渡，不改正式12源码。9:40:22和9:47:55只读上下文实际0（287c58、951970），真实oldrun为runs/20261103_221819_662833而非按PID猜名，仍同C7/5008/boot；camera2046481/5701959/SHA7a128…、3A139148/847289/SHA bd7…及7配置/3指针按同次输出实录。运行核心草案e66b5ddf…仍未冻结，结构化捕获是Host由原只读输出派生，不称板端原生JSON。稳定24字段目标只绑定真实新包，四动作许可仍false；尚无平铺/停旧/切换/新启动或新观察事实。
+
+作者运行代码在收尾变化，Root首轮编排审ccd997…按漂移待定不放行；按较早author_ready_manifest复制又因新gen摘要不符在创建目录前实际退出1（80eafd），没有板端动作。Root另把当时WIP10代码固定到runtime_transition_root_review_12_01供并行独审，snapshot SHA f6163b5a3fb07d4530ee49430ec92e4763b974a61c7da14f7de1800d39b40e27，仅源码快照不是执行批准；作者最终清单仍需逐字节/必要差异复核。实际脚本审定前C7保持，完成必要正常换版后继续新版留屏，不在观察结束再关闭。
+
+LIS不等待急诊资料：Root已读473753提示词及278781范围审，批准原窗口仅A稀疏候选，五冻结字段源码逐字节继承并新增四纯应用计划/ACK正文源。候选9源df2424…、patch2c1abf…私有check/apply0/0，合成697明确为虚拟组合，不冒充正式package枚举。Root业务审ae1a92410b4e38b70f5307097f84b09078582aa04e6f76e38a8fae4bc9e52679及资源/生命周期审均未见确定阻点，原全未知项目空任务最终None、字段命中条件、原ACK阶段/尾空/CR及压缩repeat/输入输出4MiB边界已分别核。仍无Worker真实等待、内存应用、报告reserve或生产查询/发送，未编译/联板，不纳当前正式688；后续再按完整链分派。
+
+<a id="integration-12-runtime-rebaseline-20261104"></a>
+
+11月4日运行过渡的首条链已实际完成元数据安装、独立flat存包和普通用户预检，三个回执分别a398407d…、2980289c…、55509351…，外层均0。核心3446和作者最终10代码逐字对齐、编排/脚本/事实及实际生成物独审均完成。preflight两条/root普通用户find警告保留原合并输出，另按board08的stdout+stderr连接规则无损拆分；03工具与实际分流独审f8039048…核定，未删警告或改真实退出。
+
+但10:32唯一stop阶段在正常关闭调用前因运行身份变化拒绝，SSH原件退出79；展示层退出1不替代原件。Root先核实际INI/CFG指纹：七份ad11、三指针、C7 669382/2102645、原run和原主控5008/118180、3A139148/847289保持。远端未创建stop阶段授权或日志，旧run无result/exit，证明没有发出关闭请求，不能补停止成功或继续旧链切版。
+
+只读journal和实际unit证实：相机2046481在10:30:52因连续10秒无帧自行exit-code，系统按on-failure/3秒自动拉起，10:30:56起新2510511/6498209，exe SHA仍7a128…、NRestarts31。相机窗口确认冻结期间无人通过该窗口操作；更深停帧原因列其后续待办，不把它归为人为部署。Tool76004a/62e860为只读诊断0，3bfd94为10:36:09新完整身份捕获0。Root保留旧链所有原件，不改旧core中的PID、不重复执行旧stop；新02 false草案286951d5…和新24字段目标已事实独审ac0c12ec…，仅换链命名/关联SHA及真实相机身份，四动作许可仍false。只读复用已校验flat的最小代码修订另由原构建窗口准备、双独审后才可冻结执行；正式688源、程序包和已完成文件阶段不动。详细依据在temp/sn100_host/resume_dispatch_20261103/runtime12_rebaseline_reason_01.md。
+
+<a id="integration-12-close-guard-pending-20261104"></a>
+
+新02最小工具修订只变prepare与生成器的互补事实校验，其余8份代码同f616。Root快照cadf9e…、作者锁定清单41ef29…完整相同；生成器独审c5cab72f…与脚本独审81cc838a…通过。Root将两份审查和批准17cbc791…的准确SHA补进冻结器后，94f1a8实际0，核心仅把2869草案的frozen设true，得到652ee775372fea069aef634d4a80ca703c199e9c310dab839ad196c19f8f6424；metadata单阶段授权c5b7e359…。实际metadata控制08240b…完整重建独审3549cdd8…通过。
+
+本链metadata（752800，回执38819ca7…）、prepare（87f249，16d364e7…）和普通用户preflight（125b41，096388bd…）真实退出均0。prepare明确FLAT_ALREADY_PRESENT=1/FLAT_CREATED_THIS_PHASE=0，既有6922包只读核对，未复制覆盖；七配置、三指针、C7、原主控和新相机身份保持。preflight同样两条/root find权限警告，原合并日志保留并按已审Host分流另存，不改变实际0。
+
+但新02正常关闭只请求过一次，真实工具退出4（外层SSH原件也4，PowerShell展示1）；stderr为CLOSE_PENDING，未生成stop成功回执。11:07:10只读e54b18先核实际七份INI/CFG全部ad11一致、三指针保持，C7 669382/2102645、原run和current仍在，result.txt/exit_code不存在，相机2510511仍active/running。11:09:39只读dfc1d6从既有原app.log筛出SHUTDOWN_REQUEST signal=SIGTERM及SHUTDOWN_REJECTED window_guard_or_unavailable，证明页面保护拒绝了这次请求；没有证据能进一步指明是哪一页或哪类保护。原app.log约154550946字节，仅收取生命周期标记，不将整本或可能的业务正文装入上下文/归档，不截断或清理原日志。
+
+因此不再重发关闭、不强杀、不绕保护或改数据库/配置；activate、launch、observe和新LIS采集均未生成或执行，新程序未启动，旧程序保持留驻。用户暂缺板B键鼠，实际保护/真人登录继续待验，不重复追问密码。现场回执不能改为0，也不能把旧C7的持续运行结果当成6922运行通过。Root转准备不依赖界面操作的LIS A九源窄采用/完整ARM64编译，主控急诊定义仍按用户要求待办。
+
+补充取证工具曾发现新run退出封口、旧C7停止九原件和快照字段校验三处缺口，旧proof01/d08原件保留未执行。独立proof02/5d2aa85c…作最小补正，脚本独审ecca0c93…与Python独审3ce69b19…通过；新LIS采集器21805…仅迁新core/目录/观察ID，仍未执行。工具源码审通过不能补足现场stop0、真实新进程、观察或仪器结果。相机窗口后来核源码说明：原日志“无新帧”实际指未成功发布有效图像，不能推断传感器原始帧故障；NRestarts31为累计值，不等于31次同因。其更深原因和独立候选另由相机事项跟进，本轮不改或部署相机。
+
+<a id="integration-13-source-and-sample-order-20261104"></a>
+
+### 11月4日：LIS源码采用完成；样本加号的原版顺序差异另片纠正
+
+第12批两条未完成过渡的219份原件已实际另存，加README、来源表等共223文件，清单SHA `9bf2ef0708a0cc3404833d35d0382664867aaad2c9f5785f21ecfc4a739c5e42`。目录为`04_references/sn100_host/board_b/20261104_integration_12_transition_pending/`，不能据此补出停止或新版运行成功。相机窗口后来按用户直接要求停止工作台；Root在11:28:57独立只读核相机inactive/dead、8080无监听，C7、3A、原主控、原5000连接和七配置保持。该新状态的九文件另存`04_references/sn100_host/board_b/20261104_camera_stopped_baseline/`，清单SHA `c14f02edd25e5cc0a2142aae14baa90c10dfd6c1ac12057238bb0dacac5a0b19`。不追改旧原件里的相机状态，不自动恢复工作台。
+
+LIS A九份纯数据源码和三处构建登记已由Root正式窄采用，真实check/apply为0/0，完整源码实枚举697，后表SHA `ed4a3eb3025ef0602cdb49d41a6094f35011eb68ac19cf9f36e4f75fb3f6e254`。本项只整理原查询/下发字段、生成应用计划和确认报文正文，没有接生产查询、患者应用、报告保存或发送。采用材料在`temp/sn100_host/workflow_next_20261103/integration_13_source_acceptance_01/`；13来源账按draft02另存冻结`37825e6d55a438fcb389bd08c2ae663b5b71bcf6183730160d94ff6bb1fb7157`，汇总实际退出0，未再次apply。实际输出在`temp/sn100_host/workflow_next_20261103/root_source_ledger_final_13_01/`，final_review SHA `cda99d6f461616699b905f3919f39d63e81939f4ab59e560a263af153b77aa19`、promotion_progress SHA `dfe4ca47755c7902f788ea0edc979476c40114a850b7240bcaac976e1cc32cea`。九份文件阶段代码已固定，尚未启动本批完整ARM64编译，不能称697版已编译或运行。
+
+用户在既有聊天`01a1a498-604f-70f0-8eff-0dc019bb22bd`指出并授权修复：Windows总览点加号先新增普通样本架，再进入设置；移植版却先开设置，保存后才加入后台列表。Root用两名Agent分别独立核原版和历史，确认不是Linux必需适配：原`frmsamplematerial.cpp:1085`的加号调用addRack，自动编辑在1088被注释；452–460先加入运行态架列表，465双击或编辑按钮才进详情。原版这里是进程内架列表，不能误称加号必须立即写SQL。正式`sample_page.cpp:1123–1134`则先建editing_草稿并显示详情，保存时才经`original_sample_repository.cpp:358–362`分配ID、加入后台快照。
+
+偏差至少在10月24日已存在。本记录早期O08的“有意差异”写了本地持久化/草稿方案；“O08联调发现与原版定位修复”又把未保存架仅放UI、不进后台快照当作预期。固定探针`04_references/sn100_host/samples_20261024/rack_visibility_formal/rack_visibility_probe.cpp:73`要求点击加号后后台架数不增，92–97才保存入架。因此旧测试证明草稿机制符合当时的新实现，不能证明它保留了原版操作顺序。历史也仍将原Windows完整行为和RK列待验，不能说当时已完成原版/RK一致性验收。根因是本地草稿设计改变了业务状态发生的时点，后续接原资料时沿用，验收预期又没有独立按原版校准；实现和总协调对照审查均有遗漏。
+
+沿用上述既有作者，只准备`temp/sn100_host/sample_add_order_20261104/candidate/`中的`sample_page.cpp/.h`窄候选，不改正在冻结的697正式输入。Root已明确验收点：总览连续加号立即保留两架且仍在总览；单击只选择；双击/编辑才进详情；取消设置与已新增架的关系保持原版；详情已开且有未保存设置时，必须另核原1087先新增、1089–1092再toLastRack处理旧设置的顺序。不得只隐藏编辑器便称修好，也不得提前搬动取消确认、写SQL或发主控任务。用户要求在RK验证，但候选尚未采用/编译/上板，原关闭保护及人工操作仍待。为避免紧接着重复全编，先审这份窄候选，再由Root决定后继新批；13全部冻结原件与未编译事实保留，不换入新源冒称13同源。
+
+后续每个受影响入口先写原版“操作前状态→一次点击→列表/详情/后台变化→取消与失败”的对照，再确定验收预期，不能从移植实现反推正确行为。当前未停止C7、未再次请求关闭、未切版；急诊定义继续按用户要求列待办，算法最后。
+
+<a id="integration-14-sample-source-20261104"></a>
+
+### 第14批：样本加号第三版已采用，仅关闭源码范围
+
+原作者第三版停写清单SHA `831ddb3b5f2243ab238fa0213c6049941db41ab9d44eb581f37d2e65e0ab3dde`。Root逐项核六原件及当时完整697源后另存`temp/sn100_host/resume_dispatch_20261103/root_sample_add_14_review_01/`，snapshot SHA `143bbb6ceb6150c998e462c1fedf56011b6938dddf7c835d48801ec849d60a18`。此前02曾短暂产生0862工作态，作者没有独立保存该原件，不补造；本次只审固定03副本。两份独审分别为`sample14_behavior_review_01.md` SHA `c5af94111a5552d7dcdff7d94f5692f56cda868b8de775e7d613017ddc32e03d`和`sample14_lifecycle_review_01.md` SHA `5746bb71aee6dfaf501ae116481dafd7b67e27fd1c003e637ad5ba203f0fb9e4`，未确认阻止采用的确定问题，不能据此称RK交互通过。
+
+Root只窄采用`samples/sample_page.cpp/.h`，真实普通git check/apply均0/0，外层实际0（Tool4805da）；没有整树覆盖、自动修行尾或删除文件。完整实枚举仍697，正式新后表SHA `169f571193b2893e8cbb3df8359c723e414cff89232ccc6e5d3a9274c44022bd`，另外695源字节不变。两源后像为CPP `2e29097f023b728ac87790eae04bec6eb602060d48344536744be43850b16c39`、H `41a464c372627abd79ff5997154618d47a96ffbcb834d4051d07f9f78ba65a22`。原件、真实命令/stdout/stderr/退出和前后枚举在`temp/sn100_host/workflow_next_20261103/integration_14_source_acceptance_01/`，外层四记录在`temp/sn100_host/resume_dispatch_20261103/accept_sample14_source_01.*`。
+
+原资料模式现在先登记后台空普通架、实际重读确认存在，再选择新架；总览保总览，详情有旧草稿时先新增再确认是否切换，取消保留两者。已登记而重读失败保留新ID，只重读不重复创建；原选中缓存消费后清零，确认返回再核页面存活及请求/新增身份。单击是否保详情按原状态选择，双击/编辑打开详情。原INI孔数和新孔默认容器、后台权限、急诊及任务下发路径不改；历史独立本地模式保留原范围，不再执行其脱机用例。
+
+Root决定以新14批承接LIS A9和这份修复，不先全编13。既有构建作者先只做13→14九代码命名映射，再按12的实际688源包、13的A9真实采用记录及14的两源真实采用记录准备新来源账；不重apply旧片、不追改13冻结账、不带入患者B1或全面只读审计发现。当前尚无14完整编译、板端启用或专项结果。未选中卡双击、旧草稿取消/放弃、失败重读和真实身份交错仍须RK验证；板端检查器尚为草稿，Root未批准执行，C7未输入/写入/再次关闭。
+
+LIS B1已派原任务窗口独立准备同仓库患者/条码/两阶段查询初始化三源，LIS原窗口只做字段和顺序核对，不成为第二作者。Root允许成功发布后的纯目标修订记账，但不改变原手工saveRack校验、默认值、数据或副作用；须列真实变更及删除重建覆盖。专用原映射由同Repo作者只读建立，不挪用排序/字段不同的编辑缓存。B2报告分组和B3真实等待分别保留后片；急诊定义仍待办，生产LIS入口不开。
+
+第14批来源输入独审e8b1936d…确认两片连续、实际命令及100份非空唯一原件相符。Root按draft01另存frozen spec SHA `f84e04e189c1f8a20fa84e6c6cca5a5c900488e6efd0691f145279b014ed6643`，真实聚合退出0（Tool51e037），final_review SHA `dfbe4b040e46cc51f9dd809c768f5e58b370cf527eeba4a1758692c7210d9f86`、promotion_progress SHA `7c26f4698cf617b16b56f05dce7c904629074ebf33829d768fb39aa29329484b`，只汇总实际采用、没有重apply。输出在`temp/sn100_host/workflow_next_20261103/root_source_ledger_final_14_01/`。
+
+九代码独审862df85a…及实际命名映射核定后，Root固定代码snapshot `d1c169d322ce4188093d405e2b756958cce1451373c8e7179be815f8c46649da`，另存14配置SHA `7fac2e2d334490aa67bc5ebed8f9d9d5eb61344fc2530fdad1c9132ae782c114`，113份证据，只full_build/stage两许可。配置绑定独审b92b640f…无阻点，Root启动普通WSL用户qyq的完整ARM64构建（session18841）。已核697源、405个不同构建输入并开始生成C++对象，当前尚无最终编译退出、完整产物或RK结果。
+
+本次WSL构建快照原始文件SHA为`7c0f6ad97a4457b6da0499d61baae2be26f5d9d888f6be1158c3a2b1963972da`，与Root规范采用后表`169f…`原始表示不同；Root实际解析对比697项键值完全相等、差异0。不能把两种JSON表示的文件SHA互换或说源码已变。专项外层封装曾错误地直接比较两份原始SHA，运行前已发现，旧封装未执行，另做最小修订；正式14构建不受此工具问题影响。
+
+专项检查器也单独固定：首版Root副本019062eb…独审发现嵌套确认框中的超时不能封口、看到禁动作TX后仍可能代答两处工具问题，原件保留且未执行。作者只修两点，第二版Root副本snapshot `87ded8cdd142b25ad1d3a6dd9daac4cb7c24c3165ecbbc946d5d0058e81d3b20`、CPP `100dea76ed8f8017764630257b8a218abaa36e0ac67da5bcbd851043ae4f25d1`，最小复审1f5d7b07…确认闭合。专项是增加钩子的独立二进制，不能冒称正式包同SHA；QtTest头、真实链接库和私有库来源前后核对另由Root封装，尚未编译或批准运行。空闲/Unknown门只是本专项选定安静负载的前置条件，不能改成普通空架新增的生产条件；条件不具备记待验，不报加号功能失败。成功、失败、超时均不关程序，旧C7保护仍未解除。
+
+<a id="operation-flow-audit-registration-20261104"></a>
+
+### 全面原操作审计归档：只分析登记，其他发现不混入14
+
+用户在既有审计窗口要求全面按Windows实际新增、编辑、保存、取消及切换流程核查；该窗口只分析，交付`04_references/sn100_host/operation_flow_audit_20261104/`总报告及四份业务明细。README SHA `7c5d204b0f6645dec92de353a1b96d5cf53b4175216cf0817d63a46756ea32b5`，source_snapshot SHA `27c887f622d31e3633e7c1f8fee38b84a7eafb9428810b30d5873674855fbf81`，六原件清单自身SHA `a51e7b05dfb271471043b05ae4e72901c44452c1ff5a4d7f474a6bd6a39223e5`。Root独立归档/依赖核查15ce9317…复算六原件全匹配，Git已有字节保护、不被忽略；另存的coordination.json不在六原件清单中，不能泛称目录八文件都已封口。485KB来源JSON只程序化读元数据，其筛选输入数量不是正式697源或完成率。
+
+Root已读总报告和依赖分析。新增分析项依次登记：医院/条码删除抹掉其他未保存输入优先；批组即时生效及跨组成员去重同链；样本自动号、架号即时采用、组合取消/新增及开始时保存继续按依赖；校准复制当前编辑、质控规则和管理保存范围分别核；项目重复保存/复制选中、显示恢复默认及设置离页寿命再与主窗口注销/退出统一。原有草稿、隐藏/空回调、异常分支和数量范围不误判；新增预算按生产可达拒绝、分批、未接消费者及原有效范围未核分别记录，不统一删除。报告不是每字段/全部故障和异步时序的穷举证明，也不是新的批量修复或板端操作指令；当前14范围不扩大，加号已源码修订、不重复派工。
+
+同板另一电机窗口01a1a4bb-46bb-7c83-9e2e-ddaec030a578按用户要求先与Root协调，Root仅开放一次低开销只读设备树/引脚/tty占用盘点；没有授权打开UART或收发、改复用/服务。窗口12:08报告同板序列/boot、C7/原主控/3A保持、相机inactive；其SSH因尾部CR命令实际127，不能写成功退出。UART4仅列节点/pinmux/无fd占用的当时快照候选，40针、电平及实物接线仍待核，用户尚未接信号线，没有查询收发。只读窗口已释放，后续接线明确后另排单次查询；SN100不启停，相机不恢复。
+
+<a id="integration-14-file-phase-and-15-source-20261104"></a>
+
+### 第14批构建及文件阶段完成；第15批空架专用接口已采用
+
+第14批完整ARM64构建外层和内部均实际0（Tool8b7c74），697源/405不同输入/297独立ARM64对象核定。主程序295对象，报告程序同批使用30对象，其中28共享、2额外；不是把“2额外”说成报告只链接两对象。主SHA `bdb21760ca3ba30ee11f224f69691515ab788c6ef43778335ab891ef542d41ed`、报告程序 `1016a249dd003f15109ad6b920c60ee3c84e7aa90b6da54dc56f41404e585aaa`，release `ad91ca6c44348a5fc0755ff30d2dfec74e3538618469f522609a9134b878ea6b`，115361586字节包SHA `f4919bfbcba266d8c5920c7bcfa79e9af04894bb4f9282aad122f5e1034a527a`。独立产物审1e8c3b47…核297对象、453目录文件、155生成物、33普通包成员/31清单及静态依赖相符，没有运行产品。
+
+Root随后stage、archive、collect、finish实际均0，13:12:39收尾。新包只另存`releases/integration_14_01/ad91ca6c…`，未改current、未启用新程序。板B固定主机公钥/序列通过，存包前后同boot、C7 669382/2102645、原主控5008/118180及5000监听、七配置ad11与三指针保持；没有关闭程序或启动第二主控。固定证据在`04_references/sn100_host/workflow_next_20261103/integration_14_01/`，170条清单加SUM共171文件；恢复在`07_backups/sn100_host/board_b/workflow_integration_20261103/integration_14_01/`，9条清单加SUM共10文件。源码697和包33成员回读一致，源包SHA `f8bd2bf2854dbf9b377d0f5358a3706442a91a08d57f2e36909956f8a75bff05`、2300422字节，归档raw snapshot仍7c0f。固定原件不追写后续结果，电机窗口已获文件操作结束通知，查询通信仍须先核实物接线并另排窗口。
+
+Root在编译期间进一步追明空架新增的剩余依赖：14将既有saveRack提前到加号，仍经refreshProjects、projectRepository.load和recoverPending。无待核复制清单时先枚举再只读SQL；有清单时可能获取锁、由SQLite恢复热日志并维护清单，失败会挡住空架新增，多清单先后还可能已有前项副作用。原Windows空架只用现有内存创建。此机制原本在公共读取/保存中，本次提前调用使它成为新增前置；不能泛称整条链无SQL/文件副作用。补充审查`sample14_add_project_recovery_boundary_01.md` SHA `4d095ff5782322bf028c10b91fc669a20cb9707c4186e885f38c5ba6d889a443`，并无本轮板端真的出现待核清单或恢复的结论。第14批只关闭构建/独立存包，不关闭整个空架修复。
+
+原样本作者另交六源纯运行态专口，Root固定20原件到`resume_dispatch_20261103/root_sample_backend_15_review_01/`，snapshot SHA `ae223b044cc6dbe8b5f87bb6c438bd3b6123602af66c95f4f6af41124055dd6b`。业务独审55af5a37…、异步/通知独审9e606d6a…均未确认源码阻点。Root仅普通check/apply这六源，实际0/0、外层0（Tool4740c9），完整实枚举697新后表SHA `f3519bacb0efca4077ef93ef21f59e906021585dbd9ae414a37e7bb9b2abf6d0`，另外691源不变。材料在`temp/sn100_host/workflow_next_20261103/integration_15_source_acceptance_01/sample_empty_backend/`；只复用已钉扎14记录脚本中的通用枚举/捕获函数，没有调用旧main或重放14补丁。
+
+新入口由同一Store后台根据当前Page孔数/新孔容器默认值注册真实空普通架，核孔数与已初始化配置相符，后台选号并构空孔，单次回真实运行态快照。直接新增及采用不走saveRack或全量load、不新增项目/组合SQL或复制恢复前置；总览、详情旧草稿确认/取消顺序保留。已有真实设备变化的pending按快照是否已包含区分通知，晚到变化保留再用运行态快照补刷；不伪装初始化load，也不一刀切抹掉外部priority退休和试剂待刷等原有I/O义务。原真实保存/load/恢复与锁保持，普通新增未加全局空闲门。
+
+当前第15批仅源码采用，尚未编译或RK验证。旧14专项构建封装钉14来源，源码已变后不得执行；等15实际产物再绑定同次对象/QtTest，不能借14结果。原窗口GUI状态澄清仍无回复，不当成没有草稿，Root不重复问密码、不输入旧GUI或再次发关闭。LIS B1三源03已另冻结、与本片Repo有重叠，后续Root独立窄合，不带入15；生产LIS和急诊仍保持未接/待办。
+
+后续实际更新：用户已在样本窗口回复“没有弹窗，也没有未保存设置”，再明确“旧版界面可以退出删除，没有需要保存的内容”，Root两次read_thread核过人类原文。前段“无回复”保留当时时点，当前不再据此重复询问。该授权可用于最终产物齐备后的正常旧GUI交接，删除范围不扩到配置、资料、原主控和恢复证据；没有必要不删旧恢复版本。仍按真实guard/旧退出/quiet及唯一新启动取证，实际4不补0、不强杀，复核后新验证程序留屏。
+
+15九代码独审33e63720…核定只14→15命名映射。Root复制器01因审查路径漏改、02因父目录漏改，分别在目标目录创建前实际1（Tool6fc7a9、14c751）；原脚本和明确标为工具导出摘要的failure.json保留，不能冒称另有原始stderr文件。03直接从锁定manifest读取真实父快照，实际0（782f79），code snapshot `5f759883253dd82dbddd004ca67b202db4f26ba7cd76db7665ecaf43cf8cabf0`，没有源码或板端修改。此为编排准备失败，非15源码git失败。
+
+15单片来源独审0a825cd1…通过；Root冻结spec SHA `e7197d2388c77ff216753e0bd7b5b4067e2a6d95576be64da5ec173dc89a375f`，聚合实际0（1f7213），输出`root_source_ledger_final_15_01`的review SHA `7f7915baf187766966ed957a406769cc1da51f7381f56209dd0ebd1c42352db8`、progress SHA `99e073d5f8f29b52234b3db7d0c2e226fbbdab0de48bb2a2ed76b2007617b846`。唯一片六改0增删、697/f351，历史source数组只此实际0/0为空，旧运行和准备失败分别保留。
+
+Root另存15配置SHA `ac78c585088cf8bbb35fd526785af7163196255cc97076bc39cb863885504a40`，90证据，仅full_build/stage；窄配置绑定独审f9c75fc5…通过。普通WSL用户qyq完整ARM64构建已启动（session66909），尚无15最终退出或产物通过结论。15专项构建封装仅改实际来源/执行命名空间，f7c29883…静态复审完成，未执行；父正式15与增加QtTest/checker的独立验证variant将分别固定发布号和二进制SHA，不能混同版。新运行方案e10fb426…要求显式camera-off、独立新收据链、实际旧停及唯一supervise0启动，旧12的activecamera/LIS生成器不能直接套用；既有构建窗口只准备新工具，Root未执行板端交接。
+
+构建期间，Root沿用三个Agent并行核后继材料。15文件阶段入口和专项交叉编译入口已准备、仅静态检查，分别SHA5022e84f…及4c17a615…；实际发布号只从15成功构建结果读取，不借14对象。现有sysroot有QtTest库但缺其头目录，Root准备从已固定同版ARM64开发归档只补缺失头，独审报告3840a15e…通过；须等15内外构建真实0之后再串行执行，未运行恢复、专项或产品。后续提示词顶段已更新为15当前状态，旧历史分隔段保留。
+
+LIS仓库B1最终03另完成Root只读复核，报告`temp/sn100_host/resume_dispatch_20261103/lis_B1_root_review_01.md`，SHA `37cb409a0a7df0ba95e54eb5c0fbb5a9fc770a7fb52c24f5f19e8780005f4afc`。作者38产物及三源指纹匹配，未发现已声明片内之外的确定内部阻点，不代表正式采用或业务闭环。其两份仓库旧前像与15重叠，后继只能以15为主窄合，保留专用空架和初始化守卫，成功新增后补LIS纯修订记账；不能靠重新调用保存、项目读取或放宽旧请求身份检查解决。共享任务摘要尚不含新患者/条码/针及项目身份，另有扫码自动号、报告分组、真实查询/确认和取消继续等后片，生产仍不开。本审未采用、编译、执行SQL或联板，不改当前15输入。
+
+<a id="integration-15-build-stage-actual-20261104"></a>
+
+### 第15批完整构建通过；实际旧界面已退，按真实基线接续本次验证
+
+14:11:57第15批内部构建退出0，Root外层session66909随后真实结束0，Toolccef9a；没有运行电脑产品或访问板卡。697源/405唯一输入/297独立ARM64对象，主链295、报告链30（28同批共享加2额外），155生成物及453构建目录文件完整核对。原始snapshot SHA `3a212a19e714dc0ae41c8628a6bddc2eb1da195470092ba8be3f372f516627fa`与规范f351解析后697键值完全相同，原字节摘要分别保留。主SHA `fd89cb579c7f49d321e02dfb38e1dfaf669d8dd376d4fe2b5f89905ce7f8882b`，报告程序 `d0653b471e8b171eba28351da931819e58e1cd0fdd4012a8aec18dee30c9e103`，release `d4501a69e100adbd3e3b87a4f311533ed7cfdabdd69d44f124fd822a7add4e4d`，115376661字节包SHA `67a05c08c93ae86515615a5434a6b9200718aa71519dc6800aae5a6eafe9b935`。
+
+产物独审`resume_dispatch_20261103/integration15_build_artifact_review_01.md`，SHA `028e5efd1d01f0a35f28ecd40d5578d25372df70d25b3d1ffa93cde65e8afb7b`，实际核1154个唯一绑定record、33普通包成员/31清单、19私有库真实来源、56依赖/242边/398版本/0错误，没有借旧14结果。对象绑定5a8b4a3e…、依赖报告d24cf5a8…；仅关闭构建产物范围，RK软件、实体输入、实屏、仪器和资源仍待本次实际结果。
+
+Root首次窄补QtTest头的调用真实1（Tool4f162a），在`QT.resolve()==QT`路径守卫处结束，未创建恢复OUT、没有写头/库或系统依赖，完整stdout/stderr/exit保留。随后普通WSL只读readlink/stat查明Qt5目录指向已有`/home/qyq/.cache/sn100_qt5_headers_5.15.13_20261102`，其中qtestmouse.h/QTest和配套库均存在；Windows无法跟随Linux链接造成缺件误判。无需恢复或重试补齐，不把本次编排失败算成源码或产品构建失败。Root随后启动真实15专项交叉编译session18821，尚待实际结果。
+
+Root15首次文件存包入口实际97（session64050，内部stage97/上传0，外层进程1）。七配置指纹ad11核过，但旧活进程守卫报“现有主程序缺失或多份”，未形成stage_complete；旧WORK和上传实物保留，不补成功、不重跑同入口或继续原archive链。Root只读探针`root_manager_20261103/stage15_process_actual_01`固定主机指纹和板B序列后真实0（Tool5de30e）：同序列/boot/currentC7/oldrun，669382已不存在且无另一GUI；旧run app.pid/ticks/boot仍匹配原身份，真实exit_code=0及result.txt为APP_EXIT=0/CLEAN_SHUTDOWN=1，sn100-shell.service inactive/dead/MainPID0。探针未发任何关闭或启动请求，不据现象推定谁在何时关闭。原主控5008/118180及SHA、3A139148/847289及SHA、5000监听、七实际INI指纹保持，相机inactive/dead/8080无监听。后续只按已真实旧退分支核封口和显示空闲，不再向旧PID发stop，不将旧12的4改成成功。
+
+样本解析器固定子集Root副本`resume_dispatch_20261103/runtime15_parser_root_review_01/`，snapshot cba54920…，原parser4bbc0a1d…/合同e3063c65…；两独审4fde3685…及667912a1…未见代码误放行阻点，只做静态核对。合同澄清：捕获文件中途变化会保存错误报告并退出2；expected变化才直接拒写。真实等待器、启动身份和结果仍待，不能把布尔frozen当运行授权或把软件事件当实体/实屏/仪器验收。
+
+用户最新要求“本次验证完成之后，就先暂停所有的任务”。Root继续本次样本15必需的存包/专项/板端核对，之后统一暂停并留屏、留下一次提示词，不推进其他功能。LIS原作者已按该安排完成on15私有重放并停写，交接在`temp/sn100_host/lis_repository_B1_on15_20261104_01/`，handoff3e1c23bf…、manifest331ecd90…；这只是作者报告的独立候选，Root未采用、编译或板验，不纳第15批，不转为本次通过项。
+
+后续专项交叉编译session18821已真实结束0，冻结内层、wrapper及外层均0（Tool4b698f）。`sample_checker15_exec_02_01/build_01/sample_add_review` SHA `704c50b0288241226e27d1c6ec0d01edd67a979876071e074a51b117c55f2669`、187798864字节；私有QtTest库SHA `ad0005e247907bada4d57dd41b435a00edfa32dfb007c920ea92d8534e1dbe36`、415896字节，正式fd89程序未替换。独审报告`checker15_actual_build_review_01.md` SHA `baf353ee1554d20be1e6dc494c539a519d65dd95c12f45632528464ca9d46524`，80项完整清单、295对象及真实两条编译/链接argv、46实际头与两同版ARM64归档、前后元数据均核对。专项二进制SHA及父正式发布号d450分开，尚无独立验证包发布号或RK通过。
+
+Root另对实际专项及同批报告程序执行静态ELF依赖核对，session72286真实0（Toolaf33b6），57文件/0错误；报告`checker15_dependencies_01/dependency_report.json` SHA `dafcf250fead8c482084440e66f6a7a673beb96a75d1dc6e6593f9c7400830ff`。真实命令、stdout/stderr及独立退出均保存，不运行目标ELF、不联网联板。132字节stderr是固定WSL代理提示，SHA b280c454…；不能为了满足新工具模板清空它，也不能将执行前记录的command原件倒填实际退出或工作目录。
+
+Root补核旧退显示现场实际0（Toold65d5c，`stage15_closed_display_01`四份原件）：当前VT=tty1，tty7/card0各自fuser真实1且输出空；旧run六文件的原文及SHA齐，旧PID不存在，current C7的磁盘主程序/原helper及三资料指针原字节指纹保持，sn100-shell/lightdm关闭、相机关闭但enabled不变，原主控和3A仍同身份。没有切显示、启停或发信号。新的独立四文件阶段方案`stage15_closed_baseline_continuation_plan_01.md` SHA `8ae9d8edb5b0b85dc59ed2078a0d06dc612e87055141dff5cefe42acd873aaa1`：只读原BUILD_WORK，新FILE_WORK为`integration_15_file02_01`；沿用且保留旧真upload0包，前后严格核已退旧程序、显示空闲及公共资源，新stage实际0后才新封口，不伪造旧97成功、不复制大构建树。当前仍在准备工具，尚未执行接续。
+
+验证包工具第一源码子集Root副本`variant15_source_root_review_01/`，snapshot aed35b37…、七件父清单645ecd9c…；作者明确旧父四阶段及live C7门尚待file02适配。独审e06a731d…另确认实际依赖捕获的两处误拒：原command没有内嵌actual_exit/cwd、真实stderr有已知WSL提示；须窄适配实际原件，不回填或删除捕获。包成员与独立发布号闭合未见新增确定问题，仍未制作验证包或启动程序。
+
+<a id="sample-order-board-a-paused-20261104"></a>
+
+### 本次改用板A复核：9项通过、容器选择超时，程序留屏并暂停
+
+用户明确后续测试统一板A，板B要安装到小车。Root立即停止板B后继部署和启停；B的file02候选清单ca18d15a…、配置6371064c…保持false，四权限均false，没有创建新FILE_WORK/恢复/证据目录或执行。B原stage97、工具准备失败及未完03/运行生成器全部保留；没有把B的配置、主控进程或关闭记录改名套到A。原功能窗口和小车窗口已通知资源变更；同一192.168.100.123实际转为A，小车窗口严格按B公钥连接失败255后未执行远端命令，Root没有给猜测的新B地址。
+
+Root按已知ED25519 `SHA256:xLQv5sqzTRvKbfD2fNQQLYjCbPN6WOXgkXEoUqV8Yy4`及实读序列`3bf8222fe1417f6a`确认A，开机标识`559493ce-5319-42b6-9383-bf7b93764a35`。首次实际SSH0（Tool024305）：current为旧ef294a92，没有GUI或原ACA主控/5000监听，VTtty1且显示设备空闲；A原资料根为`/home/rkshare/programs/sn100_shell/runtime/data`，仅原资料指针存在，另外两指针缺失。原theme是SN450/普通10孔，不能当当前用户SN500/5孔主题已安装。A普通用户lckfb有必要目录写权限，原通道库25条含Base、足够24通道，不替换此库。历史A原资料和B新资料/端口记录分别核，没有重新载整本历史或患者数据库正文。
+
+为本次原主控条件，从用户`05_tools/tests/sn100_host/current/`正确ACA（ee8e1932…）及SN500原配套材料制作27原件安装输入，包SHA `ca280210d564808d461f183861e3ced573517a8364aeb396fa5c29c6a67a0ac6`，固定在`07_backups/sn100_host/board_a/sample_order_20261104_01/controller_inputs/`。只新建A此前不存在的`/userdata/shared`，不从B现场拷数据，不运行旧包的强杀、全目录改权限或清理脚本，不带旧日志/core。解包逐项指纹和依赖核对成立。A原主题先按实际SHA253324ec…保存到相邻previous_theme恢复目录，随后采用用户当前SN500主题029605f3…；连接config.ini原403348a2…及config_Debug原58374e00…不改，只补两个此前不存在的本板配置/主题指针。七份配置与三资料指针在本轮验证前后逐项一致。
+
+A缺sqlite3命令。首次安装已有ARM64 CLI包因系统libsqlite3-0为3.45.1-1ubuntu2.7、包精确要求2.8，实际退出1，留原始输出；不是业务验证失败。Root随后撤回这份新未配置CLI包，保留原系统库2.7，从同一已核deb提取CLI至`/usr/local/bin/sqlite3`；普通lckfb版本及只读系统通道表查询实际0，依赖正常，未升级Qt或原系统库。没有因缺命令停任务，也未把失败改写成0。
+
+原主控按用户原程序及配置在A一次启动，临时服务`sn100-original-controller-board-a.service`、Restart=no，实际CWD `/userdata/shared`、原LD_LIBRARY_PATH。真实程序PID4426/启动计数196590、文件SHAee8e1932…，独立SSH再查仍活/监听5000，尚无最终退出码。其原日志仍有空流程CSV、校准资料等警告，内部CAN/AD打印脱机调试；这是用户指定的原主控条件，未新造模拟服务，不据此宣称真实仪器或机械动作通过。
+
+原检查器只把结果board、序列号及两处中文板名从B改成A，共四行；新CPP SHA `e6116eb485fcf272e5a5a86005d92eb6700006b492679619bd455cf5c40ad677`，其他操作/超时/登录/TX/留屏守卫逐字不变。作者独立候选及Root副本保留，Root封装只改这一来源/身份命名空间，仍链接第15批完整295主对象。板A专项真实内外编译0（session80835，Tool8056d6），独立ELF SHA `fd966beae0563c4db798b6be6c0aaa591747f375e23a1259498ab9d362d9baef`；QtTest库仍ad0005e2…、来源前后相同。新静态依赖57文件/0错误，未运行电脑产品。
+
+Root对A采用较短的独立文件流程，不用B原九工具的阶段成功作为A许可。正式15父包d450仍保留原内容；另制作独立A验证包`0b0b93787b055f51bba1ac579e0a79488959940284e0a702ab2fa06a1934e743`，36普通成员，包SHA `8d664c2f5cdb50f9f62e5d680612515aefa24d53f15121940e6ac7154b36f735`、115752594字节，含真实A检查器、私有QtTest和独立依赖/来源说明，清单SHA即新发布号，无循环引用。包及697源码归档、构建绑定和A钩子源码在`07_backups/sn100_host/board_a/sample_order_20261104_01/application/`；源规范f351与原始snapshot3a21分别保存。正式源码和正式fd89程序未因换板改动。
+
+上传、包回读、动态依赖及普通用户预检实际0。首次预检从/root降到lckfb时有find恢复工作目录的权限告警，原流保留；随后只修调用CWD为`/`，新的预检实际0且无该告警，不重新解包或伪改旧原件。Root在A无GUI/显示空闲、原主控同身份及配置一致时，将current切到flat新验证目录，唯一执行原helper `supervise BASE RELEASE RUN 0 ''`，经systemd/openvt/runuser运行，空会话、不设30秒自动退出、不重复主控、不在检查结束调用stop。
+
+15:37:22本次run为`/home/rkshare/programs/sn100_shell/runs/20261104_153722_5015`，GUI PID5836/启动计数225261、UID1000，exe SHAfd966bea…；检查输出目录`reviews/sample_order_board_a_20261104_01`。真实默认登录成功，没有假身份。实际软件前9项通过：主控/原资料条件、登录、总览数量、第一次加号即时新增并留总览、连续增加第二架、单击仅选中、双击另一未选中卡打开、未填设置返回保留两架、编辑架按钮打开普通架。原问题所指“必须先设置再保存才新增”的反序在本次这些操作中已未出现。
+
+随后在`choose_other_container_as_unsaved_draft`等待超时，19560毫秒封口，检查器check_exit=1、completed=false，10条记录为9通过/1失败。它尚未完成选择容器形成草稿后的断言，不能确定是工具没有打开/命中可见选项还是产品显示问题，也不能据此说产品不标脏。旧草稿下加号后Cancel/Discard、第三架及清理均未到达；S01(id2)/S02(id3)两个仍为空的新架按失败保留规则留现场，不自动擦除或放弃草稿。仅这次检查事件的反应时间175/193/691ms、事件间隔p95=164ms/max2210ms，不当资源或响应门槛通过。
+
+Root实际状态采集0（Toolb8f71a），最后白名单捕获再实际0（Tool4e84a3）：前后同boot/同5836身份和SHA、current新验证包、原主控4426保持，5000双端ESTAB分别归这两个程序，VTtty7。主run无exit_code/result，APPLICATION_EXIT=null，程序继续运行；QtTest实际映射到本验证包私有lib。七配置/三指针保持；检查器接入观察仅Qj，未见其监视的任务/动作TX，但不扩成全程零副作用。两张本轮空卡PNG及原JSON/退出文件SHA、PNG结构/CRC、检查顺序前缀/失败数/真实父版本和身份已在电脑纯文件核对，收证工具实际0（Tool9288da）。
+
+固定证据在`04_references/sn100_host/board_a/20261104_sample_add_order/`，先读README和summary；执行原始SSH流、失败原件及构建绑定分目录保存。实屏视觉、实体键鼠、真实仪器检测、资源门槛和长稳未验，整个专项仍未完成。用户要求本次验证后暂停，Root已通知全部既有SN100功能窗口和Agent立即停新增调查/修复/编译/联板；只完成本轮证据与公共文档收尾。两处暂停消息间已开始的超时只读快查被叫停，现有窄结论只说明原因未定，不启动下一修复。LIS on15/B1、急诊、算法和其他审计候选全部冻结，下一次提示词已更新；没有自动提交推送、清理temp、改参考工程或关闭留屏程序。
+
+15:45:55最后只读交接核对实际0（Toolb67182）：板A同boot，GUI5836/225261/UID1000及原主控4426/196590、各自exe SHA和5000双端连接仍保持，current仍0b0b验证包、VTtty7，result SHA6dbec8c6…仍同，主程序无退出封口/退出null。该次只读没有输入、关闭或重试动作，原件另收固定证据。文档差异空白检查实际0；归档及恢复清单按本轮最终实物再核。任务保持暂停，后续不再安排测试或修复。
+
+最终纯文件核对实际0（Tool10a87d）：正式697源仍全等规范f351，根字节/LFS属性文件未改。板A证据107条加SHA清单共108文件，清单SHA `520b6caf60ab93cec46c12134e88e08eed1c28c6b9dc6f4549ffc1ed62055eab`；应用恢复15条、原主控输入3条、旧主题2条各有自己的SHA清单，全部实读相符。补入说明前的中间清单另存temp原件，原始执行流不改写。没有运行电脑产品或再联板，至此只完成归档/交接收尾，继续暂停。
+
+<a id="sample-input-unresponsive-20261104"></a>
+
+### 暂停后用户反馈：所有按钮无响应，Esc也未恢复
+
+用户询问当前版本是否卡住，并明确现场“所有按钮都点不动”；按一次Esc后仍不能操作。这是新增的人工交互失败事实，不能用先前9项自动控件事件通过或进程仍活替代，也不能说只是检查器报告超时而界面正常。当前仍是带检查器的0b0b验证版，不把它混称正式父d450。
+
+Root仅作只读排查，先核七实际INI，均同本轮准备后指纹。15:54:36—38实际SSH0（Toolb714e5），同GUI5836/225261及原主控4426/196590、同boot/current保持，主控连接两端仍ESTAB，GUI上下文切换和CPU计数继续变化，日志继续增长，主线程两次均在do_sys_poll；无主程序退出封口，没有看到本次内核最近窗口的OOM/段错误提示。这只能证明进程/后台活动和连接保持，不能证明鼠标键盘交互正常或排除所有阻塞。
+
+后续输入/窗口只读检查实际0（Tool839c52）：Qt进程已打开USB鼠标event6和无线键盘event7/8，未见禁用EGLFS输入的环境项；主线程内核栈在ppoll，没有由此判定整个应用死锁。源码显示容器菜单为Qt::Popup，超时前确实刚尝试打开它，因此输入被弹层占用是候选原因；用户Esc未恢复后仍不能确证。没有给应用注入按键、调用函数、附加调试器、暂停线程或发信号。两次进一步读取Qt导出弹层状态的尝试分别因工具管道141、内存读取I/O错误实际1结束，没有取得可用弹层计数，原件保留，不作原因证据。
+
+日志另有first_light与本次发送参数不同、旧连接归属保护等DEVICE_TASK_ERROR，尚无依据证明与按钮无响应同因；INI没变化也不能反推项目参数本来正确。当前准确结论为“用户已确认整个界面无法交互，主进程及主控仍活，具体原因未定位”。此次只回应当前故障并保留现场，不修改源码、重启/关闭程序或恢复其他暂停任务；后续恢复时应先处理这一人工交互故障，再补取消/放弃分支。此前固定证据清单保持不改，新只读原件在本次A临时目录独立保存。
+
+<a id="close-cleanup-commit-20261104"></a>
+
+### 用户要求关闭、清理中间文件并commit/push
+
+用户随后两次明确要求关闭当前程序，最新范围为“把程序关掉，清理一下中间文件并commit push”。这覆盖本轮此前保持界面打开、不自动提交推送的默认安排；只按这一次授权收尾，其他功能仍暂停。
+
+Root重新核板A已知SSH公钥、实读序列3bf8222fe1417f6a、boot559493ce…、GUI5836/225261/UID1000和fd966bea程序SHA及实际INI后，通过原helper正常关闭一次。真实SSH及guarded-close均0（Toola9c6d5），原run实际exit_code=0、result APP_EXIT=0/CLEAN_SHUTDOWN=1，所有存储关闭及THREADS_STOPPED true，5836已不存在。旧日志中的SHUTDOWN_REJECTED保留原样，不覆盖本次最终真实关闭封口；没有强杀、重启或重新开程序。原主控4426及5000监听保持，未因关闭上位机一并停止。之后用户在小车窗口将192.168.100.123改接板B，Root已释放B协调占用，不再用旧A地址操作。
+
+清理仅限temp中第11/12/14/15批四个完整构建的arm64_build顶层.o，以及B15/A15专项各一个.o。先查没有编译进程并取得四把构建锁，再逐份核绝对路径在本项目明确目录内、非链接、ARM64可重定位ELF，并保留路径/大小/实际SHA的删除前清单。随后仅用PowerShell Remove-Item -LiteralPath删除这1182个文件，未递归删目录，释放2157479552字节（约2.16GB），删除后逐项确认不存在。原源码、未提交候选、构建/失败日志、工具链/sysroot和全部正式恢复输入不删；以后不能沿旧成功标志复用这些已清理对象，需重新完整构建。清理结果Toold713b4，清单SHA736bfad2…，新固定证据见`04_references/sn100_host/board_a/20261104_close_and_cleanup/`。
+
+提交前修正本仓库Git的core.longpaths设置，避免遗漏Windows长路径下的固定证据；没有改工作文件或全局Git设置。归档核对首轮把inputs内保存的来源清单误按副本目录寻找所有成员而失败，脚本/报告保留；第二版按原仓库位置逐项核，复制的来源清单自身字节也必须相同，实际0（Tool4d0576）：22份清单/1644条成员一致，697正式源仍无漂移，未检出私钥或访问令牌。未因归档核对重跑产品/功能测试。旧9通过/1超时和人工全界面无响应仍原范围，不作已修复结论。
+
+本轮提交范围为上次提交以来已完成构建的SN100正式源码、相关工具/计划/记录、分板证据及必要LFS恢复输入，不把temp、参考工程或小车的独立工作混入。实际commit/push输出保存在temp本轮收尾目录，提交编号和远端一致性由执行后Git结果及最终答复给出，不在执行前预写推送成功。关闭后原运行态空架不再按“界面仍留现场”描述；本次没有另发清架业务操作，也未验取消/放弃分支。
+
+新关闭归档35份实物已封口，SHA256SUMS为95f5a32b…；第三版总核查实际0（Tool5305f0），23份清单/1679条成员均一致，697源无漂移。暂存审查第二次实际0（Tool200d60），1514份变更文件、5个超过50MiB的恢复包均为LFS指针，未发现凭据或越界生成物。首次全范围空白检查把按原字节保存的CRLF证据行尾报告为尾部空白，真实退出2及输出保留；随后只对维护源码/文档核空白并明确识别CRLF，实际0，不改固定证据原件。样本窗口另接用户的temp候选保全要求，当前只准备独立清单；Root本轮不把LIS on15或急诊旧候选强行接入生产，正式写入与Git所有权在本次push核实后再交回。

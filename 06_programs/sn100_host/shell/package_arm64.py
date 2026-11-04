@@ -15,7 +15,7 @@ def sha(path):
 
 def snapshot(program):
     paths = []
-    for name in ("shell", "data", "ui", "history", "projects", "reagents", "samples", "instrument", "quality_control", "calibration", "alarm_history", "lis_raw_inbox", "lis_transport", "resources", "original_files", "thirdparty/qtrpt"):
+    for name in ("shell", "data", "ui", "history", "projects", "reagents", "samples", "instrument", "quality_control", "calibration", "alarm_history", "lis_raw_inbox", "lis_transport", "lis_business", "resources", "original_files", "thirdparty/qtrpt"):
         paths.extend(p for p in (program / name).rglob("*")
                      if p.is_file() and p.suffix not in (".md", ".pyc")
                      and "__pycache__" not in p.parts)

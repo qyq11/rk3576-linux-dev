@@ -1,0 +1,38 @@
+require_phase stop
+lock_store
+check_live_old
+check_old_release
+check_new_release both
+begin_phase
+# 准确旧C7 helper正常stop只调用一次；外层不timeout、不重发或强杀。
+check_live_old
+check_old_release
+stop_code=0
+check_phase_materials
+/usr/sbin/runuser -u lckfb -- /bin/bash "$base/$expected_current/rk_board.sh" stop "$base" >"$meta/phase_logs/stop/stdout.log" 2>"$meta/phase_logs/stop/stderr.log" || stop_code=$?
+printf '%s\n' "$stop_code" > "$meta/phase_logs/stop/actual_exit"
+printf 'OLD_STOP_ACTUAL_EXIT=%s\n' "$stop_code"
+[[ $stop_code == 0 ]] || exit "$stop_code"
+check_old_exit_seal
+check_environment_baseline
+# 沿实际02只等待自然quiet四轮；不发服务停止或额外信号。
+quiet=0
+for ((i=0; i<4; i++)); do
+    if transition_assert_quiet; then quiet=1; break; fi
+    sleep 0.1
+done
+[[ $quiet == 1 ]] || runtime_fail '旧显示未自然释放。'
+lock_life
+check_current "$expected_current"
+check_stopped_old
+check_old_release
+check_new_release both
+receipt_details() {
+    printf 'OLD_RUN=%s\nOLD_PID=%s\nOLD_START_TICKS=%s\nOLD_EXE=%s\nOLD_EXE_SHA256=%s\nOLD_HELPER_SHA256=%s\nOLD_MANIFEST_SHA256=%s\n' "$oldrun" "$old_pid" "$old_ticks" "$old_exe" "$old_exe_sha" "$old_helper_sha" "${expected_current#releases/}"
+    cat "$oldrun/result.txt"
+    printf 'STOP_TOOL_ACTUAL_EXIT=%s\nDISPLAY_RELEASED=1\n' "$stop_code"
+    printf 'OLD_RESULT_SHA256=%s\nOLD_EXIT_CODE_SHA256=%s\n' "$(runtime_sha "$oldrun/result.txt")" "$(runtime_sha "$oldrun/exit_code")"
+    printf 'STOP_STDOUT_SHA256=%s\nSTOP_STDERR_SHA256=%s\nSTOP_TOOL_EXIT_FILE_SHA256=%s\n' "$(runtime_sha "$meta/phase_logs/stop/stdout.log")" "$(runtime_sha "$meta/phase_logs/stop/stderr.log")" "$(runtime_sha "$meta/phase_logs/stop/actual_exit")"
+    printf 'OLD_APP_PID_FILE_SHA256=%s\nOLD_APP_START_FILE_SHA256=%s\nOLD_APP_EXE_FILE_SHA256=%s\nOLD_BOOT_FILE_SHA256=%s\n' "$(runtime_sha "$oldrun/app.pid")" "$(runtime_sha "$oldrun/app.start_ticks")" "$(runtime_sha "$oldrun/app.exe")" "$(runtime_sha "$oldrun/boot_id")"
+}
+emit_receipt

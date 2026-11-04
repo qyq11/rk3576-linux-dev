@@ -7,12 +7,22 @@
 
 namespace Sn100Lis
 {
+namespace
+{
+// 本地资源预算，不是原LIS协议限制；仍被旧消息/回执持有的快照不静默淘汰。
+constexpr int MaximumLiveProfiles = 16;
+constexpr int MaximumSequenceNumberCodeUnits = 4096;
+constexpr int MaximumOriginalRootCodeUnits = 4096;
+// 每版两段文字最多8192个UTF16字值，16版合计最多256KiB文字载荷；不是进程内存上限。
+}
 LisConnectionController::LisConnectionController(LisSettingsStore *store, bool reconnect,
     int reconnectMilliseconds, QObject *parent) : QObject(parent),
     transport_(new LisTcpTransport(this)), reconnect_(reconnect),
     reconnectMilliseconds_(reconnectMilliseconds)
 {
     qRegisterMetaType<ConfigurationIdentity>("Sn100Lis::ConfigurationIdentity");
+    qRegisterMetaType<ReceiveProfilePtr>("Sn100Lis::ReceiveProfilePtr");
+    qRegisterMetaType<QueuedSend>("Sn100Lis::QueuedSend");
     qRegisterMetaType<ConnectionState>("Sn100Lis::ConnectionState");
     qRegisterMetaType<ReceivedMessage>("Sn100Lis::ReceivedMessage");
     qRegisterMetaType<SendOutcome>("Sn100Lis::SendOutcome");
@@ -33,7 +43,14 @@ LisConnectionController::LisConnectionController(LisSettingsStore *store, bool r
     connect(transport_, &LisTcpTransport::messageReceived, this,
         [this](quint64 generation, quint64 peer, QByteArray body, QString text)
     {
+        if (!profile_ || !profile_->matches(configuration_))
+        {
+            emit messageDiscarded(configuration_, generation, peer, 1,
+                tr("完整LIS消息缺少同身份原配置快照，未改用当前全局序列号。"));
+            return;
+        }
         ReceivedMessage message;
+        message.profile = profile_;
         message.configuration = configuration_;
         message.generation = generation; message.peer = peer;
         message.body = body; message.text = text;
@@ -84,6 +101,31 @@ QString LisConnectionController::effectiveKey(const LisSettings &settings)
     return QString::fromLatin1(QCryptographicHash::hash(bytes, QCryptographicHash::Sha256).toHex());
 }
 
+bool LisConnectionController::canAdoptProfile(const LisSettings &settings, QString *detail)
+{
+    if (settings.sequenceNumber.size() > MaximumSequenceNumberCodeUnits)
+    {
+        if (detail) *detail = tr("原LIS序列号超过本地4096个UTF16字值预算，未截短或采用新配置。");
+        return false;
+    }
+    if (settings.originalRoot.size() > MaximumOriginalRootCodeUnits)
+    {
+        if (detail) *detail = tr("原资料目录超过本地4096个UTF16字值预算，未截短路径或采用新配置。");
+        return false;
+    }
+    for (auto it = profiles_.begin(); it != profiles_.end(); )
+    {
+        if (it->expired()) it = profiles_.erase(it);
+        else ++it;
+    }
+    if (profiles_.size() >= MaximumLiveProfiles)
+    {
+        if (detail) *detail = tr("仍有16个原配置版本被保留，未丢旧快照或无界增加新版本；请释放已结束的业务值后重读。");
+        return false;
+    }
+    return true;
+}
+
 void LisConnectionController::receiveCommitted(const LisSettings &settings, bool saved)
 {
     if (!checkThread(nullptr) || closing_ || applying_ || stopping_ || opening_) return;
@@ -94,9 +136,24 @@ void LisConnectionController::receiveCommitted(const LisSettings &settings, bool
     if (!saved && !first && trusted_ && key == effectiveKey_)
         return; // 普通同值重读不会恢复已明确停止的连接，也不重贴来源指纹。
 
-    const quint64 operation = ++operation_;
     if (first) openingRequested_ = settings.link;
     if (saved) openingRequested_ = true;
+    if (nextRevision_ == std::numeric_limits<quint64>::max())
+    {
+        profile_.reset();
+        settingsError(QStringLiteral("configuration-revision"), tr("LIS配置版本编号耗尽，未复用旧身份。"));
+        return;
+    }
+    QString profileError;
+    if (settings.originalProfile && settings.type == QStringLiteral("tcp") && !settings.simulation
+            && !canAdoptProfile(settings, &profileError))
+    {
+        // Store可能已成功提交新值，不能继续以旧连接冒充新配置一致。
+        profile_.reset(); // 先撤本次active；已交出的旧消息/回执仍拥有各自不可变值。
+        settingsError(QStringLiteral("receive-profile"), profileError);
+        return;
+    }
+    const quint64 operation = ++operation_;
     applying_ = true;
     trusted_ = false;
     QString detail;
@@ -113,6 +170,7 @@ void LisConnectionController::receiveCommitted(const LisSettings &settings, bool
     configuration_.transportToken = transport_->configurationToken();
     configuration_.sourceFingerprint = settings.originalFingerprint;
     effectiveKey_ = key;
+    profile_.reset();
     if (!configured)
     {
         publish(settings.type == QStringLiteral("tcp") ? QStringLiteral("Unconfigured")
@@ -128,6 +186,10 @@ void LisConnectionController::receiveCommitted(const LisSettings &settings, bool
                 tr("当前是独立本地设置，未启用原资料通信。"));
         return;
     }
+    // 设置层已在同次读取中确认目录与配置；这里不重读，四项一次冻结且不原地修改。
+    profile_ = ReceiveProfilePtr(new ReceiveProfile(configuration_, settings.sequenceNumber,
+        settings.autoGet, settings.originalRoot));
+    profiles_.append(std::weak_ptr<const ReceiveProfile>(profile_));
     trusted_ = true;
     publish(QStringLiteral("Configured"), transport_->generation(), 0);
     if (closing_ || operation != operation_) return;
@@ -170,21 +232,49 @@ bool LisConnectionController::sendMessage(quint64 revision, quint64 generation,
     if (detail) detail->clear();
     if (request) *request = 0;
     if (!checkThread(detail)) return false;
+    if (!request)
+    {
+        if (detail) *detail = tr("LIS发送请求输出为空，未排队。");
+        return false;
+    }
+    QueuedSend accepted;
+    if (!sendMessageWithReceipt(revision, generation, body, &accepted, detail)) return false;
+    *request = accepted.request;
+    return true;
+}
+
+bool LisConnectionController::sendMessageWithReceipt(quint64 revision, quint64 generation,
+    const QString &body, QueuedSend *accepted, QString *detail)
+{
+    if (detail) detail->clear();
+    if (accepted) *accepted = QueuedSend();
+    if (!checkThread(detail)) return false;
     if (closing_ || applying_ || stopping_ || opening_ || !trusted_ || revision != configuration_.revision
-            || generation != transport_->generation() || !request
+            || generation != transport_->generation() || !accepted
             || nextRequest_ == std::numeric_limits<quint64>::max())
     {
         if (detail) *detail = tr("LIS发送身份已失效、编号不可用或正在关闭，未排队。");
         return false;
     }
-    // 编号贯穿控制对象生命周期；停止或socket重连不归零。
+    if (!profile_ || !profile_->matches(configuration_))
+    {
+        if (detail) *detail = tr("LIS缺少同身份原配置快照，未排队或改用当前全局序列号。");
+        return false;
+    }
+    // 编号贯穿生命周期。已分配后即便传输拒绝，也不归零或重用。
     const quint64 id = ++nextRequest_;
+    QueuedSend queued;
+    queued.configuration = configuration_; queued.profile = profile_;
+    queued.request = id; queued.generation = generation;
+    PendingSend pending;
+    pending.configuration = configuration_; pending.profile = profile_; pending.generation = generation;
     QSet<quint64> peers;
     if (!transport_->sendMessage(id, generation, body, detail, &peers)) return false;
-    PendingSend pending;
-    pending.configuration = configuration_; pending.generation = generation; pending.peers = peers;
+    // true之后没有新校验/emit/可重入调用，不产生半入队后false而丢失身份。
+    pending.peers = peers;
+    queued.peers = peers;
     pending_.insert(id, pending);
-    *request = id;
+    *accepted = queued;
     return true;
 }
 
@@ -199,7 +289,7 @@ void LisConnectionController::receiveSendResult(quint64 request, quint64 generat
         return;
     }
     SendOutcome result;
-    result.configuration = found->configuration; result.request = request;
+    result.configuration = found->configuration; result.profile = found->profile; result.request = request;
     result.generation = generation; result.peer = peer; result.outcome = outcome; result.detail = detail;
     if (found->peers.isEmpty()) pending_.erase(found);
     ++sendNotificationDepth_;
@@ -258,6 +348,8 @@ void LisConnectionController::reportStoppedIfDrained()
     if (closing_ && !applying_ && !opening_ && !stopping_ && sendNotificationDepth_ == 0
             && !transport_->isActive() && pending_.isEmpty() && !stoppedReported_)
     {
+        profile_.reset();
+        profiles_.clear(); // 不等待外部纯值释放，也不依赖控制器寿命回收它们。
         stoppedReported_ = true;
         emit stopped();
     }
@@ -268,6 +360,10 @@ void LisConnectionController::publish(const QString &state, quint64 generation, 
     state_.configuration = configuration_; state_.generation = generation;
     state_.connectedPeers = peers; state_.state = state; state_.detail = detail;
     state_.closing = closing_;
+    // 开启过程可同步发布状态，不能因opening_暂为true而漏掉唯一一次可信来源发布。
+    // state()仍是最近发布的值；发送前由sendMessageWithReceipt重新核实际标志与身份。
+    state_.profile = trusted_ && !applying_ && !closing_ && profile_ && profile_->matches(configuration_)
+        ? profile_ : ReceiveProfilePtr();
     emit stateChanged(state_);
 }
 }

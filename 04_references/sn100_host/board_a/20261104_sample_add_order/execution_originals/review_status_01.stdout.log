@@ -1,0 +1,119 @@
+CURRENT=/home/rkshare/programs/sn100_shell/releases/0b0b93787b055f51bba1ac579e0a79488959940284e0a702ab2fa06a1934e743
+ACTIVE_VT=tty7
+fd966beae0563c4db798b6be6c0aaa591747f375e23a1259498ab9d362d9baef  /proc/5836/exe
+5836 (sn100_shell) R 5796 5787 5787 1031 5787 4194304 355995 0 1122 0 2076 242 0 0 20 0 18 0 225261 2541035520 108631 18446744073709551615 366756823040 366766946268 549263997104 0 0 0 0 4100 671746 0 0 0 17 5 0 0 0 0 0 366767023368 366767117872 367067119616 549264000567 549264001198 549264001198 549264002943 0
+CHECK_EXIT=1
+RESULT_JSON_BEGIN
+{
+    "application_close_requested_by_checker": false,
+    "application_exit_verified": false,
+    "board": "board_a",
+    "check_exit": 1,
+    "checks": [
+        {
+            "name": "板A、原资料、实际主控连接及空闲状态已核对",
+            "passed": true
+        },
+        {
+            "name": "真实登录UI建立原配置角色0会话，未设置模拟身份",
+            "passed": true
+        },
+        {
+            "name": "总览列表与后端原快照数量一致",
+            "passed": true
+        },
+        {
+            "name": "第一次加号先新增普通空架并选中新行，仍留在总览",
+            "passed": true
+        },
+        {
+            "name": "无需先保存样本设置，即可连续新增两个不同的普通空架",
+            "passed": true
+        },
+        {
+            "name": "单击普通架只选中该行，不进入设置区",
+            "passed": true
+        },
+        {
+            "name": "双击未选中卡：首击重建退休后第二击仍打开对应新架，默认孔数/容器保持原INI",
+            "passed": true
+        },
+        {
+            "name": "未填写样本设置直接返回总览，两次新增的空架均保留",
+            "passed": true
+        },
+        {
+            "name": "编辑架按钮也能打开选中普通架，未错误进入急诊架",
+            "passed": true
+        },
+        {
+            "name": "等待当前步骤超时；保留现场，不强关、不自动放弃其他页面。",
+            "passed": false
+        }
+    ],
+    "completed": false,
+    "configuration_unchanged": true,
+    "created_racks": [
+        {
+            "id": 2,
+            "name": "S01",
+            "still_in_snapshot": true
+        },
+        {
+            "id": 3,
+            "name": "S02",
+            "still_in_snapshot": true
+        }
+    ],
+    "duration_ms": 19560,
+    "event_loop_probe": {
+        "interval_max_ms": 2210,
+        "interval_p95_ms": 164,
+        "period_ms": 25,
+        "samples": 388
+    },
+    "existing_rack_hash_scope": "含孔、任务、质控和校准身份；动态remainingSeconds/remainingAtMs不作冻结比较",
+    "expected_default_container": 1,
+    "expected_ordinary_holes": 5,
+    "failed": 1,
+    "initial_rack_count": 1,
+    "last_step": "choose_other_container_as_unsaved_draft",
+    "observed_tx_types": [
+        "Qj"
+    ],
+    "operation_response_ms": [
+        {
+            "action": "first_add_to_real_snapshot",
+            "ms": 175
+        },
+        {
+            "action": "second_add_to_real_snapshot",
+            "ms": 193
+        },
+        {
+            "action": "double_click_to_editor",
+            "ms": 691
+        }
+    ],
+    "physical_mouse_keyboard_verified": false,
+    "physical_screen_verified": false,
+    "programmatic_qttest_widget_events": true,
+    "real_instrument_detection_verified": false,
+    "reason": "等待当前步骤超时；保留现场，不强关、不自动放弃其他页面。",
+    "release_id": "d4501a69e100adbd3e3b87a4f311533ed7cfdabdd69d44f124fd822a7add4e4d",
+    "schema": "sn100-sample-add-order-review-v1",
+    "tx_observation_scope": "wireActivity中已入队的实际报文；仅Ts/Tp/Tt或M前缀触发停止；不能阻发或证明全部业务副作用不存在",
+    "tx_observation_started_ms": 47,
+    "watched_task_or_motion_tx_observed": false
+}
+RESULT_JSON_END
+STARTUP_REVIEW_MARKERS
+THEME_CONFIGURATION_LOADED model= SN500 reagents= 42 sample_holes= 5 emergency_holes= 5 channels= 24 report_table_type= 1
+ORIGINAL_AD_CHANNELS_READY configured_count= 24 source_rows= 25
+SHELL_READY
+ORIGINAL_AD_CHANNELS_RELOADED reagent_positions= 48 reported_channels= 24
+SAMPLE_ADD_REVIEW_COMPLETE check_exit= 1 saved= true exit_saved= true
+MAIN_EXIT=null
+ESTAB 0      0      192.168.100.123:5000  192.168.100.123:54558 users:(("SN450_CPU3",pid=4426,fd=6))
+ESTAB 0      0      192.168.100.123:54558 192.168.100.123:5000  users:(("sn100_shell",pid=5836,fd=54))
+REVIEW_STATUS_READONLY_COMPLETE=1

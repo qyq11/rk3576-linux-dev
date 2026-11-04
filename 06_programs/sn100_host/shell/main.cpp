@@ -589,6 +589,12 @@ int main(int argc, char *argv[])
         qCritical() << "原样本新孔默认容器未能在移入工作线程前配置。";
         return 3;
     }
+    if (samples && reagents && withOriginalProjects &&
+        !samples->configureOriginalReagentMetadata(reagents->originalPageMetadata()))
+    {
+        qCritical() << "原样本未能绑定真实试剂盘面批号来源。";
+        return 3;
+    }
     if (samples)
     {
         SampleStore::registerTypes();
@@ -940,6 +946,8 @@ int main(int argc, char *argv[])
     {
         auto *projectPage = new ProjectPage(projects);
         auto *reagentPage = new ReagentsPage(reagents);
+        if (samples) QObject::connect(samples,&SampleStore::originalReagentPageMetadataChanged,
+            reagentPage,&ReagentsPage::refreshOriginalPageMetadata,Qt::QueuedConnection);
         shell->attachCatalogPages(projectPage,reagentPage);
         if (withLocalResults && !withOriginalProjects)
         {
@@ -1248,6 +1256,8 @@ int main(int argc, char *argv[])
                 }
                 return target->applyCommittedOriginalChannels(channels,generation,message);
             },&app);
+            if (!shell->attachOriginalChannelReadback(originalChannelReceiver,originalDbRoot))
+                qWarning() << "ORIGINAL_CHANNEL_MANUAL_UNAVAILABLE registration_failed=true";
             QObject::connect(&originalChannelThread,&QThread::started,originalChannelReceiver,
                 [originalChannelReceiver,&originalChannelFailure]()
             {

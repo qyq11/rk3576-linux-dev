@@ -1,0 +1,61 @@
+require_phase launch
+lock_store
+check_current "releases/$release_id"
+check_stopped_old
+check_old_release
+check_new_release both
+begin_phase
+lock_life
+check_current "releases/$release_id"
+check_stopped_old
+check_new_release both
+runtime_checked "$audit/core_inputs.sha256" "$(printf '%s\n' "$core_sha256" | sha256sum | cut -d' ' -f1)"
+[[ $(cat "$audit/old_stop_receipt.sha256") == "$old_stop_receipt_sha256" && $(cat "$audit/stop_intent.sha256") == "$root_launch_intent_sha256" ]] || runtime_fail '切换审计不属于同一旧停链。'
+[[ -d $observation_dir && ! -L $observation_dir && $(readlink -f "$observation_dir") == "$observation_dir" && $(stat -c %u "$observation_dir") == "$(id -u lckfb)" && $(stat -c %a "$observation_dir") == 700 && -z $(find "$observation_dir" -mindepth 1 -maxdepth 1 -print -quit) ]] || runtime_fail '观察目录不是空的普通用户目录。'
+[[ -d $capture_parent && ! -L $capture_parent && $(readlink -f "$capture_parent") == "$capture_parent" && $(stat -c %u "$capture_parent") == "$(id -u lckfb)" && $(stat -c %a "$capture_parent") == 700 && -z $(find "$capture_parent" -mindepth 1 -maxdepth 1 -print -quit) ]] || runtime_fail '采集父目录不规范或已有结果。'
+[[ $(stat -c %u "$base") == "$(id -u lckfb)" && -d $base/runs && ! -L $base/runs && $(readlink -f "$base/runs") == "$base/runs" ]] || runtime_fail '运行根不属于正式用户。'
+new_run=$base/runs/$(date +%Y%m%d_%H%M%S)_$$
+[[ ! -e $new_run && ! -L $new_run ]] || runtime_fail '新RUN已存在。'
+mkdir -m 700 "$new_run"
+chown lckfb:lckfb "$new_run"
+cp -- "$base/latest_run" "$meta/phase_logs/launch/latest_run_before.txt"
+latest_new=$base/.latest_run-integration_12_01-$transition_id-$$
+[[ ! -e $latest_new && ! -L $latest_new ]] || runtime_fail 'latest_run临时路径已存在。'
+printf '%s\n' "${new_run##*/}" > "$latest_new"
+chmod 600 "$latest_new"
+chown lckfb:lckfb "$latest_new"
+mv -T -- "$latest_new" "$base/latest_run"
+printf '%s\n' "$new_run" > "$meta/phase_logs/launch/new_run.txt"
+# 唯一服务请求；不使用start、timeout、--wait、--pipe或任何末尾stop。
+check_phase_materials
+check_current "releases/$release_id"
+check_environment_baseline
+transition_assert_quiet
+request_code=0
+systemd-run --quiet --collect --unit=sn100-shell --property=Type=exec \
+    /usr/bin/openvt -c 7 -s -w -- /usr/sbin/runuser -u lckfb -- \
+    /usr/bin/env SN100_LIS_OBSERVATION_DIR="$observation_dir" SN100_LIS_OBSERVATION_ID="$observation_id" SN100_LIS_OBSERVATION_RELEASE="$release_id" \
+    /bin/bash "$flat/rk_board.sh" supervise "$base" "$flat" "$new_run" 0 '' \
+    >"$meta/phase_logs/launch/systemd.stdout.log" 2>"$meta/phase_logs/launch/systemd.stderr.log" || request_code=$?
+printf '%s\n' "$request_code" > "$meta/phase_logs/launch/systemd.actual_exit"
+# 任何等待前先释放父锁，让新supervise取得自己的生命周期锁。
+exec 9>&-
+exec 8>&-
+[[ $request_code == 0 ]] || exit "$request_code"
+identified=0
+for ((i=0; i<60; i++)); do
+    if [[ -s $new_run/app.pid && -s $new_run/app.start_ticks && -s $new_run/app.exe && -s $new_run/boot_id ]]; then identified=1; break; fi
+    sleep 0.25
+done
+[[ $identified == 1 ]] || runtime_fail '只等待身份已超时；产品保持原状态。'
+new_pid=$(cat "$new_run/app.pid")
+new_ticks=$(cat "$new_run/app.start_ticks")
+check_new_live
+read_product_environment > "$meta/phase_logs/launch/product_observation_environment.txt"
+systemctl show sn100-shell.service -p Id -p ActiveState -p SubState -p MainPID -p Type -p TTYPath -p Restart -p RuntimeMaxUSec -p KillMode > "$meta/phase_logs/launch/service_properties.txt"
+check_new_live
+receipt_details() {
+    printf 'UNIQUE_START_REQUEST_EXIT=0\nNEW_PROCESS_IDENTIFIED=1\nNEW_RUN=%s\nNEW_PID=%s\nNEW_START_TICKS=%s\nNEW_EXE=%s\nNEW_EXE_SHA256=%s\nSOFT_DEADLINE_SECONDS=0\n' "$new_run" "$new_pid" "$new_ticks" "$flat/sn100_shell" "$expected_app_sha256"
+    printf 'PRODUCT_ENVIRONMENT_SHA256=%s\nSERVICE_PROPERTIES_SHA256=%s\nAPPLICATION_EXIT=not_evaluated\n' "$(runtime_sha "$meta/phase_logs/launch/product_observation_environment.txt")" "$(runtime_sha "$meta/phase_logs/launch/service_properties.txt")"
+}
+emit_receipt

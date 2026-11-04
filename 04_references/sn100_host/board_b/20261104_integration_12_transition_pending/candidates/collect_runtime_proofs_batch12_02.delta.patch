@@ -1,0 +1,162 @@
+--- collect_runtime_proofs_batch12_01.py
++++ collect_runtime_proofs_batch12_02.py
+@@ -1,4 +1,5 @@
+ """Root手动执行：只读回收第12批真实运行凭据，保持同一新版程序运行。"""
+ from pathlib import Path
++from datetime import datetime
+ import argparse
+ import gzip
+@@ -99,4 +100,43 @@
+ 
+ 
++def read_old_stop(g, originals, core, rows):
++    """实际停止后读取九原件；本地记录仅核字节，远端路径另由核心与本轮meta确定。"""
++    keys = {'result', 'exit_code', 'stdout', 'stderr', 'actual_exit', 'app_pid', 'app_start_ticks', 'app_exe', 'boot_id'}
++    records = rows['activate']['value']['old_stop_files']
++    require(type(records) is dict and set(records) == keys, '实际停止九原件字段不完整。')
++    raw = {name: originals.record(item) for name, item in records.items()}
++    old = core['fresh_baseline']['old_application']
++    expected_bytes = {'result': b'APP_EXIT=0\nCLEAN_SHUTDOWN=1\n', 'exit_code': b'0\n', 'actual_exit': b'0\n',
++                      'app_pid': (old['pid'] + '\n').encode('ascii'),
++                      'app_start_ticks': (old['start_ticks'] + '\n').encode('ascii'),
++                      'app_exe': (old['exe'] + '\n').encode('ascii'),
++                      'boot_id': (core['fresh_baseline']['boot_id'] + '\n').encode('ascii')}
++    for name, wanted in expected_bytes.items():
++        require(raw[name] == wanted, '停止原件不是准确旧C7的正常退出：' + name)
++    stop = rows['stop']['facts']
++    sha_keys = {'result': 'OLD_RESULT_SHA256', 'exit_code': 'OLD_EXIT_CODE_SHA256', 'stdout': 'STOP_STDOUT_SHA256',
++                'stderr': 'STOP_STDERR_SHA256', 'actual_exit': 'STOP_TOOL_EXIT_FILE_SHA256',
++                'app_pid': 'OLD_APP_PID_FILE_SHA256', 'app_start_ticks': 'OLD_APP_START_FILE_SHA256',
++                'app_exe': 'OLD_APP_EXE_FILE_SHA256', 'boot_id': 'OLD_BOOT_FILE_SHA256'}
++    for name, field in sha_keys.items():
++        require(stop.get(field) == g.digest(raw[name]) == records[name]['sha256'], '停止收据与实际九原件摘要不符：' + name)
++    expected = {'OLD_RUN': old['run'], 'OLD_PID': old['pid'], 'OLD_START_TICKS': old['start_ticks'],
++                'OLD_EXE': old['exe'], 'OLD_EXE_SHA256': old['sha256'], 'OLD_HELPER_SHA256': old['helper_sha256'],
++                'OLD_MANIFEST_SHA256': core['fresh_baseline']['old_current'].removeprefix('releases/'),
++                'APP_EXIT': '0', 'CLEAN_SHUTDOWN': '1', 'STOP_TOOL_ACTUAL_EXIT': '0', 'DISPLAY_RELEASED': '1'}
++    require(all(stop.get(k) == v for k, v in expected.items()), 'stop事实不是核心中准确旧C7的干净退出。')
++    stop_record = record(g.CAP / 'stop.receipt', rows['stop']['receipt'])
++    exit_record = record(g.CAP / 'stop.exit', rows['stop']['exit'])
++    log_record = record(g.CAP / 'stop.log', rows['stop']['log'])
++    for name in ('activate', 'launch', 'observe'):
++        auth = rows[name]['value']
++        require(auth['old_stop_files'] == records, '后续授权没有使用同一实际九原件：' + name)
++        require(auth['stop_intent_record'] == core['stable_target_intent'] and auth['old_stop_receipt'] == stop_record
++                and auth['old_stop_phase_exit'] == exit_record and auth['old_stop_phase_log'] == log_record,
++                '后续授权没有绑定本链同一stop/退出/log/意图：' + name)
++        require(rows[name]['facts'].get('OLD_STOP_RECEIPT_SHA256') == stop_record['sha256'], '后续回执旧停摘要不属于本链：' + name)
++    return raw
++
++
+ def file_scope(g, originals, core, rows, live):
+     """白名单直接来自本轮固定目录；不枚举业务资料目录。"""
+@@ -104,4 +144,8 @@
+     audit = core['audit_directory'][len(g.BASE) + 1:]
+     run = live['NEW_RUN'][len(g.BASE) + 1:]
++    old_run = core['fresh_baseline']['old_application']['run']
++    require(old_run.startswith(g.BASE + '/runs/') and old_run != live['NEW_RUN'], '旧run来源不明或与新run混用。')
++    old_relative = old_run[len(g.BASE) + 1:]
++    old_stop = read_old_stop(g, originals, core, rows)
+     limits, expected = {}, {}
+ 
+@@ -125,5 +169,9 @@
+                                      'product_observation_environment.txt', 'post_live_services.txt')}.items():
+         for name in names:
+-            add(meta + '/phase_logs/' + phase + '/' + name, 1048576)
++            stop_key = {'stdout.log': 'stdout', 'stderr.log': 'stderr', 'actual_exit': 'actual_exit'}.get(name) if phase == 'stop' else None
++            add(meta + '/phase_logs/' + phase + '/' + name, 1048576, raw=old_stop[stop_key] if stop_key else None)
++    for key, name in {'result': 'result.txt', 'exit_code': 'exit_code', 'app_pid': 'app.pid',
++                      'app_start_ticks': 'app.start_ticks', 'app_exe': 'app.exe', 'boot_id': 'boot_id'}.items():
++        add(old_relative + '/' + name, raw=old_stop[key])
+     audit_values = {'current_before.txt': core['fresh_baseline']['old_current'], 'core_inputs.sha256': g.CORE_SHA,
+                     'activation_authorization.sha256': g.digest(rows['activate']['auth']),
+@@ -148,4 +196,5 @@
+     text = source.split(marker)[0] + '\n'
+     text += 'meta=' + shlex.quote(core['metadata_directory']) + '\n'
++    text += 'new_run=' + shlex.quote(live['NEW_RUN']) + '\n'
+     text += r'''
+ check_identity() {
+@@ -162,5 +211,10 @@
+     [[ ${after[19]-} == "$identity_ticks" && ${after[0]-} != Z && ${after[0]-} != X ]]
+ }
++check_new_run_files() {
++    [[ -d $new_run && ! -L $new_run && $(readlink -f "$new_run") == "$new_run" ]]
++    [[ ! -e $new_run/exit_code && ! -L $new_run/exit_code && ! -e $new_run/result.txt && ! -L $new_run/result.txt ]]
++}
+ check_context() {
++    check_new_run_files
+     check_live
+ '''
+@@ -176,5 +230,5 @@
+     for pointer in core['fresh_baseline']['pointers']:
+         text += '[[ $(sha256sum ' + shlex.quote(pointer['path']) + ' | cut -d\' \' -f1) == ' + pointer['sha256'] + ' ]]\n'
+-    text += '}\ncheck_context\n'
++    text += 'check_live\ncheck_new_run_files\n}\ncheck_context\n'
+     for name, maximum in limits.items():
+         path = shlex.quote(g.BASE + '/' + name)
+@@ -220,4 +274,56 @@
+     require(set(values) == set(limits), '包内白名单文件不完整。')
+     return values
++
++
++def read_snapshot(g, raw, core, live, configuration_raw):
++    """仅接受本次现场的明确字段；不把BEGIN/END包住的任意文字当作核对通过。"""
++    begin, end = b'RUNTIME_PROOFS_SNAPSHOT_BEGIN\n', b'RUNTIME_PROOFS_SNAPSHOT_END\n'
++    require(raw.count(begin) == 1 and raw.count(end) == 1 and raw.endswith(end), '没有完整本次收证现场。')
++    snapshot = raw.split(begin, 1)[1].split(end, 1)[0]
++    baseline, controller = core['fresh_baseline'], core['fresh_baseline']['controller']
++    service = baseline['camera_service']
++    expected = {'FORMAT': 'sn100-runtime-proofs-12-01-live-v1', 'PHASE': 'post_observe',
++                'CORE_INPUTS_SHA256': g.CORE_SHA, 'RELEASE_ID': g.RELEASE, 'APP_PID': live['NEW_PID'],
++                'APP_START_TICKS': live['NEW_START_TICKS'], 'APP_EXE': live['NEW_EXE'], 'APP_SHA256': g.APP_SHA,
++                'BOOT_ID': live['BOOT_ID'], 'SERIAL': g.SERIAL, 'APPLICATION_EXIT': 'null',
++                'PRODUCT_STARTED_OR_STOPPED': '0', 'SAME_APPLICATION_RUNNING': '1', 'CURRENT': 'releases/' + g.RELEASE,
++                'CONTROLLER_PID': controller['pid'], 'CONTROLLER_START_TICKS': controller['start_ticks'],
++                'CONTROLLER_EXE': controller['exe'], 'CONTROLLER_SHA256': controller['sha256'],
++                'CONFIGURATION_MANIFEST_SHA256': baseline['configuration_manifest']['sha256'],
++                'Id': service['unit'], 'ActiveState': service['active_state'],
++                'SubState': service['sub_state'], 'MainPID': service['main_pid']}
++    require(configuration_raw.endswith(b'\n') and b'\r' not in configuration_raw, '固定配置清单不是LF原文。')
++    expected_hashes = {}
++    for line in configuration_raw.decode('ascii').split('\n')[:-1]:
++        match = re.fullmatch(r'([a-f0-9]{64})  (/[A-Za-z0-9_./-]+)', line)
++        require(match is not None and match[2] not in expected_hashes, '固定七配置清单格式或重复路径错误。')
++        expected_hashes[match[2]] = match[1]
++    require(len(expected_hashes) == 7, '固定配置清单不恰为七项。')
++    for pointer in baseline['pointers']:
++        require(pointer['path'] not in expected_hashes, '三指针与七配置路径重叠。')
++        expected_hashes[pointer['path']] = pointer['sha256']
++    require(len(baseline['pointers']) == 3 and len(expected_hashes) == 10, '不是七配置加三指针。')
++    expected_cameras = {'|'.join(row[k] for k in ('role', 'pid', 'start_ticks', 'uid', 'exe', 'sha256'))
++                        for row in baseline['camera_processes']}
++    require(len(baseline['camera_processes']) == len(expected_cameras) == 2, '固定核心不恰为两份相机/3A身份。')
++    require(snapshot.endswith(b'\n') and b'\r' not in snapshot, '现场内容不是LF原文。')
++    fields, cameras, hashes = {}, [], {}
++    for line in snapshot.decode('ascii').split('\n')[:-1]:
++        match = re.fullmatch(r'([a-f0-9]{64})  (/[A-Za-z0-9_./-]+)', line)
++        if match:
++            require(match[2] not in hashes, '现场SHA路径重复。')
++            hashes[match[2]] = match[1]
++        elif line.startswith('CAMERA_IDENTITY='):
++            cameras.append(line.partition('=')[2])
++        else:
++            key, separator, value = line.partition('=')
++            require(separator and key in set(expected) | {'UTC'} and key not in fields, '现场含未知、重复或不完整字段。')
++            fields[key] = value
++    require(set(fields) == set(expected) | {'UTC'} and all(fields[k] == v for k, v in expected.items()), '现场单值字段未与真实核心/新进程逐项一致。')
++    require(re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z', fields['UTC']), '现场UTC格式不符。')
++    datetime.strptime(fields['UTC'], '%Y-%m-%dT%H:%M:%SZ')
++    require(len(cameras) == 2 and set(cameras) == expected_cameras, '现场相机/3A身份不是恰好两条准确身份。')
++    require(hashes == expected_hashes, '现场七配置/三指针SHA原文缺失、多余或不一致。')
++    return snapshot
+ 
+ 
+@@ -264,7 +370,5 @@
+     require(stderr.stat().st_size <= 1048576, '远端stderr超过上限。')
+     text = stderr.read_bytes()
+-    begin, end = b'RUNTIME_PROOFS_SNAPSHOT_BEGIN\n', b'RUNTIME_PROOFS_SNAPSHOT_END\n'
+-    require(text.count(begin) == 1 and text.count(end) == 1 and text.endswith(end), '没有完整本次收证现场。')
+-    snapshot = text.split(begin, 1)[1].split(end, 1)[0]
++    snapshot = read_snapshot(g, text, core, live, originals.record(core['fresh_baseline']['configuration_manifest']))
+     originals.unchanged()
+     destination = out / 'remote_proofs'

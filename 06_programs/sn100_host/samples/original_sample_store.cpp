@@ -1,8 +1,11 @@
 #include "sample_store.h"
+#include "original_task_reagent_receipt_writer.h"
 #include "original_sample_repository.h"
 #include "original_detection_session.h"
 #include "original_device_sync.h"
+#include "original_files/original_ini.h"
 #include <QThread>
+#include <QCryptographicHash>
 #include <QTimer>
 #include <QFileInfo>
 #include <QDir>
@@ -14,17 +17,27 @@ void SampleStore::initializeOriginal(QString root)
     if (!pendingQuality_.change.changeToken.isEmpty())
     { emit error(0,QStringLiteral("initializeOriginal"),QStringLiteral("原有质控引用操作正在完成，未切换数据源。")); return; }
     release();
-    auto repository = std::unique_ptr<OriginalSampleRepository>(new OriginalSampleRepository);
     QString message;
-    if (!repository->initialize(root, &message, originalDefaultContainerIsTube_))
+    if (!OriginalBusiness::workingRoot(root,&message))
     { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+    const auto configurationSource=OriginalIni::InitializationSource::capture(root,&message);
+    if (!configurationSource)
+    { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+    auto repository = std::unique_ptr<OriginalSampleRepository>(new OriginalSampleRepository);
+    if (!repository->initialize(root, &message, originalDefaultContainerIsTube_, configurationSource))
+    { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
+    if (layoutConfigured_ && (ordinaryHoles_!=repository->ordinaryHoles() || emergencyHoles_!=repository->emergencyHoles()))
+    { emit error(0,QStringLiteral("initializeOriginal"),QStringLiteral("预先配置的普通/急诊孔数与本次原配置不一致，请重新加载资料。")); return; }
     auto detection = std::unique_ptr<OriginalDetectionSession>(new OriginalDetectionSession);
-    if (!detection->initialize(repository.get(), &message))
+    if (!detection->initialize(repository.get(), &message, originalPageMetadata_, configurationSource))
     { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
     std::unique_ptr<OriginalDeviceSync> synchronization(new OriginalDeviceSync);
     if (!synchronization->initialize(root,&message))
     { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
     synchronization->setKnownProjectFiles(repository->projects());
+    // 首次安装和所有就绪信号之前核对；失败只放弃本次局部对象，不假称项目原恢复动作已回滚。
+    if (!configurationSource->current(root,&message))
+    { emit error(0,QStringLiteral("initializeOriginal"),message); return; }
     originalSamples_ = std::move(repository);
     originalDetection_ = std::move(detection);
     originalDeviceSync_=std::move(synchronization);
@@ -267,6 +280,39 @@ void SampleStore::originalProjectUpdateSent(quint64 intent, quint64 connection, 
     publishOriginalProjectUpdateStates();
 }
 
+void SampleStore::registerEmptyOrdinaryRack(qint64 request, int ordinaryHoles, bool containerIsTube)
+{
+    const QString operation = QStringLiteral("registerEmptyOrdinaryRack");
+    if (!check(request, operation, true)) return;
+    if (!originalSamples_)
+    {
+        emit error(request, operation, QStringLiteral("原样本资料未就绪，未新增普通架。"));
+        return;
+    }
+    qint64 rackId = 0;
+    SampleSnapshot snapshot;
+    QString message;
+    if (!originalSamples_->registerEmptyOrdinaryRack(ordinaryHoles, containerIsTube, &rackId, &snapshot, &message))
+    {
+        emit error(request, operation, message);
+        return;
+    }
+    // 回传同一工作线程已经登记的内存快照；不再接公共load及项目复制恢复。
+    emit emptyOrdinaryRackRegistered(request, rackId, snapshot);
+}
+
+void SampleStore::loadOriginalRuntimeSnapshot(qint64 request)
+{
+    const QString operation = QStringLiteral("loadOriginalRuntimeSnapshot");
+    if (!check(request, operation)) return;
+    if (!originalSamples_)
+    {
+        emit error(request, operation, QStringLiteral("原样本资料未就绪，未读取运行态架列表。"));
+        return;
+    }
+    emit snapshotReady(request, originalSamples_->snapshot());
+}
+
 bool SampleStore::originalRackChange(qint64 request, const QString &operation, const SampleRack &rack, qint64 id)
 {
     if (!originalSamples_) return false;
@@ -298,6 +344,36 @@ void SampleStore::prepareDeviceTasks(quint64 request, bool linuxNew)
     emit deviceTasksPrepared(request, success, success ? QStringLiteral("已按当前原数据库核对样本任务，等待原开始命令。") : message);
 }
 
+void SampleStore::prepareUserDeviceTasks(OriginalTaskReagents::RuntimeBasis basis,bool linuxNew)
+{
+    if (QThread::currentThread()!=thread())
+    {
+        // 拒绝线程错误的调用，既不读仓库/账户，也不伪称已排worker完成。
+        emit deviceTaskError(QStringLiteral("用户任务准备调用线程错误，未处理；这不是原后台完成回执。"));
+        return;
+    }
+    OriginalTaskReagents::Commit receipt;
+    const QString root=originalSamples_ ? originalSamples_->root() : QString();
+    OriginalTaskReagents::ReceiptWriter writer(OriginalTaskReagents::Action::None,basis.root,QByteArray(),basis,&receipt,{});
+    const auto &user=basis.userOperation;
+    const bool account=user.authenticated==session_.authenticated && user.accountName==session_.name &&
+        user.role==session_.role && user.sessionSource==int(session_.source) && user.policyRoot==session_.originalPolicySource &&
+        user.grantedPowerIds==session_.grantedPowerIds;
+    QString message;
+    bool success=false;
+    if (!ready_ || !originalDetection_ || !originalDeviceSync_ ||
+        !canEdit(session_) || !account || !OriginalTaskReagents::taskOriginAllows(basis,OriginalTaskReagents::Action::None) ||
+        basis.source!=OriginalTaskReagents::OperationSource::UserOperation || basis.root!=root ||
+        originalDeviceSync_->connection()!=basis.connection)
+        message=QStringLiteral("用户任务准备的账户、连接、资料或所属线程已经失效，未继续。 ");
+    else if (!originalDeviceSync_->canStart(linuxNew,&message)) {}
+    else success=originalDetection_->prepareUserOperation(basis,linuxNew,&message);
+    if (!success && originalDetection_ && QThread::currentThread()==thread()) originalDetection_->cancelUnsent();
+    // 原Session已经返回；本入口无reserve/SQL写，finished不早于工作真正结束。
+    writer.finish();
+    emit userTaskOperationFinished(receipt,success,message);
+}
+
 void SampleStore::cancelDeviceTaskPreparation()
 {
     if (QThread::currentThread() == thread() && originalDetection_) originalDetection_->cancelUnsent();
@@ -321,8 +397,9 @@ void SampleStore::answerDeviceRackRequest(QByteArray payload, quint64 connection
     { emit deviceTaskError(QStringLiteral("原样本任务处理未就绪，不能回应设备。")); return; }
     QByteArray response;
     QString message;
-    if (!originalDetection_->answerRackRequest(payload, &response, &message))
-    { emit deviceTaskError(message); return; }
+    const bool success=originalDetection_->answerRackRequest(payload,&response,&message);
+    emit originalReagentPageMetadataChanged();
+    if (!success) { emit deviceTaskError(message); return; }
     emit deviceRackTasksPrepared(response, connection);
     emit originalCalibrationRecordsChanged();
 }
@@ -362,12 +439,18 @@ void SampleStore::receiveDevicePacketImpl(QByteArray payload, quint64 connection
         message = QStringLiteral("原样本/试剂处理未就绪，未保存或回应设备数据。");
     else if (!originalDeviceSync_ || !connection || originalDeviceSync_->connection()!=connection)
         message = QStringLiteral("该数据不属于当前已核对的设备连接，未写入或下发任务。");
+    else if (taskBasis && (payload.startsWith("Tt") || payload.startsWith("TR")) &&
+        (taskBasis->source!=OriginalTaskReagents::OperationSource::DevicePacket ||
+         !OriginalTaskReagents::validTaskOrigin(*taskBasis) || taskBasis->arrivalPacketId!=packet ||
+         taskBasis->connection!=connection || taskBasis->payloadSha256!=QString::fromLatin1(QCryptographicHash::hash(payload,QCryptographicHash::Sha256).toHex())))
+        message=QStringLiteral("设备原包与任务来源不对应，未借用户意图或另一包执行事务。 ");
     else if (payload.startsWith("Tt"))
     {
         QByteArray response;
         success = taskBasis
             ? originalDetection_->answerRackRequest(payload,&response,&message,*taskBasis,&taskReceipt,committed)
             : originalDetection_->answerRackRequest(payload,&response,&message);
+        emit originalReagentPageMetadataChanged();
         if (success) { emit deviceRackTasksPrepared(response,connection); emit originalCalibrationRecordsChanged(); }
         else if (taskBasis && taskReceipt.committed)
         {
