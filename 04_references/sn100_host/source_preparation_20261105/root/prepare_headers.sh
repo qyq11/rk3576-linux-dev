@@ -1,0 +1,330 @@
+#!/usr/bin/env bash
+# Integrated ARM64 target. Generate separately from O03, publish after success.
+set -Eeuo pipefail
+[[ $# == 1 && $1 == /* ]] || { echo 'Usage: shell/build.sh ABSOLUTE_OUTPUT_FILE' >&2; exit 2; }
+[[ $EUID != 0 ]] || { echo 'Build as the ordinary WSL user.' >&2; exit 2; }
+export PATH=/usr/local/bin:/usr/bin:/bin
+module_dir=/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/06_programs/sn100_host/shell
+program_dir=$(cd -- "$module_dir/.." && pwd)
+root=$(cd -- "$module_dir/../../.." && pwd)
+# Read-only input inventory for the freeze/contract test. This mode must not
+# restore a sysroot, generate files, compile, or publish an executable.
+list_inputs=${SN100_ARM64_LIST_INPUTS:-0}
+[[ $list_inputs == 0 || $list_inputs == 1 ]] || { echo 'SN100_ARM64_LIST_INPUTS must be 0 or 1.' >&2; exit 2; }
+sysroot=${SN100_ARM64_SYSROOT:-$root/temp/sn100_host/arm64_sysroot}
+[[ $sysroot == /* ]] || { echo 'SN100_ARM64_SYSROOT must be absolute.' >&2; exit 2; }
+if [[ $list_inputs == 0 ]]; then
+    [[ -f $sysroot/usr/lib/aarch64-linux-gnu/libQt5Sql.so.5.15.13 ]] || bash "$program_dir/prepare_arm64.sh"
+    [[ -f $sysroot/usr/lib/aarch64-linux-gnu/libQt5Charts.so.5.15.13 ]] || {
+        echo 'Report ARM64 inputs missing; use shell/rk.sh prepare to restore the isolated sysroot.' >&2; exit 1;
+    }
+    [[ -f $sysroot/usr/include/aarch64-linux-gnu/qt5/QtSvg/QSvgRenderer && -f $sysroot/usr/lib/aarch64-linux-gnu/libQt5Svg.so ]] || {
+        echo 'Sample UI ARM64 SVG inputs missing; restore matching archived Qt5.15.13 SVG headers/runtime before building.' >&2; exit 1;
+    }
+fi
+# 缓存头文件可能是指向WSL本地的同字节副本，先解析路径，避免每次include穿过Windows盘。
+include=$(readlink -f -- "$sysroot/usr/include/aarch64-linux-gnu/qt5")
+lib=$sysroot/usr/lib/aarch64-linux-gnu
+build_dir=${SN100_ARM64_BUILD_DIR:-$root/temp/sn100_host/integration/arm64_build}
+[[ $build_dir == /* ]] || { echo 'SN100_ARM64_BUILD_DIR must be absolute.' >&2; exit 2; }
+if [[ $list_inputs == 0 ]]; then
+    mkdir -p "$build_dir" "$(dirname -- "$1")"
+    exec 9>"$build_dir/build.lock"
+    flock -n 9 || { echo 'This ARM64 build directory is already in use.' >&2; exit 1; }
+fi
+case ${RK_BUILD_TYPE:-Release} in
+    Release) optimization=(-O2 -g -DQT_NO_DEBUG) ;;
+    Debug) optimization=(-O0 -g3 -fno-omit-frame-pointer) ;;
+    *) echo 'RK_BUILD_TYPE must be Debug or Release.' >&2; exit 2 ;;
+esac
+qt_tools=/usr/lib/qt5/bin
+vendor=$program_dir/thirdparty/qtrpt
+include_flags=(-I"$module_dir" -I"$program_dir" -I"$program_dir/ui" -I"$program_dir/history" -I"$build_dir" -I"$module_dir/widgets" -I"$module_dir/widgets/material")
+include_flags+=(-I"$vendor/QtRPT" -I"$vendor/CommonFiles")
+include_flags+=(-I"$program_dir/projects" -I"$program_dir/reagents" -I"$program_dir/samples" -I"$program_dir/samples/material")
+include_flags+=(-I"$program_dir/instrument")
+include_flags+=(-I"$program_dir/quality_control")
+include_flags+=(-I"$program_dir/calibration")
+include_flags+=(-I"$program_dir/alarm_history" -I"$program_dir/alarm_history/calendar")
+include_flags+=(-I"$program_dir/lis_raw_inbox")
+modules=(QtCore QtGui QtWidgets QtSql QtXml QtPrintSupport QtQml QtNetwork QtCharts QtSvg)
+for module in "${modules[@]}"; do include_flags+=(-I"$include/$module"); done
+sources=("$module_dir/main.cpp" "$module_dir/shutdown_request.cpp" "$module_dir/startup_splash.cpp" "$module_dir/frmmain.cpp" "$module_dir/frmuserset.cpp" "$module_dir/history_shell.cpp"
+         "$program_dir/data/hospital_store.cpp" "$program_dir/ui/frmhospinfosetting.cpp" "$program_dir/ui/mnemonic.cpp"
+         "$program_dir/data/account_store.cpp" "$program_dir/ui/frmaccountsetting.cpp"
+         "$program_dir/ui/cusmessagebox.cpp" "$program_dir/ui/cusdialogmask.cpp"
+         "$program_dir/history/history_store.cpp" "$program_dir/history/history_page.cpp" "$program_dir/history/result_statistics.cpp"
+         "$program_dir/history/history_value_text.cpp" "$program_dir/history/result_ingest_store.cpp" "$program_dir/history/result_project_references.cpp"
+         "$program_dir/history/history_current_format.cpp" "$program_dir/history/history_current_display_state.cpp"
+         "$module_dir"/widgets/*.cpp "$module_dir"/widgets/material/*.cpp "$module_dir"/widgets/material/lib/*.cpp)
+sources+=("$program_dir/history/report_controller.cpp" "$program_dir/history/report_document.cpp"
+         "$program_dir/history/report_render.cpp" "$vendor/QtRPT/"*.cpp "$vendor/CommonFiles/"*.cpp)
+# Match projects_core.pri and reagents.pri explicitly. Their standalone main.cpp,
+# tests and alternate widget bundles do not belong to the unified executable.
+sources+=("$module_dir/catalog_shell.cpp"
+         "$program_dir/original_files/original_ini.cpp" "$program_dir/original_files/theme_configuration.cpp" "$program_dir/original_files/original_runtime_settings.cpp"
+         "$program_dir/projects/projects_store.cpp" "$program_dir/projects/project_page.cpp" "$program_dir/projects/cuscheckbox.cpp"
+         "$program_dir/projects/project_advanced.cpp"
+         "$program_dir/projects/projects_current_format.cpp" "$program_dir/projects/project_format_dialog.cpp"
+         "$program_dir/projects/original_project_repository.cpp"
+         "$program_dir/projects/original_project_copy.cpp" "$program_dir/projects/original_project_copy_dialog.cpp"
+         "$program_dir/reagents/reagent_store.cpp" "$program_dir/reagents/reagents_page.cpp"
+         "$program_dir/reagents/wgtreagentpanel.cpp" "$program_dir/reagents/cusreagenthole.cpp")
+# samples_core.pri contains the local preset/task page and only the additional
+# Material controls it needs; the shell already owns the common Material base.
+sources+=("$program_dir/samples/sample_store.cpp" "$program_dir/samples/sample_page.cpp"
+         "$program_dir/samples/original_calibration_preset.cpp" "$program_dir/samples/original_control_tasks.cpp"
+         "$program_dir/samples/sample_calibration_page.cpp" "$program_dir/samples/cusnumberkeyboard.cpp"
+         "$program_dir/samples/sample_task_reset.cpp"
+         "$program_dir/samples/sample_qc_preset.cpp" "$program_dir/samples/sample_qc_storage.cpp"
+         "$module_dir/sample_qc_shell.cpp"
+         "$program_dir/samples/sample_widgets.cpp" "$program_dir/samples/cusracklistwidget.cpp"
+         "$program_dir/samples/cuscheckheader.cpp" "$program_dir/samples/cuscombox_base.cpp"
+         "$program_dir/samples/material/qtmaterialradiobutton.cpp"
+         "$program_dir/samples/material/qtmaterialscrollbar.cpp" "$program_dir/samples/material/qtmaterialscrollbar_internal.cpp"
+         "$program_dir/samples/material/lib/qtmaterialcheckable.cpp" "$program_dir/samples/material/lib/qtmaterialcheckable_internal.cpp")
+# 文件回放及受限自建回环只读闭包；独立长测入口不进入统一程序。
+sources+=("$module_dir/device_status_shell.cpp" "$program_dir/protocol/status_replay.cpp"
+         "$program_dir/protocol/status_session.cpp" "$program_dir/protocol/frame_codec.cpp")
+sources+=("$program_dir/protocol/status_loopback.cpp" "$program_dir/protocol/read_only_client.cpp"
+          "$program_dir/protocol/tcp_transport.cpp" "$program_dir/protocol/read_only_messages.cpp")
+sources+=("$module_dir/instrument_shell.cpp" "$program_dir/instrument/instrument_page.cpp"
+         "$program_dir/instrument/original_status_values.cpp"
+         "$program_dir/instrument/original_channel_receiver.cpp" "$program_dir/instrument/original_channel_store.cpp"
+         "$program_dir/instrument/maintenance_store.cpp" "$module_dir/device_control_shell.cpp"
+         "$program_dir/instrument/device_control.cpp" "$program_dir/instrument/original_device_commands.cpp")
+sources+=("$module_dir/login_shell.cpp" "$program_dir/ui/maskdlglogin.cpp")
+sources+=("$module_dir/printer_shell.cpp" "$module_dir/printer_report_shell.cpp" "$program_dir/ui/frmprintersetting.cpp" "$program_dir/data/printer_settings_store.cpp")
+sources+=("$module_dir/lis_shell.cpp" "$program_dir/ui/frmlissetting.cpp" "$program_dir/data/lis_settings_store.cpp" "$program_dir/data/serial_port_catalog.cpp")
+sources+=("$program_dir/lis_transport/lis_mllp_codec.cpp" "$program_dir/lis_transport/lis_tcp_transport.cpp" "$program_dir/lis_transport/lis_connection_controller.cpp")
+sources+=("$module_dir/lis_keep_running_observation.cpp")
+# 原报文辅助窗口只有文件/本地SQL；不引入LIS网络、ACK或任务映射。
+sources+=("$module_dir/lis_raw_inbox_shell.cpp" "$program_dir/lis_raw_inbox/lis_dsr_raw.cpp"
+          "$program_dir/lis_raw_inbox/lis_inbox_store.cpp" "$program_dir/lis_raw_inbox/lis_inbox_page.cpp"
+          "$program_dir/lis_raw_inbox/lis_inbox_page_host.cpp" "$program_dir/lis_raw_inbox/lis_inbox_page_worker.cpp")
+sources+=("$program_dir/history/report_remaining_store.cpp" "$program_dir/history/report_remaining_display_dialog.cpp")
+sources+=("$module_dir/quality_shell.cpp" "$program_dir/quality_control/qc_store.cpp"
+         "$program_dir/quality_control/qc_sample_reference_guard.cpp"
+          "$program_dir/quality_control/qc_history_core.cpp" "$program_dir/quality/statistics.cpp"
+          "$program_dir/quality_control/quality_control_page.cpp"
+          "$program_dir/quality_control/cus_quality_chart.cpp" "$program_dir/quality_control/qualitychart.cpp"
+          "$program_dir/quality_control/qc_history_presenter.cpp")
+sources+=("$module_dir/calibration_shell.cpp" "$program_dir/calibration/calibration_store.cpp"
+          "$program_dir/calibration/calibration_page.cpp" "$program_dir/calibration/calibrationchart.cpp")
+sources+=("$module_dir/language_shell.cpp" "$module_dir/alarm_shell.cpp"
+          "$program_dir/ui/language_setting_page.cpp" "$program_dir/history/report_dictionary_dialog.cpp"
+          "$program_dir/alarm_history/alarm_history_store.cpp" "$program_dir/alarm_history/alarm_history_page.cpp"
+          "$program_dir/alarm_history/alarm_history_host.cpp" "$program_dir/alarm_history/calendar/cuscalendar.cpp")
+forms=("$module_dir/frmmain.ui" "$module_dir/frmuserset.ui" "$module_dir/widgets/cusflageimage.ui" "$program_dir/ui/frmhospinfosetting.ui")
+forms+=("$program_dir/ui/frmaccountsetting.ui" "$program_dir/ui/cusmessagebox.ui" "$program_dir/ui/cusdialogmask.ui")
+forms+=("$program_dir/history/frm_report_material.ui" "$program_dir/history/mask_dlg_query_report.ui"
+        "$program_dir/history/mask_dlg_report_detail.ui" "$program_dir/history/mask_dlg_export.ui")
+forms+=("$program_dir/projects/frmsystemmaterial.ui"
+        "$program_dir/projects/copyprojectdialog.ui"
+        "$program_dir/reagents/frmreagentmaterial.ui" "$program_dir/reagents/wgtreagentpanel.ui" "$program_dir/reagents/wgtreagentpanel_42.ui"
+        "$program_dir/reagents/maskdlgreagentlistsetting.ui" "$program_dir/reagents/maskdlgreagentsetting.ui"
+        "$program_dir/reagents/maskdlggroupsetting.ui" "$program_dir/reagents/maskdlgreagentcode.ui"
+        "$program_dir/reagents/addbatchgroupdialog.ui" "$program_dir/reagents/maskdlgreagentusage.ui")
+forms+=("$program_dir/samples/frmsamplematerial.ui" "$program_dir/samples/frmsamplesettingmaterial.ui"
+        "$program_dir/samples/maskdlgcalibratorsetting.ui" "$program_dir/samples/cusnumberkeyboard.ui"
+        "$program_dir/samples/cussamplerack.ui" "$program_dir/samples/maskdlgsampledetail.ui"
+        "$program_dir/samples/maskdlgrepeatsetting.ui" "$program_dir/samples/maskdlgcombasetting.ui"
+        "$program_dir/samples/maskdlgracknosetting.ui")
+headers=("$module_dir/frmmain.h" "$module_dir/frmuserset.h" "$program_dir/data/hospital_store.h" "$program_dir/ui/frmhospinfosetting.h"
+         "$program_dir/data/account_store.h" "$program_dir/ui/frmaccountsetting.h" "$program_dir/ui/cusmessagebox.h" "$program_dir/ui/cusdialogmask.h"
+         "$program_dir/history/history_store.h" "$program_dir/history/history_page.h"
+         "$program_dir/history/result_project_references.h"
+         "$program_dir/history/history_current_display_state.h"
+         "$module_dir"/widgets/*.h "$module_dir"/widgets/material/*.h "$module_dir"/widgets/material/lib/*.h)
+headers+=("$program_dir/history/report_controller.h" "$vendor/QtRPT/"*.h "$vendor/CommonFiles/"*.h)
+headers+=("$program_dir/projects/projects_store.h" "$program_dir/projects/project_page.h" "$program_dir/projects/cuscheckbox.h"
+          "$program_dir/projects/original_project_copy.h" "$program_dir/projects/original_project_copy_dialog.h"
+          "$program_dir/projects/project_advanced.h"
+          "$program_dir/projects/project_current_format.h" "$program_dir/projects/project_format_dialog.h"
+          "$program_dir/reagents/reagent_types.h" "$program_dir/reagents/reagent_store.h" "$program_dir/reagents/reagents_page.h"
+          "$program_dir/reagents/wgtreagentpanel.h" "$program_dir/reagents/cusreagenthole.h")
+headers+=("$program_dir/samples/sample_types.h" "$program_dir/samples/sample_store.h" "$program_dir/samples/sample_page.h"
+          "$program_dir/samples/original_calibration_preset.h" "$program_dir/samples/original_control_tasks.h" "$program_dir/samples/cusnumberkeyboard.h"
+          "$program_dir/samples/sample_task_reset.h"
+          "$program_dir/samples/sample_qc_preset.h" "$program_dir/samples/sample_qc_protocol.h"
+          "$module_dir/sample_qc_shell.h"
+          "$program_dir/samples/sample_widgets.h" "$program_dir/samples/cusracklistwidget.h"
+          "$program_dir/samples/cuscheckheader.h" "$program_dir/samples/cuscombox_base.h"
+          "$program_dir/samples/material/qtmaterialradiobutton.h" "$program_dir/samples/material/qtmaterialradiobutton_p.h"
+          "$program_dir/samples/material/qtmaterialscrollbar.h" "$program_dir/samples/material/qtmaterialscrollbar_p.h"
+          "$program_dir/samples/material/qtmaterialscrollbar_internal.h"
+          "$program_dir/samples/material/lib/qtmaterialcheckable.h" "$program_dir/samples/material/lib/qtmaterialcheckable_p.h"
+          "$program_dir/samples/material/lib/qtmaterialcheckable_internal.h")
+headers+=("$program_dir/protocol/status_replay.h" "$program_dir/protocol/status_session.h" "$program_dir/protocol/frame_codec.h")
+headers+=("$program_dir/protocol/status_loopback.h" "$program_dir/protocol/read_only_client.h"
+          "$program_dir/protocol/tcp_transport.h" "$program_dir/protocol/read_only_messages.h")
+forms+=("$program_dir/instrument/frmdriverset.ui")
+forms+=("$program_dir/ui/maskdlglogin.ui")
+forms+=("$program_dir/ui/frmprintersetting.ui" "$program_dir/ui/frmlissetting.ui")
+forms+=("$program_dir/history/mask_dlg_display_setting.ui")
+forms+=("$program_dir/calibration/frmcalibrationmaterial.ui")
+forms+=("$program_dir/quality_control/frm_quality.ui" "$program_dir/quality_control/mask_dlg_add_control.ui"
+         "$program_dir/quality_control/mask_dlg_control_batch_setting.ui"
+         "$program_dir/quality_control/quality_control_add_wgt.ui"
+         "$program_dir/quality_control/quality_control_item_add_project_wgt.ui"
+         "$program_dir/quality_control/cus_quality_chart.ui")
+headers+=("$program_dir/instrument/instrument_page.h" "$program_dir/instrument/original_status_values.h" "$program_dir/instrument/maintenance_store.h"
+          "$program_dir/instrument/device_control.h" "$program_dir/instrument/original_channel_receiver.h"
+          "$program_dir/instrument/original_channel_store.h")
+headers+=("$program_dir/ui/maskdlglogin.h")
+headers+=("$module_dir/printer_report_shell.h" "$program_dir/ui/frmprintersetting.h" "$program_dir/data/printer_settings_store.h"
+           "$program_dir/ui/frmlissetting.h" "$program_dir/data/lis_settings_store.h" "$program_dir/data/serial_port_catalog.h")
+headers+=("$program_dir/lis_transport/lis_tcp_transport.h" "$program_dir/lis_transport/lis_mllp_codec.h" "$program_dir/lis_transport/lis_connection_controller.h" "$program_dir/lis_transport/lis_connection_values.h")
+headers+=("$module_dir/lis_connection_observer_09.h")
+headers+=("$program_dir/quality_control/qc_store.h" "$program_dir/quality_control/quality_control_page.h"
+          "$program_dir/quality_control/qc_history_core.h" "$program_dir/quality_control/qc_history_reply.h"
+          "$program_dir/quality_control/cus_quality_chart.h" "$program_dir/quality_control/qualitychart.h"
+          "$program_dir/quality_control/qc_history_presenter.h" "$program_dir/quality/statistics.h")
+headers+=("$program_dir/history/report_remaining_view.h" "$program_dir/history/report_remaining_display_dialog.h"
+           "$program_dir/history/report_remaining_html.h")
+headers+=("$program_dir/calibration/calibration_types.h" "$program_dir/calibration/calibration_store.h"
+           "$program_dir/calibration/calibration_page.h" "$program_dir/calibration/calibrationchart.h")
+headers+=("$program_dir/data/hospital_dictionary_query.h" "$program_dir/ui/language_setting_page.h"
+          "$program_dir/history/report_dictionary_dialog.h"
+          "$program_dir/alarm_history/alarm_history_store.h" "$program_dir/alarm_history/alarm_history_page.h"
+          "$program_dir/alarm_history/alarm_history_host.h" "$program_dir/alarm_history/calendar/cuscalendar.h")
+headers+=("$program_dir/lis_raw_inbox/lis_dsr_raw.h" "$program_dir/lis_raw_inbox/lis_inbox_store.h"
+          "$program_dir/lis_raw_inbox/lis_inbox_page.h" "$program_dir/lis_raw_inbox/lis_inbox_page_host.h"
+          "$program_dir/lis_raw_inbox/lis_inbox_page_worker.h")
+forms+=("$program_dir/ui/frmlanguagesetting.ui" "$program_dir/history/mask_dlg_select.ui"
+        "$program_dir/alarm_history/maskdlgabnormal.ui" "$program_dir/alarm_history/cusmaskcalendar.ui"
+        "$program_dir/alarm_history/calendar/cuscalendar.ui")
+# 原关机确认卡：只关闭软件，沿用主窗已有的退出检查。
+sources+=("$program_dir/ui/maskdlgshutdown.cpp")
+headers+=("$program_dir/ui/maskdlgshutdown.h")
+forms+=("$program_dir/ui/maskdlgshutdown.ui")
+# 已接原库的存储对象需要完整定义；未接页面的后台能力不代表该页已验收。
+sources+=("$program_dir/original_files/original_business_database.cpp"
+          "$program_dir/original_files/original_ini_write.cpp"
+          "$program_dir/original_files/original_system_profile.cpp"
+          "$program_dir/history/original_history_source.cpp"
+          "$program_dir/alarm_history/original_alarm_events.cpp"
+          "$program_dir/alarm_history/original_alarm_receiver.cpp"
+          "$program_dir/quality_control/qc_original_store.cpp"
+          "$program_dir/calibration/calibration_original_store.cpp"
+          "$program_dir/reagents/original_reagent_repository.cpp"
+          "$program_dir/reagents/original_reagent_editor.cpp"
+          "$program_dir/reagents/original_reagent_store.cpp"
+          "$program_dir/reagents/original_reagent_usage.cpp"
+          "$program_dir/samples/original_sample_store.cpp"
+          "$program_dir/samples/original_sample_repository.cpp"
+          "$program_dir/samples/original_detection_session.cpp"
+          "$program_dir/samples/original_task_codec.cpp"
+          "$program_dir/samples/original_result_codec.cpp"
+          "$program_dir/samples/original_device_sync.cpp"
+          "$program_dir/samples/original_project_device_repository.cpp"
+          "$program_dir/projects/original_project_codec.cpp")
+headers+=("$program_dir/reagents/original_reagent_editor.h" "$program_dir/reagents/original_reagent_usage.h")
+headers+=("$program_dir/alarm_history/original_alarm_receiver.h"
+          "$program_dir/alarm_history/original_current_alarm_state.h")
+# 当前告警只读观察与原页面显示，必须在输入清单出口之前登记。
+sources+=("$program_dir/alarm_history/original_current_alarm_state.cpp"
+          "$program_dir/alarm_history/alarm_history_page_current.cpp"
+          "$module_dir/alarm_current_shell.cpp")
+# One stable name for each QRC prevents basename collisions with other modules.
+resource_names=(shell_resources account_resources report_resources imagesRpt projects_resources reagents_resources samples_resources instrument_resources qc_history_resources)
+resource_files=("$module_dir/resources.qrc" "$module_dir/account_resources.qrc"
+                "$program_dir/history/report_resources.qrc" "$vendor/QtRPT/imagesRpt.qrc"
+                "$program_dir/projects/projects_resources.qrc" "$program_dir/reagents/reagents_resources.qrc"
+                "$program_dir/samples/samples_resources.qrc")
+resource_files+=("$program_dir/instrument/instrument_resources.qrc")
+resource_files+=("$program_dir/quality_control/qc_history_resources.qrc")
+resource_names+=(report_dictionary_resources alarm_history_resources)
+resource_files+=("$program_dir/history/report_dictionary_resources.qrc" "$program_dir/alarm_history/alarm_history_resources.qrc")
+helper_sources=("$program_dir/history/report_renderer.cpp" "$program_dir/history/report_pdf_mapping.cpp")
+is_report_helper_source()
+{
+    # File helper shares only report rendering and value text; writable stores stay in main.
+    case $1 in
+        "$vendor/"*|*/history_value_text.cpp|*/report_document.cpp|*/report_render.cpp|*/qrc_report_resources.cpp|*/qrc_imagesRpt.cpp)
+            return 0 ;;
+    esac
+    return 1
+}
+# 被动N回报使用独立运行来源和窄写；构建本身不开放设备动作。
+sources+=("$program_dir/reagents/original_reagent_level_packet.cpp" "$program_dir/reagents/original_reagent_level_model.cpp" "$program_dir/reagents/original_reagent_level_projects.cpp" "$program_dir/reagents/original_reagent_level_repository.cpp" "$program_dir/reagents/original_reagent_level_runtime.cpp" "$program_dir/reagents/original_reagent_level_worker.cpp" "$program_dir/reagents/reagents_page_level.cpp" "$program_dir/original_files/original_reagent_capacity.cpp" "$module_dir/reagent_level_shell.cpp")
+headers+=("$program_dir/reagents/original_reagent_level.h" "$program_dir/reagents/original_reagent_level_runtime.h" "$program_dir/reagents/original_reagent_level_worker.h" "$program_dir/original_files/original_reagent_capacity.h")
+# 任务剩余量走专用重读和运行采用，不发送设备命令。
+sources+=("$program_dir/reagents/original_task_reagent_display.cpp" "$program_dir/reagents/original_reagent_level_task.cpp" "$program_dir/reagents/original_task_reagent_readback.cpp" "$program_dir/reagents/reagents_page_task.cpp")
+# 任务提交后的主窗口接续；仅接原动作，不增加设备命令。
+sources+=("$module_dir/task_reagent_shell.cpp" "$module_dir/task_reagent_source.cpp" "$program_dir/samples/original_task_reagent_receipt_writer.cpp")
+# 显式登记配套头文件，使只读清单与实际构建输入一致。
+headers+=("$program_dir/reagents/original_task_reagent_display.h"
+          "$program_dir/samples/original_task_reagent_receipt.h"
+          "$program_dir/samples/original_task_reagent_receipt_writer.h"
+          "$module_dir/task_reagent_context.h")
+# 本片的选择缓存、金额工作值和任务账本接口也属于真实编译输入。
+headers+=("$program_dir/reagents/original_reagent_repository.h"
+    "$program_dir/reagents/original_reagent_page_metadata.h"
+    "$program_dir/reagents/original_reagent_probe.h"
+          "$program_dir/samples/original_detection_session.h"
+          "$program_dir/samples/original_task_codec.h")
+# LIS首片仅编译纯值准备和ACK正文，不新增生产接线或Qt元对象。
+sources+=("$program_dir/lis_business/original_lis_query.cpp"
+           "$program_dir/lis_business/original_lis_download_codec.cpp"
+           "$program_dir/lis_business/original_lis_application_plan.cpp"
+           "$program_dir/lis_business/original_lis_download_ack.cpp")
+headers+=("$program_dir/lis_business/original_lis_query.h"
+           "$program_dir/lis_business/original_lis_download_types.h"
+           "$program_dir/lis_business/original_lis_download_codec.h"
+           "$program_dir/lis_business/original_lis_application_plan.h"
+           "$program_dir/lis_business/original_lis_download_ack.h")
+for input in "${sources[@]}" "${forms[@]}" "${headers[@]}" "${resource_files[@]}" "${helper_sources[@]}"; do
+    [[ -f $input ]] || { echo "Required ARM64 build input missing: $input" >&2; exit 1; }
+done
+if [[ $list_inputs == 1 ]]; then
+    printf 'source\t%s\n' "${sources[@]}"
+    printf 'form\t%s\n' "${forms[@]}"
+    printf 'header\t%s\n' "${headers[@]}"
+    printf 'resource\t%s\n' "${resource_files[@]}"
+    printf 'include\t%s\n' "${include_flags[@]}"
+    for source in "${sources[@]}"; do
+        if is_report_helper_source "$source"; then printf 'helper_source\t%s\n' "$source"; fi
+    done
+    printf 'helper_source\t%s\n' "${helper_sources[@]}"
+    exit 0
+fi
+for form in "${forms[@]}"; do
+    name=$(basename -- "${form%.ui}")
+    "$qt_tools/uic" "$form" -o "$build_dir/ui_$name.h"
+done
+for header in "${headers[@]}"; do
+    if grep -q 'Q_OBJECT' "$header"; then
+        name=$(basename -- "${header%.h}")
+        generated=$build_dir/moc_$name.cpp
+        "$qt_tools/moc" -DNO_BARCODE -DHAVE_QT5 -I"$include" "${include_flags[@]}" "$header" -o "$generated"
+        sources+=("$generated")
+    fi
+done
+# shell/resources.qrc already owns the anonymous history fixture; do not link
+# history/resources.qrc again and register the same resource path twice.
+for index in "${!resource_files[@]}"; do
+    name=${resource_names[index]}
+    "$qt_tools/rcc" -name "$name" "${resource_files[index]}" -o "$build_dir/qrc_$name.cpp"
+    sources+=("$build_dir/qrc_$name.cpp")
+done
+output=$(realpath -m -- "$1")
+renderer_output=$(dirname -- "$output")/sn100_report_renderer
+[[ $output != "$renderer_output" ]] || { echo 'The main output must not use the reserved helper name.' >&2; exit 2; }
+temporary=$output.new
+renderer_temporary=$renderer_output.new
+trap 'rm -f -- "$temporary" "$renderer_temporary"' EXIT
+jobs=${SN100_JOBS:-2}
+[[ $jobs =~ ^[0-9]+$ && $jobs -ge 1 && $jobs -le 2 ]] || { echo 'SN100_JOBS must be 1 or 2 for the current WSL build budget.' >&2; exit 2; }
+compile_flags=(-std=c++14 "${optimization[@]}" -fPIC -Wall -Wextra -DNO_BARCODE -DHAVE_QT5 "${include_flags[@]}"
+               -isystem "$include" -isystem "$include/QtCore" -isystem "$include/QtGui"
+               -isystem "$include/QtWidgets" -isystem "$include/QtSql")
+python3 - "$SN100_CANDIDATE_FLAGS_OUTPUT" "$include" "$build_dir" --flags "${compile_flags[@]}" --sources "${sources[@]}" <<'PY'
+import json,sys
+from pathlib import Path
+output,qt,generated,*args=sys.argv[1:]
+split=args.index('--sources')
+data={'qt_headers':qt,'generated':generated,'flags':args[1:split],'sources':args[split+1:]}
+Path(output).write_text(json.dumps(data,indent=2)+'\n')
+print(json.dumps({'generated_headers':len(list(Path(generated).glob('ui_*.h'))),'source_units':len(data['sources']),'product_compiled':False,'product_run':False}))
+PY

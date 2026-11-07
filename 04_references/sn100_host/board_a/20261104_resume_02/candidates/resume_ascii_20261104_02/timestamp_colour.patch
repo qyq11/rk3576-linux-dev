@@ -1,0 +1,61 @@
+diff --git a/instrument/instrument_page.cpp b/instrument/instrument_page.cpp
+index 5a8bb489..d6d53f31 100644
+--- a/instrument/instrument_page.cpp
++++ b/instrument/instrument_page.cpp
+@@ -11,6 +11,7 @@
+ #include <QAbstractButton>
+ #include <QAtomicInteger>
+ #include <QComboBox>
++#include <QColor>
+ #include <QCoreApplication>
+ #include <QDateTime>
+ #include <QHeaderView>
+@@ -27,6 +28,7 @@
+ #include <QTableWidget>
+ #include <QTextBrowser>
+ #include <QTextDocument>
++#include <QTextCharFormat>
+ #include <QTextCursor>
+ #include <QTextEdit>
+ #include <QToolTip>
+@@ -86,7 +88,7 @@ QString communicationAsciiDisplay(const QByteArray &bytes)
+     return text;
+ }
+ 
+-void appendCommunicationLine(QTextBrowser *view, const QString &line)
++void appendCommunicationLine(QTextBrowser *view, const QString &line, int timestampLength=0)
+ {
+     // 沿原append习惯，仅原来位于底部时跟随；不移动使用者的光标或选择。
+     QScrollBar *scroll=view->verticalScrollBar();
+@@ -96,7 +98,16 @@ void appendCommunicationLine(QTextBrowser *view, const QString &line)
+     cursor.beginEditBlock();
+     cursor.movePosition(QTextCursor::End);
+     if (!view->document()->isEmpty()) cursor.insertBlock();
+-    cursor.insertText(line);
++    const QTextCharFormat bodyFormat=cursor.charFormat();
++    if (timestampLength>0)
++    {
++        // 原收发时间前缀为darkgreen；正文仍用纯文本和原格式，不解释设备中的HTML。
++        QTextCharFormat timestampFormat=bodyFormat;
++        timestampFormat.setForeground(QColor(QStringLiteral("darkgreen")));
++        cursor.insertText(line.left(timestampLength),timestampFormat);
++        cursor.insertText(line.mid(timestampLength),bodyFormat);
++    }
++    else cursor.insertText(line,bodyFormat);
+     cursor.endEditBlock();
+     if (atBottom) scroll->setValue(scroll->maximum());
+ }
+@@ -1242,10 +1253,11 @@ void InstrumentPage::appendOriginalCommunication(bool transmitted, const QByteAr
+     }
+     const QString text=communicationAsciiDisplay(payload);
+     QTextBrowser *view=transmitted ? ui->textBrowser_SendData : ui->textBrowser_ReceiveData;
+-    const QString line=QDateTime::currentDateTime().toString(QStringLiteral("HH:mm:ss:zzz")) +
++    const QString timestamp=QDateTime::currentDateTime().toString(QStringLiteral("HH:mm:ss:zzz"));
++    const QString line=timestamp +
+         (transmitted ? QStringLiteral(" TX ") : QStringLiteral(" RX ")) + text +
+         QStringLiteral(" hex=") + QString::fromLatin1(payload.toHex(' '));
+-    appendCommunicationLine(view,line);
++    appendCommunicationLine(view,line,timestamp.size());
+     if (transmitted) ui->label_SendCount->setText(QString::number(++sentCommunication_));
+     else ui->label_ReceiveCount->setText(QString::number(++receivedCommunication_));
+ }

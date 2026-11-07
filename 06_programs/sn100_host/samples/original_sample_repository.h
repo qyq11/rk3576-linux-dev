@@ -21,6 +21,21 @@ struct OriginalLisSampleTarget
 };
 
 class OriginalSampleRepository;
+// 按原项目/表行顺序读取的完整映射值；不暴露可写成员，也不代表应用许可或设备来源。
+class OriginalLisMappingSnapshot
+{
+public:
+    bool valid() const { return valid_; }
+    QString projectSourceDigest() const { return projectSourceDigest_; }
+    QString digest() const { return digest_; }
+    const Sn100Lis::OriginalLisMappingProjects &projects() const { return projects_; }
+private:
+    friend class OriginalSampleRepository;
+    bool valid_ = false;
+    QString projectSourceDigest_, digest_;
+    Sn100Lis::OriginalLisMappingProjects projects_;
+};
+
 class OriginalLisPreparedSampleUpdate
 {
 public:
@@ -84,6 +99,8 @@ public:
     ProjectRecords projects() const { return projects_; }
     ProjectUnits units() const { return units_; }
     SampleSnapshot snapshot() const { return snapshot_; }
+    // 只读原表及同次INI，不用编辑缓存、不执行未完成复制的恢复；失败输出为无效空快照。
+    bool captureOriginalLisMappings(OriginalLisMappingSnapshot *snapshot, QString *message) const;
     // 以下仅在现仓库线程操作同一snapshot；不发送QRY/ACK、不写报告或预留任务。
     bool captureOriginalLisHole(qint64 rackId, int hole, OriginalLisSampleTarget *target,
                                 Sn100Lis::OriginalLisHoleValue *oldValue, QString *message) const;
@@ -126,7 +143,6 @@ private:
     void noteLisRackRemoved(qint64 rackId);
     bool originalLisEditable(qint64 rackId, QString *message) const;
     bool originalLisProjectSource(QString *digest, QStringList *files, QString *message) const;
-    bool originalLisMappings(Sn100Lis::OriginalLisMappingProjects *mappings, QString *digest, QString *message) const;
     bool matchOriginalLisTarget(const OriginalLisSampleTarget &target, int *rackIndex, int *holeIndex, QString *message) const;
     bool publishOriginalLisHole(OriginalLisSampleTarget target, SampleHole after,
         OriginalLisSampleChangeKind kind, bool queryRequired, OriginalLisSampleChange *result, QString *message);

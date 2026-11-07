@@ -58,6 +58,8 @@ struct SampleHole
 {
     int number = 1;
     QString sampleId;
+    // 原S_SampleHoleInfo的孔位标志，独立于patient.isAutoId；LIS清患者不清此值。
+    bool isAutoId = true;
     int container = 1; // Original Tube=0 / MicroCup=1; source default is MicroCup.
     QList<SampleTask> tasks;
     bool revise = true;

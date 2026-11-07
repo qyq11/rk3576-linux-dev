@@ -1,0 +1,36 @@
+diff --git a/instrument/instrument_page.cpp b/instrument/instrument_page.cpp
+index d6d53f31..8a48909d 100644
+--- a/instrument/instrument_page.cpp
++++ b/instrument/instrument_page.cpp
+@@ -1119,7 +1119,9 @@ bool InstrumentPage::prepareCommunicationAsciiPayload(QByteArray *payload, QStri
+ {
+     // toPlainText会先把不换行空格改为普通空格，必须先保留原字符再检查。
+     QString text=ui->sendTextEdit->document()->toRawText();
++    // 原Qt5将段落和软换行均转为LF；其他字符仍交严格ASCII校验。
+     text.replace(QChar(QChar::ParagraphSeparator),QLatin1Char('\n'));
++    text.replace(QChar(QChar::LineSeparator),QLatin1Char('\n'));
+     return encodeCommunicationAscii(text,payload,message);
+ }
+ 
+@@ -1225,7 +1227,7 @@ void InstrumentPage::refreshCommunicationAsciiInput()
+     ui->sendTextEdit->setProperty("communicationAsciiInputError",message);
+     ui->sendTextEdit->setAccessibleDescription(valid ? tr("通讯测试ASCII输入") : message);
+     ui->sendTextEdit->setToolTip(valid
+-        ? tr("仅接受ASCII字符；回车为LF，文字形式的\\xHH按原文字保留。输入检查通过不表示命令已发送。")
++        ? tr("仅接受ASCII字符；段落和软换行转为LF，文字形式的\\xHH按原文字保留。输入检查通过不表示命令已发送。")
+         : message);
+     if (!valid && message!=previous && ui->sendTextEdit->hasFocus())
+         QToolTip::showText(ui->sendTextEdit->mapToGlobal(QPoint(0,ui->sendTextEdit->height())),
+diff --git a/instrument/instrument_page.h b/instrument/instrument_page.h
+index fbaefbe6..f9ff0957 100644
+--- a/instrument/instrument_page.h
++++ b/instrument/instrument_page.h
+@@ -29,7 +29,7 @@ public:
+     bool isReady() const { return ready_; }
+     bool prepareToLeave();
+     // 只读取并严格转换通讯测试输入，不发送、不检查命令权限或设备状态。
+-    // 文档段换行映为LF；不解析文字形式的\xHH，失败时清空输出并说明位置。
++    // 文档段落和软换行映为LF；不解析文字形式的\xHH，失败时清空输出并说明位置。
+     bool prepareCommunicationAsciiPayload(QByteArray *payload, QString *message) const;
+     void setManualCommunicationConsumerReady(bool ready);
+     QString manualCommunicationRequestBlocker(quint64 request, quint64 session, quint64 connection,

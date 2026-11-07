@@ -1,0 +1,168 @@
+{
+  "actualExit": 0,
+  "steps": [
+    {
+      "label": "00_builder_init",
+      "cwd": "packaging_01/patch_builder",
+      "command": [
+        "/usr/bin/git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "init",
+        "--quiet"
+      ],
+      "actualExit": 0
+    },
+    {
+      "label": "01_attributes",
+      "cwd": "packaging_01/patch_builder",
+      "command": [
+        "/usr/bin/git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "check-attr",
+        "text",
+        "eol",
+        "filter",
+        "--",
+        "06_programs/sn100_host/samples/sample_types.h",
+        "06_programs/sn100_host/samples/original_sample_repository.h",
+        "06_programs/sn100_host/samples/original_sample_repository.cpp"
+      ],
+      "actualExit": 0
+    },
+    {
+      "label": "02_index_base",
+      "cwd": "packaging_01/patch_builder",
+      "command": [
+        "/usr/bin/git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "add",
+        "--",
+        "06_programs/sn100_host/samples/sample_types.h",
+        "06_programs/sn100_host/samples/original_sample_repository.h",
+        "06_programs/sn100_host/samples/original_sample_repository.cpp"
+      ],
+      "actualExit": 0
+    },
+    {
+      "label": "03_diff",
+      "cwd": "packaging_01/patch_builder",
+      "command": [
+        "/usr/bin/git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "diff",
+        "--no-ext-diff",
+        "--no-color",
+        "--",
+        "06_programs/sn100_host/samples/sample_types.h",
+        "06_programs/sn100_host/samples/original_sample_repository.h",
+        "06_programs/sn100_host/samples/original_sample_repository.cpp"
+      ],
+      "actualExit": 0
+    },
+    {
+      "label": "04_whitespace",
+      "cwd": "packaging_01/patch_builder",
+      "command": [
+        "/usr/bin/git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "diff",
+        "--check",
+        "--",
+        "06_programs/sn100_host/samples/sample_types.h",
+        "06_programs/sn100_host/samples/original_sample_repository.h",
+        "06_programs/sn100_host/samples/original_sample_repository.cpp"
+      ],
+      "actualExit": 0
+    },
+    {
+      "label": "05_replay_init",
+      "cwd": "packaging_01/replay",
+      "command": [
+        "/usr/bin/git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "init",
+        "--quiet"
+      ],
+      "actualExit": 0
+    },
+    {
+      "label": "06_plain_check",
+      "cwd": "packaging_01/replay",
+      "command": [
+        "/usr/bin/git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "apply",
+        "--check",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/resume_lis_B1_20261104_02/packaging_01/lis_B1_snapshot_auto_id.patch"
+      ],
+      "actualExit": 0
+    },
+    {
+      "label": "07_plain_apply",
+      "cwd": "packaging_01/replay",
+      "command": [
+        "/usr/bin/git",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.safecrlf=false",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "apply",
+        "/mnt/c/Users/52400/Desktop/internship/seerain/20260907_RK3576_Linux/temp/sn100_host/resume_lis_B1_20261104_02/packaging_01/lis_B1_snapshot_auto_id.patch"
+      ],
+      "actualExit": 0
+    }
+  ],
+  "patchSha256": "43861a78914e997492a08b3a17d8cfa903c4e22914baafa558bcd845643d89bf",
+  "replayedFiles": {
+    "samples/sample_types.h": "333440f317bc249e3950f106406ce53318963047ca769b80f98df01f502d4740",
+    "samples/original_sample_repository.h": "5c36e25d1c319d7b0892fef35e482c2928ebd41c7fb7796ed1b2073ae2a0936f",
+    "samples/original_sample_repository.cpp": "5799992101dac8afa51ccf4c780ff2f321a46c957569baf8b72b263654cd73f3"
+  },
+  "replayMismatch": 0,
+  "lineEnding": "CRLF",
+  "inverseEditByteComparison": {
+    "samples/sample_types.h": "exactBaseBytes",
+    "samples/original_sample_repository.h": "exactBaseBytes",
+    "samples/original_sample_repository.cpp": "exactBaseBytes"
+  },
+  "formalPhysicalRead": 697,
+  "formalMismatch": 0,
+  "verificationScope": "sourceBytesAndPrivateGitOnly;NoCompileSqlProductNetworkOrBoard"
+}

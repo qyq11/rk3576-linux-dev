@@ -1,0 +1,121 @@
+diff --git a/06_programs/sn100_host/reagents/reagents_page.cpp b/06_programs/sn100_host/reagents/reagents_page.cpp
+index 829acd9..a091cc1 100644
+--- a/06_programs/sn100_host/reagents/reagents_page.cpp
++++ b/06_programs/sn100_host/reagents/reagents_page.cpp
+@@ -290,7 +290,8 @@ ReagentsPage::ReagentsPage(ReagentStore* store, QWidget* parent)
+     connect(store, &ReagentStore::succeeded, this,
+         [this](QString op)
+         {
+-            dirty_ = false;
++            // 删除条码没有保存厂家、阈值等资料输入，不能替这些草稿清除未保存标记。
++            if (op!=QStringLiteral("删除条码")) dirty_ = false;
+             pendingSavedOperation_=op;
+         });
+     connect(store, &ReagentStore::error, this,
+@@ -776,7 +777,21 @@ void ReagentsPage::openReagentEditor()
+                 form->listReagent->setCurrentItem(item);
+         }
+     };
+-    auto display = [this, form, current]()
++    const QString editorRoot=snapshot_.originalRoot;
++    const bool editorOriginalProfile=snapshot_.originalProfile;
++    auto barcodeDeleteSource=std::make_shared<ReagentRecord>();
++    auto refreshCodes = [this, form, current](bool selectFirst)
++    {
++        form->listReagentCode->clear();
++        for (const auto& b : snapshot_.barcodes)
++            if (b.reagentId == current->id)
++            {
++                auto* item = new QListWidgetItem(b.code, form->listReagentCode);
++                item->setData(Qt::UserRole, b.id);
++            }
++        if (selectFirst && form->listReagentCode->count()>0) form->listReagentCode->setCurrentRow(0);
++    };
++    auto display = [this, form, current, refreshCodes]()
+     {
+         form->ldtReagentName->setText(current->name);
+         form->ldtFactor->setText(current->manufacturer);
+@@ -791,13 +806,7 @@ void ReagentsPage::openReagentEditor()
+             form->ckxClean->setCheckState(current->originalValues.value("dect_clean").toBool() ? Qt::Checked : Qt::Unchecked);
+             form->cbxCleanReagent->setCurrentText(current->originalValues.value("cleaner_name").toString());
+         }
+-        form->listReagentCode->clear();
+-        for (const auto& b : snapshot_.barcodes)
+-            if (b.reagentId == current->id)
+-            {
+-                auto* item = new QListWidgetItem(b.code, form->listReagentCode);
+-                item->setData(Qt::UserRole, b.id);
+-            }
++        refreshCodes(false);
+         dirty_ = false;
+     };
+     connect(form->listReagent, &QListWidget::currentItemChanged, dialog,
+@@ -914,16 +923,63 @@ void ReagentsPage::openReagentEditor()
+             QTimer::singleShot(0, this, [this, id, code]() { openBarcodeEditor(id, code); });
+         });
+     connect(form->btnDelCode, &QPushButton::clicked, dialog,
+-        [this, form]()
++        [this, form, current, dialog, barcodeDeleteSource]()
+         {
+-            if (!form->listReagentCode->currentItem() || busy_)
+-                return;
++            if (!canEdit() || busy_) return;
++            const QPointer<QDialog> owner(dialog);
++            const QString root=snapshot_.originalRoot;
++            const bool original=snapshot_.originalProfile;
++            const qint64 reagent=current->id;
++            const auto *selected=form->listReagentCode->currentItem();
++            const qint64 barcode=selected ? selected->data(Qt::UserRole).toLongLong() : 0;
++            const QString code=selected ? selected->text() : QString();
++            CusMessageBox question(this);
++            question.showQuestionBox(QStringLiteral("是否删除条码?"));
++            if (question.getClickButton()!=QMessageBox::Yes) return;
++            // 确认期间仍会收异步消息；不把原选择换成另一资料根或条码。
++            if (!owner || dialog_!=owner || !canEdit() || busy_ || !barcode || current->id!=reagent ||
++                snapshot_.originalRoot!=root || snapshot_.originalProfile!=original) return;
++            selected=form->listReagentCode->currentItem();
++            if (!selected || selected->data(Qt::UserRole).toLongLong()!=barcode || selected->text()!=code) return;
++            bool present=false;
++            for (const auto &saved : snapshot_.barcodes)
++                if (saved.id==barcode && saved.reagentId==reagent && saved.code==code) { present=true; break; }
++            if (!present) return;
++            // 独立保留删除前已读的整行，不能拿可能含保存失败输入的current.originalValues充当原库依据。
++            *barcodeDeleteSource=ReagentRecord();
++            if (original && !current->originalFingerprint.isEmpty())
++                for (const auto &saved : snapshot_.reagents)
++                    if (saved.id==reagent && saved.originalFingerprint==current->originalFingerprint)
++                    { *barcodeDeleteSource=saved; break; }
+             setBusy(true);
+-            emit requestRemoveBarcode(form->listReagentCode->currentItem()->data(Qt::UserRole).toLongLong());
++            emit requestRemoveBarcode(barcode);
+         });
+     connect(this, &ReagentsPage::snapshotChanged, dialog,
+-        [this, populate, display]()
++        [this, current, populate, display, refreshCodes, editorRoot, editorOriginalProfile, barcodeDeleteSource]()
+         {
++            if (pendingSavedOperation_==QStringLiteral("删除条码"))
++            {
++                if (snapshot_.originalRoot!=editorRoot || snapshot_.originalProfile!=editorOriginalProfile) return;
++                // 条码与资料同库。只有已存资料整行仍相同，才推进其版本供草稿随后保存；不换任何输入。
++                if (editorOriginalProfile && current->id==barcodeDeleteSource->id && current->id &&
++                    current->originalFingerprint==barcodeDeleteSource->originalFingerprint && !barcodeDeleteSource->originalValues.isEmpty())
++                    for (const auto &saved : snapshot_.reagents)
++                        if (saved.id==current->id)
++                        {
++                            bool same=saved.originalValues.keys()==barcodeDeleteSource->originalValues.keys();
++                            for (auto it=barcodeDeleteSource->originalValues.cbegin();same && it!=barcodeDeleteSource->originalValues.cend();++it)
++                            {
++                                const auto value=saved.originalValues.value(it.key());
++                                same=it.value().userType()==value.userType() && it.value().isNull()==value.isNull() && it.value()==value;
++                            }
++                            if (same && !saved.originalFingerprint.isEmpty()) current->originalFingerprint=saved.originalFingerprint;
++                            break;
++                        }
++                // 原refreshListCode只重读条码并选第一项，不重填厂家/阈值，也不清草稿。
++                refreshCodes(true);
++                *barcodeDeleteSource=ReagentRecord();
++                return;
++            }
+             if (dirty_ || busy_)
+                 return;
+             populate();

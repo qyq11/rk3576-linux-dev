@@ -1,0 +1,166 @@
+diff --git a/06_programs/sn100_host/ui/frmhospinfosetting.cpp b/06_programs/sn100_host/ui/frmhospinfosetting.cpp
+index 786c6d0b..445dffa5 100644
+--- a/06_programs/sn100_host/ui/frmhospinfosetting.cpp
++++ b/06_programs/sn100_host/ui/frmhospinfosetting.cpp
+@@ -107,7 +107,7 @@ frmHospInfoSetting::frmHospInfoSetting(HospitalStore *store, QWidget *parent) :
+     connect(store, &HospitalStore::loaded, this,
+             [this](const QString &type, const QString &hospitalName, const HospitalRows &rows)
+     {
+-        if (type != type_)
++        if (type != type_ || !busy_ || pendingRemoveId_ > 0)
+         {
+             return;
+         }
+@@ -127,7 +127,7 @@ frmHospInfoSetting::frmHospInfoSetting(HospitalStore *store, QWidget *parent) :
+     connect(store, &HospitalStore::saved, this,
+             [this](const QString &type, const QString &hospitalName, const HospitalRows &rows)
+     {
+-        if (type != type_)
++        if (type != type_ || !busy_ || pendingOperation_ != QStringLiteral("save") || pendingRemoveId_ > 0)
+         {
+             return;
+         }
+@@ -140,22 +140,43 @@ frmHospInfoSetting::frmHospInfoSetting(HospitalStore *store, QWidget *parent) :
+     connect(store, &HospitalStore::removed, this,
+             [this](const QString &type, qint64 id)
+     {
+-        if (type != type_)
++        // 只完成当前正在等待的这一行，迟到或重复的回复不能再改页面。
++        if (!busy_ || pendingOperation_ != QStringLiteral("remove") || id != pendingRemoveId_
++                || type != pendingRemoveType_ || type != type_ || type != displayedType_)
+         {
+             return;
+         }
+-        HospitalRows remaining;
+-        for (const HospitalRow &row : displayedRows_)
++        pendingRemoveId_ = 0;
++        pendingRemoveType_.clear();
++        pendingOperation_.clear();
++        for (int row = 0; row < ui->tableInfo->rowCount(); ++row)
+         {
+-            if (row.id != id)
++            const auto *item = ui->tableInfo->item(row, 3);
++            if (item && item->text().toLongLong() == id)
+             {
+-                remaining.append(row);
++                ui->tableInfo->removeRow(row);
++                break;
+             }
+         }
+-        renderRows(displayedHospitalName_, remaining);
+-        reloadMessage_ = tr("删除完成");
+-        showStatus(tr("删除已提交，正在重新读取核对…"));
+-        emit requestLoad(type_);
++        for (int row = 0; row < displayedRows_.size(); ++row)
++        {
++            if (displayedRows_.at(row).id == id)
++            {
++                displayedRows_.removeAt(row);
++                break;
++            }
++        }
++        // 删除只提交目标行；医院名和其他行的输入、控件及已存值都保留。
++        updateDirtyAfterRemoval();
++        reloadMessage_.clear();
++        QString message = tr("已删除所选记录；其他未保存的更改仍保留。");
++        if (!operationWarning_.isEmpty())
++        {
++            message += tr(" 注意：%1").arg(operationWarning_);
++        }
++        showStatus(message);
++        setBusy(false);
++        emit operationFinished(QStringLiteral("remove"), true);
+     });
+     connect(store, &HospitalStore::warning, this, [this](const QString &message)
+     {
+@@ -165,6 +186,17 @@ frmHospInfoSetting::frmHospInfoSetting(HospitalStore *store, QWidget *parent) :
+     connect(store, &HospitalStore::error, this,
+             [this](const QString &operation, const QString &message)
+     {
++        if (!busy_ || (pendingRemoveId_ > 0 && operation != QStringLiteral("remove"))
++                || (operation == QStringLiteral("remove")
++                    && (pendingOperation_ != QStringLiteral("remove") || pendingRemoveId_ <= 0)))
++        {
++            return;
++        }
++        if (operation == QStringLiteral("remove"))
++        {
++            pendingRemoveId_ = 0;
++            pendingRemoveType_.clear();
++        }
+         // A failed category load must not relabel the still-visible draft.
+         if (operation == QStringLiteral("load") && type_ != displayedType_)
+         {
+@@ -174,7 +206,7 @@ frmHospInfoSetting::frmHospInfoSetting(HospitalStore *store, QWidget *parent) :
+         setBusy(false);
+         reloadMessage_.clear();
+         if (operation == QStringLiteral("load")
+-                && (pendingOperation_ == QStringLiteral("save") || pendingOperation_ == QStringLiteral("remove")))
++                && pendingOperation_ == QStringLiteral("save"))
+         {
+             showStatus(tr("数据已提交；再次读取核对失败：%1。当前显示已提交的数据，可点击刷新重试。").arg(message), true);
+         }
+@@ -229,6 +261,24 @@ void frmHospInfoSetting::setDirty()
+     }
+ }
+ 
++void frmHospInfoSetting::updateDirtyAfterRemoval()
++{
++    dirty_ = ui->ldtHospName->text() != displayedHospitalName_
++            || ui->tableInfo->rowCount() != displayedRows_.size();
++    for (int row = 0; !dirty_ && row < displayedRows_.size(); ++row)
++    {
++        const HospitalRow &saved = displayedRows_.at(row);
++        const auto *id = ui->tableInfo->item(row, 3);
++        const auto *one = qobject_cast<QLineEdit *>(ui->tableInfo->cellWidget(row, 0));
++        const auto *two = qobject_cast<QLineEdit *>(ui->tableInfo->cellWidget(row, 1));
++        const auto *three = qobject_cast<QLineEdit *>(ui->tableInfo->cellWidget(row, 2));
++        // 只比较输入，不走保存校验；尚未填好的新行也必须继续留在页面。
++        dirty_ = !id || !one || !two || !three || saved.id != id->text().toLongLong()
++                || saved.columnOne != one->text() || saved.columnTwo != two->text()
++                || saved.columnThree != three->text();
++    }
++}
++
+ void frmHospInfoSetting::showStatus(const QString &message, bool error)
+ {
+     ui->statusLabel->setText(message);
+@@ -479,7 +529,7 @@ void frmHospInfoSetting::on_btnDel_clicked()
+     QString message = tr("是否删除当前选中信息？");
+     if (id > 0 && dirty_)
+     {
+-        message += tr("\n删除已保存记录会立即写入数据库，并重读页面；当前其他未保存的更改将被放弃。");
++        message += tr("\n删除已保存记录会立即写入数据库；其他未保存的更改会继续保留。");
+     }
+     QMessageBox dialog(QMessageBox::Question, tr("确认删除"), message,
+                        QMessageBox::Yes | QMessageBox::No, this);
+@@ -499,6 +549,8 @@ void frmHospInfoSetting::on_btnDel_clicked()
+         return;
+     }
+     pendingOperation_ = QStringLiteral("remove");
++    pendingRemoveId_ = id;
++    pendingRemoveType_ = type_;
+     operationWarning_.clear();
+     setBusy(true);
+     showStatus(tr("正在删除所选记录…"));
+diff --git a/06_programs/sn100_host/ui/frmhospinfosetting.h b/06_programs/sn100_host/ui/frmhospinfosetting.h
+index 45ceeb06..bd9d5d42 100644
+--- a/06_programs/sn100_host/ui/frmhospinfosetting.h
++++ b/06_programs/sn100_host/ui/frmhospinfosetting.h
+@@ -61,6 +61,8 @@ private:
+     QString displayedHospitalName_;
+     HospitalRows displayedRows_;
+     QString pendingOperation_ = QStringLiteral("initialize");
++    qint64 pendingRemoveId_ = 0;
++    QString pendingRemoveType_;
+     QString reloadMessage_;
+     QString operationWarning_;
+     bool ready_ = false;
+@@ -70,6 +72,7 @@ private:
+ 
+     void setBusy(bool busy);
+     void setDirty();
++    void updateDirtyAfterRemoval();
+     void showStatus(const QString &message, bool error = false);
+     bool confirmDiscard(const QString &action);
+     void selectCategory(QAbstractButton *button);

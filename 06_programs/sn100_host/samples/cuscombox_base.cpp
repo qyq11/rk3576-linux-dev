@@ -106,14 +106,6 @@ int CusCombox_Base::getCurrentIndex()
     return sourceData.indexOf(currentData);
 }
 
-void CusCombox_Base::focusOutEvent(QFocusEvent *event)
-{
-    if(menu->isVisible())
-    {
-        menu->hide();
-    }
-    QWidget::focusOutEvent(event);
-}
 
 bool CusCombox_Base::eventFilter(QObject *watched, QEvent *event)
 {
@@ -139,7 +131,8 @@ bool CusCombox_Base::eventFilter(QObject *watched, QEvent *event)
             this->frame->show();
             this->frame->raise();
             this->menu->raise();
-            this->setFocus();
+            // Qt::Popup会自行接管焦点；这里不把焦点拉回下拉框本体，
+            // 也不在本体失焦时隐藏菜单，避免正常打开流程把菜单关掉。
             break;
         }
         case QEvent::Hide: {

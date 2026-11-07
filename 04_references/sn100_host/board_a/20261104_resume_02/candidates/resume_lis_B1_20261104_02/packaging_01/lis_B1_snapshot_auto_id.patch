@@ -1,0 +1,119 @@
+diff --git a/06_programs/sn100_host/samples/original_sample_repository.cpp b/06_programs/sn100_host/samples/original_sample_repository.cpp
+index fed91d4..b43fe78 100644
+--- a/06_programs/sn100_host/samples/original_sample_repository.cpp
++++ b/06_programs/sn100_host/samples/original_sample_repository.cpp
+@@ -54,8 +54,8 @@ QString holeTaskDigest(const SampleHole &hole)
+ {
+     QByteArray bytes;
+     QDataStream out(&bytes, QIODevice::WriteOnly); out.setVersion(QDataStream::Qt_5_12);
+-    out << QStringLiteral("SN100-LIS-hole-input-v1") << hole.number << hole.sampleId << hole.sampleBarcode
+-        << hole.container << hole.needleType << hole.revise << hole.sampleType;
++    out << QStringLiteral("SN100-LIS-hole-input-v2") << hole.number << hole.sampleId << hole.sampleBarcode
++        << hole.isAutoId << hole.container << hole.needleType << hole.revise << hole.sampleType;
+     writePatient(out, hole.patient);
+     out << hole.tasks.size();
+     for (const auto &task : hole.tasks)
+@@ -757,10 +757,10 @@ bool OriginalSampleRepository::originalLisProjectSource(QString *sourceDigest, Q
+     return true;
+ }
+ 
+-bool OriginalSampleRepository::originalLisMappings(Sn100Lis::OriginalLisMappingProjects *mappings,
+-                                                   QString *mappingDigest, QString *message) const
++bool OriginalSampleRepository::captureOriginalLisMappings(OriginalLisMappingSnapshot *snapshot, QString *message) const
+ {
+-    if (!mappings || !mappingDigest) return fail(message, QStringLiteral("没有原LIS映射输出位置。"));
++    if (!snapshot) return fail(message, QStringLiteral("没有原LIS映射输出位置。"));
++    *snapshot = OriginalLisMappingSnapshot();
+     QString beforeSource; QStringList files;
+     if (!originalLisProjectSource(&beforeSource, &files, message)) return false;
+     struct Entry { int order = 0; Sn100Lis::OriginalLisMappingProject project; };
+@@ -837,7 +837,10 @@ bool OriginalSampleRepository::originalLisMappings(Sn100Lis::OriginalLisMappingP
+     QString afterSource; QStringList afterFiles;
+     if (!originalLisProjectSource(&afterSource, &afterFiles, message) || afterSource != beforeSource || afterFiles != files)
+         return fail(message, QStringLiteral("原LIS项目/INI来源在读取期间改变，未用新配置续签旧输入。"));
+-    *mappings = result; *mappingDigest = digest(bytes);
++    OriginalLisMappingSnapshot complete;
++    complete.projectSourceDigest_ = beforeSource; complete.digest_ = digest(bytes);
++    complete.projects_ = std::move(result); complete.valid_ = true;
++    *snapshot = std::move(complete);
+     return true;
+ }
+ 
+@@ -980,9 +983,9 @@ bool OriginalSampleRepository::prepareOriginalLisApplication(const OriginalLisSa
+     const auto &rack = snapshot_.racks[r]; const auto &before = rack.holes[h];
+     if (before.lisPhase != SampleLisPhase::R1 || before.lisControlId != decoded.header.controlId)
+         return fail(message, QStringLiteral("原LIS孔尚未认领本次R1，未把Prepared值当实际接收资格。"));
+-    Sn100Lis::OriginalLisMappingProjects mappings; QString mappingDigest;
+-    if (!originalLisMappings(&mappings, &mappingDigest, message)) return false;
+-    const auto plan = Sn100Lis::buildOriginalLisApplicationPlan(decoded, originalLisValue(root_, lisRepositoryInstance_, rack, before), mappings);
++    OriginalLisMappingSnapshot mappings;
++    if (!captureOriginalLisMappings(&mappings, message)) return false;
++    const auto plan = Sn100Lis::buildOriginalLisApplicationPlan(decoded, originalLisValue(root_, lisRepositoryInstance_, rack, before), mappings.projects());
+     if (plan.state != Sn100Lis::OriginalLisPlanState::Prepared)
+         return fail(message, plan.error.field + QStringLiteral(": ") + plan.error.detail);
+     SampleHole after = before;
+@@ -1012,7 +1015,7 @@ bool OriginalSampleRepository::prepareOriginalLisApplication(const OriginalLisSa
+     int sameRack = 0, sameHole = 0;
+     if (!matchOriginalLisTarget(target, &sameRack, &sameHole, message)) return false;
+     OriginalLisPreparedSampleUpdate complete;
+-    complete.before_ = target; complete.after_ = std::move(after); complete.mappingDigest_ = mappingDigest; complete.prepared_ = true;
++    complete.before_ = target; complete.after_ = std::move(after); complete.mappingDigest_ = mappings.digest(); complete.prepared_ = true;
+     *prepared = std::move(complete);
+     return true;
+ }
+diff --git a/06_programs/sn100_host/samples/original_sample_repository.h b/06_programs/sn100_host/samples/original_sample_repository.h
+index c3c0892..d46828f 100644
+--- a/06_programs/sn100_host/samples/original_sample_repository.h
++++ b/06_programs/sn100_host/samples/original_sample_repository.h
+@@ -21,6 +21,21 @@ struct OriginalLisSampleTarget
+ };
+ 
+ class OriginalSampleRepository;
++// 按原项目/表行顺序读取的完整映射值；不暴露可写成员，也不代表应用许可或设备来源。
++class OriginalLisMappingSnapshot
++{
++public:
++    bool valid() const { return valid_; }
++    QString projectSourceDigest() const { return projectSourceDigest_; }
++    QString digest() const { return digest_; }
++    const Sn100Lis::OriginalLisMappingProjects &projects() const { return projects_; }
++private:
++    friend class OriginalSampleRepository;
++    bool valid_ = false;
++    QString projectSourceDigest_, digest_;
++    Sn100Lis::OriginalLisMappingProjects projects_;
++};
++
+ class OriginalLisPreparedSampleUpdate
+ {
+ public:
+@@ -84,6 +99,8 @@ public:
+     ProjectRecords projects() const { return projects_; }
+     ProjectUnits units() const { return units_; }
+     SampleSnapshot snapshot() const { return snapshot_; }
++    // 只读原表及同次INI，不用编辑缓存、不执行未完成复制的恢复；失败输出为无效空快照。
++    bool captureOriginalLisMappings(OriginalLisMappingSnapshot *snapshot, QString *message) const;
+     // 以下仅在现仓库线程操作同一snapshot；不发送QRY/ACK、不写报告或预留任务。
+     bool captureOriginalLisHole(qint64 rackId, int hole, OriginalLisSampleTarget *target,
+                                 Sn100Lis::OriginalLisHoleValue *oldValue, QString *message) const;
+@@ -126,7 +143,6 @@ private:
+     void noteLisRackRemoved(qint64 rackId);
+     bool originalLisEditable(qint64 rackId, QString *message) const;
+     bool originalLisProjectSource(QString *digest, QStringList *files, QString *message) const;
+-    bool originalLisMappings(Sn100Lis::OriginalLisMappingProjects *mappings, QString *digest, QString *message) const;
+     bool matchOriginalLisTarget(const OriginalLisSampleTarget &target, int *rackIndex, int *holeIndex, QString *message) const;
+     bool publishOriginalLisHole(OriginalLisSampleTarget target, SampleHole after,
+         OriginalLisSampleChangeKind kind, bool queryRequired, OriginalLisSampleChange *result, QString *message);
+diff --git a/06_programs/sn100_host/samples/sample_types.h b/06_programs/sn100_host/samples/sample_types.h
+index c7151bb..28f949f 100644
+--- a/06_programs/sn100_host/samples/sample_types.h
++++ b/06_programs/sn100_host/samples/sample_types.h
+@@ -58,6 +58,8 @@ struct SampleHole
+ {
+     int number = 1;
+     QString sampleId;
++    // 原S_SampleHoleInfo的孔位标志，独立于patient.isAutoId；LIS清患者不清此值。
++    bool isAutoId = true;
+     int container = 1; // Original Tube=0 / MicroCup=1; source default is MicroCup.
+     QList<SampleTask> tasks;
+     bool revise = true;

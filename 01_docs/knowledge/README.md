@@ -8,6 +8,7 @@
 
 | 文件或目录 | 用途 |
 | --- | --- |
+| [rk3576_project_guide.md](rk3576_project_guide.md) | 项目通用指南：开发环境、两块板用途、文件归属、运行入口和历次记录位置。 |
 | [linux_basics.md](linux_basics.md) | 面向初学者解释Linux路径、文件、设备节点、GPIO、串口和相关命令。 |
 | [sn100_host_project_guide.md](sn100_host_project_guide.md) | 解释正式工程、只读原版、规则文件、技能、计划和记录之间的关系。 |
 | [sn100_host_function_and_porting_review.md](sn100_host_function_and_porting_review.md) | 介绍上位机业务、原Windows与Linux版逐项功能差异、代码阅读路线和待补实现。 |

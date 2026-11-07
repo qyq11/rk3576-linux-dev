@@ -1,0 +1,47 @@
+[
+  {
+    "file": "sample_types.h",
+    "old": "    QString sampleId;\n    int container = 1;",
+    "new": "    QString sampleId;\n    // 原S_SampleHoleInfo的孔位标志，独立于patient.isAutoId；LIS清患者不清此值。\n    bool isAutoId = true;\n    int container = 1;"
+  },
+  {
+    "file": "original_sample_repository.h",
+    "old": "class OriginalSampleRepository;\nclass OriginalLisPreparedSampleUpdate",
+    "new": "class OriginalSampleRepository;\n// 按原项目/表行顺序读取的完整映射值；不暴露可写成员，也不代表应用许可或设备来源。\nclass OriginalLisMappingSnapshot\n{\npublic:\n    bool valid() const { return valid_; }\n    QString projectSourceDigest() const { return projectSourceDigest_; }\n    QString digest() const { return digest_; }\n    const Sn100Lis::OriginalLisMappingProjects &projects() const { return projects_; }\nprivate:\n    friend class OriginalSampleRepository;\n    bool valid_ = false;\n    QString projectSourceDigest_, digest_;\n    Sn100Lis::OriginalLisMappingProjects projects_;\n};\n\nclass OriginalLisPreparedSampleUpdate"
+  },
+  {
+    "file": "original_sample_repository.h",
+    "old": "    // 以下仅在现仓库线程操作同一snapshot；不发送QRY/ACK、不写报告或预留任务。",
+    "new": "    // 只读原表及同次INI，不用编辑缓存、不执行未完成复制的恢复；失败输出为无效空快照。\n    bool captureOriginalLisMappings(OriginalLisMappingSnapshot *snapshot, QString *message) const;\n    // 以下仅在现仓库线程操作同一snapshot；不发送QRY/ACK、不写报告或预留任务。"
+  },
+  {
+    "file": "original_sample_repository.h",
+    "old": "    bool originalLisMappings(Sn100Lis::OriginalLisMappingProjects *mappings, QString *digest, QString *message) const;\n",
+    "new": ""
+  },
+  {
+    "file": "original_sample_repository.cpp",
+    "old": "    out << QStringLiteral(\"SN100-LIS-hole-input-v1\") << hole.number << hole.sampleId << hole.sampleBarcode\n        << hole.container << hole.needleType << hole.revise << hole.sampleType;",
+    "new": "    out << QStringLiteral(\"SN100-LIS-hole-input-v2\") << hole.number << hole.sampleId << hole.sampleBarcode\n        << hole.isAutoId << hole.container << hole.needleType << hole.revise << hole.sampleType;"
+  },
+  {
+    "file": "original_sample_repository.cpp",
+    "old": "bool OriginalSampleRepository::originalLisMappings(Sn100Lis::OriginalLisMappingProjects *mappings,\n                                                   QString *mappingDigest, QString *message) const\n{\n    if (!mappings || !mappingDigest) return fail(message, QStringLiteral(\"没有原LIS映射输出位置。\"));\n    QString beforeSource; QStringList files;",
+    "new": "bool OriginalSampleRepository::captureOriginalLisMappings(OriginalLisMappingSnapshot *snapshot, QString *message) const\n{\n    if (!snapshot) return fail(message, QStringLiteral(\"没有原LIS映射输出位置。\"));\n    *snapshot = OriginalLisMappingSnapshot();\n    QString beforeSource; QStringList files;"
+  },
+  {
+    "file": "original_sample_repository.cpp",
+    "old": "    *mappings = result; *mappingDigest = digest(bytes);\n    return true;\n}\n\nbool OriginalSampleRepository::captureOriginalLisHole",
+    "new": "    OriginalLisMappingSnapshot complete;\n    complete.projectSourceDigest_ = beforeSource; complete.digest_ = digest(bytes);\n    complete.projects_ = std::move(result); complete.valid_ = true;\n    *snapshot = std::move(complete);\n    return true;\n}\n\nbool OriginalSampleRepository::captureOriginalLisHole"
+  },
+  {
+    "file": "original_sample_repository.cpp",
+    "old": "    Sn100Lis::OriginalLisMappingProjects mappings; QString mappingDigest;\n    if (!originalLisMappings(&mappings, &mappingDigest, message)) return false;\n    const auto plan = Sn100Lis::buildOriginalLisApplicationPlan(decoded, originalLisValue(root_, lisRepositoryInstance_, rack, before), mappings);",
+    "new": "    OriginalLisMappingSnapshot mappings;\n    if (!captureOriginalLisMappings(&mappings, message)) return false;\n    const auto plan = Sn100Lis::buildOriginalLisApplicationPlan(decoded, originalLisValue(root_, lisRepositoryInstance_, rack, before), mappings.projects());"
+  },
+  {
+    "file": "original_sample_repository.cpp",
+    "old": "    complete.before_ = target; complete.after_ = std::move(after); complete.mappingDigest_ = mappingDigest; complete.prepared_ = true;",
+    "new": "    complete.before_ = target; complete.after_ = std::move(after); complete.mappingDigest_ = mappings.digest(); complete.prepared_ = true;"
+  }
+]

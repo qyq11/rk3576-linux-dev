@@ -8,6 +8,7 @@
 
 | 文件或目录 | 用途 |
 | --- | --- |
+| [项目使用与资料指南](knowledge/rk3576_project_guide.md) | 开发环境、两块板用途、文件归属及操作记录入口；承接原首页的详细说明。 |
 | [plans/](plans/README.md) | 开发计划与日常待办；先看 next_steps.md。 |
 | [knowledge/](knowledge/README.md) | Linux基础、工程结构、功能差异和人工操作说明。 |
 | [02_records/](../02_records/README.md) | 按事项保存实际执行、失败、修复和验证结果。 |

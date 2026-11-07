@@ -24,7 +24,6 @@ public:
 signals:
     void itemSelected(int index, QString text);
 protected:
-    void focusOutEvent(QFocusEvent *event);
     bool eventFilter(QObject *watched, QEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *);
